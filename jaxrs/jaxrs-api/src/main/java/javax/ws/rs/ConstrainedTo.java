@@ -47,7 +47,7 @@ import java.lang.annotation.Target;
 
 /**
  * Indicates the run-time context in which an annotated JAX-RS provider
- * is applicable. If a {@code &#64;ConstrainedTo} annotation is not
+ * is applicable. If a {@code @ConstrainedTo} annotation is not
  * present on a JAX-RS provider type declaration, the declared provider
  * may be used in any run-time context. If such a annotation is present,
  * the JAX-RS runtime will enforce the specified usage restriction.
@@ -74,7 +74,7 @@ import java.lang.annotation.Target;
  * <p>
  * It is a configuration error to constraint a JAX-RS provider implementation to
  * a run-time context in which the provider cannot be applied. In such case a JAX-RS
- * runtime SHOULD report a warning and ignore the provider implementation in further
+ * runtime SHOULD inform a user about the issue and ignore the provider implementation in further
  * processing.
  * </p>
  * <p>

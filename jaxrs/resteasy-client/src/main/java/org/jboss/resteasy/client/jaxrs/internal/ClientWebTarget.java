@@ -6,6 +6,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 import javax.ws.rs.client.Configuration;
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
@@ -132,6 +133,52 @@ public class ClientWebTarget implements ResteasyWebTarget
          vals.put(entry.getKey(), val);
       }
       UriBuilder copy = uriBuilder.resolveTemplates(vals);
+      ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
+      return target;
+   }
+
+   @Override
+   public ResteasyWebTarget resolveTemplate(String name, Object value, boolean encodeSlashInPath) throws NullPointerException
+   {
+      String val = configuration.toString(value);
+      UriBuilder copy = uriBuilder.resolveTemplate(name, val, encodeSlashInPath);
+      ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
+      return target;
+   }
+
+   @Override
+   public ResteasyWebTarget resolveTemplateFromEncoded(String name, Object value) throws NullPointerException
+   {
+      String val = configuration.toString(value);
+      UriBuilder copy = uriBuilder.resolveTemplateFromEncoded(name, val);
+      ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
+      return target;
+   }
+
+   @Override
+   public ResteasyWebTarget resolveTemplatesFromEncoded(Map<String, Object> templateValues) throws NullPointerException
+   {
+      Map vals = new HashMap<String, String>();
+      for (Map.Entry<String, Object> entry : templateValues.entrySet())
+      {
+         String val = configuration.toString(entry.getValue());
+         vals.put(entry.getKey(), val);
+      }
+      UriBuilder copy = uriBuilder.resolveTemplatesFromEncoded(vals) ;
+      ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
+      return target;
+   }
+
+   @Override
+   public ResteasyWebTarget resolveTemplates(Map<String, Object> templateValues, boolean encodeSlashInPath) throws NullPointerException
+   {
+      Map vals = new HashMap<String, String>();
+      for (Map.Entry<String, Object> entry : templateValues.entrySet())
+      {
+         String val = configuration.toString(entry.getValue());
+         vals.put(entry.getKey(), val);
+      }
+      UriBuilder copy = uriBuilder.resolveTemplates(vals, encodeSlashInPath) ;
       ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
       return target;
    }

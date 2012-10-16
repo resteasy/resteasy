@@ -27,6 +27,18 @@ public interface ResteasyWebTarget extends WebTarget
    ResteasyWebTarget resolveTemplates(Map<String, Object> templateValues) throws NullPointerException;
 
    @Override
+   ResteasyWebTarget resolveTemplate(String name, Object value, boolean encodeSlashInPath) throws NullPointerException;
+
+   @Override
+   ResteasyWebTarget resolveTemplateFromEncoded(String name, Object value) throws NullPointerException;
+
+   @Override
+   ResteasyWebTarget resolveTemplatesFromEncoded(Map<String, Object> templateValues) throws NullPointerException;
+
+   @Override
+   ResteasyWebTarget resolveTemplates(Map<String, Object> templateValues, boolean encodeSlashInPath) throws NullPointerException;
+
+   @Override
    ResteasyWebTarget path(String path) throws NullPointerException;
 
    @Override
@@ -35,7 +47,6 @@ public interface ResteasyWebTarget extends WebTarget
    @Override
    ResteasyWebTarget queryParam(String name, Object... values) throws NullPointerException;
 
-   @Override
    ResteasyWebTarget queryParams(MultivaluedMap<String, Object> parameters) throws IllegalArgumentException, NullPointerException;
 
    ResteasyWebTarget path(Class<?> resource) throws IllegalArgumentException;

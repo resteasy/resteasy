@@ -55,9 +55,9 @@ import java.lang.annotation.Target;
  * available the container must respond with a HTTP "406 Not Acceptable" as
  * specified by RFC 2616.
  *
- * <p>A method for which there is a single-valued {@code &#64;Produces}
+ * <p>A method for which there is a single-valued {@code @Produces}
  * is not required to set the media type of representations that it produces:
- * the container will use the value of the {@code &#64;Produces} when
+ * the container will use the value of the {@code @Produces} when
  * sending a response.</p>
  *
  * @author Paul Sandoz

@@ -49,7 +49,7 @@ import javax.ws.rs.ext.WriterInterceptor;
  *
  * Dynamic feature provider is used by JAX-RS runtime to register providers
  * that shall be applied to a particular resource class and method and
- * overrides any annotation-based binding definitions defined on the returned
+ * overrides any annotation-based binding definitions defined on any registered
  * resource filter or interceptor instance.
  * <p>
  * Providers implementing this interface MAY be annotated with

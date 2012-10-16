@@ -176,9 +176,9 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public Collection<Feature> getFeatures()
+   public Collection<Feature> getEnabledFeatures()
    {
-      return getDelegate().getFeatures();
+      return getDelegate().getEnabledFeatures();
    }
 
    @Override

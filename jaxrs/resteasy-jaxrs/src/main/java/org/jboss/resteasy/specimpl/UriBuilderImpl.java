@@ -865,4 +865,32 @@ public class UriBuilderImpl extends UriBuilder
       String str = buildString(templateValues, false, true);
       return fromTemplate(str);
    }
+
+   @Override
+   public UriBuilder resolveTemplate(String name, Object value, boolean encodeSlashInPath) throws IllegalArgumentException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public UriBuilder resolveTemplateFromEncoded(String name, Object value) throws IllegalArgumentException
+   {
+      HashMap<String, Object> vals = new HashMap<String, Object>();
+      vals.put(name, value);
+      String str = buildString(vals, true, true);
+      return fromTemplate(str);
+   }
+
+   @Override
+   public UriBuilder resolveTemplates(Map<String, Object> templateValues, boolean encodeSlashInPath) throws IllegalArgumentException
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public UriBuilder resolveTemplatesFromEncoded(Map<String, Object> templateValues) throws IllegalArgumentException
+   {
+      String str = buildString(templateValues, false, true);
+      return fromTemplate(str);
+   }
 }

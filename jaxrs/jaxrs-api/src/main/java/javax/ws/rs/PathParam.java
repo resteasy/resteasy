@@ -59,7 +59,7 @@ import java.lang.annotation.Target;
  * segment of the matching part of the path.
  * See {@link javax.ws.rs.core.UriInfo} for a means of retrieving all request
  * path segments.</li>
- * <li>Be {@code List&lt;}{@code javax.ws.rs.core.PathSegment}{@code &gt;}, the
+ * <li>Be {@code List<javax.ws.rs.core.PathSegment>}, the
  * value will be a list of {@code PathSegment} corresponding to the path
  * segment(s) that matched the named template parameter.
  * See {@link javax.ws.rs.core.UriInfo} for a means of retrieving all request
@@ -77,9 +77,9 @@ import java.lang.annotation.Target;
  * <p>The injected value corresponds to the latest use (in terms of scope) of
  * the path parameter. E.g. if a class and a sub-resource method are both
  * annotated with a {@link Path &#64;Path} containing the same URI template
- * parameter, use of {@code &#64;PathParam} on a sub-resource method parameter
+ * parameter, use of {@code @PathParam} on a sub-resource method parameter
  * will bind the value matching URI template parameter in the method's
- * {@code &#64;Path} annotation.</p>
+ * {@code @Path} annotation.</p>
  *
  * <p>Because injection occurs at object creation time, use of this annotation
  * on resource class fields and bean properties is only supported for the
@@ -105,9 +105,9 @@ public @interface PathParam {
      * property. See {@link Path#value()} for a description of the syntax of
      * template parameters.
      *
-     * <p>E.g. a class annotated with: {@code &#64;Path("widgets/&#123;id&#125;")}
+     * <p>E.g. a class annotated with: {@code @Path("widgets/{id}")}
      * can have methods annotated whose arguments are annotated
-     * with {@code &#64;PathParam("id")}.
+     * with {@code @PathParam("id")}.
      */
     String value();
 }

@@ -189,10 +189,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected Set<DynamicFeature> serverDynamicFeatures;
    protected Set<DynamicFeature> clientDynamicFeatures;
-   protected Set<Feature> features;
+   protected Set<Feature> enabledFeatures;
    protected Map<String, Object> properties;
    protected Set<Class<?>> providerClasses;
    protected Set<Object> providerInstances;
+   protected Set<Class<?>> featureClasses;
+   protected Set<Object> featureInstances;
 
 
    public ResteasyProviderFactory()
@@ -211,19 +213,23 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public ResteasyProviderFactory(ResteasyProviderFactory parent)
    {
       this.parent = parent;
+      featureClasses = new HashSet<Class<?>>();
+      featureInstances = new HashSet<Object>();
       providerClasses = new HashSet<Class<?>>();
       providerInstances = new HashSet<Object>();
       properties = Collections.synchronizedMap(new HashMap<String, Object>());
       properties.putAll(parent.getProperties());
-      features = new HashSet<Feature>();
+      enabledFeatures = new HashSet<Feature>();
    }
 
    protected void initialize()
    {
       serverDynamicFeatures = new HashSet<DynamicFeature>();
       clientDynamicFeatures = new HashSet<DynamicFeature>();
-      features = new HashSet<Feature>();
+      enabledFeatures = new HashSet<Feature>();
       properties = Collections.synchronizedMap(new HashMap<String, Object>());
+      featureClasses = new HashSet<Class<?>>();
+      featureInstances = new HashSet<Object>();
       providerClasses = new HashSet<Class<?>>();
       providerInstances = new HashSet<Object>();
       messageBodyReaders = new MediaTypeMap<SortedKey<MessageBodyReader>>();
@@ -340,7 +346,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       Set<Class<?>> set = new HashSet<Class<?>>();
       if (parent != null) set.addAll(parent.getProviderClasses());
       set.addAll(providerClasses);
-      return providerClasses;
+      return set;
    }
 
    /**
@@ -354,7 +360,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       Set<Object> set = new HashSet<Object>();
       if (parent != null) set.addAll(parent.getProviderInstances());
       set.addAll(providerInstances);
-      return providerInstances;
+      return set;
    }
 
    protected LegacyPrecedence getPrecedence()
@@ -1401,8 +1407,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          Feature feature = injectedInstance((Class<? extends Feature>)provider);
          if (feature.configure(this))
          {
-            features.add(feature);
+            enabledFeatures.add(feature);
          }
+         featureClasses.add(provider);
 
       }
       else
@@ -1708,8 +1715,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          injectProperties(provider.getClass(), provider);
          if (feature.configure(this))
          {
-            features.add(feature);
+            enabledFeatures.add(feature);
          }
+         featureInstances.add(provider);
 
       }
       else
@@ -1870,12 +1878,32 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
    @Override
-   public Collection<Feature> getFeatures()
+   public Collection<Feature> getEnabledFeatures()
    {
-      if (features == null && parent != null) return parent.getFeatures();
+      if (enabledFeatures == null && parent != null) return parent.getEnabledFeatures();
       Set<Feature> set = new HashSet<Feature>();
-      if (parent != null) set.addAll(parent.getFeatures());
-      set.addAll(features);
+      if (parent != null) set.addAll(parent.getEnabledFeatures());
+      set.addAll(enabledFeatures);
+      return set;
+   }
+
+   @Override
+   public Set<Class<?>> getFeatureClasses()
+   {
+      if (featureClasses == null && parent != null) return parent.getFeatureClasses();
+      Set<Class<?>> set = new HashSet<Class<?>>();
+      if (parent != null) set.addAll(parent.getFeatureClasses());
+      set.addAll(featureClasses);
+      return set;
+   }
+
+   @Override
+   public Set<Object> getFeatureInstances()
+   {
+      if (featureInstances == null && parent != null) return parent.getFeatureInstances();
+      Set<Object> set = new HashSet<Object>();
+      if (parent != null) set.addAll(parent.getFeatureInstances());
+      set.addAll(featureInstances);
       return set;
    }
 

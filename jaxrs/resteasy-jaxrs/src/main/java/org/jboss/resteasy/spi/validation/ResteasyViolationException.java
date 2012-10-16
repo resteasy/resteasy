@@ -3,7 +3,7 @@ package org.jboss.resteasy.spi.validation;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 
 import javax.validation.ConstraintViolation;
-import javax.ws.rs.ValidationException;
+import javax.ws.rs.WebApplicationException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.List;
  * @TODO Need to work on representation of exceptions
  * @TODO Add javadoc.
  */
-public class ResteasyViolationException extends ValidationException
+public class ResteasyViolationException extends WebApplicationException
 {
    private static final long serialVersionUID = 2623733139912277260L;
    
@@ -34,12 +34,12 @@ public class ResteasyViolationException extends ValidationException
    
    public ResteasyViolationException()
    {
-      super();
+      super(500);
    }
 
    public ResteasyViolationException(ViolationsContainer<?> container)
    {
-      super();
+      super(500);
       this.container = container;
    }
    

@@ -50,7 +50,7 @@ import java.lang.annotation.Target;
  * into a resource class field, property or resource method parameter.
  * <p>
  * The JAX-RS runtime will instantiate the object and inject all it's fields and properties annotated
- * with either one of the {@code &#64;*Param} annotation ({@link PathParam &#64;PathParam},
+ * with either one of the {@code @XxxParam} annotation ({@link PathParam &#64;PathParam},
  * {@link FormParam &#64;FormParam} ...) or the {@link javax.ws.rs.core.Context &#64;Context}
  * annotation. For the POJO classes same instantiation and injection rules apply as in case of instantiation
  * and injection of request-scoped root resource classes.
