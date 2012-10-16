@@ -25,6 +25,7 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.util.Locale;
 
@@ -157,7 +158,16 @@ public class ClientInvocationBuilder implements Invocation.Builder
       return buildGet().invoke();
    }
 
-   protected <T> T extractResult(GenericType<T> responseType, Response response)
+   /**
+    * Extracts result from response throwing an appropriate exception if not a successful response.
+    *
+    * @param responseType
+    * @param response
+    * @param annotations
+    * @param <T>
+    * @return
+    */
+   public static <T> T extractResult(GenericType<T> responseType, Response response, Annotation[] annotations)
    {
       int status = response.getStatus();
       if (status >= 200 && status < 300)
@@ -170,7 +180,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
             }
             else
             {
-               return response.readEntity(responseType);
+               return response.readEntity(responseType, annotations);
             }
          }
          finally
@@ -182,33 +192,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
       {
          if (status >= 300 && status < 400) throw new RedirectionException(response);
 
-         switch (status)
-         {
-            case 400:
-               throw new BadRequestException(response);
-            case 401:
-               throw new NotAuthorizedException(response);
-            case 404:
-               throw new NotFoundException(response);
-            case 405:
-               throw new NotAllowedException(response);
-            case 406:
-               throw new NotAcceptableException(response);
-            case 415:
-               throw new NotSupportedException(response);
-            case 500:
-               throw new InternalServerErrorException(response);
-            case 503:
-               throw new ServiceUnavailableException(response);
-            default:
-               break;
-         }
-
-         if (status >= 400 && status < 500) throw new ClientErrorException(response);
-         if (status >= 500) throw new ServerErrorException(response);
-
-
-         throw new WebApplicationException(response);
+         return handleErrorStatus(response);
       }
       finally
       {
@@ -218,17 +202,56 @@ public class ClientInvocationBuilder implements Invocation.Builder
 
    }
 
+   /**
+    * Throw an exception.  Expecting a status of 400 or greater.
+    *
+    * @param response
+    * @param <T>
+    * @return
+    */
+   public static <T> T handleErrorStatus(Response response)
+   {
+      final int status = response.getStatus();
+      switch (status)
+      {
+         case 400:
+            throw new BadRequestException(response);
+         case 401:
+            throw new NotAuthorizedException(response);
+         case 404:
+            throw new NotFoundException(response);
+         case 405:
+            throw new NotAllowedException(response);
+         case 406:
+            throw new NotAcceptableException(response);
+         case 415:
+            throw new NotSupportedException(response);
+         case 500:
+            throw new InternalServerErrorException(response);
+         case 503:
+            throw new ServiceUnavailableException(response);
+         default:
+            break;
+      }
+
+      if (status >= 400 && status < 500) throw new ClientErrorException(response);
+      if (status >= 500) throw new ServerErrorException(response);
+
+
+      throw new WebApplicationException(response);
+   }
+
    @Override
    public <T> T get(Class<T> responseType) throws ClientException, WebApplicationException
    {
       Response response = get();
-      return extractResult(new GenericType<T>(responseType), response);
+      return extractResult(new GenericType<T>(responseType), response, null);
    }
 
    @Override
    public <T> T get(GenericType<T> responseType) throws ClientException, WebApplicationException
    {
-      return extractResult(responseType, get());
+      return extractResult(responseType, get(), null);
    }
 
    @Override
@@ -241,14 +264,14 @@ public class ClientInvocationBuilder implements Invocation.Builder
    public <T> T put(Entity<?> entity, Class<T> responseType) throws ClientException, WebApplicationException
    {
       Response response = put(entity);
-      return extractResult(new GenericType<T>(responseType), response);
+      return extractResult(new GenericType<T>(responseType), response, null);
    }
 
    @Override
    public <T> T put(Entity<?> entity, GenericType<T> responseType) throws ClientException, WebApplicationException
    {
       Response response = put(entity);
-      return extractResult(responseType, response);
+      return extractResult(responseType, response, null);
    }
 
    @Override
@@ -261,14 +284,14 @@ public class ClientInvocationBuilder implements Invocation.Builder
    public <T> T post(Entity<?> entity, Class<T> responseType) throws ClientException, WebApplicationException
    {
       Response response = post(entity);
-      return extractResult(new GenericType<T>(responseType), response);
+      return extractResult(new GenericType<T>(responseType), response, null);
    }
 
    @Override
    public <T> T post(Entity<?> entity, GenericType<T> responseType) throws ClientException, WebApplicationException
    {
       Response response = post(entity);
-      return extractResult(responseType, response);
+      return extractResult(responseType, response, null);
    }
 
    @Override
@@ -281,14 +304,14 @@ public class ClientInvocationBuilder implements Invocation.Builder
    public <T> T delete(Class<T> responseType) throws ClientException, WebApplicationException
    {
       Response response = delete();
-      return extractResult(new GenericType<T>(responseType), response);
+      return extractResult(new GenericType<T>(responseType), response, null);
    }
 
    @Override
    public <T> T delete(GenericType<T> responseType) throws ClientException, WebApplicationException
    {
       Response response = delete();
-      return extractResult(responseType, response);
+      return extractResult(responseType, response, null);
    }
 
    @Override
@@ -307,14 +330,14 @@ public class ClientInvocationBuilder implements Invocation.Builder
    public <T> T options(Class<T> responseType) throws ClientException, WebApplicationException
    {
       Response response = options();
-      return extractResult(new GenericType<T>(responseType), response);
+      return extractResult(new GenericType<T>(responseType), response, null);
    }
 
    @Override
    public <T> T options(GenericType<T> responseType) throws ClientException, WebApplicationException
    {
       Response response = options();
-      return extractResult(responseType, response);
+      return extractResult(responseType, response, null);
    }
 
    @Override
@@ -327,14 +350,14 @@ public class ClientInvocationBuilder implements Invocation.Builder
    public <T> T trace(Class<T> responseType) throws ClientException, WebApplicationException
    {
       Response response = trace();
-      return extractResult(new GenericType<T>(responseType), response);
+      return extractResult(new GenericType<T>(responseType), response, null);
    }
 
    @Override
    public <T> T trace(GenericType<T> responseType) throws ClientException, WebApplicationException
    {
       Response response = trace();
-      return extractResult(responseType, response);
+      return extractResult(responseType, response, null);
    }
 
    @Override
@@ -347,14 +370,14 @@ public class ClientInvocationBuilder implements Invocation.Builder
    public <T> T method(String name, Class<T> responseType) throws ClientException, WebApplicationException
    {
       Response response = method(name);
-      return extractResult(new GenericType<T>(responseType), response);
+      return extractResult(new GenericType<T>(responseType), response, null);
    }
 
    @Override
    public <T> T method(String name, GenericType<T> responseType) throws ClientException, WebApplicationException
    {
       Response response = method(name);
-      return extractResult(responseType, response);
+      return extractResult(responseType, response, null);
    }
 
    @Override
@@ -367,14 +390,14 @@ public class ClientInvocationBuilder implements Invocation.Builder
    public <T> T method(String name, Entity<?> entity, Class<T> responseType) throws ClientException, WebApplicationException
    {
       Response response = method(name, entity);
-      return extractResult(new GenericType<T>(responseType), response);
+      return extractResult(new GenericType<T>(responseType), response, null);
    }
 
    @Override
    public <T> T method(String name, Entity<?> entity, GenericType<T> responseType) throws ClientException, WebApplicationException
    {
       Response response = method(name, entity);
-      return extractResult(responseType, response);
+      return extractResult(responseType, response, null);
    }
 
 }
