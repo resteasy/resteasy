@@ -6,6 +6,8 @@ import org.jboss.resteasy.annotations.security.doseta.Verify;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
+import org.jboss.resteasy.client.exception.mapper.ApacheHttpClient4ExceptionMapper;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.security.doseta.DKIMSignature;
 import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
@@ -19,6 +21,7 @@ import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.util.Base64;
 import org.jboss.resteasy.util.GenericType;
 import org.jboss.resteasy.util.ParameterParser;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -52,6 +55,7 @@ public class SigningTest extends BaseResourceTest
    public static KeyPair keys;
    public static DosetaKeyRepository repository;
    public static PrivateKey badKey;
+   public static ApacheHttpClient4Executor executor;
 
    @Test
    public void testMe() throws Exception
@@ -81,6 +85,13 @@ public class SigningTest extends BaseResourceTest
 
       dispatcher.getDefaultContextObjects().put(KeyRepository.class, repository);
       addPerRequestResource(SignedResource.class);
+      executor = new ApacheHttpClient4Executor();
+   }
+
+   @AfterClass
+   public static void shutdown() throws Exception
+   {
+      executor.close();
    }
 
    @Path("/signed")
@@ -303,7 +314,7 @@ public class SigningTest extends BaseResourceTest
    @Test
    public void testRequestOnly() throws Exception
    {
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/request-only"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed/request-only"));
       DKIMSignature contentSignature = new DKIMSignature();
       contentSignature.setDomain("samplezone.org");
       contentSignature.setSelector("test");
@@ -322,18 +333,14 @@ public class SigningTest extends BaseResourceTest
       verification.setBodyHashRequired(false);
       verification.getRequiredAttributes().put("token", "1122");
       verification.verify(contentSignature, response.getHeaders(), null, keys.getPublic());
-
-
-
-
-
+      response.releaseConnection();
    }
 
 
    @Test
    public void testSigningManual() throws Exception
    {
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed"));
       ClientResponse<MarshalledEntity<String>> response = request.get(new GenericType<MarshalledEntity<String>>()
       {
       });
@@ -351,12 +358,13 @@ public class SigningTest extends BaseResourceTest
 
       DKIMSignature contentSignature = new DKIMSignature(signatureHeader);
       contentSignature.verify(response.getHeaders(), marshalledEntity.getMarshalledBytes(), keys.getPublic());
+      response.releaseConnection();
    }
 
    @Test
    public void testBasicVerification() throws Exception
    {
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed"));
       DKIMSignature contentSignature = new DKIMSignature();
       contentSignature.setDomain("samplezone.org");
       contentSignature.setSelector("test");
@@ -365,6 +373,7 @@ public class SigningTest extends BaseResourceTest
       request.body("text/plain", "hello world");
       ClientResponse response = request.post();
       Assert.assertEquals(204, response.getStatus());
+      response.releaseConnection();
 
 
    }
@@ -372,7 +381,7 @@ public class SigningTest extends BaseResourceTest
    @Test
    public void testManualVerification() throws Exception
    {
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/verify-manual"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed/verify-manual"));
       DKIMSignature contentSignature = new DKIMSignature();
       contentSignature.setDomain("samplezone.org");
       contentSignature.setSelector("test");
@@ -382,6 +391,7 @@ public class SigningTest extends BaseResourceTest
       request.body("text/plain", "hello world");
       ClientResponse response = request.post();
       Assert.assertEquals(204, response.getStatus());
+      response.releaseConnection();
 
 
    }
@@ -389,7 +399,7 @@ public class SigningTest extends BaseResourceTest
    @Test
    public void testBasicVerificationRepository() throws Exception
    {
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed"));
       DKIMSignature contentSignature = new DKIMSignature();
       contentSignature.setSelector("test");
       contentSignature.setDomain("samplezone.org");
@@ -399,6 +409,7 @@ public class SigningTest extends BaseResourceTest
       request.body("text/plain", "hello world");
       ClientResponse response = request.post();
       Assert.assertEquals(204, response.getStatus());
+      response.releaseConnection();
 
 
    }
@@ -406,7 +417,7 @@ public class SigningTest extends BaseResourceTest
    @Test
    public void testBasicVerificationBadSignature() throws Exception
    {
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed"));
       DKIMSignature contentSignature = new DKIMSignature();
       contentSignature.setSelector("test");
       contentSignature.setDomain("samplezone.org");
@@ -415,15 +426,17 @@ public class SigningTest extends BaseResourceTest
       request.body("text/plain", "hello world");
       ClientResponse response = request.post();
       Assert.assertEquals(401, response.getStatus());
+      response.releaseConnection();
    }
 
    @Test
    public void testBasicVerificationNoSignature() throws Exception
    {
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed"));
       request.body("text/plain", "hello world");
       ClientResponse response = request.post();
       Assert.assertEquals(401, response.getStatus());
+      response.releaseConnection();
    }
 
    @Test
@@ -449,12 +462,13 @@ public class SigningTest extends BaseResourceTest
       verification.setStaleCheck(true);
       verification.setStaleSeconds(100);
 
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/stamped"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed/stamped"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
       System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
       String output = response.getEntity();
+      response.releaseConnection();
 
 
    }
@@ -468,7 +482,7 @@ public class SigningTest extends BaseResourceTest
       verification.setStaleCheck(true);
       verification.setStaleSeconds(1);
 
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/stamped"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed/stamped"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
       System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
@@ -483,6 +497,7 @@ public class SigningTest extends BaseResourceTest
       {
          Assert.assertEquals("Failed to verify signatures:\r\n Signature is stale", e.getMessage());
       }
+      response.releaseConnection();
 
 
    }
@@ -494,12 +509,13 @@ public class SigningTest extends BaseResourceTest
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
 
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-hour"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed/expires-hour"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
       System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
       String output = response.getEntity();
+      response.releaseConnection();
    }
 
    @Test
@@ -509,12 +525,13 @@ public class SigningTest extends BaseResourceTest
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
 
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-minute"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed/expires-minute"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
       System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
       String output = response.getEntity();
+      response.releaseConnection();
    }
 
    @Test
@@ -524,12 +541,13 @@ public class SigningTest extends BaseResourceTest
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
 
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-day"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed/expires-day"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
       System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
       String output = response.getEntity();
+      response.releaseConnection();
    }
 
    @Test
@@ -539,12 +557,13 @@ public class SigningTest extends BaseResourceTest
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
 
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-month"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed/expires-month"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
       System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
       String output = response.getEntity();
+      response.releaseConnection();
    }
 
    @Test
@@ -554,12 +573,13 @@ public class SigningTest extends BaseResourceTest
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
 
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-year"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed/expires-year"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
       System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
       String output = response.getEntity();
+      response.releaseConnection();
    }
 
    @Test
@@ -569,7 +589,7 @@ public class SigningTest extends BaseResourceTest
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
 
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/expires-short"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed/expires-short"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
       System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
@@ -584,6 +604,7 @@ public class SigningTest extends BaseResourceTest
       {
          Assert.assertEquals("Failed to verify signatures:\r\n Signature expired", e.getMessage());
       }
+      response.releaseConnection();
 
 
    }
@@ -599,7 +620,7 @@ public class SigningTest extends BaseResourceTest
       Verification verification = verifier.addNew();
       verification.setKey(keyPair.getPublic());
 
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/manual"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed/manual"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
       System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
@@ -614,6 +635,7 @@ public class SigningTest extends BaseResourceTest
       {
          Assert.assertEquals("Failed to verify signatures:\r\n Failed to verify signature.", e.getMessage());
       }
+      response.releaseConnection();
 
 
    }
@@ -625,7 +647,7 @@ public class SigningTest extends BaseResourceTest
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
 
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/manual"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed/manual"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
       System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
@@ -633,6 +655,7 @@ public class SigningTest extends BaseResourceTest
       Assert.assertEquals(200, response.getStatus());
       String output = response.getEntity();
       Assert.assertEquals("hello", output);
+      response.releaseConnection();
    }
 
    @Test
@@ -642,7 +665,7 @@ public class SigningTest extends BaseResourceTest
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
 
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/header"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed/header"));
       ClientResponse<String> response = request.get(String.class);
       response.getAttributes().put(Verifier.class.getName(), verifier);
       System.out.println(response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
@@ -650,13 +673,14 @@ public class SigningTest extends BaseResourceTest
       Assert.assertEquals(200, response.getStatus());
       String output = response.getEntity();
       Assert.assertEquals("hello world", output);
+      response.releaseConnection();
    }
 
 
    @Test
    public void testBadSignature() throws Exception
    {
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/bad-signature"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed/bad-signature"));
       ClientResponse<?> response = request.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       String signatureHeader = response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE);
@@ -679,12 +703,13 @@ public class SigningTest extends BaseResourceTest
          failedVerification = true;
       }
       Assert.assertTrue(failedVerification);
+      response.releaseConnection();
    }
 
    @Test
    public void testBadHash() throws Exception
    {
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/signed/bad-hash"));
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/signed/bad-hash"));
       ClientResponse<?> response = request.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       String signatureHeader = response.getHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE);
@@ -707,6 +732,7 @@ public class SigningTest extends BaseResourceTest
          failedVerification = true;
       }
       Assert.assertTrue(failedVerification);
+      response.releaseConnection();
    }
 
    @Test
