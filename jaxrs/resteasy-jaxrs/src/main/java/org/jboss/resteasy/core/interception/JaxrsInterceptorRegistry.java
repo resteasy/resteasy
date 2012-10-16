@@ -89,13 +89,15 @@ public class JaxrsInterceptorRegistry<T>
       protected void checkInitialize()
       {
          boolean isInitialized = initialized;
-         if (isInitialized) return;
-         synchronized (this)
+         if (!isInitialized)
          {
-            isInitialized = initialized;
-            if (isInitialized) return;
-            isInitialized = initialized = true;
-            initialize();
+            synchronized (this)
+            {
+               isInitialized = initialized;
+               if (isInitialized) return;
+               isInitialized = initialized = true;
+               initialize();
+            }
          }
       }
 
@@ -124,21 +126,27 @@ public class JaxrsInterceptorRegistry<T>
                   if (targetClass.isAnnotationPresent(annotation) ||
                           target.isAnnotationPresent(annotation))
                   {
-                     return new Match(getInterceptor(), order);
+                     Object intercept = getInterceptor();
+                     if (intercept == null)
+                        throw new NullPointerException("interceptor null from class: " + this.getClass().getName());
+                     return new Match(intercept, order);
                   }
                }
                return null;
-            }
-            else
+            } else
             {
-               return new Match(getInterceptor(), order);
+               Object intercept = getInterceptor();
+               if (intercept == null)
+                  throw new NullPointerException("interceptor null from class: " + this.getClass().getName());
+               return new Match(intercept, order);
             }
-         }
-         else if (nameBound.size() == 0)
+         } else if (nameBound.size() == 0)
          {
-            return new Match(getInterceptor(), order);
-         }
-         else
+            Object intercept = getInterceptor();
+            if (intercept == null)
+               throw new NullPointerException("interceptor null from class: " + this.getClass().getName());
+            return new Match(intercept, order);
+         } else
          {
             return null;
          }
@@ -153,7 +161,7 @@ public class JaxrsInterceptorRegistry<T>
 
    protected class OnDemandInterceptorFactory extends AbstractInterceptorFactory
    {
-      protected Object interceptor;
+      protected volatile Object interceptor;
 
       public OnDemandInterceptorFactory(Class declaring)
       {
@@ -166,7 +174,26 @@ public class JaxrsInterceptorRegistry<T>
       {
          interceptor = createInterceptor();
          providerFactory.injectProperties(interceptor);
+         initialized = true;
       }
+
+      protected void checkInitialize()
+      {
+         Object tmp = interceptor;
+         if (tmp == null)
+         {
+            synchronized (this)
+            {
+               tmp = interceptor;
+               if (tmp == null)
+               {
+                  initialize();
+                  tmp = interceptor;
+               }
+            }
+         }
+      }
+
 
       @Override
       protected Object getInterceptor()
@@ -234,8 +261,7 @@ public class JaxrsInterceptorRegistry<T>
             if (((AcceptedByMethod) interceptor).accept(declaring, method))
             {
                return interceptor;
-            }
-            else
+            } else
             {
                return null;
             }
