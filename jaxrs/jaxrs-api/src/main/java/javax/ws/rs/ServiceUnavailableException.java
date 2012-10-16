@@ -39,11 +39,11 @@
  */
 package javax.ws.rs;
 
+import java.util.Date;
+
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.RuntimeDelegate;
-import java.util.Date;
-
 import static javax.ws.rs.core.HttpHeaders.RETRY_AFTER;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;

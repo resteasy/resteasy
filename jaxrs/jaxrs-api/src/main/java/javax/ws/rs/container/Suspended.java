@@ -79,9 +79,9 @@ import java.util.concurrent.TimeUnit;
  * </pre>
  * <p>
  * A resource or sub-resource method that injects a suspended instance of an
- * {@code AsyncResponse} using the {@code &#64;Suspended} annotation is expected
+ * {@code AsyncResponse} using the {@code @Suspended} annotation is expected
  * be declared to return {@code void} type. Methods that inject asynchronous
- * response instance using the {@code &#64;Suspended} annotation and declare a
+ * response instance using the {@code @Suspended} annotation and declare a
  * return type other than {@code void} MUST be detected by the JAX-RS runtime and
  * a warning message MUST be logged. Any response value returned from such resource
  * or sub-resource method MUST be ignored by the framework:

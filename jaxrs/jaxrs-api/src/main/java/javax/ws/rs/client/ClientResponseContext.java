@@ -39,18 +39,19 @@
  */
 package javax.ws.rs.client;
 
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.Link;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
 
 /**
  * Client response filter context.

@@ -39,10 +39,6 @@
  */
 package javax.ws.rs.core;
 
-import javax.ws.rs.MessageProcessingException;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.RuntimeDelegate;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.net.URI;
@@ -51,6 +47,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import javax.ws.rs.MessageProcessingException;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
  * Defines the contract between a returned instance and the runtime when
@@ -840,13 +841,9 @@ public abstract class Response {
          * </p>
          *
          * @return a copy of the ResponseBuilder.
-         * @throws CloneNotSupportedException if the object's class does not support
-         *                                    the Cloneable interface. Subclasses that override
-         *                                    the clone method can also throw this exception to
-         *                                    indicate that an instance cannot be cloned.
          */
         @Override
-        public abstract ResponseBuilder clone() throws CloneNotSupportedException;
+        public abstract ResponseBuilder clone();
 
         /**
          * Set the status on the ResponseBuilder.

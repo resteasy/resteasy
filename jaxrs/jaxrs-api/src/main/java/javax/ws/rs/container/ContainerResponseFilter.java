@@ -47,7 +47,7 @@ import java.io.IOException;
  * By default, i.e. if no {@link javax.ws.rs.NameBinding name binding} is applied
  * to the filter implementation class, the filter instance is applied globally to
  * any outgoing response.
- * If there is a {@code &#64;NameBinding} annotation applied to the filter, the filter
+ * If there is a {@code @NameBinding} annotation applied to the filter, the filter
  * will only be executed for a response for which the request has been matched to
  * a {@link javax.ws.rs.HttpMethod resource or sub-resource method} AND the method
  * or the whole custom {@link javax.ws.rs.core.Application JAX-RS Application} class

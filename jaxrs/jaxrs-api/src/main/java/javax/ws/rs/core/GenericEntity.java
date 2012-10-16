@@ -86,7 +86,7 @@ import java.lang.reflect.Type;
  * GenericEntity&lt;List&lt;String&gt;&gt; entity = new GenericEntity&lt;List&lt;String&gt;&gt;(list) {};
  * Response response = Response.ok(entity).build();</pre>
  *
- * <p>where <code>list</code> is the instance of <code>List&lt;String&gt</code>
+ * <p>where {@code list} is the instance of {@code List<String>}
  * that will form the response body and entity is an instance of an anonymous
  * subclass of {@code GenericEntity}.</p></li>
  * <li>Create an instance directly by supplying the generic type information

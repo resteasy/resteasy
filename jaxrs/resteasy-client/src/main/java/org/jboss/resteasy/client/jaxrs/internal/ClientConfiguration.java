@@ -143,9 +143,21 @@ public class ClientConfiguration implements Configuration, Providers, HeaderValu
    }
 
    @Override
-   public Collection<Feature> getFeatures()
+   public Collection<Feature> getEnabledFeatures()
    {
-      return providerFactory.getFeatures();
+      return providerFactory.getEnabledFeatures();
+   }
+
+   @Override
+   public Set<Class<?>> getFeatureClasses()
+   {
+      return providerFactory.getFeatureClasses();
+   }
+
+   @Override
+   public Set<Object> getFeatureInstances()
+   {
+      return providerFactory.getFeatureInstances();
    }
 
    @Override

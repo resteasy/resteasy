@@ -51,7 +51,7 @@ import java.lang.annotation.Target;
  * <p>
  * Name binding via annotations is only supported as part of the Server API.
  * In name binding, a <i>name-binding</i> annotation is first defined using the
- * {@code &#64;NameBinding} meta-annotation:
+ * {@code @NameBinding} meta-annotation:
  *
  * <pre>
  *  &#64;Target({ ElementType.TYPE, ElementType.METHOD })
