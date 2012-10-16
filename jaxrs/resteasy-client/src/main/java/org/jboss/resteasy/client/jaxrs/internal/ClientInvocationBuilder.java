@@ -192,33 +192,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
       {
          if (status >= 300 && status < 400) throw new RedirectionException(response);
 
-         switch (status)
-         {
-            case 400:
-               throw new BadRequestException(response);
-            case 401:
-               throw new NotAuthorizedException(response);
-            case 404:
-               throw new NotFoundException(response);
-            case 405:
-               throw new NotAllowedException(response);
-            case 406:
-               throw new NotAcceptableException(response);
-            case 415:
-               throw new NotSupportedException(response);
-            case 500:
-               throw new InternalServerErrorException(response);
-            case 503:
-               throw new ServiceUnavailableException(response);
-            default:
-               break;
-         }
-
-         if (status >= 400 && status < 500) throw new ClientErrorException(response);
-         if (status >= 500) throw new ServerErrorException(response);
-
-
-         throw new WebApplicationException(response);
+         return handleErrorStatus(response);
       }
       finally
       {
@@ -226,6 +200,45 @@ public class ClientInvocationBuilder implements Invocation.Builder
          if (response.getMediaType() == null) response.close();
       }
 
+   }
+
+   /**
+    * Throw an exception.  Expecting a status of 400 or greater.
+    *
+    * @param response
+    * @param <T>
+    * @return
+    */
+   public static <T> T handleErrorStatus(Response response)
+   {
+      final int status = response.getStatus();
+      switch (status)
+      {
+         case 400:
+            throw new BadRequestException(response);
+         case 401:
+            throw new NotAuthorizedException(response);
+         case 404:
+            throw new NotFoundException(response);
+         case 405:
+            throw new NotAllowedException(response);
+         case 406:
+            throw new NotAcceptableException(response);
+         case 415:
+            throw new NotSupportedException(response);
+         case 500:
+            throw new InternalServerErrorException(response);
+         case 503:
+            throw new ServiceUnavailableException(response);
+         default:
+            break;
+      }
+
+      if (status >= 400 && status < 500) throw new ClientErrorException(response);
+      if (status >= 500) throw new ServerErrorException(response);
+
+
+      throw new WebApplicationException(response);
    }
 
    @Override
