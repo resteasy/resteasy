@@ -40,10 +40,17 @@
 package javax.ws.rs.core;
 
 /**
- * A feature extension.
+ * A feature extension contract.
+ *
+ * Typically encapsulates a concept that involves configuration of multiple providers
+ * (e.g. filters or interceptors) and/or properties.
  * <p>
- * Typically encapsulates concepts that involve multiple providers
- * (e.g. filters or interceptors) and/or configuration properties.
+ * A {@code Feature} is a special type of JAX-RS configuration provider that, if registered, it's
+ * {@link #configure(Configurable)} method is invoked during JAX-RS runtime configuration and bootstrapping
+ * phase with goal to further configure the runtime scope in which it has been registered. From within the
+ * invoked {@code configure(...)} method a feature may provide additional runtime configuration for the domain
+ * it represents, such as registering additional contract providers, including nested features and/or specifying
+ * domain-specific properties.
  * </p>
  *
  * @author Marek Potociar
@@ -60,7 +67,7 @@ public interface Feature {
      * <p>
      * Note that under some circumstances the feature may decide not to enable itself, which
      * is indicated by returning {@code false}. In such case the configurable context does
-     * not internally register the feature in the {@link javax.ws.rs.core.Configurable#getFeatures()
+     * not internally register the feature in the {@link javax.ws.rs.core.Configurable#getEnabledFeatures()
      * collection of enabled features} and the attempt to enable the feature is ignored.
      * </p>
      *

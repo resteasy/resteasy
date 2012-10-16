@@ -50,7 +50,7 @@ import java.lang.annotation.Target;
  * container request filter} to indicate that such filter should be applied globally
  * on all resources in the application before the actual resource matching occurs.
  * <p>
- * The JAX-RS runtime will apply the filters marked with the {@code &#64;PreMatching}
+ * The JAX-RS runtime will apply the filters marked with the {@code @PreMatching}
  * annotation globally to all resources, before the incoming request has been matched
  * to a particular resource method.
  * </p>

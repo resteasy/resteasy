@@ -39,11 +39,11 @@
  */
 package javax.ws.rs.client;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Map;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriBuilder;
 
 /**
  * A resource target identified by the resource URI.
@@ -117,6 +117,53 @@ public interface WebTarget {
     public WebTarget resolveTemplate(String name, Object value) throws NullPointerException;
 
     /**
+     * Create a new {@code WebTarget} instance by resolving a URI template with a given {@code name}
+     * in the URI of the current target instance using a supplied value.
+     *
+     * In case a {@code null} template name or value is entered a {@link NullPointerException}
+     * is thrown.
+     * <p>
+     * A snapshot of the present configuration of the current (parent) target
+     * instance is taken and is inherited by the newly constructed (child) target
+     * instance.
+     * </p>
+     *
+     * @param name  name of the URI template.
+     * @param value value to be used to resolve the template.
+     * @param encodeSlashInPath if {@code true}, the slash ({@code '/'}) characters
+     *                          in template values will be encoded if the template
+     *                          is placed in the URI path component, otherwise the slash
+     *                          characters will not be encoded in path templates.
+     * @return a new target instance.
+     * @throws NullPointerException if the resolved template name or value is {@code null}.
+     */
+    public WebTarget resolveTemplate(String name, Object value, boolean encodeSlashInPath) throws NullPointerException;
+
+    /**
+     * Create a new {@code WebTarget} instance by resolving a URI template with a given {@code name}
+     * in the URI of the current target instance using a supplied encoded value.
+     *
+     * A template with a matching name will be replaced by the supplied value.
+     * Value is converted to {@code String} using its {@code toString()} method and is then
+     * encoded to match the rules of the URI component to which they pertain.  All % characters in
+     * the stringified values that are not followed by two hexadecimal numbers will be encoded.
+     *
+     * In case a {@code null} template name or value is entered a {@link NullPointerException}
+     * is thrown.
+     * <p>
+     * A snapshot of the present configuration of the current (parent) target
+     * instance is taken and is inherited by the newly constructed (child) target
+     * instance.
+     * </p>
+     *
+     * @param name  name of the URI template.
+     * @param value encoded value to be used to resolve the template.
+     * @return a new target instance.
+     * @throws NullPointerException if the resolved template name or value is {@code null}.
+     */
+    public WebTarget resolveTemplateFromEncoded(String name, Object value) throws NullPointerException;
+
+    /**
      * Create a new {@code WebTarget} instance by resolving one or more URI templates
      * in the URI of the current target instance using supplied name-value pairs.
      *
@@ -135,6 +182,57 @@ public interface WebTarget {
      *                              is {@code null}.
      */
     public WebTarget resolveTemplates(Map<String, Object> templateValues) throws NullPointerException;
+    /**
+     * Create a new {@code WebTarget} instance by resolving one or more URI templates
+     * in the URI of the current target instance using supplied name-value pairs.
+     *
+     * A call to the method with an empty parameter map is ignored, i.e. same {@code WebTarget}
+     * instance is returned.
+     * <p>
+     * A snapshot of the present configuration of the current (parent) target
+     * instance is taken and is inherited by the newly constructed (child) target
+     * instance.
+     * </p>
+     *
+     *
+     * @param templateValues a map of URI template names and their values.
+     * @param encodeSlashInPath if {@code true}, the slash ({@code '/'}) characters
+     *                          in template values will be encoded if the template
+     *                          is placed in the URI path component, otherwise the slash
+     *                          characters will not be encoded in path templates.
+     * @return a new target instance or the same target instance in case the input name-value map
+     *         is empty.
+     * @throws NullPointerException if the name-value map or any of the names or values in the map
+     *                              is {@code null}.
+     */
+    public WebTarget resolveTemplates(Map<String, Object> templateValues, boolean encodeSlashInPath) throws NullPointerException;
+
+    /**
+     * Create a new {@code WebTarget} instance by resolving one or more URI templates
+     * in the URI of the current target instance using supplied name-encoded value pairs.
+     *
+     * All templates  with their name matching one of the keys in the supplied map will be replaced
+     * by the value in the supplied map. Values are converted to {@code String} using
+     * their {@code toString()} method and are then encoded to match the
+     * rules of the URI component to which they pertain.  All % characters in
+     * the stringified values that are not followed by two hexadecimal numbers
+     * will be encoded.
+     *
+     * A call to the method with an empty parameter map is ignored, i.e. same {@code WebTarget}
+     * instance is returned.
+     * <p>
+     * A snapshot of the present configuration of the current (parent) target
+     * instance is taken and is inherited by the newly constructed (child) target
+     * instance.
+     * </p>
+     *
+     * @param templateValues a map of URI template names and their encoded values.
+     * @return a new target instance or the same target instance in case the input name-value map
+     *         is empty.
+     * @throws NullPointerException if the name-value map or any of the names or encoded values in the map
+     *                              is {@code null}.
+     */
+    public WebTarget resolveTemplatesFromEncoded(Map<String, Object> templateValues) throws NullPointerException;
 
     /**
      * Create a new {@code WebTarget} instance by appending a matrix parameter to
@@ -189,30 +287,6 @@ public interface WebTarget {
      *                              values present and any of those values is {@code null}.
      */
     public WebTarget queryParam(String name, Object... values) throws NullPointerException;
-
-    /**
-     * Create a new {@code WebTarget} instance by configuring one or more query parameters and
-     * respective values on the URI of the current target instance.
-     *
-     * If multiple values are supplied for a single parameter name, a new query parameter will be added
-     * once per value. All parameters with a name for which the map contains a single {@code null} value
-     * are removed (if present) from the collection of query parameters inherited from the current
-     * target. A call to the method with an empty parameter map is ignored, i.e. same {@code WebTarget} instance
-     * is returned.
-     * <p>
-     * A snapshot of the present configuration of the current (parent) target
-     * instance is taken and is inherited by the newly constructed (child) target
-     * instance.
-     * </p>
-     *
-     * @param parameters a map of query parameter names and values.
-     * @return a new target instance or the same target instance in case the input parameter map
-     *         is empty.
-     * @throws NullPointerException if the parameter map is {@code null}, any of the parameter names
-     *                              is {@code null} or in case there are multiple values present for
-     *                              a single parameter name and any of those values is {@code null}.
-     */
-    public WebTarget queryParams(MultivaluedMap<String, Object> parameters) throws NullPointerException;
 
     /**
      * Start building a request to the targeted web resource.

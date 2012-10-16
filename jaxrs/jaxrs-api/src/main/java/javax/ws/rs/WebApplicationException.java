@@ -148,7 +148,7 @@ public class WebApplicationException extends RuntimeException {
      *
      * @return the HTTP response.
      */
-    public final Response getResponse() {
+    public Response getResponse() {
         return response;
     }
 

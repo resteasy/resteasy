@@ -39,10 +39,11 @@
  */
 package javax.ws.rs.ext;
 
-import javax.ws.rs.core.MediaType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Enumeration;
+
+import javax.ws.rs.core.MediaType;
 
 /**
  * Context shared by message body interceptors that can be used to wrap

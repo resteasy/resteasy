@@ -39,11 +39,12 @@
  */
 package javax.ws.rs.ext;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * Contract for a provider that supports the conversion of a stream to a
@@ -74,7 +75,7 @@ public interface MessageBodyReader<T> {
      * class of the instance that should be produced, the {@code genericType} parameter
      * gives the {@link java.lang.reflect.Type java.lang.reflect.Type} of the instance
      * that should be produced.
-     * E.g. if the instance to be produced is List&lt;String&gt;, the {@code type} parameter
+     * E.g. if the instance to be produced is {@code List<String>}, the {@code type} parameter
      * will be {@code java.util.List} and the {@code genericType} parameter will be
      * {@link java.lang.reflect.ParameterizedType java.lang.reflect.ParameterizedType}.
      *
