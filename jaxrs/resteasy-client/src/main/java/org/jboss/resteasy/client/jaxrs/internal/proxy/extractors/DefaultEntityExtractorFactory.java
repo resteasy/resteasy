@@ -1,6 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.extractors;
 
 import org.jboss.resteasy.annotations.ResponseObject;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 
 import javax.ws.rs.WebApplicationException;
@@ -43,11 +44,11 @@ public class DefaultEntityExtractorFactory implements EntityExtractorFactory
          {
             ClientResponse response = context.getClientResponse();
             int status = response.getStatus();
-            if (status > 400)
+            if (status >= 400)
             {
                response.bufferEntity();
                response.close();
-               throw new WebApplicationException(response);
+               ClientInvocationBuilder.handleErrorStatus(response);
             }
             response.close();
             return null;

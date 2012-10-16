@@ -3,6 +3,7 @@
  */
 package org.jboss.resteasy.client.jaxrs.internal.proxy.extractors;
 
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 
 import javax.ws.rs.WebApplicationException;
@@ -14,6 +15,7 @@ import java.lang.reflect.Method;
  * BodyEntityExtractor extract body objects from responses. This ends up calling
  * the appropriate MessageBodyReader through a series of calls
  *
+ * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
  * @see org.jboss.resteasy.client.core.extractors.EntityExtractorFactory
@@ -32,16 +34,10 @@ public class BodyEntityExtractor implements EntityExtractor
    public Object extractEntity(ClientContext context, Object... args)
    {
       ClientResponse response = context.getClientResponse();
-      if (response.getStatus() != 200)
-      {
-         response.bufferEntity();
-         response.close();
-         throw new WebApplicationException(response);
-      }
 
       // only release connection if it is not an instance of an
       // InputStream
-      boolean releaseConnectionAfter = true;
+      boolean releaseConnectionAfter = response.getStatus() >=200 && response.getStatus() < 300;
       try
       {
          // void methods should be handled before this method gets called, but it's worth being defensive   
@@ -59,7 +55,7 @@ public class BodyEntityExtractor implements EntityExtractor
          {
             gt = new GenericType(method.getReturnType());
          }
-         Object obj = response.readEntity(gt, method.getAnnotations());
+         Object obj = ClientInvocationBuilder.extractResult(gt, response, method.getAnnotations());
          if (obj instanceof InputStream)
             releaseConnectionAfter = false;
          return obj;
