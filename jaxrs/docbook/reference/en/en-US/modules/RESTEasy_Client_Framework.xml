@@ -22,7 +22,7 @@
             ResteasyWebTarget target = client.target("http://foo.com/resource");
         </programlisting>
         <para>
-            Resteasy will load automatically load a set of default providers. (Basically all classes listed in all
+            Resteasy will automatically load a set of default providers. (Basically all classes listed in all
             META-INF/services/javax.ws.rs.ext.Providers files).  Additionally, you can manually register other providers,
             filters, and interceptors through the Configuration object provided by the method call Client.configuration().
             Configuration also lets you set various configuration properties that may be needed.

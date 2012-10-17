@@ -19,6 +19,12 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-client</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- javax.xml.bind.JAXBElement provider is required by spec -->
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
