@@ -1,6 +1,6 @@
 <html>
 <body>
-<h2>RESTEasy JS-API Demo</h2>
+<h2>RESTEasy JS-API Smoke Test</h2>
 
 <form>
     <input type='button' onclick='testPathParam();' value='Test Path Param'/>
