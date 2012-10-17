@@ -11,7 +11,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>RESTEASY-736-jetty</module>
+        <!--module>RESTEASY-736-jetty</module-->
         <!--module>RESTEASY-736-as71</module-->
     </modules>
     
