@@ -1,5 +1,8 @@
 package org.jboss.resteasy.client.core.marshallers;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.jboss.resteasy.client.ClientRequest;
 
 /**
@@ -18,7 +21,17 @@ public class MatrixParamMarshaller implements Marshaller
    public void build(ClientRequest request, Object object)
    {
       if (object == null) return; // Don't add a null matrix parameter
-      request.matrixParameter(paramName, object);
+      if (object instanceof Collection)
+      {
+         for (Iterator<?> it = Collection.class.cast(object).iterator(); it.hasNext(); )
+         {
+            request.matrixParameter(paramName, it.next());
+         }
+      }
+      else
+      {
+         request.matrixParameter(paramName, object);
+      }
    }
 
 }
