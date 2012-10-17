@@ -103,7 +103,7 @@
         <module>async-http-servlet-3.0</module>
         <module>jboss-modules</module>
         <module>profiling-tests</module>
-        <module>arquillian</m>
+        <module>arquillian</module>
     </modules>
 
     <dependencyManagement>
