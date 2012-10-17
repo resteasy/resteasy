@@ -61,8 +61,8 @@ import java.lang.annotation.Target;
  * <li>Have a registered implementation of {@link javax.ws.rs.ext.ParamConverterProvider}
  * JAX-RS extension SPI that returns a {@link javax.ws.rs.ext.ParamConverter}
  * instance capable of a "from string" conversion for the type.</li>
- * <li>Be {@code List&lt;T&gt;}, {@code Set&lt;T&gt;} or
- * {@code SortedSet&lt;T&gt;}, where {@code T} satisfies 2, 3, 4 or 5 above.
+ * <li>Be {@code List<T>}, {@code Set<T>} or
+ * {@code SortedSet<T>}, where {@code T} satisfies 2, 3, 4 or 5 above.
  * The resulting collection is read-only.</li>
  * </ol>
  *

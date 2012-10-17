@@ -39,12 +39,13 @@
  */
 package javax.ws.rs.ext;
 
+import java.lang.reflect.ReflectPermission;
+import java.net.URL;
+
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant.VariantListBuilder;
-import java.lang.reflect.ReflectPermission;
-import java.net.URL;
 
 /**
  * Implementations of JAX-RS provide a concrete subclass of RuntimeDelegate and
@@ -215,9 +216,10 @@ public abstract class RuntimeDelegate {
     /**
      * Obtain an instance of a {@link HeaderDelegate} for the supplied class. An
      * implementation is required to support the following values for type:
-     * {@link javax.ws.rs.core.Cookie}, {@link javax.ws.rs.core.CacheControl},
-     * {@link javax.ws.rs.core.EntityTag}, {@link javax.ws.rs.core.NewCookie},
-     * {@link javax.ws.rs.core.MediaType} and {@code java.util.Date}.
+     * {@link javax.ws.rs.core.CacheControl}, {@link javax.ws.rs.core.Cookie},
+     * {@link javax.ws.rs.core.EntityTag}, {@link javax.ws.rs.core.Link},
+     * {@link javax.ws.rs.core.NewCookie}, {@link javax.ws.rs.core.MediaType}
+     * and {@code java.util.Date}.
      *
      * @param <T>  header type.
      * @param type the class of the header.
@@ -233,12 +235,6 @@ public abstract class RuntimeDelegate {
      * Defines the contract for a delegate that is responsible for
      * converting between the String form of a HTTP header and
      * the corresponding JAX-RS type {@code T}.
-     * <p>
-     * Providers implementing {@code HeaderDelegate} contract must be either programmatically
-     * registered in a JAX-RS runtime or must be annotated with
-     * {@link javax.ws.rs.ext.Provider &#64;Provider} annotation to be automatically discovered
-     * by the JAX-RS runtime during a provider scanning phase.
-     * </p>
      *
      * @param <T> a JAX-RS type that corresponds to the value of a HTTP header.
      */

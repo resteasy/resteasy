@@ -39,8 +39,9 @@
  */
 package javax.ws.rs.client;
 
-import javax.ws.rs.core.Configurable;
 import java.util.Map;
+
+import javax.ws.rs.core.Configurable;
 
 /**
  * Represents inheritable configuration of the main client-side JAX-RS components,

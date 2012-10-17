@@ -39,10 +39,11 @@
  */
 package javax.ws.rs.core;
 
-import javax.ws.rs.ext.RuntimeDelegate;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Map;
+
+import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
  * URI template-aware utility class for building URIs from their components. See
@@ -304,7 +305,7 @@ public abstract class UriBuilder {
      * @throws IllegalArgumentException if resource is {@code null}, or
      *                                  if resource is not annotated with {@link javax.ws.rs.Path}.
      */
-    public abstract UriBuilder path(Class<?> resource) throws IllegalArgumentException;
+    public abstract UriBuilder path(Class resource) throws IllegalArgumentException;
 
     /**
      * Append the path from a Path-annotated method to the
@@ -323,7 +324,7 @@ public abstract class UriBuilder {
      *                                  or there is more than or less than one variant of the method annotated with
      *                                  {@link javax.ws.rs.Path}.
      */
-    public abstract UriBuilder path(Class<?> resource, String method) throws IllegalArgumentException;
+    public abstract UriBuilder path(Class resource, String method) throws IllegalArgumentException;
 
     /**
      * Append the path from a {@link javax.ws.rs.Path}-annotated method to the
@@ -464,8 +465,52 @@ public abstract class UriBuilder {
      * @param value value to be used to resolve the template.
      * @return the updated UriBuilder.
      * @throws IllegalArgumentException if the resolved template name or value is {@code null}.
+     *
+     * @since 2.0
      */
     public abstract UriBuilder resolveTemplate(String name, Object value) throws IllegalArgumentException;
+
+    /**
+     * Resolve a URI template with a given {@code name} in this {@code UriBuilder} instance
+     * using a supplied value.
+     *
+     * In case a {@code null} template name or value is entered a {@link IllegalArgumentException}
+     * is thrown.
+     *
+     * @param name  name of the URI template.
+     * @param value value to be used to resolve the template.
+     * @param encodeSlashInPath if {@code true}, the slash ({@code '/'}) characters
+     *                          in template values will be encoded if the template
+     *                          is placed in the URI path component, otherwise the slash
+     *                          characters will not be encoded in path templates.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if the resolved template name or value is {@code null}.
+     *
+     * @since 2.0
+     */
+    public abstract UriBuilder resolveTemplate(String name, Object value, boolean encodeSlashInPath)
+            throws IllegalArgumentException;
+
+    /**
+     * Resolve a URI template with a given {@code name} in this {@code UriBuilder} instance
+     * using a supplied encoded value.
+     *
+     * A template with a matching name will be replaced by the supplied value.
+     * Value is converted to {@code String} using its {@code toString()} method and is then
+     * encoded to match the rules of the URI component to which they pertain.  All % characters in
+     * the stringified values that are not followed by two hexadecimal numbers will be encoded.
+     *
+     * In case a {@code null} template name or encoded value is entered a {@link IllegalArgumentException}
+     * is thrown.
+     *
+     * @param name  name of the URI template.
+     * @param value encoded value to be used to resolve the template.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if the resolved template name or encoded value is {@code null}.
+     *
+     * @since 2.0
+     */
+    public abstract UriBuilder resolveTemplateFromEncoded(String name, Object value) throws IllegalArgumentException;
 
     /**
      * Resolve one or more URI templates in this {@code UriBuilder} instance using supplied
@@ -477,8 +522,52 @@ public abstract class UriBuilder {
      * @return the updated UriBuilder.
      * @throws IllegalArgumentException if the name-value map or any of the names or values
      *                                  in the map is {@code null}.
+     *
+     * @since 2.0
      */
     public abstract UriBuilder resolveTemplates(Map<String, Object> templateValues) throws IllegalArgumentException;
+
+    /**
+     * Resolve one or more URI templates in this {@code UriBuilder} instance using supplied
+     * name-value pairs.
+     *
+     * A call to the method with an empty parameter map is ignored.
+     *
+     * @param templateValues a map of URI template names and their values.
+     * @param encodeSlashInPath if {@code true}, the slash ({@code '/'}) characters
+     *                          in template values will be encoded if the template
+     *                          is placed in the URI path component, otherwise the slash
+     *                          characters will not be encoded in path templates.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if the name-value map or any of the names or values
+     *                                  in the map is {@code null}.
+     *
+     * @since 2.0
+     */
+    public abstract UriBuilder resolveTemplates(Map<String, Object> templateValues, boolean encodeSlashInPath)
+            throws IllegalArgumentException;
+
+    /**
+     * Resolve one or more URI templates in this {@code UriBuilder} instance using supplied
+     * name-value pairs.
+     *
+     * All templates  with their name matching one of the keys in the supplied map will be replaced
+     * by the value in the supplied map. Values are converted to {@code String} using
+     * their {@code toString()} method and are then encoded to match the
+     * rules of the URI component to which they pertain.  All % characters in
+     * the stringified values that are not followed by two hexadecimal numbers
+     * will be encoded.
+     *
+     * A call to the method with an empty parameter map is ignored.
+     *
+     * @param templateValues a map of URI template names and their values.
+     * @return the updated UriBuilder.
+     * @throws IllegalArgumentException if the name-value map or any of the names or values
+     *                                  in the map is {@code null}.
+     *
+     * @since 2.0
+     */
+    public abstract UriBuilder resolveTemplatesFromEncoded(Map<String, Object> templateValues) throws IllegalArgumentException;
 
     /**
      * Build a URI.

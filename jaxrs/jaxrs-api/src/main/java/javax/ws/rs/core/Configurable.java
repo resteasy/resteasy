@@ -132,21 +132,57 @@ public interface Configurable {
     public Configurable setProperty(String name, Object value);
 
     /**
-     * Get the immutable set of configured features.
+     * Get the immutable set of features that have been successfully configured within the current
+     * configurable context.
      * <p>
      * The returned set contains the features that have already been successfully
      * {@link Feature#configure(Configurable) configured} in this configuration context.
      * </p>
+     * <p>
+     * Note that a registered features may not be immediately available in the collection
+     * of enabled features returned this method. Implementations MAY decide to defer the feature
+     * instantiation and/or {@link Feature#configure(Configurable) configuration} to a later point
+     * in time, yet the order in which features have been registered MUST be preserved during
+     * the feature configuration phase. This method is expected to provide up-to-date information only
+     * when invoked from a {@link Feature#configure(Configurable) feature configuration} method or
+     * once the configured instance has been fully initialized.
+     * </p>
      *
      * @return the enabled feature set. The returned value shall never be {@code null}.
-     * @see Feature#configure(Configurable)
      */
-    public Collection<Feature> getFeatures();
+    public Collection<Feature> getEnabledFeatures();
+
+    /**
+     * Get the immutable set of registered feature classes to be instantiated,
+     * injected and {@link Feature#configure(Configurable)} configured}
+     * in the scope of the configured instance.
+     *
+     * @return the immutable set of registered feature classes. The returned
+     *         value shall never be {@code null}.
+     * @see #getFeatureInstances()
+     */
+    public Set<Class<?>> getFeatureClasses();
+
+    /**
+     * Get the immutable set of registered feature instances to be
+     * {@link Feature#configure(Configurable)} configured} in the scope
+     * of the configured instance.
+     * <p>
+     * When the configured instance is initialized the set of feature instances
+     * will be combined with and take precedence over the instantiated registered feature
+     * classes.
+     * </p>
+     *
+     * @return the immutable set of registered feature instances. The returned
+     *         value shall never be {@code null}.
+     * @see #getFeatureClasses()
+     */
+    public Set<Object> getFeatureInstances();
 
     /**
      * Get the immutable set of registered provider classes to be instantiated,
      * injected and utilized in the scope of the configured instance (excluding
-     * {@link Feature features}).
+     * pure {@link Feature feature} providers).
      *
      * @return the immutable set of registered provider classes. The returned
      *         value shall never be {@code null}.
@@ -156,10 +192,10 @@ public interface Configurable {
 
     /**
      * Get the immutable set of registered provider instances to be utilized by
-     * the configured instance (excluding {@link Feature features}).
+     * the configured instance (excluding pure {@link Feature feature} providers).
      * <p>
      * When the configured instance is initialized the set of provider instances
-     * will be combined and take precedence over the instantiated registered provider
+     * will be combined with and take precedence over the instantiated registered provider
      * classes.
      * </p>
      *
@@ -173,25 +209,15 @@ public interface Configurable {
      * Register a provider or a {@link Feature feature} class to be instantiated
      * and used in the scope of the configured instance.
      *
-     * The registered provider class is registered as a provider of all the recognized
-     * JAX-RS or implementation-specific extension contracts.
+     * The registered class is registered as a provider of all the recognized JAX-RS or
+     * implementation-specific extension contracts including {@code Feature} contract.
      * <p>
-     * As opposed to the providers registered by the
-     * {@link #register(Object)  provider instances}, providers
+     * As opposed to the instances registered via {@link #register(Object)} method, classes
      * registered using this method are instantiated and properly injected
      * by the JAX-RS implementation provider. In case of a conflict between
-     * a registered provider instance and instantiated registered provider class,
-     * the registered provider instance takes precedence and the registered provider
-     * class will not be instantiated in such case.
-     * </p>
-     * <p>
-     * In case the registered class represents a {@link Feature feature},
-     * this {@code Configurable} context instantiates the feature and invokes the
-     * {@link Feature#configure(javax.ws.rs.core.Configurable)} method and
-     * lets the feature update the configurable context. If the invocation
-     * of {@link Feature#configure(javax.ws.rs.core.Configurable)} returns {@code true}
-     * the feature is added to the {@link #getFeatures() collection of enabled features},
-     * otherwise the feature instance is discarded.
+     * a registered feature and/or provider instance and instantiated registered class,
+     * the registered instance takes precedence and the registered class will not be
+     * instantiated in such case.
      * </p>
      *
      * @param providerClass provider class to be instantiated and used in the scope
@@ -210,9 +236,9 @@ public interface Configurable {
      * with the supplied {@code bindingPriority} value.
      * </p>
      * <p>
-     * Note that in case the binding priority cannot be applied to a particular provider
+     * Note that in case the binding priority is not applicable to any particular provider
      * contract registered for the provider class, the supplied {@code bindingPriority} value
-     * is ignored.
+     * will be ignored for that contract.
      * </p>
      *
      * @param providerClass   provider class to be instantiated and used in the scope
@@ -252,9 +278,9 @@ public interface Configurable {
      * with the supplied {@code bindingPriority} value.
      * </p>
      * <p>
-     * Note that in case the binding priority cannot be applied to a particular provider
+     * Note that in case the binding priority is not applicable to any particular provider
      * contract registered for the provider class, the supplied {@code bindingPriority} value
-     * is ignored.
+     * will be ignored for that contract.
      * </p>
      *
      * @param providerClass   provider class to be instantiated and used in the scope
@@ -272,26 +298,15 @@ public interface Configurable {
      * Register a provider or a {@link Feature feature} ("singleton") instance to be used
      * in the scope of the configured instance.
      *
-     * The registered provider is registered as a provider of all the recognized JAX-RS
-     * or implementation-specific extension contracts.
+     * The registered instance is registered as a provider of all the recognized JAX-RS or
+     * implementation-specific extension contracts including {@code Feature} contract.
      * <p>
-     * As opposed to the providers registered by the
-     * {@link #register(Class) provider classes}, provider instances
-     * registered using this method are used "as is, i.e. are not managed or
-     * injected by the JAX-RS implementation provider. In case of a conflict
-     * between a registered provider instance and instantiated registered provider
-     * class, the registered provider instance takes precedence and the registered
-     * provider class will not be instantiated in such case.
-     * </p>
-     * <p>
-     * In case the registered class represents a {@link Feature feature},
-     * this {@code Configurable} context instantiates the feature and invokes the
-     * {@link Feature#configure(javax.ws.rs.core.Configurable)} method and
-     * lets the feature update the configurable context. If the invocation
-     * of {@link Feature#configure(javax.ws.rs.core.Configurable)} returns {@code true}
-     * the feature is added to the {@link #getFeatures() collection of enabled features},
-     * otherwise the feature instance is discarded.
-     * </p>
+     * As opposed to the instances registered via {@link #register(Object)} method, classes
+     * registered using this method used "as is", i.e. are not managed or
+     * injected by the JAX-RS implementation provider. In case of a conflict between
+     * a registered feature and/or provider instance and instantiated registered class,
+     * the registered instance takes precedence and the registered class will not be
+     * instantiated in such case.
      *
      * @param provider a provider instance to be registered in the scope of the configured
      *                 instance.
@@ -309,9 +324,9 @@ public interface Configurable {
      * with the supplied {@code bindingPriority} value.
      * </p>
      * <p>
-     * Note that in case the binding priority cannot be applied to a particular provider
+     * Note that in case the binding priority is not applicable to any particular provider
      * contract registered for the provider, the supplied {@code bindingPriority} value
-     * is ignored.
+     * will be ignored for that contract.
      * </p>
      *
      * @param provider        provider class to be instantiated and used in the scope
@@ -351,9 +366,9 @@ public interface Configurable {
      * with the supplied {@code bindingPriority} value.
      * </p>
      * <p>
-     * Note that in case the binding priority cannot be applied to a particular provider
+     * Note that in case the binding priority is not applicable to any particular provider
      * contract registered for the provider, the supplied {@code bindingPriority} value
-     * is ignored.
+     * will be ignored for that contract.
      * </p>
      *
      * @param provider  a provider instance to be registered in the scope of the configured

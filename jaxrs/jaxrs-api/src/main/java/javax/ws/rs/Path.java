@@ -50,7 +50,7 @@ import java.lang.annotation.Target;
  * requests for.
  *
  * <p>Paths are relative. For an annotated class the base URI is the
- * application path, see {@link javax.ws.rs.ApplicationPath}. For an annotated
+ * application path, see {@link ApplicationPath}. For an annotated
  * method the base URI is the
  * effective URI of the containing class. For the purposes of absolutizing a
  * path against the base URI , a leading '/' in a path is
@@ -66,14 +66,14 @@ import java.lang.annotation.Target;
  * }</pre>
  *
  * <p>In the above, if the application path is
- * <code>catalogue</code> and the application is deployed at
- * <code>http://example.com/</code>, then <code>GET</code> requests for
- * <code>http://example.com/catalogue/widgets</code> will be handled by the
- * <code>getList</code> method while requests for
+ * {@code catalogue} and the application is deployed at
+ * {@code http://example.com/}, then {@code GET} requests for
+ * {@code http://example.com/catalogue/widgets} will be handled by the
+ * {@code getList} method while requests for
  * <code>http://example.com/catalogue/widgets/<i>nnn</i></code> (where
  * <code><i>nnn</i></code> is some value) will be handled by the
- * <code>getWidget</code> method. The same would apply if the value of either
- * <code>&#64;Path</code> annotation started with '/'.</p>
+ * {@code getWidget} method. The same would apply if the value of either
+ * {@code @Path} annotation started with '/'.</p>
  *
  * <p>Classes and methods may also be annotated with {@link Consumes} and
  * {@link Produces} to filter the requests they will receive.</p>
