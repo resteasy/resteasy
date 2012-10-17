@@ -1,7 +1,9 @@
 package org.jboss.resteasy.jsapi;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import org.jboss.resteasy.core.ResourceMethodRegistry;
+import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -9,14 +11,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.jboss.resteasy.core.ResourceMethodRegistry;
-import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.spi.Registry;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import java.io.IOException;
 
 /**
  * @author Stéphane Épardaud <stef@epardaud.fr>
+ *     <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
 public class JSAPIServlet extends HttpServlet
 {
@@ -57,8 +56,8 @@ public class JSAPIServlet extends HttpServlet
 			logger.debug("Serving " + pathInfo);
 			logger.debug("Query " + req.getQueryString());
 		}
-		PrintWriter printWriter = resp.getWriter();
-		this.apiWriter.writeJavaScript(uri, printWriter, service);
+
+        this.apiWriter.writeJavaScript(uri, req, resp, service);
 	}
 
 	public void scanResources(){
