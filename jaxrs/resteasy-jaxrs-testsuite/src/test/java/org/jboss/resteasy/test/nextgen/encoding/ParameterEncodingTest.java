@@ -1,6 +1,13 @@
-package org.jboss.resteasy.test.encoding;
+package org.jboss.resteasy.test.nextgen.encoding;
 
-import java.util.Iterator;
+import junit.framework.Assert;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.test.EmbeddedContainer;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Encoded;
@@ -12,21 +19,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
-
-import junit.framework.Assert;
-
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import javax.ws.rs.core.Response;
+import java.util.Iterator;
 
 /**
  * RESTEASY-737
@@ -39,6 +38,7 @@ import org.junit.Test;
 public class ParameterEncodingTest
 {  
    protected static ResteasyDeployment deployment;
+   protected static ResteasyClient client;
    
    @Path("/")
    static public class TestResource
@@ -177,11 +177,13 @@ public class ParameterEncodingTest
    {
       deployment = EmbeddedContainer.start();
       deployment.getRegistry().addPerRequestResource(TestResource.class);
+      client = new ResteasyClient();
    }
 
    @AfterClass
    public static void shutdown() throws Exception
    {
+      client.close();
       EmbeddedContainer.stop();
       deployment = null;
    }
@@ -189,93 +191,95 @@ public class ParameterEncodingTest
    @Test
    public void testResteasy734() throws Exception
    {
-      ClientRequest request = null;
-      ClientResponse<String> response = null;
+      ResteasyWebTarget target = null;
+      Response response = null;
             
-      request = new ClientRequest("http://localhost:8081/encoded/pathparam/bee bop");
-      response = request.get(String.class);
-      System.out.println("Received encoded path param: " + response.getEntity());
+      target = client.target("http://localhost:8081/encoded/pathparam/bee bop");
+      response = target.request().get();
+      System.out.println("Received encoded path param: " + response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee%20bop", response.getEntity());
-      response.releaseConnection();
+      response.close();
 
-      request = new ClientRequest("http://localhost:8081/decoded/pathparam/bee bop");
-      response = request.get(String.class);
-      System.out.println("Received decoded path param: " + response.getEntity());
+      target = client.target("http://localhost:8081/decoded/pathparam/bee bop");
+      response = target.request().get();
+      System.out.println("Received decoded path param: " + response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee bop", response.getEntity());
-      response.releaseConnection();
+      response.close();
 
-      request = new ClientRequest("http://localhost:8081/encoded/matrix;m=bee bop");
-      response = request.get(String.class);
-      System.out.println("Received encoded matrix param: " + response.getEntity());
+      target = client.target("http://localhost:8081/encoded/matrix;m=bee bop");
+      response = target.request().get();
+      System.out.println("Received encoded matrix param: " + response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee%20bop", response.getEntity());
-      response.releaseConnection();
+      response.close();
 
-      request = new ClientRequest("http://localhost:8081/decoded/matrix;m=bee bop");
-      response = request.get(String.class);
-      System.out.println("Received decoded matrix param: " + response.getEntity());
+      target = client.target("http://localhost:8081/decoded/matrix;m=bee bop");
+      response = target.request().get();
+      System.out.println("Received decoded matrix param: " + response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee bop", response.getEntity());
-      response.releaseConnection();
+      response.close();
 
-      request = new ClientRequest("http://localhost:8081/encoded/query?m=bee bop");
-      response = request.get(String.class);
-      System.out.println("Received encoded query param: " + response.getEntity());
+      target = client.target("http://localhost:8081/encoded/query?m=bee bop");
+      response = target.request().get();
+      System.out.println("Received encoded query param: " + response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee%20bop", response.getEntity());
-      response.releaseConnection();
+      response.close();
 
-      request = new ClientRequest("http://localhost:8081/decoded/query?m=bee bop");
-      response = request.get(String.class);
-      System.out.println("Received decoded query param: " + response.getEntity());
+      target = client.target("http://localhost:8081/decoded/query?m=bee bop");
+      response = target.request().get();
+      System.out.println("Received decoded query param: " + response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee bop", response.getEntity());
-      response.releaseConnection();
+      response.close();
 
-      request = new ClientRequest("http://localhost:8081/encoded/form");
-      request.formParameter("f", "bee bop");
-      response = request.post(String.class);
-      System.out.println("Received encoded form param: " + response.getEntity());
+      target = client.target("http://localhost:8081/encoded/form");
+      Form form = new Form();
+      form.param("f", "bee bop");
+      response = target.request().post(Entity.form(form));
+      System.out.println("Received encoded form param: " + response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee%20bop", response.getEntity());
-      response.releaseConnection();
+      response.close();
 
-      request = new ClientRequest("http://localhost:8081/decoded/form");
-      request.formParameter("f", "bee bop");
-      response = request.post(String.class);
-      System.out.println("Received decoded form param: " + response.getEntity());
+      target = client.target("http://localhost:8081/decoded/form");
+      form = new Form();
+      form.param("f", "bee bop");
+      response = target.request().post(Entity.form(form));
+      System.out.println("Received decoded form param: " + response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee bop", response.getEntity());
-      response.releaseConnection();
+      response.close();
 
-      request = new ClientRequest("http://localhost:8081/encoded/segment/bee bop");
-      response = request.get(String.class);
-      System.out.println("Received encoded path param from segment: " + response.getEntity());
+      target = client.target("http://localhost:8081/encoded/segment/bee bop");
+      response = target.request().get();
+      System.out.println("Received encoded path param from segment: " + response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee%20bop", response.getEntity());
-      response.releaseConnection();
+      response.close();
 
-      request = new ClientRequest("http://localhost:8081/decoded/segment/bee bop");
-      response = request.get(String.class);
-      System.out.println("Received decoded path param from segment: " + response.getEntity());
+      target = client.target("http://localhost:8081/decoded/segment/bee bop");
+      response = target.request().get();
+      System.out.println("Received decoded path param from segment: " + response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee bop", response.getEntity());
-      response.releaseConnection();
+      response.close();
 
-      request = new ClientRequest("http://localhost:8081/encoded/segment/matrix/params;m=bee bop");
-      response = request.get(String.class);
-      System.out.println("Received encoded matrix param from segment: " + response.getEntity());
+      target = client.target("http://localhost:8081/encoded/segment/matrix/params;m=bee bop");
+      response = target.request().get();
+      System.out.println("Received encoded matrix param from segment: " + response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee%20bop", response.getEntity());
-      response.releaseConnection();
+      response.close();
 
-      request = new ClientRequest("http://localhost:8081/decoded/segment/matrix/params;m=bee bop");
-      response = request.get(String.class);
-      System.out.println("Received decoded matrix param from segment: " + response.getEntity());
+      target = client.target("http://localhost:8081/decoded/segment/matrix/params;m=bee bop");
+      response = target.request().get();
+      System.out.println("Received decoded matrix param from segment: " + response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bee bop", response.getEntity());
-      response.releaseConnection();
+      response.close();
    }
 }

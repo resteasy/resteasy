@@ -1,14 +1,7 @@
-package org.jboss.resteasy.test.encoding;
+package org.jboss.resteasy.test.nextgen.encoding;
 
-import javax.ws.rs.Encoded;
-import javax.ws.rs.GET;
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.UriBuilder;
-
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -18,6 +11,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import javax.ws.rs.Encoded;
+import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
 /**
  * RESTEASY-729
@@ -30,6 +31,7 @@ import org.junit.Test;
 public class MatrixParamEncodingTest
 {
    protected static ResteasyDeployment deployment;
+   protected static ResteasyClient client;
    
    @Path("/")
    static public class TestResource
@@ -58,40 +60,37 @@ public class MatrixParamEncodingTest
    {
       deployment = EmbeddedContainer.start();
       deployment.getRegistry().addPerRequestResource(TestResource.class);
+      client = new ResteasyClient();
    }
    
 
    @AfterClass
    public static void shutdown() throws Exception
    {
+      client.close();
       EmbeddedContainer.stop();
       deployment = null;
+
    }
 
    @Test
    public void testMatrixParamRequestDecoded() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:8081/decoded");
-      request.matrixParameter("param", "ac/dc");
-      System.out.println("Sending request: " + request.getUri());
-      ClientResponse<String> response = request.get(String.class);
-      System.out.println("Received response: " + response.getEntity());
+      ResteasyWebTarget target = client.target("http://localhost:8081/decoded").matrixParam("param", "ac/dc");
+      Response response = target.request().get();
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("ac/dc", response.getEntity());
-      response.releaseConnection();
+      Assert.assertEquals("ac/dc", response.readEntity(String.class));
+      response.close();
    }
    
    @Test
    public void testMatrixParamRequestEncoded() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:8081/encoded");
-      request.matrixParameter("param", "ac/dc");
-      System.out.println("Sending request: " + request.getUri());
-      ClientResponse<String> response = request.get(String.class);
-      System.out.println("Received response: " + response.getEntity());
+      ResteasyWebTarget target = client.target("http://localhost:8081/encoded").matrixParam("param", "ac/dc");
+      Response response = target.request().get();
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("ac%2Fdc", response.getEntity());
-      response.releaseConnection();
+      Assert.assertEquals("ac%2Fdc", response.readEntity(String.class));
+      response.close();
    }
    
    @Test
@@ -99,13 +98,13 @@ public class MatrixParamEncodingTest
    {
       UriBuilder uriBuilder = UriBuilderImpl.fromUri("http://localhost:8081/decoded");
       uriBuilder.matrixParam("param", "ac/dc");
-      ClientRequest request = new ClientRequest(uriBuilder.build().toString());
+      ResteasyWebTarget target = client.target(uriBuilder.build().toString());
       System.out.println("Sending request to " + uriBuilder.build().toString());
-      ClientResponse<String> response = request.get(String.class);
-      System.out.println("Received response: " + response.getEntity());
+      Response response = target.request().get();
+      System.out.println("Received response: " + response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("ac/dc", response.getEntity());
-      response.releaseConnection();
+      response.close();
    }
    
    @Test
@@ -113,12 +112,12 @@ public class MatrixParamEncodingTest
    {
       UriBuilder uriBuilder = UriBuilderImpl.fromUri("http://localhost:8081/encoded");
       uriBuilder.matrixParam("param", "ac/dc");
-      ClientRequest request = new ClientRequest(uriBuilder.build().toString());
+      ResteasyWebTarget target = client.target(uriBuilder.build().toString());
       System.out.println("Sending request to " + uriBuilder.build().toString());
-      ClientResponse<String> response = request.get(String.class);
-      System.out.println("Received response: " + response.getEntity());
+      Response response = target.request().get();
+      System.out.println("Received response: " + response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("ac%2Fdc", response.getEntity());
-      response.releaseConnection();
+      response.close();
    }
 }
