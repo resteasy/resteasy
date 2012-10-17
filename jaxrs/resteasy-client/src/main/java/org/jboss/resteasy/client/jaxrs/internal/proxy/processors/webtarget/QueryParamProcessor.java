@@ -1,5 +1,8 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors.webtarget;
 
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.util.Encode;
+
 import javax.ws.rs.client.WebTarget;
 
 /**
@@ -8,7 +11,6 @@ import javax.ws.rs.client.WebTarget;
  */
 public class QueryParamProcessor extends AbstractWebTargetCollectionProcessor
 {
-
    public QueryParamProcessor(String paramName)
    {
       super(paramName);
@@ -17,7 +19,8 @@ public class QueryParamProcessor extends AbstractWebTargetCollectionProcessor
    @Override
    protected WebTarget apply(WebTarget target, Object object)
    {
-      return target.queryParam(paramName, object);
+      ResteasyWebTarget t = (ResteasyWebTarget)target;
+      return t.queryParamNoTemplate(paramName, object);
    }
 
 

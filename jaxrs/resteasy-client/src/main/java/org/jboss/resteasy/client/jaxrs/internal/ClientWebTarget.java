@@ -3,6 +3,7 @@ package org.jboss.resteasy.client.jaxrs.internal;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.specimpl.UriBuilderImpl;
 
 import javax.ws.rs.client.Configuration;
 import javax.ws.rs.client.Invocation;
@@ -216,7 +217,34 @@ public class ClientWebTarget implements ResteasyWebTarget
       for (Map.Entry<String, List<Object>> entry : parameters.entrySet())
       {
          String[] stringValues = toStringValues(entry.getValue().toArray());
-         uriBuilder.queryParam(entry.getKey(), stringValues);
+         copy.queryParam(entry.getKey(), stringValues);
+      }
+      return  new ClientWebTarget(client, copy, configuration);
+   }
+
+   @Override
+   public ResteasyWebTarget queryParamNoTemplate(String name, Object... values) throws NullPointerException
+   {
+      String[] stringValues = toStringValues(values);
+      UriBuilderImpl copy = (UriBuilderImpl)uriBuilder.clone();
+      for (String obj : stringValues)
+      {
+         copy.clientQueryParam(name, obj);
+      }
+      return  new ClientWebTarget(client, copy, configuration);
+   }
+
+   @Override
+   public ResteasyWebTarget queryParamsNoTemplate(MultivaluedMap<String, Object> parameters) throws IllegalArgumentException, NullPointerException
+   {
+      UriBuilderImpl copy = (UriBuilderImpl)uriBuilder.clone();
+      for (Map.Entry<String, List<Object>> entry : parameters.entrySet())
+      {
+         String[] stringValues = toStringValues(entry.getValue().toArray());
+         for (String val : stringValues)
+         {
+            copy.clientQueryParam(entry.getKey(), val);
+         }
       }
       return  new ClientWebTarget(client, copy, configuration);
    }

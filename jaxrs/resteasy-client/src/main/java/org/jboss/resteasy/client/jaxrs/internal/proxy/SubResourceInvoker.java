@@ -25,7 +25,7 @@ public class SubResourceInvoker implements MethodInvoker
       this.config = config;
       this.method = method;
       this.iface = method.getReturnType();
-      String[] pathParams = new String[method.getParameterTypes().length];
+      pathParams = new String[method.getParameterTypes().length];
       for (int i = 0; i < pathParams.length; i++)
       {
          Annotation[] paramAnnotations = method.getParameterAnnotations()[i];
