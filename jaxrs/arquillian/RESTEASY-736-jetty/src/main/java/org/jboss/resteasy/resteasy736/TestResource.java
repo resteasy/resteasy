@@ -45,4 +45,30 @@ public class TestResource
       };
       t.start();
    }
+   
+   @GET
+   @Path("default")
+   public void defaultTest(final @Suspend AsynchronousResponse response)
+   {
+      Thread t = new Thread()
+      {
+         @Override
+         public void run()
+         {
+            try
+            {
+               System.out.println("TestResource: async thread started");
+               Thread.sleep(35000); // Jetty async timeout defaults to 30000.
+               Response jaxrs = Response.ok("test").type(MediaType.TEXT_PLAIN).build();
+               response.setResponse(jaxrs);
+               System.out.println("TestResource: async thread finished");
+            }
+            catch (Exception e)
+            {
+               e.printStackTrace();
+            }
+         }
+      };
+      t.start();
+   }
 }
