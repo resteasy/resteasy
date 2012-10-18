@@ -97,7 +97,7 @@
         <module>async-http-tomcat</module>
         <module>resteasy-spring</module>
         <module>resteasy-jsapi</module>
-        <module>resteasy-jsapi-testing</module>
+        <!-- <module>resteasy-jsapi-testing</module> -->
         <module>resteasy-cdi</module>
         <module>server-adapters</module>
         <!-- <module>interface-description</module> -->
@@ -446,6 +446,15 @@
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <artifactId>maven-clover2-plugin</artifactId>
                 <version>3.1.6</version>
+            </plugin>
+                       <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-surefire-plugin</artifactId>
+              <version>2.12</version>
+              <configuration>
+                  <forkMode>once</forkMode>
+                  <argLine>-Xms512m -Xmx512m</argLine>
+              </configuration>
             </plugin>
         </plugins>
 
