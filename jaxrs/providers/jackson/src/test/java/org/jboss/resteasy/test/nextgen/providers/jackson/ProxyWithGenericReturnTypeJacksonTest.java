@@ -1,27 +1,27 @@
-package org.jboss.resteasy.test.providers.jackson;
-
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+package org.jboss.resteasy.test.nextgen.providers.jackson;
 
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.annotate.JsonTypeInfo.As;
 import org.codehaus.jackson.annotate.JsonTypeInfo.Id;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="holger.morch@navteq.com">Holger Morch</a>
@@ -158,21 +158,24 @@ public class ProxyWithGenericReturnTypeJacksonTest
    }
 
     @Test
-    public void test() throws Exception {
-        ClientRequest request = new ClientRequest("http://localhost:8081/test/one/");
+    public void test() throws Exception
+    {
+       ResteasyClient client = new ResteasyClient();
+        WebTarget target = client.target("http://localhost:8081/test/one/");
         System.out.println("Sending request");
-        ClientResponse<String> response = request.get(String.class);
-        System.out.println("Received response: " + response.getEntity(String.class));
+        Response response = target.request().get();
+        System.out.println("Received response: " + response.readEntity(String.class));
         Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue("Type property is missing.", response.getEntity(String.class).contains("type"));
-       response.releaseConnection();
+        Assert.assertTrue("Type property is missing.", ((String)response.getEntity()).contains("type"));
+       response.close();
 
-        request = new ClientRequest("http://localhost:8081/test/list/");
+       target = client.target("http://localhost:8081/test/list/");
         System.out.println("Sending request");
-        response = request.get(String.class);
-        System.out.println("Received response: " + response.getEntity(String.class));
+        response = target.request().get();
+        System.out.println("Received response: " + response.readEntity(String.class));
         Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue("Type property is missing.", response.getEntity(String.class).contains("type"));
-       response.releaseConnection();
+        Assert.assertTrue("Type property is missing.", ((String)response.getEntity()).contains("type"));
+       response.close();
+       client.close();
     }
 }
