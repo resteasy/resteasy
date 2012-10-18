@@ -9,6 +9,7 @@ import org.jboss.resteasy.resteasy736.TestResource;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -60,6 +61,35 @@ public class AsyncTimeoutTest
          System.out.println("response: " + response.getEntity());
          assertTrue(response.getStatus() == 503);
          assertTrue(elapsed < 10000);
+      }
+   }
+   
+   @Ignore // Fails on master branch.
+   @Test
+   public void testDefaultAsynchTimeout() throws Exception
+   {
+      ClientRequest request = new ClientRequest("http://localhost:9090/RESTEASY-736/default/");
+      long start = System.currentTimeMillis();
+      System.out.println("start:   " + start);
+      ClientResponse<String> response = null;
+      try
+      {
+         response = request.get(String.class);
+      }
+      catch (Exception e)
+      {
+         System.out.println(e);
+      }
+      finally
+      {
+         System.out.println("finish:  " + System.currentTimeMillis());
+         long elapsed = System.currentTimeMillis() - start;
+         System.out.println("elapsed: " + elapsed + " ms");;
+         System.out.println("status: " + response.getStatus());
+         assertTrue(response != null);
+         System.out.println("response: " + response.getEntity());
+         assertTrue(response.getStatus() == 503);
+         assertTrue(elapsed < 35000); // Jetty async timeout defaults to 30000.
       }
    }
 }
