@@ -276,7 +276,7 @@ public interface MyInterface {
         </para>
         <programlisting><![CDATA[
 MyInterface proxy = ProxyFactory.create(MyInterface.class, "http://localhost:8081");
-ClientResponse response = (ClientResponse)proxy.getMyListOfJAXBObjects();
+ClientResponse<List<MyJaxbClass>> response = (ClientResponse)proxy.getMyListOfJAXBObjects();
 List<MyJaxbClass> list = response.getEntity(new GenericType<List<MyJaxbClass>>());
 ]]></programlisting>
 

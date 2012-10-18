@@ -107,6 +107,7 @@
         <module>profiling-tests</module>
         <module>jboss-modules</module>
         <!-- <module>as7-integration-testing</module> -->
+        <module>arquillian</module>
     </modules>
 
     <dependencyManagement>
