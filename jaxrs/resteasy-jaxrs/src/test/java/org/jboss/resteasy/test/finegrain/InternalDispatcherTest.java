@@ -225,7 +225,7 @@ public class InternalDispatcherTest
             dispatcher.getRegistry().addSingletonResource(forwardingResource);
    }
 
-@Before
+   @Before
    public void setup() {
        forwardingResource.uriStack.clear();
    }

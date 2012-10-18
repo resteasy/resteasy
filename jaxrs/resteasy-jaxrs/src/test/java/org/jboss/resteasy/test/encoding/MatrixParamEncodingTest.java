@@ -13,8 +13,10 @@ import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -27,7 +29,7 @@ import org.junit.Test;
  */
 public class MatrixParamEncodingTest
 {
-   protected ResteasyDeployment deployment;
+   protected static ResteasyDeployment deployment;
    
    @Path("/")
    static public class TestResource
@@ -51,16 +53,16 @@ public class MatrixParamEncodingTest
       }
    }
    
-   @Before
-   public void before() throws Exception
+   @BeforeClass
+   public static void setup() throws Exception
    {
       deployment = EmbeddedContainer.start();
       deployment.getRegistry().addPerRequestResource(TestResource.class);
    }
    
 
-   @After
-   public void after() throws Exception
+   @AfterClass
+   public static void shutdown() throws Exception
    {
       EmbeddedContainer.stop();
       deployment = null;
@@ -76,6 +78,7 @@ public class MatrixParamEncodingTest
       System.out.println("Received response: " + response.getEntity());
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("ac/dc", response.getEntity());
+      response.releaseConnection();
    }
    
    @Test
@@ -88,6 +91,7 @@ public class MatrixParamEncodingTest
       System.out.println("Received response: " + response.getEntity());
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("ac%2Fdc", response.getEntity());
+      response.releaseConnection();
    }
    
    @Test
@@ -101,6 +105,7 @@ public class MatrixParamEncodingTest
       System.out.println("Received response: " + response.getEntity());
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("ac/dc", response.getEntity());
+      response.releaseConnection();
    }
    
    @Test
@@ -114,5 +119,6 @@ public class MatrixParamEncodingTest
       System.out.println("Received response: " + response.getEntity());
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("ac%2Fdc", response.getEntity());
+      response.releaseConnection();
    }
 }
