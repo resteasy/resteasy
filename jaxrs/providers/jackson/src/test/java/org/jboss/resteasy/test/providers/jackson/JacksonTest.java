@@ -8,6 +8,7 @@ import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.Consumes;
@@ -187,8 +188,8 @@ public class JacksonTest extends BaseResourceTest
 
    }
 
-   @Before
-   public void setUp() throws Exception
+   @BeforeClass
+   public static void setUp() throws Exception
    {
       dispatcher.getRegistry().addPerRequestResource(JacksonService.class);
       dispatcher.getRegistry().addPerRequestResource(XmlService.class);
@@ -202,12 +203,14 @@ public class JacksonTest extends BaseResourceTest
       System.out.println(response.getEntity());
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("{\"name\":\"Iphone\",\"id\":333}", response.getEntity());
+      response.releaseConnection();
 
       request = new ClientRequest(generateURL("/products"));
       ClientResponse<String> response2 = request.get(String.class);
       System.out.println(response2.getEntity());
       Assert.assertEquals(200, response2.getStatus());
       Assert.assertEquals("[{\"name\":\"Iphone\",\"id\":333},{\"name\":\"macbook\",\"id\":44}]", response2.getEntity());
+      response2.releaseConnection();
 
    }
 
@@ -219,6 +222,7 @@ public class JacksonTest extends BaseResourceTest
       System.out.println(response.getEntity());
       Assert.assertEquals(200, response.getStatus());
       Assert.assertTrue(response.getEntity().startsWith("{\"product"));
+      response.releaseConnection();
 
 
       request = new ClientRequest(generateURL("/xml/products"));
@@ -226,6 +230,7 @@ public class JacksonTest extends BaseResourceTest
       System.out.println(response2.getEntity());
       Assert.assertEquals(200, response2.getStatus());
       Assert.assertTrue(response2.getEntity().startsWith("[{\"product"));
+      response2.releaseConnection();
    }
 
    @Test
@@ -236,10 +241,12 @@ public class JacksonTest extends BaseResourceTest
       Product p = response.getEntity();
       Assert.assertEquals(333, p.getId());
       Assert.assertEquals("Iphone", p.getName());
+      response.releaseConnection();
       request = new ClientRequest(generateURL("/products"));
       ClientResponse<String> response2 = request.get(String.class);
       System.out.println(response2.getEntity());
       Assert.assertEquals(200, response2.getStatus());
+      response2.releaseConnection();
 
       request = new ClientRequest(generateURL("/products/333"));
       request.body("application/foo+json", p);
@@ -247,6 +254,7 @@ public class JacksonTest extends BaseResourceTest
       p = response.getEntity();
       Assert.assertEquals(333, p.getId());
       Assert.assertEquals("Iphone", p.getName());
+      response.releaseConnection();
 
 
    }
