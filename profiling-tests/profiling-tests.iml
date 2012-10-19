@@ -27,10 +27,10 @@
     <orderEntry type="library" scope="TEST" name="Maven: commons-io:commons-io:1.4" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: net.jcip:jcip-annotations:1.0" level="project" />
     <orderEntry type="module" module-name="resteasy-jackson-provider" scope="TEST" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.codehaus.jackson:jackson-core-asl:1.8.5" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.codehaus.jackson:jackson-mapper-asl:1.8.5" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.codehaus.jackson:jackson-jaxrs:1.8.5" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.codehaus.jackson:jackson-xc:1.8.5" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.codehaus.jackson:jackson-core-asl:1.9.9" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.codehaus.jackson:jackson-mapper-asl:1.9.9" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.codehaus.jackson:jackson-jaxrs:1.9.9" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.codehaus.jackson:jackson-xc:1.9.9" level="project" />
     <orderEntry type="module" module-name="resteasy-jaxb-provider" scope="TEST" />
     <orderEntry type="library" scope="TEST" name="Maven: com.sun.xml.bind:jaxb-impl:2.2.4" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: javax.xml.bind:jaxb-api:2.2.3" level="project" />
