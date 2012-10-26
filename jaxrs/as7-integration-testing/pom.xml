@@ -28,5 +28,6 @@
 
     <modules>
         <module>cdi-test</module>
+        <module>modules-test</module>
     </modules>
 </project>
