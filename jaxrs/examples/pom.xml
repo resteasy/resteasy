@@ -37,5 +37,6 @@
         <module>examples-jsapi</module>
         <module>smime</module>
         <module>digital-signatures</module>
+        <module>jaxrs-2.0/simple-client</module>
     </modules>
 </project>
