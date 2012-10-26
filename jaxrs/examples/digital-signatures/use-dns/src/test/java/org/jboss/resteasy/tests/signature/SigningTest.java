@@ -1,7 +1,5 @@
 package org.jboss.resteasy.tests.signature;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.security.doseta.DKIMSignature;
 import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
 import org.jboss.resteasy.security.doseta.KeyRepository;
@@ -13,6 +11,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import se.unlogic.eagledns.EagleDNS;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientFactory;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 import java.security.KeyPair;
 
 /**
@@ -23,6 +27,7 @@ public class SigningTest
 {
    public static KeyPair keys;
    public static DosetaKeyRepository repository;
+   public static Client client;
 
    @BeforeClass
    public static void setup() throws Exception
@@ -38,6 +43,7 @@ public class SigningTest
       repository.start();
 
       configureDNS();
+      client = ClientFactory.newClient();
    }
 
    private static EagleDNS dns;
@@ -53,6 +59,7 @@ public class SigningTest
    public static void shutdownDns()
    {
       dns.shutdown();
+      client.close();
    }
 
 
@@ -63,31 +70,34 @@ public class SigningTest
       Verification verification = verifier.addNew();
       verification.setRepository(repository);
 
-      ClientRequest request = new ClientRequest("http://localhost:9095/signed");
-      ClientResponse<String> response = request.get(String.class);
-      response.getAttributes().put(Verifier.class.getName(), verifier);
+      WebTarget target = client.target("http://localhost:9095/signed");
+      Invocation.Builder request = target.request();
+      request.configuration().setProperty(Verifier.class.getName(), verifier);
+      Response response = request.get();
 
       System.out.println("Client: ");
-      System.out.println(response.getResponseHeaders().getFirst(DKIMSignature.DKIM_SIGNATURE));
+      System.out.println(response.getHeaderString(DKIMSignature.DKIM_SIGNATURE));
       Assert.assertEquals(200, response.getStatus());
 
       // verification doesn't happen unless you try and extract the entity
-      System.out.println(response.getEntity());
+      System.out.println(response.readEntity(String.class));
+      response.close();
    }
 
    @Test
    public void testPost() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9095/signed");
+      WebTarget target = client.target("http://localhost:9095/signed");
+      Invocation.Builder request = target.request();
       DKIMSignature contentSignature = new DKIMSignature();
       contentSignature.setSelector("bill");
       contentSignature.setDomain("client.com");
-      request.getAttributes().put(KeyRepository.class.getName(), repository);
+      request.configuration().setProperty(KeyRepository.class.getName(), repository);
 
       request.header(DKIMSignature.DKIM_SIGNATURE, contentSignature);
-      request.body("text/plain", "hello world");
-      ClientResponse response = request.post();
+      Response response = request.post(Entity.text("hello world"));
       Assert.assertEquals(204, response.getStatus());
+      response.close();
 
 
    }

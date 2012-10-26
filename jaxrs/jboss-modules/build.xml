@@ -42,6 +42,26 @@
             <maven-resource group="org.bouncycastle" artifact="bcmail-jdk16"/>
         </module-def>
 
+        <module-def name="org.codehaus.jackson.jackson-core-asl">
+            <maven-resource group="org.codehaus.jackson" artifact="jackson-core-asl"/>
+        </module-def>
+
+        <module-def name="org.codehaus.jackson.jackson-jaxrs">
+            <maven-resource group="org.codehaus.jackson" artifact="jackson-jaxrs"/>
+        </module-def>
+
+        <module-def name="org.codehaus.jackson.jackson-mapper-asl">
+            <maven-resource group="org.codehaus.jackson" artifact="jackson-mapper-asl"/>
+        </module-def>
+
+        <module-def name="org.codehaus.jackson.jackson-xc">
+            <maven-resource group="org.codehaus.jackson" artifact="jackson-xc"/>
+        </module-def>
+
+        <module-def name="org.codehaus.jettison">
+            <maven-resource group="org.codehaus.jettison" artifact="jettison"/>
+        </module-def>
+
         <module-def name="javax.ws.rs.api">
             <maven-resource group="org.jboss.resteasy" artifact="jaxrs-api"/>
         </module-def>
@@ -52,10 +72,6 @@
 
         <module-def name="org.jboss.resteasy.resteasy-cdi">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-cdi"/>
-        </module-def>
-
-        <module-def name="org.jboss.resteasy.resteasy-crypto">
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-crypto"/>
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-jackson-provider">
@@ -74,6 +90,7 @@
             <maven-resource group="org.jboss.resteasy" artifact="async-http-servlet-3.0"/>
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jaxrs" jandex="true"/>
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-client" jandex="true"/>
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-crypto" jandex="true"/>
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-jsapi">

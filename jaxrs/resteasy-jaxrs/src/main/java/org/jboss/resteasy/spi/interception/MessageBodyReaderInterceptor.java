@@ -6,9 +6,11 @@ import java.io.IOException;
 /**
  * Wraps around invocations of MessageBodyReader.readFrom().
  *
+ * @deprecated
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Deprecated
 public interface MessageBodyReaderInterceptor
 {
    /**

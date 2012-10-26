@@ -15,9 +15,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * @deprecated
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Deprecated
 public class ProxyFactory
 {
 
