@@ -6,6 +6,10 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import javax.ws.rs.core.MediaType;
 import java.util.Map;
 
+/**
+ * @deprecated
+ */
+@Deprecated
 public class ProxyConfig
 {
 	private final ClassLoader loader;

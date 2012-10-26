@@ -9,6 +9,10 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @deprecated
+ */
+@Deprecated
 public class CacheEntry implements Entry, Serializable
 {
    private static final long serialVersionUID = -1922521972113619372L;

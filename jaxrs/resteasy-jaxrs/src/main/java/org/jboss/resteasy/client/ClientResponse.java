@@ -15,9 +15,11 @@ import java.util.Map;
  * in your client proxy interface method return type declarations if you want
  * access to the response entity as well as status and header information.
  *
+ * @deprecated
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Deprecated
 public abstract class ClientResponse<T> extends Response
 {
    /**

@@ -5,9 +5,11 @@ import javax.ws.rs.core.MultivaluedMap;
 import java.io.Serializable;
 
 /**
+ * @deprecated
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Deprecated
 public interface BrowserCache
 {
    public static class Header implements Serializable
