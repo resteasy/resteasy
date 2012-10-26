@@ -9,9 +9,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
+ * @deprecated
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Deprecated
 public interface MessageBodyWriterContext
 {
    Object getEntity();

@@ -21,6 +21,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ *
+ * @param <T>
+ * @deprecated
+ */
+@Deprecated
 public class ProxyBuilder<T>
 {
 	public static <T> ProxyBuilder<T> build(Class<T> iface, URI base)

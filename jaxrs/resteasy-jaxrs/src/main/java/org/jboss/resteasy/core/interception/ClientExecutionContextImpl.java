@@ -9,9 +9,11 @@ import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 import java.util.List;
 
 /**
+ * @deprecated
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Deprecated
 public class ClientExecutionContextImpl implements ClientExecutionContext
 {
    protected List<ClientExecutionInterceptor> interceptors;

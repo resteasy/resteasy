@@ -6,6 +6,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @deprecated
+ */
+@Deprecated
 public class MapCache implements BrowserCache
 {
    protected Map<String, Map<String, Entry>> cache = null;

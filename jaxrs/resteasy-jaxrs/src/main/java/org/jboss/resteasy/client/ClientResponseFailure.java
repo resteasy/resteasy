@@ -3,9 +3,11 @@ package org.jboss.resteasy.client;
 import org.jboss.resteasy.client.core.BaseClientResponse;
 
 /**
+ * @deprecated
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Deprecated
 public class ClientResponseFailure extends RuntimeException
 {
    private static final long serialVersionUID = 7491381058971118249L;

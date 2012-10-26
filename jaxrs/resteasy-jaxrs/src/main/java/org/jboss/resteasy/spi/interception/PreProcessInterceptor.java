@@ -12,9 +12,11 @@ import javax.ws.rs.WebApplicationException;
  * <p/>
  * The interceptor can decide to return its own response.  This will result in not invoking the resource method.
  *
+ * @deprecated
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Deprecated
 public interface PreProcessInterceptor
 {
    /**

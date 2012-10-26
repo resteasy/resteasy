@@ -5,7 +5,9 @@ import javax.ws.rs.core.UriBuilder;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * @deprecated
  */
+@Deprecated
 public interface ClientExecutor
 {
    ClientRequest createRequest(String uriTemplate);
