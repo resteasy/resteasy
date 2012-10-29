@@ -8,7 +8,7 @@
         <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>
-            <param-value>org.jboss.example.jaxrs2.simple.CustomerApplication</param-value>
+            <param-value>org.jboss.example.jaxrs2.async.CustomerApplication</param-value>
         </init-param>
     </servlet>
 

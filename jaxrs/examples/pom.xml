@@ -38,5 +38,6 @@
         <module>smime</module>
         <module>digital-signatures</module>
         <module>jaxrs-2.0/simple-client</module>
+        <module>jaxrs-2.0/server-async-http</module>
     </modules>
 </project>

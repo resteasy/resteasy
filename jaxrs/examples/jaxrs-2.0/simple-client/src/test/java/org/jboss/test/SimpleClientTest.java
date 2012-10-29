@@ -1,7 +1,7 @@
 package org.jboss.test;
 
 import junit.framework.Assert;
-import org.jboss.example.jaxrs2.simple.Customer;
+import org.jboss.example.jaxrs2.async.Customer;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.junit.Test;
 
