@@ -89,6 +89,15 @@
             </excludes>
         </fileSet>
         <fileSet>
+            <directory>../examples/simple</directory>
+            <outputDirectory>examples/jaxrs-2.0</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
             <directory>../examples/async-job-service</directory>
             <outputDirectory>examples/async-job-service</outputDirectory>
             <excludes>
