@@ -63,6 +63,13 @@ public class SmokingTest {
         selenium.click("css=input[type=\"button\"]");
         assertTrue(selenium.isTextPresent("304"));
 
+        // RESTEASY-789
+        selenium.open("/resteasy-jsapi-testing/resteasy789.jsp");
+        selenium.click("//input[@value='Test Add']");
+        selenium.click("//input[@value='Test Minus']");
+        assertTrue(selenium.isTextPresent("2"));
+        assertTrue(selenium.isTextPresent("0"));
+
     }
 
     @Test
