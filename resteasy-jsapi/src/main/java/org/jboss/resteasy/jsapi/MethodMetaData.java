@@ -1,28 +1,19 @@
 package org.jboss.resteasy.jsapi;
 
+import org.jboss.resteasy.annotations.Form;
+import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.jsapi.MethodParamMetaData.MethodParamType;
+import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.util.FindAnnotation;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-
-import org.jboss.resteasy.annotations.Form;
-import org.jboss.resteasy.core.ResourceMethod;
-import org.jboss.resteasy.jsapi.MethodParamMetaData.MethodParamType;
-import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.util.FindAnnotation;
 
 public class MethodMetaData
 {
@@ -47,7 +38,7 @@ public class MethodMetaData
 		this.registry = serviceRegistry;
 		this.resource = resource;
 		this.method = resource.getMethod();
-		this.klass = method.getDeclaringClass();
+        this.klass = resource.getResourceClass();
 		Path methodPath = method.getAnnotation(Path.class);
 		Path klassPath = klass.getAnnotation(Path.class);
 		Produces produces = method.getAnnotation(Produces.class);
