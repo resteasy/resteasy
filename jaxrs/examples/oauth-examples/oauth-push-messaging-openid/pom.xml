@@ -2,7 +2,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0-beta-1</version>
+        <version>3.0-beta-2</version>
 	    <relativePath>../../../pom.xml</relativePath>
     </parent>
     <name>Example: OAuth Push Messaging OpenId Modules</name>
