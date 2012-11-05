@@ -6,7 +6,7 @@
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-reference-guide-${translation}</artifactId>
-    <version>3.0-beta-1</version>
+    <version>3.0-beta-2</version>
     <packaging>jdocbook</packaging>
     <name>RESTEasy Reference Guide (${translation})</name>
     <description/>
