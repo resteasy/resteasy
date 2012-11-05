@@ -12,7 +12,6 @@
     <input type='button' onclick='testHeaderParam();' value='Test Header Param'/>
     <input type='button' onclick='testRESTEasy731False();' value='RESTEASY-731-false'/>
     <input type='button' onclick='testRESTEasy731Zero();' value='RESTEASY-731-zero'/>
-
 </form>
 
 <div id="path_result"></div>
