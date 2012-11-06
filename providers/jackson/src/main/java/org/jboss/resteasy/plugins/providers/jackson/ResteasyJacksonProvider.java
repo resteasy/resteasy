@@ -23,12 +23,14 @@ import java.lang.reflect.Type;
 @Produces({"application/*+json", "text/json"})
 public class ResteasyJacksonProvider extends JacksonJsonProvider
 {
-
+/*
+// todo find a better way of doing this
     public ResteasyJacksonProvider() {
         super();
         Annotations[] ANNOTATIONS = {Annotations.JACKSON, Annotations.JAXB};
         _mapperConfig.setAnnotationsToUse(ANNOTATIONS);
     }
+*/
 
 
    @Override
