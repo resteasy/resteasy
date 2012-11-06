@@ -23,13 +23,14 @@ import java.lang.reflect.Type;
 @Produces({"application/*+json", "text/json"})
 public class ResteasyJacksonProvider extends JacksonJsonProvider
 {
-
+/*
+    // todo figure out a nice way to support jackson + jaxb
     public ResteasyJacksonProvider() {
         super();
         Annotations[] ANNOTATIONS = {Annotations.JACKSON, Annotations.JAXB};
         _mapperConfig.setAnnotationsToUse(ANNOTATIONS);
     }
-
+*/
 
    @Override
    public boolean isReadable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType)
