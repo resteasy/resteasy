@@ -6,6 +6,7 @@ import org.jboss.resteasy.spi.interception.AcceptedByMethod;
 import javax.ws.rs.BindingPriority;
 import javax.ws.rs.NameBinding;
 import javax.ws.rs.container.PreMatching;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
@@ -48,10 +49,7 @@ public class JaxrsInterceptorRegistry<T>
       {
          if (annotation.annotationType().isAnnotationPresent(NameBinding.class))
          {
-            if (nameBound == null)
-            {
-               nameBound.add(annotation.annotationType());
-            }
+             nameBound.add(annotation.annotationType());
          }
       }
       return nameBound;
