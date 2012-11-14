@@ -21,7 +21,6 @@ public class DomainDelegatingAuthenticator extends AuthenticatorBase
    {
       ThreadContext.set(Request.class.getName(), request);
       ThreadContext.set(HttpServletResponse.class.getName(), httpServletResponse);
-      log.severe("DomainDelegatingAuthenticator HERE!!!!");
       try
       {
          Principal principal = context.getRealm().authenticate("", "");

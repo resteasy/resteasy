@@ -23,20 +23,27 @@ public class KeyTools
       BouncyIntegration.init();
    }
 
-   public static X509Certificate generateTestCertificate(KeyPair pair) throws InvalidKeyException,
+   public static X509Certificate generateTestCertificate(String subject, String issuer, KeyPair pair) throws InvalidKeyException,
            NoSuchProviderException, SignatureException
    {
 
       X509V1CertificateGenerator certGen = new X509V1CertificateGenerator();
 
       certGen.setSerialNumber(BigInteger.valueOf(System.currentTimeMillis()));
-      certGen.setIssuerDN(new X500Principal("CN=Test Certificate"));
+      certGen.setIssuerDN(new X500Principal(issuer));
       certGen.setNotBefore(new Date(System.currentTimeMillis() - 10000));
       certGen.setNotAfter(new Date(System.currentTimeMillis() + 10000));
-      certGen.setSubjectDN(new X500Principal("CN=Test Certificate"));
+      certGen.setSubjectDN(new X500Principal(subject));
       certGen.setPublicKey(pair.getPublic());
       certGen.setSignatureAlgorithm("SHA256WithRSAEncryption");
 
       return certGen.generateX509Certificate(pair.getPrivate(), "BC");
+   }
+
+
+   public static X509Certificate generateTestCertificate(KeyPair pair) throws InvalidKeyException,
+           NoSuchProviderException, SignatureException
+   {
+      return generateTestCertificate("CN=Test", "CN=Issuer", pair);
    }
 }
