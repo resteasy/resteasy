@@ -1,21 +1,16 @@
 package org.jboss.resteasy.plugins.server.netty;
 
-import static org.jboss.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
-import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
-
+import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.ChannelHandler.Sharable;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.Failure;
+
+import static org.jboss.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
+import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * {@link SimpleChannelUpstreamHandler} which handles the requests and dispatch them.
@@ -71,6 +66,9 @@ public class RequestHandler extends SimpleChannelUpstreamHandler
           
           // Write the response.
           ChannelFuture future = e.getChannel().write(response);
+
+          //NETTY-391
+          NettyJaxrsServer.allChannels.add(e.getChannel());
 
           // Close the non-keep-alive connection after the write operation is done.
           if (!request.isKeepAlive())
