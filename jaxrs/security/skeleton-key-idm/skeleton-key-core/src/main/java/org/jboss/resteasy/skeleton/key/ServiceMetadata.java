@@ -1,6 +1,5 @@
 package org.jboss.resteasy.skeleton.key;
 
-import javax.crypto.SecretKey;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 
@@ -11,7 +10,7 @@ import java.security.cert.X509Certificate;
 public class ServiceMetadata
 {
    protected String name;
-   protected String domain;
+   protected String realm;
    protected KeyStore keystore;
    protected KeyStore truststore;
    protected X509Certificate[] identityProviderCertificates;
@@ -21,9 +20,9 @@ public class ServiceMetadata
       return name;
    }
 
-   public String getDomain()
+   public String getRealm()
    {
-      return domain;
+      return realm;
    }
 
   /**
@@ -62,9 +61,9 @@ public class ServiceMetadata
       this.name = name;
    }
 
-   public void setDomain(String domain)
+   public void setRealm(String realm)
    {
-      this.domain = domain;
+      this.realm = realm;
    }
 
    public void setKeystore(KeyStore keystore)

@@ -21,8 +21,8 @@ public class SkeletonKeyToken extends JsonWebToken
       protected Set<String> surrogates;
       @JsonProperty("rls")
       protected Set<String> roles;
-      @JsonProperty("cert")
-      protected boolean certNotRequired;
+      @JsonProperty("auth")
+      protected boolean tokenAuthRequired;
 
       public Set<String> getSurrogates()
       {
@@ -73,36 +73,36 @@ public class SkeletonKeyToken extends JsonWebToken
          return this;
       }
 
-      public boolean isCertNotRequired()
+      public boolean isTokenAuthRequired()
       {
-         return certNotRequired;
+         return tokenAuthRequired;
       }
 
-      public Access certNotRequired(boolean certNotRequired)
+      public Access tokenAuthRequired(boolean tokenAuthRequired)
       {
-         this.certNotRequired = certNotRequired;
+         this.tokenAuthRequired = tokenAuthRequired;
          return this;
       }
    }
 
    @JsonProperty("acc")
-   protected Map<String, Access> serviceTokens = new HashMap<String, Access>();
+   protected Map<String, Access> resourceAccess = new HashMap<String, Access>();
 
-   public Map<String, Access> getServiceTokens()
+   public Map<String, Access> getResourceAccess()
    {
-      return serviceTokens;
+      return resourceAccess;
    }
 
    @JsonIgnore
-   public Access getServiceToken(String service)
+   public Access getResourceAccess(String resource)
    {
-      return serviceTokens.get(service);
+      return resourceAccess.get(resource);
    }
 
    public Access addAccess(String service)
    {
       Access token = new Access();
-      serviceTokens.put(service, token);
+      resourceAccess.put(service, token);
       return token;
    }
 

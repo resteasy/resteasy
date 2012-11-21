@@ -4,14 +4,10 @@ import junit.framework.Assert;
 import org.jboss.resteasy.jose.jws.JWSBuilder;
 import org.jboss.resteasy.jose.jws.JWSInput;
 import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
-import org.jboss.resteasy.jwt.JWTContextResolver;
 import org.jboss.resteasy.jwt.JsonSerialization;
-import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyToken;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Test;
 
-import javax.ws.rs.core.MediaType;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 
@@ -34,7 +30,7 @@ public class SkeletonKeyTokenTest
 
       token = JsonSerialization.fromString(SkeletonKeyToken.class, json);
       Assert.assertEquals("111", token.getId());
-      SkeletonKeyToken.Access foo = token.getServiceToken("foo");
+      SkeletonKeyToken.Access foo = token.getResourceAccess("foo");
       Assert.assertNotNull(foo);
       Assert.assertTrue(foo.isUserInRole("admin"));
 

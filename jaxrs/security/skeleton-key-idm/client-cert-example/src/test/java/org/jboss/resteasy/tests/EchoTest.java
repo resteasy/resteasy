@@ -35,6 +35,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
+import javax.ws.rs.core.Response;
 import java.security.SecureRandom;
 
 
@@ -69,8 +70,8 @@ public class EchoTest
       System.out.println(clientCert.getSubjectX500Principal().getName());
       SkeletonKeyToken token  = new SkeletonKeyToken();
       token.principal(clientCert.getSubjectX500Principal().getName())
-              .audience("MyDomain")
-              .addAccess("MyService").addRole("user");
+              .audience("MyRealm")
+              .addAccess("MyService").addRole("user").tokenAuthRequired(true);
 
       byte[] tokenBytes = JsonSerialization.toByteArray(token, false);
 
@@ -84,13 +85,68 @@ public class EchoTest
 
 
       String message = appTarget.path("user/users.txt").request()
-              .header("X-Skeleton-Key-Token", encoded).get(String.class);
+              .header("Authorization", "Bearer " + encoded).get(String.class);
       Assert.assertEquals("Hello User", message);
 
       /*
       Response response = appTarget.path("admin/admins.txt").request().get();
       Assert.assertEquals(403, response.getStatus());
       */
+
+   }
+
+   @Test
+   public void testNoToken() throws Exception
+   {
+      ResteasyClient client = new ResteasyClient();
+      client.httpEngine(new ApacheHttpClient4Engine(trustedClient(8443)));
+      WebTarget appTarget = client.target("https://localhost:8443/skeleton-app");
+
+      Response response = appTarget.path("user/users.txt").request().get();
+      System.out.println(response.getStatus());
+      Assert.assertEquals(401, response.getStatus());
+      Assert.assertNotNull(response.getHeaderString("WWW-Authenticate"));
+      Assert.assertTrue(response.getHeaderString("WWW-Authenticate").contains("Bearer"));
+      System.out.println(response.getHeaderString("WWW-Authenticate").contains("Bearer"));
+   }
+
+   @Test
+   public void testNoClientCert() throws Exception
+   {
+      ResteasyClient client = new ResteasyClient();
+      client.httpEngine(new ApacheHttpClient4Engine(trusted(8443)));
+      WebTarget appTarget = client.target("https://localhost:8443/skeleton-app");
+
+      KeyStore idpStore = loadIDP();
+      PrivateKey privateKey = (PrivateKey)idpStore.getKey("idp", "password".toCharArray());
+      KeyStore clientStore = loadClientStore();
+      X509Certificate clientCert = (X509Certificate)clientStore.getCertificate("client");
+      System.out.println(clientCert.getSubjectX500Principal().getName());
+      SkeletonKeyToken token  = new SkeletonKeyToken();
+      token.principal(clientCert.getSubjectX500Principal().getName())
+              .audience("MyRealm")
+              .addAccess("MyService").addRole("user").tokenAuthRequired(true);
+
+      byte[] tokenBytes = JsonSerialization.toByteArray(token, false);
+
+      System.out.println(new String(tokenBytes));
+
+      String encoded = new JWSBuilder()
+              .content(tokenBytes)
+              .rsa256(privateKey);
+
+      System.out.println("Key length: " + encoded.length());
+
+
+      Response response = appTarget.path("user/users.txt").request()
+              .header("Authorization", "Bearer " + encoded).get();
+
+      System.out.println(response.getStatus());
+      Assert.assertEquals(401, response.getStatus());
+      Assert.assertNotNull(response.getHeaderString("WWW-Authenticate"));
+      Assert.assertTrue(response.getHeaderString("WWW-Authenticate").contains("Bearer"));
+      System.out.println(response.getHeaderString("WWW-Authenticate").contains("Bearer"));
+
 
    }
 

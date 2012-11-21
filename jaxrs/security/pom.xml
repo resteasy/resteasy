@@ -21,6 +21,7 @@
         <module>login-module-authenticator</module>
         <!-- <module>skeleton-key-idm/client-cert-example</module>  -->
         <module>skeleton-key-idm/skeleton-key-core</module>
+        <module>skeleton-key-idm/skeleton-key-idp</module>
         <module>skeleton-key-idm/skeleton-key-as7</module>
         <module>skeleton-key-idm/skeleton-key-as7-modules</module>
         <module>keystone/keystone-core</module>

@@ -4,7 +4,6 @@ import org.jboss.resteasy.jose.jws.JWSInput;
 import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
 import org.jboss.resteasy.jwt.JsonSerialization;
 
-import javax.ws.rs.ext.Providers;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
 import java.util.HashSet;
@@ -56,15 +55,15 @@ public class RSATokenVerifier
       {
          throw new VerificationException("Token user was null");
       }
-      if (!metadata.getDomain().equals(token.getAudience()))
+      if (!metadata.getRealm().equals(token.getAudience()))
       {
          throw new VerificationException("Token audience doesn't match domain");
 
       }
-      SkeletonKeyToken.Access access = token.getServiceToken(metadata.getName());
+      SkeletonKeyToken.Access access = token.getResourceAccess(metadata.getName());
       if (access == null)
       {
-         throw new VerificationException("No service access specified");
+         throw new VerificationException("No resource access specified");
       }
 
       /*
@@ -81,18 +80,22 @@ public class RSATokenVerifier
       if (!found) throw new VerificationException("User: " + user + " was not found in list of client certificates");
       */
       // assuming 1st is root
-      String certUser = userCerts[0].getSubjectX500Principal().getName();
       String surrogate = null;
-      if (!certUser.equals(user))
+      if (access.isTokenAuthRequired())
       {
-         // check surrogate
-         if (access.hasSurrogate(certUser))
+         if (userCerts == null) throw new VerificationException("Client certificate auth required");
+         String certUser = userCerts[0].getSubjectX500Principal().getName();
+         if (!certUser.equals(user))
          {
-            surrogate = certUser;
-         }
-         else
-         {
-            throw new VerificationException("Certificate principal does not match token principal");
+            // check surrogate
+            if (access.hasSurrogate(certUser))
+            {
+               surrogate = certUser;
+            }
+            else
+            {
+               throw new VerificationException("Certificate principal does not match token principal");
+            }
          }
       }
       SkeletonKeyPrincipal principal = new SkeletonKeyPrincipal(user, surrogate, tokenString, metadata.getKeystore(), metadata.getTruststore());

@@ -13,40 +13,40 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.x500.X500Principal;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.acl.Group;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.jboss.security.auth.spi.BaseCertLoginModule;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class SkeletonCertAuthLoginModule extends JBossWebAuthLoginModule
+public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
 {
-   protected X500Principal principal = null;
    /*
 
-               <connector name="https" protocol="HTTP/1.1" scheme="https" socket-binding="https" secure="true">
-                <ssl name="ssl" key-alias="server" password="password" certificate-key-file="c:/Users/William/jboss/keystore.jks" verify-client="want"
-                     ca-certificate-file="c:/Users/William/jboss/truststore.ts"
-                     ca-certificate-password="password"
-                        />
+            <connector name="https" protocol="HTTP/1.1" scheme="https" socket-binding="https" secure="true">
+                <ssl name="ssl" key-alias="server" password="password" certificate-key-file="c:/Users/William/jboss/application.jks" verify-client="want" ca-certificate-file="c:/Users/William/jboss/truststore.ts" ca-certificate-password="password"/>
+            </connector>
+
+                                                <login-module code="org.jboss.resteasy.skeleton.key.as7.SkeletonKeyBearerTokenLoginModule" flag="required" module="org.jboss.resteasy.skeleton-key">
+                            <module-option name="idp-realm" value="MyRealm"/>
+                            <module-option name="resource-name" value="MyService"/>
+                            <module-option name="idp-truststore" value="C:/Users/William/jboss/idpTrust.ts"/>
+                            <module-option name="idp-truststore-password" value="password"/>
+                            <module-option name="idp-aliases" value="idp"/>
+                        </login-module>
+
 
     */
 
@@ -71,15 +71,14 @@ public class SkeletonCertAuthLoginModule extends JBossWebAuthLoginModule
    public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState, Map<String, ?> options)
    {
       super.initialize(subject, callbackHandler, sharedState, options);
-      String name = (String) options.get("service-name");
-      if (name == null) throw new RuntimeException("Must set service-name in security domain config");
-      String domain = (String) options.get("idp-domain");
-      if (domain == null) throw new RuntimeException(("Must set idp-domain in security domain config"));
+      String name = (String) options.get("resource-name");
+      if (name == null) throw new RuntimeException("Must set resource-name in security domain config");
+      String domain = (String) options.get("realm");
+      if (domain == null) throw new RuntimeException(("Must set realm in security domain config"));
 
       String cacheKey = domain + ":" + name;
       serviceMetadata = serviceMetadataCache.get(cacheKey);
       if (serviceMetadata != null) return;
-
 
       String idpTruststore = (String) options.get("idp-truststore");
       String idpTruststorePassword = (String) options.get("idp-truststore-password");
@@ -124,7 +123,7 @@ public class SkeletonCertAuthLoginModule extends JBossWebAuthLoginModule
          idpCerts.add(cert);
       }
       serviceMetadata = new ServiceMetadata();
-      serviceMetadata.setDomain(domain);
+      serviceMetadata.setRealm(domain);
       serviceMetadata.setName(name);
       serviceMetadata.setIdentityProviderCertificates(idpCerts.toArray(new X509Certificate[idpCerts.size()]));
 
@@ -189,18 +188,48 @@ public class SkeletonCertAuthLoginModule extends JBossWebAuthLoginModule
 
    }
 
+   protected void challengeResponse(HttpServletResponse response, String error, String description) throws LoginException
+   {
+      StringBuilder header = new StringBuilder("Bearer realm=\"");
+      header.append(serviceMetadata.getRealm()).append("\"");
+      if (error != null)
+      {
+         header.append(", error=\"").append(error).append("\"");
+      }
+      if (description != null)
+      {
+         header.append(", error_description=\"").append(description).append("\"");
+      }
+      response.setHeader("WWW-Authenticate", header.toString());
+      try
+      {
+         response.sendError(401);
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+      throw new LoginException("Challenged");
+   }
+
    @Override
    protected boolean login(Request request, HttpServletResponse response) throws LoginException
    {
       X509Certificate[] chain = request.getCertificateChain();
-      if (chain == null) return false;
-      String tokenString = request.getHeader("X-Skeleton-Key-Token");
-      if (tokenString == null)
+      String authHeader = request.getHeader("Authorization");
+      if (authHeader == null)
       {
-         if (request.getQueryString() == null) return false;
-         tokenString = getQueryParamToken(request.getQueryString());
-         if (tokenString == null) return false;
+         challengeResponse(response, null, null);
       }
+
+      String[] split = authHeader.trim().split("\\s+");
+      if (split == null || split.length != 2) challengeResponse(response, null, null);
+      if (!split[0].equalsIgnoreCase("Bearer")) challengeResponse(response, null, null);
+
+
+      String tokenString = split[1];
+
+
       try
       {
          verification = RSATokenVerifier.verify(chain, tokenString, serviceMetadata);
@@ -210,7 +239,7 @@ public class SkeletonCertAuthLoginModule extends JBossWebAuthLoginModule
       catch (VerificationException e)
       {
          log.error("Failed to verify token", e);
-         throw new LoginException(e.getMessage());
+         challengeResponse(response, "invalid_token", e.getMessage());
       }
       this.loginOk = true;
       return true;
@@ -233,4 +262,5 @@ public class SkeletonCertAuthLoginModule extends JBossWebAuthLoginModule
       }
       return roleSets;
    }
+
 }
