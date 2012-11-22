@@ -1,0 +1,2 @@
+org.jboss.resteasy.cdi.ejb.extension.scope.PlannedObsolescenceExtension
+org.jboss.resteasy.cdi.ejb.extension.bean.RestfulBeanExtension

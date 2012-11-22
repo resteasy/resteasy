@@ -1,0 +1,76 @@
+// ------------------------------------------------------------------
+// Transitive dependencies of this project determined from the
+// maven pom organized by organization.
+// ------------------------------------------------------------------
+
+Weld Implementation
+
+
+From: 'an unknown organization'
+  - JavaBeans Activation Framework (JAF) (http://java.sun.com/products/javabeans/jaf/index.jsp) javax.activation:activation:jar:1.1
+    License: Common Development and Distribution License (CDDL) v1.0  (https://glassfish.dev.java.net/public/CDDLv1.0.html)
+  - jsr250-api  javax.annotation:jsr250-api:jar:1.0
+
+  - Expression Language API (2.1 Maintenance Release)  javax.el:el-api:jar:2.2
+
+  - javax.inject (http://code.google.com/p/atinject/) javax.inject:javax.inject:jar:1
+    License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
+  - persistence-api  javax.persistence:persistence-api:jar:1.0
+
+  - servlet-api  javax.servlet:servlet-api:jar:2.5
+
+  - jsp-api  javax.servlet.jsp:jsp-api:jar:2.1
+
+  - Java Transaction API (http://java.sun.com/products/jta) javax.transaction:jta:jar:1.1
+
+  - Bean Validation API  javax.validation:validation-api:jar:1.0.0.GA
+    License: Apache License, Version 2.0  (license.txt)
+  - jaxrpc-api  javax.xml:jaxrpc-api:jar:1.1
+
+  - saaj-api  javax.xml.soap:saaj-api:jar:1.3
+
+  - FindBugs-Annotations (http://findbugs.sourceforge.net/) net.sourceforge.findbugs:annotations:jar:1.3.2
+    License: GNU Lesser Public License  (http://www.gnu.org/licenses/lgpl.html)
+  - Javassist (http://www.javassist.org/) org.javassist:javassist:jar:3.14.0-GA
+    License: MPL 1.1  (http://www.mozilla.org/MPL/MPL-1.1.html)    License: LGPL 2.1  (http://www.gnu.org/licenses/lgpl-2.1.html)
+
+From: 'Google' (http://www.google.com/)
+  - Guava (Google Common Libraries) (http://code.google.com/p/guava-libraries) com.google.guava:guava:jar:r06
+    License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+From: 'JBoss, a division of Red Hat, Inc.' (http://www.jboss.org)
+  - JBoss EJB 3.1 Common Interceptor Library Implementation (http://www.jboss.org/jboss-interceptor-parent/jboss-interceptor-core) org.jboss.interceptor:jboss-interceptor-core:jar:2.0.0.CR1
+    License: Apache License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
+  - JBoss EJB 3.1 Common Interceptor Library API (http://www.jboss.org/jboss-interceptor-parent/jboss-interceptor-spi) org.jboss.interceptor:jboss-interceptor-spi:jar:2.0.0.CR1
+    License: Apache License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.html)
+  - EJB 3.1 API (http://jboss-ejb-api_3.1_spec/) org.jboss.spec.javax.ejb:jboss-ejb-api_3.1_spec:jar:1.0.0.CR2
+    License: lgpl  (http://repository.jboss.org/licenses/lgpl-2.1.txt)
+  - Interceptors 1.1 API (http://jboss-interceptors-api_1.1_spec/) org.jboss.spec.javax.interceptor:jboss-interceptors-api_1.1_spec:jar:1.0.0.Beta1
+    License: lgpl  (http://repository.jboss.org/licenses/lgpl-2.1.txt)
+  - Transaction 1.1 API (http://jboss-transaction-api_1.1_spec/) org.jboss.spec.javax.transaction:jboss-transaction-api_1.1_spec:jar:1.0.0.Beta1
+    License: lgpl  (http://repository.jboss.org/licenses/lgpl-2.1.txt)
+
+From: 'QOS.ch' (http://www.qos.ch)
+  - Compiler assisted localization library (CAL10N) -    API (http://cal10n.qos.ch/cal10n-api) ch.qos.cal10n:cal10n-api:jar:0.7.2
+    License: MIT License  (http://www.opensource.org/licenses/mit-license.php)
+  - SLF4J API Module (http://www.slf4j.org) org.slf4j:slf4j-api:jar:1.6.1
+    License: MIT License  (http://www.opensource.org/licenses/mit-license.php)
+  - SLF4J Extensions Module (http://www.slf4j.org) org.slf4j:slf4j-ext:jar:1.6.1
+    License: MIT License  (http://www.opensource.org/licenses/mit-license.php)
+
+From: 'Seam Framework' (http://seamframework.org)
+  - CDI APIs (http://www.seamframework.org/Weld) javax.enterprise:cdi-api:jar:1.0-SP4
+    License: Apache License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.html)
+  - Weld APIs (http://www.seamframework.org/Weld) org.jboss.weld:weld-api:jar:1.1.Final
+    License: Apache License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.html)
+  - Weld: Build Configuration (http://www.seamframework.org/Weld/weld-build-config) org.jboss.weld:weld-build-config:jar:1.1.5.Final
+    License: Apache License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
+  - Weld SPIs for container integration (http://www.seamframework.org/Weld) org.jboss.weld:weld-spi:jar:1.1.Final
+    License: Apache License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.html)
+
+From: 'Sun Microsystems, Inc' (http://www.sun.com/)
+  - Sun's implementation of the JSF 2.0 specification API. (http://java.sun.com/javaee/javaserverfaces/) javax.faces:jsf-api:jar:2.0
+    License: COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) plus GPL  (https://glassfish.dev.java.net/public/CDDL+GPL.html)
+
+
+

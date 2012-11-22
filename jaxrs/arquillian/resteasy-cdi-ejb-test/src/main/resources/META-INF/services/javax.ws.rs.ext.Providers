@@ -1,0 +1,4 @@
+org.jboss.resteasy.cdi.ejb.BookReader
+org.jboss.resteasy.cdi.ejb.BookWriter
+
+

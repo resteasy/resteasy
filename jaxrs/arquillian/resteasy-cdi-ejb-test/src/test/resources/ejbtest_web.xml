@@ -1,0 +1,27 @@
+<web-app>
+   <display-name>Archetype Created Web Application</display-name>
+   <context-param>
+      <param-name>resteasy.jndi.resources</param-name>
+      <!--param-value>global/resteasy-ejb-test/EJBBookReaderImpl!org.jboss.resteasy.ejb.EJBBookReader,global/resteasy-ejb-test/EJBBookResource!org.jboss.resteasy.ejb.EJBLocalResource</param-value-->
+      <param-value>global/resteasy-ejb-test/EJBBookResource!org.jboss.resteasy.ejb.EJBLocalResource</param-value>
+   </context-param>
+
+   <!--listener>
+      <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+   </listener-->
+
+   <servlet>
+      <servlet-name>Resteasy</servlet-name>
+      <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+      <init-param>
+         <param-name>javax.ws.rs.Application</param-name>
+         <param-value>org.jboss.resteasy.ejb.EJBApplication</param-value>
+      </init-param>
+   </servlet>
+
+   <servlet-mapping>
+      <servlet-name>Resteasy</servlet-name>
+      <url-pattern>/*</url-pattern>
+   </servlet-mapping>
+
+</web-app>
