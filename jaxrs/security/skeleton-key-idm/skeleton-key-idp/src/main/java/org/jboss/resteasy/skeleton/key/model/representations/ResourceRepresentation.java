@@ -17,6 +17,7 @@ public class ResourceRepresentation
    protected boolean tokenAuthRequired;
    protected Set<String> roles;
    protected List<RoleMappingRepresentation> roleMappings;
+   protected List<ScopeMappingRepresentation> scopeMappings;
 
    public String getSelf()
    {
@@ -88,5 +89,20 @@ public class ResourceRepresentation
       roleMappings.add(mapping);
       return mapping;
    }
+
+   public List<ScopeMappingRepresentation> getScopeMappings()
+   {
+      return scopeMappings;
+   }
+
+   public ScopeMappingRepresentation scopeMapping(String username)
+   {
+      ScopeMappingRepresentation mapping = new ScopeMappingRepresentation();
+      mapping.setUsername(username);
+      if (scopeMappings == null) scopeMappings = new ArrayList<ScopeMappingRepresentation>();
+      scopeMappings.add(mapping);
+      return mapping;
+   }
+
 
 }

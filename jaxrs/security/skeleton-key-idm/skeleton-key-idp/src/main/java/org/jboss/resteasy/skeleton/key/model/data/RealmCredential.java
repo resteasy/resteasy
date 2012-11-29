@@ -4,15 +4,15 @@ package org.jboss.resteasy.skeleton.key.model.data;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class UserCredential
+public class RealmCredential
 {
    public static final String PASSWORD = "PASSWORD";
    public static final String CALLER_PRINCIPAL = "CALLER_PRINCIPAL";
 
    protected String id;
    protected String type;
-   protected String value;
-   protected boolean hashed;
+   protected boolean input;
+   protected boolean secret;
 
    public String getId()
    {
@@ -34,23 +34,23 @@ public class UserCredential
       this.type = type;
    }
 
-   public String getValue()
+   public boolean isInput()
    {
-      return value;
+      return input;
    }
 
-   public void setValue(String value)
+   public void setInput(boolean input)
    {
-      this.value = value;
+      this.input = input;
    }
 
-   public boolean isHashed()
+   public boolean isSecret()
    {
-      return hashed;
+      return secret;
    }
 
-   public void setHashed(boolean hashed)
+   public void setSecret(boolean secret)
    {
-      this.hashed = hashed;
+      this.secret = secret;
    }
 }

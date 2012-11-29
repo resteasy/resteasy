@@ -13,8 +13,6 @@ public class Resource
    protected String name;
    protected String baseUrl;
    protected boolean tokenAuthRequired;
-   protected Set<String> roleIds = new HashSet<String>();
-   protected Set<String> roleMappingIds = new HashSet<String>();
 
    public String getId()
    {
@@ -44,16 +42,6 @@ public class Resource
    public void setBaseUrl(String baseUrl)
    {
       this.baseUrl = baseUrl;
-   }
-
-   public Set<String> getRoleIds()
-   {
-      return roleIds;
-   }
-
-   public Set<String> getRoleMappingIds()
-   {
-      return roleMappingIds;
    }
 
    public boolean isTokenAuthRequired()

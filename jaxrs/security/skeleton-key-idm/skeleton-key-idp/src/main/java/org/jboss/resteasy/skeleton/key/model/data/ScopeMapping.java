@@ -1,19 +1,17 @@
 package org.jboss.resteasy.skeleton.key.model.data;
 
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class User
+public class ScopeMapping
 {
    protected String id;
-   protected String username;
-   protected boolean enabled;
+   protected String userid;
+   protected Set<String> roles = new HashSet<String>();
 
    public String getId()
    {
@@ -25,23 +23,24 @@ public class User
       this.id = id;
    }
 
-   public String getUsername()
+   public String getUserid()
    {
-      return username;
+      return userid;
    }
 
-   public void setUsername(String username)
+   public void setUserid(String userid)
    {
-      this.username = username;
+      this.userid = userid;
    }
 
-   public boolean isEnabled()
+   public Set<String> getRoles()
    {
-      return enabled;
+      return roles;
    }
 
-   public void setEnabled(boolean enabled)
+   public void setRoles(Set<String> roles)
    {
-      this.enabled = enabled;
+      this.roles = roles;
    }
+
 }

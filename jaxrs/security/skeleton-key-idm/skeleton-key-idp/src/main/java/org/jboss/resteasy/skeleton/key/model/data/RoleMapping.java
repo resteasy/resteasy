@@ -11,8 +11,8 @@ public class RoleMapping
 {
    protected String id;
    protected String userid;
-   protected Set<String> roleIds = new HashSet<String>();
-   protected String surrogateId;
+   protected Set<String> roles = new HashSet<String>();
+   protected Set<String> surrogateIds = new HashSet<String>();
 
    public String getId()
    {
@@ -34,23 +34,23 @@ public class RoleMapping
       this.userid = userid;
    }
 
-   public Set<String> getRoleIds()
+   public Set<String> getRoles()
    {
-      return roleIds;
+      return roles;
    }
 
-   public void setRoleIds(Set<String> roleIds)
+   public void setRoles(Set<String> roles)
    {
-      this.roleIds = roleIds;
+      this.roles = roles;
    }
 
-   public String getSurrogateId()
+   public Set<String> getSurrogateIds()
    {
-      return surrogateId;
+      return surrogateIds;
    }
 
-   public void setSurrogateId(String surrogateId)
+   public void setSurrogateIds(Set<String> surrogateIds)
    {
-      this.surrogateId = surrogateId;
+      this.surrogateIds = surrogateIds;
    }
 }

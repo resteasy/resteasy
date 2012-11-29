@@ -1,56 +1,20 @@
 package org.jboss.resteasy.skeleton.key.model.representations;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class AccessTokenRequest
+public class AccessTokenRequest extends UserAuth
 {
-   public static class Credential
+   protected String code;
+
+   public String getCode()
    {
-      protected String type;
-      protected String value;
-
-      public String getType()
-      {
-         return type;
-      }
-
-      public void setType(String type)
-      {
-         this.type = type;
-      }
-
-      public String getValue()
-      {
-         return value;
-      }
-
-      public void setValue(String value)
-      {
-         this.value = value;
-      }
+      return code;
    }
 
-   protected String username;
-   protected List<Credential> credentials = new ArrayList<Credential>();
-
-   public String getUsername()
+   public void setCode(String code)
    {
-      return username;
+      this.code = code;
    }
-
-   public void setUsername(String username)
-   {
-      this.username = username;
-   }
-
-   public List<Credential> getCredentials()
-   {
-      return credentials;
-   }
-
 }

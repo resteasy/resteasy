@@ -15,10 +15,10 @@ public class Realm
 {
    protected String id;
    protected String name;
+   protected long tokenLifespan = 3600 * 24; // one day
+   protected long accessCodeLifespan = 300; // 5 minutes
+   protected boolean directAccessTokenAllowed;
    protected boolean enabled;
-   protected Set<String> adminIds;
-   protected Set<String> resourceIds;
-   protected Set<String> userIds;
 
    public String getId()
    {
@@ -50,33 +50,33 @@ public class Realm
       this.enabled = enabled;
    }
 
-   public Set<String> getAdminIds()
+   public boolean isDirectAccessTokenAllowed()
    {
-      return adminIds;
+      return directAccessTokenAllowed;
    }
 
-   public void setAdminIds(Set<String> adminIds)
+   public void setDirectAccessTokenAllowed(boolean directAccessTokenAllowed)
    {
-      this.adminIds = adminIds;
+      this.directAccessTokenAllowed = directAccessTokenAllowed;
    }
 
-   public Set<String> getResourceIds()
+   public long getTokenLifespan()
    {
-      return resourceIds;
+      return tokenLifespan;
    }
 
-   public void setResourceIds(Set<String> resourceIds)
+   public void setTokenLifespan(long tokenLifespan)
    {
-      this.resourceIds = resourceIds;
+      this.tokenLifespan = tokenLifespan;
    }
 
-   public Set<String> getUserIds()
+   public long getAccessCodeLifespan()
    {
-      return userIds;
+      return accessCodeLifespan;
    }
 
-   public void setUserIds(Set<String> userIds)
+   public void setAccessCodeLifespan(long accessCodeLifespan)
    {
-      this.userIds = userIds;
+      this.accessCodeLifespan = accessCodeLifespan;
    }
 }

@@ -13,10 +13,16 @@ public class RealmRepresentation
 {
    protected String self; // link
    protected String realm;
+   protected long tokenLifespan;
    protected boolean enabled;
+   protected boolean directAccessTokenAllowed;
+   protected List<RealmCredentialRepresentation> credentials;
    protected List<UserRepresentation> users;
    protected List<ResourceRepresentation> resources;
-   protected Set<String> admins;
+   protected Set<String> roles;
+   protected List<RoleMappingRepresentation> roleMappings;
+   protected List<ScopeMappingRepresentation> scopeMappings;
+
 
    public String getSelf()
    {
@@ -71,20 +77,20 @@ public class RealmRepresentation
       return user;
    }
 
-   public Set<String> getAdmins()
+   public Set<String> getRoles()
    {
-      return admins;
+      return roles;
    }
 
-   public void setAdmins(Set<String> admins)
+   public void setRoles(Set<String> roles)
    {
-      this.admins = admins;
+      this.roles = roles;
    }
 
-   public RealmRepresentation admin(String username)
+   public RealmRepresentation role(String role)
    {
-      if (admins == null) admins = new HashSet<String>();
-      admins.add(username);
+      if (roles == null) roles = new HashSet<String>();
+      roles.add(role);
       return this;
    }
 
@@ -101,5 +107,63 @@ public class RealmRepresentation
    public void setEnabled(boolean enabled)
    {
       this.enabled = enabled;
+   }
+
+   public boolean isDirectAccessTokenAllowed()
+   {
+      return directAccessTokenAllowed;
+   }
+
+   public void setDirectAccessTokenAllowed(boolean directAccessTokenAllowed)
+   {
+      this.directAccessTokenAllowed = directAccessTokenAllowed;
+   }
+
+   public long getTokenLifespan()
+   {
+      return tokenLifespan;
+   }
+
+   public void setTokenLifespan(long tokenLifespan)
+   {
+      this.tokenLifespan = tokenLifespan;
+   }
+
+   public List<RoleMappingRepresentation> getRoleMappings()
+   {
+      return roleMappings;
+   }
+
+   public RoleMappingRepresentation roleMapping(String username)
+   {
+      RoleMappingRepresentation mapping = new RoleMappingRepresentation();
+      mapping.setUsername(username);
+      if (roleMappings == null) roleMappings = new ArrayList<RoleMappingRepresentation>();
+      roleMappings.add(mapping);
+      return mapping;
+   }
+
+   public List<ScopeMappingRepresentation> getScopeMappings()
+   {
+      return scopeMappings;
+   }
+
+   public ScopeMappingRepresentation scopeMapping(String username)
+   {
+      ScopeMappingRepresentation mapping = new ScopeMappingRepresentation();
+      mapping.setUsername(username);
+      if (scopeMappings == null) scopeMappings = new ArrayList<ScopeMappingRepresentation>();
+      scopeMappings.add(mapping);
+      return mapping;
+   }
+
+   public List<RealmCredentialRepresentation> getCredentials()
+   {
+      return credentials;
+   }
+
+   public void setCredentials(List<RealmCredentialRepresentation> credentials)
+   {
+      this.credentials = credentials;
    }
 }

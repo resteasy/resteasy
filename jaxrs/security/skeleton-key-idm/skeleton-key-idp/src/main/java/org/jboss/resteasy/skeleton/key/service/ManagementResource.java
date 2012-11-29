@@ -50,27 +50,11 @@ public class ManagementResource
       if (rep.getUsers() == null)
       {
          throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                 .entity("No domain admin users defined").type("text/plain").build());
-      }
-
-      if (rep.getAdmins() == null)
-      {
-         throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                 .entity("No domain admin users declared").type("text/plain").build());
-
+                 .entity("No realm admin users defined").type("text/plain").build());
       }
 
       HashMap<String, UserRepresentation> userReps = new HashMap<String, UserRepresentation>();
       for (UserRepresentation userRep : rep.getUsers()) userReps.put(userRep.getUsername(), userRep);
-
-      for (String admin : rep.getAdmins())
-      {
-         if (!userReps.containsKey(admin))
-         {
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Admin " + admin + " is not declared").type("text/plain").build());
-         }
-      }
 
       if (rep.getResources() != null)
       {
@@ -87,10 +71,16 @@ public class ManagementResource
                              .entity("No users declared for role mapping").type("text/plain").build());
 
                   }
-                  if (mapping.getSurrogate() != null && !userReps.containsKey(mapping.getSurrogate()))
+                  if (mapping.getSurrogates() != null)
                   {
-                     throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                             .entity("No users declared for role mapping surrogate").type("text/plain").build());
+                     for (String surrogate : mapping.getSurrogates())
+                     {
+                        if (!userReps.containsKey(surrogate))
+                        {
+                           throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
+                                   .entity("No users declared for role mapping surrogate").type("text/plain").build());
+                        }
+                     }
                   }
                   for (String role : mapping.getRoles())
                   {
@@ -105,9 +95,12 @@ public class ManagementResource
          }
       }
 
-      Realm domain = new Realm();
-      domain.setName(rep.getRealm());
-      domain = identityManager.create(domain);
+      Realm realm = new Realm();
+      realm.setName(rep.getRealm());
+      realm.setEnabled(rep.isEnabled());
+      realm.setDirectAccessTokenAllowed(rep.isDirectAccessTokenAllowed());
+      realm.setTokenLifespan(rep.getTokenLifespan());
+      realm = identityManager.create(realm);
       Map<String, User> userMap = new HashMap<String, User>();
 
       for (UserRepresentation userRep : rep.getUsers())
@@ -115,7 +108,7 @@ public class ManagementResource
          User user = new User();
          user.setUsername(userRep.getUsername());
          user.setEnabled(userRep.isEnabled());
-         user = identityManager.create(domain, user);
+         user = identityManager.create(realm, user);
          userMap.put(user.getUsername(), user);
          if (userRep.getCredentials() != null)
          {
@@ -149,13 +142,13 @@ public class ManagementResource
             resource.setName(resourceRep.getName());
             resource.setBaseUrl(resourceRep.getBaseUrl());
             resource.setTokenAuthRequired(resourceRep.isTokenAuthRequired());
-            resource = identityManager.create(domain, resource);
+            resource = identityManager.create(realm, resource);
             Map<String, Role> roles = new HashMap<String, Role>();
             if (resourceRep.getRoles() != null)
             {
                for (String role : resourceRep.getRoles())
                {
-                  Role r = identityManager.create(resource, role);
+                  Role r = identityManager.create(realm, resource, role);
                   roles.put(r.getName(), r);
                }
             }
@@ -166,22 +159,26 @@ public class ManagementResource
                   RoleMapping roleMapping = new RoleMapping();
                   User user = userMap.get(mapping.getUsername());
                   roleMapping.setUserid(user.getId());
-                  if (mapping.getSurrogate() != null)
+                  if (mapping.getSurrogates() != null)
                   {
-                     User surrogate = userMap.get(mapping.getSurrogate());
-                     roleMapping.setSurrogateId(surrogate.getId());
+                     for (String s : mapping.getSurrogates())
+                     {
+                        User surrogate = userMap.get(s);
+                        roleMapping.getSurrogateIds().add(surrogate.getId());
+
+                     }
                   }
                   for (String roleName : mapping.getRoles())
                   {
                      Role role = roles.get(roleName);
-                     roleMapping.getRoleIds().add(role.getId());
+                     roleMapping.getRoles().add(role.getId());
                   }
-                  identityManager.create(resource, roleMapping);
+                  identityManager.create(realm, resource, roleMapping);
                }
             }
          }
       }
-      UriBuilder builder = uriInfo.getRequestUriBuilder().path(domain.getId());
+      UriBuilder builder = uriInfo.getRequestUriBuilder().path(realm.getId());
       return Response.created(builder.build()).build();
 
 

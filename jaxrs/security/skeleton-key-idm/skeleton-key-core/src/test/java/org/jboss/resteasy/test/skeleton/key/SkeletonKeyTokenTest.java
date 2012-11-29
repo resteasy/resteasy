@@ -5,9 +5,11 @@ import org.jboss.resteasy.jose.jws.JWSBuilder;
 import org.jboss.resteasy.jose.jws.JWSInput;
 import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
 import org.jboss.resteasy.jwt.JsonSerialization;
+import org.jboss.resteasy.skeleton.key.SkeletonKeyScope;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyToken;
 import org.junit.Test;
 
+import javax.ws.rs.core.MultivaluedHashMap;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 
@@ -17,6 +19,20 @@ import java.security.KeyPairGenerator;
  */
 public class SkeletonKeyTokenTest
 {
+   @Test
+   public void testScope() throws Exception
+   {
+     SkeletonKeyScope scope2 = new SkeletonKeyScope();
+
+      scope2.add("one", "admin");
+      scope2.add("one", "buyer");
+      scope2.add("two", "seller");
+      String json = JsonSerialization.toString(scope2, true);
+      System.out.println(json);
+
+
+   }
+
    @Test
    public void testToken() throws Exception
    {

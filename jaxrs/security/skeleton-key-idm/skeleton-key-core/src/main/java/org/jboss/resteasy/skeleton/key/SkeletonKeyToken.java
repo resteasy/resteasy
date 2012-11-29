@@ -85,7 +85,7 @@ public class SkeletonKeyToken extends JsonWebToken
       }
    }
 
-   @JsonProperty("acc")
+   @JsonProperty("access")
    protected Map<String, Access> resourceAccess = new HashMap<String, Access>();
 
    public Map<String, Access> getResourceAccess()
