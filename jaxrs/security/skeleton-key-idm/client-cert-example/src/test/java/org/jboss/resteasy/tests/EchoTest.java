@@ -22,7 +22,6 @@ import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.X509TrustManager;
-import javax.print.DocFlavor;
 import javax.ws.rs.client.WebTarget;
 import java.io.File;
 import java.io.FileInputStream;
@@ -71,7 +70,7 @@ public class EchoTest
       SkeletonKeyToken token  = new SkeletonKeyToken();
       token.principal(clientCert.getSubjectX500Principal().getName())
               .audience("MyRealm")
-              .addAccess("MyService").addRole("user").tokenAuthRequired(true);
+              .addAccess("MyService").addRole("user").surrogateAuthRequired(true);
 
       byte[] tokenBytes = JsonSerialization.toByteArray(token, false);
 
@@ -125,7 +124,7 @@ public class EchoTest
       SkeletonKeyToken token  = new SkeletonKeyToken();
       token.principal(clientCert.getSubjectX500Principal().getName())
               .audience("MyRealm")
-              .addAccess("MyService").addRole("user").tokenAuthRequired(true);
+              .addAccess("MyService").addRole("user").surrogateAuthRequired(true);
 
       byte[] tokenBytes = JsonSerialization.toByteArray(token, false);
 

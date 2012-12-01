@@ -81,7 +81,7 @@ public class RSATokenVerifier
       */
       // assuming 1st is root
       String surrogate = null;
-      if (access.isTokenAuthRequired())
+      if (access.isSurrogateAuthRequired())
       {
          if (userCerts == null) throw new VerificationException("Client certificate auth required");
          String certUser = userCerts[0].getSubjectX500Principal().getName();

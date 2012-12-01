@@ -10,35 +10,31 @@ import org.jboss.resteasy.skeleton.key.IdentityManager;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyScope;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyToken;
 import org.jboss.resteasy.skeleton.key.model.data.Realm;
-import org.jboss.resteasy.skeleton.key.model.data.RealmCredential;
+import org.jboss.resteasy.skeleton.key.model.data.RequiredCredential;
 import org.jboss.resteasy.skeleton.key.model.data.Resource;
-import org.jboss.resteasy.skeleton.key.model.data.Role;
 import org.jboss.resteasy.skeleton.key.model.data.RoleMapping;
 import org.jboss.resteasy.skeleton.key.model.data.ScopeMapping;
 import org.jboss.resteasy.skeleton.key.model.data.User;
 import org.jboss.resteasy.skeleton.key.model.data.UserCredential;
-import org.jboss.resteasy.skeleton.key.model.representations.UserAuth;
 import org.jboss.resteasy.spi.ForbiddenException;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.util.Base64;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Providers;
@@ -65,6 +61,7 @@ public class TokenResource
       protected String id = UUID.randomUUID().toString() + System.currentTimeMillis();
       protected long expiration;
       protected SkeletonKeyToken token;
+      protected User client;
 
       public boolean isExpired()
       {
@@ -95,6 +92,16 @@ public class TokenResource
       {
          this.token = token;
       }
+
+      public User getClient()
+      {
+         return client;
+      }
+
+      public void setClient(User client)
+      {
+         this.client = client;
+      }
    }
 
    protected IdentityManager identityManager;
@@ -102,8 +109,12 @@ public class TokenResource
    protected PrivateKey privateKey;
    protected PublicKey publicKey;
    protected Map<String, AccessCode> accessCodeMap = new HashMap<String, AccessCode>();
-   @Context protected UriInfo uriInfo;
-   @Context protected Providers providers;
+   @Context
+   protected UriInfo uriInfo;
+   @Context
+   protected Providers providers;
+   @Context
+   protected SecurityContext securityContext;
 
 
    protected SkeletonKeyToken createAccessToken(User user, Realm realm)
@@ -116,11 +127,26 @@ public class TokenResource
       {
          token.expiration((System.currentTimeMillis() / 1000) + realm.getTokenLifespan());
       }
+      RoleMapping realmMapping = identityManager.getRoleMapping(realm, user);
+      if (realmMapping != null && realmMapping.getRoles().size() > 0)
+      {
+         SkeletonKeyToken.Access access = new SkeletonKeyToken.Access();
+         for (String role : realmMapping.getRoles())
+         {
+            access.addRole(role);
+         }
+         for (String surrogateId : realmMapping.getSurrogateIds())
+         {
+            User surrogate = identityManager.getUser(realm, surrogateId);
+            access.addSurrogate(surrogate.getUsername());
+         }
+         token.setRealmAccess(access);
+      }
       for (Resource resource : resources)
       {
          RoleMapping mapping = identityManager.getRoleMapping(realm, resource, user);
          SkeletonKeyToken.Access access = token.addAccess(resource.getName())
-                 .tokenAuthRequired(resource.isTokenAuthRequired());
+                                               .surrogateAuthRequired(resource.isTokenAuthRequired());
          for (String role : mapping.getRoles())
          {
             access.addRole(role);
@@ -134,25 +160,6 @@ public class TokenResource
       }
       if (token.getResourceAccess() == null || token.getResourceAccess().size() == 0) return null;
       return token;
-   }
-
-   protected String signAndEncodeToken(SkeletonKeyToken token)
-   {
-      byte[] tokenBytes = new byte[0];
-      try
-      {
-         tokenBytes = JsonSerialization.toByteArray(token, false);
-      }
-      catch (Exception e)
-      {
-         throw new RuntimeException(e);
-      }
-
-      String encoded = new JWSBuilder()
-              .content(tokenBytes)
-              .rsa256(privateKey);
-      return encoded;
-
    }
 
    @Path("realms/{realm}/auth/request/login")
@@ -200,45 +207,33 @@ public class TokenResource
          return Response.ok("Your account is not enabled").type("text/html").build();
 
       }
-      MultivaluedMap<String, UserCredential> userCredentials = new MultivaluedHashMap<String, UserCredential>();
-      List<UserCredential> creds = identityManager.getCredentials(user);
-      for (UserCredential userCredential : creds)
+      boolean authenticated = authenticate(realm, user, formData);
+      if (!authenticated) return loginForm(true, redirect, clientId, scopeParam, realm, client);
+
+      SkeletonKeyToken token = createToken(scopeParam, realm, client, user);
+      AccessCode code = new AccessCode();
+      code.setExpiration((System.currentTimeMillis() / 1000) + realm.getAccessCodeLifespan());
+      code.setToken(token);
+      code.setClient(client);
+      synchronized (accessCodeMap)
       {
-         userCredentials.add(userCredential.getType(), userCredential);
+         accessCodeMap.put(code.getId(), code);
       }
-
-
-      for (RealmCredential credential : identityManager.getCredentials(realm))
+      String accessCode = null;
+      try
       {
-         if (credential.isInput())
-         {
-            String value = formData.getFirst(credential.getType());
-            if (value == null)
-            {
-               return loginForm(true, redirect, clientId, scopeParam, realm, client);
-            }
-            UserCredential userCredential = userCredentials.getFirst(credential.getType());
-            if (userCredential == null)
-            {
-               logger.debug("Missing required user credential");
-               throw new ForbiddenException();
-            }
-            if (userCredential.isHashed())
-            {
-               value = hash(value);
-            }
-            if (!value.equals(userCredential.getValue()))
-            {
-               logger.debug("Credential mismatch");
-               return loginForm(true, redirect, clientId, scopeParam, realm, client);
-            }
-         }
-         else // todo support other credentials
-         {
-            throw new NotImplementedYetException();
-         }
+         accessCode = new JWSBuilder().content(code.getId().getBytes("UTF-8")).rsa256(privateKey);
       }
+      catch (UnsupportedEncodingException e)
+      {
+         throw new RuntimeException(e);
+      }
+      UriBuilder redirectUri = UriBuilder.fromUri(redirect).queryParam("code", accessCode).queryParam("state", state);
+      return Response.status(302).location(redirectUri.build()).build();
+   }
 
+   protected SkeletonKeyToken createToken(String scopeParam, Realm realm, User client, User user)
+   {
       SkeletonKeyToken token = null;
       if (scopeParam != null)
       {
@@ -269,11 +264,11 @@ public class TokenResource
             {
                if (!scopeMapping.getRoles().contains(role))
                {
-                  return Response.status(403).entity("<h1>Security Alert</h1><p>Known client not authorized for the requested scope.</p>").type("text/html").build();
+                  throw new ForbiddenException("Known client not authorized for the requested scope.", Response.status(403).entity("<h1>Security Alert</h1><p>Known client not authorized for the requested scope.</p>").type("text/html").build());
                }
                if (!roleMapping.getRoles().contains(role))
                {
-                  return Response.status(403).entity("<h1>Security Alert</h1><p>You are not authorized for the requested scope.</p>").type("text/html").build();
+                  throw new ForbiddenException("", Response.status(403).entity("<h1>Security Alert</h1><p>You are not authorized for the requested scope.</p>").type("text/html").build());
 
                }
                access.addRole(role);
@@ -289,48 +284,95 @@ public class TokenResource
          ScopeMapping mapping = identityManager.getScopeMapping(realm, client);
          if (mapping == null || !mapping.getRoles().contains("login"))
          {
-            return Response.status(403).entity("<h1>Security Alert</h1><p>Known client not authorized to request a user login.</p>").type("text/html").build();
+            throw new ForbiddenException("", Response.status(403).entity("<h1>Security Alert</h1><p>Known client not authorized to request a user login.</p>").type("text/html").build());
          }
          token = createAccessToken(user, realm);
       }
-      AccessCode code = new AccessCode();
-      code.setExpiration((System.currentTimeMillis()/1000) + realm.getAccessCodeLifespan());
-      code.setToken(token);
-      synchronized (accessCodeMap)
+      return token;
+   }
+
+   protected void challengeResponse(String realm, String error, String description)
+   {
+      StringBuilder header = new StringBuilder("Bearer realm=\"").append(realm).append("\"");
+      if (error != null)
       {
-         accessCodeMap.put(code.getId(), code);
+         header.append(", error=\"").append(error).append("\"");
       }
-      String accessCode = null;
-      try
+      if (description != null)
       {
-         accessCode = new JWSBuilder().content(code.getId().getBytes("UTF-8")).rsa256(privateKey);
+         header.append(", error_description=\"").append(description).append("\"");
       }
-      catch (UnsupportedEncodingException e)
-      {
-         throw new RuntimeException(e);
-      }
-      UriBuilder redirectUri = UriBuilder.fromUri(redirect).queryParam("code", accessCode).queryParam("state", state);
-      return Response.status(302).location(redirectUri.build()).build();
+      throw new NotAuthorizedException(header.toString());
    }
 
    @Path("realms/{realm}/access/request")
    @POST
    @Produces("application/json")
-   public Response accessRequest(@HeaderParam("Authorization") String authorization,
-                                         @FormParam("code") String code,
-                                         @FormParam("redirect_uri") String redirect_uri)
+   public Response accessRequest(@PathParam("realm") String realmId,
+                                 MultivaluedMap<String, String> formData)
    {
+      Realm realm = identityManager.getRealm(realmId);
+      if (realm == null) throw new NotFoundException();
+
+      String code = formData.getFirst("code");
+      if (code == null)
+      {
+         logger.debug("code not specified");
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", "invalid_request");
+         error.put("error_description", "code not specified");
+         return Response.status(Response.Status.BAD_REQUEST).entity(error).type("application/json").build();
+
+      }
+      String client_id = formData.getFirst("client_id");
+      if (client_id == null)
+      {
+         logger.debug("client_id not specified");
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", "invalid_request");
+         error.put("error_description", "client_id not specified");
+         return Response.status(Response.Status.BAD_REQUEST).entity(error).type("application/json").build();
+      }
+      User client = identityManager.getUser(realm, client_id);
+      if (client == null)
+      {
+         logger.debug("Could not find user");
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", "invalid_client");
+         error.put("error_description", "Could not find user");
+         return Response.status(Response.Status.BAD_REQUEST).entity(error).type("application/json").build();
+      }
+
+      if (!client.isEnabled())
+      {
+         logger.debug("user is not enabled");
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", "invalid_client");
+         error.put("error_description", "User is not enabled");
+         return Response.status(Response.Status.BAD_REQUEST).entity(error).type("application/json").build();
+      }
+
+      boolean authenticated = authenticate(realm, client, formData);
+      if (!authenticated)
+      {
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", "unauthorized_client");
+         return Response.status(Response.Status.BAD_REQUEST).entity(error).type("application/json").build();
+      }
+
+
+
       JWSInput input = new JWSInput(code, providers);
-      boolean verified = false;
+      boolean verifiedCode = false;
       try
       {
-         verified = RSAProvider.verify(input, publicKey);
+         verifiedCode = RSAProvider.verify(input, publicKey);
       }
       catch (Exception ignored)
       {
          logger.debug("Failed to verify signature", ignored);
       }
-      if (!verified)
+      if (!verifiedCode)
       {
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
@@ -349,11 +391,25 @@ public class TokenResource
          res.put("error_description", "Code not found or expired");
          return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(res).build();
       }
+      if (!client.getId().equals(accessCode.getClient().getId()))
+      {
+         Map<String, String> res = new HashMap<String, String>();
+         res.put("error", "invalid_grant");
+         res.put("error_description", "Code not found or expired");
+         return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(res).build();
+      }
+      Map<String, String> res = accessTokenResponse(accessCode.getToken());
+      return Response.ok(res).build();
+
+   }
+
+   protected Map<String, String> accessTokenResponse(SkeletonKeyToken token)
+   {
       Map<String, String> res = new HashMap<String, String>();
-      byte[] tokenBytes = new byte[0];
+      byte[] tokenBytes = null;
       try
       {
-         tokenBytes = JsonSerialization.toByteArray(accessCode.getToken(), false);
+         tokenBytes = JsonSerialization.toByteArray(token, false);
       }
       catch (Exception e)
       {
@@ -366,28 +422,28 @@ public class TokenResource
 
       res.put("access_token", encodedToken);
       res.put("token_type", "bearer");
-      if (accessCode.getToken().getExpiration() != 0)
+      if (token.getExpiration() != 0)
       {
-         long time = accessCode.getToken().getExpiration() - (System.currentTimeMillis() / 1000);
+         long time = token.getExpiration() - (System.currentTimeMillis() / 1000);
          res.put("expires_in", Long.toString(time));
       }
-      return Response.ok(res).build();
-
+      return res;
    }
 
    @Path("realms/{realm}/auth/request")
    @GET
    public Response requestAccessCode(@PathParam("realm") String realmName,
-                                   @QueryParam("response_type") String responseType,
-                                   @QueryParam("redirect_uri") String redirect,
-                                   @QueryParam("client_id") String clientId,
-                                   @QueryParam("scope") String scopeParam,
-                                   @QueryParam("state") String state)
+                                     @QueryParam("response_type") String responseType,
+                                     @QueryParam("redirect_uri") String redirect,
+                                     @QueryParam("client_id") String clientId,
+                                     @QueryParam("scope") String scopeParam,
+                                     @QueryParam("state") String state)
    {
       Realm realm = identityManager.getRealm(realmName);
       if (realm == null) throw new NotFoundException();
       User client = identityManager.getUser(realm, clientId);
-      if (client == null) return Response.ok("<h1>Security Alert</h1><p>Unknown client trying to get access to your account.</p>").type("text/html").build();
+      if (client == null)
+         return Response.ok("<h1>Security Alert</h1><p>Unknown client trying to get access to your account.</p>").type("text/html").build();
 
       return loginForm(false, redirect, clientId, scopeParam, realm, client);
    }
@@ -438,8 +494,7 @@ public class TokenResource
             html.append("</td></tr>");
          }
          html.append("</table><p>To Authorize, please login below</p>");
-      }
-      else
+      } else
       {
          ScopeMapping mapping = identityManager.getScopeMapping(realm, client);
          if (mapping == null || !mapping.getRoles().contains("login"))
@@ -453,7 +508,7 @@ public class TokenResource
       html.append("<form action=\"").append(formActionUri.build().toString()).append("\" method=\"POST\">");
       html.append("Username: <input type=\"text\" name=\"username\" size=\"20\"><br>");
 
-      for (RealmCredential credential : identityManager.getCredentials(realm))
+      for (RequiredCredential credential : identityManager.getBrowserCredentials(realm))
       {
          if (!credential.isInput()) continue;
          html.append(credential.getType()).append(": ");
@@ -461,8 +516,7 @@ public class TokenResource
          {
             html.append("<input type=\"password\" name=\"").append(credential.getType()).append("\"  size=\"20\"><br>");
 
-         }
-         else
+         } else
          {
             html.append("<input type=\"text\" name=\"").append(credential.getType()).append("\"  size=\"20\"><br>");
          }
@@ -475,55 +529,118 @@ public class TokenResource
       return Response.ok(html.toString()).type("text/html").build();
    }
 
+
+   /**
+    * OAuth Section 4.4 Client Credentials Grant
+    *
+    */
    @Path("realms/{realm}/tokens")
    @POST
-   @Consumes("application/json")
-   @Produces("text/plain")
-   public String accessTokenGrant(@PathParam("realm") String realmId, UserAuth auth)
+   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+   @Produces("application/json")
+   public Response accessTokenGrant(@PathParam("realm") String realmId,
+                                    MultivaluedMap<String, String> formParams)
    {
       Realm realm = identityManager.getRealm(realmId);
       if (realm == null) throw new NotFoundException();
-      if (!realm.isDirectAccessTokenAllowed())
+      if (!realm.isEnabled())
       {
-         logger.debug("Realm does not allow direct access tokens");
-         throw new ForbiddenException();
+         logger.debug("realm is not enabled");
+         throw new NotFoundException();
       }
 
-      User user = identityManager.getUser(realm, auth.getUsername());
+      User user = identityManager.getUser(realm, formParams.getFirst("client_id"));
       if (user == null)
       {
          logger.debug("Could not find user");
-         throw new ForbiddenException();
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", "invalid_client");
+         error.put("error_description", "Could not find user");
+         return Response.status(Response.Status.BAD_REQUEST).entity(error).type("application/json").build();
+     }
+
+      if (!user.isEnabled())
+      {
+         logger.debug("user is not enabled");
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", "invalid_client");
+         error.put("error_description", "User is not enabled");
+         return Response.status(Response.Status.BAD_REQUEST).entity(error).type("application/json").build();
       }
 
-      List<UserCredential> credentials = identityManager.getCredentials(user);
-      for (UserCredential cred : credentials)
+      boolean authenticated = authenticate(realm, user, formParams);
+      if (!authenticated)
       {
-         String value = auth.getCredentials().get(cred.getType());
-         if (value == null)
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", "unauthorized_client");
+         return Response.status(Response.Status.BAD_REQUEST).entity(error).type("application/json").build();
+      }
+      SkeletonKeyToken token = createAccessToken(user, realm);
+      return Response.ok(accessTokenResponse(token), MediaType.APPLICATION_JSON_TYPE).build();
+   }
+
+   protected boolean authenticate(Realm realm, User user, MultivaluedMap<String, String> formData)
+   {
+      MultivaluedMap<String, UserCredential> userCredentials = new MultivaluedHashMap<String, UserCredential>();
+      List<UserCredential> creds = identityManager.getCredentials(user);
+      for (UserCredential userCredential : creds)
+      {
+         userCredentials.add(userCredential.getType(), userCredential);
+      }
+
+      for (RequiredCredential credential : identityManager.getBrowserCredentials(realm))
+      {
+         if (credential.isInput())
          {
-            logger.debug("Cred not found in request");
-            throw new ForbiddenException();
-         } else if (cred.isHashed())
-         {
-            String base64 = hash(value);
-            if (!cred.getValue().equals(base64))
+            String value = formData.getFirst(credential.getType());
+            if (value == null)
             {
-               logger.debug("Credential hash did not validate");
-               throw new ForbiddenException();
+               return false;
             }
-         } else
-         {
-            if (!value.equals(cred.getValue()))
+            UserCredential userCredential = userCredentials.getFirst(credential.getType());
+            if (userCredential == null)
             {
-               logger.debug("Credential value did not match");
-               throw new ForbiddenException();
+               logger.debug("Missing required user credential");
+               return false;
+            }
+            if (userCredential.isHashed())
+            {
+               value = hash(value);
+            }
+            if (!value.equals(userCredential.getValue()))
+            {
+               logger.debug("Credential mismatch");
+               return false;
+            }
+         }
+         else
+         {
+            if (credential.getType().equals(RequiredCredential.CALLER_PRINCIPAL))
+            {
+               List<UserCredential> principals = userCredentials.get(RequiredCredential.CALLER_PRINCIPAL);
+               if (principals == null) return false;
+               boolean found = false;
+               for (UserCredential userCredential : principals)
+               {
+                  if (userCredential.getValue().equals(securityContext.getUserPrincipal().getName()))
+                  {
+                     found = true;
+                     break;
+                  }
+               }
+               if (!found)
+               {
+                  logger.debug("caller principal not matched");
+                  return false;
+               }
+            }
+            else // todo support other credentials
+            {
+               throw new NotImplementedYetException();
             }
          }
       }
-      SkeletonKeyToken token = createAccessToken(user, realm);
-      if (token == null) throw new ForbiddenException();
-      return signAndEncodeToken(token);
+      return true;
    }
 
    private String hash(String value)

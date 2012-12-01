@@ -1,7 +1,7 @@
 package org.jboss.resteasy.skeleton.key;
 
 import org.jboss.resteasy.skeleton.key.model.data.Realm;
-import org.jboss.resteasy.skeleton.key.model.data.RealmCredential;
+import org.jboss.resteasy.skeleton.key.model.data.RequiredCredential;
 import org.jboss.resteasy.skeleton.key.model.data.Resource;
 import org.jboss.resteasy.skeleton.key.model.data.Role;
 import org.jboss.resteasy.skeleton.key.model.data.RoleMapping;
@@ -22,11 +22,13 @@ public interface IdentityManager
    Realm create(Realm realm);
    void update(Realm realm);
    void delete(Realm realm);
-   List<RealmCredential> getCredentials(Realm realm);
-   RealmCredential getRealmCredential(String id);
-   RealmCredential create(Realm realm, RealmCredential cred);
-   void update(RealmCredential cred);
-   void delete(RealmCredential cred);
+   List<RequiredCredential> getBrowserCredentials(Realm realm);
+   List<RequiredCredential> getClientCredentials(Realm realm);
+   RequiredCredential getRealmCredential(String id);
+   RequiredCredential createBrowser(Realm realm, RequiredCredential cred);
+   RequiredCredential createClient(Realm realm, RequiredCredential cred);
+   void update(RequiredCredential cred);
+   void delete(RequiredCredential cred);
 
    User getUser(Realm realm, String username);
    User create(Realm realm, User user);

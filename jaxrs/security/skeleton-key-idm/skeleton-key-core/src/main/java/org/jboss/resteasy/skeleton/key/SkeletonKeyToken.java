@@ -17,12 +17,12 @@ public class SkeletonKeyToken extends JsonWebToken
 {
    public static class Access
    {
-      @JsonProperty("sur")
+      @JsonProperty("surrogates")
       protected Set<String> surrogates;
-      @JsonProperty("rls")
+      @JsonProperty("roles")
       protected Set<String> roles;
-      @JsonProperty("auth")
-      protected boolean tokenAuthRequired;
+      @JsonProperty("surrogate_auth")
+      protected boolean surrogateAuthRequired;
 
       public Set<String> getSurrogates()
       {
@@ -73,19 +73,22 @@ public class SkeletonKeyToken extends JsonWebToken
          return this;
       }
 
-      public boolean isTokenAuthRequired()
+      public boolean isSurrogateAuthRequired()
       {
-         return tokenAuthRequired;
+         return surrogateAuthRequired;
       }
 
-      public Access tokenAuthRequired(boolean tokenAuthRequired)
+      public Access surrogateAuthRequired(boolean required)
       {
-         this.tokenAuthRequired = tokenAuthRequired;
+         this.surrogateAuthRequired = required;
          return this;
       }
    }
 
-   @JsonProperty("access")
+   @JsonProperty("realm_access")
+   protected Access realmAccess;
+
+   @JsonProperty("resource_access")
    protected Map<String, Access> resourceAccess = new HashMap<String, Access>();
 
    public Map<String, Access> getResourceAccess()
@@ -152,5 +155,15 @@ public class SkeletonKeyToken extends JsonWebToken
    public SkeletonKeyToken type(String type)
    {
       return (SkeletonKeyToken)super.type(type);
+   }
+
+   public Access getRealmAccess()
+   {
+      return realmAccess;
+   }
+
+   public void setRealmAccess(Access realmAccess)
+   {
+      this.realmAccess = realmAccess;
    }
 }

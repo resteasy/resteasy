@@ -216,7 +216,7 @@ public class RSAVerifierTest
       token = new SkeletonKeyToken();
       token.principal("CN=Client")
               .audience("domain")
-              .addAccess("service").addRole("admin").tokenAuthRequired(true);
+              .addAccess("service").addRole("admin").surrogateAuthRequired(true);
       byte[] tokenBytes = JsonSerialization.toByteArray(token, false);
 
       String encoded = new JWSBuilder()

@@ -1,9 +1,7 @@
 package org.jboss.resteasy.skeleton.key.model.representations;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -14,12 +12,12 @@ public class RealmRepresentation
    protected String self; // link
    protected String realm;
    protected long tokenLifespan;
+   protected long accessCodeLifespan;
    protected boolean enabled;
    protected boolean directAccessTokenAllowed;
-   protected List<RealmCredentialRepresentation> credentials;
+   protected List<RequiredCredentialRepresentation> requiredCredentials;
    protected List<UserRepresentation> users;
    protected List<ResourceRepresentation> resources;
-   protected Set<String> roles;
    protected List<RoleMappingRepresentation> roleMappings;
    protected List<ScopeMappingRepresentation> scopeMappings;
 
@@ -75,23 +73,6 @@ public class RealmRepresentation
       if (users == null) users = new ArrayList<UserRepresentation>();
       users.add(user);
       return user;
-   }
-
-   public Set<String> getRoles()
-   {
-      return roles;
-   }
-
-   public void setRoles(Set<String> roles)
-   {
-      this.roles = roles;
-   }
-
-   public RealmRepresentation role(String role)
-   {
-      if (roles == null) roles = new HashSet<String>();
-      roles.add(role);
-      return this;
    }
 
    public void setResources(List<ResourceRepresentation> resources)
@@ -157,13 +138,23 @@ public class RealmRepresentation
       return mapping;
    }
 
-   public List<RealmCredentialRepresentation> getCredentials()
+   public List<RequiredCredentialRepresentation> getRequiredCredentials()
    {
-      return credentials;
+      return requiredCredentials;
    }
 
-   public void setCredentials(List<RealmCredentialRepresentation> credentials)
+   public void setRequiredCredentials(List<RequiredCredentialRepresentation> requiredCredentials)
    {
-      this.credentials = credentials;
+      this.requiredCredentials = requiredCredentials;
+   }
+
+   public long getAccessCodeLifespan()
+   {
+      return accessCodeLifespan;
+   }
+
+   public void setAccessCodeLifespan(long accessCodeLifespan)
+   {
+      this.accessCodeLifespan = accessCodeLifespan;
    }
 }
