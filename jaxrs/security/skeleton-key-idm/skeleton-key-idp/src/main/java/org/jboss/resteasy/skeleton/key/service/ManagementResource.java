@@ -99,13 +99,15 @@ public class ManagementResource
       for (RoleMappingRepresentation mapping : rep.getRoleMappings())
       {
          RoleMapping roleMapping = createRoleMapping(userMap, mapping);
-         identityManager.create(realm, roleMapping);
+         User user = userMap.get(mapping.getUsername());
+         identityManager.create(realm, user, roleMapping);
       }
 
       for (ScopeMappingRepresentation scope : rep.getScopeMappings())
       {
          ScopeMapping scopeMapping = createScopeMapping(userMap, scope);
-         identityManager.create(realm, scopeMapping);
+         User user = userMap.get(scope.getUsername());
+         identityManager.create(realm, user, scopeMapping);
 
       }
 
@@ -115,8 +117,7 @@ public class ManagementResource
          {
             Resource resource = new Resource();
             resource.setName(resourceRep.getName());
-            resource.setBaseUrl(resourceRep.getBaseUrl());
-            resource.setTokenAuthRequired(resourceRep.isTokenAuthRequired());
+            resource.setSurrogateAuthRequired(resourceRep.isSurrogateAuthRequired());
             resource = identityManager.create(realm, resource);
             if (resourceRep.getRoles() != null)
             {
@@ -130,7 +131,8 @@ public class ManagementResource
                for (RoleMappingRepresentation mapping : resourceRep.getRoleMappings())
                {
                   RoleMapping roleMapping = createRoleMapping(userMap, mapping);
-                  identityManager.create(realm, resource, roleMapping);
+                  User user = userMap.get(mapping.getUsername());
+                  identityManager.create(realm, resource, user, roleMapping);
                }
             }
             if (resourceRep.getScopeMappings() != null)
@@ -138,7 +140,8 @@ public class ManagementResource
                for (ScopeMappingRepresentation mapping : resourceRep.getScopeMappings())
                {
                   ScopeMapping scopeMapping = createScopeMapping(userMap, mapping);
-                  identityManager.create(realm, resource, scopeMapping);
+                  User user = userMap.get(mapping.getUsername());
+                  identityManager.create(realm, resource, user, scopeMapping);
                }
             }
 

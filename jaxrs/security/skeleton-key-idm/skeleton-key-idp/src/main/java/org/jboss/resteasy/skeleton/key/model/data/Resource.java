@@ -1,18 +1,17 @@
 package org.jboss.resteasy.skeleton.key.model.data;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.io.Serializable;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class Resource
+public class Resource implements Serializable
 {
+   private static final long serialVersionUID = 1L;
    protected String id;
    protected String name;
-   protected String baseUrl;
-   protected boolean tokenAuthRequired;
+   protected boolean surrogateAuthRequired;
 
    public String getId()
    {
@@ -34,23 +33,13 @@ public class Resource
       this.name = name;
    }
 
-   public String getBaseUrl()
+   public boolean isSurrogateAuthRequired()
    {
-      return baseUrl;
+      return surrogateAuthRequired;
    }
 
-   public void setBaseUrl(String baseUrl)
+   public void setSurrogateAuthRequired(boolean surrogateAuthRequired)
    {
-      this.baseUrl = baseUrl;
-   }
-
-   public boolean isTokenAuthRequired()
-   {
-      return tokenAuthRequired;
-   }
-
-   public void setTokenAuthRequired(boolean tokenAuthRequired)
-   {
-      this.tokenAuthRequired = tokenAuthRequired;
+      this.surrogateAuthRequired = surrogateAuthRequired;
    }
 }

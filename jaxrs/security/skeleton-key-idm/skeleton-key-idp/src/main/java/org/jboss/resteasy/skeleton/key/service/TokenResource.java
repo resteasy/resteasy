@@ -146,7 +146,7 @@ public class TokenResource
       {
          RoleMapping mapping = identityManager.getRoleMapping(realm, resource, user);
          SkeletonKeyToken.Access access = token.addAccess(resource.getName())
-                                               .surrogateAuthRequired(resource.isTokenAuthRequired());
+                                               .surrogateAuthRequired(resource.isSurrogateAuthRequired());
          for (String role : mapping.getRoles())
          {
             access.addRole(role);
@@ -508,7 +508,7 @@ public class TokenResource
       html.append("<form action=\"").append(formActionUri.build().toString()).append("\" method=\"POST\">");
       html.append("Username: <input type=\"text\" name=\"username\" size=\"20\"><br>");
 
-      for (RequiredCredential credential : identityManager.getBrowserCredentials(realm))
+      for (RequiredCredential credential : identityManager.getRequiredCredentials(realm))
       {
          if (!credential.isInput()) continue;
          html.append(credential.getType()).append(": ");
@@ -588,7 +588,7 @@ public class TokenResource
          userCredentials.add(userCredential.getType(), userCredential);
       }
 
-      for (RequiredCredential credential : identityManager.getBrowserCredentials(realm))
+      for (RequiredCredential credential : identityManager.getRequiredCredentials(realm))
       {
          if (credential.isInput())
          {

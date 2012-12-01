@@ -22,11 +22,9 @@ public interface IdentityManager
    Realm create(Realm realm);
    void update(Realm realm);
    void delete(Realm realm);
-   List<RequiredCredential> getBrowserCredentials(Realm realm);
-   List<RequiredCredential> getClientCredentials(Realm realm);
+   List<RequiredCredential> getRequiredCredentials(Realm realm);
    RequiredCredential getRealmCredential(String id);
-   RequiredCredential createBrowser(Realm realm, RequiredCredential cred);
-   RequiredCredential createClient(Realm realm, RequiredCredential cred);
+   RequiredCredential create(Realm realm, RequiredCredential cred);
    void update(RequiredCredential cred);
    void delete(RequiredCredential cred);
 
@@ -46,6 +44,7 @@ public interface IdentityManager
    void update(UserAttribute attribute);
    void delete(UserAttribute attribute);
 
+   Resource getResource(String id);
    Resource getResource(Realm realm, String name);
    List<Resource> getResources(Realm realm);
    Resource create(Realm realm, Resource resource);
@@ -62,18 +61,22 @@ public interface IdentityManager
    Role create(Realm realm, String role);
    void delete(Role role);
 
+   List<RoleMapping> getRoleMappings(Realm realm);
+   List<RoleMapping> getRoleMappings(Realm realm, Resource resource);
    RoleMapping getRoleMapping(Realm realm, User user);
    RoleMapping getRoleMapping(Realm realm, Resource resource, User user);
    RoleMapping getRoleMapping(String id);
-   RoleMapping create(Realm realm, RoleMapping mapping);
-   RoleMapping create(Realm realm, Resource resource, RoleMapping mapping);
+   RoleMapping create(Realm realm, User user, RoleMapping mapping);
+   RoleMapping create(Realm realm, Resource resource, User user, RoleMapping mapping);
    void delete(RoleMapping role);
 
+   List<ScopeMapping> getScopeMappings(Realm realm);
+   List<ScopeMapping> getScopeMappings(Realm realm, Resource resource);
    ScopeMapping getScopeMapping(Realm realm, User user);
    ScopeMapping getScopeMapping(Realm realm, Resource resource, User user);
    ScopeMapping getScopeMapping(String id);
-   ScopeMapping create(Realm realm, ScopeMapping mapping);
-   ScopeMapping create(Realm realm, Resource resource, ScopeMapping mapping);
+   ScopeMapping create(Realm realm, User user, ScopeMapping mapping);
+   ScopeMapping create(Realm realm, Resource resource, User user, ScopeMapping mapping);
    void delete(ScopeMapping scope);
 
 

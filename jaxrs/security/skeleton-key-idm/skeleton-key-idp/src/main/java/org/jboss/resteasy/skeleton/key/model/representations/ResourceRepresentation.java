@@ -13,8 +13,7 @@ public class ResourceRepresentation
 {
    protected String self; // link
    protected String name;
-   protected String baseUrl;
-   protected boolean tokenAuthRequired;
+   protected boolean surrogateAuthRequired;
    protected Set<String> roles;
    protected List<RoleMappingRepresentation> roleMappings;
    protected List<ScopeMappingRepresentation> scopeMappings;
@@ -39,24 +38,14 @@ public class ResourceRepresentation
       this.name = name;
    }
 
-   public String getBaseUrl()
+   public boolean isSurrogateAuthRequired()
    {
-      return baseUrl;
+      return surrogateAuthRequired;
    }
 
-   public void setBaseUrl(String baseUrl)
+   public void setSurrogateAuthRequired(boolean surrogateAuthRequired)
    {
-      this.baseUrl = baseUrl;
-   }
-
-   public boolean isTokenAuthRequired()
-   {
-      return tokenAuthRequired;
-   }
-
-   public void setTokenAuthRequired(boolean tokenAuthRequired)
-   {
-      this.tokenAuthRequired = tokenAuthRequired;
+      this.surrogateAuthRequired = surrogateAuthRequired;
    }
 
    public Set<String> getRoles()

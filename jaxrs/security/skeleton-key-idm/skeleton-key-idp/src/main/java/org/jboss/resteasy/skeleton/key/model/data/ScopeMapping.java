@@ -1,5 +1,6 @@
 package org.jboss.resteasy.skeleton.key.model.data;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,8 +8,9 @@ import java.util.Set;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ScopeMapping
+public class ScopeMapping implements Serializable
 {
+   private static final long serialVersionUID = 1L;
    protected String id;
    protected String userid;
    protected Set<String> roles = new HashSet<String>();

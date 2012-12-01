@@ -1,11 +1,14 @@
 package org.jboss.resteasy.skeleton.key.model.data;
 
+import java.io.Serializable;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class Role
+public class Role implements Serializable
 {
+   private static final long serialVersionUID = 1L;
    protected String id;
    protected String name;
 

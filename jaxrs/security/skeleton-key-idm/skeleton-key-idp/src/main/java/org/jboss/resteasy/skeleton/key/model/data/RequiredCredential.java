@@ -1,11 +1,14 @@
 package org.jboss.resteasy.skeleton.key.model.data;
 
+import java.io.Serializable;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class RequiredCredential
+public class RequiredCredential implements Serializable
 {
+   private static final long serialVersionUID = 1L;
    public static final String PASSWORD = "Password";
    public static final String CALLER_PRINCIPAL = "CALLER_PRINCIPAL";
 

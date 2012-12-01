@@ -3,6 +3,7 @@ package org.jboss.resteasy.skeleton.key.model.data;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -11,8 +12,10 @@ import java.util.Set;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class Realm
+public class Realm implements Serializable
 {
+   private static final long serialVersionUID = 1L;
+
    protected String id;
    protected String name;
    protected long tokenLifespan = 3600 * 24; // one day
