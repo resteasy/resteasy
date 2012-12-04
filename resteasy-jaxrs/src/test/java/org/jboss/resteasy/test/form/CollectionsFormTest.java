@@ -46,7 +46,6 @@ public class CollectionsFormTest extends BaseResourceTest {
 			assertEquals("91", p.telephoneNumbers.get(1).countryCode);
 			assertEquals("Main Street", p.adresses.get("INVOICE").street);
 			assertEquals("Square One", p.adresses.get("SHIPPING").street);
-            System.out.println("P: " + p);
 		}
 	}
 
