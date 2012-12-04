@@ -1,22 +1,21 @@
 package org.jboss.resteasy.test.form;
 
-import static junit.framework.Assert.*;
-
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
-
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
+import java.util.List;
+import java.util.Map;
+
+import static junit.framework.Assert.assertEquals;
 
 public class CollectionsFormTest extends BaseResourceTest {
 
@@ -47,6 +46,7 @@ public class CollectionsFormTest extends BaseResourceTest {
 			assertEquals("91", p.telephoneNumbers.get(1).countryCode);
 			assertEquals("Main Street", p.adresses.get("INVOICE").street);
 			assertEquals("Square One", p.adresses.get("SHIPPING").street);
+            System.out.println("P: " + p);
 		}
 	}
 

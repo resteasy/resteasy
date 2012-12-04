@@ -1,5 +1,11 @@
 package org.jboss.resteasy.jsapi.testing;
 
+import org.jboss.resteasy.annotations.Form;
+import org.jboss.resteasy.jsapi.testing.form.Foo;
+import org.jboss.resteasy.jsapi.testing.form.MyForm;
+import org.jboss.resteasy.jsapi.testing.form.MyForm2;
+import org.jboss.resteasy.jsapi.testing.form.MyForm3;
+
 import javax.ws.rs.*;
 
 /**
@@ -71,5 +77,31 @@ public class SmokeTestResource {
     @Path("/RESTEASY-731/zero")
     public String testRESTEasy731Zero(@FormParam("zero") int zero) {
         return ("RESTEASY-731-" + String.valueOf(zero));
+    }
+
+    @POST
+    @Path("/RESTEASY-805/form1")
+    public String testRESTEasy805(@Form MyForm myForm) {
+        StringBuilder ret = new StringBuilder();
+        for (String key : myForm.getMyMap().keySet()) {
+            ret.append(myForm.getMyMap().get(key).getBar());
+        }
+        return ret.toString();
+    }
+
+    @POST
+    @Path("/RESTEASY-805/form2")
+    public String testRESTEasy805Case2(@Form MyForm2 myForm2) {
+        return myForm2.getHeader() + myForm2.getStuff() + myForm2.getNumber();
+    }
+
+    @POST
+    @Path("/RESTEASY-805/form3")
+    public String testRESTEasy805Case3(@Form MyForm3 myForm3) {
+        StringBuilder ret = new StringBuilder();
+        for (Foo foo : myForm3.getFoos()) {
+            ret.append(foo.getBar());
+        }
+        return ret.toString();
     }
 }
