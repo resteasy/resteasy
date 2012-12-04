@@ -6,6 +6,9 @@
     <input type='button' onclick='testPathParam();' value='Test Path Param'/>
     <input type='button' onclick='testFormParam();' value='Test Form Param'/>
     <input type='button' onclick='testFormParam2();' value='Test Form Param2'/>
+    <input type='button' onclick='testForm();' value='Test Form'/>
+    <input type='button' onclick='testForm2();' value='Test Form2'/>
+    <input type='button' onclick='testForm3();' value='Test Form3'/>
     <input type='button' onclick='testQueryParam();' value='Test Query Param'/>
     <input type='button' onclick='testCookieParam();' value='Test Cookie Param'/>
     <input type='button' onclick='testMatrixParam();' value='Test Matrix Param'/>
@@ -16,8 +19,11 @@
 </form>
 
 <div id="path_result"></div>
+<div id="form_param_result"></div>
+<div id="form_param_result2"></div>
 <div id="form_result"></div>
 <div id="form_result2"></div>
+<div id="form_result3"></div>
 <div id="query_result"></div>
 <div id="cookie_result"></div>
 <div id="matrix_result"></div>
@@ -39,13 +45,28 @@
     }
 
     function testFormParam() {
-        document.getElementById('form_result').innerHTML =
+        document.getElementById('form_param_result').innerHTML =
                 SmokeTestResource.testFormParam({key:["a", "b", "c"]});
     }
 
     function testFormParam2() {
-        document.getElementById('form_result2').innerHTML =
+        document.getElementById('form_param_result2').innerHTML =
                 SmokeTestResource.testFormParam2({key:"xyz"});
+    }
+
+    function testForm() {
+        document.getElementById('form_result').innerHTML =
+                SmokeTestResource.testRESTEasy805({myMap:["myMap[foo].bar=.-_~&myMap[.-_~].bar=.-_~&myMap[b794c4a0-14b7-0130-c2da-20c9d04983db].bar=.-_~"]});
+    }
+
+    function testForm2() {
+        document.getElementById('form_result2').innerHTML =
+                SmokeTestResource.testRESTEasy805Case2({stuff:"A-1", myHeader:"2B_2", number:14});
+    }
+
+    function testForm3() {
+        document.getElementById('form_result3').innerHTML =
+                SmokeTestResource.testRESTEasy805Case3({foos:"foos[2].bar=A&foos[1].bar=B&foos[0].bar=C"});
     }
 
     function testQueryParam() {
