@@ -33,31 +33,35 @@ import java.util.Set;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Path("/idm")
-public class ManagementResource
+@Path("/realms")
+public class RealmFactory
 {
    protected IdentityManager identityManager;
 
    @Context
    protected UriInfo uriInfo;
 
-   public ManagementResource(IdentityManager identityManager)
+   public RealmFactory(IdentityManager identityManager)
    {
       this.identityManager = identityManager;
    }
 
-   @Path("realms")
    @POST
    @Consumes("application/json")
    public Response importDomain(RealmRepresentation rep)
    {
+      Realm realm = createRealm(rep);
+      UriBuilder builder = uriInfo.getRequestUriBuilder().path(realm.getId());
+      return Response.created(builder.build()).build();
+   }
 
+   protected Realm createRealm(RealmRepresentation rep)
+   {
       verifyRealmRepresentation(rep);
 
       Realm realm = new Realm();
       realm.setName(rep.getRealm());
       realm.setEnabled(rep.isEnabled());
-      realm.setDirectAccessTokenAllowed(rep.isDirectAccessTokenAllowed());
       realm.setTokenLifespan(rep.getTokenLifespan());
       realm.setAccessCodeLifespan(rep.getAccessCodeLifespan());
       realm = identityManager.create(realm);
@@ -147,10 +151,7 @@ public class ManagementResource
 
          }
       }
-      UriBuilder builder = uriInfo.getRequestUriBuilder().path(realm.getId());
-      return Response.created(builder.build()).build();
-
-
+      return realm;
    }
 
    protected RoleMapping createRoleMapping(Map<String, User> userMap, RoleMappingRepresentation mapping)

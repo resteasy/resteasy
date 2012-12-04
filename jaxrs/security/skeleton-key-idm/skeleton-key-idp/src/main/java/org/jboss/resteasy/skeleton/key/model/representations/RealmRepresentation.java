@@ -14,12 +14,11 @@ public class RealmRepresentation
    protected long tokenLifespan;
    protected long accessCodeLifespan;
    protected boolean enabled;
-   protected boolean directAccessTokenAllowed;
    protected List<RequiredCredentialRepresentation> requiredCredentials;
    protected List<UserRepresentation> users;
-   protected List<ResourceRepresentation> resources;
    protected List<RoleMappingRepresentation> roleMappings;
    protected List<ScopeMappingRepresentation> scopeMappings;
+   protected List<ResourceRepresentation> resources;
 
 
    public String getSelf()
@@ -88,16 +87,6 @@ public class RealmRepresentation
    public void setEnabled(boolean enabled)
    {
       this.enabled = enabled;
-   }
-
-   public boolean isDirectAccessTokenAllowed()
-   {
-      return directAccessTokenAllowed;
-   }
-
-   public void setDirectAccessTokenAllowed(boolean directAccessTokenAllowed)
-   {
-      this.directAccessTokenAllowed = directAccessTokenAllowed;
    }
 
    public long getTokenLifespan()

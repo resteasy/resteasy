@@ -53,8 +53,8 @@ import java.util.UUID;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Path("/idm")
-public class TokenResource
+@Path("/realms")
+public class TokenManagement
 {
    protected static class AccessCode
    {
@@ -104,8 +104,15 @@ public class TokenResource
       }
    }
 
+   public TokenManagement(IdentityManager identityManager, PrivateKey privateKey, PublicKey publicKey)
+   {
+      this.identityManager = identityManager;
+      this.privateKey = privateKey;
+      this.publicKey = publicKey;
+   }
+
    protected IdentityManager identityManager;
-   protected Logger logger = Logger.getLogger(TokenResource.class);
+   protected Logger logger = Logger.getLogger(TokenManagement.class);
    protected PrivateKey privateKey;
    protected PublicKey publicKey;
    protected Map<String, AccessCode> accessCodeMap = new HashMap<String, AccessCode>();
@@ -162,7 +169,7 @@ public class TokenResource
       return token;
    }
 
-   @Path("realms/{realm}/auth/request/login")
+   @Path("{realm}/auth/request/login")
    @POST
    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
    public Response login(@PathParam("realm") String realmName,
@@ -305,7 +312,7 @@ public class TokenResource
       throw new NotAuthorizedException(header.toString());
    }
 
-   @Path("realms/{realm}/access/request")
+   @Path("{realm}/access/request")
    @POST
    @Produces("application/json")
    public Response accessRequest(@PathParam("realm") String realmId,
@@ -430,7 +437,7 @@ public class TokenResource
       return res;
    }
 
-   @Path("realms/{realm}/auth/request")
+   @Path("{realm}/auth/request")
    @GET
    public Response requestAccessCode(@PathParam("realm") String realmName,
                                      @QueryParam("response_type") String responseType,
@@ -534,7 +541,7 @@ public class TokenResource
     * OAuth Section 4.4 Client Credentials Grant
     *
     */
-   @Path("realms/{realm}/tokens")
+   @Path("{realm}/tokens")
    @POST
    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
    @Produces("application/json")

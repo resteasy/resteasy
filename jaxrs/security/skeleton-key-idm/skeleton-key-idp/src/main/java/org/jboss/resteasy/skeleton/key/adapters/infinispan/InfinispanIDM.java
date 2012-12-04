@@ -32,10 +32,15 @@ public class InfinispanIDM implements IdentityManager
 
    protected Cache cache;
 
+   public InfinispanIDM(Cache cache)
+   {
+      this.cache = cache;
+   }
+
    @Override
    public Realm getRealm(String id)
    {
-      return null;
+      return (Realm)cache.get("/realms/" +id);
    }
 
    @Override
@@ -268,6 +273,7 @@ public class InfinispanIDM implements IdentityManager
          resources = new HashSet<String>();
       }
       resources.add(resource.getId());
+      cache.put(realmKey(realm)+"/resources", resources);
       return resource;
    }
 
@@ -413,13 +419,15 @@ public class InfinispanIDM implements IdentityManager
    @Override
    public RoleMapping getRoleMapping(Realm realm, User user)
    {
-      return (RoleMapping)cache.get("/realms/" + realm.getId() + "/RoleMappings/users/" + user.getId());
+      String id = (String)cache.get("/realms/" + realm.getId() + "/RoleMappings/users/" + user.getId());
+      return getRoleMapping(id);
    }
 
    @Override
    public RoleMapping getRoleMapping(Realm realm, Resource resource, User user)
    {
-      return (RoleMapping)cache.get("/resources/" + resource.getId() + "/RoleMappings/users/" + user.getId());
+      String id = (String)cache.get("/resources/" + resource.getId() + "/RoleMappings/users/" + user.getId());
+      return getRoleMapping(id);
    }
 
    @Override
@@ -502,13 +510,15 @@ public class InfinispanIDM implements IdentityManager
    @Override
    public ScopeMapping getScopeMapping(Realm realm, User user)
    {
-      return (ScopeMapping)cache.get("/realms/" + realm.getId() + "/ScopeMappings/users/" + user.getId());
+      String id = (String)cache.get("/realms/" + realm.getId() + "/ScopeMappings/users/" + user.getId());
+      return getScopeMapping(id);
    }
 
    @Override
    public ScopeMapping getScopeMapping(Realm realm, Resource resource, User user)
    {
-      return (ScopeMapping)cache.get("/resources/" + resource.getId() + "/ScopeMappings/users/" + user.getId());
+      String id = (String)cache.get("/resources/" + resource.getId() + "/ScopeMappings/users/" + user.getId());
+      return getScopeMapping(id);
    }
 
    @Override
