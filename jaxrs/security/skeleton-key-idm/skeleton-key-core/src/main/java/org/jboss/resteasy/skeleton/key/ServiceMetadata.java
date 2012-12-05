@@ -1,6 +1,7 @@
 package org.jboss.resteasy.skeleton.key;
 
 import java.security.KeyStore;
+import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 
 /**
@@ -13,7 +14,7 @@ public class ServiceMetadata
    protected String realm;
    protected KeyStore keystore;
    protected KeyStore truststore;
-   protected X509Certificate[] identityProviderCertificates;
+   protected PublicKey realmKey;
 
    public String getName()
    {
@@ -27,7 +28,7 @@ public class ServiceMetadata
 
   /**
     * keystore that contains service's private key and certificate.
-    * Used when making external SSL connections.
+    * Used when making invocations on remote HTTPS endpoints that require client-cert authentication
     *
     * @return
     */
@@ -37,7 +38,7 @@ public class ServiceMetadata
    }
 
    /**
-    * Truststore to use if this service makes external SSL connections
+    * Truststore to use if this service makes client invocations on remote HTTPS endpoints.
     *
     * @return
     */
@@ -47,13 +48,13 @@ public class ServiceMetadata
    }
 
    /**
-    * List of certificates used to verify signed tokens
+    * Public key of the realm.  Used to verify access tokens
     *
     * @return
     */
-   public X509Certificate[] getIdentityProviderCertificates()
+   public PublicKey getRealmKey()
    {
-      return identityProviderCertificates;
+      return realmKey;
    }
 
    public void setName(String name)
@@ -76,8 +77,8 @@ public class ServiceMetadata
       this.truststore = truststore;
    }
 
-   public void setIdentityProviderCertificates(X509Certificate[] identityProviderCertificates)
+   public void setRealmKey(PublicKey realmKey)
    {
-      this.identityProviderCertificates = identityProviderCertificates;
+      this.realmKey = realmKey;
    }
 }

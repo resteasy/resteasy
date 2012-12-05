@@ -21,8 +21,8 @@ public class SkeletonKeyToken extends JsonWebToken
       protected Set<String> surrogates;
       @JsonProperty("roles")
       protected Set<String> roles;
-      @JsonProperty("surrogate_auth")
-      protected boolean surrogateAuthRequired;
+      @JsonProperty("verify_caller")
+      protected boolean verifyCaller;
 
       public Set<String> getSurrogates()
       {
@@ -73,14 +73,14 @@ public class SkeletonKeyToken extends JsonWebToken
          return this;
       }
 
-      public boolean isSurrogateAuthRequired()
+      public boolean isVerifyCaller()
       {
-         return surrogateAuthRequired;
+         return verifyCaller;
       }
 
       public Access surrogateAuthRequired(boolean required)
       {
-         this.surrogateAuthRequired = required;
+         this.verifyCaller = required;
          return this;
       }
    }

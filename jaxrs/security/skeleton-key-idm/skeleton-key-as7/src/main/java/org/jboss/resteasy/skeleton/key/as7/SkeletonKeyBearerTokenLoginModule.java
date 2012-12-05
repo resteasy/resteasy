@@ -11,9 +11,7 @@ import org.jboss.security.SimplePrincipal;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
-import javax.security.auth.x500.X500Principal;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.security.KeyStore;
 import java.security.Principal;
+import java.security.PublicKey;
 import java.security.acl.Group;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -80,52 +79,39 @@ public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
       serviceMetadata = serviceMetadataCache.get(cacheKey);
       if (serviceMetadata != null) return;
 
-      String idpTruststore = (String) options.get("idp-truststore");
-      String idpTruststorePassword = (String) options.get("idp-truststore-password");
-      String idpAliases = (String) options.get("idp-aliases");
-      if (idpTruststore == null)
+      String realmTruststore = (String) options.get("realm-truststore");
+      String realmTruststorePassword = (String) options.get("realm-truststore-password");
+      String realmAlias = (String) options.get("realm-key-alias");
+      if (realmTruststore == null)
       {
-         throw new IllegalArgumentException("Must set idp-truststore in security domain config");
+         throw new IllegalArgumentException("Must set realm-truststore in security domain config");
       }
-      if (idpTruststorePassword == null)
+      if (realmTruststorePassword == null)
       {
-         throw new IllegalArgumentException("Must set idp-truststore-password in security domain config");
+         throw new IllegalArgumentException("Must set realm-truststore-password in security domain config");
       }
-      if (idpAliases == null)
+      if (realmAlias == null)
       {
-         throw new IllegalArgumentException("Must set idp-aliases in security domain config");
+         throw new IllegalArgumentException("Must set realm-key-alias in security domain config");
       }
 
-
-      KeyStore idp = null;
+      PublicKey realmKey = null;
       try
       {
-         idp = loadKeyStore(idpTruststore, idpTruststorePassword);
+         KeyStore realmKeystore = loadKeyStore(realmTruststore, realmTruststorePassword);
+         X509Certificate cert = (X509Certificate)realmKeystore.getCertificate(realmAlias);
+         if (cert == null) throw new RuntimeException("Could not find realm key: " + realmAlias);
+         realmKey = cert.getPublicKey();
+
       }
       catch (Exception e)
       {
          throw new RuntimeException(e);
       }
-      String[] aliases = idpAliases.split(",");
-      ArrayList<X509Certificate> idpCerts = new ArrayList<X509Certificate>();
-      for (String alias : aliases)
-      {
-         X509Certificate cert = null;
-         try
-         {
-            cert = (X509Certificate)idp.getCertificate(alias.trim());
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException(e);
-         }
-         if (cert == null) throw new RuntimeException("Could not find IDP alias: " + alias);
-         idpCerts.add(cert);
-      }
       serviceMetadata = new ServiceMetadata();
       serviceMetadata.setRealm(domain);
       serviceMetadata.setName(name);
-      serviceMetadata.setIdentityProviderCertificates(idpCerts.toArray(new X509Certificate[idpCerts.size()]));
+      serviceMetadata.setRealmKey(realmKey);
 
 
 
@@ -160,32 +146,6 @@ public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
          serviceMetadata.setKeystore(serverKS);
       }
       serviceMetadataCache.putIfAbsent(cacheKey, serviceMetadata);
-   }
-
-   protected String getQueryParamToken(String queryString)
-   {
-      if (queryString == null) return null;
-      String[] params = queryString.split("&");
-
-      for (String param : params)
-      {
-         if (param.indexOf('=') >= 0)
-         {
-            String[] nv = param.split("=");
-            try
-            {
-               String name = URLDecoder.decode(nv[0], "UTF-8");
-               String val = nv.length > 1 ? nv[1] : "";
-               if (name.equals("skeleton_token")) return val;
-            }
-            catch (UnsupportedEncodingException e)
-            {
-               throw new RuntimeException(e);
-            }
-         }
-      }
-      return null;
-
    }
 
    protected void challengeResponse(HttpServletResponse response, String error, String description) throws LoginException

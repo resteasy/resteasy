@@ -1,9 +1,15 @@
 package org.jboss.resteasy.skeleton.key.model.data;
 
+import org.bouncycastle.openssl.PEMWriter;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.jboss.resteasy.security.PemUtils;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringWriter;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -20,8 +26,11 @@ public class Realm implements Serializable
    protected String name;
    protected long tokenLifespan = 3600 * 24; // one day
    protected long accessCodeLifespan = 300; // 5 minutes
-   protected boolean directAccessTokenAllowed;
    protected boolean enabled;
+   protected String publicKeyPem;
+   protected String privateKeyPem;
+   protected volatile transient PublicKey publicKey;
+   protected volatile transient PrivateKey privateKey;
 
    public String getId()
    {
@@ -53,16 +62,6 @@ public class Realm implements Serializable
       this.enabled = enabled;
    }
 
-   public boolean isDirectAccessTokenAllowed()
-   {
-      return directAccessTokenAllowed;
-   }
-
-   public void setDirectAccessTokenAllowed(boolean directAccessTokenAllowed)
-   {
-      this.directAccessTokenAllowed = directAccessTokenAllowed;
-   }
-
    public long getTokenLifespan()
    {
       return tokenLifespan;
@@ -81,5 +80,97 @@ public class Realm implements Serializable
    public void setAccessCodeLifespan(long accessCodeLifespan)
    {
       this.accessCodeLifespan = accessCodeLifespan;
+   }
+
+   public String getPublicKeyPem()
+   {
+      return publicKeyPem;
+   }
+
+   public void setPublicKeyPem(String publicKeyPem)
+   {
+      this.publicKeyPem = publicKeyPem;
+      this.publicKey = null;
+   }
+
+   public String getPrivateKeyPem()
+   {
+      return privateKeyPem;
+   }
+
+   public void setPrivateKeyPem(String privateKeyPem)
+   {
+      this.privateKeyPem = privateKeyPem;
+      this.privateKey = null;
+   }
+
+   public PublicKey getPublicKey()
+   {
+      if (publicKey != null) return publicKey;
+      if (publicKeyPem != null)
+      {
+         try
+         {
+            publicKey = PemUtils.decodePublicKey(publicKeyPem);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      return publicKey;
+   }
+
+   public void setPublicKey(PublicKey publicKey)
+   {
+      this.publicKey = publicKey;
+      StringWriter writer = new StringWriter();
+      PEMWriter pemWriter = new PEMWriter(writer);
+      try
+      {
+         pemWriter.writeObject(publicKey);
+         pemWriter.flush();
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+      String s = writer.toString();
+      this.publicKeyPem = PemUtils.removeBeginEnd(s);
+   }
+
+   public PrivateKey getPrivateKey()
+   {
+      if (privateKey != null) return privateKey;
+      if (privateKeyPem != null)
+      {
+         try
+         {
+            privateKey = PemUtils.decodePrivateKey(privateKeyPem);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      return privateKey;
+   }
+
+   public void setPrivateKey(PrivateKey privateKey)
+   {
+      this.privateKey = privateKey;
+      StringWriter writer = new StringWriter();
+      PEMWriter pemWriter = new PEMWriter(writer);
+      try
+      {
+         pemWriter.writeObject(privateKey);
+         pemWriter.flush();
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+      String s = writer.toString();
+      this.privateKeyPem = PemUtils.removeBeginEnd(s);
    }
 }

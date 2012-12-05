@@ -2,6 +2,7 @@ package org.jboss.resteasy.skeleton.key.service;
 
 import org.jboss.resteasy.skeleton.key.IdentityManager;
 import org.jboss.resteasy.skeleton.key.model.data.Realm;
+import org.jboss.resteasy.skeleton.key.model.data.RequiredCredential;
 import org.jboss.resteasy.skeleton.key.model.data.Resource;
 import org.jboss.resteasy.skeleton.key.model.data.Role;
 import org.jboss.resteasy.skeleton.key.model.data.RoleMapping;
@@ -21,9 +22,13 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -52,7 +57,9 @@ public class RealmFactory
    {
       Realm realm = createRealm(rep);
       UriBuilder builder = uriInfo.getRequestUriBuilder().path(realm.getId());
-      return Response.created(builder.build()).build();
+      return Response.created(builder.build())
+                     .entity(RealmResource.realmRep(realm, uriInfo))
+                     .type(MediaType.APPLICATION_JSON_TYPE).build();
    }
 
    protected Realm createRealm(RealmRepresentation rep)
@@ -60,6 +67,17 @@ public class RealmFactory
       verifyRealmRepresentation(rep);
 
       Realm realm = new Realm();
+      KeyPair keyPair = null;
+      try
+      {
+         keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
+      }
+      catch (NoSuchAlgorithmException e)
+      {
+         throw new RuntimeException(e);
+      }
+      realm.setPrivateKey(keyPair.getPrivate());
+      realm.setPublicKey(keyPair.getPublic());
       realm.setName(rep.getRealm());
       realm.setEnabled(rep.isEnabled());
       realm.setTokenLifespan(rep.getTokenLifespan());
@@ -68,6 +86,15 @@ public class RealmFactory
       Map<String, User> userMap = new HashMap<String, User>();
 
       Role adminRole = identityManager.create(realm, "admin");
+
+      for (RequiredCredentialRepresentation requiredCred : rep.getRequiredCredentials())
+      {
+         RequiredCredential credential = new RequiredCredential();
+         credential.setType(requiredCred.getType());
+         credential.setInput(requiredCred.isInput());
+         credential.setSecret(requiredCred.isSecret());
+         identityManager.create(realm, credential);
+      }
 
       for (UserRepresentation userRep : rep.getUsers())
       {

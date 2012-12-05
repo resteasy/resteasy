@@ -78,7 +78,7 @@ public class RSAVerifierTest
       metadata = new ServiceMetadata();
       metadata.setName("service");
       metadata.setRealm("domain");
-      metadata.setIdentityProviderCertificates(idpCertificates);
+      metadata.setRealmKey(idpPair.getPublic());
 
       token = new SkeletonKeyToken();
       token.principal("CN=Client")

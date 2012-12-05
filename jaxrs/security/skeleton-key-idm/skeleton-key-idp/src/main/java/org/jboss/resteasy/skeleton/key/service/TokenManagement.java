@@ -16,13 +16,13 @@ import org.jboss.resteasy.skeleton.key.model.data.RoleMapping;
 import org.jboss.resteasy.skeleton.key.model.data.ScopeMapping;
 import org.jboss.resteasy.skeleton.key.model.data.User;
 import org.jboss.resteasy.skeleton.key.model.data.UserCredential;
+import org.jboss.resteasy.skeleton.key.model.representations.AccessTokenResponse;
 import org.jboss.resteasy.spi.ForbiddenException;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.util.Base64;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -43,7 +43,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,17 +103,13 @@ public class TokenManagement
       }
    }
 
-   public TokenManagement(IdentityManager identityManager, PrivateKey privateKey, PublicKey publicKey)
+   public TokenManagement(IdentityManager identityManager)
    {
       this.identityManager = identityManager;
-      this.privateKey = privateKey;
-      this.publicKey = publicKey;
    }
 
    protected IdentityManager identityManager;
    protected Logger logger = Logger.getLogger(TokenManagement.class);
-   protected PrivateKey privateKey;
-   protected PublicKey publicKey;
    protected Map<String, AccessCode> accessCodeMap = new HashMap<String, AccessCode>();
    @Context
    protected UriInfo uriInfo;
@@ -207,7 +202,7 @@ public class TokenManagement
       if (user == null)
       {
          logger.debug("user not found");
-         return loginForm(true, redirect, clientId, scopeParam, realm, client);
+         return loginForm(true, redirect, clientId, scopeParam, state, realm, client);
       }
       if (!user.isEnabled())
       {
@@ -215,7 +210,7 @@ public class TokenManagement
 
       }
       boolean authenticated = authenticate(realm, user, formData);
-      if (!authenticated) return loginForm(true, redirect, clientId, scopeParam, realm, client);
+      if (!authenticated) return loginForm(true, redirect, clientId, scopeParam, state, realm, client);
 
       SkeletonKeyToken token = createToken(scopeParam, realm, client, user);
       AccessCode code = new AccessCode();
@@ -229,13 +224,14 @@ public class TokenManagement
       String accessCode = null;
       try
       {
-         accessCode = new JWSBuilder().content(code.getId().getBytes("UTF-8")).rsa256(privateKey);
+         accessCode = new JWSBuilder().content(code.getId().getBytes("UTF-8")).rsa256(realm.getPrivateKey());
       }
       catch (UnsupportedEncodingException e)
       {
          throw new RuntimeException(e);
       }
-      UriBuilder redirectUri = UriBuilder.fromUri(redirect).queryParam("code", accessCode).queryParam("state", state);
+      UriBuilder redirectUri = UriBuilder.fromUri(redirect).queryParam("code", accessCode);
+      if (state != null) redirectUri.queryParam("state", state);
       return Response.status(302).location(redirectUri.build()).build();
    }
 
@@ -298,21 +294,7 @@ public class TokenManagement
       return token;
    }
 
-   protected void challengeResponse(String realm, String error, String description)
-   {
-      StringBuilder header = new StringBuilder("Bearer realm=\"").append(realm).append("\"");
-      if (error != null)
-      {
-         header.append(", error=\"").append(error).append("\"");
-      }
-      if (description != null)
-      {
-         header.append(", error_description=\"").append(description).append("\"");
-      }
-      throw new NotAuthorizedException(header.toString());
-   }
-
-   @Path("{realm}/access/request")
+   @Path("{realm}/access/codes")
    @POST
    @Produces("application/json")
    public Response accessRequest(@PathParam("realm") String realmId,
@@ -373,7 +355,7 @@ public class TokenManagement
       boolean verifiedCode = false;
       try
       {
-         verifiedCode = RSAProvider.verify(input, publicKey);
+         verifiedCode = RSAProvider.verify(input, realm.getPublicKey());
       }
       catch (Exception ignored)
       {
@@ -405,14 +387,13 @@ public class TokenManagement
          res.put("error_description", "Code not found or expired");
          return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(res).build();
       }
-      Map<String, String> res = accessTokenResponse(accessCode.getToken());
+      AccessTokenResponse res = accessTokenResponse(realm.getPrivateKey(), accessCode.getToken());
       return Response.ok(res).build();
 
    }
 
-   protected Map<String, String> accessTokenResponse(SkeletonKeyToken token)
+   protected AccessTokenResponse accessTokenResponse(PrivateKey privateKey, SkeletonKeyToken token)
    {
-      Map<String, String> res = new HashMap<String, String>();
       byte[] tokenBytes = null;
       try
       {
@@ -426,13 +407,13 @@ public class TokenManagement
               .content(tokenBytes)
               .rsa256(privateKey);
 
-
-      res.put("access_token", encodedToken);
-      res.put("token_type", "bearer");
+      AccessTokenResponse res = new AccessTokenResponse();
+      res.setToken(encodedToken);
+      res.setTokenType("bearer");
       if (token.getExpiration() != 0)
       {
          long time = token.getExpiration() - (System.currentTimeMillis() / 1000);
-         res.put("expires_in", Long.toString(time));
+         res.setExpiresIn(time);
       }
       return res;
    }
@@ -452,10 +433,10 @@ public class TokenManagement
       if (client == null)
          return Response.ok("<h1>Security Alert</h1><p>Unknown client trying to get access to your account.</p>").type("text/html").build();
 
-      return loginForm(false, redirect, clientId, scopeParam, realm, client);
+      return loginForm(false, redirect, clientId, scopeParam, state, realm, client);
    }
 
-   private Response loginForm(boolean validationError, String redirect, String clientId, String scopeParam, Realm realm, User client)
+   private Response loginForm(boolean validationError, String redirect, String clientId, String scopeParam, String state, Realm realm, User client)
    {
       StringBuffer html = new StringBuffer();
       if (scopeParam != null)
@@ -501,7 +482,8 @@ public class TokenManagement
             html.append("</td></tr>");
          }
          html.append("</table><p>To Authorize, please login below</p>");
-      } else
+      }
+      else
       {
          ScopeMapping mapping = identityManager.getScopeMapping(realm, client);
          if (mapping == null || !mapping.getRoles().contains("login"))
@@ -529,8 +511,8 @@ public class TokenManagement
          }
       }
       html.append("<input type=\"hidden\" name=\"client_id\" value=\"").append(clientId).append("\">");
-      html.append("<input type=\"hidden\" name=\"scope\" value=\"").append(scopeParam).append("\">");
-      html.append("<input type=\"hidden\" name=\"state\" value=\"").append(scopeParam).append("\">");
+      if (scopeParam != null) html.append("<input type=\"hidden\" name=\"scope\" value=\"").append(scopeParam).append("\">");
+      if (state != null) html.append("<input type=\"hidden\" name=\"state\" value=\"").append(state).append("\">");
       html.append("<input type=\"hidden\" name=\"redirect_uri\" value=\"").append(redirect).append("\">");
       html.append("</form>");
       return Response.ok(html.toString()).type("text/html").build();
@@ -541,7 +523,7 @@ public class TokenManagement
     * OAuth Section 4.4 Client Credentials Grant
     *
     */
-   @Path("{realm}/tokens")
+   @Path("{realm}/grants")
    @POST
    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
    @Produces("application/json")
@@ -583,7 +565,7 @@ public class TokenManagement
          return Response.status(Response.Status.BAD_REQUEST).entity(error).type("application/json").build();
       }
       SkeletonKeyToken token = createAccessToken(user, realm);
-      return Response.ok(accessTokenResponse(token), MediaType.APPLICATION_JSON_TYPE).build();
+      return Response.ok(accessTokenResponse(realm.getPrivateKey(), token), MediaType.APPLICATION_JSON_TYPE).build();
    }
 
    protected boolean authenticate(Realm realm, User user, MultivaluedMap<String, String> formData)

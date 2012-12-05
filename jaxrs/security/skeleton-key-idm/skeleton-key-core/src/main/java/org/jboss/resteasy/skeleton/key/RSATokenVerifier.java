@@ -5,6 +5,7 @@ import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
 import org.jboss.resteasy.jwt.JsonSerialization;
 
 import java.io.IOException;
+import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,22 +19,18 @@ public class RSATokenVerifier
    public static SkeletonKeyTokenVerification verify(X509Certificate[] userCerts,
                                                      String tokenString, ServiceMetadata metadata) throws VerificationException
    {
+      PublicKey realmKey = metadata.getRealmKey();
+      String realm = metadata.getRealm();
+      String resource = metadata.getName();
       JWSInput input = new JWSInput(tokenString);
       boolean verified = false;
-      for (X509Certificate idp : metadata.getIdentityProviderCertificates())
+      try
       {
-         try
-         {
-            if (RSAProvider.verify(input, idp.getPublicKey()))
-            {
-               verified = true;
-               break;
-            }
-         }
-         catch (Exception ignore)
-         {
+         verified = RSAProvider.verify(input, realmKey);
+      }
+      catch (Exception ignore)
+      {
 
-         }
       }
       if (!verified) throw new VerificationException("Token signature not validated");
 
@@ -55,12 +52,20 @@ public class RSATokenVerifier
       {
          throw new VerificationException("Token user was null");
       }
-      if (!metadata.getRealm().equals(token.getAudience()))
+      if (!realm.equals(token.getAudience()))
       {
          throw new VerificationException("Token audience doesn't match domain");
 
       }
-      SkeletonKeyToken.Access access = token.getResourceAccess(metadata.getName());
+      SkeletonKeyToken.Access access= null;
+      if (resource == null) // realm access
+      {
+         access = token.getRealmAccess();
+      }
+      else
+      {
+         access = token.getResourceAccess(resource);
+      }
       if (access == null)
       {
          throw new VerificationException("No resource access specified");
@@ -81,7 +86,7 @@ public class RSATokenVerifier
       */
       // assuming 1st is root
       String surrogate = null;
-      if (access.isSurrogateAuthRequired())
+      if (access.isVerifyCaller())
       {
          if (userCerts == null) throw new VerificationException("Client certificate auth required");
          String certUser = userCerts[0].getSubjectX500Principal().getName();

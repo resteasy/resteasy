@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -25,9 +26,10 @@ import java.util.UUID;
  */
 public class InfinispanIDM implements IdentityManager
 {
+   private static AtomicLong counter = new AtomicLong(1);
    private static String generateId()
    {
-      return UUID.randomUUID().toString() + "-" + System.currentTimeMillis();
+      return counter.getAndIncrement() + "-" + System.currentTimeMillis();
    }
 
    protected Cache cache;
