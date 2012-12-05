@@ -33,6 +33,7 @@ public class SmokingTest {
         selenium.click("//input[@value='Test Form']");
         selenium.click("//input[@value='Test Form2']");
         selenium.click("//input[@value='Test Form3']");
+        selenium.click("//input[@value='Test Prefix Form']");
 
         selenium.click("//input[@value='Test Cookie Param']");
         selenium.click("//input[@value='Test Matrix Param']");
@@ -43,9 +44,11 @@ public class SmokingTest {
         assertTrue(selenium.isTextPresent("0"));
         assertTrue(selenium.isTextPresent("exact:a::b::c::"));
         assertTrue(selenium.isTextPresent("exact:xyz"));
-        assertTrue(selenium.isTextPresent(".-_~.-_~.-_~"));
-        assertTrue(selenium.isTextPresent("2B_2A-114"));
+        assertTrue(selenium.isTextPresent(".-_~=&.-_~=&.-_~=&"));
+        assertTrue(selenium.isTextPresent("2B=_2A-&114"));
         assertTrue(selenium.isTextPresent("CBA"));
+        assertTrue(selenium.isTextPresent("11111111"));
+
 
         assertTrue(selenium.isTextPresent("Weinan"));
         assertTrue(selenium.isTextPresent("exact:g::h::i::"));

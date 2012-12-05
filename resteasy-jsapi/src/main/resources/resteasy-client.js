@@ -7,6 +7,15 @@ var REST = {
     cacheHeaders : []
 };
 
+// helper function
+REST.getKeys = function (o) {
+    if (o !== Object(o))
+        throw new TypeError('REST.getKeys called on non-object');
+    var ret = [], p;
+    for (p in o) if (Object.prototype.hasOwnProperty.call(o, p)) ret.push(p);
+    return ret;
+};
+
 // constructor
 REST.Request = function (){
 	REST.log("Creating new Request");
@@ -116,9 +125,10 @@ REST.Request.prototype = {
                 for (var i = 0; i < this.forms.length; i++) {
                     if (i > 0)
                         data += "&";
-                    data = REST.Encoding.encodeFormNameOrValue(this.forms[i][1]);
-                    data = data.replace(/%3d/g, "=");
-                    data = data.replace(/%26/g, "&");
+                    var obj = this.forms[i][1];
+                    var key = REST.getKeys(obj)[0];
+                    data += REST.Encoding.encodeFormNameOrValue(key);
+                    data += "=" + REST.Encoding.encodeFormNameOrValue(obj[key]);
                 }
             }
 			REST.log("Content-Type set to "+contentTypeSet);

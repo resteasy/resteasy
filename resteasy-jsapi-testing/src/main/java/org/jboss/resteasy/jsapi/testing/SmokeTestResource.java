@@ -1,10 +1,7 @@
 package org.jboss.resteasy.jsapi.testing;
 
 import org.jboss.resteasy.annotations.Form;
-import org.jboss.resteasy.jsapi.testing.form.Foo;
-import org.jboss.resteasy.jsapi.testing.form.MyForm;
-import org.jboss.resteasy.jsapi.testing.form.MyForm2;
-import org.jboss.resteasy.jsapi.testing.form.MyForm3;
+import org.jboss.resteasy.jsapi.testing.form.*;
 
 import javax.ws.rs.*;
 
@@ -103,5 +100,22 @@ public class SmokeTestResource {
             ret.append(foo.getBar());
         }
         return ret.toString();
+    }
+
+    @POST
+    @Path("/postPrefixForm")
+    public String postPrefixForm(@Form Person person) {
+        StringBuilder ret = new StringBuilder();
+        for (TelephoneNumber number : person.getTelephoneNumbers()) {
+            ret.append(number.getNumber()).append(number.getCountryCode());
+        }
+
+        for (String key : person.getAddresses().keySet()) {
+            Address address = person.getAddresses().get(key);
+            ret.append(address.getHouseNumber()).append(address.getStreet());
+        }
+        return ret.toString();
+
+
     }
 }
