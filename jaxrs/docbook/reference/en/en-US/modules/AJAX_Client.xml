@@ -151,6 +151,69 @@ Foo.put({$entity: text});]]></programlisting>
     		</example>
     	</section>
     	<section>
+    		<title>Work with @Form</title>
+    		<para>
+    			@Form is a RESTEasy specific annotation that allows you to re-use any @*Param annotation within an injected class. 
+    			The generated JavaScript API will expand the parameters for use automatically. Support we have the following form:
+    		</para>
+    		<programlisting language="java"><![CDATA[public class MyForm {
+    @FormParam("stuff")
+    private String stuff;
+
+    @FormParam("number")
+    private int number;
+
+    @HeaderParam("myHeader")
+    private String header;
+}]]></programlisting>
+			<para>And the resource is like:</para>
+			<programlisting language="java"><![CDATA[@Path("/")
+public class MyResource {
+
+    @POST
+    public String postForm(@Form MyForm myForm) {...}
+
+}]]></programlisting>
+			<para>Then we could call the method from JavaScript API like following:</para>
+			<programlisting language="java"><![CDATA[MyResource.postForm({stuff:"A", myHeader:"B", number:1});]]></programlisting>
+			<para>Also, @Form supports prefix mappings for lists and maps:</para>
+			<programlisting language="java"><![CDATA[public static class Person {
+    @Form(prefix="telephoneNumbers") List<TelephoneNumber> telephoneNumbers;
+    @Form(prefix="address") Map<String, Address> addresses;
+}
+
+public static class TelephoneNumber {
+    @FormParam("countryCode") private String countryCode;
+    @FormParam("number") private String number;
+}
+
+public static class Address {
+    @FormParam("street") private String street;
+    @FormParam("houseNumber") private String houseNumber;
+}
+
+@Path("person")
+public static class MyResource {
+	@POST
+	public void postForm(@Form Person p) {...} 
+}]]></programlisting>
+		<para>From JavaScript we could call the API like this:</para>
+		<programlisting><![CDATA[MyResource.postForm({
+	telephoneNumbers:[
+		{"telephoneNumbers[0].countryCode":31},
+		{"telephoneNumbers[0].number":12345678},
+		{"telephoneNumbers[1].countryCode":91},
+		{"telephoneNumbers[1].number":9717738723}
+	],
+	address:[
+		{"address[INVOICE].street":"Main Street"},
+		{"address[INVOICE].houseNumber":2},
+		{"address[SHIPPING].street":"Square One"},
+		{"address[SHIPPING].houseNumber":13}
+	]
+});]]></programlisting>
+    	</section>
+    	<section>
     		<title>MIME types and unmarshalling.</title>
     		<para>
     			The Accept header sent by any client JavaScript function is controlled by the $accepts parameter, which overrides
@@ -471,5 +534,17 @@ r.execute(function(status, request, entity){
 });]]></programlisting>
    			</example>
    		</section>
+   	</section>
+   	<section>
+   		<title>Caching Features</title>
+   		<para>
+   			RESTEasy AJAX Client works well with server side caching features. But the buggy browsers cache will 
+   			always prevent the function to work properly. If you'd like to use RESTEasy's caching feature with its
+   			AJAX client, you can enable 'antiBrowserCache' option:
+   		</para>
+	    <programlisting language="javascript"><![CDATA[REST.antiBrowserCache = true;]]></programlisting>
+		<para>
+			The above setting should be set once before you call any APIs.
+		</para>
    	</section>
 </chapter>

@@ -9,34 +9,37 @@ import java.util.regex.Pattern;
 /**
  * Can inject lists.
  */
-public class ListFormInjector extends AbstractCollectionFormInjector<List>
-{
+public class ListFormInjector extends AbstractCollectionFormInjector<List> {
 
-   /**
-    * Constructor.
-    */
-   public ListFormInjector(Class collectionType, Class genericType, String prefix, ResteasyProviderFactory factory)
-   {
-      super(collectionType, genericType, prefix, Pattern.compile("^" + prefix + "\\[(\\d+)\\]"), factory);
-   }
+    /**
+     * Constructor.
+     */
+    public ListFormInjector(Class collectionType, Class genericType, String prefix, ResteasyProviderFactory factory) {
+        super(collectionType, genericType, prefix, Pattern.compile("^" + prefix + "\\[(\\d+)\\]"), factory);
+    }
 
-   /**
-    * {@inheritDoc}
-    *
-    * @return ArrayList
-    */
-   @Override
-   protected List createInstance(Class collectionType)
-   {
-      return new ArrayList();
-   }
+    /**
+     * {@inheritDoc}
+     *
+     * @return ArrayList
+     */
+    @Override
+    protected List createInstance(Class collectionType) {
+        return new ArrayList();
+    }
 
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   protected void addTo(List collection, String key, Object value)
-   {
-      collection.add(Integer.parseInt(key), value);
-   }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addTo(List collection, String key, Object value) {
+        int index = Integer.parseInt(key);
+        int size = collection.size();
+        // in case the key doesn't come in sorted order
+        if (collection.size() <= index) {
+            for (int i = 0; i < index - size + 1; i++)
+                collection.add(null);
+        }
+        collection.set(index, value);
+    }
 }
