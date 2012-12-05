@@ -17,6 +17,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 import java.io.StringWriter;
+import java.net.URI;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PublicKey;
@@ -65,6 +66,42 @@ public class LoginTest extends SkeletonTestBase
       System.out.println("LoginUrl: " + loginUrl);
       Response response = client.target(loginUrl).request().post(Entity.form(loginform));
       Assert.assertEquals(302, response.getStatus());
+      URI uri = response.getLocation();
+      response.close();
+      Assert.assertNotNull(uri);
+      System.out.println(uri);
+      Pattern q = Pattern.compile("code=([^&]+)");
+      matcher = q.matcher(uri.getRawQuery());
+      String code = null;
+      if (matcher.find())
+      {
+         code = matcher.group(1);
+      }
+      System.out.println("Code: " + code);
+      Assert.assertNotNull(code);
+      WebTarget codes = client.target(realmInfo.getCodeUrl());
+      Form codeForm = new Form()
+              .param("code", code)
+              .param("client_id", "loginclient")
+              .param("Password", "clientpassword");
+      Response res = codes.request().post(Entity.form(codeForm));
+      if (res.getStatus() == 400)
+      {
+         System.out.println(res.readEntity(String.class));
+      }
+      Assert.assertEquals(200, res.getStatus());
+      AccessTokenResponse tokenResponse = res.readEntity(AccessTokenResponse.class);
+      res.close();
+
+      ServiceMetadata metadata = new ServiceMetadata();
+      metadata.setRealm("test-realm");
+      metadata.setName("Application");
+      metadata.setRealmKey(realmInfo.getPublicKey());
+      SkeletonKeyTokenVerification verification = RSATokenVerifier.verify(null, tokenResponse.getToken(), metadata);
+      Assert.assertEquals(verification.getPrincipal().getName(), "wburke");
+      Assert.assertTrue(verification.getRoles().contains("user"));
+
+
 
 
    }

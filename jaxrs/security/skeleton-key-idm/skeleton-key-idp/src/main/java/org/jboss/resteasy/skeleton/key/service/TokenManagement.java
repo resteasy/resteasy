@@ -64,7 +64,7 @@ public class TokenManagement
 
       public boolean isExpired()
       {
-         return expiration == 0 || (System.currentTimeMillis() / 1000) < expiration;
+         return expiration != 0 && (System.currentTimeMillis() / 1000) > expiration;
       }
 
       public String getId()
@@ -368,23 +368,38 @@ public class TokenManagement
          res.put("error_description", "Unable to verify code signature");
          return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(res).build();
       }
+      String key = input.readContent(String.class);
       AccessCode accessCode = null;
       synchronized (accessCodeMap)
       {
-         accessCode = accessCodeMap.remove(code);
+         accessCode = accessCodeMap.remove(key);
       }
-      if (accessCode == null || accessCode.isExpired() || !accessCode.getToken().isActive())
+      if (accessCode == null)
       {
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
-         res.put("error_description", "Code not found or expired");
+         res.put("error_description", "Code not found");
+         return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(res).build();
+      }
+      if (accessCode.isExpired())
+      {
+         Map<String, String> res = new HashMap<String, String>();
+         res.put("error", "invalid_grant");
+         res.put("error_description", "Code is expired");
+         return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(res).build();
+      }
+      if (!accessCode.getToken().isActive())
+      {
+         Map<String, String> res = new HashMap<String, String>();
+         res.put("error", "invalid_grant");
+         res.put("error_description", "Token expired");
          return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(res).build();
       }
       if (!client.getId().equals(accessCode.getClient().getId()))
       {
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
-         res.put("error_description", "Code not found or expired");
+         res.put("error_description", "Auth error");
          return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(res).build();
       }
       AccessTokenResponse res = accessTokenResponse(realm.getPrivateKey(), accessCode.getToken());
