@@ -7,6 +7,15 @@ var REST = {
     cacheHeaders : []
 };
 
+// helper function
+REST.getKeys = function (o) {
+    if (o !== Object(o))
+        throw new TypeError('REST.getKeys called on non-object');
+    var ret = [], p;
+    for (p in o) if (Object.prototype.hasOwnProperty.call(o, p)) ret.push(p);
+    return ret;
+};
+
 // constructor
 REST.Request = function (){
 	REST.log("Creating new Request");
@@ -20,6 +29,7 @@ REST.Request = function (){
 	this.queryParameters = [];
 	this.matrixParameters = [];
 	this.formParameters = [];
+    this.forms = [];
 	this.cookies = [];
 	this.headers = [];
 	this.entity = null;
@@ -66,10 +76,10 @@ REST.Request.prototype = {
 				request.setRequestHeader('Accept', this.acceptHeader);
 			REST.log("Got form params: "+this.formParameters.length);
 			// see if we're sending an entity or a form
-			if(this.entity && this.formParameters.length > 0)
+			if(this.entity && (this.formParameters.length > 0 || this.forms.length > 0))
 				throw "Cannot have both an entity and form parameters";
 			// form
-			if(this.formParameters.length > 0){
+			if(this.formParameters.length > 0 || this.forms.length > 0){
 				if(contentTypeSet && contentTypeSet != "application/x-www-form-urlencoded")
 					throw "The ContentType that was set by header value ("+contentTypeSet+") is incompatible with form parameters";
 				if(this.contentTypeHeader && this.contentTypeHeader != "application/x-www-form-urlencoded")
@@ -110,7 +120,17 @@ REST.Request.prototype = {
 					data += REST.Encoding.encodeFormNameOrValue(this.formParameters[i][0]);
 					data += "=" + REST.Encoding.encodeFormNameOrValue(this.formParameters[i][1]);
 				}
-			}
+            } else if (this.forms.length > 0) {
+                data = '';
+                for (var i = 0; i < this.forms.length; i++) {
+                    if (i > 0)
+                        data += "&";
+                    var obj = this.forms[i][1];
+                    var key = REST.getKeys(obj)[0];
+                    data += REST.Encoding.encodeFormNameOrValue(key);
+                    data += "=" + REST.Encoding.encodeFormNameOrValue(obj[key]);
+                }
+            }
 			REST.log("Content-Type set to "+contentTypeSet);
 			REST.log("Entity set to "+data);
 			request.send(data);
@@ -179,6 +199,10 @@ REST.Request.prototype = {
 			REST.log("addFormParameter("+name+"="+value+")");
             REST._addToArray(this.formParameters, name, value);
 		},
+        addForm : function(name, value){
+    		REST.log("addForm("+name+"="+value+")");
+            REST._addToArray(this.forms, name, value);
+    	},
 		addHeader : function(name, value){
 			REST.log("addHeader("+name+"="+value+")");
             REST._addToArray(this.headers, name, value);
@@ -377,7 +401,8 @@ REST.Encoding.HTTPToken = REST.Encoding.hash(REST.Encoding.HTTPChar);
 //and http://www.apps.ietf.org/rfc/rfc1738.html#page-4
 REST.Encoding.encodeFormNameOrValue = function (val){
 	return REST.Encoding.encodeValue(val, REST.Encoding.AlphaNumHash, true);
-}
+};
+
 
 //see http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
 REST.Encoding.encodeHeaderName = function (val){

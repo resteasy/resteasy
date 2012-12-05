@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class MethodMetaData
 {
@@ -85,6 +86,7 @@ public class MethodMetaData
 		PathParam uriParam;
 		CookieParam cookie;
 		FormParam formParam;
+        Form form;
 
 		// boolean isEncoded = FindAnnotation.findAnnotation(annotations,
 		// Encoded.class) != null;
@@ -119,10 +121,14 @@ public class MethodMetaData
 			addParameter(type, annotations, MethodParamType.FORM_PARAMETER,
 					formParam.value());
 			this.wantsForm = true;
-		} else if (FindAnnotation.findAnnotation(annotations, Form.class) != null)
+		} else if ((form = FindAnnotation.findAnnotation(annotations, Form.class)) != null)
 		{
-			walkForm(type);
-		} else if ((FindAnnotation.findAnnotation(annotations, Context.class)) != null)
+            if (type == Map.class || type == List.class) {
+                addParameter(type, annotations, MethodParamType.FORM, form.prefix());
+                this.wantsForm = true;
+            } else
+                walkForm(type);
+        } else if ((FindAnnotation.findAnnotation(annotations, Context.class)) != null)
 		{
 			// righfully ignore
 		} else if (useBody)
@@ -145,8 +151,9 @@ public class MethodMetaData
 			processMetaData(method.getParameterTypes()[0],
 					method.getAnnotations(), false);
 		}
-		if (type.getSuperclass() != null)
+		if (type.getSuperclass() != null) {
 			walkForm(type.getSuperclass());
+        }
 	}
 
 	private void addParameter(Class<?> type, Annotation[] annotations,
