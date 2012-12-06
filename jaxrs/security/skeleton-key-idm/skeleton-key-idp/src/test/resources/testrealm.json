@@ -79,7 +79,22 @@
                 "roles" : ["user"]
              }
           ]
-       }
+       },
+              {
+                 "name" : "OtherApp",
+                 "roles" : ["admin", "user"],
+                 "roleMappings" : [
+                    {
+                       "username" : "wburke",
+                       "roles" : ["user"]
+                    },
+                    {
+                       "username" : "admin",
+                       "roles" : ["admin"]
+                    }
+                 ]
+              }
+
    ]
 
 

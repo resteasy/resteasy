@@ -261,7 +261,7 @@ public class TokenManagement
          {
             Resource resource = identityManager.getResource(realm, res);
             ScopeMapping scopeMapping = identityManager.getScopeMapping(realm, resource, client);
-            RoleMapping roleMapping = identityManager.getRoleMapping(realm, user);
+            RoleMapping roleMapping = identityManager.getRoleMapping(realm, resource, user);
             SkeletonKeyToken.Access access = token.addAccess(resource.getName());
             for (String role : scope.get(res))
             {
@@ -484,7 +484,7 @@ public class TokenManagement
          for (String res : scope.keySet())
          {
             Resource resource = identityManager.getResource(realm, res);
-            html.append("<tr><td><B>").append(resource.getName()).append("</b></td><td>");
+            html.append("<tr><td><b>Resource: </b>").append(resource.getName()).append("</td><td><b>Roles:</b>");
             ScopeMapping mapping = identityManager.getScopeMapping(realm, resource, client);
             for (String role : scope.get(res))
             {
@@ -501,11 +501,50 @@ public class TokenManagement
       else
       {
          ScopeMapping mapping = identityManager.getScopeMapping(realm, client);
-         if (mapping == null || !mapping.getRoles().contains("login"))
+         if (mapping != null && mapping.getRoles().contains("login"))
          {
-            return Response.ok("<h1>Security Alert</h1><p>Known client not authorized to request a user login.</p>").type("text/html").build();
+            html.append("<h1>Login For ").append(realm.getName()).append(" Realm</h1>");
          }
-         html.append("<h1>Login For ").append(realm.getName()).append(" Realm</h1>");
+         else
+         {
+            SkeletonKeyScope scope = new SkeletonKeyScope();
+            List<Resource> resources = identityManager.getResources(realm);
+            boolean found = false;
+            for (Resource resource : resources)
+            {
+               ScopeMapping resourceScope = identityManager.getScopeMapping(realm, resource, client);
+               if (resourceScope == null) continue;
+               if (resourceScope.getRoles().size() == 0) continue;
+               if (!found)
+               {
+                  found = true;
+                  html.append("<p>A Third Party is requesting access to the following resources</p>");
+                  html.append("<table>");
+               }
+               html.append("<tr><td><b>Resource: </b>").append(resource.getName()).append("</td><td><b>Roles:</b>");
+               // todo add description of role
+               for (String role : resourceScope.getRoles())
+               {
+                  html.append(" ").append(role);
+                  scope.add(resource.getName(), role);
+               }
+            }
+            if (!found)
+            {
+               return Response.ok("<h1>Security Alert</h1><p>Known client not authorized to access this realm.</p>").type("text/html").build();
+            }
+            html.append("</table>");
+            try
+            {
+               String json = JsonSerialization.toString(scope, false);
+               scopeParam = Base64Url.encode(json.getBytes("UTF-8"));
+            }
+            catch (Exception e)
+            {
+               throw new RuntimeException(e);
+            }
+
+         }
       }
 
       UriBuilder formActionUri = uriInfo.getAbsolutePathBuilder().path("login");
@@ -526,9 +565,16 @@ public class TokenManagement
          }
       }
       html.append("<input type=\"hidden\" name=\"client_id\" value=\"").append(clientId).append("\">");
-      if (scopeParam != null) html.append("<input type=\"hidden\" name=\"scope\" value=\"").append(scopeParam).append("\">");
+      if (scopeParam != null)
+      {
+         html.append("<input type=\"hidden\" name=\"scope\" value=\"").append(scopeParam).append("\">");
+      }
       if (state != null) html.append("<input type=\"hidden\" name=\"state\" value=\"").append(state).append("\">");
       html.append("<input type=\"hidden\" name=\"redirect_uri\" value=\"").append(redirect).append("\">");
+      html.append("<input type=\"submit\" value=\"");
+      if (scopeParam == null) html.append("Login");
+      else html.append("Grant Access");
+      html.append("\">");
       html.append("</form>");
       return Response.ok(html.toString()).type("text/html").build();
    }

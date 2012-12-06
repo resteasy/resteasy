@@ -68,7 +68,7 @@ public class RSATokenVerifier
       }
       if (access == null)
       {
-         throw new VerificationException("No resource access specified");
+         throw new VerificationException("Not authorized for resource access");
       }
 
       /*
