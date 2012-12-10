@@ -1,14 +1,10 @@
 package org.jboss.resteasy.test.skeleton.key;
 
 import junit.framework.Assert;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.PEMWriter;
-import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
-import org.jboss.resteasy.skeleton.key.ServiceMetadata;
+import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
 import org.jboss.resteasy.skeleton.key.VerificationException;
-import org.jboss.resteasy.skeleton.key.model.data.RequiredCredential;
 import org.jboss.resteasy.skeleton.key.model.representations.AccessTokenResponse;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -17,12 +13,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
-import java.io.StringWriter;
 import java.net.URI;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.PublicKey;
-import java.security.Security;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -94,7 +85,7 @@ public class LoginTest extends SkeletonTestBase
       AccessTokenResponse tokenResponse = res.readEntity(AccessTokenResponse.class);
       res.close();
 
-      ServiceMetadata metadata = new ServiceMetadata();
+      ResourceMetadata metadata = new ResourceMetadata();
       metadata.setRealm("test-realm");
       metadata.setName("Application");
       metadata.setRealmKey(realmInfo.getPublicKey());
@@ -170,7 +161,7 @@ public class LoginTest extends SkeletonTestBase
       AccessTokenResponse tokenResponse = res.readEntity(AccessTokenResponse.class);
       res.close();
 
-      ServiceMetadata metadata = new ServiceMetadata();
+      ResourceMetadata metadata = new ResourceMetadata();
       metadata.setRealm("test-realm");
       metadata.setName("Application");
       metadata.setRealmKey(realmInfo.getPublicKey());

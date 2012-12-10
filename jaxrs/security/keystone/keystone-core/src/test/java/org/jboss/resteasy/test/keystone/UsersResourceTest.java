@@ -5,6 +5,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.keystone.model.User;
@@ -68,12 +69,9 @@ public class UsersResourceTest
    public void testUser()
    {
       String newUser = "{ \"user\" : { \"username\" : \"wburke\", \"name\" : \"Bill Burke\", \"email\" : \"bburke@redhat.com\", \"enabled\" : true, \"credentials\" : { \"password\" : \"geheim\" }} }";
-      ResteasyClient client = new ResteasyClient(deployment.getProviderFactory());
-      ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager();
-      cm.setMaxTotal(100);
-      cm.setDefaultMaxPerRoute(100);
-      HttpClient httpClient = new DefaultHttpClient(cm);
-      client.httpEngine(new ApacheHttpClient4Engine(httpClient));
+      ResteasyClient client = new ResteasyClientBuilder().providerFactory(deployment.getProviderFactory())
+                                                         .connectionPoolSize(100)
+                                                         .maxPooledPerRoute(100).build();
       Response response = client.target(generateURL("/users")).request().post(Entity.json(newUser));
       Assert.assertEquals(response.getStatus(), 201);
       response.close();

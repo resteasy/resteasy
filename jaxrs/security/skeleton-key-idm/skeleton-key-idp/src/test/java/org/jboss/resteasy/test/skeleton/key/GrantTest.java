@@ -2,39 +2,24 @@ package org.jboss.resteasy.test.skeleton.key;
 
 import junit.framework.Assert;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.PEMReader;
 import org.bouncycastle.openssl.PEMWriter;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
-import org.jboss.resteasy.skeleton.key.ServiceMetadata;
+import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
-import org.jboss.resteasy.skeleton.key.adapters.infinispan.InfinispanIDM;
 import org.jboss.resteasy.skeleton.key.model.data.RequiredCredential;
 import org.jboss.resteasy.skeleton.key.model.representations.AccessTokenResponse;
-import org.jboss.resteasy.skeleton.key.model.representations.PublishedRealmRepresentation;
-import org.jboss.resteasy.skeleton.key.model.representations.RealmRepresentation;
-import org.jboss.resteasy.skeleton.key.service.RealmFactory;
-import org.jboss.resteasy.skeleton.key.service.SkeletonKeyContextResolver;
-import org.jboss.resteasy.skeleton.key.service.TokenManagement;
-import org.jboss.resteasy.test.BaseResourceTest;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PublicKey;
 import java.security.Security;
-
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -63,7 +48,7 @@ public class GrantTest extends SkeletonTestBase
       }
       AccessTokenResponse tokenResponse = response.readEntity(AccessTokenResponse.class);
       Assert.assertEquals("bearer", tokenResponse.getTokenType());
-      ServiceMetadata metadata = new ServiceMetadata();
+      ResourceMetadata metadata = new ResourceMetadata();
       metadata.setRealm("test-realm");
       metadata.setName("Application");
       metadata.setRealmKey(realmInfo.getPublicKey());

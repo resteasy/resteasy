@@ -256,7 +256,6 @@ public class EchoTest
             public void checkClientTrusted(X509Certificate[] chain,
                                            String authType) throws CertificateException
             {
-               System.out.println("**************Client");
                for (X509Certificate cert : chain)
                {
                   System.out.println("--" + cert);
@@ -266,7 +265,6 @@ public class EchoTest
             public void checkServerTrusted(X509Certificate[] chain,
                                            String authType) throws CertificateException
             {
-               System.out.println("*********** SERVER");
                for (X509Certificate cert : chain)
                {
                   System.out.println("--" + cert);
@@ -275,7 +273,6 @@ public class EchoTest
 
             public X509Certificate[] getAcceptedIssuers()
             {
-               System.out.println("************* Accepted");
                return null;
             }
          };
@@ -294,7 +291,7 @@ public class EchoTest
 
          // Register our new socket factory with the typical SSL port and the
          // correct protocol name.
-         Scheme httpsScheme = new Scheme("https", sf, port);
+         Scheme httpsScheme = new Scheme("https", sf, 443);
          SchemeRegistry schemeRegistry = new SchemeRegistry();
          schemeRegistry.register(httpsScheme);
 

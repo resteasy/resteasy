@@ -1,6 +1,10 @@
 package org.jboss.resteasy.skeleton.key.as7;
 
 import org.apache.catalina.connector.Request;
+import org.apache.http.auth.AuthScope;
+import org.jboss.resteasy.client.exception.ResteasyClientException;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
@@ -12,6 +16,7 @@ import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.Form;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,6 +25,7 @@ import java.security.Principal;
 import java.security.PublicKey;
 import java.security.acl.Group;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
+public class SkeletonKeyOAuthLoginModule extends JBossWebAuthLoginModule
 {
    /*
 
@@ -46,9 +52,63 @@ public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
 
     */
 
-   static ConcurrentHashMap<String, ResourceMetadata> resourceMetadataCache = new ConcurrentHashMap<String, ResourceMetadata>();
+   protected static class CacheEntry
+   {
+      protected ResourceMetadata metadata;
+      protected ResteasyClient client;
+      protected ResteasyWebTarget authUrl;
+      protected String clientId;
+      protected Form credentials = new Form();
 
-   protected ResourceMetadata resourceMetadata;
+      public ResourceMetadata getMetadata()
+      {
+         return metadata;
+      }
+
+      public void setMetadata(ResourceMetadata metadata)
+      {
+         this.metadata = metadata;
+      }
+
+      public ResteasyClient getClient()
+      {
+         return client;
+      }
+
+      public void setClient(ResteasyClient client)
+      {
+         this.client = client;
+      }
+
+      public ResteasyWebTarget getAuthUrl()
+      {
+         return authUrl;
+      }
+
+      public void setAuthUrl(ResteasyWebTarget authUrl)
+      {
+         this.authUrl = authUrl;
+      }
+
+      public String getClientId()
+      {
+         return clientId;
+      }
+
+      public void setClientId(String clientId)
+      {
+         this.clientId = clientId;
+      }
+
+      public Form getCredentials()
+      {
+         return credentials;
+      }
+   }
+
+   static ConcurrentHashMap<String, CacheEntry> resourceMetadataCache = new ConcurrentHashMap<String, CacheEntry>();
+
+   protected CacheEntry cacheEntry;
    protected SkeletonKeyTokenVerification verification;
 
    private static KeyStore loadKeyStore(String filename, String password) throws Exception
@@ -73,8 +133,8 @@ public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
       if (domain == null) throw new RuntimeException(("Must set realm in security domain config"));
 
       String cacheKey = domain + ":" + name;
-      resourceMetadata = resourceMetadataCache.get(cacheKey);
-      if (resourceMetadata != null) return;
+      cacheEntry = resourceMetadataCache.get(cacheKey);
+      if (cacheEntry != null) return;
 
       String realmTruststore = (String) options.get("realm-truststore");
       String realmTruststorePassword = (String) options.get("realm-truststore-password");
@@ -105,7 +165,7 @@ public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
       {
          throw new RuntimeException(e);
       }
-      resourceMetadata = new ResourceMetadata();
+      ResourceMetadata resourceMetadata = new ResourceMetadata();
       resourceMetadata.setRealm(domain);
       resourceMetadata.setName(name);
       resourceMetadata.setRealmKey(realmKey);
@@ -142,13 +202,42 @@ public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
          }
          resourceMetadata.setKeystore(serverKS);
       }
-      resourceMetadataCache.putIfAbsent(cacheKey, resourceMetadata);
+      String client_id = (String)options.get("client-id");
+      if (client_id == null)
+      {
+         throw new IllegalArgumentException("Must set client-id to use with auth server");
+      }
+      cacheEntry = new CacheEntry();
+      String authUrl = (String)options.get("auth-url");
+      if (authUrl == null)
+      {
+         throw new RuntimeException("You must specify auth-url");
+      }
+      cacheEntry.setMetadata(resourceMetadata);
+      cacheEntry.setClientId(client_id);
+
+      String credentials = (String)options.get("client-credentials");
+      if (credentials != null)
+      {
+         String[] creds = credentials.trim().split(",");
+         for (String cred : creds)
+         {
+            cred = cred.trim();
+            if ("".equals(cred)) continue;
+            String val = (String)options.get(cred);
+            if (val == null) throw new RuntimeException("You must specify the credential parameter: " + cred);
+            cacheEntry.getCredentials().param(cred, val);
+         }
+      }
+
+
+      resourceMetadataCache.putIfAbsent(cacheKey, cacheEntry);
    }
 
    protected void challengeResponse(HttpServletResponse response, String error, String description) throws LoginException
    {
       StringBuilder header = new StringBuilder("Bearer realm=\"");
-      header.append(resourceMetadata.getRealm()).append("\"");
+     // header.append(resourceMetadata.getRealm()).append("\"");
       if (error != null)
       {
          header.append(", error=\"").append(error).append("\"");
@@ -189,7 +278,7 @@ public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
 
       try
       {
-         verification = RSATokenVerifier.verify(chain, tokenString, resourceMetadata);
+         verification = RSATokenVerifier.verify(chain, tokenString, null);
          System.out.println(verification.getPrincipal().getName());
          System.out.println(verification.getRoles());
       }

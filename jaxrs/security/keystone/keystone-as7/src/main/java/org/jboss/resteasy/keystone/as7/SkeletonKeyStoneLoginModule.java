@@ -5,6 +5,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
@@ -53,11 +54,9 @@ public class SkeletonKeyStoneLoginModule extends JBossWebAuthLoginModule
          Thread.currentThread().setContextClassLoader(old);
       }
       client = new ResteasyClient(providerFactory);
-      ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager();
-      cm.setMaxTotal(100);
-      cm.setDefaultMaxPerRoute(100);
-      HttpClient httpClient = new DefaultHttpClient(cm);
-      client.httpEngine(new ApacheHttpClient4Engine(httpClient));
+      client = new ResteasyClientBuilder().providerFactory(providerFactory)
+              .connectionPoolSize(100)
+              .maxPooledPerRoute(100).build();
    }
 
    static void initAdmin(Map<String, ?> options)

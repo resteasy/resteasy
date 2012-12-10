@@ -17,7 +17,7 @@ import java.util.Set;
 public class RSATokenVerifier
 {
    public static SkeletonKeyTokenVerification verify(X509Certificate[] userCerts,
-                                                     String tokenString, ServiceMetadata metadata) throws VerificationException
+                                                     String tokenString, ResourceMetadata metadata) throws VerificationException
    {
       PublicKey realmKey = metadata.getRealmKey();
       String realm = metadata.getRealm();

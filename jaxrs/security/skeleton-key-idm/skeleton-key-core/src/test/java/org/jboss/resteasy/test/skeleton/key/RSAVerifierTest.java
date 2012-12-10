@@ -6,7 +6,7 @@ import org.bouncycastle.x509.X509V1CertificateGenerator;
 import org.jboss.resteasy.jose.jws.JWSBuilder;
 import org.jboss.resteasy.jwt.JsonSerialization;
 import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
-import org.jboss.resteasy.skeleton.key.ServiceMetadata;
+import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyToken;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
 import org.jboss.resteasy.skeleton.key.VerificationException;
@@ -37,7 +37,7 @@ public class RSAVerifierTest
    private static KeyPair badPair;
    private static KeyPair clientPair;
    private static X509Certificate[] clientCertificateChain;
-   private ServiceMetadata metadata;
+   private ResourceMetadata metadata;
    private SkeletonKeyToken token;
 
    static
@@ -75,7 +75,7 @@ public class RSAVerifierTest
    @Before
    public void initTest()
    {
-      metadata = new ServiceMetadata();
+      metadata = new ResourceMetadata();
       metadata.setName("service");
       metadata.setRealm("domain");
       metadata.setRealmKey(idpPair.getPublic());
