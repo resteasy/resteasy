@@ -62,8 +62,7 @@ public class ClientExecutorShutdownTest extends BaseResourceTest
    public void testApacheHttpClient4ExecutorNonSharedHttpClientFinalize() throws Throwable
    {
       ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine();
-      ResteasyClient client = new ResteasyClient();
-      client.httpEngine(engine);
+      ResteasyClient client = new ResteasyClient(engine);
       Response response = client.target(generateURL("/test")).request().post(null);
       Assert.assertEquals(204, response.getStatus());
       engine.finalize();
@@ -89,8 +88,7 @@ public class ClientExecutorShutdownTest extends BaseResourceTest
    public void testApacheHttpClient4ExecutorNonSharedHttpClientClose() throws Throwable
    {
       ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine();
-      ResteasyClient client = new ResteasyClient();
-      client.httpEngine(engine);
+      ResteasyClient client = new ResteasyClient(engine);
       Response response = client.target(generateURL("/test")).request().post(null);
       Assert.assertEquals(204, response.getStatus());
       engine.close();
@@ -117,8 +115,7 @@ public class ClientExecutorShutdownTest extends BaseResourceTest
    {
       HttpClient httpClient = new DefaultHttpClient();
       ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
-      ResteasyClient client = new ResteasyClient();
-      client.httpEngine(engine);
+      ResteasyClient client = new ResteasyClient(engine);
       Response response = client.target(generateURL("/test")).request().post(null);
       Assert.assertEquals(204, response.getStatus());
       engine.finalize();
@@ -139,8 +136,7 @@ public class ClientExecutorShutdownTest extends BaseResourceTest
    {
       HttpClient httpClient = new DefaultHttpClient();
       ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
-      ResteasyClient client = new ResteasyClient();
-      client.httpEngine(engine);
+      ResteasyClient client = new ResteasyClient(engine);
       Response response = client.target(generateURL("/test")).request().post(null);
       Assert.assertEquals(204, response.getStatus());
       engine.close();

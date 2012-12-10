@@ -279,8 +279,7 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       HttpClient httpClient = new DefaultHttpClient(cm, params);
 
       final ApacheHttpClient4Engine executor = new ApacheHttpClient4Engine(httpClient);
-      ResteasyClient client = new ResteasyClient();
-      client.httpEngine(executor);
+      ResteasyClient client = new ResteasyClient(executor);
       return client;
    }
 
