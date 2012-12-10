@@ -126,13 +126,37 @@ public class PathParamTest extends BaseResourceTest
       }
    }
 
+   @Path("/employeeinfo")
+   public static class Email
+   {
+      @GET
+      @Path("/employees/{firstname}.{lastname}@{domain}.com")
+      @Produces("text/plain")
+      public String getEmployeeLastName(@PathParam("lastname") String lastName)
+      {
+         return lastName;
+      }
+   }
+
+
    @Before
    public void setUp() throws Exception
    {
       deployment.getRegistry().addPerRequestResource(Digits.class);
       deployment.getRegistry().addPerRequestResource(Resource.class);
       deployment.getRegistry().addPerRequestResource(CarResource.class);
+      deployment.getRegistry().addPerRequestResource(Email.class);
    }
+
+   @Test
+   public void testEmail() throws Exception
+   {
+
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/employeeinfo/employees/bill.burke@burkecentral.com"));
+      String str = request.getTarget(String.class);
+      Assert.assertEquals("burke", str);
+   }
+
 
    /*
     * Client invokes GET on root resource at /PathParamTest;

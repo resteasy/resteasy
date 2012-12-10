@@ -1,5 +1,15 @@
 package org.jboss.resteasy.client.jaxrs.engines;
 
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.SingleClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -19,13 +29,25 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.MessageProcessingException;
 import javax.ws.rs.client.ClientException;
 import javax.ws.rs.client.Configuration;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Map;
 
@@ -57,6 +79,13 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
    {
       this.httpClient = httpClient;
    }
+
+   public ApacheHttpClient4Engine(HttpClient httpClient, boolean closeHttpClient)
+   {
+      this.httpClient = httpClient;
+      this.createdHttpClient = closeHttpClient;
+   }
+
 
    public ApacheHttpClient4Engine(HttpClient httpClient, HttpContext httpContext)
    {

@@ -25,58 +25,42 @@ public class ResteasyClient implements Client
    protected volatile ExecutorService asyncInvocationExecutor;
    protected ClientConfiguration configuration;
 
+
    public ResteasyClient()
    {
-      configuration = new ClientConfiguration(ResteasyProviderFactory.getInstance());
+      this(ResteasyProviderFactory.getInstance());
    }
 
-   public ResteasyClient(ResteasyProviderFactory providerFactory)
+   public ResteasyClient(ResteasyProviderFactory factory)
    {
-      configuration = new ClientConfiguration(providerFactory);
+      configuration = new ClientConfiguration(factory);
+      httpEngine = new ApacheHttpClient4Engine(configuration());
+      asyncInvocationExecutor = Executors.newFixedThreadPool(10);
+   }
+
+   public ResteasyClient(ClientHttpEngine httpEngine)
+   {
+      this.httpEngine = httpEngine;
+      configuration = new ClientConfiguration(ResteasyProviderFactory.getInstance());
+      asyncInvocationExecutor = Executors.newFixedThreadPool(10);
+
+   }
+
+   public ResteasyClient(ClientHttpEngine httpEngine, ExecutorService asyncInvocationExecutor, ClientConfiguration configuration)
+   {
+      this.httpEngine = httpEngine;
+      this.asyncInvocationExecutor = asyncInvocationExecutor;
+      this.configuration = configuration;
    }
 
    public ClientHttpEngine httpEngine()
    {
-      ClientHttpEngine result = httpEngine;
-      if (result == null)
-      { // First check (no locking)
-         synchronized (this)
-         {
-            result = httpEngine;
-            if (result == null) // Second check (with locking)
-            {
-               httpEngine = result = new ApacheHttpClient4Engine(configuration());
-            }
-         }
-      }
-      return result;
+      return httpEngine;
    }
 
    public ExecutorService asyncInvocationExecutor()
    {
-      ExecutorService result = asyncInvocationExecutor;
-      if (result == null)
-      { // First check (no locking)
-         synchronized (this)
-         {
-            result = asyncInvocationExecutor;
-            if (result == null) // Second check (with locking)
-               asyncInvocationExecutor = result = Executors.newFixedThreadPool(10);
-         }
-      }
-      return result;
-   }
-
-   public ResteasyClient httpEngine(ClientHttpEngine httpEngine)
-   {
-      this.httpEngine = httpEngine;
-      return this;
-   }
-
-   public ResteasyClient asyncInvocationExecutor(ExecutorService asyncInvocationExecutor)
-   {
-      this.asyncInvocationExecutor = asyncInvocationExecutor;
-      return this;
+      return asyncInvocationExecutor;
    }
 
    @Override
