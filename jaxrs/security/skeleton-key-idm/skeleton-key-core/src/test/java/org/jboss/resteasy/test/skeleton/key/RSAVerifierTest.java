@@ -4,6 +4,8 @@ import junit.framework.Assert;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.x509.X509V1CertificateGenerator;
 import org.jboss.resteasy.jose.jws.JWSBuilder;
+import org.jboss.resteasy.jose.jws.JWSInput;
+import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
 import org.jboss.resteasy.jwt.JsonSerialization;
 import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
@@ -15,6 +17,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.security.auth.x500.X500Principal;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
@@ -76,7 +79,7 @@ public class RSAVerifierTest
    public void initTest()
    {
       metadata = new ResourceMetadata();
-      metadata.setName("service");
+      metadata.setResourceName("service");
       metadata.setRealm("domain");
       metadata.setRealmKey(idpPair.getPublic());
 
@@ -102,6 +105,30 @@ public class RSAVerifierTest
       Assert.assertEquals("CN=Client", v.getPrincipal().getName());
       Assert.assertEquals(encoded, v.getPrincipal().getToken());
    }
+
+   /*
+   @Test
+   public void testSpeed() throws Exception
+   {
+
+      byte[] tokenBytes = JsonSerialization.toByteArray(token, false);
+
+      String encoded = new JWSBuilder()
+              .content(tokenBytes)
+              .rsa256(idpPair.getPrivate());
+
+      long start = System.currentTimeMillis();
+      int count = 10000;
+      for (int i = 0; i < count; i++)
+      {
+         SkeletonKeyTokenVerification v = RSATokenVerifier.verify(null, encoded, metadata);
+
+      }
+      long end = System.currentTimeMillis() - start;
+      System.out.println("rate: " + ((double)end/(double)count));
+   }
+   */
+
 
    @Test
    public void testBadSignature() throws Exception

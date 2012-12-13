@@ -107,7 +107,7 @@ public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
       }
       resourceMetadata = new ResourceMetadata();
       resourceMetadata.setRealm(domain);
-      resourceMetadata.setName(name);
+      resourceMetadata.setResourceName(name);
       resourceMetadata.setRealmKey(realmKey);
 
 
@@ -140,7 +140,7 @@ public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
          {
             throw new RuntimeException(e);
          }
-         resourceMetadata.setKeystore(serverKS);
+         resourceMetadata.setClientKeystore(serverKS);
       }
       resourceMetadataCache.putIfAbsent(cacheKey, resourceMetadata);
    }
@@ -172,7 +172,6 @@ public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
    @Override
    protected boolean login(Request request, HttpServletResponse response) throws LoginException
    {
-      X509Certificate[] chain = request.getCertificateChain();
       String authHeader = request.getHeader("Authorization");
       if (authHeader == null)
       {
@@ -189,9 +188,8 @@ public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
 
       try
       {
+         X509Certificate[] chain = request.getCertificateChain();
          verification = RSATokenVerifier.verify(chain, tokenString, resourceMetadata);
-         System.out.println(verification.getPrincipal().getName());
-         System.out.println(verification.getRoles());
       }
       catch (VerificationException e)
       {

@@ -21,7 +21,7 @@ public class RSATokenVerifier
    {
       PublicKey realmKey = metadata.getRealmKey();
       String realm = metadata.getRealm();
-      String resource = metadata.getName();
+      String resource = metadata.getResourceName();
       JWSInput input = new JWSInput(tokenString);
       boolean verified = false;
       try
@@ -103,9 +103,9 @@ public class RSATokenVerifier
             }
          }
       }
-      SkeletonKeyPrincipal principal = new SkeletonKeyPrincipal(user, surrogate, tokenString, metadata.getKeystore(), metadata.getTruststore());
+      SkeletonKeyPrincipal principal = new SkeletonKeyPrincipal(user, surrogate, tokenString, metadata.getClientKeystore(), metadata.getTruststore());
       Set<String> roles = access.getRoles();
       if (roles == null) roles = new HashSet<String>();
-      return new SkeletonKeyTokenVerification(principal, roles);
+      return new SkeletonKeyTokenVerification(token, principal, roles);
    }
 }
