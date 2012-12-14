@@ -1,12 +1,9 @@
 package org.jboss.resteasy.skeleton.key.as7;
 
-import org.apache.catalina.Session;
 import org.apache.catalina.connector.Request;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.security.PemUtils;
-import org.jboss.resteasy.skeleton.key.AccessTokenResponse;
-import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
 import org.jboss.resteasy.skeleton.key.VerificationException;
@@ -16,21 +13,14 @@ import org.jboss.security.SimplePrincipal;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.security.KeyStore;
 import java.security.Principal;
 import java.security.PublicKey;
 import java.security.acl.Group;
-import java.security.cert.X509Certificate;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,8 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SkeletonKeyOAuthLoginModule extends JBossWebAuthLoginModule
 {
 
-   private static final ConcurrentHashMap<String, CatalinaRealmInfo> resourceMetadataCache = new ConcurrentHashMap<String, CatalinaRealmInfo>();
-   protected CatalinaRealmInfo cacheEntry;
+   private static final ConcurrentHashMap<String, CatalinaRealmConfiguration> resourceMetadataCache = new ConcurrentHashMap<String, CatalinaRealmConfiguration>();
+   protected CatalinaRealmConfiguration cacheEntry;
    protected SkeletonKeyTokenVerification verification;
 
    private static KeyStore loadKeyStore(String filename, String password) throws Exception
@@ -129,7 +119,7 @@ public class SkeletonKeyOAuthLoginModule extends JBossWebAuthLoginModule
       {
          throw new IllegalArgumentException("Must set client-id to use with auth server");
       }
-      cacheEntry = new CatalinaRealmInfo();
+      cacheEntry = new CatalinaRealmConfiguration();
       String authUrl = (String) options.get("auth-url");
       if (authUrl == null)
       {
@@ -165,7 +155,7 @@ public class SkeletonKeyOAuthLoginModule extends JBossWebAuthLoginModule
               .build();
       cacheEntry.setClient(client);
       cacheEntry.setAuthUrl(UriBuilder.fromUri(authUrl).queryParam("client_id", client_id));
-      cacheEntry.setTokenUrl(client.target(tokenUrl));
+      cacheEntry.setCodeUrl(client.target(tokenUrl));
       cacheEntry.setCookiePath((String) options.get("cookie-path"));
       String secureCookie = (String) options.get("cookie-secure");
       if (secureCookie == null)
@@ -183,14 +173,8 @@ public class SkeletonKeyOAuthLoginModule extends JBossWebAuthLoginModule
    protected boolean login(Request request, HttpServletResponse response) throws LoginException
    {
       CatalinaOAuthLogin oAuthLogin = new CatalinaOAuthLogin(cacheEntry, request, response);
-      try
-      {
-         loginOk = oAuthLogin.login();
-      }
-      catch (VerificationException e)
-      {
-         new LoginException(e.getMessage());
-      }
+      loginOk = oAuthLogin.login();
+      if (!loginOk) return true;
       verification = oAuthLogin.getVerification();
       return true;
    }

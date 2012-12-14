@@ -36,7 +36,7 @@ public class SkeletonTestBase extends BaseResourceTest
 {
    protected static InfinispanIDM idm;
    protected static WebTarget realm;
-   protected static Client client;
+   protected static ResteasyClient client;
    protected static PublishedRealmRepresentation realmInfo;
 
    public static void setupIDM(String realmJson) throws Exception

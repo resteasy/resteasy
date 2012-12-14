@@ -3,7 +3,7 @@ package org.jboss.resteasy.skeleton.key.as7;
 import org.apache.catalina.Session;
 import org.apache.catalina.connector.Request;
 import org.jboss.resteasy.skeleton.key.OAuthLogin;
-import org.jboss.resteasy.skeleton.key.RealmInfo;
+import org.jboss.resteasy.skeleton.key.RealmConfiguration;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -19,7 +19,7 @@ public class CatalinaOAuthLogin extends OAuthLogin
    protected Request request;
    protected HttpServletResponse response;
 
-   public CatalinaOAuthLogin(RealmInfo realmInfo, Request request, HttpServletResponse response)
+   public CatalinaOAuthLogin(RealmConfiguration realmInfo, Request request, HttpServletResponse response)
    {
       super(realmInfo);
       this.request = request;
@@ -128,7 +128,7 @@ public class CatalinaOAuthLogin extends OAuthLogin
    protected void register()
    {
       Session session = request.getSessionInternal(true);
-      CatalinaRealmInfo cacheEntry = (CatalinaRealmInfo)realmInfo;
+      CatalinaRealmConfiguration cacheEntry = (CatalinaRealmConfiguration)realmInfo;
       cacheEntry.register(session, verification);
    }
 }

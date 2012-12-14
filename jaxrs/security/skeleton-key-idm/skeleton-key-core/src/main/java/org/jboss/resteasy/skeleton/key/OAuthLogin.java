@@ -13,7 +13,7 @@ import java.security.cert.X509Certificate;
  */
 public abstract class OAuthLogin
 {
-   protected RealmInfo realmInfo;
+   protected RealmConfiguration realmInfo;
    protected SkeletonKeyTokenVerification verification;
 
    protected abstract String getRequestUrl();
@@ -30,12 +30,12 @@ public abstract class OAuthLogin
 
    private static final String LOGIN_COOKIE = "SKELETON_KEY_LOGIN";
 
-   protected OAuthLogin(RealmInfo realmInfo)
+   protected OAuthLogin(RealmConfiguration realmInfo)
    {
       this.realmInfo = realmInfo;
    }
 
-   public RealmInfo getRealmInfo()
+   public RealmConfiguration getRealmInfo()
    {
       return realmInfo;
    }
@@ -85,7 +85,7 @@ public abstract class OAuthLogin
          if (port != 443) secureUrl.port(port);
          url = secureUrl.build().toString();
       }
-      return realmInfo.getAuthUrl().clone().queryParam("redirect_uri", url).build().toString();
+      return realmInfo.getAuthUrl().clone().queryParam("client_id", realmInfo.getClientId()).queryParam("redirect_uri", url).build().toString();
    }
 
    protected void loginRedirect()
@@ -100,7 +100,7 @@ public abstract class OAuthLogin
    }
 
 
-   public boolean login() throws VerificationException
+   public boolean login()
    {
       if (checkCookie()) return true;
       String code = getCode();
@@ -123,16 +123,25 @@ public abstract class OAuthLogin
               .param("redirect_uri", getRedirectUri())
               .param("client_id", realmInfo.getClientId());
 
-      Response res = realmInfo.getTokenUrl().request().post(Entity.form(form));
+      Response res = realmInfo.getCodeUrl().request().post(Entity.form(form));
       if (res.getStatus() != 200)
       {
-         throw new VerificationException("Failed to get token");
+         sendError(Response.Status.FORBIDDEN.getStatusCode());
+         return false;
       }
       AccessTokenResponse tokenResponse = res.readEntity(AccessTokenResponse.class);
 
       String tokenString = tokenResponse.getToken();
       X509Certificate[] chain = getCertificateChain();
-      verification = RSATokenVerifier.verify(chain, tokenString, realmInfo.getMetadata());
+      try
+      {
+         verification = RSATokenVerifier.verify(chain, tokenString, realmInfo.getMetadata());
+      }
+      catch (VerificationException e)
+      {
+         sendError(Response.Status.FORBIDDEN.getStatusCode());
+         return false;
+      }
       register();
       setCookie(getCookieName(), verification.getToken().getId(), null, realmInfo.getCookiePath(), realmInfo.isCookieSecure());
       return true;

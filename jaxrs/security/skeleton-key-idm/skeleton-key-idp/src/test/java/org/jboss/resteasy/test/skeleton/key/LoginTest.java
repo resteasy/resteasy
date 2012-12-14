@@ -14,6 +14,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 import java.net.URI;
+import java.security.cert.X509Certificate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -89,7 +90,7 @@ public class LoginTest extends SkeletonTestBase
       metadata.setRealm("test-realm");
       metadata.setResourceName("Application");
       metadata.setRealmKey(realmInfo.getPublicKey());
-      SkeletonKeyTokenVerification verification = RSATokenVerifier.verify(null, tokenResponse.getToken(), metadata);
+      SkeletonKeyTokenVerification verification = RSATokenVerifier.verify((X509Certificate[])null, tokenResponse.getToken(), metadata);
       Assert.assertEquals(verification.getPrincipal().getName(), "wburke");
       Assert.assertTrue(verification.getRoles().contains("user"));
    }
@@ -165,7 +166,7 @@ public class LoginTest extends SkeletonTestBase
       metadata.setRealm("test-realm");
       metadata.setResourceName("Application");
       metadata.setRealmKey(realmInfo.getPublicKey());
-      SkeletonKeyTokenVerification verification = RSATokenVerifier.verify(null, tokenResponse.getToken(), metadata);
+      SkeletonKeyTokenVerification verification = RSATokenVerifier.verify((X509Certificate[])null, tokenResponse.getToken(), metadata);
       Assert.assertEquals(verification.getPrincipal().getName(), "wburke");
       Assert.assertTrue(verification.getRoles().contains("user"));
       metadata.setRealm("test-realm");
@@ -173,7 +174,7 @@ public class LoginTest extends SkeletonTestBase
       metadata.setRealmKey(realmInfo.getPublicKey());
       try
       {
-         verification = RSATokenVerifier.verify(null, tokenResponse.getToken(), metadata);
+         verification = RSATokenVerifier.verify((X509Certificate[])null, tokenResponse.getToken(), metadata);
          Assert.fail("should not verify");
       }
       catch (VerificationException e)

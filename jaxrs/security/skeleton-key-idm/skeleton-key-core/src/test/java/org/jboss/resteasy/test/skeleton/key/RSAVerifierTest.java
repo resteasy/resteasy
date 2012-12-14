@@ -100,7 +100,7 @@ public class RSAVerifierTest
               .content(tokenBytes)
               .rsa256(idpPair.getPrivate());
 
-      SkeletonKeyTokenVerification v = RSATokenVerifier.verify(null, encoded, metadata);
+      SkeletonKeyTokenVerification v = RSATokenVerifier.verify((X509Certificate[])null, encoded, metadata);
       Assert.assertTrue(v.getRoles().contains("admin"));
       Assert.assertEquals("CN=Client", v.getPrincipal().getName());
       Assert.assertEquals(encoded, v.getPrincipal().getToken());
@@ -143,7 +143,7 @@ public class RSAVerifierTest
       SkeletonKeyTokenVerification v = null;
       try
       {
-         v = RSATokenVerifier.verify(null, encoded, metadata);
+         v = RSATokenVerifier.verify((X509Certificate[])null, encoded, metadata);
          Assert.fail();
       }
       catch (VerificationException ignored)
@@ -164,7 +164,7 @@ public class RSAVerifierTest
       SkeletonKeyTokenVerification v = null;
       try
       {
-         v = RSATokenVerifier.verify(null, encoded, metadata);
+         v = RSATokenVerifier.verify((X509Certificate[])null, encoded, metadata);
       }
       catch (VerificationException ignored)
       {
@@ -185,7 +185,7 @@ public class RSAVerifierTest
       SkeletonKeyTokenVerification v = null;
       try
       {
-         v = RSATokenVerifier.verify(null, encoded, metadata);
+         v = RSATokenVerifier.verify((X509Certificate[])null, encoded, metadata);
          Assert.fail();
       }
       catch (VerificationException ignored)
@@ -207,7 +207,7 @@ public class RSAVerifierTest
       SkeletonKeyTokenVerification v = null;
       try
       {
-         v = RSATokenVerifier.verify(null, encoded, metadata);
+         v = RSATokenVerifier.verify((X509Certificate[])null, encoded, metadata);
       }
       catch (VerificationException ignored)
       {
@@ -228,7 +228,7 @@ public class RSAVerifierTest
       SkeletonKeyTokenVerification v = null;
       try
       {
-         v = RSATokenVerifier.verify(null, encoded, metadata);
+         v = RSATokenVerifier.verify((X509Certificate[])null, encoded, metadata);
          Assert.fail();
       }
       catch (VerificationException ignored)
@@ -253,7 +253,7 @@ public class RSAVerifierTest
       SkeletonKeyTokenVerification v = null;
       try
       {
-         v = RSATokenVerifier.verify(null, encoded, metadata);
+         v = RSATokenVerifier.verify((X509Certificate[])null, encoded, metadata);
          Assert.fail();
       }
       catch (VerificationException ignored)
