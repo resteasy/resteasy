@@ -12,11 +12,13 @@ import java.util.Set;
  */
 public class SkeletonKeyTokenVerification
 {
-   protected SkeletonKeyPrincipal principal;
-   protected Set<String> roles;
+   protected final SkeletonKeyPrincipal principal;
+   protected final Set<String> roles;
+   protected final SkeletonKeyToken token;
 
-   public SkeletonKeyTokenVerification(SkeletonKeyPrincipal principal, Set<String> roles)
+   public SkeletonKeyTokenVerification(SkeletonKeyToken token, SkeletonKeyPrincipal principal, Set<String> roles)
    {
+      this.token = token;
       this.principal = principal;
       this.roles = roles;
    }
@@ -29,5 +31,10 @@ public class SkeletonKeyTokenVerification
    public Set<String> getRoles()
    {
       return roles;
+   }
+
+   public SkeletonKeyToken getToken()
+   {
+      return token;
    }
 }

@@ -232,7 +232,7 @@ public class BuiltResponse extends Response
    public Map<String, NewCookie> getCookies()
    {
       Map<String, NewCookie> cookies = new HashMap<String, NewCookie>();
-      List list = metadata.get(HttpHeaders.COOKIE);
+      List list = metadata.get(HttpHeaders.SET_COOKIE);
       if (list == null) return cookies;
       for (Object obj : list)
       {

@@ -2,7 +2,6 @@ package org.jboss.resteasy.skeleton.key;
 
 import java.security.KeyStore;
 import java.security.PublicKey;
-import java.security.cert.X509Certificate;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -10,15 +9,16 @@ import java.security.cert.X509Certificate;
  */
 public class ResourceMetadata
 {
-   protected String name;
+   protected String resourceName;
    protected String realm;
-   protected KeyStore keystore;
+   protected KeyStore clientKeystore;
+   protected String clientKeyPassword;
    protected KeyStore truststore;
    protected PublicKey realmKey;
 
-   public String getName()
+   public String getResourceName()
    {
-      return name;
+      return resourceName;
    }
 
    public String getRealm()
@@ -32,9 +32,19 @@ public class ResourceMetadata
     *
     * @return
     */
-   public KeyStore getKeystore()
+   public KeyStore getClientKeystore()
    {
-      return keystore;
+      return clientKeystore;
+   }
+
+   public String getClientKeyPassword()
+   {
+      return clientKeyPassword;
+   }
+
+   public void setClientKeyPassword(String clientKeyPassword)
+   {
+      this.clientKeyPassword = clientKeyPassword;
    }
 
    /**
@@ -57,9 +67,9 @@ public class ResourceMetadata
       return realmKey;
    }
 
-   public void setName(String name)
+   public void setResourceName(String resourceName)
    {
-      this.name = name;
+      this.resourceName = resourceName;
    }
 
    public void setRealm(String realm)
@@ -67,9 +77,9 @@ public class ResourceMetadata
       this.realm = realm;
    }
 
-   public void setKeystore(KeyStore keystore)
+   public void setClientKeystore(KeyStore clientKeystore)
    {
-      this.keystore = keystore;
+      this.clientKeystore = clientKeystore;
    }
 
    public void setTruststore(KeyStore truststore)

@@ -5,6 +5,7 @@ import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
 import org.jboss.resteasy.jwt.JsonSerialization;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.HashSet;
@@ -16,12 +17,21 @@ import java.util.Set;
  */
 public class RSATokenVerifier
 {
+   public static SkeletonKeyTokenVerification verify(Principal principal,
+                                                     String tokenString, ResourceMetadata metadata) throws VerificationException
+   {
+      return verify(tokenString, metadata, principal);
+   }
    public static SkeletonKeyTokenVerification verify(X509Certificate[] userCerts,
                                                      String tokenString, ResourceMetadata metadata) throws VerificationException
    {
+      return verify(tokenString, metadata, userCerts);
+   }
+   public static SkeletonKeyTokenVerification verify(String tokenString, ResourceMetadata metadata, Object caller) throws VerificationException
+   {
       PublicKey realmKey = metadata.getRealmKey();
       String realm = metadata.getRealm();
-      String resource = metadata.getName();
+      String resource = metadata.getResourceName();
       JWSInput input = new JWSInput(tokenString);
       boolean verified = false;
       try
@@ -88,8 +98,16 @@ public class RSATokenVerifier
       String surrogate = null;
       if (access.isVerifyCaller())
       {
-         if (userCerts == null) throw new VerificationException("Client certificate auth required");
-         String certUser = userCerts[0].getSubjectX500Principal().getName();
+         if (caller == null) throw new VerificationException("Caller auth required");
+         String certUser = null;
+         if (caller instanceof Principal)
+         {
+            certUser = ((Principal)caller).getName();
+         }
+         else
+         {
+            certUser = ((X509Certificate[])caller)[0].getSubjectX500Principal().getName();
+         }
          if (!certUser.equals(user))
          {
             // check surrogate
@@ -99,13 +117,13 @@ public class RSATokenVerifier
             }
             else
             {
-               throw new VerificationException("Certificate principal does not match token principal");
+               throw new VerificationException("Caller principal does not match token principal");
             }
          }
       }
-      SkeletonKeyPrincipal principal = new SkeletonKeyPrincipal(user, surrogate, tokenString, metadata.getKeystore(), metadata.getTruststore());
+      SkeletonKeyPrincipal principal = new SkeletonKeyPrincipal(user, surrogate, tokenString, metadata.getClientKeystore(), metadata.getTruststore());
       Set<String> roles = access.getRoles();
       if (roles == null) roles = new HashSet<String>();
-      return new SkeletonKeyTokenVerification(principal, roles);
+      return new SkeletonKeyTokenVerification(token, principal, roles);
    }
 }
