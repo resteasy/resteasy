@@ -28,7 +28,6 @@ public abstract class OAuthLogin
    protected abstract X509Certificate[] getCertificateChain();
    protected abstract void setCookie(String name, String value, String domain, String path, boolean secure);
 
-   private static final String LOGIN_COOKIE = "SKELETON_KEY_LOGIN";
 
    protected OAuthLogin(RealmConfiguration realmInfo)
    {
@@ -45,15 +44,15 @@ public abstract class OAuthLogin
       return verification;
    }
 
-   protected String getCookieName()
-   {
-      return LOGIN_COOKIE + "." + realmInfo.getMetadata().getRealm() + "." + realmInfo.getMetadata().getResourceName();
-   }
 
    protected boolean checkCookie()
    {
-      String cookieName = getCookieName();
+      String cookieName = realmInfo.getSessionCookieName();
       String id = getCookieValue(cookieName);
+      if (id == null)
+      {
+         return false;
+      }
       verification = realmInfo.getVerification(id);
       if (verification == null)
       {
@@ -124,12 +123,20 @@ public abstract class OAuthLogin
               .param("client_id", realmInfo.getClientId());
 
       Response res = realmInfo.getCodeUrl().request().post(Entity.form(form));
-      if (res.getStatus() != 200)
+      AccessTokenResponse tokenResponse;
+      try
       {
-         sendError(Response.Status.FORBIDDEN.getStatusCode());
-         return false;
+         if (res.getStatus() != 200)
+         {
+            sendError(Response.Status.FORBIDDEN.getStatusCode());
+            return false;
+         }
+         tokenResponse = res.readEntity(AccessTokenResponse.class);
       }
-      AccessTokenResponse tokenResponse = res.readEntity(AccessTokenResponse.class);
+      finally
+      {
+         res.close();
+      }
 
       String tokenString = tokenResponse.getToken();
       X509Certificate[] chain = getCertificateChain();
@@ -143,7 +150,7 @@ public abstract class OAuthLogin
          return false;
       }
       register();
-      setCookie(getCookieName(), verification.getToken().getId(), null, realmInfo.getCookiePath(), realmInfo.isCookieSecure());
+      setCookie(realmInfo.getSessionCookieName(), verification.getToken().getId(), null, realmInfo.getCookiePath(), realmInfo.isCookieSecure());
       return true;
    }
 }

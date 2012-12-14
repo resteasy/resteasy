@@ -25,6 +25,15 @@ public class RealmConfiguration
    protected boolean sslRequired = true;
    protected Map<String, SkeletonKeyTokenVerification> verifications = new HashMap<String, SkeletonKeyTokenVerification>();
 
+   private static final String LOGIN_COOKIE = "SKELETON_KEY_LOGIN";
+
+
+   public String getSessionCookieName()
+   {
+      return LOGIN_COOKIE + "." + getMetadata().getRealm() + "." + getMetadata().getResourceName();
+   }
+
+
    public ResourceMetadata getMetadata()
    {
       return metadata;

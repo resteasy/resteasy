@@ -1,6 +1,9 @@
 package org.jboss.resteasy.test.skeleton.key;
 
 import junit.framework.Assert;
+import org.apache.http.client.params.CookiePolicy;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.plugins.interceptors.RoleBasedSecurityFeature;
 import org.jboss.resteasy.skeleton.key.RealmConfiguration;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
@@ -12,9 +15,12 @@ import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Configurable;
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
@@ -30,18 +36,19 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  */
 public class JaxrsOAuthLoginTest extends SkeletonTestBase
 {
+   private static final RealmConfiguration config = new RealmConfiguration();
+
    @BeforeClass
    public static void setupTest() throws Exception
    {
       setupIDM("testrealm.json");
-      final RealmConfiguration config = new RealmConfiguration();
       ResourceMetadata resourceMetadata = new ResourceMetadata();
       resourceMetadata.setRealm("test-realm");
       resourceMetadata.setResourceName("Application");
       resourceMetadata.setRealmKey(realmInfo.getPublicKey());
       config.setAuthUrl(UriBuilder.fromUri(realmInfo.getAuthorizationUrl()));
-      config.setCodeUrl(client.target(realmInfo.getCodeUrl()));
-      config.setClient(client);
+      config.setClient(new ResteasyClient());
+      config.setCodeUrl(config.getClient().target(realmInfo.getCodeUrl()));
       config.setCookieSecure(false);
       config.setSslRequired(false);
       config.setClientId("loginclient");
@@ -88,7 +95,9 @@ public class JaxrsOAuthLoginTest extends SkeletonTestBase
    @Test
    public void testLogin() throws Exception
    {
-      Response res = client.target(generateURL("/Application/user.txt")).request().get();
+      String uri = generateURL("/Application/user.txt");
+      ResteasyWebTarget target = client.target(uri);
+      Response res = target.request().get();
       Assert.assertEquals(res.getStatus(), 302);
       res.close();
       URI location = res.getLocation();
@@ -108,5 +117,62 @@ public class JaxrsOAuthLoginTest extends SkeletonTestBase
       Assert.assertNotNull(loginUrl);
 
       res.close();
+
+      Pattern sp = Pattern.compile("name=\"scope\" value=\"([^\"]+)\"");
+      matcher = sp.matcher(form);
+      String scope = null;
+      if (matcher.find())
+      {
+         scope = matcher.group(1);
+      }
+
+      sp = Pattern.compile("name=\"redirect_uri\" value=\"([^\"]+)\"");
+      matcher = sp.matcher(form);
+      String redirect = null;
+      if (matcher.find())
+      {
+         redirect = matcher.group(1);
+      }
+
+
+      Form loginform = new Form()
+              .param("username", "wburke")
+              .param("Password", "userpassword")
+              .param("client_id", "loginclient");
+      if (scope != null) loginform.param("scope", scope);
+      if (redirect != null) loginform.param("redirect_uri", redirect);
+
+      res = client.target(loginUrl).request().post(Entity.form(loginform));
+      Assert.assertEquals(302, res.getStatus());
+      location = res.getLocation();
+      System.out.println("size: " + location.toString().length());
+      System.out.println(location);
+      res.close();
+      res = client.target(location).request().get();
+      Assert.assertEquals(200, res.getStatus());
+      String val = res.readEntity(String.class);
+      Assert.assertEquals("user", val);
+      NewCookie cookie = res.getCookies().get(config.getSessionCookieName());
+      Assert.assertNotNull(cookie);
+      res.close();
+
+      // Apache HC 4 saves cookies so create a new client just to make sure cookie stuff is cool.
+      ResteasyClient client = new ResteasyClient();
+      ResteasyWebTarget t = client.target(uri);
+      res = t.request().get();
+      Assert.assertEquals(302, res.getStatus());
+      res.close();
+      val = t.request().cookie(config.getSessionCookieName(), cookie.getValue()).get(String.class);
+      Assert.assertEquals("user", val);
+      res = t.request().get();
+      Assert.assertEquals(302, res.getStatus());
+      res.close();
+
+      res = client.target(generateURL("/Application/admin.txt")).request().cookie(config.getSessionCookieName(), cookie.getValue()).get();
+      Assert.assertEquals(403, res.getStatus());
+      res.close();
+
+      client.close();
+
    }
 }
