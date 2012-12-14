@@ -1,11 +1,9 @@
 package org.jboss.resteasy.skeleton.key.as7;
 
 import org.apache.catalina.connector.Request;
-import org.apache.http.auth.AuthScope;
-import org.jboss.resteasy.client.exception.ResteasyClientException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
 import org.jboss.resteasy.skeleton.key.VerificationException;
@@ -16,16 +14,13 @@ import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Form;
+import javax.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.security.KeyStore;
 import java.security.Principal;
 import java.security.PublicKey;
 import java.security.acl.Group;
-import java.security.cert.X509Certificate;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,80 +30,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SkeletonKeyOAuthLoginModule extends JBossWebAuthLoginModule
 {
-   /*
 
-            <connector name="https" protocol="HTTP/1.1" scheme="https" socket-binding="https" secure="true">
-                <ssl name="ssl" key-alias="server" password="password" certificate-key-file="c:/Users/William/jboss/application.jks" verify-client="want" ca-certificate-file="c:/Users/William/jboss/truststore.ts" ca-certificate-password="password"/>
-            </connector>
-
-            <login-module code="org.jboss.resteasy.skeleton.key.as7.SkeletonKeyBearerTokenLoginModule" flag="required" module="org.jboss.resteasy.skeleton-key">
-                          <module-option name="realm" value="MyRealm"/>
-                            <module-option name="resource-name" value="MyService"/>
-                            <module-option name="realm-truststore" value="C:/Users/William/jboss/idpTrust.ts"/>
-                            <module-option name="realm-truststore-password" value="password"/>
-                            <module-option name="realm-key-aliases" value="idp"/>
-                        </login-module>
-
-
-    */
-
-   protected static class CacheEntry
-   {
-      protected ResourceMetadata metadata;
-      protected ResteasyClient client;
-      protected ResteasyWebTarget authUrl;
-      protected String clientId;
-      protected Form credentials = new Form();
-
-      public ResourceMetadata getMetadata()
-      {
-         return metadata;
-      }
-
-      public void setMetadata(ResourceMetadata metadata)
-      {
-         this.metadata = metadata;
-      }
-
-      public ResteasyClient getClient()
-      {
-         return client;
-      }
-
-      public void setClient(ResteasyClient client)
-      {
-         this.client = client;
-      }
-
-      public ResteasyWebTarget getAuthUrl()
-      {
-         return authUrl;
-      }
-
-      public void setAuthUrl(ResteasyWebTarget authUrl)
-      {
-         this.authUrl = authUrl;
-      }
-
-      public String getClientId()
-      {
-         return clientId;
-      }
-
-      public void setClientId(String clientId)
-      {
-         this.clientId = clientId;
-      }
-
-      public Form getCredentials()
-      {
-         return credentials;
-      }
-   }
-
-   static ConcurrentHashMap<String, CacheEntry> resourceMetadataCache = new ConcurrentHashMap<String, CacheEntry>();
-
-   protected CacheEntry cacheEntry;
+   private static final ConcurrentHashMap<String, CatalinaRealmConfiguration> resourceMetadataCache = new ConcurrentHashMap<String, CatalinaRealmConfiguration>();
+   protected CatalinaRealmConfiguration cacheEntry;
    protected SkeletonKeyTokenVerification verification;
 
    private static KeyStore loadKeyStore(String filename, String password) throws Exception
@@ -129,47 +53,32 @@ public class SkeletonKeyOAuthLoginModule extends JBossWebAuthLoginModule
       super.initialize(subject, callbackHandler, sharedState, options);
       String name = (String) options.get("resource-name");
       if (name == null) throw new RuntimeException("Must set resource-name in security domain config");
-      String domain = (String) options.get("realm");
-      if (domain == null) throw new RuntimeException(("Must set realm in security domain config"));
+      String realm = (String) options.get("realm");
+      if (realm == null) throw new RuntimeException(("Must set 'realm' in security domain config"));
 
-      String cacheKey = domain + ":" + name;
+      String cacheKey = realm + ":" + name;
       cacheEntry = resourceMetadataCache.get(cacheKey);
       if (cacheEntry != null) return;
 
-      String realmTruststore = (String) options.get("realm-truststore");
-      String realmTruststorePassword = (String) options.get("realm-truststore-password");
-      String realmAlias = (String) options.get("realm-key-alias");
-      if (realmTruststore == null)
+      String realmKeyPem = (String) options.get("realm-public-key");
+      if (realmKeyPem == null)
       {
-         throw new IllegalArgumentException("Must set realm-truststore in security domain config");
-      }
-      if (realmTruststorePassword == null)
-      {
-         throw new IllegalArgumentException("Must set realm-truststore-password in security domain config");
-      }
-      if (realmAlias == null)
-      {
-         throw new IllegalArgumentException("Must set realm-key-alias in security domain config");
+         throw new IllegalArgumentException("You must set the realm-public-key");
       }
 
       PublicKey realmKey = null;
       try
       {
-         KeyStore realmKeystore = loadKeyStore(realmTruststore, realmTruststorePassword);
-         X509Certificate cert = (X509Certificate)realmKeystore.getCertificate(realmAlias);
-         if (cert == null) throw new RuntimeException("Could not find realm key: " + realmAlias);
-         realmKey = cert.getPublicKey();
-
+         realmKey = PemUtils.decodePublicKey(realmKeyPem);
       }
       catch (Exception e)
       {
          throw new RuntimeException(e);
       }
       ResourceMetadata resourceMetadata = new ResourceMetadata();
-      resourceMetadata.setRealm(domain);
-      resourceMetadata.setName(name);
+      resourceMetadata.setRealm(realm);
+      resourceMetadata.setResourceName(name);
       resourceMetadata.setRealmKey(realmKey);
-
 
 
       String truststore = (String) options.get("truststore");
@@ -187,36 +96,44 @@ public class SkeletonKeyOAuthLoginModule extends JBossWebAuthLoginModule
          }
          resourceMetadata.setTruststore(trust);
       }
-      String serverKeystore = (String) options.get("resource-keystore");
-      if (serverKeystore != null)
+      String clientKeystore = (String) options.get("resource-keystore");
+      String clientKeyPassword = null;
+      if (clientKeystore != null)
       {
-         String serverKeystorePassword = (String) options.get("resource-keystore-password");
+         String clientKeystorePassword = (String) options.get("resource-keystore-password");
          KeyStore serverKS = null;
          try
          {
-            serverKS = loadKeyStore(serverKeystore, serverKeystorePassword);
+            serverKS = loadKeyStore(clientKeystore, clientKeystorePassword);
          }
          catch (Exception e)
          {
             throw new RuntimeException(e);
          }
-         resourceMetadata.setKeystore(serverKS);
+         resourceMetadata.setClientKeystore(serverKS);
+         clientKeyPassword = (String) options.get("resource-key-password");
+         resourceMetadata.setClientKeyPassword(clientKeyPassword);
       }
-      String client_id = (String)options.get("client-id");
+      String client_id = (String) options.get("client-id");
       if (client_id == null)
       {
          throw new IllegalArgumentException("Must set client-id to use with auth server");
       }
-      cacheEntry = new CacheEntry();
-      String authUrl = (String)options.get("auth-url");
+      cacheEntry = new CatalinaRealmConfiguration();
+      String authUrl = (String) options.get("auth-url");
       if (authUrl == null)
       {
          throw new RuntimeException("You must specify auth-url");
       }
+      String tokenUrl = (String) options.get("token-url");
+      if (tokenUrl == null)
+      {
+         throw new RuntimeException("You mut specify token-url");
+      }
       cacheEntry.setMetadata(resourceMetadata);
       cacheEntry.setClientId(client_id);
 
-      String credentials = (String)options.get("client-credentials");
+      String credentials = (String) options.get("client-credentials");
       if (credentials != null)
       {
          String[] creds = credentials.trim().split(",");
@@ -224,82 +141,55 @@ public class SkeletonKeyOAuthLoginModule extends JBossWebAuthLoginModule
          {
             cred = cred.trim();
             if ("".equals(cred)) continue;
-            String val = (String)options.get(cred);
+            String val = (String) options.get(cred);
             if (val == null) throw new RuntimeException("You must specify the credential parameter: " + cred);
             cacheEntry.getCredentials().param(cred, val);
          }
       }
-
-
+      int size = 10;
+      String s = (String) options.get("connection-pool-size");
+      if (s != null) size = Integer.parseInt(s);
+      ResteasyClient client = new ResteasyClientBuilder().connectionPoolSize(size)
+              .truststore(resourceMetadata.getTruststore())
+              .clientKeyStore(resourceMetadata.getClientKeystore(), clientKeyPassword)
+              .build();
+      cacheEntry.setClient(client);
+      cacheEntry.setAuthUrl(UriBuilder.fromUri(authUrl).queryParam("client_id", client_id));
+      cacheEntry.setCodeUrl(client.target(tokenUrl));
+      cacheEntry.setCookiePath((String) options.get("cookie-path"));
+      String secureCookie = (String) options.get("cookie-secure");
+      if (secureCookie == null)
+      {
+         throw new RuntimeException("You must define cookie-secure.  This specifies whether security cookie should only be transmitted via HTTPS");
+      }
+      cacheEntry.setCookieSecure(Boolean.parseBoolean(secureCookie));
+      String sslRequired = (String)options.get("ssl-required");
+      if (sslRequired != null) cacheEntry.setSslRequired(Boolean.parseBoolean(sslRequired));
       resourceMetadataCache.putIfAbsent(cacheKey, cacheEntry);
    }
 
-   protected void challengeResponse(HttpServletResponse response, String error, String description) throws LoginException
-   {
-      StringBuilder header = new StringBuilder("Bearer realm=\"");
-     // header.append(resourceMetadata.getRealm()).append("\"");
-      if (error != null)
-      {
-         header.append(", error=\"").append(error).append("\"");
-      }
-      if (description != null)
-      {
-         header.append(", error_description=\"").append(description).append("\"");
-      }
-      response.setHeader("WWW-Authenticate", header.toString());
-      try
-      {
-         response.sendError(401);
-      }
-      catch (IOException e)
-      {
-         throw new RuntimeException(e);
-      }
-      throw new LoginException("Challenged");
-   }
 
    @Override
    protected boolean login(Request request, HttpServletResponse response) throws LoginException
    {
-      X509Certificate[] chain = request.getCertificateChain();
-      String authHeader = request.getHeader("Authorization");
-      if (authHeader == null)
-      {
-         challengeResponse(response, null, null);
-      }
-
-      String[] split = authHeader.trim().split("\\s+");
-      if (split == null || split.length != 2) challengeResponse(response, null, null);
-      if (!split[0].equalsIgnoreCase("Bearer")) challengeResponse(response, null, null);
-
-
-      String tokenString = split[1];
-
-
-      try
-      {
-         verification = RSATokenVerifier.verify(chain, tokenString, null);
-         System.out.println(verification.getPrincipal().getName());
-         System.out.println(verification.getRoles());
-      }
-      catch (VerificationException e)
-      {
-         log.error("Failed to verify token", e);
-         challengeResponse(response, "invalid_token", e.getMessage());
-      }
-      this.loginOk = true;
+      CatalinaOAuthLogin oAuthLogin = new CatalinaOAuthLogin(cacheEntry, request, response);
+      loginOk = oAuthLogin.login();
+      if (!loginOk) return true;
+      verification = oAuthLogin.getVerification();
       return true;
    }
 
    @Override
    protected Principal getIdentity()
    {
+      if (verification == null) return null;
       return verification.getPrincipal();
    }
 
    @Override
    protected Group[] getRoleSets() throws LoginException
    {
+      if (verification == null) return new Group[0];
       SimpleGroup roles = new SimpleGroup("Roles");
       Group[] roleSets = {roles};
       for (String role : verification.getRoles())
