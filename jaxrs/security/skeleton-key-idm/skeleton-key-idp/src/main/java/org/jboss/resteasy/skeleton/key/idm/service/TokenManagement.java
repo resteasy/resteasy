@@ -154,6 +154,7 @@ public class TokenManagement
       for (Resource resource : resources)
       {
          RoleMapping mapping = identityManager.getRoleMapping(realm, resource, user);
+         if (mapping == null) continue;
          SkeletonKeyToken.Access access = token.addAccess(resource.getName())
                                                .surrogateAuthRequired(resource.isSurrogateAuthRequired());
          for (String role : mapping.getRoles())
@@ -634,6 +635,13 @@ public class TokenManagement
          return Response.status(Response.Status.BAD_REQUEST).entity(error).type("application/json").build();
       }
       SkeletonKeyToken token = createAccessToken(user, realm);
+      if (token == null)
+      {
+         Map<String, String> error = new HashMap<String, String>();
+         error.put("error", "unauthorized_client");
+         return Response.status(Response.Status.BAD_REQUEST).entity(error).type("application/json").build();
+
+      }
       return Response.ok(accessTokenResponse(realm.getPrivateKey(), token), MediaType.APPLICATION_JSON_TYPE).build();
    }
 
