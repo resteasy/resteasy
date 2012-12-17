@@ -67,6 +67,9 @@ public class RequestHandler extends SimpleChannelUpstreamHandler
           // Write the response.
           ChannelFuture future = e.getChannel().write(response);
 
+          //NETTY-391
+          NettyJaxrsServer.allChannels.add(e.getChannel());
+
           // Close the non-keep-alive connection after the write operation is done.
           if (!request.isKeepAlive())
           {
