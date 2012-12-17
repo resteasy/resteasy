@@ -6,9 +6,11 @@ import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
 import org.jboss.resteasy.skeleton.key.VerificationException;
 
+import javax.ws.rs.BindingPriority;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.io.IOException;
@@ -18,6 +20,7 @@ import java.security.Principal;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@BindingPriority(BindingPriority.AUTHENTICATION)
 public class JaxrsBearerTokenFilter implements ContainerRequestFilter
 {
    protected ResourceMetadata resourceMetadata;
@@ -50,7 +53,7 @@ public class JaxrsBearerTokenFilter implements ContainerRequestFilter
    @Override
    public void filter(ContainerRequestContext request) throws IOException
    {
-      String authHeader = request.getHeaderString("Authorization");
+      String authHeader = request.getHeaderString(HttpHeaders.AUTHORIZATION);
       if (authHeader == null)
       {
          challengeResponse(request, null, null);
