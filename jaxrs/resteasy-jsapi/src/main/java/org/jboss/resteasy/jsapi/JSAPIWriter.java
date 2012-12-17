@@ -257,6 +257,9 @@ public class JSAPIWriter
 		case FORM_PARAMETER:
 			print(metaData, writer, "FormParameter");
 			break;
+        case FORM:
+            print(metaData, writer, "Form");
+            break;
 		case ENTITY_PARAMETER:
 			// the entity
 			writer.println(" if(params.$entity)");
