@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.providers.jackson;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
+import java.io.OutputStreamWriter;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -10,15 +10,11 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
+import javax.ws.rs.ext.WriterInterceptor;
+import javax.ws.rs.ext.WriterInterceptorContext;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.util.JSONPObject;
-import org.codehaus.jackson.type.JavaType;
-import org.jboss.resteasy.annotations.interception.ServerInterceptor;
-import org.jboss.resteasy.annotations.providers.NoJackson;
 import org.jboss.resteasy.core.MediaTypeMap;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterContext;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 
 /**
  * <p>
@@ -37,8 +33,7 @@ import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
  * @version $Revision: 1 $
  */
 @Provider
-@ServerInterceptor
-public class JacksonJsonpInterceptor implements MessageBodyWriterInterceptor{
+public class JacksonJsonpInterceptor implements WriterInterceptor{
 
     /**
      * "text/javascript" media type. Default media type of script tags.
@@ -101,32 +96,19 @@ public class JacksonJsonpInterceptor implements MessageBodyWriterInterceptor{
      * {@inheritDoc}
      */
     @Override
-    public void write(MessageBodyWriterContext context) throws IOException, WebApplicationException {
-        for (Annotation annotation : context.getAnnotations()) {
-            if (annotation.equals(NoJackson.class)) {
-                context.proceed();
-                return;
-            }
-        }
-        
+    public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException {
         String function = uri.getQueryParameters().getFirst(callbackQueryParameter);
         if (function != null && !function.trim().isEmpty() && !jsonpCompatibleMediaTypes.getPossible(context.getMediaType()).isEmpty()){
-            Object entity = context.getEntity();
-            ObjectMapper mapper = getObjectMapper(context.getType(), context.getMediaType());
-              
-            JSONPObject jsonpEntity;
-            if (context.getGenericType() != null && context.getGenericType().getClass() != Class.class) {
-                JavaType type = mapper.getTypeFactory().constructType(context.getGenericType());
-                jsonpEntity = new JSONPObject(function, entity, type);
-            } else {
-                JavaType type = mapper.getTypeFactory().constructType(context.getType());
-                jsonpEntity = new JSONPObject(function, entity, type);
-            }
-            context.setEntity(jsonpEntity);
-            context.setType(JSONPObject.class);
-            context.setGenericType(null);
+            OutputStreamWriter writer = new OutputStreamWriter(context.getOutputStream());
+            
+            writer.write(function + "(");
+            writer.flush();
+            context.proceed();
+            writer.write(")");
+            writer.flush();
+        } else {
+            context.proceed();
         }
-        context.proceed();
     }
     
     /**
@@ -203,4 +185,5 @@ public class JacksonJsonpInterceptor implements MessageBodyWriterInterceptor{
     public void setCallbackQueryParameter(String callbackQueryParameter) {
         this.callbackQueryParameter = callbackQueryParameter;
     }
+
 }

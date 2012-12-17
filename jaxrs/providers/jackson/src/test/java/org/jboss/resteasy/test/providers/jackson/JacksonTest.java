@@ -210,6 +210,19 @@ public class JacksonTest extends BaseResourceTest
       Assert.assertEquals("[{\"name\":\"Iphone\",\"id\":333},{\"name\":\"macbook\",\"id\":44}]", response2.getEntity());
       response2.releaseConnection();
 
+      request = new ClientRequest(generateURL("/products/333?callback=product"));
+      ClientResponse<String> response3 = request.get(String.class);
+      System.out.println(response3.getEntity());
+      Assert.assertEquals(200, response3.getStatus());
+      Assert.assertEquals("product({\"name\":\"Iphone\",\"id\":333})", response3.getEntity());
+      response3.releaseConnection();
+
+      request = new ClientRequest(generateURL("/products?callback=products"));
+      ClientResponse<String> response4 = request.get(String.class);
+      System.out.println(response4.getEntity());
+      Assert.assertEquals(200, response4.getStatus());
+      Assert.assertEquals("products([{\"name\":\"Iphone\",\"id\":333},{\"name\":\"macbook\",\"id\":44}])", response4.getEntity());
+      response4.releaseConnection();
    }
 
    @Test
@@ -229,6 +242,20 @@ public class JacksonTest extends BaseResourceTest
       Assert.assertEquals(200, response2.getStatus());
       Assert.assertTrue(response2.getEntity().startsWith("[{\"product"));
       response2.releaseConnection();
+
+      request = new ClientRequest(generateURL("/xml/products/333?callback=product"));
+      ClientResponse<String> response3 = request.get(String.class);
+      System.out.println(response3.getEntity());
+      Assert.assertEquals(200, response3.getStatus());
+      Assert.assertTrue(response3.getEntity().startsWith("product({\"product"));
+      response3.releaseConnection();
+
+      request = new ClientRequest(generateURL("/xml/products?callback=products"));
+      ClientResponse<String> response4 = request.get(String.class);
+      System.out.println(response4.getEntity());
+      Assert.assertEquals(200, response4.getStatus());
+      Assert.assertTrue(response4.getEntity().startsWith("products([{\"product"));
+      response4.releaseConnection();
    }
 
    @Test
