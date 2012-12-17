@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.providers.jackson;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
+import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -33,6 +34,7 @@ import org.jboss.resteasy.core.MediaTypeMap;
  * @version $Revision: 1 $
  */
 @Provider
+@ConstrainedTo(ConstrainedTo.Type.SERVER)
 public class JacksonJsonpInterceptor implements WriterInterceptor{
 
     /**
