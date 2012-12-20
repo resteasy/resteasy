@@ -1,4 +1,4 @@
-package org.jboss.resteasy.skeleton.key.idm.model.representations;
+package org.jboss.resteasy.skeleton.key.representations.idm;
 
 import org.bouncycastle.openssl.PEMWriter;
 import org.codehaus.jackson.annotate.JsonIgnore;

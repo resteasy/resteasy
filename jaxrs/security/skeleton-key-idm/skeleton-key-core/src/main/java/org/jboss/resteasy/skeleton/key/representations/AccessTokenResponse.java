@@ -1,4 +1,4 @@
-package org.jboss.resteasy.skeleton.key;
+package org.jboss.resteasy.skeleton.key.representations;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 

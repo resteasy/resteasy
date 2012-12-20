@@ -9,7 +9,7 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
 /**
- * Any class that extends JsonWebToken will use NON_DEFAULT inclusion
+ * Any class with package org.jboss.resteasy.skeleton.key will use NON_DEFAULT inclusion
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $

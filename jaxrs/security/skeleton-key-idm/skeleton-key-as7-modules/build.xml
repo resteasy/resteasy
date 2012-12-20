@@ -31,9 +31,6 @@
         <module-def name="org.jboss.security.web.login-module-authenticator">
             <maven-resource group="org.jboss.security.web" artifact="login-module-authenticator"/>
         </module-def>
-        <module-def name="org.jboss.resteasy.jose-jwt">
-            <maven-resource group="org.jboss.resteasy" artifact="jose-jwt"/>
-        </module-def>
         <module-def name="org.jboss.resteasy.skeleton-key">
             <maven-resource group="org.jboss.resteasy" artifact="skeleton-key-as7"/>
             <maven-resource group="org.jboss.resteasy" artifact="skeleton-key-core"/>

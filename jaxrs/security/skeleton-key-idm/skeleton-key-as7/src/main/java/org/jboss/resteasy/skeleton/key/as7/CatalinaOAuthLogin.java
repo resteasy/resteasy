@@ -73,9 +73,10 @@ public class CatalinaOAuthLogin extends OAuthLogin
    @Override
    protected String getCookieValue(String cookieName)
    {
+      if (request.getCookies() == null) return null;
       for (Cookie cookie : request.getCookies())
       {
-         if (cookie.getName().equals(cookieName) && cookie.getSecure())
+         if (cookie.getName().equals(cookieName))
          {
             return cookie.getValue();
          }
