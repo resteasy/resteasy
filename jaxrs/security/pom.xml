@@ -24,6 +24,8 @@
         <module>skeleton-key-idm/skeleton-key-idp</module>
         <module>skeleton-key-idm/skeleton-key-as7</module>
         <module>skeleton-key-idm/skeleton-key-as7-modules</module>
+        <module>skeleton-key-idm/skeleton-key-idp-war</module>
+        <!-- <module>skeleton-key-idm/example/setup</module>  -->
         <module>keystone/keystone-core</module>
         <module>keystone/keystone-as7</module>
         <module>keystone/keystone-as7-modules</module>

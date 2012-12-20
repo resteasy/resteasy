@@ -9,8 +9,6 @@ import java.io.Serializable;
 public class RequiredCredential implements Serializable
 {
    private static final long serialVersionUID = 1L;
-   public static final String PASSWORD = "Password";
-   public static final String CALLER_PRINCIPAL = "CALLER_PRINCIPAL";
 
    protected String id;
    protected String type;

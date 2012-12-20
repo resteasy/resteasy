@@ -3,6 +3,7 @@ package org.jboss.resteasy.skeleton.key;
 import org.jboss.resteasy.jose.jws.JWSInput;
 import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
 import org.jboss.resteasy.jwt.JsonSerialization;
+import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 
 import java.io.IOException;
 import java.security.Principal;

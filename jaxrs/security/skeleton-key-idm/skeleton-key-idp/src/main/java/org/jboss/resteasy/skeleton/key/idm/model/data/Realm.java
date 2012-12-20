@@ -22,6 +22,7 @@ public class Realm implements Serializable
    protected long tokenLifespan = 3600 * 24; // one day
    protected long accessCodeLifespan = 300; // 5 minutes
    protected boolean enabled;
+   protected boolean sslNotRequired;
    protected String publicKeyPem;
    protected String privateKeyPem;
    protected volatile transient PublicKey publicKey;
@@ -55,6 +56,16 @@ public class Realm implements Serializable
    public void setEnabled(boolean enabled)
    {
       this.enabled = enabled;
+   }
+
+   public boolean isSslNotRequired()
+   {
+      return sslNotRequired;
+   }
+
+   public void setSslNotRequired(boolean sslNotRequired)
+   {
+      this.sslNotRequired = sslNotRequired;
    }
 
    public long getTokenLifespan()

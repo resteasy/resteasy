@@ -5,7 +5,7 @@ import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
 import org.jboss.resteasy.skeleton.key.VerificationException;
-import org.jboss.resteasy.skeleton.key.AccessTokenResponse;
+import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -28,6 +28,25 @@ public class LoginTest extends SkeletonTestBase
    public static void setupTest() throws Exception
    {
       setupIDM("testrealm.json");
+   }
+
+   @Test
+   public void testEnv() throws Exception
+   {
+      String val = "foo bar ${config} xyz config ${config} ";
+      System.setProperty("config", "hello");
+      System.out.println("***** START *****");
+      Pattern p = Pattern.compile("[$][{]([^}]+)[}]");
+      Matcher matcher = p.matcher(val);
+      StringBuffer buf = new StringBuffer();
+      while (matcher.find())
+      {
+         String envVar = matcher.group(1);
+         String envVal = System.getProperty(envVar);
+         matcher.appendReplacement(buf, envVal);
+      }
+      matcher.appendTail(buf);
+      System.out.println(buf.toString());
    }
 
    @Test

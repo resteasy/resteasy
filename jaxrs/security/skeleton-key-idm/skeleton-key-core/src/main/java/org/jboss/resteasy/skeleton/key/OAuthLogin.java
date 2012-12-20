@@ -1,5 +1,8 @@
 package org.jboss.resteasy.skeleton.key;
 
+import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
+
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MultivaluedHashMap;
@@ -28,6 +31,8 @@ public abstract class OAuthLogin
    protected abstract X509Certificate[] getCertificateChain();
    protected abstract void setCookie(String name, String value, String domain, String path, boolean secure);
 
+   private static final Logger logger = Logger.getLogger(OAuthLogin.class);
+
 
    protected OAuthLogin(RealmConfiguration realmInfo)
    {
@@ -51,11 +56,13 @@ public abstract class OAuthLogin
       String id = getCookieValue(cookieName);
       if (id == null)
       {
+         logger.info("Cookie not found: " + cookieName);
          return false;
       }
       verification = realmInfo.getVerification(id);
       if (verification == null)
       {
+         logger.info("Invalid cookie: " + cookieName);
          resetCookie(cookieName);
          return false;
       }

@@ -7,8 +7,8 @@ import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
-import org.jboss.resteasy.skeleton.key.idm.model.data.RequiredCredential;
-import org.jboss.resteasy.skeleton.key.AccessTokenResponse;
+import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
+import org.jboss.resteasy.skeleton.key.representations.idm.RequiredCredentialRepresentation;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -39,7 +39,7 @@ public class GrantTest extends SkeletonTestBase
    {
 
       Form form = new Form();
-      form.param(RequiredCredential.PASSWORD, "userpassword")
+      form.param(RequiredCredentialRepresentation.PASSWORD, "userpassword")
           .param("client_id", "wburke");
       System.out.println(realmInfo.getGrantUrl());
       Response response = client.target(realmInfo.getGrantUrl()).request().post(Entity.form(form));

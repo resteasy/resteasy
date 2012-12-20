@@ -5,11 +5,10 @@ import org.jboss.resteasy.jose.jws.JWSBuilder;
 import org.jboss.resteasy.jose.jws.JWSInput;
 import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
 import org.jboss.resteasy.jwt.JsonSerialization;
-import org.jboss.resteasy.skeleton.key.SkeletonKeyScope;
-import org.jboss.resteasy.skeleton.key.SkeletonKeyToken;
+import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyScope;
+import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 import org.junit.Test;
 
-import javax.ws.rs.core.MultivaluedHashMap;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 
