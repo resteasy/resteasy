@@ -93,6 +93,10 @@
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-crypto" jandex="true"/>
         </module-def>
 
+        <module-def name="org.jboss.resteasy.jose-jwt">
+            <maven-resource group="org.jboss.resteasy" artifact="jose-jwt"/>
+        </module-def>
+
         <module-def name="org.jboss.resteasy.resteasy-jsapi">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jsapi" jandex="true"/>
         </module-def>

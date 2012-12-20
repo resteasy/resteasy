@@ -1,12 +1,14 @@
 package org.jboss.resteasy.skeleton.key.as7;
 
 import org.apache.catalina.connector.Request;
+import org.jboss.resteasy.client.jaxrs.AbstractClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
-import org.jboss.resteasy.skeleton.key.VerificationException;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.security.SimpleGroup;
 import org.jboss.security.SimplePrincipal;
 
@@ -31,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SkeletonKeyOAuthLoginModule extends JBossWebAuthLoginModule
 {
 
-   private static final ConcurrentHashMap<String, CatalinaRealmConfiguration> resourceMetadataCache = new ConcurrentHashMap<String, CatalinaRealmConfiguration>();
+   private static final ConcurrentHashMap<String, CatalinaRealmConfiguration> configurationCache = new ConcurrentHashMap<String, CatalinaRealmConfiguration>();
    protected CatalinaRealmConfiguration cacheEntry;
    protected SkeletonKeyTokenVerification verification;
 
@@ -52,12 +54,12 @@ public class SkeletonKeyOAuthLoginModule extends JBossWebAuthLoginModule
    {
       super.initialize(subject, callbackHandler, sharedState, options);
       String name = (String) options.get("resource-name");
-      if (name == null) throw new RuntimeException("Must set resource-name in security domain config");
       String realm = (String) options.get("realm");
       if (realm == null) throw new RuntimeException(("Must set 'realm' in security domain config"));
 
-      String cacheKey = realm + ":" + name;
-      cacheEntry = resourceMetadataCache.get(cacheKey);
+      String cacheKey = realm;
+      if (name != null) cacheKey += ":" + name;
+      cacheEntry = configurationCache.get(cacheKey);
       if (cacheEntry != null) return;
 
       String realmKeyPem = (String) options.get("realm-public-key");
@@ -92,7 +94,7 @@ public class SkeletonKeyOAuthLoginModule extends JBossWebAuthLoginModule
          }
          catch (Exception e)
          {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to load truststore", e);
          }
          resourceMetadata.setTruststore(trust);
       }
@@ -108,7 +110,7 @@ public class SkeletonKeyOAuthLoginModule extends JBossWebAuthLoginModule
          }
          catch (Exception e)
          {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to load keystore", e);
          }
          resourceMetadata.setClientKeystore(serverKS);
          clientKeyPassword = (String) options.get("resource-key-password");
@@ -149,7 +151,24 @@ public class SkeletonKeyOAuthLoginModule extends JBossWebAuthLoginModule
       int size = 10;
       String s = (String) options.get("connection-pool-size");
       if (s != null) size = Integer.parseInt(s);
-      ResteasyClient client = new ResteasyClientBuilder().connectionPoolSize(size)
+      String hostnameVerification = (String)options.get("hostname-verification");
+      AbstractClientBuilder.HostnameVerificationPolicy policy = AbstractClientBuilder.HostnameVerificationPolicy.WILDCARD;
+      if (hostnameVerification != null && !Boolean.parseBoolean(hostnameVerification)) policy = AbstractClientBuilder.HostnameVerificationPolicy.ANY;
+      ResteasyProviderFactory providerFactory = new ResteasyProviderFactory();
+      ClassLoader old = Thread.currentThread().getContextClassLoader();
+      Thread.currentThread().setContextClassLoader(SkeletonKeyOAuthLoginModule.class.getClassLoader());
+      try
+      {
+         RegisterBuiltin.register(providerFactory);
+      }
+      finally
+      {
+         Thread.currentThread().setContextClassLoader(old);
+      }
+      ResteasyClient client = new ResteasyClientBuilder()
+              .providerFactory(providerFactory)
+              .connectionPoolSize(size)
+              .hostnameVerification(policy)
               .truststore(resourceMetadata.getTruststore())
               .clientKeyStore(resourceMetadata.getClientKeystore(), clientKeyPassword)
               .build();
@@ -160,12 +179,16 @@ public class SkeletonKeyOAuthLoginModule extends JBossWebAuthLoginModule
       String secureCookie = (String) options.get("cookie-secure");
       if (secureCookie == null)
       {
-         throw new RuntimeException("You must define cookie-secure.  This specifies whether security cookie should only be transmitted via HTTPS");
+         cacheEntry.setCookieSecure(true);
       }
-      cacheEntry.setCookieSecure(Boolean.parseBoolean(secureCookie));
+      else
+      {
+         cacheEntry.setCookieSecure(Boolean.parseBoolean(secureCookie));
+      }
       String sslRequired = (String)options.get("ssl-required");
       if (sslRequired != null) cacheEntry.setSslRequired(Boolean.parseBoolean(sslRequired));
-      resourceMetadataCache.putIfAbsent(cacheKey, cacheEntry);
+
+      configurationCache.putIfAbsent(cacheKey, cacheEntry);
    }
 
 
@@ -174,7 +197,10 @@ public class SkeletonKeyOAuthLoginModule extends JBossWebAuthLoginModule
    {
       CatalinaOAuthLogin oAuthLogin = new CatalinaOAuthLogin(cacheEntry, request, response);
       loginOk = oAuthLogin.login();
-      if (!loginOk) return true;
+      if (!loginOk)
+      {
+         return false;
+      }
       verification = oAuthLogin.getVerification();
       return true;
    }

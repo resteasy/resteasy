@@ -2,13 +2,11 @@ package org.jboss.resteasy.test.skeleton.key;
 
 import junit.framework.Assert;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.plugins.interceptors.RoleBasedSecurityFeature;
-import org.jboss.resteasy.skeleton.key.AccessTokenResponse;
+import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
 import org.jboss.resteasy.skeleton.key.RealmConfiguration;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.jaxrs.JaxrsBearerTokenFilter;
-import org.jboss.resteasy.skeleton.key.jaxrs.JaxrsOAuthLoginFilter;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -22,12 +20,8 @@ import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-import java.net.URI;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 

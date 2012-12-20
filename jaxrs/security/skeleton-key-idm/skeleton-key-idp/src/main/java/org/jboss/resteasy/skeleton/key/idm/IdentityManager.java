@@ -80,8 +80,5 @@ public interface IdentityManager
    void delete(ScopeMapping scope);
 
 
-
-
-
-
+   List<Realm> getRealmsByName(String name);
 }

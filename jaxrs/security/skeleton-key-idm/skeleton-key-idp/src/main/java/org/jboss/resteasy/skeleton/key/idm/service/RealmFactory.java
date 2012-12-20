@@ -10,12 +10,12 @@ import org.jboss.resteasy.skeleton.key.idm.model.data.ScopeMapping;
 import org.jboss.resteasy.skeleton.key.idm.model.data.User;
 import org.jboss.resteasy.skeleton.key.idm.model.data.UserAttribute;
 import org.jboss.resteasy.skeleton.key.idm.model.data.UserCredential;
-import org.jboss.resteasy.skeleton.key.idm.model.representations.RequiredCredentialRepresentation;
-import org.jboss.resteasy.skeleton.key.idm.model.representations.RealmRepresentation;
-import org.jboss.resteasy.skeleton.key.idm.model.representations.ResourceRepresentation;
-import org.jboss.resteasy.skeleton.key.idm.model.representations.RoleMappingRepresentation;
-import org.jboss.resteasy.skeleton.key.idm.model.representations.ScopeMappingRepresentation;
-import org.jboss.resteasy.skeleton.key.idm.model.representations.UserRepresentation;
+import org.jboss.resteasy.skeleton.key.representations.idm.RequiredCredentialRepresentation;
+import org.jboss.resteasy.skeleton.key.representations.idm.RealmRepresentation;
+import org.jboss.resteasy.skeleton.key.representations.idm.ResourceRepresentation;
+import org.jboss.resteasy.skeleton.key.representations.idm.RoleMappingRepresentation;
+import org.jboss.resteasy.skeleton.key.representations.idm.ScopeMappingRepresentation;
+import org.jboss.resteasy.skeleton.key.representations.idm.UserRepresentation;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -82,6 +82,7 @@ public class RealmFactory
       realm.setEnabled(rep.isEnabled());
       realm.setTokenLifespan(rep.getTokenLifespan());
       realm.setAccessCodeLifespan(rep.getAccessCodeLifespan());
+      realm.setSslNotRequired(rep.isSslNotRequired());
       realm = identityManager.create(realm);
       Map<String, User> userMap = new HashMap<String, User>();
 

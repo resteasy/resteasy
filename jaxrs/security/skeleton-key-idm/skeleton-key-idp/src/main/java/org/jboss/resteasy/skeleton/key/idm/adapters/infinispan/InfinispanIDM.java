@@ -45,10 +45,32 @@ public class InfinispanIDM implements IdentityManager
    }
 
    @Override
+   public List<Realm> getRealmsByName(String name)
+   {
+      Set<String> realms = (Set<String>)cache.get("/realms/names/" + name);
+      List<Realm> list = new ArrayList<Realm>();
+      if (realms == null) return list;
+      for (String id : realms)
+      {
+         Realm realm = getRealm(id);
+         if (realm != null) list.add(realm);
+      }
+      return list;
+   }
+
+   @Override
    public Realm create(Realm realm)
    {
       realm.setId(generateId());
       cache.put(realmKey(realm), realm);
+      Set<String> realms = (Set<String>)cache.get("/realms/names/" + realm.getName());
+      if (realms == null)
+      {
+         realms = new HashSet<String>();
+      }
+      realms.add(realm.getId());
+      cache.put("/realms/names/" + realm.getName(), realms);
+
       return realm;
    }
 

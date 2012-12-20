@@ -7,8 +7,8 @@ import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
 import org.jboss.resteasy.jwt.JsonSerialization;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.skeleton.key.idm.IdentityManager;
-import org.jboss.resteasy.skeleton.key.SkeletonKeyScope;
-import org.jboss.resteasy.skeleton.key.SkeletonKeyToken;
+import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyScope;
+import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 import org.jboss.resteasy.skeleton.key.idm.model.data.Realm;
 import org.jboss.resteasy.skeleton.key.idm.model.data.RequiredCredential;
 import org.jboss.resteasy.skeleton.key.idm.model.data.Resource;
@@ -16,7 +16,8 @@ import org.jboss.resteasy.skeleton.key.idm.model.data.RoleMapping;
 import org.jboss.resteasy.skeleton.key.idm.model.data.ScopeMapping;
 import org.jboss.resteasy.skeleton.key.idm.model.data.User;
 import org.jboss.resteasy.skeleton.key.idm.model.data.UserCredential;
-import org.jboss.resteasy.skeleton.key.AccessTokenResponse;
+import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
+import org.jboss.resteasy.skeleton.key.representations.idm.RequiredCredentialRepresentation;
 import org.jboss.resteasy.spi.ForbiddenException;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.util.Base64;
@@ -210,7 +211,7 @@ public class TokenManagement
       if (user == null)
       {
          logger.debug("user not found");
-         return loginForm(true, redirect, clientId, scopeParam, state, realm, client);
+         return loginForm("Not valid user", redirect, clientId, scopeParam, state, realm, client);
       }
       if (!user.isEnabled())
       {
@@ -218,7 +219,7 @@ public class TokenManagement
 
       }
       boolean authenticated = authenticate(realm, user, formData);
-      if (!authenticated) return loginForm(true, redirect, clientId, scopeParam, state, realm, client);
+      if (!authenticated) return loginForm("Unable to authenticate, try again", redirect, clientId, scopeParam, state, realm, client);
 
       SkeletonKeyToken token = createToken(scopeParam, realm, client, user);
       AccessCode code = new AccessCode();
@@ -457,16 +458,16 @@ public class TokenManagement
       if (client == null)
          return Response.ok("<h1>Security Alert</h1><p>Unknown client trying to get access to your account.</p>").type("text/html").build();
 
-      return loginForm(false, redirect, clientId, scopeParam, state, realm, client);
+      return loginForm(null, redirect, clientId, scopeParam, state, realm, client);
    }
 
-   private Response loginForm(boolean validationError, String redirect, String clientId, String scopeParam, String state, Realm realm, User client)
+   private Response loginForm(String validationError, String redirect, String clientId, String scopeParam, String state, Realm realm, User client)
    {
       StringBuffer html = new StringBuffer();
       if (scopeParam != null)
       {
          html.append("<h1>Grant Request For ").append(realm.getName()).append(" Realm</h1>");
-         if (validationError)
+         if (validationError != null)
          {
             try
             {
@@ -476,7 +477,7 @@ public class TokenManagement
             {
                throw new RuntimeException(e);
             }
-            html.append("<p/><p><b>* Please recheck your username and credentials *</b></p>");
+            html.append("<p/><p><b>").append(validationError).append("</b></p>");
          }
          html.append("<p>A Third Party is requesting access to the following resources</p>");
          html.append("<table>");
@@ -513,9 +514,34 @@ public class TokenManagement
          if (mapping != null && mapping.getRoles().contains("login"))
          {
             html.append("<h1>Login For ").append(realm.getName()).append(" Realm</h1>");
+            if (validationError != null)
+            {
+               try
+               {
+                  Thread.sleep(1000); // put in a delay
+               }
+               catch (InterruptedException e)
+               {
+                  throw new RuntimeException(e);
+               }
+               html.append("<p/><p><b>").append(validationError).append("</b></p>");
+            }
          }
          else
          {
+            html.append("<h1>Grant Request For ").append(realm.getName()).append(" Realm</h1>");
+            if (validationError != null)
+            {
+               try
+               {
+                  Thread.sleep(1000); // put in a delay
+               }
+               catch (InterruptedException e)
+               {
+                  throw new RuntimeException(e);
+               }
+               html.append("<p/><p><b>").append(validationError).append("</b></p>");
+            }
             SkeletonKeyScope scope = new SkeletonKeyScope();
             List<Resource> resources = identityManager.getResources(realm);
             boolean found = false;
@@ -556,8 +582,9 @@ public class TokenManagement
          }
       }
 
-      UriBuilder formActionUri = uriInfo.getAbsolutePathBuilder().path("login");
-      html.append("<form action=\"").append(formActionUri.build().toString()).append("\" method=\"POST\">");
+      UriBuilder formActionUri = uriInfo.getBaseUriBuilder().path(TokenManagement.class).path(TokenManagement.class, "login");
+      String action = formActionUri.build(realm.getId()).toString();
+      html.append("<form action=\"").append(action).append("\" method=\"POST\">");
       html.append("Username: <input type=\"text\" name=\"username\" size=\"20\"><br>");
 
       for (RequiredCredential credential : identityManager.getRequiredCredentials(realm))
@@ -666,7 +693,7 @@ public class TokenManagement
             UserCredential userCredential = userCredentials.getFirst(credential.getType());
             if (userCredential == null)
             {
-               logger.debug("Missing required user credential");
+               logger.warn("Missing required user credential");
                return false;
             }
             if (userCredential.isHashed())
@@ -675,15 +702,15 @@ public class TokenManagement
             }
             if (!value.equals(userCredential.getValue()))
             {
-               logger.debug("Credential mismatch");
+               logger.warn("Credential mismatch");
                return false;
             }
          }
          else
          {
-            if (credential.getType().equals(RequiredCredential.CALLER_PRINCIPAL))
+            if (credential.getType().equals(RequiredCredentialRepresentation.CALLER_PRINCIPAL))
             {
-               List<UserCredential> principals = userCredentials.get(RequiredCredential.CALLER_PRINCIPAL);
+               List<UserCredential> principals = userCredentials.get(RequiredCredentialRepresentation.CALLER_PRINCIPAL);
                if (principals == null) return false;
                boolean found = false;
                for (UserCredential userCredential : principals)
@@ -696,7 +723,7 @@ public class TokenManagement
                }
                if (!found)
                {
-                  logger.debug("caller principal not matched");
+                  logger.warn("caller principal not matched");
                   return false;
                }
             }

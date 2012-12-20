@@ -1,6 +1,7 @@
 package org.jboss.resteasy.skeleton.key.as7;
 
 import org.apache.catalina.connector.Request;
+import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
@@ -50,6 +51,7 @@ public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
 
    protected ResourceMetadata resourceMetadata;
    protected SkeletonKeyTokenVerification verification;
+   protected boolean challenge = true;
 
    private static KeyStore loadKeyStore(String filename, String password) throws Exception
    {
@@ -74,32 +76,20 @@ public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
 
       String cacheKey = domain + ":" + name;
       resourceMetadata = resourceMetadataCache.get(cacheKey);
+      String ch = (String)options.get("challengeWithNoHeader");
+      if (ch != null) challenge = Boolean.parseBoolean(ch);
       if (resourceMetadata != null) return;
 
-      String realmTruststore = (String) options.get("realm-truststore");
-      String realmTruststorePassword = (String) options.get("realm-truststore-password");
-      String realmAlias = (String) options.get("realm-key-alias");
-      if (realmTruststore == null)
+      String realmKeyPem = (String) options.get("realm-public-key");
+      if (realmKeyPem == null)
       {
-         throw new IllegalArgumentException("Must set realm-truststore in security domain config");
-      }
-      if (realmTruststorePassword == null)
-      {
-         throw new IllegalArgumentException("Must set realm-truststore-password in security domain config");
-      }
-      if (realmAlias == null)
-      {
-         throw new IllegalArgumentException("Must set realm-key-alias in security domain config");
+         throw new IllegalArgumentException("You must set the realm-public-key");
       }
 
       PublicKey realmKey = null;
       try
       {
-         KeyStore realmKeystore = loadKeyStore(realmTruststore, realmTruststorePassword);
-         X509Certificate cert = (X509Certificate)realmKeystore.getCertificate(realmAlias);
-         if (cert == null) throw new RuntimeException("Could not find realm key: " + realmAlias);
-         realmKey = cert.getPublicKey();
-
+         realmKey = PemUtils.decodePublicKey(realmKeyPem);
       }
       catch (Exception e)
       {
@@ -175,7 +165,14 @@ public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
       String authHeader = request.getHeader("Authorization");
       if (authHeader == null)
       {
-         challengeResponse(response, null, null);
+         if (challenge)
+         {
+            challengeResponse(response, null, null);
+         }
+         else
+         {
+            return false;
+         }
       }
 
       String[] split = authHeader.trim().split("\\s+");

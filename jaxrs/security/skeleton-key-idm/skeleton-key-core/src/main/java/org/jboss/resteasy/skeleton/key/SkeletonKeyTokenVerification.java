@@ -1,9 +1,7 @@
 package org.jboss.resteasy.skeleton.key;
 
-import org.jboss.resteasy.jose.jws.JWSInput;
+import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 
-import javax.ws.rs.ext.Providers;
-import java.security.cert.X509Certificate;
 import java.util.Set;
 
 /**
