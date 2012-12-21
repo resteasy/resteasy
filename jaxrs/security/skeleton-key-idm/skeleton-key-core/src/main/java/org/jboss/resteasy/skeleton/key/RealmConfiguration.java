@@ -30,7 +30,13 @@ public class RealmConfiguration
 
    public String getSessionCookieName()
    {
-      return LOGIN_COOKIE + "." + getMetadata().getRealm() + "." + getMetadata().getResourceName();
+      StringBuffer buf = new StringBuffer(LOGIN_COOKIE);
+      buf.append(".").append(getMetadata().getRealm());
+      if (getMetadata().getResourceName() != null)
+      {
+         buf.append(".").append(getMetadata().getResourceName());
+      }
+      return buf.toString();
    }
 
 

@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.security.KeyStore;
 import java.security.Principal;
 import java.security.PublicKey;
@@ -196,11 +197,26 @@ public class SkeletonKeyOAuthLoginModule extends JBossWebAuthLoginModule
    protected boolean login(Request request, HttpServletResponse response) throws LoginException
    {
       CatalinaOAuthLogin oAuthLogin = new CatalinaOAuthLogin(cacheEntry, request, response);
-      loginOk = oAuthLogin.login();
-      if (!loginOk)
+      boolean login = oAuthLogin.login();
+      if (login && oAuthLogin.isCodePresent()) // redirect without code
+      {
+         StringBuffer buf = request.getRequestURL().append("?").append(request.getQueryString());
+         UriBuilder builder = UriBuilder.fromUri(buf.toString()).replaceQueryParam("code", null);
+         try
+         {
+            response.sendRedirect(builder.build().toString());
+            return false;
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      else if (!login)
       {
          return false;
       }
+      loginOk = true;
       verification = oAuthLogin.getVerification();
       return true;
    }

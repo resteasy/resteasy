@@ -30,28 +30,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
 {
-   /*
-
-            <connector name="https" protocol="HTTP/1.1" scheme="https" socket-binding="https" secure="true">
-                <ssl name="ssl" key-alias="server" password="password" certificate-key-file="c:/Users/William/jboss/application.jks" verify-client="want" ca-certificate-file="c:/Users/William/jboss/truststore.ts" ca-certificate-password="password"/>
-            </connector>
-
-            <login-module code="org.jboss.resteasy.skeleton.key.as7.SkeletonKeyBearerTokenLoginModule" flag="required" module="org.jboss.resteasy.skeleton-key">
-                          <module-option name="realm" value="MyRealm"/>
-                            <module-option name="resource-name" value="MyService"/>
-                            <module-option name="realm-truststore" value="C:/Users/William/jboss/idpTrust.ts"/>
-                            <module-option name="realm-truststore-password" value="password"/>
-                            <module-option name="realm-key-aliases" value="idp"/>
-                        </login-module>
-
-
-    */
-
    static ConcurrentHashMap<String, ResourceMetadata> resourceMetadataCache = new ConcurrentHashMap<String, ResourceMetadata>();
 
    protected ResourceMetadata resourceMetadata;
    protected SkeletonKeyTokenVerification verification;
-   protected boolean challenge = true;
+   protected boolean challenge;
 
    private static KeyStore loadKeyStore(String filename, String password) throws Exception
    {
@@ -70,13 +53,14 @@ public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
    {
       super.initialize(subject, callbackHandler, sharedState, options);
       String name = (String) options.get("resource-name");
-      if (name == null) throw new RuntimeException("Must set resource-name in security domain config");
-      String domain = (String) options.get("realm");
-      if (domain == null) throw new RuntimeException(("Must set realm in security domain config"));
+      if (name == null) throw new RuntimeException("Must set resource-name in security realm config");
+      String realm = (String) options.get("realm");
+      if (realm == null) throw new RuntimeException(("Must set realm in security realm config"));
 
-      String cacheKey = domain + ":" + name;
+      String cacheKey = realm;
+      if (name != null) cacheKey += ":" + name;
       resourceMetadata = resourceMetadataCache.get(cacheKey);
-      String ch = (String)options.get("challengeWithNoHeader");
+      String ch = (String)options.get("challenge");
       if (ch != null) challenge = Boolean.parseBoolean(ch);
       if (resourceMetadata != null) return;
 
@@ -96,7 +80,7 @@ public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
          throw new RuntimeException(e);
       }
       resourceMetadata = new ResourceMetadata();
-      resourceMetadata.setRealm(domain);
+      resourceMetadata.setRealm(realm);
       resourceMetadata.setResourceName(name);
       resourceMetadata.setRealmKey(realmKey);
 

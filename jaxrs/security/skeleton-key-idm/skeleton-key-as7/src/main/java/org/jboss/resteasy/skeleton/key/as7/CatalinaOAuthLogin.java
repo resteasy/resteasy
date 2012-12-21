@@ -18,6 +18,7 @@ public class CatalinaOAuthLogin extends OAuthLogin
 {
    protected Request request;
    protected HttpServletResponse response;
+   protected boolean codePresent;
 
    public CatalinaOAuthLogin(RealmConfiguration realmInfo, Request request, HttpServletResponse response)
    {
@@ -104,9 +105,15 @@ public class CatalinaOAuthLogin extends OAuthLogin
          if (eq == -1) continue;
          String name = param.substring(0, eq);
          if (!name.equals("code")) continue;
+         codePresent = true;
          return param.substring(eq + 1);
       }
       return null;
+   }
+
+   public boolean isCodePresent()
+   {
+      return codePresent;
    }
 
    @Override
