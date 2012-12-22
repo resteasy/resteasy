@@ -31,6 +31,12 @@ public class JaxrsOAuthLogin extends OAuthLogin
       this.securityContext = securityContext;
    }
 
+   @Override
+   protected String getDefaultCookiePath()
+   {
+      return request.getUriInfo().getBaseUri().getPath();
+   }
+
    public List<NewCookie> getCookies()
    {
       return cookies;

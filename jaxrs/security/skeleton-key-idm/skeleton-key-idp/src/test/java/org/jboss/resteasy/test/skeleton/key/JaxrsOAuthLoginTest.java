@@ -152,6 +152,11 @@ public class JaxrsOAuthLoginTest extends SkeletonTestBase
       Assert.assertEquals(200, res.getStatus());
       String val = res.readEntity(String.class);
       Assert.assertEquals("user", val);
+      System.out.println("Headers: ");
+      for (String header : res.getHeaders().keySet())
+      {
+         System.out.println(header + ": " + res.getHeaderString(header));
+      }
       NewCookie cookie = res.getCookies().get(config.getSessionCookieName());
       Assert.assertNotNull(cookie);
       res.close();

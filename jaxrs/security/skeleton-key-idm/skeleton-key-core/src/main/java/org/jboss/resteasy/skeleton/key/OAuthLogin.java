@@ -30,6 +30,7 @@ public abstract class OAuthLogin
    protected abstract String getCode();
    protected abstract X509Certificate[] getCertificateChain();
    protected abstract void setCookie(String name, String value, String domain, String path, boolean secure);
+   protected abstract String getDefaultCookiePath();
 
    private static final Logger logger = Logger.getLogger(OAuthLogin.class);
 
@@ -157,7 +158,10 @@ public abstract class OAuthLogin
          return false;
       }
       register();
-      setCookie(realmInfo.getSessionCookieName(), verification.getToken().getId(), null, realmInfo.getCookiePath(), realmInfo.isCookieSecure());
+      String cookiePath = getDefaultCookiePath();
+      logger.info("******** cookiePath *******" + cookiePath);
+      if (realmInfo.getCookiePath() != null) cookiePath = realmInfo.getCookiePath();
+      setCookie(realmInfo.getSessionCookieName(), verification.getToken().getId(), null, cookiePath, realmInfo.isCookieSecure());
       return true;
    }
 }

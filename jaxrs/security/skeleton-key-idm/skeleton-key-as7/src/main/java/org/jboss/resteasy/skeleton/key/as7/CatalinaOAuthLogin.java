@@ -28,6 +28,12 @@ public class CatalinaOAuthLogin extends OAuthLogin
    }
 
    @Override
+   protected String getDefaultCookiePath()
+   {
+      return request.getContextPath();
+   }
+
+   @Override
    protected String getRequestUrl()
    {
       return request.getRequestURL().toString();
