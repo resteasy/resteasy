@@ -196,29 +196,10 @@ public class SkeletonKeyOAuthLoginModule extends JBossWebAuthLoginModule
    @Override
    protected boolean login(Request request, HttpServletResponse response) throws LoginException
    {
-      CatalinaOAuthLogin oAuthLogin = new CatalinaOAuthLogin(cacheEntry, request, response);
-      boolean login = oAuthLogin.login();
-      if (login && oAuthLogin.isCodePresent()) // redirect without code
-      {
-         StringBuffer buf = request.getRequestURL().append("?").append(request.getQueryString());
-         UriBuilder builder = UriBuilder.fromUri(buf.toString()).replaceQueryParam("code", null);
-         try
-         {
-            response.sendRedirect(builder.build().toString());
-            return false;
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-      }
-      else if (!login)
-      {
-         return false;
-      }
-      loginOk = true;
-      verification = oAuthLogin.getVerification();
-      return true;
+      CatalinaOAuthAuthenticator authenticator = new CatalinaOAuthAuthenticator(cacheEntry);
+      loginOk = authenticator.login(request, response);
+      verification = authenticator.getVerification();
+      return loginOk;
    }
 
    @Override

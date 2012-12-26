@@ -119,66 +119,13 @@ public class SkeletonKeyBearerTokenLoginModule extends JBossWebAuthLoginModule
       resourceMetadataCache.putIfAbsent(cacheKey, resourceMetadata);
    }
 
-   protected void challengeResponse(HttpServletResponse response, String error, String description) throws LoginException
-   {
-      StringBuilder header = new StringBuilder("Bearer realm=\"");
-      header.append(resourceMetadata.getRealm()).append("\"");
-      if (error != null)
-      {
-         header.append(", error=\"").append(error).append("\"");
-      }
-      if (description != null)
-      {
-         header.append(", error_description=\"").append(description).append("\"");
-      }
-      response.setHeader("WWW-Authenticate", header.toString());
-      try
-      {
-         response.sendError(401);
-      }
-      catch (IOException e)
-      {
-         throw new RuntimeException(e);
-      }
-      throw new LoginException("Challenged");
-   }
-
    @Override
    protected boolean login(Request request, HttpServletResponse response) throws LoginException
    {
-      String authHeader = request.getHeader("Authorization");
-      if (authHeader == null)
-      {
-         if (challenge)
-         {
-            challengeResponse(response, null, null);
-         }
-         else
-         {
-            return false;
-         }
-      }
-
-      String[] split = authHeader.trim().split("\\s+");
-      if (split == null || split.length != 2) challengeResponse(response, null, null);
-      if (!split[0].equalsIgnoreCase("Bearer")) challengeResponse(response, null, null);
-
-
-      String tokenString = split[1];
-
-
-      try
-      {
-         X509Certificate[] chain = request.getCertificateChain();
-         verification = RSATokenVerifier.verify(chain, tokenString, resourceMetadata);
-      }
-      catch (VerificationException e)
-      {
-         log.error("Failed to verify token", e);
-         challengeResponse(response, "invalid_token", e.getMessage());
-      }
-      this.loginOk = true;
-      return true;
+      CatalinaBearerTokenAuthenticator authenticator = new CatalinaBearerTokenAuthenticator(challenge, resourceMetadata);
+      loginOk = authenticator.login(request, response);
+      verification = authenticator.getVerification();
+      return loginOk;
    }
 
    @Override

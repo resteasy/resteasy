@@ -159,7 +159,6 @@ public abstract class OAuthLogin
       }
       register();
       String cookiePath = getDefaultCookiePath();
-      logger.info("******** cookiePath *******" + cookiePath);
       if (realmInfo.getCookiePath() != null) cookiePath = realmInfo.getCookiePath();
       setCookie(realmInfo.getSessionCookieName(), verification.getToken().getId(), null, cookiePath, realmInfo.isCookieSecure());
       return true;

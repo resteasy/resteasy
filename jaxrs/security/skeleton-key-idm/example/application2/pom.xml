@@ -9,9 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.test</groupId>
-    <artifactId>skeleton-key-application</artifactId>
+    <artifactId>skeleton-key-application2</artifactId>
     <packaging>war</packaging>
-    <name>Simple Example Secure Application via LoginModule</name>
+    <name>Simple Example Secure Application via Valve</name>
     <description/>
 
     <repositories>
@@ -38,7 +38,7 @@
     </dependencies>
 
     <build>
-        <finalName>application</finalName>
+        <finalName>application2</finalName>
         <plugins>
             <plugin>
                 <groupId>org.jboss.as.plugins</groupId>

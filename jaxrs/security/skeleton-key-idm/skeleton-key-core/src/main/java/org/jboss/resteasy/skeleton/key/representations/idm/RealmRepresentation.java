@@ -15,6 +15,7 @@ public class RealmRepresentation
    protected long accessCodeLifespan;
    protected boolean enabled;
    protected boolean sslNotRequired;
+   protected boolean cookieLoginAllowed;
    protected List<RequiredCredentialRepresentation> requiredCredentials;
    protected List<UserRepresentation> users;
    protected List<RoleMappingRepresentation> roleMappings;
@@ -98,6 +99,16 @@ public class RealmRepresentation
    public void setSslNotRequired(boolean sslNotRequired)
    {
       this.sslNotRequired = sslNotRequired;
+   }
+
+   public boolean isCookieLoginAllowed()
+   {
+      return cookieLoginAllowed;
+   }
+
+   public void setCookieLoginAllowed(boolean cookieLoginAllowed)
+   {
+      this.cookieLoginAllowed = cookieLoginAllowed;
    }
 
    public long getTokenLifespan()

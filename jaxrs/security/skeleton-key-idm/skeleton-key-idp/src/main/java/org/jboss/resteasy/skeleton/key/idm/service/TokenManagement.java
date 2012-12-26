@@ -31,6 +31,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
@@ -119,6 +121,8 @@ public class TokenManagement
    protected Providers providers;
    @Context
    protected SecurityContext securityContext;
+   @Context
+   protected HttpHeaders headers;
 
    private static AtomicLong counter = new AtomicLong(1);
    private static String generateId()
