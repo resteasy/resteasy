@@ -8,13 +8,19 @@ import org.apache.catalina.connector.Response;
 import org.apache.catalina.realm.GenericPrincipal;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.jose.jws.JWSBuilder;
+import org.jboss.resteasy.jose.jws.JWSInput;
+import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
 import org.jboss.resteasy.jwt.JsonSerialization;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.skeleton.key.as7.config.LocalSkeletonKeyConfig;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.servlet.ServletException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,6 +91,7 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
    }
 
    protected Map<String, AccessCode> accessCodeMap = new HashMap<String, AccessCode>();
+   private static final Logger log = Logger.getLogger(LocalOAuthAuthenticatorValve.class);
 
    private static AtomicLong counter = new AtomicLong(1);
 
@@ -94,6 +101,7 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
    }
 
    protected LocalSkeletonKeyConfig skeletonKeyConfig;
+   protected ResteasyProviderFactory providers;
 
    @Override
    public void start() throws LifecycleException
@@ -110,6 +118,20 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       {
          throw new RuntimeException(e);
       }
+
+      providers = new ResteasyProviderFactory();
+      ClassLoader old = Thread.currentThread().getContextClassLoader();
+      Thread.currentThread().setContextClassLoader(SkeletonKeyOAuthLoginModule.class.getClassLoader());
+      try
+      {
+         ResteasyProviderFactory.getInstance(); // initialize builtins
+         RegisterBuiltin.register(providers);
+      }
+      finally
+      {
+         Thread.currentThread().setContextClassLoader(old);
+      }
+
    }
 
    @Override
@@ -120,44 +142,44 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       if (request.getMethod().equalsIgnoreCase("GET")
               && context.getLoginConfig().getLoginPage().equals(request.getRequestPathMB().toString()))
       {
-         String loginAction = Constants.FORM_ACTION;
-         String response_type = request.getParameter("response_type");
-         if (response_type != null && response_type.equals("code"))
+         String client_id = request.getParameter("client_id");
+         if (client_id != null)
          {
             String redirect_uri = request.getParameter("redirect_uri");
-            String client_id = request.getParameter("client_id");
             String state = request.getParameter("state");
-            if (redirect_uri == null || client_id == null || state == "null")
+            if (redirect_uri == null || client_id == null)
             {
                response.sendError(400);
                return;
             }
-            UriBuilder builder = UriBuilder.fromUri(Constants.FORM_ACTION)
+            UriBuilder builder = UriBuilder.fromUri("j_security_check")
                     .queryParam("redirect_uri", redirect_uri)
-                    .queryParam("client_id", client_id)
-                    .queryParam("state", state);
-            loginAction = builder.build().toString();
+                    .queryParam("client_id", client_id);
+            if (state != null) builder.queryParam("state", state);
+            String loginAction = builder.build().toString();
+            request.setAttribute("OAUTH_FORM_ACTION", loginAction);
+            getNext().invoke(request, response);
+            return;
          }
-         request.setAttribute("OAUTH_FORM_ACTION", loginAction);
-         getNext().invoke(request, response);
-      }
+     }
       else if (request.getMethod().equalsIgnoreCase("POST")
               && requestURI.startsWith(contextPath) &&
               requestURI.endsWith(Constants.FORM_ACTION)
               && request.getParameter("client_id") != null)
       {
          oauthAuthenticate(request, response);
-      } else if (request.getMethod().equalsIgnoreCase("POST")
+         return;
+      }
+      else if (request.getMethod().equalsIgnoreCase("POST")
               && requestURI.startsWith(contextPath) &&
               requestURI.endsWith("j_oauth_resolve_access_code"))
       {
          resolveAccessCode(request, response);
+         return;
       }
-      else
-      {
-         // its just a regular form login
-         super.invoke(request, response);
-      }
+      // default behavior
+      request.setAttribute("OAUTH_FORM_ACTION", "j_security_check");
+      super.invoke(request, response);
    }
 
    protected void resolveAccessCode(Request request, Response response) throws IOException
@@ -168,21 +190,43 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       GenericPrincipal gp = (GenericPrincipal) context.getRealm().authenticate(username, password);
       if (gp == null)
       {
+         log.error("Failed to authenticate client_id");
          response.sendError(400);
          return;
       }
+      JWSInput input = new JWSInput(code, providers);
+      boolean verifiedCode = false;
+      try
+      {
+         verifiedCode = RSAProvider.verify(input, skeletonKeyConfig.getPublicKey());
+      }
+      catch (Exception ignored)
+      {
+         log.debug("Failed to verify signature", ignored);
+      }
+      if (!verifiedCode)
+      {
+         Map<String, String> res = new HashMap<String, String>();
+         res.put("error", "invalid_grant");
+         res.put("error_description", "Unable to verify code signature");
+         response.sendError(400);
+         //return javax.ws.rs.core.Response.status(javax.ws.rs.core.Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(res).build();
+      }
+      String key = input.readContent(String.class);
       AccessCode accessCode = null;
       synchronized (accessCodeMap)
       {
-         accessCode = accessCodeMap.remove(code);
+         accessCode = accessCodeMap.remove(key);
       }
       if (accessCode == null)
       {
+         log.error("No access code: " + code);
          response.sendError(400);
          return;
       }
       if (accessCode.isExpired())
       {
+         log.error("Access code expired");
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
          res.put("error_description", "Code is expired");
@@ -192,6 +236,7 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       }
       if (!accessCode.getToken().isActive())
       {
+         log.error("token not active");
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
          res.put("error_description", "Token expired");
@@ -201,6 +246,7 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       }
       if (!username.equals(accessCode.getClient()))
       {
+         log.error("not equal client");
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
          res.put("error_description", "Auth error");
@@ -264,6 +310,7 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
 
    protected void oauthAuthenticate(Request request, Response response) throws IOException
    {
+      log.info("<--- Begin oauthAuthenticate");
       String redirect_uri = request.getParameter("redirect_uri");
       String client_id = request.getParameter("client_id");
       String state = request.getParameter("state");
@@ -277,6 +324,7 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       }
       GenericPrincipal gp = (GenericPrincipal) principal;
       SkeletonKeyToken token = new SkeletonKeyToken();
+      token.id(generateId());
       token.principal(gp.getName());
       token.audience(skeletonKeyConfig.getRealm());
       SkeletonKeyToken.Access realmAccess = new SkeletonKeyToken.Access();
@@ -284,6 +332,7 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       {
          realmAccess.addRole(role);
       }
+      token.setRealmAccess(realmAccess);
       AccessCode code = new AccessCode();
       code.setToken(token);
       code.setClient(client_id);
@@ -293,6 +342,7 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       {
          accessCodeMap.put(code.getId(), code);
       }
+      log.info("--- sign access code");
       String accessCode = null;
       try
       {
@@ -302,9 +352,12 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       {
          throw new RuntimeException(e);
       }
+      log.info("--- build redirect");
       UriBuilder redirectUri = UriBuilder.fromUri(redirect_uri).queryParam("code", accessCode);
       if (state != null) redirectUri.queryParam("state", state);
       response.sendRedirect(redirectUri.toTemplate());
+      log.info("<--- end oauthAuthenticate");
+
       return;
    }
 

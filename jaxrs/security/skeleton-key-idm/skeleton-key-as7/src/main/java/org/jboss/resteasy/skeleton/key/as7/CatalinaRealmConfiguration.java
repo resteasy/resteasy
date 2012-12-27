@@ -3,6 +3,7 @@ package org.jboss.resteasy.skeleton.key.as7;
 import org.apache.catalina.Session;
 import org.apache.catalina.SessionEvent;
 import org.apache.catalina.SessionListener;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.skeleton.key.RealmConfiguration;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
 
@@ -16,9 +17,11 @@ import java.util.Map;
 public class CatalinaRealmConfiguration extends RealmConfiguration implements SessionListener
 {
    protected Map<Session, String> sessionMap = new HashMap<Session, String>();
+   private static final Logger log = Logger.getLogger(CatalinaRealmConfiguration.class);
 
    public void register(Session session, SkeletonKeyTokenVerification verification)
    {
+      log.info("registering: " + verification.getToken().getId());
       synchronized(sessionMap)
       {
          sessionMap.put(session, verification.getToken().getId());
@@ -72,6 +75,7 @@ public class CatalinaRealmConfiguration extends RealmConfiguration implements Se
                   }
                }
             }
+            log.info("*** REMOVING VERFICIATION: " + id);
             synchronized (verifications)
             {
                verifications.remove(id);

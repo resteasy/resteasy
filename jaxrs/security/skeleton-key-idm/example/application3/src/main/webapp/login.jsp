@@ -6,7 +6,7 @@
 </head>
 <h2>Hello, please log in:</h2>
 <br><br>
-<form action="j_security_check?name=value" method=post>
+<form action="<%= request.getAttribute("OAUTH_FORM_ACTION")%>" method=post>
     <p><strong>Please Enter Your User Name: </strong>
     <input type="text" name="j_username" size="25">
     <p><p><strong>Please Enter Your Password: </strong>

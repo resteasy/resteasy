@@ -6,6 +6,7 @@ import org.apache.catalina.connector.Request;
 import org.apache.catalina.deploy.LoginConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.AbstractClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -35,11 +36,13 @@ import java.util.Map;
 public class OAuthAuthenticatorValve extends AuthenticatorBase
 {
    protected CatalinaRealmConfiguration realmConfiguration;
+   private static final Logger log = Logger.getLogger(OAuthAuthenticatorValve.class);
 
    @Override
    public void start() throws LifecycleException
    {
       super.start();
+      log.info("--> Begin OAuthAuthenticatorValve Initialization");
       ObjectMapper mapper = new ObjectMapper();
       mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
       InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("resteasy-oauth.json");
@@ -143,6 +146,7 @@ public class OAuthAuthenticatorValve extends AuthenticatorBase
       Thread.currentThread().setContextClassLoader(SkeletonKeyOAuthLoginModule.class.getClassLoader());
       try
       {
+         ResteasyProviderFactory.getInstance(); // initialize builtins
          RegisterBuiltin.register(providerFactory);
       }
       finally
@@ -162,6 +166,8 @@ public class OAuthAuthenticatorValve extends AuthenticatorBase
       realmConfiguration.setCookiePath(config.getCookiePath());
       realmConfiguration.setCookieSecure(!config.isCookieUnsecure());
       realmConfiguration.setSslRequired(!config.isSslNotRequired());
+      log.info("<-- End OAuthAuthenticatorValve Initialization");
+
    }
 
    @Override
