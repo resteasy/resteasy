@@ -59,7 +59,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Path("/realms")
 public class TokenManagement
 {
-   protected static class AccessCode
+   public static class AccessCode
    {
       protected String id = UUID.randomUUID().toString() + System.currentTimeMillis();
       protected long expiration;

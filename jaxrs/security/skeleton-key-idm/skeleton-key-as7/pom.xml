@@ -74,7 +74,7 @@
             <groupId>org.picketbox</groupId>
             <artifactId>picketbox</artifactId>
             <scope>provided</scope>
-            <version>4.0.13.Final</version>
+            <version>4.0.7.Final</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
