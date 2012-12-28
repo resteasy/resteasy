@@ -30,19 +30,22 @@ import java.security.PublicKey;
 import java.util.Map;
 
 /**
+ * Uses a configured remote auth server to do OAuth2 or Bearer token authentication.  SkeletonKeyTokens are used
+ * to provide user data and role mappings.
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class OAuthAuthenticatorValve extends AuthenticatorBase
+public class RemoteOAuthAuthenticatorValve extends AuthenticatorBase
 {
    protected CatalinaRealmConfiguration realmConfiguration;
-   private static final Logger log = Logger.getLogger(OAuthAuthenticatorValve.class);
+   private static final Logger log = Logger.getLogger(RemoteOAuthAuthenticatorValve.class);
 
    @Override
    public void start() throws LifecycleException
    {
       super.start();
-      log.info("--> Begin OAuthAuthenticatorValve Initialization");
+      log.info("--> Begin RemoteOAuthAuthenticatorValve Initialization");
       ObjectMapper mapper = new ObjectMapper();
       mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
       InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("resteasy-oauth.json");
@@ -166,7 +169,7 @@ public class OAuthAuthenticatorValve extends AuthenticatorBase
       realmConfiguration.setCookiePath(config.getCookiePath());
       realmConfiguration.setCookieSecure(!config.isCookieUnsecure());
       realmConfiguration.setSslRequired(!config.isSslNotRequired());
-      log.info("<-- End OAuthAuthenticatorValve Initialization");
+      log.info("<-- End RemoteOAuthAuthenticatorValve Initialization");
 
    }
 

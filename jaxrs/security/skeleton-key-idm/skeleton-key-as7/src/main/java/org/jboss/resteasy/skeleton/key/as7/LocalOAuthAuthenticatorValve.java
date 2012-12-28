@@ -5,6 +5,7 @@ import org.apache.catalina.authenticator.Constants;
 import org.apache.catalina.authenticator.FormAuthenticator;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
+import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.realm.GenericPrincipal;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -14,12 +15,19 @@ import org.jboss.resteasy.jose.jws.JWSInput;
 import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
 import org.jboss.resteasy.jwt.JsonSerialization;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
+import org.jboss.resteasy.skeleton.key.ResourceMetadata;
+import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
 import org.jboss.resteasy.skeleton.key.as7.config.LocalSkeletonKeyConfig;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
+import org.jboss.resteasy.skeleton.key.representations.idm.PublishedRealmRepresentation;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 
+import javax.security.auth.login.LoginException;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
@@ -35,7 +43,12 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Uses the local security domain as a authentication server for OAuth.
+ * Servlet FORM authentication that uses the local security domain to authenticate and for role mappings.
+ *
+ * Supports bearer token creation and authentication.  The client asking for access must be set up as a valid user
+ * within the security domain.
+ *
+ * If no an OAuth access request, this works like normal FORM authentication and authorization.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -102,6 +115,7 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
 
    protected LocalSkeletonKeyConfig skeletonKeyConfig;
    protected ResteasyProviderFactory providers;
+   private ResourceMetadata resourceMetadata;
 
    @Override
    public void start() throws LifecycleException
@@ -131,7 +145,9 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       {
          Thread.currentThread().setContextClassLoader(old);
       }
-
+      resourceMetadata = new ResourceMetadata();
+      resourceMetadata.setRealm(skeletonKeyConfig.getRealm());
+      resourceMetadata.setRealmKey(skeletonKeyConfig.getPublicKey());
    }
 
    @Override
@@ -161,7 +177,7 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
             getNext().invoke(request, response);
             return;
          }
-     }
+      }
       else if (request.getMethod().equalsIgnoreCase("POST")
               && requestURI.startsWith(contextPath) &&
               requestURI.endsWith(Constants.FORM_ACTION)
@@ -177,10 +193,99 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
          resolveAccessCode(request, response);
          return;
       }
+      else if (request.getMethod().equalsIgnoreCase("GET")
+              && requestURI.startsWith(contextPath) &&
+              requestURI.endsWith("j_oauth_realm_info"))
+      {
+         publishRealmInfo(request, response);
+         return;
+      }
+      else if (request.getMethod().equalsIgnoreCase("GET")
+              && requestURI.startsWith(contextPath) &&
+              requestURI.endsWith("j_oauth_realm_info.html"))
+      {
+         publishRealmInfoHtml(request, response);
+         return;
+      }
       // default behavior
       request.setAttribute("OAUTH_FORM_ACTION", "j_security_check");
       super.invoke(request, response);
    }
+
+   protected void publishRealmInfo(Request request, HttpServletResponse response) throws IOException
+   {
+      PublishedRealmRepresentation rep = getRealmRepresentation(request);
+
+      response.setStatus(200);
+      response.setContentType("application/json");
+      ObjectMapper mapper = new ObjectMapper();
+      mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
+      mapper.writeValue(response.getOutputStream(), rep);
+      response.getOutputStream().flush();
+
+   }
+
+   protected void publishRealmInfoHtml(Request request, HttpServletResponse response) throws IOException
+   {
+      PublishedRealmRepresentation rep = getRealmRepresentation(request);
+
+      StringBuffer html = new StringBuffer();
+
+      html.append("<html><body><h1>Realm: ").append(rep.getRealm()).append("</h1>");
+      html.append("<p>auth: ").append(rep.getAuthorizationUrl()).append("</p>");
+      html.append("<p>code: ").append(rep.getCodeUrl()).append("</p>");
+      html.append("<p>grant: NONE</p>");
+      html.append("<p>public key: ").append(rep.getPublicKeyPem()).append("</p>");
+      html.append("</body></html>");
+
+
+
+      response.setStatus(200);
+      response.setContentType("text/html");
+      response.getOutputStream().println(html.toString());
+      response.getOutputStream().flush();
+
+   }
+
+
+   protected PublishedRealmRepresentation getRealmRepresentation(Request request)
+   {
+      PublishedRealmRepresentation rep = new PublishedRealmRepresentation();
+      ResteasyUriInfo uriInfo = ServletUtil.extractUriInfo(request, null);
+      UriBuilder authUrl = uriInfo.getBaseUriBuilder().path(context.getLoginConfig().getLoginPage());
+      UriBuilder codeUrl = uriInfo.getBaseUriBuilder().path("j_oauth_resolve_access_code");
+      rep.setRealm(skeletonKeyConfig.getRealm());
+      rep.setPublicKeyPem(skeletonKeyConfig.getRealmPublicKey());
+      rep.setAuthorizationUrl(authUrl.toTemplate());
+      rep.setCodeUrl(codeUrl.toTemplate());
+      return rep;
+   }
+
+
+   @Override
+   public boolean authenticate(Request request, HttpServletResponse response, LoginConfig config) throws IOException
+   {
+      if (request.getHeader("Authorization") != null)
+      {
+         CatalinaBearerTokenAuthenticator bearer = new CatalinaBearerTokenAuthenticator(false, resourceMetadata);
+         try
+         {
+            if (bearer.login(request, response))
+            {
+               SkeletonKeyTokenVerification verification = bearer.getVerification();
+               Principal principal = new CatalinaSecurityContextHelper().createPrincipal(context.getRealm(), verification.getPrincipal(), verification.getRoles());
+               request.setUserPrincipal(principal);
+               return true;
+            }
+         }
+         catch (LoginException e)
+         {
+         }
+         return false;
+      }
+      return super.authenticate(request, response, config);
+   }
+
 
    protected void resolveAccessCode(Request request, Response response) throws IOException
    {

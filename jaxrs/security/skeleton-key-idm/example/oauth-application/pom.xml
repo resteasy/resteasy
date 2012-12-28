@@ -11,7 +11,7 @@
     <groupId>org.jboss.resteasy.example</groupId>
     <artifactId>skeleton-key-oauth-client-app</artifactId>
     <packaging>war</packaging>
-    <name>Example OAuth Client Web App</name>
+    <name>Example OAuth Client Web App With Skeleton Key IDM</name>
     <description/>
     <url>http://maven.apache.org</url>
 
