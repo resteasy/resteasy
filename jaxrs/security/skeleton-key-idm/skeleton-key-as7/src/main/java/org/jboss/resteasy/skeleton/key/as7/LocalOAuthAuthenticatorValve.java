@@ -136,7 +136,7 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
 
       providers = new ResteasyProviderFactory();
       ClassLoader old = Thread.currentThread().getContextClassLoader();
-      Thread.currentThread().setContextClassLoader(SkeletonKeyOAuthLoginModule.class.getClassLoader());
+      Thread.currentThread().setContextClassLoader(LocalOAuthAuthenticatorValve.class.getClassLoader());
       try
       {
          ResteasyProviderFactory.getInstance(); // initialize builtins

@@ -2,6 +2,7 @@ package org.jboss.resteasy.skeleton.key.as7;
 
 import org.apache.catalina.Realm;
 import org.apache.catalina.ha.backend.CollectedInfo;
+import org.apache.catalina.realm.GenericPrincipal;
 import org.jboss.as.web.security.JBossGenericPrincipal;
 import org.jboss.security.NestableGroup;
 import org.jboss.security.SecurityConstants;
@@ -27,7 +28,7 @@ import java.util.Set;
  */
 public class CatalinaSecurityContextHelper
 {
-   public Principal createPrincipal(Realm realm, Principal identity, Collection<String> roleSet)
+   public GenericPrincipal createPrincipal(Realm realm, Principal identity, Collection<String> roleSet)
    {
       Subject subject = new Subject();
       String credentials = "";

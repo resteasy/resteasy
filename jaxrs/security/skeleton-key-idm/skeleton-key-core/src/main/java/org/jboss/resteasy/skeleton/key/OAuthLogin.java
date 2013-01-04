@@ -73,6 +73,10 @@ public abstract class OAuthLogin
    protected void register()
    {
       realmInfo.register(verification.getToken().getId(), verification);
+      String cookiePath = getDefaultCookiePath();
+      if (realmInfo.getCookiePath() != null) cookiePath = realmInfo.getCookiePath();
+      logger.info("Cookie Path: " + cookiePath);
+      setCookie(realmInfo.getSessionCookieName(), verification.getToken().getId(), null, cookiePath, realmInfo.isCookieSecure());
    }
 
 
@@ -168,10 +172,6 @@ public abstract class OAuthLogin
       }
       logger.info("Registering...");
       register();
-      String cookiePath = getDefaultCookiePath();
-      if (realmInfo.getCookiePath() != null) cookiePath = realmInfo.getCookiePath();
-      logger.info("Cookie Path: " + cookiePath);
-      setCookie(realmInfo.getSessionCookieName(), verification.getToken().getId(), null, cookiePath, realmInfo.isCookieSecure());
       return true;
    }
 }

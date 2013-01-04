@@ -1,10 +1,12 @@
 package org.jboss.resteasy.skeleton.key.as7;
 
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.Session;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.deploy.LoginConfig;
+import org.apache.catalina.realm.GenericPrincipal;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jboss.logging.Logger;
@@ -14,7 +16,9 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.skeleton.key.EnvUtil;
+import org.jboss.resteasy.skeleton.key.RealmConfiguration;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
+import org.jboss.resteasy.skeleton.key.SkeletonKeyPrincipal;
 import org.jboss.resteasy.skeleton.key.SkeletonKeySession;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
 import org.jboss.resteasy.skeleton.key.as7.config.RemoteSkeletonKeyConfig;
@@ -43,7 +47,8 @@ import java.util.Map;
  */
 public class RemoteOAuthAuthenticatorValve extends AbstractRemoteOAuthAuthenticatorValve
 {
-   protected CatalinaRealmConfiguration realmConfiguration;
+   protected RealmConfiguration realmConfiguration;
+   private static final Logger log = Logger.getLogger(RemoteOAuthAuthenticatorValve.class);
 
    @Override
    public void start() throws LifecycleException
@@ -54,7 +59,7 @@ public class RemoteOAuthAuthenticatorValve extends AbstractRemoteOAuthAuthentica
       {
          throw new IllegalArgumentException("Must set client-id to use with auth server");
       }
-      realmConfiguration = new CatalinaRealmConfiguration();
+      realmConfiguration = new RealmConfiguration();
       String authUrl = remoteSkeletonKeyConfig.getAuthUrl();
       if (authUrl == null)
       {
@@ -78,7 +83,7 @@ public class RemoteOAuthAuthenticatorValve extends AbstractRemoteOAuthAuthentica
       if (remoteSkeletonKeyConfig.isAllowAnyHostname()) policy = AbstractClientBuilder.HostnameVerificationPolicy.ANY;
       ResteasyProviderFactory providerFactory = new ResteasyProviderFactory();
       ClassLoader old = Thread.currentThread().getContextClassLoader();
-      Thread.currentThread().setContextClassLoader(SkeletonKeyOAuthLoginModule.class.getClassLoader());
+      Thread.currentThread().setContextClassLoader(RemoteOAuthAuthenticatorValve.class.getClassLoader());
       try
       {
          ResteasyProviderFactory.getInstance(); // initialize builtins
@@ -122,6 +127,7 @@ public class RemoteOAuthAuthenticatorValve extends AbstractRemoteOAuthAuthentica
       try
       {
          if (bearer(request, response)) return true;
+         else if (checkLoggedIn(request, response)) return true;
          else if (oauth(request, response)) return true;
       }
       catch (LoginException e)
@@ -138,6 +144,7 @@ public class RemoteOAuthAuthenticatorValve extends AbstractRemoteOAuthAuthentica
          SkeletonKeyTokenVerification verification = bearer.getVerification();
          Principal principal = new CatalinaSecurityContextHelper().createPrincipal(context.getRealm(), verification.getPrincipal(), verification.getRoles());
          request.setUserPrincipal(principal);
+         request.setAuthType("OAUTH");
          if (!remoteSkeletonKeyConfig.isCancelPropagation())
          {
             SkeletonKeySession skSession = new SkeletonKeySession(verification.getPrincipal().getToken(), realmConfiguration.getMetadata());
@@ -149,17 +156,53 @@ public class RemoteOAuthAuthenticatorValve extends AbstractRemoteOAuthAuthentica
       return false;
    }
 
+   protected boolean checkLoggedIn(Request request, HttpServletResponse response)
+   {
+      if  (cache && request.getSessionInternal() == null || request.getSessionInternal().getPrincipal() == null) return false;
+      log.info("remote logged in already");
+      GenericPrincipal principal = (GenericPrincipal)request.getSessionInternal().getPrincipal();
+      bindRequest(request, principal);
+      return true;
+   }
+
+   protected void bindRequest(Request request, GenericPrincipal principal)
+   {
+      request.setUserPrincipal(principal);
+      request.setAuthType("OAUTH");
+      SkeletonKeyPrincipal skp = (SkeletonKeyPrincipal)principal.getUserPrincipal();
+      SkeletonKeySession skSession = new SkeletonKeySession(skp.getToken(), realmConfiguration.getMetadata());
+      request.setAttribute(SkeletonKeySession.class.getName(), skSession);
+      ResteasyProviderFactory.pushContext(SkeletonKeySession.class, skSession);
+   }
+
    protected boolean oauth(Request request, HttpServletResponse response) throws LoginException
    {
-      CatalinaOAuthAuthenticator oauth = new CatalinaOAuthAuthenticator(realmConfiguration);
-      if (oauth.login(request, response))
+      CatalinaOAuthLogin oauth = new CatalinaOAuthLogin(realmConfiguration, request, response);
+      if (oauth.login())
       {
          SkeletonKeyTokenVerification verification = oauth.getVerification();
-         Principal principal = new CatalinaSecurityContextHelper().createPrincipal(context.getRealm(), verification.getPrincipal(), verification.getRoles());
-         request.setUserPrincipal(principal);
-         SkeletonKeySession skSession = new SkeletonKeySession(verification.getPrincipal().getToken(), realmConfiguration.getMetadata());
-         request.setAttribute(SkeletonKeySession.class.getName(), skSession);
-         ResteasyProviderFactory.pushContext(SkeletonKeySession.class, skSession);
+         GenericPrincipal principal = new CatalinaSecurityContextHelper().createPrincipal(context.getRealm(), verification.getPrincipal(), verification.getRoles());
+         Session session = request.getSessionInternal(true);
+         session.setPrincipal(principal);
+         session.setAuthType("OAUTH");
+         if (oauth.isCodePresent()) // redirect without code
+         {
+            StringBuffer buf = request.getRequestURL().append("?").append(request.getQueryString());
+            UriBuilder builder = UriBuilder.fromUri(buf.toString()).replaceQueryParam("code", null);
+            try
+            {
+               String location = builder.build().toString();
+               log.info("* redirect to stripped query parameters: " + location);
+               response.sendRedirect(location);
+               return false;
+            }
+            catch (IOException e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
+
+         bindRequest(request, principal);
          return true;
       }
       return false;
