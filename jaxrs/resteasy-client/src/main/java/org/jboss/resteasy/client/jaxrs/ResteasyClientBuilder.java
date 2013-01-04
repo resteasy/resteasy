@@ -1,6 +1,7 @@
 package org.jboss.resteasy.client.jaxrs;
 
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
@@ -39,7 +40,7 @@ public class ResteasyClientBuilder extends AbstractClientBuilder
 
    protected KeyStore truststore;
    protected KeyStore clientKeyStore;
-   protected String clientKeyStorePassword;
+   protected String clientPrivateKeyPassword;
    protected boolean disableTrustManager;
    protected HostnameVerificationPolicy policy = HostnameVerificationPolicy.WILDCARD;
    protected ResteasyProviderFactory providerFactory;
@@ -98,14 +99,14 @@ public class ResteasyClientBuilder extends AbstractClientBuilder
     * Client keystore to use when doing 2-way TLS (client cert auth).
     *
     * @param clientKeyStore
-    * @param password
+    * @param password private key password
     * @return
     */
    @Override
    public ResteasyClientBuilder clientKeyStore(KeyStore clientKeyStore, String password)
    {
       this.clientKeyStore = clientKeyStore;
-      this.clientKeyStorePassword = password;
+      this.clientPrivateKeyPassword = password;
       return this;
    }
 
@@ -209,32 +210,40 @@ public class ResteasyClientBuilder extends AbstractClientBuilder
       }
       try
       {
-         SSLSocketFactory sf = null;
+         SSLSocketFactory sslsf = null;
          if (disableTrustManager)
          {
             SSLContext sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, new TrustManager[]{new PassthroughTrustManager()},
                     new SecureRandom());
 
-            sf = new SSLSocketFactory(sslContext);
-            sf.setHostnameVerifier(new AllowAllHostnameVerifier());
+            sslsf = new SSLSocketFactory(sslContext);
+            sslsf.setHostnameVerifier(new AllowAllHostnameVerifier());
          }
          else if (sslContext != null)
          {
-            sf = new SSLSocketFactory(sslContext);
-            sf.setHostnameVerifier(verifier);
-         }
+            sslsf = new SSLSocketFactory(sslContext);
+            sslsf.setHostnameVerifier(verifier);
+        }
          else if (clientKeyStore != null || truststore != null)
          {
-            sf = new SSLSocketFactory(clientKeyStore, clientKeyStorePassword, truststore);
-            sf.setHostnameVerifier(verifier);
+            sslsf = new SSLSocketFactory(clientKeyStore, clientPrivateKeyPassword, truststore);
+            sslsf.setHostnameVerifier(verifier);
+         }
+         else if (connectionPoolSize <= 0)
+         {
+            // no special settings, just return the default
+            return new ApacheHttpClient4Engine();
          }
          else
          {
-            return new ApacheHttpClient4Engine();
+            sslsf = SSLSocketFactory.getSocketFactory();
+            sslsf.setHostnameVerifier(verifier);
          }
-         Scheme httpsScheme = new Scheme("https", sf, 443);
          SchemeRegistry registry = new SchemeRegistry();
+         registry.register(
+                 new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
+         Scheme httpsScheme = new Scheme("https", sslsf, 443);
          registry.register(httpsScheme);
          ClientConnectionManager cm = null;
          if (connectionPoolSize > 0)

@@ -9,7 +9,7 @@ import java.util.Map;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class SkeletonKeyConfig
+public class RemoteSkeletonKeyConfig
 {
    protected String realm;
    protected String resource;
@@ -50,6 +50,10 @@ public class SkeletonKeyConfig
 
    @JsonProperty("ssl-not-required")
    protected boolean sslNotRequired;
+
+   @JsonProperty("cancel-propagation")
+   protected boolean cancelPropagation;
+
 
    public String getRealm()
    {
@@ -214,5 +218,15 @@ public class SkeletonKeyConfig
    public void setSslNotRequired(boolean sslNotRequired)
    {
       this.sslNotRequired = sslNotRequired;
+   }
+
+   public boolean isCancelPropagation()
+   {
+      return cancelPropagation;
+   }
+
+   public void setCancelPropagation(boolean cancelPropagation)
+   {
+      this.cancelPropagation = cancelPropagation;
    }
 }

@@ -125,6 +125,8 @@ public class CatalinaOAuthLogin extends OAuthLogin
    @Override
    protected X509Certificate[] getCertificateChain()
    {
+      if (true) return null;
+      // disabled at the moment.  If verify-client is false, this method call will crap out the SSL connection
       return request.getCertificateChain();
    }
 
