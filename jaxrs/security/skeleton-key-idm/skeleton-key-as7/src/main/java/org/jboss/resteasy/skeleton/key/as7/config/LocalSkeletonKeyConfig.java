@@ -6,6 +6,8 @@ import org.jboss.resteasy.security.PemUtils;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -24,6 +26,9 @@ public class LocalSkeletonKeyConfig
 
    @JsonProperty("access-code-expiration")
    protected int expiration;
+
+   @JsonProperty("admin-role")
+   protected String adminRole;
 
    @JsonProperty("cancel-propagation")
    protected boolean cancelPropagation;
@@ -47,6 +52,8 @@ public class LocalSkeletonKeyConfig
    protected String clientKeystorePassword;
    @JsonProperty("client-key-password")
    protected String clientKeyPassword;
+
+   protected List<String> resources = new ArrayList<String>();
 
 
    public String getRealm()
@@ -191,5 +198,20 @@ public class LocalSkeletonKeyConfig
    public void setSsoDisabled(boolean ssoDisabled)
    {
       this.ssoDisabled = ssoDisabled;
+   }
+
+   public List<String> getResources()
+   {
+      return resources;
+   }
+
+   public String getAdminRole()
+   {
+      return adminRole;
+   }
+
+   public void setAdminRole(String adminRole)
+   {
+      this.adminRole = adminRole;
    }
 }

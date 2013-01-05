@@ -17,14 +17,13 @@ public class RemoteSkeletonKeyConfig
    @JsonProperty("realm-public-key")
    protected String realmKey;
 
+   @JsonProperty("admin-role")
+   protected String adminRole;
+
    @JsonProperty("auth-url")
    protected String authUrl;
    @JsonProperty("code-url")
    protected String codeUrl;
-   @JsonProperty("unsecure-cookie")
-   protected boolean cookieUnsecure;
-   @JsonProperty("cookie-path")
-   protected String cookiePath;
 
    @JsonProperty("allow-any-hostname")
    protected boolean allowAnyHostname;
@@ -105,16 +104,6 @@ public class RemoteSkeletonKeyConfig
       this.codeUrl = codeUrl;
    }
 
-   public boolean isCookieUnsecure()
-   {
-      return cookieUnsecure;
-   }
-
-   public void setCookieUnsecure(boolean cookieUnsecure)
-   {
-      this.cookieUnsecure = cookieUnsecure;
-   }
-
    public boolean isAllowAnyHostname()
    {
       return allowAnyHostname;
@@ -190,16 +179,6 @@ public class RemoteSkeletonKeyConfig
       this.clientKeyPassword = clientKeyPassword;
    }
 
-   public String getCookiePath()
-   {
-      return cookiePath;
-   }
-
-   public void setCookiePath(String cookiePath)
-   {
-      this.cookiePath = cookiePath;
-   }
-
    public int getConnectionPoolSize()
    {
       return connectionPoolSize;
@@ -228,5 +207,15 @@ public class RemoteSkeletonKeyConfig
    public void setCancelPropagation(boolean cancelPropagation)
    {
       this.cancelPropagation = cancelPropagation;
+   }
+
+   public String getAdminRole()
+   {
+      return adminRole;
+   }
+
+   public void setAdminRole(String adminRole)
+   {
+      this.adminRole = adminRole;
    }
 }

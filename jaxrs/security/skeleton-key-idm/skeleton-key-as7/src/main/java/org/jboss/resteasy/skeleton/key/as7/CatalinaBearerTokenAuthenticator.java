@@ -65,7 +65,7 @@ public class CatalinaBearerTokenAuthenticator
 
       try
       {
-         X509Certificate[] chain = request.getCertificateChain();
+         X509Certificate[] chain = null; // fucks up connection if client verification is not set up request.getCertificateChain();
          verification = RSATokenVerifier.verify(chain, tokenString, resourceMetadata);
       }
       catch (VerificationException e)

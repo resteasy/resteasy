@@ -10,12 +10,16 @@ import org.apache.catalina.realm.GenericPrincipal;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.client.jaxrs.AbstractClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.jose.jws.JWSBuilder;
 import org.jboss.resteasy.jose.jws.JWSInput;
 import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
 import org.jboss.resteasy.jwt.JsonSerialization;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
+import org.jboss.resteasy.skeleton.key.EnvUtil;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeySession;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
@@ -31,9 +35,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.UriBuilder;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.security.KeyStore;
 import java.security.Principal;
 import java.security.PrivateKey;
 import java.util.HashMap;
@@ -118,6 +125,17 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
    protected ResteasyProviderFactory providers;
    protected ResourceMetadata resourceMetadata;
 
+   private static KeyStore loadKeyStore(String filename, String password) throws Exception
+   {
+      KeyStore trustStore = KeyStore.getInstance(KeyStore
+              .getDefaultType());
+      File truststoreFile = new File(filename);
+      FileInputStream trustStream = new FileInputStream(truststoreFile);
+      trustStore.load(trustStream, password.toCharArray());
+      trustStream.close();
+      return trustStore;
+   }
+
    @Override
    public void start() throws LifecycleException
    {
@@ -149,6 +167,41 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       resourceMetadata = new ResourceMetadata();
       resourceMetadata.setRealm(skeletonKeyConfig.getRealm());
       resourceMetadata.setRealmKey(skeletonKeyConfig.getPublicKey());
+      String truststore = skeletonKeyConfig.getTruststore();
+      if (truststore != null)
+      {
+         truststore = EnvUtil.replace(truststore);
+         String truststorePassword = skeletonKeyConfig.getTruststorePassword();
+         KeyStore trust = null;
+         try
+         {
+            trust = loadKeyStore(truststore, truststorePassword);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException("Failed to load truststore", e);
+         }
+         resourceMetadata.setTruststore(trust);
+      }
+      String clientKeystore = skeletonKeyConfig.getClientKeystore();
+      String clientKeyPassword = null;
+      if (clientKeystore != null)
+      {
+         clientKeystore = EnvUtil.replace(clientKeystore);
+         String clientKeystorePassword = skeletonKeyConfig.getClientKeystorePassword();
+         KeyStore serverKS = null;
+         try
+         {
+            serverKS = loadKeyStore(clientKeystore, clientKeystorePassword);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException("Failed to load keystore", e);
+         }
+         resourceMetadata.setClientKeystore(serverKS);
+         clientKeyPassword = skeletonKeyConfig.getClientKeyPassword();
+         resourceMetadata.setClientKeyPassword(clientKeyPassword);
+      }
    }
 
    @Override
@@ -156,10 +209,17 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
    {
       String contextPath = request.getContextPath();
       String requestURI = request.getDecodedRequestURI();
+      log.info("--- invoke: " + requestURI);
       if (request.getMethod().equalsIgnoreCase("GET")
               && context.getLoginConfig().getLoginPage().equals(request.getRequestPathMB().toString()))
       {
          if (handleLoginPage(request, response)) return;
+      }
+      else if (request.getMethod().equalsIgnoreCase("GET")
+              && requestURI.endsWith("j_oauth_logoff"))
+      {
+         logoff(request, response);
+         return;
       }
       else if (request.getMethod().equalsIgnoreCase("POST")
               && requestURI.startsWith(contextPath) &&
@@ -241,6 +301,80 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       }
       return true;
    }
+
+   protected void logoff(Request request, HttpServletResponse response) throws IOException
+   {
+      log.info("->> logoff");
+      if (request.getSessionInternal() == null || request.getSessionInternal().getPrincipal() == null)
+      {
+         redirectToWelcomePage(request, response);
+         return;
+      }
+      GenericPrincipal principal = (GenericPrincipal) request.getSessionInternal().getPrincipal();
+      String username = principal.getName();
+      String admin = username;
+      request.setUserPrincipal(null);
+      request.setAuthType(null);
+      request.getSessionInternal().setPrincipal(null);
+      request.getSessionInternal().setAuthType(null);
+      request.getSession().invalidate();
+      if (skeletonKeyConfig.getResources().size() != 0)
+      {
+         ResteasyClient client = new ResteasyClientBuilder()
+                 .providerFactory(providers)
+                 .hostnameVerification(AbstractClientBuilder.HostnameVerificationPolicy.ANY)
+                 .truststore(resourceMetadata.getTruststore())
+                 .clientKeyStore(resourceMetadata.getClientKeystore(), resourceMetadata.getClientKeyPassword())
+                 .build();
+         log.info("truststore is null: " + resourceMetadata.getTruststore() == null);
+         SkeletonKeyToken token = new SkeletonKeyToken();
+         token.id(generateId());
+         token.principal(admin);
+         token.audience(skeletonKeyConfig.getRealm());
+         SkeletonKeyToken.Access realmAccess = new SkeletonKeyToken.Access();
+         realmAccess.addRole(skeletonKeyConfig.getAdminRole());
+         token.setRealmAccess(realmAccess);
+         String tokenString = buildTokenString(skeletonKeyConfig.getPrivateKey(), token);
+         try
+         {
+            for (String resource : skeletonKeyConfig.getResources())
+            {
+               try
+               {
+                  log.info("logging out: " + resource);
+                  client.target(resource).path("j_oauth_remote_logout").queryParam("user", username).request()
+                          .header("Authorization", "Bearer " + tokenString)
+                          .get().close();
+               }
+               catch (Exception ignored)
+               {
+                  log.error("Failed to log out", ignored);
+               }
+            }
+         }
+         finally
+         {
+            client.close();
+         }
+      }
+      redirectToWelcomePage(request, response);
+   }
+
+   protected void redirectToWelcomePage(Request request, HttpServletResponse response) throws IOException
+   {
+      ResteasyUriInfo uriInfo = ServletUtil.extractUriInfo(request, null);
+      String[] welcomes = context.findWelcomeFiles();
+      if (welcomes.length > 0)
+      {
+         UriBuilder welcome = uriInfo.getBaseUriBuilder().path(welcomes[0]);
+         response.sendRedirect(welcome.toTemplate());
+      }
+      else
+      {
+         response.setStatus(204);
+      }
+   }
+
 
    protected void publishRealmInfo(Request request, HttpServletResponse response) throws IOException
    {

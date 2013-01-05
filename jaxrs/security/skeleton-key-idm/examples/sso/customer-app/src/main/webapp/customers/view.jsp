@@ -5,7 +5,7 @@
     <title>Customer View Page</title>
 </head>
 <body bgcolor="#E3F6CE">
-<p>Goto: <a href="https://localhost:8443/product-portal">products</a></p>
+<p>Goto: <a href="https://localhost:8443/product-portal">products</a> | <a href="https://localhost:8443/auth-server/j_oauth_logoff">logout</a></p>
 User <b><%=request.getUserPrincipal().getName()%></b> made this request.
 <h2>Customer Listing</h2>
 <br><br>

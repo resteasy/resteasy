@@ -99,7 +99,7 @@ public abstract class OAuthLogin
       return realmInfo.getAuthUrl().clone().queryParam("client_id", realmInfo.getClientId()).queryParam("redirect_uri", url).build().toString();
    }
 
-   protected void loginRedirect()
+   public void loginRedirect()
    {
       String redirect = getRedirectUri();
       if (redirect == null)
