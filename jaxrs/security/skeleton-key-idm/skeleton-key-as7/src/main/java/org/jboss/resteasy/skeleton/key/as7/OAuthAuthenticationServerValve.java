@@ -392,14 +392,9 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       GenericPrincipal principal = (GenericPrincipal) request.getSessionInternal().getPrincipal();
       String username = principal.getName();
       String admin = username;
-      request.setUserPrincipal(null);
-      request.setAuthType(null);
-      request.getSessionInternal().setPrincipal(null);
-      request.getSessionInternal().setAuthType(null);
-      request.getSession().invalidate();
+      userSessionManagement.logout(username);
       // logout user on all declared authenticated resources
       logoutResources(username, admin);
-      userSessionManagement.logout(username);
       redirectToWelcomePage(request, response);
    }
 

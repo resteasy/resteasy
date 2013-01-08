@@ -36,6 +36,8 @@ public class Bootstrap implements ServletContextListener
    public void contextInitialized(ServletContextEvent sce)
    {
       // hardcoded, WARNING, you should really have a better way of doing this
+      // configuration.  Either use something like Spring or CDI, or even pull
+      // config vales from context-params
       String truststorePath = "${jboss.server.config.dir}/client-truststore.ts";
       String truststorePassword = "password";
       truststorePath = EnvUtil.replace(truststorePath);

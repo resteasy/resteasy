@@ -2,7 +2,6 @@
     <deployment>
         <!-- This allows you to define additional dependencies, it is the same as using the Dependencies: manifest attribute -->
         <dependencies>
-            <module name="org.jboss.resteasy.resteasy-jaxrs" />
             <module name="org.jboss.resteasy.skeleton-key" />
         </dependencies>
     </deployment>

@@ -16,6 +16,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.client.jaxrs.engines.PassthroughTrustManager;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.net.ssl.SSLContext;
@@ -174,7 +175,12 @@ public class ResteasyClientBuilder extends AbstractClientBuilder
    @Override
    public ResteasyClient build()
    {
-      if (providerFactory == null) providerFactory = ResteasyProviderFactory.getInstance();
+      if (providerFactory == null)
+      {
+         // create a new one
+         providerFactory = new ResteasyProviderFactory();
+         RegisterBuiltin.register(providerFactory);
+      }
       ClientConfiguration config = new ClientConfiguration(providerFactory);
       for (Map.Entry<String, Object> entry : properties.entrySet())
       {
