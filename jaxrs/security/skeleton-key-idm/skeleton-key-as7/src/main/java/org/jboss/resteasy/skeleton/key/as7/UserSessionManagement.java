@@ -69,6 +69,7 @@ public class UserSessionManagement implements SessionListener
          log.info("no session for user: " + user);
          return;
       }
+      log.info("found session for user");
       synchronized (map)
       {
          for (Session session : map.values())
@@ -79,6 +80,7 @@ public class UserSessionManagement implements SessionListener
             session.getSession().invalidate();
          }
       }
+
    }
 
    public void sessionEvent(SessionEvent event)

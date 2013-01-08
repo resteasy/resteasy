@@ -393,6 +393,8 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       String username = principal.getName();
       String admin = username;
       userSessionManagement.logout(username);
+      request.setUserPrincipal(null);
+      request.setAuthType(null);
       // logout user on all declared authenticated resources
       logoutResources(username, admin);
       redirectToWelcomePage(request, response);
@@ -537,6 +539,26 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       return false;
    }
 
+   @Override
+   protected void register(Request request, HttpServletResponse response, Principal principal, String authType, String username, String password)
+   {
+      super.register(request, response, principal, authType, username, password);
+      log.info("authenticate userSessionManage.login(): " + principal.getName());
+      userSessionManagement.login(request.getSessionInternal(), principal.getName());
+      if (!skeletonKeyConfig.isCancelPropagation())
+      {
+         GenericPrincipal gp = (GenericPrincipal) request.getPrincipal();
+         if (gp != null)
+         {
+            SkeletonKeyToken token = buildToken(gp);
+            String stringToken = buildTokenString(skeletonKeyConfig.getPrivateKey(), token);
+            SkeletonKeySession skSession = new SkeletonKeySession(stringToken, resourceMetadata);
+            request.setAttribute(SkeletonKeySession.class.getName(), skSession);
+            ResteasyProviderFactory.pushContext(SkeletonKeySession.class, skSession);
+            request.getSessionInternal(true).setNote(SkeletonKeySession.class.getName(), skSession);
+         }
+      }
+   }
 
    @Override
    public boolean authenticate(Request request, HttpServletResponse response, LoginConfig config) throws IOException
@@ -545,38 +567,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       {
          return true;
       }
-      else if (!super.authenticate(request, response, config))
-      {
-         return false;
-      }
-      String contextPath = request.getContextPath();
-      String requestURI = request.getDecodedRequestURI();
-
-      // need to do some post processing if this is a login
-      if (request.getMethod().equalsIgnoreCase("POST")
-              && requestURI.startsWith(contextPath) &&
-              requestURI.endsWith(Constants.FORM_ACTION))
-      {
-         Principal principal = request.getPrincipal();
-         log.info("authenticate userSessionManage.login(): " + principal.getName());
-         userSessionManagement.login(request.getSessionInternal(), principal.getName());
-         if (!skeletonKeyConfig.isCancelPropagation())
-         {
-            GenericPrincipal gp = (GenericPrincipal) request.getPrincipal();
-            if (gp != null)
-            {
-               SkeletonKeyToken token = buildToken(gp);
-               String stringToken = buildTokenString(skeletonKeyConfig.getPrivateKey(), token);
-               SkeletonKeySession skSession = new SkeletonKeySession(stringToken, resourceMetadata);
-               request.setAttribute(SkeletonKeySession.class.getName(), skSession);
-               ResteasyProviderFactory.pushContext(SkeletonKeySession.class, skSession);
-               request.getSessionInternal(true).setNote(SkeletonKeySession.class.getName(), skSession);
-            }
-         }
-      }
-
-
-      return true;
+      return super.authenticate(request, response, config);
    }
 
 

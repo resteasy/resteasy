@@ -165,7 +165,7 @@ public abstract class ClientResponse extends BuiltResponse
       {
          throw new MessageProcessingException(format(
                  "Unable to find a MessageBodyReader of content-type %s and type %s",
-                 media, genericType));
+                 media, useType));
       }
 
 
