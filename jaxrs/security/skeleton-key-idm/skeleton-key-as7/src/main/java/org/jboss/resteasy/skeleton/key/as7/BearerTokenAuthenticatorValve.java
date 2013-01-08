@@ -61,7 +61,7 @@ public class BearerTokenAuthenticatorValve extends AbstractRemoteOAuthAuthentica
    @Override
    protected boolean authenticate(Request request, HttpServletResponse response, LoginConfig config) throws IOException
    {
-      CatalinaBearerTokenAuthenticator bearer = new CatalinaBearerTokenAuthenticator(false, resourceMetadata);
+      CatalinaBearerTokenAuthenticator bearer = new CatalinaBearerTokenAuthenticator(true, resourceMetadata);
       try
       {
          if (bearer.login(request, response))

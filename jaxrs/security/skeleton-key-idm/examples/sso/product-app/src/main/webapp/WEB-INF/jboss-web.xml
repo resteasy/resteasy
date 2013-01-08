@@ -1,5 +1,5 @@
 <jboss-web>
     <valve>
-        <class-name>org.jboss.resteasy.skeleton.key.as7.RemoteOAuthAuthenticatorValve</class-name>
+        <class-name>org.jboss.resteasy.skeleton.key.as7.OAuthManagedResourceValve</class-name>
     </valve>
 </jboss-web>

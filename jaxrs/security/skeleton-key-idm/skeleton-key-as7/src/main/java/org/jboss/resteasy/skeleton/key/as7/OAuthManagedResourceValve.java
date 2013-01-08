@@ -2,61 +2,43 @@ package org.jboss.resteasy.skeleton.key.as7;
 
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Session;
-import org.apache.catalina.SessionEvent;
-import org.apache.catalina.SessionListener;
-import org.apache.catalina.authenticator.AuthenticatorBase;
-import org.apache.catalina.authenticator.Constants;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.realm.GenericPrincipal;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.AbstractClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.security.PemUtils;
-import org.jboss.resteasy.skeleton.key.EnvUtil;
 import org.jboss.resteasy.skeleton.key.RealmConfiguration;
-import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyPrincipal;
 import org.jboss.resteasy.skeleton.key.SkeletonKeySession;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
-import org.jboss.resteasy.skeleton.key.as7.config.RemoteSkeletonKeyConfig;
-import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.security.auth.login.LoginException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.UriBuilder;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.security.KeyStore;
 import java.security.Principal;
-import java.security.PublicKey;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Uses a configured remote auth server to do OAuth2 or Bearer token authentication.  SkeletonKeyTokens are used
- * to provide user data and role mappings.
+ * Web deployment whose security is managed by a remote OAuth Skeleton Key authentication server
+ *
+ * Redirects browser to remote authentication server if not logged in.  Also allows OAuth Bearer Token requests
+ * that contain a Skeleton Key bearer tokens.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class RemoteOAuthAuthenticatorValve extends AbstractRemoteOAuthAuthenticatorValve implements SessionListener
+public class OAuthManagedResourceValve extends AbstractRemoteOAuthAuthenticatorValve
 {
    protected RealmConfiguration realmConfiguration;
-   private static final Logger log = Logger.getLogger(RemoteOAuthAuthenticatorValve.class);
-   protected ConcurrentHashMap<String, Map<String, Session>> userSessionMap = new ConcurrentHashMap<String, Map<String, Session>>();
+   private static final Logger log = Logger.getLogger(OAuthManagedResourceValve.class);
+   protected UserSessionManagement userSessionManagement = new UserSessionManagement();
 
 
    @Override
@@ -92,7 +74,7 @@ public class RemoteOAuthAuthenticatorValve extends AbstractRemoteOAuthAuthentica
       if (remoteSkeletonKeyConfig.isAllowAnyHostname()) policy = AbstractClientBuilder.HostnameVerificationPolicy.ANY;
       ResteasyProviderFactory providerFactory = new ResteasyProviderFactory();
       ClassLoader old = Thread.currentThread().getContextClassLoader();
-      Thread.currentThread().setContextClassLoader(RemoteOAuthAuthenticatorValve.class.getClassLoader());
+      Thread.currentThread().setContextClassLoader(OAuthManagedResourceValve.class.getClassLoader());
       try
       {
          ResteasyProviderFactory.getInstance(); // initialize builtins
@@ -170,13 +152,11 @@ public class RemoteOAuthAuthenticatorValve extends AbstractRemoteOAuthAuthentica
          String user = request.getParameter("user");
          if (user != null)
          {
-            logoutUser(user);
+            userSessionManagement.logout(user);
          }
          else
          {
-            ArrayList<String> users = new ArrayList<String>();
-            users.addAll(userSessionMap.keySet());
-            for (String u :users) logoutUser(user);
+            userSessionManagement.logoutAll();
          }
       }
       catch (Exception e)
@@ -184,27 +164,6 @@ public class RemoteOAuthAuthenticatorValve extends AbstractRemoteOAuthAuthentica
          log.error("failed to logout", e);
       }
       response.setStatus(204);
-   }
-
-   protected void logoutUser(String user)
-   {
-      log.info("logoutUser: " + user);
-      Map<String, Session> map = userSessionMap.remove(user);
-      if (map == null)
-      {
-         log.info("no session for user");
-         return;
-      }
-      synchronized (map)
-      {
-         for (Session session : map.values())
-         {
-            log.info("invalidating session");
-            session.setPrincipal(null);
-            session.setAuthType(null);
-            session.getSession().invalidate();
-         }
-      }
    }
 
    protected boolean bearer(boolean challenge, Request request, HttpServletResponse response) throws LoginException
@@ -259,20 +218,8 @@ public class RemoteOAuthAuthenticatorValve extends AbstractRemoteOAuthAuthentica
          session.setAuthType("OAUTH");
 
          String username = verification.getPrincipal().getName();
-         Map<String, Session> map = userSessionMap.get(username);
-         if (map == null)
-         {
-            final Map<String, Session> value = new HashMap<String, Session>();
-            map = userSessionMap.putIfAbsent(username, value);
-            if (map == null)
-            {
-               map = value;
-            }
-         }
-         synchronized (map)
-         {
-            map.put(session.getId(), session);
-         }
+         log.info("userSessionManage.login: " + username);
+         userSessionManagement.login(session, username);
 
          if (oauth.isCodePresent()) // redirect without code
          {
@@ -297,34 +244,4 @@ public class RemoteOAuthAuthenticatorValve extends AbstractRemoteOAuthAuthentica
       return false;
    }
 
-   @Override
-   /**
-    * Clean up user-sesssion relationships
-    *
-    */
-   public void sessionEvent(SessionEvent event)
-   {
-      // We only care about session destroyed events
-      if (!Session.SESSION_DESTROYED_EVENT.equals(event.getType())
-              && (!Session.SESSION_PASSIVATED_EVENT.equals(event.getType())))
-         return;
-
-      // Look up the single session id associated with this session (if any)
-      Session session = event.getSession();
-      GenericPrincipal principal = (GenericPrincipal) session.getPrincipal();
-      if (principal == null) return;
-      session.setPrincipal(null);
-      session.setAuthType(null);
-
-      String username = principal.getUserPrincipal().getName();
-      Map<String, Session> map = userSessionMap.get(username);
-      if (map == null) return;
-      synchronized (map)
-      {
-         map.remove(session.getId());
-         if (map.isEmpty()) userSessionMap.remove(username);
-      }
-
-
-   }
 }

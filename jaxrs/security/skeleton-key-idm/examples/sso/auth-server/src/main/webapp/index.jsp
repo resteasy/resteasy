@@ -11,6 +11,6 @@ Welcome <b><%=request.getUserPrincipal().getName()%></b>!.
 <p><a href="https://localhost:8443/customer-portal">Customer Portal</a></p>
 <p><a href="https://localhost:8443/product-portal">Product Portal</a></p>
 <br>
-<p><a href="https://localhost:8443/auth-server/j_oauth_logoff">logout</a></p>
+<p><a href="https://localhost:8443/auth-server/j_oauth_logout">logout</a></p>
 </body>
 </html>

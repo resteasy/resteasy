@@ -1,0 +1,13 @@
+<jboss-deployment-structure>
+    <deployment>
+        <!-- This allows you to define additional dependencies, it is the same as using the Dependencies: manifest attribute -->
+        <dependencies>
+            <module name="org.jboss.resteasy.resteasy-jaxrs" />
+            <module name="org.jboss.resteasy.skeleton-key" />
+        </dependencies>
+        <!-- These add additional classes to the module. In this case it is the same as including the jar in the EAR's lib directory -->
+        <resources>
+            <resource-root path="my-library.jar" />
+        </resources>
+    </deployment>
+</jboss-deployment-structure>

@@ -4,6 +4,6 @@
 
     <security-domain>java:/jaas/props</security-domain>
     <valve>
-        <class-name>org.jboss.resteasy.skeleton.key.as7.LocalOAuthAuthenticatorValve</class-name>
+        <class-name>org.jboss.resteasy.skeleton.key.as7.OAuthAuthenticationServerValve</class-name>
     </valve>
 </jboss-web>

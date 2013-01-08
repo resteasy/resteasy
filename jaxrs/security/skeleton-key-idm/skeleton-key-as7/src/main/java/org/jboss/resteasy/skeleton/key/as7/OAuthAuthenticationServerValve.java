@@ -31,9 +31,11 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 
 import javax.security.auth.login.LoginException;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,9 +50,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
+ * Turns a web deployment into an authentication server that follwos the OAuth 2 protocol and Skeleton Key bearer tokens.
+ * Authentication store is backed by a JBoss security domain.
+ *
  * Servlet FORM authentication that uses the local security domain to authenticate and for role mappings.
  * <p/>
  * Supports bearer token creation and authentication.  The client asking for access must be set up as a valid user
@@ -61,7 +67,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class LocalOAuthAuthenticatorValve extends FormAuthenticator
+public class OAuthAuthenticationServerValve extends FormAuthenticator
 {
    public static class AccessCode
    {
@@ -111,8 +117,8 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       }
    }
 
-   protected Map<String, AccessCode> accessCodeMap = new HashMap<String, AccessCode>();
-   private static final Logger log = Logger.getLogger(LocalOAuthAuthenticatorValve.class);
+   protected ConcurrentHashMap<String, AccessCode> accessCodeMap = new ConcurrentHashMap<String, AccessCode>();
+   private static final Logger log = Logger.getLogger(OAuthAuthenticationServerValve.class);
 
    private static AtomicLong counter = new AtomicLong(1);
 
@@ -124,6 +130,7 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
    protected LocalSkeletonKeyConfig skeletonKeyConfig;
    protected ResteasyProviderFactory providers;
    protected ResourceMetadata resourceMetadata;
+   protected UserSessionManagement userSessionManagement = new UserSessionManagement();
 
    private static KeyStore loadKeyStore(String filename, String password) throws Exception
    {
@@ -154,7 +161,7 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
 
       providers = new ResteasyProviderFactory();
       ClassLoader old = Thread.currentThread().getContextClassLoader();
-      Thread.currentThread().setContextClassLoader(LocalOAuthAuthenticatorValve.class.getClassLoader());
+      Thread.currentThread().setContextClassLoader(OAuthAuthenticationServerValve.class.getClassLoader());
       try
       {
          ResteasyProviderFactory.getInstance(); // initialize builtins
@@ -216,9 +223,15 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
          if (handleLoginPage(request, response)) return;
       }
       else if (request.getMethod().equalsIgnoreCase("GET")
-              && requestURI.endsWith("j_oauth_logoff"))
+              && requestURI.endsWith(Actions.J_OAUTH_LOGOUT))
       {
-         logoff(request, response);
+         logoutCurrentUser(request, response);
+         return;
+      }
+      else if (request.getMethod().equalsIgnoreCase("POST")
+              && requestURI.endsWith(Actions.J_OAUTH_ADMIN_FORCED_LOGOUT))
+      {
+         adminLogout(request, response);
          return;
       }
       else if (request.getMethod().equalsIgnoreCase("POST")
@@ -231,7 +244,7 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       }
       else if (request.getMethod().equalsIgnoreCase("POST")
               && requestURI.startsWith(contextPath) &&
-              requestURI.endsWith("j_oauth_resolve_access_code"))
+              requestURI.endsWith(Actions.J_OAUTH_RESOLVE_ACCESS_CODE))
       {
          resolveAccessCode(request, response);
          return;
@@ -286,7 +299,7 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       else if (!skeletonKeyConfig.isSsoDisabled() && request.getSessionInternal() != null && request.getSessionInternal().getPrincipal() != null)
       {
          log.info("We're ALREADY LOGGED IN!!!");
-         GenericPrincipal gp = (GenericPrincipal)request.getSessionInternal().getPrincipal();
+         GenericPrincipal gp = (GenericPrincipal) request.getSessionInternal().getPrincipal();
          redirectAccessCode(response, redirect_uri, client_id, state, gp);
       }
       else
@@ -302,9 +315,75 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       return true;
    }
 
-   protected void logoff(Request request, HttpServletResponse response) throws IOException
+   protected GenericPrincipal checkLoggedIn(Request request, HttpServletResponse response)
    {
-      log.info("->> logoff");
+      if (request.getPrincipal() != null)
+      {
+         return (GenericPrincipal) request.getPrincipal();
+      }
+      else if (request.getSessionInternal() != null && request.getSessionInternal().getPrincipal() != null)
+      {
+         return (GenericPrincipal) request.getSessionInternal().getPrincipal();
+      }
+      return null;
+   }
+
+
+   protected void adminLogout(Request request, HttpServletResponse response) throws IOException
+   {
+      log.info("<< adminLogout");
+      GenericPrincipal gp = checkLoggedIn(request, response);
+      if (gp == null)
+      {
+         if (bearer(request, response, false))
+         {
+            gp = (GenericPrincipal) request.getPrincipal();
+         }
+         else
+         {
+            response.sendError(403);
+            return;
+         }
+      }
+      if (!gp.hasRole(skeletonKeyConfig.getAdminRole()))
+      {
+         response.sendError(403);
+         return;
+      }
+      String logoutUser = request.getParameter("user");
+      if (logoutUser != null)
+      {
+         userSessionManagement.logout(logoutUser);
+         logoutResources(logoutUser, gp.getName());
+      }
+      else
+      {
+         userSessionManagement.logoutAllBut(gp.getName());
+         logoutResources(null, gp.getName());
+      }
+      String forwardTo = request.getParameter("forward");
+      if (forwardTo == null)
+      {
+         response.setStatus(204);
+         return;
+      }
+      RequestDispatcher disp =
+              context.getServletContext().getRequestDispatcher(forwardTo);
+      try {
+         disp.forward(request.getRequest(), response);
+      } catch (Throwable t) {
+         request.setAttribute(RequestDispatcher.ERROR_EXCEPTION, t);
+         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                 "failed to forward");
+      }
+
+
+
+   }
+
+
+   protected void logoutCurrentUser(Request request, HttpServletResponse response) throws IOException
+   {
       if (request.getSessionInternal() == null || request.getSessionInternal().getPrincipal() == null)
       {
          redirectToWelcomePage(request, response);
@@ -318,15 +397,16 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       request.getSessionInternal().setPrincipal(null);
       request.getSessionInternal().setAuthType(null);
       request.getSession().invalidate();
+      // logout user on all declared authenticated resources
+      logoutResources(username, admin);
+      userSessionManagement.logout(username);
+      redirectToWelcomePage(request, response);
+   }
+
+   protected void logoutResources(String username, String admin)
+   {
       if (skeletonKeyConfig.getResources().size() != 0)
       {
-         ResteasyClient client = new ResteasyClientBuilder()
-                 .providerFactory(providers)
-                 .hostnameVerification(AbstractClientBuilder.HostnameVerificationPolicy.ANY)
-                 .truststore(resourceMetadata.getTruststore())
-                 .clientKeyStore(resourceMetadata.getClientKeystore(), resourceMetadata.getClientKeyPassword())
-                 .build();
-         log.info("truststore is null: " + resourceMetadata.getTruststore() == null);
          SkeletonKeyToken token = new SkeletonKeyToken();
          token.id(generateId());
          token.principal(admin);
@@ -335,6 +415,12 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
          realmAccess.addRole(skeletonKeyConfig.getAdminRole());
          token.setRealmAccess(realmAccess);
          String tokenString = buildTokenString(skeletonKeyConfig.getPrivateKey(), token);
+         ResteasyClient client = new ResteasyClientBuilder()
+                 .providerFactory(providers)
+                 .hostnameVerification(AbstractClientBuilder.HostnameVerificationPolicy.ANY)
+                 .truststore(resourceMetadata.getTruststore())
+                 .clientKeyStore(resourceMetadata.getClientKeystore(), resourceMetadata.getClientKeyPassword())
+                 .build();
          try
          {
             for (String resource : skeletonKeyConfig.getResources())
@@ -342,9 +428,13 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
                try
                {
                   log.info("logging out: " + resource);
-                  client.target(resource).path("j_oauth_remote_logout").queryParam("user", username).request()
+                  WebTarget target = client.target(resource).path(Actions.J_OAUTH_REMOTE_LOGOUT);
+                  if (username != null) target = target.queryParam("user", username);
+                  javax.ws.rs.core.Response response = target.request()
                           .header("Authorization", "Bearer " + tokenString)
-                          .get().close();
+                          .put(null);
+                  if (response.getStatus() != 204) log.error("Failed to log out");
+                  response.close();
                }
                catch (Exception ignored)
                {
@@ -357,7 +447,6 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
             client.close();
          }
       }
-      redirectToWelcomePage(request, response);
    }
 
    protected void redirectToWelcomePage(Request request, HttpServletResponse response) throws IOException
@@ -416,7 +505,7 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       PublishedRealmRepresentation rep = new PublishedRealmRepresentation();
       ResteasyUriInfo uriInfo = ServletUtil.extractUriInfo(request, null);
       UriBuilder authUrl = uriInfo.getBaseUriBuilder().path(context.getLoginConfig().getLoginPage());
-      UriBuilder codeUrl = uriInfo.getBaseUriBuilder().path("j_oauth_resolve_access_code");
+      UriBuilder codeUrl = uriInfo.getBaseUriBuilder().path(Actions.J_OAUTH_RESOLVE_ACCESS_CODE);
       rep.setRealm(skeletonKeyConfig.getRealm());
       rep.setPublicKeyPem(skeletonKeyConfig.getRealmPublicKey());
       rep.setAuthorizationUrl(authUrl.toTemplate());
@@ -424,9 +513,7 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       return rep;
    }
 
-
-   @Override
-   public boolean authenticate(Request request, HttpServletResponse response, LoginConfig config) throws IOException
+   public boolean bearer(Request request, HttpServletResponse response, boolean propagate)
    {
       if (request.getHeader("Authorization") != null)
       {
@@ -436,9 +523,10 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
             if (bearer.login(request, response))
             {
                SkeletonKeyTokenVerification verification = bearer.getVerification();
-               Principal principal = new CatalinaSecurityContextHelper().createPrincipal(context.getRealm(), verification.getPrincipal(), verification.getRoles());
+               GenericPrincipal principal = new CatalinaSecurityContextHelper().createPrincipal(context.getRealm(), verification.getPrincipal(), verification.getRoles());
                request.setUserPrincipal(principal);
-               if (!skeletonKeyConfig.isCancelPropagation())
+               request.setAuthType("OAUTH");
+               if (propagate)
                {
                   SkeletonKeySession skSession = new SkeletonKeySession(verification.getPrincipal().getToken(), resourceMetadata);
                   request.setAttribute(SkeletonKeySession.class.getName(), skSession);
@@ -450,47 +538,58 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
          catch (LoginException e)
          {
          }
-         return false;
       }
-      if (!super.authenticate(request, response, config))
+      return false;
+   }
+
+
+   @Override
+   public boolean authenticate(Request request, HttpServletResponse response, LoginConfig config) throws IOException
+   {
+      if (bearer(request, response, true))
+      {
+         return true;
+      }
+      else if (!super.authenticate(request, response, config))
       {
          return false;
       }
       String contextPath = request.getContextPath();
       String requestURI = request.getDecodedRequestURI();
 
-      if (!skeletonKeyConfig.isCancelPropagation()
-              && request.getMethod().equalsIgnoreCase("POST")
+      // need to do some post processing if this is a login
+      if (request.getMethod().equalsIgnoreCase("POST")
               && requestURI.startsWith(contextPath) &&
               requestURI.endsWith(Constants.FORM_ACTION))
       {
-         GenericPrincipal gp = (GenericPrincipal) request.getPrincipal();
-         if (gp != null)
+         Principal principal = request.getPrincipal();
+         log.info("authenticate userSessionManage.login(): " + principal.getName());
+         userSessionManagement.login(request.getSessionInternal(), principal.getName());
+         if (!skeletonKeyConfig.isCancelPropagation())
          {
-            SkeletonKeyToken token = buildToken(gp);
-            String stringToken = buildTokenString(skeletonKeyConfig.getPrivateKey(), token);
-            SkeletonKeySession skSession = new SkeletonKeySession(stringToken, resourceMetadata);
-            request.setAttribute(SkeletonKeySession.class.getName(), skSession);
-            ResteasyProviderFactory.pushContext(SkeletonKeySession.class, skSession);
-            request.getSessionInternal(true).setNote(SkeletonKeySession.class.getName(), skSession);
+            GenericPrincipal gp = (GenericPrincipal) request.getPrincipal();
+            if (gp != null)
+            {
+               SkeletonKeyToken token = buildToken(gp);
+               String stringToken = buildTokenString(skeletonKeyConfig.getPrivateKey(), token);
+               SkeletonKeySession skSession = new SkeletonKeySession(stringToken, resourceMetadata);
+               request.setAttribute(SkeletonKeySession.class.getName(), skSession);
+               ResteasyProviderFactory.pushContext(SkeletonKeySession.class, skSession);
+               request.getSessionInternal(true).setNote(SkeletonKeySession.class.getName(), skSession);
+            }
          }
       }
+
+
       return true;
    }
 
 
    protected void resolveAccessCode(Request request, Response response) throws IOException
    {
-      String username = request.getParameter("client_id");
-      String password = request.getParameter("password");
+      // always verify code and remove access code from map before authenticating user
+      // if user authentication fails, we want the code to be removed irreguardless just in case we're under attack
       String code = request.getParameter("code");
-      GenericPrincipal gp = (GenericPrincipal) context.getRealm().authenticate(username, password);
-      if (gp == null)
-      {
-         log.error("Failed to authenticate client_id");
-         response.sendError(400);
-         return;
-      }
       JWSInput input = new JWSInput(code, providers);
       boolean verifiedCode = false;
       try
@@ -501,19 +600,30 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       {
          log.debug("Failed to verify signature", ignored);
       }
+      ObjectMapper mapper = new ObjectMapper();
+      mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
       if (!verifiedCode)
       {
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
          res.put("error_description", "Unable to verify code signature");
          response.sendError(400);
-         //return javax.ws.rs.core.Response.status(javax.ws.rs.core.Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(res).build();
+         response.setContentType("application/json");
+         mapper.writeValue(response.getOutputStream(), res);
+         response.getOutputStream().flush();
+         return;
       }
       String key = input.readContent(String.class);
-      AccessCode accessCode = null;
-      synchronized (accessCodeMap)
+      AccessCode accessCode = accessCodeMap.remove(key);
+
+      String username = request.getParameter("client_id");
+      String password = request.getParameter("password");
+      GenericPrincipal gp = (GenericPrincipal) context.getRealm().authenticate(username, password);
+      if (gp == null)
       {
-         accessCode = accessCodeMap.remove(key);
+         log.error("Failed to authenticate client_id");
+         response.sendError(400);
+         return;
       }
       if (accessCode == null)
       {
@@ -521,8 +631,6 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
          response.sendError(400);
          return;
       }
-      ObjectMapper mapper = new ObjectMapper();
-      mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
       if (accessCode.isExpired())
       {
          log.error("Access code expired");
@@ -632,6 +740,7 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       }
       GenericPrincipal gp = (GenericPrincipal) principal;
       register(request, response, principal, HttpServletRequest.FORM_AUTH, username, password);
+      userSessionManagement.login(request.getSessionInternal(), username);
       redirectAccessCode(response, redirect_uri, client_id, state, gp);
 
       return;
@@ -645,10 +754,7 @@ public class LocalOAuthAuthenticatorValve extends FormAuthenticator
       code.setClient(client_id);
       int expiration = skeletonKeyConfig.getExpiration() == 0 ? 300 : skeletonKeyConfig.getExpiration();
       code.setExpiration((System.currentTimeMillis() / 1000) + expiration);
-      synchronized (accessCodeMap)
-      {
-         accessCodeMap.put(code.getId(), code);
-      }
+      accessCodeMap.put(code.getId(), code);
       log.info("--- sign access code");
       String accessCode = null;
       try
