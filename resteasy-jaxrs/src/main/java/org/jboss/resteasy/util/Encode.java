@@ -431,6 +431,7 @@ public class Encode
          String replacement = params.get(i++);
          // double encode slashes, so that slashes stay where they are 
          replacement = replacement.replace("\\", "\\\\");
+         replacement = replacement.replace("$", "\\$");
          matcher.appendReplacement(newSegment, replacement);
       }
       matcher.appendTail(newSegment);
