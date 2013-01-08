@@ -234,6 +234,46 @@ public class PathParamTest extends BaseResourceTest
 
          return "A " + color + " " + year + " " + make + " " + model.getPath();
       }
+      
+      @GET
+      @Path("/concat/{model: \\D+}{year: \\d+}")
+      @Produces("text/plain")
+     public String getConcatenatedSegment(@Context UriInfo info,
+        @PathParam("model") String model, @PathParam("year") String year) {
+         String make = info.getPathParameters().getFirst("make");
+         String color = info.getQueryParameters().get("color").get(0);
+         return "A " + color + " " + year + " " + make + " " + model;
+      }
+      
+      @GET
+      @Path("/concat2/{model: \\$\\D+}{year: \\d+}")
+      @Produces("text/plain")
+      public String getConcatenated2Segment(@Context UriInfo info,
+        @PathParam("model") String model, @PathParam("year") String year) {
+         String make = info.getPathParameters().getFirst("make");
+         String color = info.getQueryParameters().get("color").get(0);
+         return "A " + color + " " + year + " " + make + " " + model;
+      }
+      
+      @GET
+      @Path("/concat3/{model: [\\$]glk}")
+      @Produces("text/plain")
+      public String getConcatenated3Segment(@Context UriInfo info,
+        @PathParam("model") String model) {
+         String make = info.getPathParameters().getFirst("make");
+         String color = info.getQueryParameters().get("color").get(0);
+         return "A " + color + " " + make + " " + model;
+      }
+      
+      @GET
+      @Path("/group/{model: [^/()]+?}{ignore: (?:\\(\\))?}")
+      @Produces("text/plain")
+      public String getGroupSegment(@Context UriInfo info,
+         @PathParam("model") String model) {
+         String make = info.getPathParameters().getFirst("make");
+         String color = info.getQueryParameters().get("color").get(0);
+         return "A " + color + " " + make + " " + model;
+      } 
    }
 
    @Test
@@ -264,6 +304,30 @@ public class PathParamTest extends BaseResourceTest
       response = get.get(String.class);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("A black 2006 mercedes e55", response.getEntity());
+
+      System.out.println("**** Via Concatenated plain***");
+      get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/concat/mlk2006?color=black"));
+      response = get.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("A black 2006 mercedes mlk", response.getEntity());
+      
+      System.out.println("**** Via Concatenated with regex character***");
+      get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/concat2/$mlk2006?color=black"));
+      response = get.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("A black 2006 mercedes $mlk", response.getEntity());
+      
+      System.out.println("**** Via Concatenated with regex character with $ ***");
+      get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/concat3/$glk?color=black"));
+      response = get.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("A black mercedes $glk", response.getEntity());
+      
+      System.out.println("**** Via grouping chars in regex ***");
+      get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/group/glk()?color=black"));
+      response = get.get(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("A black mercedes glk", response.getEntity()); 
    }
 
 
