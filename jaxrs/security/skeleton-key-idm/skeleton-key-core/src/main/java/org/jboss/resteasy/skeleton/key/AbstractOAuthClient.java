@@ -123,6 +123,7 @@ public class AbstractOAuthClient
    public String resolveBearerToken(String code)
    {
       Form codeForm = new Form()
+              .param("grant_type", "authorization_code")
               .param("code", code)
               .param("client_id", clientId)
               .param("password", password);

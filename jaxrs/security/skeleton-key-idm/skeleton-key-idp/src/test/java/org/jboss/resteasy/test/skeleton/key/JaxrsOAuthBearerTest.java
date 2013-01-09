@@ -44,7 +44,6 @@ public class JaxrsOAuthBearerTest extends SkeletonTestBase
       config.setAuthUrl(UriBuilder.fromUri(realmInfo.getAuthorizationUrl()));
       config.setClient(new ResteasyClient());
       config.setCodeUrl(config.getClient().target(realmInfo.getCodeUrl()));
-      config.setCookieSecure(false);
       config.setSslRequired(false);
       config.setClientId("loginclient");
       config.getCredentials().param("Password", "clientpassword");

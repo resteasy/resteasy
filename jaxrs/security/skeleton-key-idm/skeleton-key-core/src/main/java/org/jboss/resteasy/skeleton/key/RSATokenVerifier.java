@@ -18,17 +18,7 @@ import java.util.Set;
  */
 public class RSATokenVerifier
 {
-   public static SkeletonKeyTokenVerification verify(Principal principal,
-                                                     String tokenString, ResourceMetadata metadata) throws VerificationException
-   {
-      return verify(tokenString, metadata, principal);
-   }
-   public static SkeletonKeyTokenVerification verify(X509Certificate[] userCerts,
-                                                     String tokenString, ResourceMetadata metadata) throws VerificationException
-   {
-      return verify(tokenString, metadata, userCerts);
-   }
-   public static SkeletonKeyTokenVerification verify(String tokenString, ResourceMetadata metadata, Object caller) throws VerificationException
+   public static SkeletonKeyToken verifyToken(String tokenString, ResourceMetadata metadata) throws VerificationException
    {
       PublicKey realmKey = metadata.getRealmKey();
       String realm = metadata.getRealm();
@@ -68,7 +58,28 @@ public class RSATokenVerifier
          throw new VerificationException("Token audience doesn't match domain");
 
       }
-      SkeletonKeyToken.Access access= null;
+      return token;
+   }
+
+
+   public static SkeletonKeyTokenVerification verify(Principal principal,
+                                                     String tokenString, ResourceMetadata metadata) throws VerificationException
+   {
+      return verify(tokenString, metadata, principal);
+   }
+
+   public static SkeletonKeyTokenVerification verify(X509Certificate[] userCerts,
+                                                     String tokenString, ResourceMetadata metadata) throws VerificationException
+   {
+      return verify(tokenString, metadata, userCerts);
+   }
+
+   public static SkeletonKeyTokenVerification verify(String tokenString, ResourceMetadata metadata, Object caller) throws VerificationException
+   {
+      SkeletonKeyToken token = verifyToken(tokenString, metadata);
+      SkeletonKeyToken.Access access = null;
+      String realm = metadata.getRealm();
+      String resource = metadata.getResourceName();
       if (resource == null) // realm access
       {
          access = token.getRealmAccess();
@@ -96,6 +107,7 @@ public class RSATokenVerifier
       if (!found) throw new VerificationException("User: " + user + " was not found in list of client certificates");
       */
       // assuming 1st is root
+      String user = token.getPrincipal();
       String surrogate = null;
       if (access.isVerifyCaller())
       {
@@ -103,11 +115,11 @@ public class RSATokenVerifier
          String certUser = null;
          if (caller instanceof Principal)
          {
-            certUser = ((Principal)caller).getName();
+            certUser = ((Principal) caller).getName();
          }
          else
          {
-            certUser = ((X509Certificate[])caller)[0].getSubjectX500Principal().getName();
+            certUser = ((X509Certificate[]) caller)[0].getSubjectX500Principal().getName();
          }
          if (!certUser.equals(user))
          {
