@@ -1,6 +1,8 @@
 {
    "realm" : "commerce",
    "admin-role" : "admin",
+   "login-role" : "login",
+   "wildcard-role" : "*",
    "realm-private-key" : "MIICXAIBAAKBgQDkWICgVYtQfMl09xvewGiVTHSbuFKiKJwAzkwuCvToeNzeyvFbJpIr17aADzRQ7uSWK4O4eYqA2wLyPffxrrJrge+FUfEnpUfC4kdO5FadrObC12G7uAdbfwoZ7XAET2hTRwzhwQpbfscBwcqhem8coUkSjnTxxbon3MrMg0yW1wIDAQABAoGAQIx8H9bOwPvlfvjzme5OIhYwyGw8f7Z3Ews+Ia3bOXQhC6HWxGuM2nPqFR03LsG5QHIglB9XdcFzfcLiuiEmMhDqRZlLPV+sRHneQYbM7j3CjGqGpdQCZIF3gG9a+tiR5/KSBjk6zTmZx1jxCNq5pcw6bmgbgdKEvM0AKBGqImECQQD/vf0jjdJyOSVBCEj7InFLt82PgPIMt8xYqg/mD8xwis9I9aSZtQOcGDU8HnOi0Widn9FrrXsbZ2djRtmmU49ZAkEA5JNxMX/YRLHBAM3i4WdlzKb0b9OEZvY61PT5thONBp/SshcBvqiURDMHL2mo97kcmAM0HIjP0kdDq5uXTghBrwJAcNluNV0kiuCqjrrQMXkuU0IlA/jbVj9YfZt1boh0JwkplMFIQ8c7c4q/Gus5DZSoPD3ElGY1147WcVlXO2zN6QJAeCN+5TN66nA7Lz8Hts1v1icSZwxXlP5qYa/459hS0V6DkZNCGYHlnAruBd+VLc8f1k4ov66w/Kb0TGhVGHCChQJBAJpjRrvuoyWgl96fQU2IP+6ZJQSIqMgXak8e26rMX6Q0FxMcs/68d0ZTGZrBJRQjDCAUi6MDuuazfWNTKCz5Z7Y=",
    "realm-public-key" : "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDkWICgVYtQfMl09xvewGiVTHSbuFKiKJwAzkwuCvToeNzeyvFbJpIr17aADzRQ7uSWK4O4eYqA2wLyPffxrrJrge+FUfEnpUfC4kdO5FadrObC12G7uAdbfwoZ7XAET2hTRwzhwQpbfscBwcqhem8coUkSjnTxxbon3MrMg0yW1wIDAQAB",
    "truststore" : "${jboss.server.config.dir}/client-truststore.ts",

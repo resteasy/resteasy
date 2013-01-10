@@ -13,7 +13,7 @@ import java.util.List;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class LocalSkeletonKeyConfig
+public class AuthServerConfig
 {
    @JsonProperty("realm")
    protected String realm;
@@ -30,9 +30,19 @@ public class LocalSkeletonKeyConfig
    @JsonProperty("admin-role")
    protected String adminRole;
 
+   @JsonProperty("login-role")
+   protected String loginRole;
+
+   @JsonProperty("client-role")
+   protected String clientRole;
+
+   @JsonProperty("wildcard-role")
+   protected String wildcardRole;
+
    @JsonProperty("cancel-propagation")
    protected boolean cancelPropagation;
 
+   @JsonProperty("sso-disabled")
    protected boolean ssoDisabled;
 
    @JsonIgnore
@@ -213,5 +223,35 @@ public class LocalSkeletonKeyConfig
    public void setAdminRole(String adminRole)
    {
       this.adminRole = adminRole;
+   }
+
+   public String getLoginRole()
+   {
+      return loginRole;
+   }
+
+   public void setLoginRole(String loginRole)
+   {
+      this.loginRole = loginRole;
+   }
+
+   public String getClientRole()
+   {
+      return clientRole;
+   }
+
+   public void setClientRole(String clientRole)
+   {
+      this.clientRole = clientRole;
+   }
+
+   public String getWildcardRole()
+   {
+      return wildcardRole;
+   }
+
+   public void setWildcardRole(String wildcardRole)
+   {
+      this.wildcardRole = wildcardRole;
    }
 }

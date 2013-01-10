@@ -5,24 +5,17 @@ import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.client.jaxrs.AbstractClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.skeleton.key.EnvUtil;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
-import org.jboss.resteasy.skeleton.key.as7.config.RemoteSkeletonKeyConfig;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.skeleton.key.as7.config.ManagedResourceConfig;
 
-import javax.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.PublicKey;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -31,7 +24,7 @@ import java.util.Map;
 public abstract class AbstractRemoteOAuthAuthenticatorValve extends AuthenticatorBase
 {
    private static final Logger log = Logger.getLogger(AbstractRemoteOAuthAuthenticatorValve.class);
-   protected RemoteSkeletonKeyConfig remoteSkeletonKeyConfig;
+   protected ManagedResourceConfig remoteSkeletonKeyConfig;
    protected ResourceMetadata resourceMetadata;
 
    private static KeyStore loadKeyStore(String filename, String password) throws Exception
@@ -55,7 +48,7 @@ public abstract class AbstractRemoteOAuthAuthenticatorValve extends Authenticato
       remoteSkeletonKeyConfig = null;
       try
       {
-         remoteSkeletonKeyConfig = mapper.readValue(is, RemoteSkeletonKeyConfig.class);
+         remoteSkeletonKeyConfig = mapper.readValue(is, ManagedResourceConfig.class);
       }
       catch (IOException e)
       {

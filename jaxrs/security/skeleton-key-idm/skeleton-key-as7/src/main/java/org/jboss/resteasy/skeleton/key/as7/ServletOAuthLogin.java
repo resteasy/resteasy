@@ -1,6 +1,5 @@
 package org.jboss.resteasy.skeleton.key.as7;
 
-import org.apache.catalina.connector.Request;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
 import org.jboss.resteasy.skeleton.key.RealmConfiguration;
@@ -9,6 +8,7 @@ import org.jboss.resteasy.skeleton.key.VerificationException;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
@@ -21,23 +21,26 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class CatalinaOAuthLogin
+public class ServletOAuthLogin
 {
-   private static final Logger log = Logger.getLogger(CatalinaOAuthLogin.class);
-   protected Request request;
+   private static final Logger log = Logger.getLogger(ServletOAuthLogin.class);
+   protected HttpServletRequest request;
    protected HttpServletResponse response;
    protected boolean codePresent;
    protected RealmConfiguration realmInfo;
    protected SkeletonKeyTokenVerification verification;
+   protected int redirectPort;
 
-   public CatalinaOAuthLogin(RealmConfiguration realmInfo, Request request, HttpServletResponse response)
+   public ServletOAuthLogin(RealmConfiguration realmInfo, HttpServletRequest request, HttpServletResponse response, int redirectPort)
    {
       this.request = request;
       this.response = response;
       this.realmInfo = realmInfo;
+      this.redirectPort = redirectPort;
    }
 
    public SkeletonKeyTokenVerification getVerification()
@@ -67,11 +70,6 @@ public class CatalinaOAuthLogin
       return request.isSecure();
    }
 
-   protected int getSslRedirectPort()
-   {
-      return request.getConnector().getRedirectPort();
-   }
-
    protected void sendError(int code)
    {
       try
@@ -96,17 +94,24 @@ public class CatalinaOAuthLogin
       }
    }
 
-   protected String getCookieValue(String cookieName)
+   protected Cookie getCookie(String cookieName)
    {
       if (request.getCookies() == null) return null;
       for (Cookie cookie : request.getCookies())
       {
          if (cookie.getName().equals(cookieName))
          {
-            return cookie.getValue();
+            return cookie;
          }
       }
       return null;
+   }
+
+   protected String getCookieValue(String cookieName)
+   {
+      Cookie cookie = getCookie(cookieName);
+      if (cookie == null) return null;
+      return cookie.getValue();
    }
 
    protected String getCode()
@@ -131,13 +136,6 @@ public class CatalinaOAuthLogin
       return codePresent;
    }
 
-   protected X509Certificate[] getCertificateChain()
-   {
-      // disabled at the moment.  If verify-client is false, this method call will crap out the SSL connection
-      if (true) return null;
-      return request.getCertificateChain();
-   }
-
    protected void setCookie(String name, String value, String domain, String path, boolean secure)
    {
       Cookie cookie = new Cookie(name, value);
@@ -152,7 +150,7 @@ public class CatalinaOAuthLogin
       String url = getRequestUrl();
       if (!isRequestSecure() && realmInfo.isSslRequired())
       {
-         int port = getSslRedirectPort();
+         int port = redirectPort;
          if (port < 0)
          {
             // disabled?
@@ -166,6 +164,7 @@ public class CatalinaOAuthLogin
               .queryParam("client_id", realmInfo.getClientId())
               .queryParam("redirect_uri", url)
               .queryParam("state", state)
+              .queryParam("login", "true")
               .build().toString();
    }
 
@@ -191,14 +190,21 @@ public class CatalinaOAuthLogin
 
    public boolean checkStateCookie()
    {
-      String stateCookie = getCookieValue(realmInfo.getStateCookieName());
+      Cookie stateCookie = getCookie(realmInfo.getStateCookieName());
+
       if (stateCookie == null)
       {
          sendError(400);
          log.warn("No state cookie");
          return false;
       }
+      // reset the cookie
+      Cookie reset = new Cookie(stateCookie.getName(), stateCookie.getValue());
+      reset.setPath(stateCookie.getPath());
+      reset.setMaxAge(0);
+      response.addCookie(reset);
 
+      String stateCookieValue = getCookieValue(realmInfo.getStateCookieName());
       String state = request.getParameter("state");
       if (state == null)
       {
@@ -206,11 +212,11 @@ public class CatalinaOAuthLogin
          log.warn("state parameter was null");
          return false;
       }
-      if (!state.equals(stateCookie))
+      if (!state.equals(stateCookieValue))
       {
          sendError(400);
          log.warn("state parameter invalid");
-         log.warn("cookie: " + stateCookie);
+         log.warn("cookie: " + stateCookieValue);
          log.warn("queryParam: " + state);
          return false;
       }
@@ -218,7 +224,18 @@ public class CatalinaOAuthLogin
 
    }
 
-
+   /**
+    * Start or continue the oauth login process.
+    *
+    * if code query parameter is not present, then browser is redirected to authUrl.  The redirect URL will be
+    * the URL of the current request.
+    *
+    * If code query parameter is present, then an access token is obtained by invoking a secure request to the codeUrl.
+    * If the access token is obtained, the browser is again redirected to the current request URL, but any OAuth
+    * protocol specific query parameters are removed.
+    *
+    * @return true if an access token was obtained
+    */
    public boolean login()
    {
       String code = getCode();
@@ -267,10 +284,9 @@ public class CatalinaOAuthLogin
       }
 
       String tokenString = tokenResponse.getToken();
-      X509Certificate[] chain = getCertificateChain();
       try
       {
-         verification = RSATokenVerifier.verify(chain, tokenString, realmInfo.getMetadata());
+         verification = RSATokenVerifier.verify((X509Certificate[])null, tokenString, realmInfo.getMetadata());
          log.info("Verification succeeded!");
       }
       catch (VerificationException e)
@@ -279,7 +295,22 @@ public class CatalinaOAuthLogin
          sendError(Response.Status.FORBIDDEN.getStatusCode());
          return false;
       }
-      log.info("Registering...");
+
+      // strip out unwanted query parameters and redirect so bookmarks don't retain oauth protocol bits
+      StringBuffer buf = request.getRequestURL().append("?").append(request.getQueryString());
+      UriBuilder builder = UriBuilder.fromUri(buf.toString())
+              .replaceQueryParam("code", null)
+              .replaceQueryParam("state", null);
+      try
+      {
+         String location = builder.build().toString();
+         log.info("* redirect to stripped query parameters: " + location);
+         response.sendRedirect(location);
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
       return true;
    }
 

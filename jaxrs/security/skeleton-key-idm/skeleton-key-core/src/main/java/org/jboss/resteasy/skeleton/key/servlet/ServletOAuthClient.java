@@ -25,7 +25,17 @@ import java.net.URI;
  */
 public class ServletOAuthClient extends AbstractOAuthClient
 {
-
+   /**
+    * Start the process of obtaining an access token by redirecting the browser
+    * to the authentication server
+    *
+    *
+    *
+    * @param relativePath path relative to context root you want auth server to redirect back to
+    * @param request
+    * @param response
+    * @throws IOException
+    */
    public void redirectRelative(String relativePath, HttpServletRequest request, HttpServletResponse response) throws IOException
    {
       ResteasyUriInfo uriInfo = ServletUtil.extractUriInfo(request, null);
@@ -34,6 +44,15 @@ public class ServletOAuthClient extends AbstractOAuthClient
    }
 
 
+   /**
+    * Start the process of obtaining an access token by redirecting the browser
+    * to the authentication server
+    *
+    * @param redirectUri  full URI you want auth server to redirect back to
+    * @param request
+    * @param response
+    * @throws IOException
+    */
    public void redirect(String redirectUri, HttpServletRequest request, HttpServletResponse response) throws IOException
    {
       String state = getStateCode();
@@ -64,6 +83,15 @@ public class ServletOAuthClient extends AbstractOAuthClient
       return null;
    }
 
+   /**
+    * Obtain the code parameter from the url after being redirected back from the auth-server.  Then
+    * do an authenticated request back to the auth-server to turn the access code into an access token.
+    *
+    * @param request
+    * @return
+    * @throws BadRequestException
+    * @throws InternalServerErrorException
+    */
    public String getBearerToken(HttpServletRequest request) throws BadRequestException, InternalServerErrorException
    {
       String stateCookie = getCookieValue(stateCookieName, request);

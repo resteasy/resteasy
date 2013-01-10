@@ -23,7 +23,7 @@ import org.jboss.resteasy.skeleton.key.EnvUtil;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeySession;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
-import org.jboss.resteasy.skeleton.key.as7.config.LocalSkeletonKeyConfig;
+import org.jboss.resteasy.skeleton.key.as7.config.AuthServerConfig;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 import org.jboss.resteasy.skeleton.key.representations.idm.PublishedRealmRepresentation;
@@ -75,6 +75,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       protected long expiration;
       protected SkeletonKeyToken token;
       protected String client;
+      protected boolean sso;
 
       public boolean isExpired()
       {
@@ -115,6 +116,16 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       {
          this.client = client;
       }
+
+      public boolean isSso()
+      {
+         return sso;
+      }
+
+      public void setSso(boolean sso)
+      {
+         this.sso = sso;
+      }
    }
 
    protected ConcurrentHashMap<String, AccessCode> accessCodeMap = new ConcurrentHashMap<String, AccessCode>();
@@ -127,7 +138,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       return counter.getAndIncrement() + "." + UUID.randomUUID().toString();
    }
 
-   protected LocalSkeletonKeyConfig skeletonKeyConfig;
+   protected AuthServerConfig skeletonKeyConfig;
    protected ResteasyProviderFactory providers;
    protected ResourceMetadata resourceMetadata;
    protected UserSessionManagement userSessionManagement = new UserSessionManagement();
@@ -152,7 +163,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       InputStream is = context.getServletContext().getResourceAsStream("/WEB-INF/resteasy-local-oauth.json");
       try
       {
-         skeletonKeyConfig = mapper.readValue(is, LocalSkeletonKeyConfig.class);
+         skeletonKeyConfig = mapper.readValue(is, AuthServerConfig.class);
       }
       catch (IOException e)
       {
@@ -296,11 +307,17 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       {
          response.sendError(400);
       }
-      else if (!skeletonKeyConfig.isSsoDisabled() && request.getSessionInternal() != null && request.getSessionInternal().getPrincipal() != null)
+      // only bypass authentication if the login query parameter is on request URL
+      // and we have configured the login-role
+      else if (!skeletonKeyConfig.isSsoDisabled()
+              && request.getSessionInternal() != null
+              && request.getSessionInternal().getPrincipal() != null
+              && request.getParameter("login") != null
+              && skeletonKeyConfig.getLoginRole() != null)
       {
          log.info("We're ALREADY LOGGED IN!!!");
          GenericPrincipal gp = (GenericPrincipal) request.getSessionInternal().getPrincipal();
-         redirectAccessCode(response, redirect_uri, client_id, state, gp);
+         redirectAccessCode(true, response, redirect_uri, client_id, state, gp);
       }
       else
       {
@@ -653,7 +670,28 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
          response.getOutputStream().flush();
          return;
       }
-      if (accessCode.getToken().getRealmAccess().getRoles() != null)
+      if (accessCode.isSso() && (skeletonKeyConfig.getLoginRole() == null || !gp.hasRole(skeletonKeyConfig.getLoginRole())))
+      {
+         // we did not authenticate user on an access code request because a session was already established
+         // but, the client_id does not have permission to bypass this on a simple grant.  We want
+         // to always ask for credentials from a simple oath request
+
+         log.error("does not have login role");
+         Map<String, String> res = new HashMap<String, String>();
+         res.put("error", "invalid_grant");
+         res.put("error_description", "Auth error");
+         response.setStatus(400);
+         response.setContentType("application/json");
+         mapper.writeValue(response.getOutputStream(), res);
+         response.getOutputStream().flush();
+         return;
+      }
+      String wildcard = skeletonKeyConfig.getWildcardRole() == null ? "*" : skeletonKeyConfig.getWildcardRole();
+      // is we have a login role, then we don't need to filter out roles, just grant all the roles the user has
+      // Also, if the client has the "wildcard" role, then we don't need to filter out roles
+      if (accessCode.getToken().getRealmAccess().getRoles() != null
+              && !gp.hasRole(wildcard)
+              && (skeletonKeyConfig.getLoginRole() == null || !gp.hasRole(skeletonKeyConfig.getLoginRole())))
       {
          Set<String> clientAllowed = new HashSet<String>();
          for (String role : gp.getRoles())
@@ -727,17 +765,18 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       GenericPrincipal gp = (GenericPrincipal) principal;
       register(request, response, principal, HttpServletRequest.FORM_AUTH, username, password);
       userSessionManagement.login(request.getSessionInternal(), username);
-      redirectAccessCode(response, redirect_uri, client_id, state, gp);
+      redirectAccessCode(false, response, redirect_uri, client_id, state, gp);
 
       return;
    }
 
-   protected void redirectAccessCode(Response response, String redirect_uri, String client_id, String state, GenericPrincipal gp) throws IOException
+   protected void redirectAccessCode(boolean sso, Response response, String redirect_uri, String client_id, String state, GenericPrincipal gp) throws IOException
    {
       SkeletonKeyToken token = buildToken(gp);
       AccessCode code = new AccessCode();
       code.setToken(token);
       code.setClient(client_id);
+      code.setSso(sso);
       int expiration = skeletonKeyConfig.getExpiration() == 0 ? 300 : skeletonKeyConfig.getExpiration();
       code.setExpiration((System.currentTimeMillis() / 1000) + expiration);
       accessCodeMap.put(code.getId(), code);

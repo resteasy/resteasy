@@ -124,7 +124,9 @@ public class OAuthManagedResourceValve extends AbstractRemoteOAuthAuthenticatorV
       {
          if (bearer(false, request, response)) return true;
          else if (checkLoggedIn(request, response)) return true;
-         else if (oauth(request, response)) return true;
+
+         // initiate or continue oauth2 protocol
+         oauth(request, response);
       }
       catch (LoginException e)
       {
@@ -206,9 +208,12 @@ public class OAuthManagedResourceValve extends AbstractRemoteOAuthAuthenticatorV
       ResteasyProviderFactory.pushContext(SkeletonKeySession.class, skSession);
    }
 
-   protected boolean oauth(Request request, HttpServletResponse response) throws LoginException
+   /**
+    * This method always set the HTTP response, so do not continue after invoking
+    */
+   protected void oauth(Request request, HttpServletResponse response)
    {
-      CatalinaOAuthLogin oauth = new CatalinaOAuthLogin(realmConfiguration, request, response);
+      ServletOAuthLogin oauth = new ServletOAuthLogin(realmConfiguration, request, response, request.getConnector().getRedirectPort());
       if (oauth.login())
       {
          SkeletonKeyTokenVerification verification = oauth.getVerification();
@@ -221,27 +226,8 @@ public class OAuthManagedResourceValve extends AbstractRemoteOAuthAuthenticatorV
          log.info("userSessionManage.login: " + username);
          userSessionManagement.login(session, username);
 
-         if (oauth.isCodePresent()) // redirect without code
-         {
-            StringBuffer buf = request.getRequestURL().append("?").append(request.getQueryString());
-            UriBuilder builder = UriBuilder.fromUri(buf.toString()).replaceQueryParam("code", null);
-            try
-            {
-               String location = builder.build().toString();
-               log.info("* redirect to stripped query parameters: " + location);
-               response.sendRedirect(location);
-               return false;
-            }
-            catch (IOException e)
-            {
-               throw new RuntimeException(e);
-            }
-         }
-
          bindRequest(request, principal);
-         return true;
       }
-      return false;
    }
 
 }
