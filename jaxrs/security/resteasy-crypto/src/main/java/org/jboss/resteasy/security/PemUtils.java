@@ -29,6 +29,14 @@ public class PemUtils
       return DerUtils.decodeCertificate(bis);
    }
 
+   public static X509Certificate decodeCertificate(String cert) throws Exception
+   {
+      byte[] der = pemToDer(cert);
+      ByteArrayInputStream bis = new ByteArrayInputStream(der);
+      return DerUtils.decodeCertificate(bis);
+   }
+
+
    /**
     * Extract a public key from a PEM string
     *

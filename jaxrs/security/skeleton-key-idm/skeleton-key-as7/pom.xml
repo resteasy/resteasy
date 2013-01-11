@@ -66,10 +66,15 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.jboss.as</groupId>
+            <artifactId>jboss-as-web</artifactId>
+            <version>7.1.2.Final</version>
+        </dependency>
+        <dependency>
             <groupId>org.picketbox</groupId>
             <artifactId>picketbox</artifactId>
             <scope>provided</scope>
-            <version>4.0.13.Final</version>
+            <version>4.0.7.Final</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

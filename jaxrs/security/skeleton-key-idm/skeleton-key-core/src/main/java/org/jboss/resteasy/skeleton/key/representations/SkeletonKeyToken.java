@@ -17,23 +17,10 @@ public class SkeletonKeyToken extends JsonWebToken
 {
    public static class Access
    {
-      @JsonProperty("surrogates")
-      protected Set<String> surrogates;
       @JsonProperty("roles")
       protected Set<String> roles;
       @JsonProperty("verify_caller")
-      protected boolean verifyCaller;
-
-      public Set<String> getSurrogates()
-      {
-         return surrogates;
-      }
-
-      public Access surrogates(Set<String> surrogates)
-      {
-         this.surrogates = surrogates;
-         return this;
-      }
+      protected Boolean verifyCaller;
 
       public Set<String> getRoles()
       {
@@ -53,19 +40,6 @@ public class SkeletonKeyToken extends JsonWebToken
          return roles.contains(role);
       }
 
-      @JsonIgnore
-      public boolean hasSurrogate(String surrogate)
-      {
-         if (surrogates == null) return false;
-         return surrogates.contains(surrogate);
-      }
-
-      public Access addSurrogate(String surrogate)
-      {
-         if (surrogates == null) surrogates = new HashSet<String>();
-         surrogates.add(surrogate);
-         return this;
-      }
       public Access addRole(String role)
       {
          if (roles == null) roles = new HashSet<String>();
@@ -73,17 +47,21 @@ public class SkeletonKeyToken extends JsonWebToken
          return this;
       }
 
-      public boolean isVerifyCaller()
+      public Boolean getVerifyCaller()
       {
          return verifyCaller;
       }
 
-      public Access surrogateAuthRequired(boolean required)
+      public Access verifyCaller(Boolean required)
       {
          this.verifyCaller = required;
          return this;
       }
    }
+
+   @JsonProperty("trusted-certs")
+   protected Set<String> trustedCertificates;
+
 
    @JsonProperty("realm_access")
    protected Access realmAccess;
@@ -94,6 +72,32 @@ public class SkeletonKeyToken extends JsonWebToken
    public Map<String, Access> getResourceAccess()
    {
       return resourceAccess;
+   }
+
+   /**
+    * Does the realm require verifying the caller?
+    *
+    * @return
+    */
+   @JsonIgnore
+   public boolean isVerifyCaller()
+   {
+      if (getRealmAccess() != null && getRealmAccess().getVerifyCaller() != null) return getRealmAccess().getVerifyCaller().booleanValue();
+      return false;
+   }
+
+   /**
+    * Does the resource override the requirement of verifying the caller?
+    *
+    * @param resource
+    * @return
+    */
+   @JsonIgnore
+   public boolean isVerifyCaller(String resource)
+   {
+      Access access = getResourceAccess(resource);
+      if (access != null && access.getVerifyCaller() != null) return access.getVerifyCaller().booleanValue();
+      return false;
    }
 
    @JsonIgnore
@@ -165,5 +169,15 @@ public class SkeletonKeyToken extends JsonWebToken
    public void setRealmAccess(Access realmAccess)
    {
       this.realmAccess = realmAccess;
+   }
+
+   public Set<String> getTrustedCertificates()
+   {
+      return trustedCertificates;
+   }
+
+   public void setTrustedCertificates(Set<String> trustedCertificates)
+   {
+      this.trustedCertificates = trustedCertificates;
    }
 }

@@ -143,6 +143,19 @@
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
+            <artifactId>skeleton-key-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>skeleton-key-as7</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-yaml-provider</artifactId>
             <version>${project.version}</version>
         </dependency>
