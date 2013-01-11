@@ -583,20 +583,17 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
    protected void publishRealmInfoHtml(Request request, HttpServletResponse response) throws IOException
    {
       ManagedResourceConfig rep = getRealmRepresentation(request);
+      StringWriter writer;
+      String json;
 
       ObjectMapper mapper = new ObjectMapper();
       mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
       mapper.enable(SerializationConfig.Feature.INDENT_OUTPUT);
-      StringWriter writer = new StringWriter();
-      mapper.writeValue(writer, rep);
-      String json = writer.toString();
-      StringBuffer html = new StringBuffer();
 
-      html.append("<html><body>");
-      html.append("<h1>Config for Realm: ").append(rep.getRealm()).append("</h1>");
-      html.append("<h3>OAuthManagedResourceValve Json Config</h3>");
-      html.append("<form><textarea rows=\"20\" cols=\"80\">").append(json).append("</textarea></form>");
-      html.append("<br>");
+      StringBuffer html = new StringBuffer();
+      html.append("<html><body bgcolor=\"#CED8F6\">");
+      html.append("<h1>Realm: ").append(rep.getRealm()).append("</h1>");
+
       ManagedResourceConfig bearer = new ManagedResourceConfig();
       bearer.setRealm(rep.getRealm());
       bearer.setRealmKey(rep.getRealmKey());
@@ -605,9 +602,21 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       json = writer.toString();
 
       html.append("<h3>BearerTokenAuthValve Json Config</h3>");
-      html.append("<form><textarea rows=\"20\" cols=\"80\">").append(json).append("</textarea></form>");
-      html.append("</body></html>");
+      html.append("<form><textarea rows=\"7\" cols=\"80\">").append(json).append("</textarea></form>");
 
+      html.append("<br>");
+
+      writer = new StringWriter();
+      rep.getClientCredentials().put("password", "REQUIRED");
+      rep.setClientId("REQUIRED");
+      rep.setTruststore("MIGHT-NEED");
+      rep.setTruststorePassword("MIGHT-NEED");
+      mapper.writeValue(writer, rep);
+      json = writer.toString();
+      html.append("<h3>OAuthManagedResourceValve Json Config</h3>");
+      html.append("<form><textarea rows=\"20\" cols=\"80\">").append(json).append("</textarea></form>");
+
+      html.append("</body></html>");
 
       response.setStatus(200);
       response.setContentType("text/html");

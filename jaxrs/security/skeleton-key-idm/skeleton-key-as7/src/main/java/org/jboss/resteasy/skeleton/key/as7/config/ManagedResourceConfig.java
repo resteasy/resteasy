@@ -1,6 +1,7 @@
 package org.jboss.resteasy.skeleton.key.as7.config;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonPropertyOrder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,9 +10,12 @@ import java.util.Map;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@JsonPropertyOrder({"realm", "resource", "realm-public-key", "admin-role", "auth-url", "code-url", "truststore", "truststore-password", "client-id", "client-credentials"})
 public class ManagedResourceConfig
 {
+   @JsonProperty("realm")
    protected String realm;
+   @JsonProperty("resource")
    protected String resource;
 
    @JsonProperty("realm-public-key")
@@ -28,6 +32,7 @@ public class ManagedResourceConfig
    @JsonProperty("allow-any-hostname")
    protected boolean allowAnyHostname;
 
+   @JsonProperty("truststore")
    protected String truststore;
 
    @JsonProperty("truststore-password")
