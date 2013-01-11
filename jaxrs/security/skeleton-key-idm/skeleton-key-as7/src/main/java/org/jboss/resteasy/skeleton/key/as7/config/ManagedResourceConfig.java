@@ -47,9 +47,6 @@ public class ManagedResourceConfig
    @JsonProperty("connection-pool-size")
    protected int connectionPoolSize;
 
-   @JsonProperty("ssl-not-required")
-   protected boolean sslNotRequired;
-
    @JsonProperty("cancel-propagation")
    protected boolean cancelPropagation;
 
@@ -187,16 +184,6 @@ public class ManagedResourceConfig
    public void setConnectionPoolSize(int connectionPoolSize)
    {
       this.connectionPoolSize = connectionPoolSize;
-   }
-
-   public boolean isSslNotRequired()
-   {
-      return sslNotRequired;
-   }
-
-   public void setSslNotRequired(boolean sslNotRequired)
-   {
-      this.sslNotRequired = sslNotRequired;
    }
 
    public boolean isCancelPropagation()

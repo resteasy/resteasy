@@ -24,6 +24,18 @@ public class AuthServerConfig
    @JsonProperty("realm-public-key")
    protected String realmPublicKey;
 
+   @JsonProperty("realm-keystore")
+   protected String realmKeyStore;
+
+   @JsonProperty("realm-keystore-password")
+   protected String realmKeystorePassword;
+
+   @JsonProperty("realm-key-alias")
+   protected String realmKeyAlias;
+
+   @JsonProperty("realm-private-key-password")
+   protected String realmPrivateKeyPassword;
+
    @JsonProperty("access-code-expiration")
    protected int expiration;
 
@@ -33,7 +45,7 @@ public class AuthServerConfig
    @JsonProperty("login-role")
    protected String loginRole;
 
-   @JsonProperty("client-role")
+   @JsonProperty("oauth-client-role")
    protected String clientRole;
 
    @JsonProperty("wildcard-role")
@@ -44,11 +56,6 @@ public class AuthServerConfig
 
    @JsonProperty("sso-disabled")
    protected boolean ssoDisabled;
-
-   @JsonIgnore
-   protected volatile PublicKey publicKey;
-   @JsonIgnore
-   protected volatile PrivateKey privateKey;
 
    // these properties are optional and used to provide connection metadata when the server wants to make
    // remote SSL connections
@@ -104,40 +111,6 @@ public class AuthServerConfig
    public void setExpiration(int expiration)
    {
       this.expiration = expiration;
-   }
-
-   public PublicKey getPublicKey()
-   {
-      if (publicKey != null) return publicKey;
-      if (realmPublicKey != null)
-      {
-         try
-         {
-            publicKey = PemUtils.decodePublicKey(realmPublicKey);
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException(e);
-         }
-      }
-      return publicKey;
-   }
-
-   public PrivateKey getPrivateKey()
-   {
-      if (privateKey != null) return privateKey;
-      if (realmPrivateKey != null)
-      {
-         try
-         {
-            privateKey = PemUtils.decodePrivateKey(realmPrivateKey);
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException(e);
-         }
-      }
-      return privateKey;
    }
 
    public String getTruststore()
@@ -253,5 +226,45 @@ public class AuthServerConfig
    public void setWildcardRole(String wildcardRole)
    {
       this.wildcardRole = wildcardRole;
+   }
+
+   public String getRealmKeyStore()
+   {
+      return realmKeyStore;
+   }
+
+   public void setRealmKeyStore(String realmKeyStore)
+   {
+      this.realmKeyStore = realmKeyStore;
+   }
+
+   public String getRealmKeystorePassword()
+   {
+      return realmKeystorePassword;
+   }
+
+   public void setRealmKeystorePassword(String realmKeystorePassword)
+   {
+      this.realmKeystorePassword = realmKeystorePassword;
+   }
+
+   public String getRealmKeyAlias()
+   {
+      return realmKeyAlias;
+   }
+
+   public void setRealmKeyAlias(String realmKeyAlias)
+   {
+      this.realmKeyAlias = realmKeyAlias;
+   }
+
+   public String getRealmPrivateKeyPassword()
+   {
+      return realmPrivateKeyPassword;
+   }
+
+   public void setRealmPrivateKeyPassword(String realmPrivateKeyPassword)
+   {
+      this.realmPrivateKeyPassword = realmPrivateKeyPassword;
    }
 }

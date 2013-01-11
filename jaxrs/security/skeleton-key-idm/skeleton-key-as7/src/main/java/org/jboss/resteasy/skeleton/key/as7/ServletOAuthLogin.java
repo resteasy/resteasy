@@ -3,7 +3,6 @@ package org.jboss.resteasy.skeleton.key.as7;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
 import org.jboss.resteasy.skeleton.key.RealmConfiguration;
-import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
 import org.jboss.resteasy.skeleton.key.VerificationException;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
@@ -17,7 +16,6 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
-import java.security.cert.X509Certificate;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 

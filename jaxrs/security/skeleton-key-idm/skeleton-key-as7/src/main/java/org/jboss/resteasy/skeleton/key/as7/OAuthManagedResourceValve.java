@@ -11,11 +11,9 @@ import org.jboss.resteasy.client.jaxrs.AbstractClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.skeleton.key.RealmConfiguration;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyPrincipal;
 import org.jboss.resteasy.skeleton.key.SkeletonKeySession;
-import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -24,10 +22,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
-import java.security.Principal;
-import java.security.PublicKey;
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
@@ -100,7 +94,6 @@ public class OAuthManagedResourceValve extends AbstractRemoteOAuthAuthenticatorV
       realmConfiguration.setClient(client);
       realmConfiguration.setAuthUrl(UriBuilder.fromUri(authUrl).queryParam("client_id", client_id));
       realmConfiguration.setCodeUrl(client.target(tokenUrl));
-      realmConfiguration.setSslRequired(!remoteSkeletonKeyConfig.isSslNotRequired());
    }
 
    @Override

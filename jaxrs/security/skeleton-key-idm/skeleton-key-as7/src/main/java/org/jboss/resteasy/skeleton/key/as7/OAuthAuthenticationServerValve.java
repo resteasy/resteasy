@@ -7,7 +7,9 @@ import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.realm.GenericPrincipal;
+import org.bouncycastle.openssl.PEMWriter;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.AbstractClientBuilder;
@@ -19,16 +21,19 @@ import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
 import org.jboss.resteasy.jwt.JsonSerialization;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
+import org.jboss.resteasy.security.DerUtils;
+import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.skeleton.key.EnvUtil;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeySession;
-import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
 import org.jboss.resteasy.skeleton.key.as7.config.AuthServerConfig;
+import org.jboss.resteasy.skeleton.key.as7.config.ManagedResourceConfig;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 import org.jboss.resteasy.skeleton.key.representations.idm.PublishedRealmRepresentation;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.util.Base64;
 
 import javax.security.auth.login.LoginException;
 import javax.servlet.RequestDispatcher;
@@ -41,10 +46,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.security.KeyStore;
 import java.security.Principal;
 import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.cert.Certificate;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -139,6 +147,9 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
    }
 
    protected AuthServerConfig skeletonKeyConfig;
+   protected PrivateKey realmPrivateKey;
+   protected PublicKey realmPublicKey;
+   protected String realmPublicKeyPem;
    protected ResteasyProviderFactory providers;
    protected ResourceMetadata resourceMetadata;
    protected UserSessionManagement userSessionManagement = new UserSessionManagement();
@@ -160,7 +171,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       super.start();
       ObjectMapper mapper = new ObjectMapper();
       mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
-      InputStream is = context.getServletContext().getResourceAsStream("/WEB-INF/resteasy-local-oauth.json");
+      InputStream is = context.getServletContext().getResourceAsStream("/WEB-INF/resteasy-oauth.json");
       try
       {
          skeletonKeyConfig = mapper.readValue(is, AuthServerConfig.class);
@@ -169,7 +180,77 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       {
          throw new RuntimeException(e);
       }
-
+      if (skeletonKeyConfig.getLoginRole() == null)
+      {
+         throw new RuntimeException("You must define the login-role in your config file");
+      }
+      if (skeletonKeyConfig.getClientRole() == null)
+      {
+         throw new RuntimeException("You must define the oauth-client-role in your config file");
+      }
+      if (skeletonKeyConfig.getRealmPrivateKey() != null)
+      {
+         try
+         {
+            realmPrivateKey = PemUtils.decodePrivateKey(skeletonKeyConfig.getRealmPrivateKey());
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      if (skeletonKeyConfig.getRealmPublicKey() != null)
+      {
+         try
+         {
+            realmPublicKey = PemUtils.decodePublicKey(skeletonKeyConfig.getRealmPublicKey());
+            realmPublicKeyPem = skeletonKeyConfig.getRealmPublicKey();
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      if (skeletonKeyConfig.getRealmKeyStore() != null)
+      {
+         if (skeletonKeyConfig.getRealmKeyAlias() == null) throw new RuntimeException("Must define realm-key-alias");
+         String path = EnvUtil.replace(skeletonKeyConfig.getRealmKeyStore());
+         try
+         {
+            KeyStore ks = loadKeyStore(path, skeletonKeyConfig.getRealmKeystorePassword());
+            if (realmPrivateKey == null)
+            {
+               realmPrivateKey = (PrivateKey)ks.getKey(skeletonKeyConfig.getRealmKeyAlias(), skeletonKeyConfig.getRealmPrivateKeyPassword().toCharArray());
+            }
+            if (realmPublicKey == null)
+            {
+               Certificate cert =  ks.getCertificate(skeletonKeyConfig.getRealmKeyAlias());
+               realmPublicKey = cert.getPublicKey();
+            }
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      if (realmPublicKey == null) throw new RuntimeException("You have not declared a keystore or public key");
+      if (realmPrivateKey == null) throw new RuntimeException("You have not declared a keystore or private key");
+      if (realmPublicKeyPem == null)
+      {
+         StringWriter sw = new StringWriter();
+         PEMWriter writer = new PEMWriter(sw);
+         try
+         {
+            writer.writeObject(realmPublicKey);
+            writer.flush();
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException(e);
+         }
+         realmPublicKeyPem = sw.toString();
+         realmPublicKeyPem = PemUtils.removeBeginEnd(realmPublicKeyPem);
+      }
       providers = new ResteasyProviderFactory();
       ClassLoader old = Thread.currentThread().getContextClassLoader();
       Thread.currentThread().setContextClassLoader(OAuthAuthenticationServerValve.class.getClassLoader());
@@ -184,7 +265,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       }
       resourceMetadata = new ResourceMetadata();
       resourceMetadata.setRealm(skeletonKeyConfig.getRealm());
-      resourceMetadata.setRealmKey(skeletonKeyConfig.getPublicKey());
+      resourceMetadata.setRealmKey(realmPublicKey);
       String truststore = skeletonKeyConfig.getTruststore();
       if (truststore != null)
       {
@@ -318,8 +399,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       else if (!skeletonKeyConfig.isSsoDisabled()
               && request.getSessionInternal() != null
               && request.getSessionInternal().getPrincipal() != null
-              && request.getParameter("login") != null
-              && skeletonKeyConfig.getLoginRole() != null)
+              && request.getParameter("login") != null)
       {
          log.info("We're ALREADY LOGGED IN!!!");
          GenericPrincipal gp = (GenericPrincipal) request.getSessionInternal().getPrincipal();
@@ -436,7 +516,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
          SkeletonKeyToken.Access realmAccess = new SkeletonKeyToken.Access();
          realmAccess.addRole(skeletonKeyConfig.getAdminRole());
          token.setRealmAccess(realmAccess);
-         String tokenString = buildTokenString(skeletonKeyConfig.getPrivateKey(), token);
+         String tokenString = buildTokenString(realmPrivateKey, token);
          ResteasyClient client = new ResteasyClientBuilder()
                  .providerFactory(providers)
                  .hostnameVerification(AbstractClientBuilder.HostnameVerificationPolicy.ANY)
@@ -489,7 +569,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
 
    protected void publishRealmInfo(Request request, HttpServletResponse response) throws IOException
    {
-      PublishedRealmRepresentation rep = getRealmRepresentation(request);
+      ManagedResourceConfig rep = getRealmRepresentation(request);
 
       response.setStatus(200);
       response.setContentType("application/json");
@@ -502,15 +582,30 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
 
    protected void publishRealmInfoHtml(Request request, HttpServletResponse response) throws IOException
    {
-      PublishedRealmRepresentation rep = getRealmRepresentation(request);
+      ManagedResourceConfig rep = getRealmRepresentation(request);
 
+      ObjectMapper mapper = new ObjectMapper();
+      mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
+      mapper.enable(SerializationConfig.Feature.INDENT_OUTPUT);
+      StringWriter writer = new StringWriter();
+      mapper.writeValue(writer, rep);
+      String json = writer.toString();
       StringBuffer html = new StringBuffer();
 
-      html.append("<html><body><h1>Realm: ").append(rep.getRealm()).append("</h1>");
-      html.append("<p>auth: ").append(rep.getAuthorizationUrl()).append("</p>");
-      html.append("<p>code: ").append(rep.getCodeUrl()).append("</p>");
-      html.append("<p>grant: NONE</p>");
-      html.append("<p>public key: ").append(rep.getPublicKeyPem()).append("</p>");
+      html.append("<html><body>");
+      html.append("<h1>Config for Realm: ").append(rep.getRealm()).append("</h1>");
+      html.append("<h3>OAuthManagedResourceValve Json Config</h3>");
+      html.append("<form><textarea rows=\"20\" cols=\"80\">").append(json).append("</textarea></form>");
+      html.append("<br>");
+      ManagedResourceConfig bearer = new ManagedResourceConfig();
+      bearer.setRealm(rep.getRealm());
+      bearer.setRealmKey(rep.getRealmKey());
+      writer = new StringWriter();
+      mapper.writeValue(writer, bearer);
+      json = writer.toString();
+
+      html.append("<h3>BearerTokenAuthValve Json Config</h3>");
+      html.append("<form><textarea rows=\"20\" cols=\"80\">").append(json).append("</textarea></form>");
       html.append("</body></html>");
 
 
@@ -522,16 +617,17 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
    }
 
 
-   protected PublishedRealmRepresentation getRealmRepresentation(Request request)
+   protected ManagedResourceConfig getRealmRepresentation(Request request)
    {
-      PublishedRealmRepresentation rep = new PublishedRealmRepresentation();
+      ManagedResourceConfig rep = new ManagedResourceConfig();
       ResteasyUriInfo uriInfo = ServletUtil.extractUriInfo(request, null);
       UriBuilder authUrl = uriInfo.getBaseUriBuilder().path(context.getLoginConfig().getLoginPage());
       UriBuilder codeUrl = uriInfo.getBaseUriBuilder().path(Actions.J_OAUTH_RESOLVE_ACCESS_CODE);
       rep.setRealm(skeletonKeyConfig.getRealm());
-      rep.setPublicKeyPem(skeletonKeyConfig.getRealmPublicKey());
-      rep.setAuthorizationUrl(authUrl.toTemplate());
+      rep.setRealmKey(realmPublicKeyPem);
+      rep.setAuthUrl(authUrl.toTemplate());
       rep.setCodeUrl(codeUrl.toTemplate());
+      rep.setAdminRole(skeletonKeyConfig.getAdminRole());
       return rep;
    }
 
@@ -566,7 +662,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
          if (gp != null)
          {
             SkeletonKeyToken token = buildToken(gp);
-            String stringToken = buildTokenString(skeletonKeyConfig.getPrivateKey(), token);
+            String stringToken = buildTokenString(realmPrivateKey, token);
             SkeletonKeySession skSession = new SkeletonKeySession(stringToken, resourceMetadata);
             request.setAttribute(SkeletonKeySession.class.getName(), skSession);
             ResteasyProviderFactory.pushContext(SkeletonKeySession.class, skSession);
@@ -595,7 +691,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       boolean verifiedCode = false;
       try
       {
-         verifiedCode = RSAProvider.verify(input, skeletonKeyConfig.getPublicKey());
+         verifiedCode = RSAProvider.verify(input, realmPublicKey);
       }
       catch (Exception ignored)
       {
@@ -668,13 +764,13 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
          response.getOutputStream().flush();
          return;
       }
-      if (accessCode.isSso() && (skeletonKeyConfig.getLoginRole() == null || !gp.hasRole(skeletonKeyConfig.getLoginRole())))
+      if (accessCode.isSso() && !gp.hasRole(skeletonKeyConfig.getLoginRole()))
       {
          // we did not authenticate user on an access code request because a session was already established
          // but, the client_id does not have permission to bypass this on a simple grant.  We want
          // to always ask for credentials from a simple oath request
 
-         log.error("does not have login role");
+         log.error("does not have login permission");
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
          res.put("error_description", "Auth error");
@@ -684,12 +780,39 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
          response.getOutputStream().flush();
          return;
       }
+      else if (!gp.hasRole(skeletonKeyConfig.getClientRole()) && !gp.hasRole(skeletonKeyConfig.getLoginRole()))
+      {
+         log.error("does not have login or client role permission for access token request");
+         Map<String, String> res = new HashMap<String, String>();
+         res.put("error", "invalid_grant");
+         res.put("error_description", "Auth error");
+         response.setStatus(400);
+         response.setContentType("application/json");
+         mapper.writeValue(response.getOutputStream(), res);
+         response.getOutputStream().flush();
+         return;
+
+      }
       String wildcard = skeletonKeyConfig.getWildcardRole() == null ? "*" : skeletonKeyConfig.getWildcardRole();
+      Set<String> codeRoles = accessCode.getToken().getRealmAccess().getRoles();
+      if (codeRoles != null &&
+              (codeRoles.contains(skeletonKeyConfig.getClientRole()) ||codeRoles.contains(skeletonKeyConfig.getLoginRole())))
+      {
+         // we store roles a oauth client is granted in the user role mapping, remove those roles as we don't want those clients with those
+         // permissions if they are logging in.
+         Set<String> newRoles = new HashSet<String>();
+         if (codeRoles.contains(skeletonKeyConfig.getClientRole())) newRoles.add(skeletonKeyConfig.getClientRole());
+         if (codeRoles.contains(skeletonKeyConfig.getLoginRole())) newRoles.add(skeletonKeyConfig.getLoginRole());
+         if (codeRoles.contains(wildcard)) newRoles.add(wildcard);
+         codeRoles.clear();
+         codeRoles.addAll(newRoles);
+      }
+
       // is we have a login role, then we don't need to filter out roles, just grant all the roles the user has
       // Also, if the client has the "wildcard" role, then we don't need to filter out roles
-      if (accessCode.getToken().getRealmAccess().getRoles() != null
+      if (codeRoles != null
               && !gp.hasRole(wildcard)
-              && (skeletonKeyConfig.getLoginRole() == null || !gp.hasRole(skeletonKeyConfig.getLoginRole())))
+              && !gp.hasRole(skeletonKeyConfig.getLoginRole()))
       {
          Set<String> clientAllowed = new HashSet<String>();
          for (String role : gp.getRoles())
@@ -697,16 +820,16 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
             clientAllowed.add(role);
          }
          Set<String> newRoles = new HashSet<String>();
-         newRoles.addAll(accessCode.getToken().getRealmAccess().getRoles());
+         newRoles.addAll(codeRoles);
          for (String role : newRoles)
          {
             if (!clientAllowed.contains(role))
             {
-               accessCode.getToken().getRealmAccess().getRoles().remove(role);
+               codeRoles.remove(role);
             }
          }
       }
-      AccessTokenResponse res = accessTokenResponse(skeletonKeyConfig.getPrivateKey(), accessCode.getToken());
+      AccessTokenResponse res = accessTokenResponse(realmPrivateKey, accessCode.getToken());
       response.setStatus(200);
       response.setContentType("application/json");
       mapper.writeValue(response.getOutputStream(), res);
@@ -782,7 +905,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       String accessCode = null;
       try
       {
-         accessCode = new JWSBuilder().content(code.getId().getBytes("UTF-8")).rsa256(skeletonKeyConfig.getPrivateKey());
+         accessCode = new JWSBuilder().content(code.getId().getBytes("UTF-8")).rsa256(realmPrivateKey);
       }
       catch (UnsupportedEncodingException e)
       {
