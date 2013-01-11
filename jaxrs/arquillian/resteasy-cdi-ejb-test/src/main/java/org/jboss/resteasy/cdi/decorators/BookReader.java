@@ -42,9 +42,9 @@ public class BookReader implements MessageBodyReader<Book>
    
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      System.out.println("entering BookReader.isReadable()");
+      log.info("entering BookReader.isReadable()");
       boolean b = Book.class.equals(type);
-      System.out.println("leaving BookReader.isReadable()");
+      log.info("leaving BookReader.isReadable()");
       return b;
    }
 

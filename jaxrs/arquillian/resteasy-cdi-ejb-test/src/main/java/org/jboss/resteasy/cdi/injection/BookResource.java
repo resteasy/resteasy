@@ -1,29 +1,13 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2012, Red Hat, Inc. and/or its affiliates, and individual
- * contributors by the @authors tag. See the copyright.txt in the 
- * distribution for a full listing of individual contributors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,  
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.jboss.resteasy.cdi.injection;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Proxy;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
@@ -35,9 +19,11 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.New;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
+import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
@@ -59,8 +45,6 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.hornetq.jms.client.HornetQDestination;
-import org.hornetq.jms.client.HornetQQueue;
 import org.jboss.resteasy.cdi.util.Constants;
 import org.jboss.resteasy.cdi.util.Counter;
 import org.jboss.resteasy.cdi.util.CounterBinding;
@@ -90,6 +74,10 @@ public class BookResource
    public static final String COUNTER = "counter";
    public static final String COLLECTION = "collection";
    public static final String BOOK_BAG = "bookBag";
+   public static final String NEW_BEAN_APPLICATION_SCOPED = "newBeanApplicationScoped";
+   public static final String NEW_BEAN_DEPENDENT_SCOPED = "newBeanDependentScoped";
+   public static final String STEREOTYPED_APPLICATION_SCOPED = "stereotypedApplicationScoped";
+   public static final String STEREOTYPED_DEPENDENT_SCOPED = "stereotypedDependentScoped";
    
    private static HashMap<String,Object> store;
    
@@ -136,6 +124,7 @@ public class BookResource
    
    public CountDownLatch getCountDownLatch()
    {
+      log.info("latch.getCount(): " + latch.getCount());
       return latch;
    }
    
@@ -164,7 +153,20 @@ public class BookResource
 
    @Inject 
    @ResourceBinding
-   private Queue bookQueue; 
+   private Queue bookQueue;
+   
+   @Inject
+   private NewBean newBean1;
+   
+   @Inject
+   @New
+   private NewBean newBean2;
+   
+   @Inject
+   private StereotypedApplicationScope stereotypeApplicationScoped;
+   
+   @Inject
+   private StereotypedDependentScope stereotypedRequestScoped;
    
 //   @Inject
 //   @ResourceBinding
@@ -203,7 +205,10 @@ public class BookResource
          log.info("DependentScoped scope:  " + getScope(DependentScoped.class));
          log.info("StatelessEJB scope:     " + getScope(StatefulEJB.class));
          log.info("BookBagLocal scope:     " + getScope(BookBagLocal.class));
-         log.info("BookMDB scope:          " + getScope(BookMDB.class));
+//         log.info("BookMDB scope:          " + getScope(BookMDB.class));
+         log.info("NewBean scope:          " + getScope(NewBean.class));
+         log.info("stereotypeApplicationScoped: " + getScope(StereotypedApplicationScope.class));
+         log.info("stereotypeRequestScoped:     " + getScope(StereotypedDependentScope.class));
          
          store = new HashMap<String,Object>();
          store.put(BOOK_READER, reader);
@@ -219,23 +224,30 @@ public class BookResource
          store.put(COUNTER, counter);
          store.put(COLLECTION, collection);
          store.put(BOOK_BAG, bookBag);
+         store.put(NEW_BEAN_APPLICATION_SCOPED, newBean1);
+         store.put(NEW_BEAN_DEPENDENT_SCOPED, newBean2);
+         store.put(STEREOTYPED_APPLICATION_SCOPED, stereotypeApplicationScoped);
+         store.put(STEREOTYPED_DEPENDENT_SCOPED, stereotypedRequestScoped);
          return Response.ok().build();
       }
       
-      if (isApplicationScoped(Counter.class)        &&
-          isApplicationScoped(BookCollection.class) &&
-          isApplicationScoped(BookReader.class)     &&
-          isApplicationScoped(BookWriter.class)     &&
-          isRequestScoped(BookResource.class)       &&
-          isDependentScoped(DependentScoped.class)  &&
-          isDependentScoped(StatefulEJB.class)      &&
-          isRequestScoped(UnscopedResource.class)   &&
-          isApplicationScoped(JaxRsActivator.class) &&
-          isSessionScoped(BookBagLocal.class)       &&
-          getScope(BookMDB.class) == null           &&
-          store.get(BOOK_READER) == reader          &&
-          store.get(BOOK_WRITER) == writer          &&
-          store.get(BOOK_RESOURCE) != this          &&
+      if (isApplicationScoped(Counter.class)                     &&
+          isApplicationScoped(BookCollection.class)              &&
+          isApplicationScoped(BookReader.class)                  &&
+          isApplicationScoped(BookWriter.class)                  &&
+          isRequestScoped(BookResource.class)                    &&
+          isDependentScoped(DependentScoped.class)               &&
+          isDependentScoped(StatefulEJB.class)                   &&
+          isRequestScoped(UnscopedResource.class)                &&
+          isApplicationScoped(JaxRsActivator.class)              &&
+          isSessionScoped(BookBagLocal.class)                    &&
+          isApplicationScoped(NewBean.class)                     &&
+          isApplicationScoped(StereotypedApplicationScope.class) &&
+          isDependentScoped(StereotypedDependentScope.class)     &&
+//          getScope(BookMDB.class) == null                        &&
+          store.get(BOOK_READER) == reader                       &&
+          store.get(BOOK_WRITER) == writer                       &&
+          store.get(BOOK_RESOURCE) != this                       &&
           store.get(BOOK_READER_DEPENDENT) == reader.getDependent()    &&
           store.get(BOOK_WRITER_DEPENDENT) == writer.getDependent()    &&
           store.get(BOOK_RESOURCE_DEPENDENT) != dependent              &&
@@ -245,8 +257,13 @@ public class BookResource
          !store.get(BOOK_RESOURCE_STATEFUL2).equals(stateful2)         &&
           store.get(COUNTER).equals(counter)                           &&
           store.get(COLLECTION).equals(collection)                     &&
-          store.get(BOOK_BAG).equals(bookBag)
-         )
+          store.get(BOOK_BAG).equals(bookBag)                          &&
+          store.get(NEW_BEAN_APPLICATION_SCOPED).equals(newBean1)      &&
+         !store.get(NEW_BEAN_DEPENDENT_SCOPED).equals(newBean2)        &&
+         !newBean1.equals(newBean2)                                    &&
+          store.get(STEREOTYPED_APPLICATION_SCOPED).equals(stereotypeApplicationScoped) &&
+         !store.get(STEREOTYPED_DEPENDENT_SCOPED).equals(stereotypedRequestScoped)
+          )
       {
          return Response.ok().build();
       }
@@ -368,23 +385,18 @@ public class BookResource
    }
    
    @GET
-   @Produces(MediaType.APPLICATION_XML)
-   @Path("mdb/books")
-   public Collection<Book> getBooksMDB() throws InterruptedException
-   {
-      latch.await();
-      log.info("this.theSecret(): " + this.theSecret());
-      log.info("entering listAllMembers()");
-      Collection<Book> books = collection.getBooks();
-      log.info("listAllMembers(): " + books);
-      return books;
-   }
-   
-   @GET
    @Path("getCounters")
    public String getCounters()
    {
       return Integer.toString(constructCounter.get()) + ":" + Integer.toString(destroyCounter.get()) + ":";
+   }
+   
+   @GET
+   @Path("disposer")
+   public Response testDisposer()
+   {
+      log.info("entering testDisposer()");
+      return ResourceProducer.isDisposed() ? Response.ok().build() : Response.serverError().build();
    }
    
    @POST
@@ -397,36 +409,13 @@ public class BookResource
       try
       {
          log.info("queue: " + bookQueue);
-         log.info("isProxy(): " + Proxy.isProxyClass(bookQueue.getClass()));
-         log.info("class: " + bookQueue.getClass());
-         log.info("instanceOf: " + (bookQueue instanceof HornetQDestination));
-         log.info("Class.isInstance(): " + HornetQDestination.class.isInstance(bookQueue));
-         try
-         {
-            HornetQDestination hqd = HornetQDestination.class.cast(bookQueue);
-            log.info("bookQueue can be cast to HornetQDestination");
-            hqd = (HornetQDestination) bookQueue;
-         }
-         catch (Exception e)
-         {
-            log.info("bookQueue can't be cast to HornetQDestination");
-         }
-         try
-         {
-            HornetQDestination hqd = (HornetQDestination) bookQueue;;
-            log.info("bookQueue can be cast to HornetQDestination now");
-         }
-         catch (Exception e)
-         {
-            log.info("bookQueue still can't be cast to HornetQDestination");
-         }
-         log.info("getClass().getClassLoader():               " + getClass().getClassLoader());
-         log.info("HornetQDestination.class.getClassLoader(): " + HornetQDestination.class.getClassLoader());
          log.info("ResourceProducer scope: " + getScope(ResourceProducer.class));
+         log.info("queue scope: " + getScope(Queue.class));
          MessageProducer producer = session.createProducer(bookQueue);
          TextMessage message = session.createTextMessage(book.getName());
+         producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
          producer.send(message);
-         log.info("sent: " + book.getName());
+         log.info("sent: " + message.getText());
          return Response.ok().build();
       }
       catch (JMSException e)
@@ -437,19 +426,23 @@ public class BookResource
    }
    
    @GET
-   @Path("consumeMessage")
+   @Path("queue/consumeMessage")
    @Produces(MediaType.TEXT_PLAIN)
-   public Response consumeBookMessage()
+   public Response consumeBookMessageFromQueue()
    {
-      log.info("entering consumeBookMessage()");
+      log.info("entering consumeBookMessageFromQueue() xxx");
+      log.info("getting consumer");
       try
       {
          MessageConsumer consumer = session.createConsumer(bookQueue);
-         TextMessage message = (TextMessage) consumer.receive();
+         log.info("got consumer");
+         TextMessage message = (TextMessage) consumer.receiveNoWait();
+         log.info("message: " + message);
          if (message == null)
          {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+            return Response.serverError().build();
          }
+         log.info("message text: " + message.getText());
          return Response.ok(message.getText()).build();
       }
       catch (JMSException e)
@@ -458,17 +451,44 @@ public class BookResource
       }
    }
    
+   @GET
+   @Path("mdb/consumeMessage")
+   @Produces(MediaType.TEXT_PLAIN)
+   public Response consumeBookMessageFromMDB() throws InterruptedException
+   {
+      log.info("entering consumeBookMessageFromMDB()");
+      getCountDownLatch().await(5000, TimeUnit.MILLISECONDS); // Wait until BookMDB has stored book in BookCollection.
+      BookCollection collection = getBookCollection();
+      log.info("consumeBookMessageFromMDB(): collection.size(): " + collection.getBooks().size());
+      if (collection.getBooks().size() == 1)
+      {
+         String name = collection.getBooks().iterator().next().getName();
+         log.info("got book name: " + name);
+         return Response.ok(name).build();
+      }
+      else
+      {
+         return Response.serverError().entity("Collection size: " + collection.getBooks().size()).build();
+      }
+   }
+   
+   @GET
+   @Produces(MediaType.APPLICATION_XML)
+   @Path("mdb/books")
+   public Collection<Book> getBooksMDB() throws InterruptedException
+   {
+      log.info("entering getBooksMDB()");
+      log.info("getBooksMDB(): waiting on latch");
+      latch.await();
+      log.info("this.theSecret(): " + this.theSecret());
+      Collection<Book> books = collection.getBooks();
+      log.info("getBooksMDB(): " + books);
+      return books;
+   }
+   
    BookCollection getBookCollection()
    {
-      log.info("returning: " + collection);
-      log.info("collection.size(): " + collection.getBooks().size());
-      log.info("collection: ");
-      Collection<Book> c = collection.getBooks();
-      Iterator<Book> it = c.iterator();
-      while (it.hasNext())
-      {
-         log.info(it.next().toString());
-      }
+      log.info("entering getBookCollection()");
       return collection;
    }
    
@@ -477,15 +497,6 @@ public class BookResource
       log.info("returning: " + counter);
       return counter;
    }
-
-//   @PostConstruct
-//   private void saveContexts()
-//   {
-////      log.info("entering saveContexts()");
-////      applicationContext = beanManager.getContext(ApplicationScoped.class);
-////      requestContext = beanManager.getContext(RequestScoped.class);
-////      sessionContext = beanManager.getContext(SessionScoped.class);
-//   }
    
    boolean isApplicationScoped(Class<?> c)
    {

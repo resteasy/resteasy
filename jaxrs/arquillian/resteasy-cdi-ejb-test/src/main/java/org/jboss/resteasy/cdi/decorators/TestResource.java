@@ -20,7 +20,6 @@ import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.cdi.util.Constants;
 
-
 /**
  * 
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
@@ -134,11 +133,8 @@ public class TestResource implements TestResourceIntf
       expectedList.add(VisitList.READER_DECORATOR_LEAVE);
       expectedList.add(VisitList.READER_INTERCEPTOR_LEAVE);
       expectedList.add(VisitList.READER_INTERCEPTOR_DECORATOR_LEAVE);
+      
       ArrayList<String> visitList = VisitList.getList();
-      for (int i = 0; i < visitList.size(); i++)
-      {
-         log.info(i + ": " + visitList.get(i).toString());
-      }
       boolean status = expectedList.size() == visitList.size();
       if (!status)
       {
@@ -154,6 +150,19 @@ public class TestResource implements TestResourceIntf
                log.info("visitList.get(" + i + ") incorrect: should be: " + expectedList.get(i) + ", is: " + visitList.get(i));
                break;
             }
+         }
+      }
+      if (!status)
+      {
+         log.info("\rexpectedList: ");
+         for (int i = 0; i < expectedList.size(); i++)
+         {
+            log.info(i + ": " + expectedList.get(i).toString());
+         }
+         log.info("\rvisitList:");
+         for (int i = 0; i < visitList.size(); i++)
+         {
+            log.info(i + ": " + visitList.get(i).toString());
          }
       }
       log.info("leaving TestResource.test()");

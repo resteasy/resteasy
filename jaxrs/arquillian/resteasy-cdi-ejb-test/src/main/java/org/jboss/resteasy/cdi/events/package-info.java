@@ -1,25 +1,7 @@
 /**
- * High-level interfaces and annotations used to create RESTful service
- * resources. E.g.:
- <pre>
- &#064;Path("widgets/{widgetid}")
- &#064;Consumes("application/widgets+xml")
- &#064;Produces("application/widgets+xml")
- public class WidgetResource {
-
- &#064;GET
- public String getWidget(&#064;PathParam("widgetid") String id) {
- return getWidgetAsXml(id);
- }
-
- &#064;PUT
- public void updateWidget(&#064;PathParam("widgetid") String id,
- Source update) {
- updateWidgetFromXml(id, update);
- }
-
- ...
- }
- </pre>
- */
+ * This package (along with @see org.jboss.resteasy.test.cdi.events) tests CDI event processing
+ * with JAX-RS components.
+ * 
+ * @see org.jboss.resteasy.package-info.java
+*/
 package org.jboss.resteasy.cdi.events;

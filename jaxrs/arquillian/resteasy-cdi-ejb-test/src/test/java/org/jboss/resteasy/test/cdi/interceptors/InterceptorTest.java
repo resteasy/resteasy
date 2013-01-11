@@ -20,7 +20,12 @@ import org.jboss.resteasy.cdi.interceptors.BookWriter;
 import org.jboss.resteasy.cdi.interceptors.BookWriterInterceptor;
 import org.jboss.resteasy.cdi.interceptors.BookWriterInterceptorInterceptor;
 import org.jboss.resteasy.cdi.interceptors.ClassBinding;
+import org.jboss.resteasy.cdi.interceptors.ClassInterceptorStereotype;
+import org.jboss.resteasy.cdi.interceptors.ClassMethodInterceptorStereotype;
 import org.jboss.resteasy.cdi.interceptors.FilterBinding;
+import org.jboss.resteasy.cdi.interceptors.LifecycleBinding;
+import org.jboss.resteasy.cdi.interceptors.PostConstructInterceptor;
+import org.jboss.resteasy.cdi.interceptors.PreDestroyInterceptor;
 import org.jboss.resteasy.cdi.interceptors.RequestFilterInterceptorBinding;
 import org.jboss.resteasy.cdi.interceptors.ResponseFilterInterceptorBinding;
 import org.jboss.resteasy.cdi.interceptors.Interceptor0;
@@ -33,6 +38,7 @@ import org.jboss.resteasy.cdi.interceptors.MethodBinding;
 import org.jboss.resteasy.cdi.interceptors.ReaderInterceptorBinding;
 import org.jboss.resteasy.cdi.interceptors.RequestFilterInterceptor;
 import org.jboss.resteasy.cdi.interceptors.ResponseFilterInterceptor;
+import org.jboss.resteasy.cdi.interceptors.Stereotyped;
 import org.jboss.resteasy.cdi.interceptors.TestRequestFilter;
 import org.jboss.resteasy.cdi.interceptors.TestResponseFilter;
 import org.jboss.resteasy.cdi.interceptors.VisitList;
@@ -77,7 +83,9 @@ public class InterceptorTest
 	         .addClasses(Book.class, BookReader.class, BookWriter.class)
 	         .addClasses(BookReaderInterceptor.class, BookWriterInterceptor.class)
 	         .addClasses(BookReaderInterceptorInterceptor.class, BookWriterInterceptorInterceptor.class)
-	         .addAsWebInfResource("interceptorBeans.xml", "beans.xml");
+	         .addClasses(ClassInterceptorStereotype.class, ClassMethodInterceptorStereotype.class, Stereotyped.class)
+	         .addClasses(LifecycleBinding.class, PostConstructInterceptor.class, PreDestroyInterceptor.class)
+	         .addAsWebInfResource("interceptors/interceptorBeans.xml", "beans.xml");
 	   System.out.println(war.toString(true));
 	   return war;
 	}
@@ -93,8 +101,8 @@ public class InterceptorTest
       Type genericType = (new GenericType<Book>() {}).getGenericType();
       request.body(Constants.MEDIA_TYPE_TEST_XML_TYPE, book, genericType);
       ClientResponse<?> response = request.post();
-      assertEquals(200, response.getStatus());
       log.info("Status: " + response.getStatus());
+      assertEquals(200, response.getStatus());
       int id = response.getEntity(int.class);
       log.info("id: " + id);
       Assert.assertEquals(0, id);

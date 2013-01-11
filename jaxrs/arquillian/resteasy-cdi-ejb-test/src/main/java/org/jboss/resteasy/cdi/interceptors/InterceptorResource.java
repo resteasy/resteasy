@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.interceptor.Interceptors;
@@ -33,12 +34,25 @@ import org.jboss.resteasy.cdi.util.Constants;
 @RequestScoped
 @Interceptors ({Interceptor0.class})
 @ClassBinding
+@LifecycleBinding
 public class InterceptorResource
 {  
    static private Map<Integer, Book> collection = new HashMap<Integer, Book>();
    static private AtomicInteger counter = new AtomicInteger();
-   
    @Inject private Logger log;
+   @Inject private Stereotyped stereotyped;
+
+   @PostConstruct
+   public void postConstruct()
+   {
+      log.info("executing InterceptorResource.postConstruct()");
+   }
+   
+   @javax.annotation.PreDestroy
+   public void PreDestroy()
+   {
+      log.info("executing InterceptorResource.PreDestroy()");
+   }
    
    @POST
    @Path("create")
@@ -86,6 +100,7 @@ public class InterceptorResource
    public Response test()
    {
       log.info("entering InterceptorResource.test()");
+      stereotyped.test();
       ArrayList<Class<?>> expectedList = new ArrayList<Class<?>>();
       expectedList.add(RequestFilterInterceptor.class);          // TestRequestFilter.filter()
       expectedList.add(Interceptor0.class);                      // BookReader.isReadable()
@@ -96,6 +111,7 @@ public class InterceptorResource
       expectedList.add(Interceptor1.class);                      // BookReader.readFrom()
       expectedList.add(Interceptor2.class);                      // BookReader.readFrom()
       expectedList.add(Interceptor3.class);                      // BookReader.readFrom()
+      expectedList.add(PostConstructInterceptor.class);          // InterceptorResource.postConstruct()
       expectedList.add(Interceptor0.class);                      // InterceptorResource.createBook()
       expectedList.add(Interceptor1.class);                      // InterceptorResource.createBook()
       expectedList.add(Interceptor2.class);                      // InterceptorResource.createBook()
@@ -103,7 +119,9 @@ public class InterceptorResource
       expectedList.add(ResponseFilterInterceptor.class);         // TestResponseFilter.filter()
       expectedList.add(BookWriterInterceptorInterceptor.class);  // BookWriterInterceptor.aroundWriteTo()
       expectedList.add(BookWriterInterceptor.class);             // BookWriter.writeTo()
+      expectedList.add(PreDestroyInterceptor.class);             // InterceptorResource.preDestroy()
       expectedList.add(RequestFilterInterceptor.class);          // TestRequestFilter.filter()
+      expectedList.add(PostConstructInterceptor.class);          // InterceptorResource.postConstruct()
       expectedList.add(Interceptor0.class);                      // InterceptorResource.lookBookById()
       expectedList.add(Interceptor1.class);                      // InterceptorResource.lookBookById()
       expectedList.add(Interceptor2.class);                      // InterceptorResource.lookBookById()
@@ -119,6 +137,7 @@ public class InterceptorResource
       expectedList.add(Interceptor1.class);                      // BookWriter.writeTo()
       expectedList.add(Interceptor2.class);                      // BookWriter.writeTo()
       expectedList.add(Interceptor3.class);                      // BookWriter.writeTo()
+      expectedList.add(PreDestroyInterceptor.class);             // InterceptorResource.preDestroy()
       expectedList.add(Interceptor0.class);                      // BookReader.isReadable()
       expectedList.add(Interceptor2.class);                      // BookReader.isReadable()
       expectedList.add(BookReaderInterceptorInterceptor.class);  // BookReaderInterceptor.aroundReadFrom()
@@ -127,31 +146,40 @@ public class InterceptorResource
       expectedList.add(Interceptor1.class);                      // BookReader.readFrom()
       expectedList.add(Interceptor2.class);                      // BookReader.readFrom()
       expectedList.add(Interceptor3.class);                      // BookReader.readFrom()
+      expectedList.add(PostConstructInterceptor.class);          // InterceptorResource.postConstruct()
       expectedList.add(Interceptor0.class);                      // InterceptorResource.test()
       expectedList.add(Interceptor1.class);                      // InterceptorResource.test()
       expectedList.add(Interceptor2.class);                      // InterceptorResource.test()
       expectedList.add(Interceptor3.class);                      // InterceptorResource.test()
+      expectedList.add(Interceptor2.class);                      // Stereotyped.test()
+      expectedList.add(Interceptor3.class);                      // Stereotyped.test()
       
       ArrayList<Object> visitList = VisitList.getList();
-      for (int i = 0; i < visitList.size(); i++)
-      {
-         log.info(i + ": " + visitList.get(i).toString());
-      }
       boolean status = expectedList.size() == visitList.size();
       if (!status)
       {
          log.info("expectedList.size() [" + expectedList.size() + "] != visitList.size() [" + visitList.size() + "]");
       }
-      else
+      for (int i = 0; i < expectedList.size(); i++)
       {
+         if (!expectedList.get(i).isAssignableFrom(visitList.get(i).getClass()))
+         {
+            status = false;
+            log.info("visitList.get(" + i + ") incorrect: should be an instance of: " + expectedList.get(i) + ", is: " + visitList.get(i));
+            break;
+         }
+      }
+      if (!status)
+      {
+         log.info("\rexpected list:");
          for (int i = 0; i < expectedList.size(); i++)
          {
-            if (!expectedList.get(i).isAssignableFrom(visitList.get(i).getClass()))
-            {
-               status = false;
-               log.info("visitList.get(" + i + ") incorrect: should be an instance of: " + expectedList.get(i) + ", is: " + visitList.get(i));
-               break;
-            }
+            log.info(i + ": " + expectedList.get(i).toString());
+         }
+         log.info("\rvisited list:");
+         for (int i = 0; i < visitList.size(); i++)
+         {
+            log.info(i + ": " + visitList.get(i).toString());
          }
       }
       log.info("leaving InterceptorResource.test()");

@@ -6,7 +6,6 @@ import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
-import javax.swing.text.Utilities;
 
 import junit.framework.Assert;
 
@@ -33,9 +32,8 @@ import org.jboss.resteasy.cdi.decorators.TestResource;
 import org.jboss.resteasy.cdi.decorators.TestResourceIntf;
 import org.jboss.resteasy.cdi.decorators.TestResponseFilter;
 import org.jboss.resteasy.cdi.decorators.VisitList;
-import org.jboss.resteasy.cdi.interceptors.ReaderInterceptorBinding;
-import org.jboss.resteasy.cdi.interceptors.WriterInterceptorBinding;
 import org.jboss.resteasy.cdi.util.Constants;
+import org.jboss.resteasy.cdi.util.Utilities;
 import org.jboss.resteasy.cdi.util.UtilityProducer;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
@@ -70,8 +68,7 @@ public class DecoratorsTest
             .addClasses(BookWriterDecorator.class, BookWriter.class)
             .addClasses(ResourceBinding.class, ResourceInterceptor.class, ResourceDecorator.class)
             .addClasses(FilterBinding.class, TestRequestFilter.class, RequestFilterDecorator.class, TestResponseFilter.class, ResponseFilterDecorator.class)
-            .addAsResource("persistence.xml", "META-INF/persistence.xml")
-            .addAsWebInfResource("decoratorBeans.xml", "beans.xml");
+            .addAsWebInfResource("decorators/decoratorBeans.xml", "beans.xml");
       System.out.println(war.toString(true));
       return war;
    }

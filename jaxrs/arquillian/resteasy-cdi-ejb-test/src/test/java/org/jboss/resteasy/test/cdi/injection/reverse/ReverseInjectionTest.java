@@ -1,19 +1,3 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2012, Red Hat, Inc. and/or its affiliates, and individual
- * contributors by the @authors tag. See the copyright.txt in the 
- * distribution for a full listing of individual contributors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,  
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.jboss.resteasy.test.cdi.injection.reverse;
 
 import static org.jboss.resteasy.cdi.injection.reverse.ReverseInjectionResource.NON_CONTEXTUAL;
@@ -50,9 +34,12 @@ import org.jboss.resteasy.cdi.injection.BookResource;
 import org.jboss.resteasy.cdi.injection.BookWriter;
 import org.jboss.resteasy.cdi.injection.DependentScoped;
 import org.jboss.resteasy.cdi.injection.JaxRsActivator;
+import org.jboss.resteasy.cdi.injection.NewBean;
 import org.jboss.resteasy.cdi.injection.ResourceBinding;
 import org.jboss.resteasy.cdi.injection.ResourceProducer;
 import org.jboss.resteasy.cdi.injection.StatefulEJB;
+import org.jboss.resteasy.cdi.injection.StereotypedApplicationScope;
+import org.jboss.resteasy.cdi.injection.StereotypedDependentScope;
 import org.jboss.resteasy.cdi.injection.UnscopedResource;
 import org.jboss.resteasy.cdi.injection.reverse.EJBHolder;
 import org.jboss.resteasy.cdi.injection.reverse.EJBHolderLocal;
@@ -141,8 +128,10 @@ public class ReverseInjectionTest
       .addClasses(StatefulApplicationScopedEJBwithJaxRsComponentsInterface.class, StatefulApplicationScopedEJBwithJaxRsComponents.class)
       .addClasses(EJBHolderRemote.class, EJBHolderLocal.class, EJBHolder.class)
       .addClasses(ReverseInjectionResource.class)
+      .addClasses(NewBean.class, StereotypedApplicationScope.class, StereotypedDependentScope.class)
       .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-      .addAsResource("persistence.xml", "META-INF/persistence.xml");
+      .setManifest("reverseInjection/hornetq_manifest.mf")
+      .addAsResource("injection/persistence.xml", "META-INF/persistence.xml");
       System.out.println(war.toString(true));
       return war;
    }
@@ -276,15 +265,15 @@ public class ReverseInjectionTest
          Queue queue = (Queue)ic.lookup(destinationName);
          connection = cf.createConnection();
          Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-         MessageProducer publisher = session.createProducer(queue);
+         MessageProducer producer = session.createProducer(queue);
          connection.start();
          Book book1 = new Book("Dead Man Snoring");
          TextMessage message = session.createTextMessage(book1.getName());
-         publisher.send(message);
+         producer.send(message);
          log.info("Message sent to to the JMS Provider: " + book1.getName());
          Book book2 = new Book("Dead Man Drooling");
          message = session.createTextMessage(book2.getName());
-         publisher.send(message);
+         producer.send(message);
          log.info("Message sent to to the JMS Provider: " + book2.getName());
          ClientRequest request = new ClientRequest("http://localhost:8080/resteasy-reverse-injection-test/rest/mdb/books");
          ClientResponse<?> response = request.get();

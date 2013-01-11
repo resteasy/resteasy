@@ -1,19 +1,3 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2012, Red Hat, Inc. and/or its affiliates, and individual
- * contributors by the @authors tag. See the copyright.txt in the 
- * distribution for a full listing of individual contributors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,  
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.jboss.resteasy.test.cdi.injection;
 
 import static org.junit.Assert.assertEquals;
@@ -32,19 +16,22 @@ import junit.framework.Assert;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.cdi.decorators.ResourceBinding;
 import org.jboss.resteasy.cdi.injection.Book;
 import org.jboss.resteasy.cdi.injection.BookBag;
 import org.jboss.resteasy.cdi.injection.BookBagLocal;
 import org.jboss.resteasy.cdi.injection.BookCollection;
-import org.jboss.resteasy.cdi.injection.BookMDB;
 import org.jboss.resteasy.cdi.injection.BookReader;
 import org.jboss.resteasy.cdi.injection.BookResource;
 import org.jboss.resteasy.cdi.injection.BookWriter;
 import org.jboss.resteasy.cdi.injection.DependentScoped;
 import org.jboss.resteasy.cdi.injection.JaxRsActivator;
+import org.jboss.resteasy.cdi.injection.NewBean;
 import org.jboss.resteasy.cdi.injection.ResourceProducer;
+import org.jboss.resteasy.cdi.injection.ScopeInheritingStereotype;
+import org.jboss.resteasy.cdi.injection.ScopeStereotype;
 import org.jboss.resteasy.cdi.injection.StatefulEJB;
+import org.jboss.resteasy.cdi.injection.StereotypedApplicationScope;
+import org.jboss.resteasy.cdi.injection.StereotypedDependentScope;
 import org.jboss.resteasy.cdi.injection.UnscopedResource;
 import org.jboss.resteasy.cdi.util.Constants;
 import org.jboss.resteasy.cdi.util.Counter;
@@ -107,11 +94,12 @@ public class InjectionTest
             .addClasses(Counter.class, BookCollection.class, BookReader.class, BookWriter.class)
             .addClasses(DependentScoped.class, StatefulEJB.class, UnscopedResource.class)
             .addClasses(BookBagLocal.class, BookBag.class)
-            .addClasses(BookMDB.class)
-            .addClasses(Resource.class, ResourceBinding.class, ResourceProducer.class, PersistenceUnitProducer.class)
-            .addAsLibraries("hornetq-jms-client-2.2.13.Final.jar", "jboss-jms-api_1.1_spec-1.0.0.Final.jar")
+            .addClasses(NewBean.class)
+            .addClasses(ScopeStereotype.class, ScopeInheritingStereotype.class)
+            .addClasses(StereotypedApplicationScope.class, StereotypedDependentScope.class)
+            .addClasses(Resource.class, ResourceProducer.class, PersistenceUnitProducer.class)
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-            .addAsResource("persistence.xml", "META-INF/persistence.xml");
+            .addAsResource("injection/persistence.xml", "META-INF/persistence.xml");
       System.out.println(war.toString(true));
       return war;
    }
@@ -317,7 +305,8 @@ public class InjectionTest
       Assert.assertEquals(200, response.getStatus());
       
       // Verify that the received book title is the one that was sent.
-      request = new ClientRequest("http://localhost:8080/resteasy-cdi-ejb-test/rest/consumeMessage/");     
+      request = new ClientRequest("http://localhost:8080/resteasy-cdi-ejb-test/rest/queue/consumeMessage/");
+      log.info("consuming book");
       response = request.get();
       invocationCounter++;
       log.info("status: " + response.getStatus());
@@ -344,5 +333,19 @@ public class InjectionTest
       String[] counters = result.split(":");
       Assert.assertTrue(invocationCounter + 1 == Integer.valueOf(counters[0])); // invocations of postConstruct()
       Assert.assertTrue(invocationCounter == Integer.valueOf(counters[1]));     // invocations of preDestroy()
+   }
+   
+   /**
+    * Verifies that ResourceProducer disposer method has been called for Queue.
+    */
+   @Test
+   public void testDisposer() throws Exception
+   {
+      log.info("starting testDisposer()");
+      ClientRequest request = new ClientRequest("http://localhost:8080/resteasy-cdi-ejb-test/rest/disposer/");
+      ClientResponse<?> response = request.get();
+      log.info("status: " + response.getStatus());
+      Assert.assertEquals(200, response.getStatus());
+      response.releaseConnection();
    }
 }

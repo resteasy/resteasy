@@ -9,7 +9,7 @@
   </parent>
   <artifactId>resteasy-cdi-ejb-test</artifactId>
   <packaging>jar</packaging>
-  <name>Resteasy AS7 Integration Testsuite</name>
+  <name>Resteasy AS7/CDI/EJB Integration Testsuite</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -55,10 +55,10 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.jboss.as</groupId>
-                  <artifactId>jboss-as-dist</artifactId>
-                  <version>7.1.1.Final</version>
-                  <type>zip</type>
+                  <groupId>org.jboss.resteasy.test</groupId>
+                  <artifactId>as7-dist-cdi-ejb-7.1.1.Final</artifactId>
+                  <version>1.0</version>
+                  <type>jar</type>
                   <overWrite>false</overWrite>
                   <outputDirectory>target</outputDirectory>
                 </artifactItem>
@@ -80,11 +80,12 @@
 	<groupId>org.hornetq</groupId>
 	<artifactId>hornetq-jms-client</artifactId>
 	<version>2.2.13.Final</version>
-</dependency>
+  </dependency>
     <dependency>
         <groupId>org.jboss.weld</groupId>
         <artifactId>weld-core</artifactId>
-        <version>1.1.5.AS71.Final</version>
+        <!--version>1.1.5.AS71.Final</version-->
+        <version>1.2.0-SNAPSHOT</version>
     </dependency>
     <dependency>
         <groupId>org.jboss.spec</groupId>
