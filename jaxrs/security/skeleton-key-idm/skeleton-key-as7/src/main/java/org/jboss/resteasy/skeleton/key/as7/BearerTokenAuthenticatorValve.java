@@ -6,6 +6,7 @@ import org.apache.catalina.deploy.LoginConfig;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.skeleton.key.SkeletonKeySession;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
+import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.security.auth.login.LoginException;
@@ -42,26 +43,17 @@ public class BearerTokenAuthenticatorValve extends AbstractRemoteOAuthAuthentica
    @Override
    protected boolean authenticate(Request request, HttpServletResponse response, LoginConfig config) throws IOException
    {
-      CatalinaBearerTokenAuthenticator bearer = new CatalinaBearerTokenAuthenticator(true, resourceMetadata);
       try
       {
+         CatalinaBearerTokenAuthenticator bearer = new CatalinaBearerTokenAuthenticator(resourceMetadata, !remoteSkeletonKeyConfig.isCancelPropagation(), true);
          if (bearer.login(request, response))
          {
-            SkeletonKeyTokenVerification verification = bearer.getVerification();
-            Principal principal = new CatalinaSecurityContextHelper().createPrincipal(context.getRealm(), verification.getPrincipal(), verification.getRoles());
-            request.setUserPrincipal(principal);
-            if (!remoteSkeletonKeyConfig.isCancelPropagation())
-            {
-               SkeletonKeySession skSession = new SkeletonKeySession(verification.getPrincipal().getToken(), resourceMetadata);
-               request.setAttribute(SkeletonKeySession.class.getName(), skSession);
-               ResteasyProviderFactory.pushContext(SkeletonKeySession.class, skSession);
-            }
             return true;
-         }
+       }
+         return false;
       }
       catch (LoginException e)
       {
-         return false;
       }
       return false;
    }

@@ -56,7 +56,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Turns a web deployment into an authentication server that follwos the OAuth 2 protocol and Skeleton Key bearer tokens.
  * Authentication store is backed by a JBoss security domain.
- *
+ * <p/>
  * Servlet FORM authentication that uses the local security domain to authenticate and for role mappings.
  * <p/>
  * Supports bearer token creation and authentication.  The client asking for access must be set up as a valid user
@@ -280,8 +280,11 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
          if (request.getAttribute(SkeletonKeySession.class.getName()) == null && request.getSessionInternal() != null)
          {
             SkeletonKeySession skSession = (SkeletonKeySession) request.getSessionInternal().getNote(SkeletonKeySession.class.getName());
-            request.setAttribute(SkeletonKeySession.class.getName(), skSession);
-            ResteasyProviderFactory.pushContext(SkeletonKeySession.class, skSession);
+            if (skSession != null)
+            {
+               request.setAttribute(SkeletonKeySession.class.getName(), skSession);
+               ResteasyProviderFactory.pushContext(SkeletonKeySession.class, skSession);
+            }
          }
       }
       request.setAttribute("OAUTH_FORM_ACTION", "j_security_check");
@@ -298,16 +301,19 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
    protected boolean handleLoginPage(Request request, Response response) throws IOException, ServletException
    {
       String client_id = request.getParameter("client_id");
+      // if this is not an OAUTH redirect, just return and let the default flow happen
       if (client_id == null) return false;
 
       String redirect_uri = request.getParameter("redirect_uri");
       String state = request.getParameter("state");
 
-      if (redirect_uri == null || client_id == null)
+      if (redirect_uri == null)
       {
-         response.sendError(400);
+         response.sendError(400, "No oauth redirect query parameter set");
+         return true;
       }
-      // only bypass authentication if the login query parameter is on request URL
+      // only bypass authentication if our session is authenticated,
+      // the login query parameter is on request URL,
       // and we have configured the login-role
       else if (!skeletonKeyConfig.isSsoDisabled()
               && request.getSessionInternal() != null
@@ -386,14 +392,16 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       }
       RequestDispatcher disp =
               context.getServletContext().getRequestDispatcher(forwardTo);
-      try {
+      try
+      {
          disp.forward(request.getRequest(), response);
-      } catch (Throwable t) {
+      }
+      catch (Throwable t)
+      {
          request.setAttribute(RequestDispatcher.ERROR_EXCEPTION, t);
          response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                  "failed to forward");
       }
-
 
 
    }
@@ -527,25 +535,15 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       return rep;
    }
 
-   public boolean bearer(Request request, HttpServletResponse response, boolean propagate)
+   public boolean bearer(Request request, HttpServletResponse response, boolean propagate) throws IOException
    {
       if (request.getHeader("Authorization") != null)
       {
-         CatalinaBearerTokenAuthenticator bearer = new CatalinaBearerTokenAuthenticator(false, resourceMetadata);
+         CatalinaBearerTokenAuthenticator bearer = new CatalinaBearerTokenAuthenticator(resourceMetadata, true, false);
          try
          {
             if (bearer.login(request, response))
             {
-               SkeletonKeyTokenVerification verification = bearer.getVerification();
-               GenericPrincipal principal = new CatalinaSecurityContextHelper().createPrincipal(context.getRealm(), verification.getPrincipal(), verification.getRoles());
-               request.setUserPrincipal(principal);
-               request.setAuthType("OAUTH");
-               if (propagate)
-               {
-                  SkeletonKeySession skSession = new SkeletonKeySession(verification.getPrincipal().getToken(), resourceMetadata);
-                  request.setAttribute(SkeletonKeySession.class.getName(), skSession);
-                  ResteasyProviderFactory.pushContext(SkeletonKeySession.class, skSession);
-               }
                return true;
             }
          }

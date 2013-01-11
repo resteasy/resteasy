@@ -6,6 +6,7 @@ import org.jboss.resteasy.skeleton.key.RealmConfiguration;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
 import org.jboss.resteasy.skeleton.key.VerificationException;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
+import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -32,8 +33,9 @@ public class ServletOAuthLogin
    protected HttpServletResponse response;
    protected boolean codePresent;
    protected RealmConfiguration realmInfo;
-   protected SkeletonKeyTokenVerification verification;
    protected int redirectPort;
+   protected String tokenString;
+   protected SkeletonKeyToken token;
 
    public ServletOAuthLogin(RealmConfiguration realmInfo, HttpServletRequest request, HttpServletResponse response, int redirectPort)
    {
@@ -43,9 +45,14 @@ public class ServletOAuthLogin
       this.redirectPort = redirectPort;
    }
 
-   public SkeletonKeyTokenVerification getVerification()
+   public String getTokenString()
    {
-      return verification;
+      return tokenString;
+   }
+
+   public SkeletonKeyToken getToken()
+   {
+      return token;
    }
 
    public RealmConfiguration getRealmInfo()
@@ -283,10 +290,10 @@ public class ServletOAuthLogin
          res.close();
       }
 
-      String tokenString = tokenResponse.getToken();
+      tokenString = tokenResponse.getToken();
       try
       {
-         verification = RSATokenVerifier.verify((X509Certificate[])null, tokenString, realmInfo.getMetadata());
+         token = RSATokenVerifier.verifyToken(tokenString, realmInfo.getMetadata());
          log.info("Verification succeeded!");
       }
       catch (VerificationException e)
@@ -295,8 +302,15 @@ public class ServletOAuthLogin
          sendError(Response.Status.FORBIDDEN.getStatusCode());
          return false;
       }
+      redirectAfterCodeProcessing();
+      return true;
+   }
 
-      // strip out unwanted query parameters and redirect so bookmarks don't retain oauth protocol bits
+   /**
+    * strip out unwanted query parameters and redirect so bookmarks don't retain oauth protocol bits
+    */
+   public void redirectAfterCodeProcessing()
+   {
       StringBuffer buf = request.getRequestURL().append("?").append(request.getQueryString());
       UriBuilder builder = UriBuilder.fromUri(buf.toString())
               .replaceQueryParam("code", null)
@@ -311,7 +325,6 @@ public class ServletOAuthLogin
       {
          throw new RuntimeException(e);
       }
-      return true;
    }
 
 

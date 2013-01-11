@@ -4,13 +4,20 @@ import org.apache.catalina.connector.Request;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
+import org.jboss.resteasy.skeleton.key.SkeletonKeyPrincipal;
+import org.jboss.resteasy.skeleton.key.SkeletonKeySession;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
 import org.jboss.resteasy.skeleton.key.VerificationException;
+import org.jboss.resteasy.skeleton.key.as7.config.ManagedResourceConfig;
+import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.Principal;
 import java.security.cert.X509Certificate;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -19,14 +26,18 @@ import java.security.cert.X509Certificate;
 public class CatalinaBearerTokenAuthenticator
 {
    protected ResourceMetadata resourceMetadata;
-   protected SkeletonKeyTokenVerification verification;
    protected boolean challenge;
    protected Logger log = Logger.getLogger(CatalinaBearerTokenAuthenticator.class);
+   protected String tokenString;
+   protected SkeletonKeyToken token;
+   private Principal principal;
+   protected boolean propagateToken;
 
-   public CatalinaBearerTokenAuthenticator(boolean challenge, ResourceMetadata resourceMetadata)
+   public CatalinaBearerTokenAuthenticator(ResourceMetadata resourceMetadata, boolean propagateToken, boolean challenge)
    {
-      this.challenge = challenge;
       this.resourceMetadata = resourceMetadata;
+      this.challenge = challenge;
+      this.propagateToken = propagateToken;
    }
 
    public ResourceMetadata getResourceMetadata()
@@ -34,12 +45,22 @@ public class CatalinaBearerTokenAuthenticator
       return resourceMetadata;
    }
 
-   public SkeletonKeyTokenVerification getVerification()
+   public String getTokenString()
    {
-      return verification;
+      return tokenString;
    }
 
-   public boolean login(Request request, HttpServletResponse response) throws LoginException
+   public SkeletonKeyToken getToken()
+   {
+      return token;
+   }
+
+   public Principal getPrincipal()
+   {
+      return principal;
+   }
+
+   public boolean login(Request request, HttpServletResponse response) throws LoginException, IOException
    {
       String authHeader = request.getHeader("Authorization");
       if (authHeader == null)
@@ -60,19 +81,60 @@ public class CatalinaBearerTokenAuthenticator
       if (!split[0].equalsIgnoreCase("Bearer")) challengeResponse(response, null, null);
 
 
-      String tokenString = split[1];
-
+      tokenString = split[1];
 
       try
       {
-         X509Certificate[] chain = null; // fucks up connection if client verification is not set up request.getCertificateChain();
-         verification = RSATokenVerifier.verify(chain, tokenString, resourceMetadata);
+         token = RSATokenVerifier.verifyToken(tokenString, resourceMetadata);
       }
       catch (VerificationException e)
       {
          log.error("Failed to verify token", e);
          challengeResponse(response, "invalid_token", e.getMessage());
       }
+      boolean verifyCaller = false;
+      Set<String> roles = null;
+      if (resourceMetadata.getResourceName() != null)
+      {
+         SkeletonKeyToken.Access access = token.getResourceAccess(resourceMetadata.getResourceName());
+         if (access != null) roles = access.getRoles();
+         verifyCaller = token.isVerifyCaller(resourceMetadata.getResourceName());
+      }
+      else
+      {
+         verifyCaller = token.isVerifyCaller();
+         SkeletonKeyToken.Access access = token.getRealmAccess();
+         if (access != null) roles = access.getRoles();
+      }
+      String surrogate = null;
+      if (verifyCaller)
+      {
+         if (token.getTrustedCertificates() == null || token.getTrustedCertificates().size() == 0)
+         {
+            response.sendError(400);
+            throw new LoginException("No trusted certificates in token");
+         }
+         // for now, we just make sure JBoss Web did two-way SSL
+         // assume JBoss Web verifies the client cert
+         X509Certificate[] chain = request.getCertificateChain();
+         if (chain == null || chain.length == 0)
+         {
+            response.sendError(400);
+            throw new LoginException("No certificates provided by jboss web to verify the caller");
+         }
+         surrogate = chain[0].getSubjectX500Principal().getName();
+      }
+      SkeletonKeyPrincipal skeletonKeyPrincipal = new SkeletonKeyPrincipal(token.getPrincipal(), surrogate);
+      principal = new CatalinaSecurityContextHelper().createPrincipal(request.getContext().getRealm(), skeletonKeyPrincipal, roles);
+      request.setUserPrincipal(principal);
+      request.setAuthType("OAUTH_BEARER");
+      if (propagateToken)
+      {
+         SkeletonKeySession skSession = new SkeletonKeySession(tokenString, resourceMetadata);
+         request.setAttribute(SkeletonKeySession.class.getName(), skSession);
+         ResteasyProviderFactory.pushContext(SkeletonKeySession.class, skSession);
+      }
+
       return true;
    }
 

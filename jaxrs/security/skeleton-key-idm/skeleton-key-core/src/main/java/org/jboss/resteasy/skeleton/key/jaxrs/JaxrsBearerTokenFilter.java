@@ -3,8 +3,12 @@ package org.jboss.resteasy.skeleton.key.jaxrs;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
+import org.jboss.resteasy.skeleton.key.SkeletonKeyPrincipal;
+import org.jboss.resteasy.skeleton.key.SkeletonKeySession;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
 import org.jboss.resteasy.skeleton.key.VerificationException;
+import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.BindingPriority;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -70,21 +74,35 @@ public class JaxrsBearerTokenFilter implements ContainerRequestFilter
 
       try
       {
-         final SkeletonKeyTokenVerification verification = RSATokenVerifier.verify(securityContext.getUserPrincipal(), tokenString, resourceMetadata);
+         SkeletonKeyToken token = RSATokenVerifier.verifyToken(tokenString, resourceMetadata);
+         SkeletonKeySession skSession = new SkeletonKeySession(tokenString, resourceMetadata);
+         ResteasyProviderFactory.pushContext(SkeletonKeySession.class, skSession);
+         String callerPrincipal = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : null;
+
+         final SkeletonKeyPrincipal principal = new SkeletonKeyPrincipal(token.getPrincipal(), callerPrincipal);
          final boolean isSecure = securityContext.isSecure();
-         final String scheme = securityContext.getAuthenticationScheme();
+         final SkeletonKeyToken.Access access;
+         if (resourceMetadata.getResourceName() != null)
+         {
+            access = token.getResourceAccess(resourceMetadata.getResourceName());
+         }
+         else
+         {
+            access = token.getRealmAccess();
+         }
          SecurityContext ctx = new SecurityContext()
          {
             @Override
             public Principal getUserPrincipal()
             {
-               return verification.getPrincipal();
+               return principal;
             }
 
             @Override
             public boolean isUserInRole(String role)
             {
-               return verification.getRoles().contains(role);
+               if (access.getRoles() == null) return false;
+               return access.getRoles().contains(role);
             }
 
             @Override
@@ -96,7 +114,7 @@ public class JaxrsBearerTokenFilter implements ContainerRequestFilter
             @Override
             public String getAuthenticationScheme()
             {
-               return scheme;
+               return "OAUTH_BEARER";
             }
          };
          request.setSecurityContext(ctx);

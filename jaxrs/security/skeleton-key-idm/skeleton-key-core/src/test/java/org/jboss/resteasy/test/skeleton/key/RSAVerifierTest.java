@@ -96,11 +96,9 @@ public class RSAVerifierTest
       String encoded = new JWSBuilder()
               .content(tokenBytes)
               .rsa256(idpPair.getPrivate());
-
-      SkeletonKeyTokenVerification v = RSATokenVerifier.verify((X509Certificate[])null, encoded, metadata);
-      Assert.assertTrue(v.getRoles().contains("admin"));
-      Assert.assertEquals("CN=Client", v.getPrincipal().getName());
-      Assert.assertEquals(encoded, v.getPrincipal().getToken());
+      SkeletonKeyToken token =  RSATokenVerifier.verifyToken(encoded, metadata);
+      Assert.assertTrue(token.getResourceAccess("service").getRoles().contains("admin"));
+      Assert.assertEquals("CN=Client", token.getPrincipal());
    }
 
    /*
@@ -137,10 +135,10 @@ public class RSAVerifierTest
               .content(tokenBytes)
               .rsa256(badPair.getPrivate());
 
-      SkeletonKeyTokenVerification v = null;
+      SkeletonKeyToken v = null;
       try
       {
-         v = RSATokenVerifier.verify((X509Certificate[])null, encoded, metadata);
+         v = RSATokenVerifier.verifyToken(encoded, metadata);
          Assert.fail();
       }
       catch (VerificationException ignored)
@@ -158,10 +156,10 @@ public class RSAVerifierTest
               .content(tokenBytes)
               .rsa256(idpPair.getPrivate());
 
-      SkeletonKeyTokenVerification v = null;
+      SkeletonKeyToken v = null;
       try
       {
-         v = RSATokenVerifier.verify((X509Certificate[])null, encoded, metadata);
+         v = RSATokenVerifier.verifyToken(encoded, metadata);
       }
       catch (VerificationException ignored)
       {
@@ -179,10 +177,10 @@ public class RSAVerifierTest
               .content(tokenBytes)
               .rsa256(idpPair.getPrivate());
 
-      SkeletonKeyTokenVerification v = null;
+      SkeletonKeyToken v = null;
       try
       {
-         v = RSATokenVerifier.verify((X509Certificate[])null, encoded, metadata);
+         v = RSATokenVerifier.verifyToken(encoded, metadata);
          Assert.fail();
       }
       catch (VerificationException ignored)
@@ -201,10 +199,10 @@ public class RSAVerifierTest
               .content(tokenBytes)
               .rsa256(idpPair.getPrivate());
 
-      SkeletonKeyTokenVerification v = null;
+      SkeletonKeyToken v = null;
       try
       {
-         v = RSATokenVerifier.verify((X509Certificate[])null, encoded, metadata);
+         v = RSATokenVerifier.verifyToken(encoded, metadata);
       }
       catch (VerificationException ignored)
       {
@@ -222,10 +220,10 @@ public class RSAVerifierTest
               .content(tokenBytes)
               .rsa256(idpPair.getPrivate());
 
-      SkeletonKeyTokenVerification v = null;
+      SkeletonKeyToken v = null;
       try
       {
-         v = RSATokenVerifier.verify((X509Certificate[])null, encoded, metadata);
+         v = RSATokenVerifier.verifyToken(encoded, metadata);
          Assert.fail();
       }
       catch (VerificationException ignored)
@@ -240,18 +238,17 @@ public class RSAVerifierTest
       token = new SkeletonKeyToken();
       token.principal("CN=Client")
               .audience("domain")
-              .addAccess("service").addRole("admin").surrogateAuthRequired(true);
+              .addAccess("service").addRole("admin").verifyCaller(true);
       byte[] tokenBytes = JsonSerialization.toByteArray(token, false);
 
       String encoded = new JWSBuilder()
               .content(tokenBytes)
               .rsa256(idpPair.getPrivate());
 
-      SkeletonKeyTokenVerification v = null;
+      SkeletonKeyToken v = null;
       try
       {
-         v = RSATokenVerifier.verify((X509Certificate[])null, encoded, metadata);
-         Assert.fail();
+         v = RSATokenVerifier.verifyToken(encoded, metadata);
       }
       catch (VerificationException ignored)
       {

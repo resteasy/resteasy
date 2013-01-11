@@ -8,6 +8,7 @@ import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
+import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 import org.jboss.resteasy.skeleton.key.representations.idm.RequiredCredentialRepresentation;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -53,7 +54,7 @@ public class GrantTest extends SkeletonTestBase
       metadata.setRealm("test-realm");
       metadata.setResourceName("Application");
       metadata.setRealmKey(realmInfo.getPublicKey());
-      SkeletonKeyTokenVerification verification = RSATokenVerifier.verify((X509Certificate[])null, tokenResponse.getToken(), metadata);
+      SkeletonKeyToken token = RSATokenVerifier.verifyToken(tokenResponse.getToken(), metadata);
 
 
    }

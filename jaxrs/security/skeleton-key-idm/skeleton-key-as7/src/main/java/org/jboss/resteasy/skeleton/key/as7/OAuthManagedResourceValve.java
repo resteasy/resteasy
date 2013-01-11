@@ -11,10 +11,12 @@ import org.jboss.resteasy.client.jaxrs.AbstractClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.skeleton.key.RealmConfiguration;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyPrincipal;
 import org.jboss.resteasy.skeleton.key.SkeletonKeySession;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
+import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.security.auth.login.LoginException;
@@ -23,11 +25,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.security.Principal;
+import java.security.PublicKey;
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Web deployment whose security is managed by a remote OAuth Skeleton Key authentication server
- *
+ * <p/>
  * Redirects browser to remote authentication server if not logged in.  Also allows OAuth Bearer Token requests
  * that contain a Skeleton Key bearer tokens.
  *
@@ -100,7 +106,6 @@ public class OAuthManagedResourceValve extends AbstractRemoteOAuthAuthenticatorV
    @Override
    public void invoke(Request request, Response response) throws IOException, ServletException
    {
-      String contextPath = request.getContextPath();
       String requestURI = request.getDecodedRequestURI();
       if (requestURI.endsWith("j_oauth_remote_logout"))
       {
@@ -144,7 +149,7 @@ public class OAuthManagedResourceValve extends AbstractRemoteOAuthAuthenticatorV
             log.info("remoteLogout: bearer auth failed");
             return;
          }
-         GenericPrincipal gp = (GenericPrincipal)request.getPrincipal();
+         GenericPrincipal gp = (GenericPrincipal) request.getPrincipal();
          if (!gp.hasRole(remoteSkeletonKeyConfig.getAdminRole()))
          {
             log.info("remoteLogout: role failure");
@@ -168,21 +173,11 @@ public class OAuthManagedResourceValve extends AbstractRemoteOAuthAuthenticatorV
       response.setStatus(204);
    }
 
-   protected boolean bearer(boolean challenge, Request request, HttpServletResponse response) throws LoginException
+   protected boolean bearer(boolean challenge, Request request, HttpServletResponse response) throws LoginException, IOException
    {
-      CatalinaBearerTokenAuthenticator bearer = new CatalinaBearerTokenAuthenticator(challenge, realmConfiguration.getMetadata());
+      CatalinaBearerTokenAuthenticator bearer = new CatalinaBearerTokenAuthenticator(realmConfiguration.getMetadata(), !remoteSkeletonKeyConfig.isCancelPropagation(), challenge);
       if (bearer.login(request, response))
       {
-         SkeletonKeyTokenVerification verification = bearer.getVerification();
-         Principal principal = new CatalinaSecurityContextHelper().createPrincipal(context.getRealm(), verification.getPrincipal(), verification.getRoles());
-         request.setUserPrincipal(principal);
-         request.setAuthType("OAUTH");
-         if (!remoteSkeletonKeyConfig.isCancelPropagation())
-         {
-            SkeletonKeySession skSession = new SkeletonKeySession(verification.getPrincipal().getToken(), realmConfiguration.getMetadata());
-            request.setAttribute(SkeletonKeySession.class.getName(), skSession);
-            ResteasyProviderFactory.pushContext(SkeletonKeySession.class, skSession);
-         }
          return true;
       }
       return false;
@@ -190,22 +185,24 @@ public class OAuthManagedResourceValve extends AbstractRemoteOAuthAuthenticatorV
 
    protected boolean checkLoggedIn(Request request, HttpServletResponse response)
    {
-      if (cache && request.getSessionInternal() == null || request.getSessionInternal().getPrincipal() == null)
+      if (request.getSessionInternal() == null || request.getSessionInternal().getPrincipal() == null)
          return false;
       log.info("remote logged in already");
       GenericPrincipal principal = (GenericPrincipal) request.getSessionInternal().getPrincipal();
-      bindRequest(request, principal);
-      return true;
-   }
-
-   protected void bindRequest(Request request, GenericPrincipal principal)
-   {
       request.setUserPrincipal(principal);
       request.setAuthType("OAUTH");
-      SkeletonKeyPrincipal skp = (SkeletonKeyPrincipal) principal.getUserPrincipal();
-      SkeletonKeySession skSession = new SkeletonKeySession(skp.getToken(), realmConfiguration.getMetadata());
-      request.setAttribute(SkeletonKeySession.class.getName(), skSession);
-      ResteasyProviderFactory.pushContext(SkeletonKeySession.class, skSession);
+      Session session = request.getSessionInternal();
+      if (session != null && !remoteSkeletonKeyConfig.isCancelPropagation())
+      {
+         SkeletonKeySession skSession = (SkeletonKeySession)session.getNote(SkeletonKeySession.class.getName());
+         if (skSession != null)
+         {
+            request.setAttribute(SkeletonKeySession.class.getName(), skSession);
+            ResteasyProviderFactory.pushContext(SkeletonKeySession.class, skSession);
+
+         }
+      }
+      return true;
    }
 
    /**
@@ -216,17 +213,32 @@ public class OAuthManagedResourceValve extends AbstractRemoteOAuthAuthenticatorV
       ServletOAuthLogin oauth = new ServletOAuthLogin(realmConfiguration, request, response, request.getConnector().getRedirectPort());
       if (oauth.login())
       {
-         SkeletonKeyTokenVerification verification = oauth.getVerification();
-         GenericPrincipal principal = new CatalinaSecurityContextHelper().createPrincipal(context.getRealm(), verification.getPrincipal(), verification.getRoles());
+         SkeletonKeyToken token = oauth.getToken();
+         Set<String> roles = null;
+         if (resourceMetadata.getResourceName() != null)
+         {
+            SkeletonKeyToken.Access access = token.getResourceAccess(resourceMetadata.getResourceName());
+            if (access != null) roles = access.getRoles();
+         }
+         else
+         {
+            SkeletonKeyToken.Access access = token.getRealmAccess();
+            if (access != null) roles = access.getRoles();
+         }
+         SkeletonKeyPrincipal skp = new SkeletonKeyPrincipal(token.getPrincipal(), null);
+         GenericPrincipal principal = new CatalinaSecurityContextHelper().createPrincipal(context.getRealm(), skp, roles);
          Session session = request.getSessionInternal(true);
          session.setPrincipal(principal);
          session.setAuthType("OAUTH");
+         if (!remoteSkeletonKeyConfig.isCancelPropagation())
+         {
+            SkeletonKeySession skSession = new SkeletonKeySession(oauth.getTokenString(), realmConfiguration.getMetadata());
+            session.setNote(SkeletonKeySession.class.getName(), skSession);
+         }
 
-         String username = verification.getPrincipal().getName();
+         String username = token.getPrincipal();
          log.info("userSessionManage.login: " + username);
          userSessionManagement.login(session, username);
-
-         bindRequest(request, principal);
       }
    }
 
