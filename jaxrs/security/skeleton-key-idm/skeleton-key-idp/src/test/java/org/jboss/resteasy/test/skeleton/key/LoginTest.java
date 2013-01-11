@@ -6,6 +6,7 @@ import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
 import org.jboss.resteasy.skeleton.key.VerificationException;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
+import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -28,25 +29,6 @@ public class LoginTest extends SkeletonTestBase
    public static void setupTest() throws Exception
    {
       setupIDM("testrealm.json");
-   }
-
-   @Test
-   public void testEnv() throws Exception
-   {
-      String val = "foo bar ${config} xyz config ${config} ";
-      System.setProperty("config", "hello");
-      System.out.println("***** START *****");
-      Pattern p = Pattern.compile("[$][{]([^}]+)[}]");
-      Matcher matcher = p.matcher(val);
-      StringBuffer buf = new StringBuffer();
-      while (matcher.find())
-      {
-         String envVar = matcher.group(1);
-         String envVal = System.getProperty(envVar);
-         matcher.appendReplacement(buf, envVal);
-      }
-      matcher.appendTail(buf);
-      System.out.println(buf.toString());
    }
 
    @Test
@@ -109,9 +91,9 @@ public class LoginTest extends SkeletonTestBase
       metadata.setRealm("test-realm");
       metadata.setResourceName("Application");
       metadata.setRealmKey(realmInfo.getPublicKey());
-      SkeletonKeyTokenVerification verification = RSATokenVerifier.verify((X509Certificate[])null, tokenResponse.getToken(), metadata);
-      Assert.assertEquals(verification.getPrincipal().getName(), "wburke");
-      Assert.assertTrue(verification.getRoles().contains("user"));
+      SkeletonKeyToken token = RSATokenVerifier.verifyToken(tokenResponse.getToken(), metadata);
+      Assert.assertEquals(token.getPrincipal(), "wburke");
+      Assert.assertTrue(token.getResourceAccess("Application").getRoles().contains("user"));
    }
 
    @Test
@@ -185,22 +167,9 @@ public class LoginTest extends SkeletonTestBase
       metadata.setRealm("test-realm");
       metadata.setResourceName("Application");
       metadata.setRealmKey(realmInfo.getPublicKey());
-      SkeletonKeyTokenVerification verification = RSATokenVerifier.verify((X509Certificate[])null, tokenResponse.getToken(), metadata);
-      Assert.assertEquals(verification.getPrincipal().getName(), "wburke");
-      Assert.assertTrue(verification.getRoles().contains("user"));
-      metadata.setRealm("test-realm");
-      metadata.setResourceName("OtherApp");
-      metadata.setRealmKey(realmInfo.getPublicKey());
-      try
-      {
-         verification = RSATokenVerifier.verify((X509Certificate[])null, tokenResponse.getToken(), metadata);
-         Assert.fail("should not verify");
-      }
-      catch (VerificationException e)
-      {
-      }
-
-
+      SkeletonKeyToken token = RSATokenVerifier.verifyToken(tokenResponse.getToken(), metadata);
+      Assert.assertEquals(token.getPrincipal(), "wburke");
+      Assert.assertTrue(token.getResourceAccess("Application").getRoles().contains("user"));
    }
 
 }

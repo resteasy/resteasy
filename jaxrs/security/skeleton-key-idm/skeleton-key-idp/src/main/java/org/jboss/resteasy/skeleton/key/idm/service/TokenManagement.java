@@ -31,6 +31,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
@@ -57,7 +58,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Path("/realms")
 public class TokenManagement
 {
-   protected static class AccessCode
+   public static class AccessCode
    {
       protected String id = UUID.randomUUID().toString() + System.currentTimeMillis();
       protected long expiration;
@@ -119,6 +120,8 @@ public class TokenManagement
    protected Providers providers;
    @Context
    protected SecurityContext securityContext;
+   @Context
+   protected HttpHeaders headers;
 
    private static AtomicLong counter = new AtomicLong(1);
    private static String generateId()
@@ -145,11 +148,6 @@ public class TokenManagement
          {
             access.addRole(role);
          }
-         for (String surrogateId : realmMapping.getSurrogateIds())
-         {
-            User surrogate = identityManager.getUser(realm, surrogateId);
-            access.addSurrogate(surrogate.getUsername());
-         }
          token.setRealmAccess(access);
       }
       for (Resource resource : resources)
@@ -157,16 +155,10 @@ public class TokenManagement
          RoleMapping mapping = identityManager.getRoleMapping(realm, resource, user);
          if (mapping == null) continue;
          SkeletonKeyToken.Access access = token.addAccess(resource.getName())
-                                               .surrogateAuthRequired(resource.isSurrogateAuthRequired());
+                                               .verifyCaller(resource.isSurrogateAuthRequired());
          for (String role : mapping.getRoles())
          {
             access.addRole(role);
-         }
-         for (String surrogateId : mapping.getSurrogateIds())
-         {
-            User surrogate = identityManager.getUser(realm, surrogateId);
-            access.addSurrogate(surrogate.getUsername());
-
          }
       }
       if (token.getResourceAccess() == null || token.getResourceAccess().size() == 0) return null;

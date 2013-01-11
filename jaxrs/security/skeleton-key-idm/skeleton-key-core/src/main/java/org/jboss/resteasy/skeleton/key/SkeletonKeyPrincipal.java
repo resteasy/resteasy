@@ -11,17 +11,11 @@ public class SkeletonKeyPrincipal implements Principal
 {
    protected String name;
    protected String surrogate;
-   protected String token;
-   protected KeyStore keystore;
-   protected KeyStore truststore;
 
-   public SkeletonKeyPrincipal(String name, String surrogate, String token, KeyStore keystore, KeyStore truststore)
+   public SkeletonKeyPrincipal(String name, String surrogate)
    {
       this.name = name;
       this.surrogate = surrogate;
-      this.token = token;
-      this.keystore = keystore;
-      this.truststore = truststore;
    }
 
    @Override
@@ -35,34 +29,31 @@ public class SkeletonKeyPrincipal implements Principal
       return surrogate;
    }
 
-   /**
-    * On the wire string representation of token
-    *
-    * @return
-    */
-   public String getToken()
+   @Override
+   public boolean equals(Object o)
    {
-      return token;
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      SkeletonKeyPrincipal that = (SkeletonKeyPrincipal) o;
+
+      if (!name.equals(that.name)) return false;
+      if (surrogate != null ? !surrogate.equals(that.surrogate) : that.surrogate != null) return false;
+
+      return true;
    }
 
-   /**
-    * keystore that contains service's private key and certificate.
-    * Used when making external SSL connections.
-    *
-    * @return
-    */
-   public KeyStore getKeystore()
+   @Override
+   public int hashCode()
    {
-      return keystore;
+      int result = name.hashCode();
+      result = 31 * result + (surrogate != null ? surrogate.hashCode() : 0);
+      return result;
    }
 
-   /**
-    * Truststore to use if this service makes external SSL connections
-    *
-    * @return
-    */
-   public KeyStore getTruststore()
+   @Override
+   public String toString()
    {
-      return truststore;
+      return name;
    }
 }

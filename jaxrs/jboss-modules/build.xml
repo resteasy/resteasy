@@ -88,8 +88,8 @@
 
         <module-def name="org.jboss.resteasy.resteasy-jaxrs">
             <maven-resource group="org.jboss.resteasy" artifact="async-http-servlet-3.0"/>
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-jaxrs" jandex="true"/>
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-client" jandex="true"/>
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-jaxrs"/>
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-client"/>
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-crypto" jandex="true"/>
         </module-def>
 
@@ -107,6 +107,11 @@
 
         <module-def name="org.jboss.resteasy.resteasy-yaml-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-yaml-provider" jandex="true"/>
+        </module-def>
+
+        <module-def name="org.jboss.resteasy.skeleton-key">
+            <maven-resource group="org.jboss.resteasy" artifact="skeleton-key-as7"/>
+            <maven-resource group="org.jboss.resteasy" artifact="skeleton-key-core"/>
         </module-def>
 
         <zip destfile="${output.dir}/resteasy-jboss-modules-${project.version}.zip">
