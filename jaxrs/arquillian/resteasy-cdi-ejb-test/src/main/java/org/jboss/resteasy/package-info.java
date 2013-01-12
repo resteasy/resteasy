@@ -83,6 +83,14 @@
  *          and then removed) is tested.
  *       C. Issue: https://community.jboss.org/thread/217515
  *        
+ *        
+ * Note. These tests run in a version of AS7 with Resteasy 3.0-beta-2, with two modifications:
+ * 
+ *       1. Weld 1.2.0-SNAPSHOT with a fix for WELD-1174.
+ *       2. resteasy-jaxrs 3.0-alpha-1-SNAPSHOT with some modifications to the Bean Validation facility..
+ *       
+ * This version of AS7 is downloaded by maven from https://repository.jboss.org/nexus, where it is
+ * identified as org.jboss.resteasy.test:as7-dist-cdi-ejb-7.1.1.Final:1.0:jar.
  */
 package org.jboss.resteasy;
 
