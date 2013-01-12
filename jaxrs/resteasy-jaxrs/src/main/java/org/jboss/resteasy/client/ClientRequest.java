@@ -40,11 +40,12 @@ import static org.jboss.resteasy.util.HttpHeaderNames.ACCEPT;
  * After an execution of a request, the internal state remains the same.  You can invoke the request again.
  * You can clear the request with the clear() method.
  *
+ * @deprecated
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-
+@Deprecated
 @SuppressWarnings("unchecked")
 public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cloneable
 {

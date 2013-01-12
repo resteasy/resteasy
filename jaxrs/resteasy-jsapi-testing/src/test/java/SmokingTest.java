@@ -30,6 +30,11 @@ public class SmokingTest {
         selenium.click("css=input[type=\"button\"]");
         selenium.click("//input[@value='Test Form Param']");
         selenium.click("//input[@value='Test Form Param2']");
+        selenium.click("//input[@value='Test Form']");
+        selenium.click("//input[@value='Test Form2']");
+        selenium.click("//input[@value='Test Form3']");
+        selenium.click("//input[@value='Test Prefix Form']");
+
         selenium.click("//input[@value='Test Cookie Param']");
         selenium.click("//input[@value='Test Matrix Param']");
         selenium.click("//input[@value='Test Header Param']");
@@ -39,11 +44,18 @@ public class SmokingTest {
         assertTrue(selenium.isTextPresent("0"));
         assertTrue(selenium.isTextPresent("exact:a::b::c::"));
         assertTrue(selenium.isTextPresent("exact:xyz"));
+        assertTrue(selenium.isTextPresent(".-_~=&.-_~=&.-_~=&"));
+        assertTrue(selenium.isTextPresent("2B=_2A-&114"));
+        assertTrue(selenium.isTextPresent("CBA"));
+        assertTrue(selenium.isTextPresent("11111111"));
+
+
         assertTrue(selenium.isTextPresent("Weinan"));
         assertTrue(selenium.isTextPresent("exact:g::h::i::"));
         assertTrue(selenium.isTextPresent("/resteasy-jsapi-testing/"));
         assertTrue(selenium.isTextPresent("RESTEASY-731-false"));
         assertTrue(selenium.isTextPresent("RESTEASY-731-0"));
+
 
         // Put this at bottom because it will cause weird problem in Selenium.
         selenium.click("//input[@value='Test Query Param']");
@@ -62,6 +74,13 @@ public class SmokingTest {
         assertTrue(selenium.isTextPresent("200"));
         selenium.click("css=input[type=\"button\"]");
         assertTrue(selenium.isTextPresent("304"));
+
+        // RESTEASY-789
+        selenium.open("/resteasy-jsapi-testing/resteasy789.jsp");
+        selenium.click("//input[@value='Test Add']");
+        selenium.click("//input[@value='Test Minus']");
+        assertTrue(selenium.isTextPresent("2"));
+        assertTrue(selenium.isTextPresent("0"));
 
     }
 

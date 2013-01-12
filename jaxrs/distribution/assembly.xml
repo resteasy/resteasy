@@ -89,6 +89,15 @@
             </excludes>
         </fileSet>
         <fileSet>
+            <directory>../examples/simple</directory>
+            <outputDirectory>examples/jaxrs-2.0</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
             <directory>../examples/async-job-service</directory>
             <outputDirectory>examples/async-job-service</outputDirectory>
             <excludes>
@@ -153,6 +162,7 @@
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <includes>
                 <include>org.jboss.resteasy:resteasy-jaxrs</include>
+                <include>org.jboss.resteasy:resteasy-client</include>
                 <include>org.jboss.resteasy:resteasy-jaxb-provider</include>
                 <include>org.jboss.resteasy:resteasy-jettison-provider</include>
                 <include>org.jboss.resteasy:resteasy-fastinfoset-provider</include>
@@ -162,9 +172,7 @@
                 <include>org.jboss.resteasy:resteasy-yaml-provider</include>
                 <include>org.jboss.resteasy:resteasy-spring</include>
                 <include>org.jboss.resteasy:resteasy-guice</include>
-                <include>org.jboss.resteasy:async-http-jbossweb</include>
                 <include>org.jboss.resteasy:async-http-servlet-3.0</include>
-                <include>org.jboss.resteasy:async-http-tomcat6</include>
                 <include>org.jboss.resteasy:resteasy-cache-core</include>
                 <include>org.jboss.resteasy:resteasy-oauth</include>
                 <include>org.jboss.resteasy:resteasy-cdi</include>

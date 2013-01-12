@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<infinispan
+        xmlns="urn:infinispan:config:5.0">
+    <global />
+    <default />
+    <namedCache name="skeleton-key">
+        <eviction maxEntries="200" strategy="LIRS"/>
+        <loaders shared="false" passivation="false" preload="true">
+            <loader
+                    class="org.infinispan.loaders.file.FileCacheStore"
+                    fetchPersistentState="true" ignoreModifications="false"
+                    purgeOnStartup="false">
+                <properties>
+                    <property name="location" value="${jboss.server.data.dir}" />
+                </properties>
+            </loader>
+        </loaders>
+    </namedCache>
+</infinispan>

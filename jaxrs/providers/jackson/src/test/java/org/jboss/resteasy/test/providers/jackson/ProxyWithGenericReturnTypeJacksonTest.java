@@ -165,6 +165,7 @@ public class ProxyWithGenericReturnTypeJacksonTest
         System.out.println("Received response: " + response.getEntity(String.class));
         Assert.assertEquals(200, response.getStatus());
         Assert.assertTrue("Type property is missing.", response.getEntity(String.class).contains("type"));
+       response.releaseConnection();
 
         request = new ClientRequest("http://localhost:8081/test/list/");
         System.out.println("Sending request");
@@ -172,5 +173,6 @@ public class ProxyWithGenericReturnTypeJacksonTest
         System.out.println("Received response: " + response.getEntity(String.class));
         Assert.assertEquals(200, response.getStatus());
         Assert.assertTrue("Type property is missing.", response.getEntity(String.class).contains("type"));
-    }   
+       response.releaseConnection();
+    }
 }

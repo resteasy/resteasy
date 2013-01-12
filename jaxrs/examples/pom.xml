@@ -2,7 +2,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0-alpha-1-SNAPSHOT</version>
+        <version>3.0-beta-2</version>
     </parent>
     <name>Resteasy Examples</name>
     <description/>
@@ -37,5 +37,7 @@
         <module>examples-jsapi</module>
         <module>smime</module>
         <module>digital-signatures</module>
+        <module>jaxrs-2.0/simple-client</module>
+        <module>jaxrs-2.0/server-async-http</module>
     </modules>
 </project>

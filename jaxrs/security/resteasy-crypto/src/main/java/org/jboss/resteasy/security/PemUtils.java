@@ -29,6 +29,14 @@ public class PemUtils
       return DerUtils.decodeCertificate(bis);
    }
 
+   public static X509Certificate decodeCertificate(String cert) throws Exception
+   {
+      byte[] der = pemToDer(cert);
+      ByteArrayInputStream bis = new ByteArrayInputStream(der);
+      return DerUtils.decodeCertificate(bis);
+   }
+
+
    /**
     * Extract a public key from a PEM string
     *
@@ -88,11 +96,12 @@ public class PemUtils
       return Base64.decode(pem);
    }
 
-   private static String removeBeginEnd(String pem)
+   public static String removeBeginEnd(String pem)
    {
       pem = pem.replaceAll("-----BEGIN (.*)-----", "");
       pem = pem.replaceAll("-----END (.*)----", "");
-      pem = pem.replaceAll("\r\n", "\n");
+      pem = pem.replaceAll("\r\n", "");
+      pem = pem.replaceAll("\n", "");
       return pem.trim();
    }
 

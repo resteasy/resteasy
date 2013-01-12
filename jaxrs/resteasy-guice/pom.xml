@@ -6,7 +6,7 @@
     <parent>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <groupId>org.jboss.resteasy</groupId>
-        <version>3.0-alpha-1-SNAPSHOT</version>
+        <version>3.0-beta-2</version>
     </parent>
     <artifactId>resteasy-guice</artifactId>
     <name>Resteasy Guice</name>
@@ -14,9 +14,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.google.code.guice</groupId>
+            <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>2.0</version>
+            <version>3.0</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>

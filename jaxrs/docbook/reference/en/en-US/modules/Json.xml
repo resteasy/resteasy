@@ -21,7 +21,7 @@
     <dependency>
        <groupId>org.jboss.resteasy</groupId>
        <artifactId>resteasy-jackson-provider</artifactId>
-       <version>3.0-alpha-1-SNAPSHOT</version>
+       <version>3.0-beta-2</version>
     </dependency>
  ]]></programlisting>
     <para>The first extra piece that Resteasy added to the integration was
@@ -93,6 +93,26 @@ public class MyService {
             classpath, you may trigger the Jettision JAXB marshalling code. To turn off the JAXB json marshaller
             use the @org.jboss.resteasy.annotations.providers.jaxb.IgnoreMediaTypes("application/*+json") on your
             classes.
+        </para>
+    </sect1>
+    <sect1 id="JSONP_Support">
+        <title>JSONP Support</title>
+        <para>
+            If you're use Jackson <ulink url="http://en.wikipedia.org/wiki/JSONP">JSONP</ulink> is supported right away.
+            If the media type of the response is json and a callback query parameter is given, the response will be a javascript snippet with
+            a method call of the method defined by the callback parameter.
+            For example:
+<programlisting>
+GET /resources/stuff?callback=processStuffResponse
+</programlisting>
+            will produce this response:
+<programlisting>
+processStuffResponse(&lt;nomal JSON body&gt;)
+</programlisting>
+            This supports the default behavior of <ulink url="http://api.jquery.com/jQuery.ajax/">jQuery</ulink>.
+        </para>
+        <para>
+            You can change the name of the callback parameter by setting the callbackQueryParameter property.
         </para>
     </sect1>
 </chapter>

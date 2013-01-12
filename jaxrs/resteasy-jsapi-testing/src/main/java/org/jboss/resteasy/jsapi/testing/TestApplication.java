@@ -1,5 +1,8 @@
 package org.jboss.resteasy.jsapi.testing;
 
+import org.jboss.resteasy.jsapi.testing.AddImpl;
+import org.jboss.resteasy.jsapi.testing.MinusImpl;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,6 +15,8 @@ public class TestApplication extends javax.ws.rs.core.Application {
 	public TestApplication() {
 		singletons.add(new SmokeTestResource());
         singletons.add(new CachedResource());
+        singletons.add(new AddImpl());
+        singletons.add(new MinusImpl());
 	}
 
 	@Override
@@ -24,5 +29,4 @@ public class TestApplication extends javax.ws.rs.core.Application {
 	public Set<Object> getSingletons() {
 		return singletons;
 	}
-
 }

@@ -30,7 +30,8 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0-alpha-1-SNAPSHOT</version>
+        <version>3.0-beta-2</version>
+        <relativePath>../../../pom.xml</relativePath>
     </parent>
 
     <artifactId>skeleton-key-as7-modules</artifactId>
@@ -40,12 +41,17 @@
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-skeleton-key-core</artifactId>
+            <artifactId>jose-jwt</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-skeleton-key-as7</artifactId>
+            <artifactId>skeleton-key-as7</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>skeleton-key-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -6,15 +6,7 @@ import org.jboss.resteasy.jsapi.MethodParamMetaData.MethodParamType;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.util.FindAnnotation;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -22,6 +14,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class MethodMetaData
 {
@@ -46,7 +39,7 @@ public class MethodMetaData
 		this.registry = serviceRegistry;
 		this.resource = resource;
 		this.method = resource.getMethod();
-		this.klass = method.getDeclaringClass();
+        this.klass = resource.getResourceClass();
 		Path methodPath = method.getAnnotation(Path.class);
 		Path klassPath = klass.getAnnotation(Path.class);
 		Produces produces = method.getAnnotation(Produces.class);
@@ -93,6 +86,7 @@ public class MethodMetaData
 		PathParam uriParam;
 		CookieParam cookie;
 		FormParam formParam;
+        Form form;
 
 		// boolean isEncoded = FindAnnotation.findAnnotation(annotations,
 		// Encoded.class) != null;
@@ -127,10 +121,14 @@ public class MethodMetaData
 			addParameter(type, annotations, MethodParamType.FORM_PARAMETER,
 					formParam.value());
 			this.wantsForm = true;
-		} else if (FindAnnotation.findAnnotation(annotations, Form.class) != null)
+		} else if ((form = FindAnnotation.findAnnotation(annotations, Form.class)) != null)
 		{
-			walkForm(type);
-		} else if ((FindAnnotation.findAnnotation(annotations, Context.class)) != null)
+            if (type == Map.class || type == List.class) {
+                addParameter(type, annotations, MethodParamType.FORM, form.prefix());
+                this.wantsForm = true;
+            } else
+                walkForm(type);
+        } else if ((FindAnnotation.findAnnotation(annotations, Context.class)) != null)
 		{
 			// righfully ignore
 		} else if (useBody)
@@ -153,8 +151,9 @@ public class MethodMetaData
 			processMetaData(method.getParameterTypes()[0],
 					method.getAnnotations(), false);
 		}
-		if (type.getSuperclass() != null)
+		if (type.getSuperclass() != null) {
 			walkForm(type.getSuperclass());
+        }
 	}
 
 	private void addParameter(Class<?> type, Annotation[] annotations,

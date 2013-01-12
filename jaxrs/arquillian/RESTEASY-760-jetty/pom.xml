@@ -4,8 +4,8 @@
   <parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>2.3.5.Final</version>
-    <!--<relativePath>../../pom.xml</relativePath>-->
+    <version>3.0-beta-2</version>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
   <artifactId>RESTEASY-760-jetty</artifactId>
   <packaging>jar</packaging>
@@ -15,7 +15,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <!--jetty.version>7.0.2.v20100331</jetty.version-->
       <jetty.version>8.1.1.v20120215</jetty.version>
-      <resteasy.version>2.3.5.Final</resteasy.version>
+      <resteasy.version>3.0-beta-2</resteasy.version>
   </properties>
   
   <dependencyManagement>
@@ -81,13 +81,12 @@
       <artifactId>arquillian-junit-container</artifactId>
       <scope>test</scope>
     </dependency>
+      <!--
     <dependency>
       <groupId>org.slf4j</groupId>
-      <!--<artifactId>slf4j-simple</artifactId>-->
         <artifactId>slf4j-api</artifactId>
       <version>1.6.4</version>
-      <!--<scope>test</scope>-->
-    </dependency>
+    </dependency>   -->
       <dependency>
           <groupId>javax.servlet</groupId>
           <artifactId>javax.servlet-api</artifactId>

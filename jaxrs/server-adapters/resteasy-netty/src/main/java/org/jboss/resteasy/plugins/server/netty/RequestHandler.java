@@ -19,9 +19,9 @@ import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * {@link SimpleChannelUpstreamHandler} which handles the requests and dispatch them.
- * 
+ *
  * This class is {@link Sharable}.
- * 
+ *
  * @author <a href="http://www.jboss.org/netty/">The Netty Project</a>
  * @author Andy Taylor (andy.taylor@jboss.org)
  * @author <a href="http://gleamynode.net/">Trustin Lee</a>
@@ -68,9 +68,12 @@ public class RequestHandler extends SimpleChannelUpstreamHandler
              logger.error("Unexpected", ex);
              return;
           }
-          
+
           // Write the response.
           ChannelFuture future = e.getChannel().write(response);
+
+          //NETTY-391
+          NettyJaxrsServer.allChannels.add(e.getChannel());
 
           // Close the non-keep-alive connection after the write operation is done.
           if (!request.isKeepAlive())
@@ -78,7 +81,7 @@ public class RequestHandler extends SimpleChannelUpstreamHandler
              future.addListener(ChannelFutureListener.CLOSE);
           }
       }
-      
+
    }
 
    private void send100Continue(MessageEvent e)
@@ -92,12 +95,12 @@ public class RequestHandler extends SimpleChannelUpstreamHandler
            throws Exception
    {
       // handle the case of to big requests.
-      if (e.getCause() instanceof TooLongFrameException) 
+      if (e.getCause() instanceof TooLongFrameException)
       {
           DefaultHttpResponse response = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE);
           e.getChannel().write(response).addListener(ChannelFutureListener.CLOSE);
-      } 
-      else 
+      }
+      else
       {
           e.getCause().printStackTrace();
           e.getChannel().close();

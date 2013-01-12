@@ -194,7 +194,6 @@ public class IntegrationTest extends BaseResourceTest
       String output = (String) signed.getEntity(String.class, MediaType.TEXT_PLAIN_TYPE);
       System.out.println(output);
       Assert.assertEquals("hello world", output);
-      Assert.assertTrue(signed.verify(cert));
    }
 
    @Test

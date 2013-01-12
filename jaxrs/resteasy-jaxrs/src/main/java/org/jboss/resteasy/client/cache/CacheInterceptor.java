@@ -26,9 +26,11 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * @deprecated
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Deprecated
 @SuppressWarnings("unchecked")
 public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByMethod
 {

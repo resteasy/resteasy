@@ -16,9 +16,11 @@ import java.net.URI;
  * Helper class that allows you to pre-initialize an Executor, preset some ClientRequest attributes (like follow redirects)
  * and define some client-side interceptors you want applied
  *
+ * @deprecated
  * @author Solomon Duskis
  * @version $Revision: 1 $
  */
+@Deprecated
 public class ClientRequestFactory
 {
    private ResteasyProviderFactory providerFactory;

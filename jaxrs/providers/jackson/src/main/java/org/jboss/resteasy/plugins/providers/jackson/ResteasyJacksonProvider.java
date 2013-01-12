@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.jackson;
 
+import org.codehaus.jackson.jaxrs.Annotations;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.jboss.resteasy.annotations.providers.NoJackson;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -22,6 +23,15 @@ import java.lang.reflect.Type;
 @Produces({"application/*+json", "text/json"})
 public class ResteasyJacksonProvider extends JacksonJsonProvider
 {
+/*
+    // todo figure out a nice way to support jackson + jaxb
+    public ResteasyJacksonProvider() {
+        super();
+        Annotations[] ANNOTATIONS = {Annotations.JACKSON, Annotations.JAXB};
+        _mapperConfig.setAnnotationsToUse(ANNOTATIONS);
+    }
+*/
+
    @Override
    public boolean isReadable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType)
    {

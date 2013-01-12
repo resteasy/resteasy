@@ -59,8 +59,8 @@ public class JSAPIServlet extends HttpServlet
 			logger.debug("Serving " + pathInfo);
 			logger.debug("Query " + req.getQueryString());
 		}
-		PrintWriter printWriter = resp.getWriter();
-		this.apiWriter.writeJavaScript(uri, printWriter, service);
+
+        this.apiWriter.writeJavaScript(uri, req, resp, service);
 	}
 
 	public void scanResources(){

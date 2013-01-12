@@ -1,15 +1,9 @@
 package org.jboss.resteasy.jsapi.testing;
 
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import org.jboss.resteasy.annotations.Form;
+import org.jboss.resteasy.jsapi.testing.form.*;
+
+import javax.ws.rs.*;
 
 /**
  * @author Weinan Li
@@ -80,5 +74,48 @@ public class SmokeTestResource {
     @Path("/RESTEASY-731/zero")
     public String testRESTEasy731Zero(@FormParam("zero") int zero) {
         return ("RESTEASY-731-" + String.valueOf(zero));
+    }
+
+    @POST
+    @Path("/RESTEASY-805/form1")
+    public String testRESTEasy805(@Form MyForm myForm) {
+        StringBuilder ret = new StringBuilder();
+        for (String key : myForm.getMyMap().keySet()) {
+            ret.append(myForm.getMyMap().get(key).getBar());
+        }
+        return ret.toString();
+    }
+
+    @POST
+    @Path("/RESTEASY-805/form2")
+    public String testRESTEasy805Case2(@Form MyForm2 myForm2) {
+        return myForm2.getHeader() + myForm2.getStuff() + myForm2.getNumber();
+    }
+
+    @POST
+    @Path("/RESTEASY-805/form3")
+    public String testRESTEasy805Case3(@Form MyForm3 myForm3) {
+        StringBuilder ret = new StringBuilder();
+        for (Foo foo : myForm3.getFoos()) {
+            ret.append(foo.getBar());
+        }
+        return ret.toString();
+    }
+
+    @POST
+    @Path("/postPrefixForm")
+    public String postPrefixForm(@Form Person person) {
+        StringBuilder ret = new StringBuilder();
+        for (TelephoneNumber number : person.getTelephoneNumbers()) {
+            ret.append(number.getNumber()).append(number.getCountryCode());
+        }
+
+        for (String key : person.getAddresses().keySet()) {
+            Address address = person.getAddresses().get(key);
+            ret.append(address.getHouseNumber()).append(address.getStreet());
+        }
+        return ret.toString();
+
+
     }
 }

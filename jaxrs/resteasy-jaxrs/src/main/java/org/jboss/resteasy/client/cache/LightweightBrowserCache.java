@@ -15,9 +15,11 @@ import java.util.concurrent.atomic.AtomicLong;
  * With high concurrent access, because this is not a sophisticated cache,
  * sometimes a cache entry may be lost. It is consistent though.
  *
+ * @deprecated
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Deprecated
 public class LightweightBrowserCache implements BrowserCache
 {
 

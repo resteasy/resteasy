@@ -28,25 +28,16 @@
 
 
     <target name="modules">
-        <echo message="******** ${project.version} ********"/>
-        <!--
-          ~ Complete list of modules to assemble.
-          ~
-          ~ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-          ~ +++++++   KEEP THIS LIST ALPHABETICAL BY MODULE NAME!   +++++++
-          ~ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-          -->
-
-        <module-def name="org.jboss.resteasy.resteasy-skeleton-key">
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-skeleton-key-core"/>
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-skeleton-key-as7"/>
-        </module-def>
-
         <module-def name="org.jboss.security.web.login-module-authenticator">
             <maven-resource group="org.jboss.security.web" artifact="login-module-authenticator"/>
         </module-def>
+        <module-def name="org.jboss.resteasy.skeleton-key">
+            <maven-resource group="org.jboss.resteasy" artifact="skeleton-key-as7"/>
+            <maven-resource group="org.jboss.resteasy" artifact="skeleton-key-core"/>
+        </module-def>
 
-        <zip destfile="${output.dir}/resteasy-skeleton-key-a7-modules-${project.version}.zip">
+
+        <zip destfile="${output.dir}/skeleton-key-a7-modules-${project.version}.zip">
             <zipfileset dir="${output.dir}/modules"/>
         </zip>
     </target>

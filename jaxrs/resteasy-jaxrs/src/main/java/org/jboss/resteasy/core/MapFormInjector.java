@@ -22,7 +22,7 @@ public class MapFormInjector extends AbstractCollectionFormInjector<Map>
     */
    public MapFormInjector(Class collectionType, Class keyType, Class valueType, String prefix, ResteasyProviderFactory factory)
    {
-      super(collectionType, valueType, prefix, Pattern.compile("^" + prefix + "\\[([a-zA-Z_]+)\\]"), factory);
+      super(collectionType, valueType, prefix, Pattern.compile("^" + prefix + "\\[([0-9a-zA-Z_\\-\\.~]+)\\]"), factory);
       keyInjector = new StringParameterInjector(keyType, keyType, null, Form.class, null, null, new Annotation[0], factory);
    }
 
