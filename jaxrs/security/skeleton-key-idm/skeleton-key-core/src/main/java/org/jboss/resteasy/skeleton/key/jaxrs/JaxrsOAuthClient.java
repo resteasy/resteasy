@@ -60,6 +60,6 @@ public class JaxrsOAuthClient extends AbstractOAuthClient
       }
       String code = uriInfo.getQueryParameters().getFirst("code");
       if (code == null) throw new BadRequestException(new Exception("code parameter was null"));
-      return resolveBearerToken(code);
+      return resolveBearerToken(uriInfo.getRequestUri().toString(), code);
    }
 }

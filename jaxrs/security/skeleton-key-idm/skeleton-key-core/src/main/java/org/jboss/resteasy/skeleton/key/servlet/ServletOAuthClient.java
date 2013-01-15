@@ -105,7 +105,7 @@ public class ServletOAuthClient extends AbstractOAuthClient
       }
       String code = request.getParameter("code");
       if (code == null) throw new BadRequestException(new Exception("code parameter was null"));
-      return resolveBearerToken(code);
+      return resolveBearerToken(request.getRequestURL().toString(), code);
    }
 
 

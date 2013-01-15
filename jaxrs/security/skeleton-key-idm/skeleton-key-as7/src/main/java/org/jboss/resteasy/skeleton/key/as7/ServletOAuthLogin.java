@@ -6,12 +6,14 @@ import org.jboss.resteasy.skeleton.key.RealmConfiguration;
 import org.jboss.resteasy.skeleton.key.VerificationException;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
+import org.jboss.resteasy.util.BasicAuthHelper;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -261,15 +263,15 @@ public class ServletOAuthLogin
 
       if (!checkStateCookie()) return false;
 
-      MultivaluedHashMap<String, String> creds = new MultivaluedHashMap<String, String>();
-      creds.putAll(realmInfo.getCredentials().asMap());
-      Form form = new Form(creds);
+      String client_id = realmInfo.getClientId();
+      String password = realmInfo.getCredentials().asMap().getFirst("password");
+      String authHeader = BasicAuthHelper.createHeader(client_id, password);
+      Form form = new Form();
       form.param("grant_type", "authorization_code")
               .param("code", code)
-              .param("redirect_uri", getRequestUrl())
-              .param("client_id", realmInfo.getClientId());
+              .param("redirect_uri", getRequestUrl());
 
-      Response res = realmInfo.getCodeUrl().request().post(Entity.form(form));
+      Response res = realmInfo.getCodeUrl().request().header(HttpHeaders.AUTHORIZATION, authHeader).post(Entity.form(form));
       AccessTokenResponse tokenResponse;
       try
       {

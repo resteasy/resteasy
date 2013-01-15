@@ -3,12 +3,14 @@ package org.jboss.resteasy.skeleton.key;
 import org.jboss.resteasy.client.jaxrs.AbstractClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
+import org.jboss.resteasy.util.BasicAuthHelper;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.security.KeyStore;
 import java.util.UUID;
@@ -120,20 +122,20 @@ public class AbstractOAuthClient
       this.client = client;
    }
 
-   public String resolveBearerToken(String code)
+   public String resolveBearerToken(String redirectUri, String code)
    {
+      String authHeader = BasicAuthHelper.createHeader(clientId, password);
       Form codeForm = new Form()
               .param("grant_type", "authorization_code")
               .param("code", code)
-              .param("client_id", clientId)
-              .param("password", password);
-      Response res = client.target(codeUrl).request().post(Entity.form(codeForm));
+              .param("redirect_uri", redirectUri);
+      ;
+      Response res = client.target(codeUrl).request().header(HttpHeaders.AUTHORIZATION, authHeader).post(Entity.form(codeForm));
       try
       {
          if (res.getStatus() == 400)
          {
             throw new BadRequestException();
-
          }
          else if (res.getStatus() != 200)
          {

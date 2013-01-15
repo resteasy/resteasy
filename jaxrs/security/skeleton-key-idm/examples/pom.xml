@@ -20,5 +20,6 @@
         <module>sso/customer-app</module>
         <module>sso/product-app</module>
         <module>sso/third-party</module>
+        <module>sso/client-grant</module>
     </modules>
 </project>
