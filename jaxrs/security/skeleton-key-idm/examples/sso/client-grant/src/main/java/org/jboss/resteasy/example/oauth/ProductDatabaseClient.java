@@ -1,8 +1,10 @@
 package org.jboss.resteasy.example.oauth;
 
 import org.jboss.resteasy.client.jaxrs.AbstractClientBuilder;
+import org.jboss.resteasy.client.jaxrs.BasicAuthentication;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
 import org.jboss.resteasy.skeleton.key.SkeletonKeySession;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
@@ -32,13 +34,13 @@ public class ProductDatabaseClient
                  .disableTrustManager() // shouldn't really do this, but I'm being lazy
                  .build();
 
-      String authheader = BasicAuthHelper.createHeader("bburke@redhat.com", "password");
       Form form = new Form().param("grant_type", "client_credentials");
-      AccessTokenResponse res = client.target("https://localhost:8443/auth-server/j_oauth_token_grant").request()
-              .header(HttpHeaders.AUTHORIZATION, authheader)
+      ResteasyWebTarget target = client.target("https://localhost:8443/auth-server/j_oauth_token_grant");
+      // this is resteasy specific, check spec to make sure it hasn't added a way to do basic auth
+      target.configuration().register(new BasicAuthentication("bburke@redhat.com", "password"));
+      AccessTokenResponse res = target
+              .request()
               .post(Entity.form(form), AccessTokenResponse.class);
-
-
       try
       {
          Response response = client.target("https://localhost:8443/database/products").request()
