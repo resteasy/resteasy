@@ -83,6 +83,23 @@ public class ServletOAuthClient extends AbstractOAuthClient
       return null;
    }
 
+   protected String getCode(HttpServletRequest request)
+   {
+      String query = request.getQueryString();
+      if (query == null) return null;
+      String[] params = query.split("&");
+      for (String param : params)
+      {
+         int eq = param.indexOf('=');
+         if (eq == -1) continue;
+         String name = param.substring(0, eq);
+         if (!name.equals("code")) continue;
+         return param.substring(eq + 1);
+      }
+      return null;
+   }
+
+
    /**
     * Obtain the code parameter from the url after being redirected back from the auth-server.  Then
     * do an authenticated request back to the auth-server to turn the access code into an access token.
@@ -94,18 +111,20 @@ public class ServletOAuthClient extends AbstractOAuthClient
     */
    public String getBearerToken(HttpServletRequest request) throws BadRequestException, InternalServerErrorException
    {
+      String redirectUri = request.getRequestURL().append("?").append(request.getQueryString()).toString();
       String stateCookie = getCookieValue(stateCookieName, request);
-      if (stateCookie == null) throw new BadRequestException(new Exception("state cookie not set"));;
-
+      if (stateCookie == null) throw new BadRequestException(new Exception("state cookie not set"));
+      // we can call get parameter as this should be a redirect
       String state = request.getParameter("state");
+      String code = request.getParameter("code");
+
       if (state == null) throw new BadRequestException(new Exception("state parameter was null"));
       if (!state.equals(stateCookie))
       {
          throw new BadRequestException(new Exception("state parameter invalid"));
       }
-      String code = request.getParameter("code");
       if (code == null) throw new BadRequestException(new Exception("code parameter was null"));
-      return resolveBearerToken(request.getRequestURL().toString(), code);
+      return resolveBearerToken(redirectUri, code);
    }
 
 

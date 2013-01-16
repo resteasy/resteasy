@@ -12,6 +12,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import java.security.KeyStore;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
@@ -124,12 +125,12 @@ public class AbstractOAuthClient
 
    public String resolveBearerToken(String redirectUri, String code)
    {
+      redirectUri = stripOauthParametersFromRedirect(redirectUri);
       String authHeader = BasicAuthHelper.createHeader(clientId, password);
       Form codeForm = new Form()
               .param("grant_type", "authorization_code")
               .param("code", code)
               .param("redirect_uri", redirectUri);
-      ;
       Response res = client.target(codeUrl).request().header(HttpHeaders.AUTHORIZATION, authHeader).post(Entity.form(codeForm));
       try
       {
@@ -149,4 +150,14 @@ public class AbstractOAuthClient
          res.close();
       }
    }
+
+   protected String stripOauthParametersFromRedirect(String uri)
+   {
+      System.out.println("******************** redirect_uri: " + uri);
+      UriBuilder builder = UriBuilder.fromUri(uri)
+              .replaceQueryParam("code", null)
+              .replaceQueryParam("state", null);
+      return builder.build().toString();
+   }
+
 }

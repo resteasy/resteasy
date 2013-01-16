@@ -1,9 +1,14 @@
 package org.jboss.resteasy.skeleton.key.as7;
 
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.deploy.LoginConfig;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.skeleton.key.ResourceMetadata;
+import org.jboss.resteasy.skeleton.key.as7.config.ManagedResourceConfig;
+import org.jboss.resteasy.skeleton.key.as7.config.ManagedResourceConfigLoader;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.security.auth.login.LoginException;
@@ -18,12 +23,23 @@ import java.io.IOException;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class BearerTokenAuthenticatorValve extends AbstractRemoteOAuthAuthenticatorValve
+public class BearerTokenAuthenticatorValve extends AuthenticatorBase
 {
    private static final Logger log = Logger.getLogger(BearerTokenAuthenticatorValve.class);
-
+   protected ManagedResourceConfig remoteSkeletonKeyConfig;
+   protected ResourceMetadata resourceMetadata;
 
    @Override
+   public void start() throws LifecycleException
+   {
+      super.start();
+      ManagedResourceConfigLoader managedResourceConfigLoader = new ManagedResourceConfigLoader(context);
+      resourceMetadata = managedResourceConfigLoader.getResourceMetadata();
+      remoteSkeletonKeyConfig = managedResourceConfigLoader.getRemoteSkeletonKeyConfig();
+   }
+
+
+      @Override
    public void invoke(Request request, Response response) throws IOException, ServletException
    {
       try
