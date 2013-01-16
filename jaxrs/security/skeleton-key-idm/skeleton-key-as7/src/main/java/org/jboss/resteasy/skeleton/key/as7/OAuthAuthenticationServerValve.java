@@ -90,6 +90,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       protected SkeletonKeyToken token;
       protected String client;
       protected boolean sso;
+      protected String redirect;
 
       public boolean isExpired()
       {
@@ -139,6 +140,16 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       public void setSso(boolean sso)
       {
          this.sso = sso;
+      }
+
+      public String getRedirect()
+      {
+         return redirect;
+      }
+
+      public void setRedirect(String redirect)
+      {
+         this.redirect = redirect;
       }
    }
 
@@ -717,6 +728,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       }
       String key = input.readContent(String.class);
       AccessCode accessCode = accessCodeMap.remove(key);
+      String redirect = request.getParameter("redirect_uri");
 
       GenericPrincipal gp = basicAuth(request, response);
       if (gp == null)
@@ -757,6 +769,18 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       if (!gp.getName().equals(accessCode.getClient()))
       {
          log.error("not equal client");
+         Map<String, String> res = new HashMap<String, String>();
+         res.put("error", "invalid_grant");
+         res.put("error_description", "Auth error");
+         response.setStatus(400);
+         response.setContentType("application/json");
+         mapWriter.writeValue(response.getOutputStream(), res);
+         response.getOutputStream().flush();
+         return;
+      }
+      if (!accessCode.getRedirect().equals(redirect))
+      {
+         log.error("not equal redirect");
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
          res.put("error_description", "Auth error");
@@ -942,6 +966,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       code.setToken(token);
       code.setClient(client_id);
       code.setSso(sso);
+      code.setRedirect(redirect_uri);
       int expiration = skeletonKeyConfig.getExpiration() == 0 ? 300 : skeletonKeyConfig.getExpiration();
       code.setExpiration((System.currentTimeMillis() / 1000) + expiration);
       accessCodeMap.put(code.getId(), code);
