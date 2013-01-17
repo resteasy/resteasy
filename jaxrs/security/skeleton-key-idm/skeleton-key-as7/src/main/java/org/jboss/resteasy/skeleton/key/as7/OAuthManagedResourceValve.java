@@ -1,9 +1,15 @@
 package org.jboss.resteasy.skeleton.key.as7;
 
+import org.apache.catalina.Lifecycle;
+import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Session;
+import org.apache.catalina.authenticator.Constants;
+import org.apache.catalina.authenticator.FormAuthenticator;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.realm.GenericPrincipal;
 import org.jboss.logging.Logger;
@@ -11,11 +17,12 @@ import org.jboss.resteasy.client.jaxrs.AbstractClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.skeleton.key.RealmConfiguration;
+import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyPrincipal;
 import org.jboss.resteasy.skeleton.key.SkeletonKeySession;
-import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
+import org.jboss.resteasy.skeleton.key.as7.config.ManagedResourceConfig;
+import org.jboss.resteasy.skeleton.key.as7.config.ManagedResourceConfigLoader;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -24,10 +31,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
-import java.security.Principal;
-import java.security.PublicKey;
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,17 +43,34 @@ import java.util.Set;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class OAuthManagedResourceValve extends AbstractRemoteOAuthAuthenticatorValve
+public class OAuthManagedResourceValve extends FormAuthenticator implements LifecycleListener
 {
    protected RealmConfiguration realmConfiguration;
    private static final Logger log = Logger.getLogger(OAuthManagedResourceValve.class);
    protected UserSessionManagement userSessionManagement = new UserSessionManagement();
+   protected ManagedResourceConfig remoteSkeletonKeyConfig;
+   protected ResourceMetadata resourceMetadata;
 
 
    @Override
    public void start() throws LifecycleException
    {
       super.start();
+      StandardContext standardContext = (StandardContext) context;
+      standardContext.addLifecycleListener(this);
+   }
+
+   @Override
+   public void lifecycleEvent(LifecycleEvent event)
+   {
+      if (event.getType() == Lifecycle.AFTER_START_EVENT) init();
+   }
+
+   protected void init()
+   {
+      ManagedResourceConfigLoader managedResourceConfigLoader = new ManagedResourceConfigLoader(context);
+      resourceMetadata = managedResourceConfigLoader.getResourceMetadata();
+      remoteSkeletonKeyConfig = managedResourceConfigLoader.getRemoteSkeletonKeyConfig();
       String client_id = remoteSkeletonKeyConfig.getClientId();
       if (client_id == null)
       {
@@ -70,14 +90,16 @@ public class OAuthManagedResourceValve extends AbstractRemoteOAuthAuthenticatorV
       realmConfiguration.setMetadata(resourceMetadata);
       realmConfiguration.setClientId(client_id);
 
-      for (Map.Entry<String, String> entry : remoteSkeletonKeyConfig.getClientCredentials().entrySet())
+      for (Map.Entry<String, String> entry : managedResourceConfigLoader.getRemoteSkeletonKeyConfig().getClientCredentials().entrySet())
       {
          realmConfiguration.getCredentials().param(entry.getKey(), entry.getValue());
       }
       int size = 10;
-      if (remoteSkeletonKeyConfig.getConnectionPoolSize() > 0) size = remoteSkeletonKeyConfig.getConnectionPoolSize();
+      if (managedResourceConfigLoader.getRemoteSkeletonKeyConfig().getConnectionPoolSize() > 0)
+         size = managedResourceConfigLoader.getRemoteSkeletonKeyConfig().getConnectionPoolSize();
       AbstractClientBuilder.HostnameVerificationPolicy policy = AbstractClientBuilder.HostnameVerificationPolicy.WILDCARD;
-      if (remoteSkeletonKeyConfig.isAllowAnyHostname()) policy = AbstractClientBuilder.HostnameVerificationPolicy.ANY;
+      if (managedResourceConfigLoader.getRemoteSkeletonKeyConfig().isAllowAnyHostname())
+         policy = AbstractClientBuilder.HostnameVerificationPolicy.ANY;
       ResteasyProviderFactory providerFactory = new ResteasyProviderFactory();
       ClassLoader old = Thread.currentThread().getContextClassLoader();
       Thread.currentThread().setContextClassLoader(OAuthManagedResourceValve.class.getClassLoader());
@@ -100,20 +122,19 @@ public class OAuthManagedResourceValve extends AbstractRemoteOAuthAuthenticatorV
       realmConfiguration.setClient(client);
       realmConfiguration.setAuthUrl(UriBuilder.fromUri(authUrl).queryParam("client_id", client_id));
       realmConfiguration.setCodeUrl(client.target(tokenUrl));
-      realmConfiguration.setSslRequired(!remoteSkeletonKeyConfig.isSslNotRequired());
    }
 
    @Override
    public void invoke(Request request, Response response) throws IOException, ServletException
    {
-      String requestURI = request.getDecodedRequestURI();
-      if (requestURI.endsWith("j_oauth_remote_logout"))
-      {
-         remoteLogout(request, response);
-         return;
-      }
       try
       {
+         String requestURI = request.getDecodedRequestURI();
+         if (requestURI.endsWith("j_oauth_remote_logout"))
+         {
+            remoteLogout(request, response);
+            return;
+         }
          super.invoke(request, response);
       }
       finally
@@ -123,12 +144,32 @@ public class OAuthManagedResourceValve extends AbstractRemoteOAuthAuthenticatorV
    }
 
    @Override
-   protected boolean authenticate(Request request, HttpServletResponse response, LoginConfig config) throws IOException
+   public boolean authenticate(Request request, HttpServletResponse response, LoginConfig config) throws IOException
    {
       try
       {
          if (bearer(false, request, response)) return true;
-         else if (checkLoggedIn(request, response)) return true;
+         else if (checkLoggedIn(request, response))
+         {
+            if (request.getSessionInternal().getNote(Constants.FORM_REQUEST_NOTE) != null)
+            {
+               if (restoreRequest(request, request.getSessionInternal()))
+               {
+                  log.info("restoreRequest");
+                  return (true);
+               }
+               else
+               {
+                  log.info("Restore of original request failed");
+                  response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                  return (false);
+               }
+            }
+            else
+            {
+               return true;
+            }
+         }
 
          // initiate or continue oauth2 protocol
          oauth(request, response);
@@ -194,7 +235,7 @@ public class OAuthManagedResourceValve extends AbstractRemoteOAuthAuthenticatorV
       Session session = request.getSessionInternal();
       if (session != null && !remoteSkeletonKeyConfig.isCancelPropagation())
       {
-         SkeletonKeySession skSession = (SkeletonKeySession)session.getNote(SkeletonKeySession.class.getName());
+         SkeletonKeySession skSession = (SkeletonKeySession) session.getNote(SkeletonKeySession.class.getName());
          if (skSession != null)
          {
             request.setAttribute(SkeletonKeySession.class.getName(), skSession);
@@ -208,11 +249,29 @@ public class OAuthManagedResourceValve extends AbstractRemoteOAuthAuthenticatorV
    /**
     * This method always set the HTTP response, so do not continue after invoking
     */
-   protected void oauth(Request request, HttpServletResponse response)
+   protected void oauth(Request request, HttpServletResponse response) throws IOException
    {
       ServletOAuthLogin oauth = new ServletOAuthLogin(realmConfiguration, request, response, request.getConnector().getRedirectPort());
-      if (oauth.login())
+      String code = oauth.getCode();
+      if (code == null)
       {
+         String error = oauth.getError();
+         if (error != null)
+         {
+            response.sendError(400, "OAuth " + error);
+            return;
+         }
+         else
+         {
+            saveRequest(request, request.getSessionInternal(true));
+            oauth.loginRedirect();
+         }
+         return;
+      }
+      else
+      {
+         if (!oauth.resolveCode(code)) return;
+
          SkeletonKeyToken token = oauth.getToken();
          Set<String> roles = null;
          if (resourceMetadata.getResourceName() != null)

@@ -3,10 +3,7 @@ package org.jboss.resteasy.example.oauth;
 import org.jboss.resteasy.client.jaxrs.AbstractClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
-import org.jboss.resteasy.skeleton.key.SkeletonKeySession;
 import org.jboss.resteasy.skeleton.key.servlet.ServletOAuthClient;
-import org.jboss.resteasy.spi.ResteasyUriInfo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,6 +49,21 @@ public class ProductDatabaseClient
       ResteasyClient client = new ResteasyClientBuilder()
                  .truststore(oAuthClient.getTruststore())
                  .hostnameVerification(AbstractClientBuilder.HostnameVerificationPolicy.ANY).build();
+      try
+      {
+         // invoke without the Authorization header
+         Response response = client.target("https://localhost:8443/database/products").request().get();
+         response.close();
+         if (response.getStatus() != 401)
+         {
+            response.close();
+            client.close();
+            throw new RuntimeException("Expecting an auth status code: " + response.getStatus());
+         }
+      }
+      finally
+      {
+      }
       try
       {
          Response response = client.target("https://localhost:8443/database/products").request()

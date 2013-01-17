@@ -2,25 +2,28 @@ package org.jboss.resteasy.test.skeleton.key;
 
 import junit.framework.Assert;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openssl.PEMWriter;
 import org.bouncycastle.x509.X509V1CertificateGenerator;
 import org.jboss.resteasy.jose.jws.JWSBuilder;
 import org.jboss.resteasy.jwt.JsonSerialization;
 import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
-import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
-import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
 import org.jboss.resteasy.skeleton.key.VerificationException;
+import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.security.auth.x500.X500Principal;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PublicKey;
 import java.security.Security;
 import java.security.SignatureException;
 import java.security.cert.X509Certificate;
@@ -84,6 +87,24 @@ public class RSAVerifierTest
       token.principal("CN=Client")
               .audience("domain")
               .addAccess("service").addRole("admin");
+   }
+
+   @Test
+   public void testPemWriter() throws Exception
+   {
+      PublicKey realmPublicKey = idpPair.getPublic();
+      StringWriter sw = new StringWriter();
+      PEMWriter writer = new PEMWriter(sw);
+      try
+      {
+         writer.writeObject(realmPublicKey);
+         writer.flush();
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+      System.out.println(sw.toString());
    }
 
 

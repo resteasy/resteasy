@@ -1,50 +1,48 @@
-package org.jboss.resteasy.skeleton.key.as7;
+package org.jboss.resteasy.skeleton.key.as7.config;
 
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.authenticator.AuthenticatorBase;
+import org.apache.catalina.Context;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.skeleton.key.EnvUtil;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
-import org.jboss.resteasy.skeleton.key.as7.config.ManagedResourceConfig;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.PublicKey;
 
-/**
- * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
- * @version $Revision: 1 $
- */
-public abstract class AbstractRemoteOAuthAuthenticatorValve extends AuthenticatorBase
+public class ManagedResourceConfigLoader
 {
-   private static final Logger log = Logger.getLogger(AbstractRemoteOAuthAuthenticatorValve.class);
+   static final Logger log = Logger.getLogger(ManagedResourceConfigLoader.class);
    protected ManagedResourceConfig remoteSkeletonKeyConfig;
    protected ResourceMetadata resourceMetadata;
 
-   private static KeyStore loadKeyStore(String filename, String password) throws Exception
+   public ManagedResourceConfigLoader(Context context)
    {
-      KeyStore trustStore = KeyStore.getInstance(KeyStore
-              .getDefaultType());
-      File truststoreFile = new File(filename);
-      FileInputStream trustStream = new FileInputStream(truststoreFile);
-      trustStore.load(trustStream, password.toCharArray());
-      trustStream.close();
-      return trustStore;
-   }
-
-   @Override
-   public void start() throws LifecycleException
-   {
-      super.start();
       ObjectMapper mapper = new ObjectMapper();
       mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
-      InputStream is = context.getServletContext().getResourceAsStream("/WEB-INF/resteasy-oauth.json");
+      InputStream is = null;
+      String path = context.getServletContext().getInitParameter("skeleton.key.config.file");
+      if (path == null)
+      {
+         is = context.getServletContext().getResourceAsStream("/WEB-INF/resteasy-oauth.json");
+      }
+      else
+      {
+         try
+         {
+            is = new FileInputStream(path);
+         }
+         catch (FileNotFoundException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
       remoteSkeletonKeyConfig = null;
       try
       {
@@ -117,4 +115,25 @@ public abstract class AbstractRemoteOAuthAuthenticatorValve extends Authenticato
       }
 
    }
+   public static KeyStore loadKeyStore(String filename, String password) throws Exception
+   {
+      KeyStore trustStore = KeyStore.getInstance(KeyStore
+              .getDefaultType());
+      File truststoreFile = new File(filename);
+      FileInputStream trustStream = new FileInputStream(truststoreFile);
+      trustStore.load(trustStream, password.toCharArray());
+      trustStream.close();
+      return trustStore;
+   }
+
+   public ManagedResourceConfig getRemoteSkeletonKeyConfig()
+   {
+      return remoteSkeletonKeyConfig;
+   }
+
+   public ResourceMetadata getResourceMetadata()
+   {
+      return resourceMetadata;
+   }
+
 }

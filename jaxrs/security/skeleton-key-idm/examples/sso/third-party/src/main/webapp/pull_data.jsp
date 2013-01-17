@@ -4,7 +4,7 @@
 <head>
     <title>Pull Page</title>
 </head>
-<body bgcolor="#E3F6CE">
+<body>
 <h2>Pulled Product Listing</h2>
 <%
 java.util.List<String> list = org.jboss.resteasy.example.oauth.ProductDatabaseClient.getProducts(request);

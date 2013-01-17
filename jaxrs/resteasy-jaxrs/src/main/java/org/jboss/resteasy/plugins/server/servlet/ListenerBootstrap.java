@@ -76,6 +76,11 @@ public class ListenerBootstrap extends ConfigurationBootstrap
    @Override
    public Set<String> getParameterNames()
    {
+      return getServletContextNames();
+   }
+
+   protected Set<String> getServletContextNames()
+   {
       Enumeration<String> en = servletContext.getInitParameterNames();
       HashSet<String> set = new HashSet<String>();
       while (en.hasMoreElements()) set.add(en.nextElement());

@@ -1,7 +1,6 @@
 package org.jboss.resteasy.skeleton.key.as7;
 
 import org.apache.catalina.Realm;
-import org.apache.catalina.ha.backend.CollectedInfo;
 import org.apache.catalina.realm.GenericPrincipal;
 import org.jboss.as.web.security.JBossGenericPrincipal;
 import org.jboss.security.NestableGroup;
@@ -12,7 +11,6 @@ import org.jboss.security.SimpleGroup;
 import org.jboss.security.SimplePrincipal;
 
 import javax.security.auth.Subject;
-import javax.security.auth.login.LoginException;
 import java.security.Principal;
 import java.security.acl.Group;
 import java.util.ArrayList;

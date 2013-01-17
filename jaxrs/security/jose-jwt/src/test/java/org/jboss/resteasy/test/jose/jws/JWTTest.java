@@ -1,16 +1,8 @@
 package org.jboss.resteasy.test.jose.jws;
 
-import org.jboss.resteasy.jwt.JWTContextResolver;
 import org.jboss.resteasy.jwt.JsonSerialization;
 import org.jboss.resteasy.jwt.JsonWebToken;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Test;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Providers;
-import java.io.ByteArrayOutputStream;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

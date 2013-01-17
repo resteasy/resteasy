@@ -4,20 +4,13 @@ import org.infinispan.Cache;
 import org.infinispan.manager.DefaultCacheManager;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyContextResolver;
 import org.jboss.resteasy.skeleton.key.idm.adapters.infinispan.InfinispanIDM;
-import org.jboss.resteasy.spi.ResteasyConfiguration;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Context;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.CacheRequest;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
