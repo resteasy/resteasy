@@ -105,6 +105,8 @@ public class ServletOAuthClient extends AbstractOAuthClient
     */
    public String getBearerToken(HttpServletRequest request) throws BadRequestException, InternalServerErrorException
    {
+      String error = request.getParameter("error");
+      if (error != null) throw new BadRequestException(new Exception("OAuth error: " + error));
       String redirectUri = request.getRequestURL().append("?").append(request.getQueryString()).toString();
       String stateCookie = getCookieValue(stateCookieName, request);
       if (stateCookie == null) throw new BadRequestException(new Exception("state cookie not set"));

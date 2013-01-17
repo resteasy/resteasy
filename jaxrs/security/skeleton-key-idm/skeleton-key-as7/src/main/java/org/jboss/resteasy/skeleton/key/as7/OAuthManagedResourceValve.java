@@ -56,7 +56,7 @@ public class OAuthManagedResourceValve extends FormAuthenticator implements Life
    public void start() throws LifecycleException
    {
       super.start();
-      StandardContext standardContext = (StandardContext)context;
+      StandardContext standardContext = (StandardContext) context;
       standardContext.addLifecycleListener(this);
    }
 
@@ -127,14 +127,14 @@ public class OAuthManagedResourceValve extends FormAuthenticator implements Life
    @Override
    public void invoke(Request request, Response response) throws IOException, ServletException
    {
-      String requestURI = request.getDecodedRequestURI();
-      if (requestURI.endsWith("j_oauth_remote_logout"))
-      {
-         remoteLogout(request, response);
-         return;
-      }
       try
       {
+         String requestURI = request.getDecodedRequestURI();
+         if (requestURI.endsWith("j_oauth_remote_logout"))
+         {
+            remoteLogout(request, response);
+            return;
+         }
          super.invoke(request, response);
       }
       finally
@@ -255,8 +255,17 @@ public class OAuthManagedResourceValve extends FormAuthenticator implements Life
       String code = oauth.getCode();
       if (code == null)
       {
-         saveRequest(request, request.getSessionInternal(true));
-         oauth.loginRedirect();
+         String error = oauth.getError();
+         if (error != null)
+         {
+            response.sendError(400, "OAuth " + error);
+            return;
+         }
+         else
+         {
+            saveRequest(request, request.getSessionInternal(true));
+            oauth.loginRedirect();
+         }
          return;
       }
       else

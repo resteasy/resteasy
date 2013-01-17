@@ -136,6 +136,11 @@ public class ServletOAuthLogin
       return null;
    }
 
+   public String getError()
+   {
+      return getQueryParamValue("error");
+   }
+
    public String getCode()
    {
       return getQueryParamValue("code");

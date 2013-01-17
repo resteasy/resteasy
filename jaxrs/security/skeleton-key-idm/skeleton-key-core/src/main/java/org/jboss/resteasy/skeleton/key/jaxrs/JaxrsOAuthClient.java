@@ -37,6 +37,8 @@ public class JaxrsOAuthClient extends AbstractOAuthClient
 
    public String getBearerToken(UriInfo uriInfo, HttpHeaders headers) throws BadRequestException, InternalServerErrorException
    {
+      String error = uriInfo.getQueryParameters().getFirst("error");
+      if (error != null) throw new BadRequestException(new Exception("OAuth error: " + error));
       Cookie stateCookie = headers.getCookies().get(stateCookieName);
       if (stateCookie == null) throw new BadRequestException(new Exception("state cookie not set"));;
 

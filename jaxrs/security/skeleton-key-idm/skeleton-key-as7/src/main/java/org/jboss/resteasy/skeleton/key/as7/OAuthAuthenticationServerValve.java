@@ -84,7 +84,6 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
 {
 
 
-
    public static class AccessCode
    {
       protected String id = UUID.randomUUID().toString() + System.currentTimeMillis();
@@ -191,7 +190,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
    public void start() throws LifecycleException
    {
       super.start();
-      StandardContext standardContext = (StandardContext)context;
+      StandardContext standardContext = (StandardContext) context;
       standardContext.addLifecycleListener(this);
    }
 
@@ -273,11 +272,11 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
             KeyStore ks = loadKeyStore(keystorePath, skeletonKeyConfig.getRealmKeystorePassword());
             if (realmPrivateKey == null)
             {
-               realmPrivateKey = (PrivateKey)ks.getKey(skeletonKeyConfig.getRealmKeyAlias(), skeletonKeyConfig.getRealmPrivateKeyPassword().toCharArray());
+               realmPrivateKey = (PrivateKey) ks.getKey(skeletonKeyConfig.getRealmKeyAlias(), skeletonKeyConfig.getRealmPrivateKeyPassword().toCharArray());
             }
             if (realmPublicKey == null)
             {
-               Certificate cert =  ks.getCertificate(skeletonKeyConfig.getRealmKeyAlias());
+               Certificate cert = ks.getCertificate(skeletonKeyConfig.getRealmKeyAlias());
                realmPublicKey = cert.getPublicKey();
             }
          }
@@ -359,70 +358,70 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
    @Override
    public void invoke(Request request, Response response) throws IOException, ServletException
    {
-      String contextPath = request.getContextPath();
-      String requestURI = request.getDecodedRequestURI();
-      log.info("--- invoke: " + requestURI);
-      if (request.getMethod().equalsIgnoreCase("GET")
-              && context.getLoginConfig().getLoginPage().equals(request.getRequestPathMB().toString()))
-      {
-         if (handleLoginPage(request, response)) return;
-      }
-      else if (request.getMethod().equalsIgnoreCase("GET")
-              && requestURI.endsWith(Actions.J_OAUTH_LOGOUT))
-      {
-         logoutCurrentUser(request, response);
-         return;
-      }
-      else if (request.getMethod().equalsIgnoreCase("POST")
-              && requestURI.endsWith(Actions.J_OAUTH_ADMIN_FORCED_LOGOUT))
-      {
-         adminLogout(request, response);
-         return;
-      }
-      else if (request.getMethod().equalsIgnoreCase("POST")
-              && requestURI.startsWith(contextPath) &&
-              requestURI.endsWith(Constants.FORM_ACTION)
-              && request.getParameter("client_id") != null)
-      {
-         handleOAuth(request, response);
-         return;
-      }
-      else if (request.getMethod().equalsIgnoreCase("POST")
-              && requestURI.endsWith(Actions.J_OAUTH_TOKEN_GRANT))
-      {
-         tokenGrant(request, response);
-         return;
-      }
-      else if (request.getMethod().equalsIgnoreCase("POST")
-              && requestURI.startsWith(contextPath) &&
-              requestURI.endsWith(Actions.J_OAUTH_RESOLVE_ACCESS_CODE))
-      {
-         resolveAccessCode(request, response);
-         return;
-      }
-      else if (request.getMethod().equalsIgnoreCase("GET")
-              && requestURI.startsWith(contextPath) &&
-              requestURI.endsWith("j_oauth_realm_info.html"))
-      {
-         publishRealmInfoHtml(request, response);
-         return;
-      }
-      // propagate the skeleton key token string?
-      if (!skeletonKeyConfig.isCancelPropagation())
-      {
-         if (request.getAttribute(SkeletonKeySession.class.getName()) == null && request.getSessionInternal() != null)
-         {
-            SkeletonKeySession skSession = (SkeletonKeySession) request.getSessionInternal().getNote(SkeletonKeySession.class.getName());
-            if (skSession != null)
-            {
-               request.setAttribute(SkeletonKeySession.class.getName(), skSession);
-               ResteasyProviderFactory.pushContext(SkeletonKeySession.class, skSession);
-            }
-         }
-      }
-      request.setAttribute("OAUTH_FORM_ACTION", "j_security_check");
       try
       {
+         String contextPath = request.getContextPath();
+         String requestURI = request.getDecodedRequestURI();
+         log.info("--- invoke: " + requestURI);
+         if (request.getMethod().equalsIgnoreCase("GET")
+                 && context.getLoginConfig().getLoginPage().equals(request.getRequestPathMB().toString()))
+         {
+            if (handleLoginPage(request, response)) return;
+         }
+         else if (request.getMethod().equalsIgnoreCase("GET")
+                 && requestURI.endsWith(Actions.J_OAUTH_LOGOUT))
+         {
+            logoutCurrentUser(request, response);
+            return;
+         }
+         else if (request.getMethod().equalsIgnoreCase("POST")
+                 && requestURI.endsWith(Actions.J_OAUTH_ADMIN_FORCED_LOGOUT))
+         {
+            adminLogout(request, response);
+            return;
+         }
+         else if (request.getMethod().equalsIgnoreCase("POST")
+                 && requestURI.startsWith(contextPath) &&
+                 requestURI.endsWith(Constants.FORM_ACTION)
+                 && request.getParameter("client_id") != null)
+         {
+            handleOAuth(request, response);
+            return;
+         }
+         else if (request.getMethod().equalsIgnoreCase("POST")
+                 && requestURI.endsWith(Actions.J_OAUTH_TOKEN_GRANT))
+         {
+            tokenGrant(request, response);
+            return;
+         }
+         else if (request.getMethod().equalsIgnoreCase("POST")
+                 && requestURI.startsWith(contextPath) &&
+                 requestURI.endsWith(Actions.J_OAUTH_RESOLVE_ACCESS_CODE))
+         {
+            resolveAccessCode(request, response);
+            return;
+         }
+         else if (request.getMethod().equalsIgnoreCase("GET")
+                 && requestURI.startsWith(contextPath) &&
+                 requestURI.endsWith("j_oauth_realm_info.html"))
+         {
+            publishRealmInfoHtml(request, response);
+            return;
+         }
+         // propagate the skeleton key token string?
+         if (!skeletonKeyConfig.isCancelPropagation())
+         {
+            if (request.getAttribute(SkeletonKeySession.class.getName()) == null && request.getSessionInternal() != null)
+            {
+               SkeletonKeySession skSession = (SkeletonKeySession) request.getSessionInternal().getNote(SkeletonKeySession.class.getName());
+               if (skSession != null)
+               {
+                  request.setAttribute(SkeletonKeySession.class.getName(), skSession);
+                  ResteasyProviderFactory.pushContext(SkeletonKeySession.class, skSession);
+               }
+            }
+         }
+         request.setAttribute("OAUTH_FORM_ACTION", "j_security_check");
          super.invoke(request, response);
       }
       finally
@@ -732,6 +731,11 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
 
    protected void resolveAccessCode(Request request, Response response) throws IOException
    {
+      if (!request.isSecure())
+      {
+         response.sendError(400);
+         return;
+      }
       // always verify code and remove access code from map before authenticating user
       // if user authentication fails, we want the code to be removed irreguardless just in case we're under attack
       String code = request.getParameter("code");
@@ -852,7 +856,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       String wildcard = skeletonKeyConfig.getWildcardRole() == null ? "*" : skeletonKeyConfig.getWildcardRole();
       Set<String> codeRoles = accessCode.getToken().getRealmAccess().getRoles();
       if (codeRoles != null &&
-              (codeRoles.contains(skeletonKeyConfig.getClientRole()) ||codeRoles.contains(skeletonKeyConfig.getLoginRole())))
+              (codeRoles.contains(skeletonKeyConfig.getClientRole()) || codeRoles.contains(skeletonKeyConfig.getLoginRole())))
       {
          // we store roles a oauth client is granted in the user role mapping, remove those roles as we don't want those clients with those
          // permissions if they are logging in.
@@ -935,7 +939,9 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       Principal principal = context.getRealm().authenticate(username, password);
       if (principal == null)
       {
-         forwardToErrorPage(request, response, context.getLoginConfig());
+         UriBuilder builder = UriBuilder.fromUri(redirect_uri).queryParam("error", "unauthorized_client");
+         if (state != null) builder.queryParam("state", state);
+         response.sendRedirect(builder.toTemplate());
          return;
       }
       GenericPrincipal gp = (GenericPrincipal) principal;
@@ -948,6 +954,11 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
 
    protected void tokenGrant(Request request, Response response) throws IOException
    {
+      if (!request.isSecure())
+      {
+         response.sendError(400);
+         return;
+      }
       GenericPrincipal gp = basicAuth(request, response);
       if (gp == null) return;
       SkeletonKeyToken token = buildToken(gp);
@@ -974,7 +985,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       }
       String username = creds[0];
       String password = creds[1];
-      GenericPrincipal gp = (GenericPrincipal)context.getRealm().authenticate(username, password);
+      GenericPrincipal gp = (GenericPrincipal) context.getRealm().authenticate(username, password);
       if (gp == null)
       {
          basicAuthError(response);
