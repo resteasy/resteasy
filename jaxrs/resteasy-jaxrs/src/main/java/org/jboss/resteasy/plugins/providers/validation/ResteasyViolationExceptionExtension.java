@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.providers.validation;
 
+import java.util.List;
+
 import org.jboss.resteasy.spi.validation.ResteasyViolationException;
 
 /**
@@ -19,6 +21,12 @@ public class ResteasyViolationExceptionExtension extends ResteasyViolationExcept
    }
    
    // Makes method available in package.
+   public List<List<String>> getStrings()
+   {
+      return super.getStrings();
+   }
+   
+   // Makes method available in package.
    @SuppressWarnings("rawtypes")
    protected ViolationsContainer getViolationsContainer()
    {
@@ -30,11 +38,5 @@ public class ResteasyViolationExceptionExtension extends ResteasyViolationExcept
    protected void setViolationsContainer(ViolationsContainer container)
    {
       super.setViolationsContainer(container);
-   }
-   
-   // Makes method available in package.
-   protected void convertToStrings()
-   {
-      super.convertToStrings();
    }
 }

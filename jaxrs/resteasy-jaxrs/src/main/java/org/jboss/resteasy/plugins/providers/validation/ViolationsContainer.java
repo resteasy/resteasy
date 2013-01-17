@@ -1,9 +1,5 @@
 package org.jboss.resteasy.plugins.providers.validation;
 
-import org.hibernate.validator.method.MethodConstraintViolation;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Path.Node;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -13,6 +9,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Path.Node;
+
+import org.hibernate.validator.method.MethodConstraintViolation;
 
 /**
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
@@ -166,9 +167,9 @@ public class ViolationsContainer<T> implements Serializable
       }
       
       Object o = v.getRootBean();
-      Class<?> containingClass = v.getRootBeanClass();
+      Class<?> containingClass = getRepresentedClass(v.getRootBeanClass(), o);
       String fieldName = null;
-      Field field = null;
+//      Field field = null;
       Iterator<Node>it = v.getPropertyPath().iterator();
       while (it.hasNext())
       {
@@ -178,22 +179,31 @@ public class ViolationsContainer<T> implements Serializable
          {
             return ConstraintType.CLASS;
          }
-         try
-         {
-            o = unwrapCompoundObject(o, node);
-            containingClass = o.getClass();
-            field = getField(containingClass, fieldName);
-            field.setAccessible(true);
-            o = field.get(o);
-         }
-         catch (NoSuchFieldException e)
-         {
-            throw new RuntimeException("Missing field", e);
-         }
-         catch (IllegalAccessException e)
-         {
-            throw new RuntimeException("Unable to access " + fieldName, e);
-         }
+//         try
+//         {
+//            o = unwrapCompoundObject(o, node);
+//            containingClass = getRepresentedClass(o.getClass(), o);
+//            field = getField(containingClass, fieldName);
+//            field.setAccessible(true);
+//            o = getTargetInstance(o);
+//            if (o != null)
+//            {
+//               o = field.get(o);
+//            }
+//         }
+//         catch (NoSuchFieldException e)
+//         {
+//            // Could be a CDI proxy.
+//            if (!containingClass.equals(o.getClass()))
+//            {
+//               break;
+//            }
+//            throw new RuntimeException("Missing field", e);
+//         }
+//         catch (IllegalAccessException e)
+//         {
+//            throw new RuntimeException("Unable to access " + fieldName, e);
+//         }
       }
       String getterName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
       try
@@ -292,5 +302,47 @@ public class ViolationsContainer<T> implements Serializable
          throw new NoSuchMethodException(methodName);
       }
       return method;
+   }
+   
+   private Class<?> getRepresentedClass(Class<?> clazz, Object target)
+   {
+      Method method;
+      try
+      {
+         method = clazz.getDeclaredMethod("getTargetClass");
+      }
+      catch (NoSuchMethodException e)
+      {
+         return clazz;
+      }
+      try
+      {
+         return Class.class.cast(method.invoke(target));
+      }
+      catch (Exception e)
+      {
+         return clazz;
+      }
+   }
+   
+   private Object getTargetInstance(Object target)
+   {
+      Method method;
+      try
+      {
+         method = target.getClass().getDeclaredMethod("getTargetInstance");
+      }
+      catch (NoSuchMethodException e)
+      {
+         return target;
+      }
+      try
+      {
+         return method.invoke(target);
+      }
+      catch (Exception e)
+      {
+         return target;
+      }
    }
 }

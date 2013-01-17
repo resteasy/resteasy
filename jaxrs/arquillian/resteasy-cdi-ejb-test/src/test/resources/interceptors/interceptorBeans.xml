@@ -1,0 +1,14 @@
+<beans xmlns="http://java.sun.com/xml/ns/javaee"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
+   <interceptors>
+      <class>org.jboss.resteasy.cdi.interceptors.RequestFilterInterceptor</class>
+      <class>org.jboss.resteasy.cdi.interceptors.ResponseFilterInterceptor</class> 
+      <class>org.jboss.resteasy.cdi.interceptors.Interceptor2</class>
+      <class>org.jboss.resteasy.cdi.interceptors.Interceptor3</class>
+      <class>org.jboss.resteasy.cdi.interceptors.BookReaderInterceptorInterceptor</class>
+      <class>org.jboss.resteasy.cdi.interceptors.BookWriterInterceptorInterceptor</class>
+      <class>org.jboss.resteasy.cdi.interceptors.PostConstructInterceptor</class>
+      <class>org.jboss.resteasy.cdi.interceptors.PreDestroyInterceptor</class>   
+   </interceptors>
+</beans>
