@@ -6,11 +6,7 @@ import org.jboss.resteasy.jwt.JsonSerialization;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.security.PublicKey;
-import java.security.cert.X509Certificate;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

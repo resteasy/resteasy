@@ -1,11 +1,7 @@
 package org.jboss.resteasy.skeleton.key.as7.config;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.jboss.resteasy.security.PemUtils;
 
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 

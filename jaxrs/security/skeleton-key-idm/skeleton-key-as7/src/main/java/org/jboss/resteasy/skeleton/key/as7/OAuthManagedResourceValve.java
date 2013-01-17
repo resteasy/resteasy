@@ -1,11 +1,15 @@
 package org.jboss.resteasy.skeleton.key.as7;
 
+import org.apache.catalina.Lifecycle;
+import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Session;
 import org.apache.catalina.authenticator.Constants;
 import org.apache.catalina.authenticator.FormAuthenticator;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.realm.GenericPrincipal;
 import org.jboss.logging.Logger;
@@ -39,7 +43,7 @@ import java.util.Set;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class OAuthManagedResourceValve extends FormAuthenticator
+public class OAuthManagedResourceValve extends FormAuthenticator implements LifecycleListener
 {
    protected RealmConfiguration realmConfiguration;
    private static final Logger log = Logger.getLogger(OAuthManagedResourceValve.class);
@@ -52,6 +56,18 @@ public class OAuthManagedResourceValve extends FormAuthenticator
    public void start() throws LifecycleException
    {
       super.start();
+      StandardContext standardContext = (StandardContext)context;
+      standardContext.addLifecycleListener(this);
+   }
+
+   @Override
+   public void lifecycleEvent(LifecycleEvent event)
+   {
+      if (event.getType() == Lifecycle.AFTER_START_EVENT) init();
+   }
+
+   protected void init()
+   {
       ManagedResourceConfigLoader managedResourceConfigLoader = new ManagedResourceConfigLoader(context);
       resourceMetadata = managedResourceConfigLoader.getResourceMetadata();
       remoteSkeletonKeyConfig = managedResourceConfigLoader.getRemoteSkeletonKeyConfig();

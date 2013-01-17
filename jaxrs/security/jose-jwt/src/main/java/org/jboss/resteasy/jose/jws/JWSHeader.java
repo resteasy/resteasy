@@ -8,7 +8,6 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

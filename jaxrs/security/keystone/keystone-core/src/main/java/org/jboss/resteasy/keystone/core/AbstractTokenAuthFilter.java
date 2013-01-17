@@ -1,9 +1,9 @@
 package org.jboss.resteasy.keystone.core;
 
-import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
 import org.jboss.resteasy.keystone.model.Access;
 import org.jboss.resteasy.keystone.model.Role;
+import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;

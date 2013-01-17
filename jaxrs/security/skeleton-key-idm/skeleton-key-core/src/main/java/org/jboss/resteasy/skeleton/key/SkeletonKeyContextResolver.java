@@ -3,7 +3,6 @@ package org.jboss.resteasy.skeleton.key;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.jboss.resteasy.jwt.JsonWebToken;
 
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;

@@ -8,19 +8,18 @@ import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.jwt.JsonSerialization;
+import org.jboss.resteasy.skeleton.key.SkeletonKeyContextResolver;
 import org.jboss.resteasy.skeleton.key.idm.adapters.infinispan.InfinispanIDM;
+import org.jboss.resteasy.skeleton.key.idm.service.RealmFactory;
+import org.jboss.resteasy.skeleton.key.idm.service.TokenManagement;
 import org.jboss.resteasy.skeleton.key.representations.idm.PublishedRealmRepresentation;
 import org.jboss.resteasy.skeleton.key.representations.idm.RealmRepresentation;
-import org.jboss.resteasy.skeleton.key.idm.service.RealmFactory;
-import org.jboss.resteasy.skeleton.key.SkeletonKeyContextResolver;
-import org.jboss.resteasy.skeleton.key.idm.service.TokenManagement;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.AfterClass;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;

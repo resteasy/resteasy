@@ -3,10 +3,10 @@ package org.jboss.resteasy.test.skeleton.key;
 import junit.framework.Assert;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.plugins.interceptors.RoleBasedSecurityFeature;
-import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
 import org.jboss.resteasy.skeleton.key.RealmConfiguration;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.jaxrs.JaxrsBearerTokenFilter;
+import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

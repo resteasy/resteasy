@@ -1,28 +1,16 @@
 package org.jboss.resteasy.skeleton.key.jaxrs;
 
-import org.jboss.resteasy.client.jaxrs.AbstractClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.skeleton.key.AbstractOAuthClient;
-import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
-import org.jboss.resteasy.spi.ForbiddenException;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.Form;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
-import java.security.KeyStore;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Helper code to obtain oauth access tokens via browser redirects

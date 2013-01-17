@@ -1,7 +1,6 @@
 package org.jboss.resteasy.skeleton.key.as7.config;
 
 import org.apache.catalina.Context;
-import org.apache.catalina.LifecycleException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jboss.logging.Logger;
@@ -11,6 +10,7 @@ import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -26,7 +26,23 @@ public class ManagedResourceConfigLoader
    {
       ObjectMapper mapper = new ObjectMapper();
       mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
-      InputStream is = context.getServletContext().getResourceAsStream("/WEB-INF/resteasy-oauth.json");
+      InputStream is = null;
+      String path = context.getServletContext().getInitParameter("skeleton.key.config.file");
+      if (path == null)
+      {
+         is = context.getServletContext().getResourceAsStream("/WEB-INF/resteasy-oauth.json");
+      }
+      else
+      {
+         try
+         {
+            is = new FileInputStream(path);
+         }
+         catch (FileNotFoundException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
       remoteSkeletonKeyConfig = null;
       try
       {

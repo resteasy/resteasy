@@ -5,8 +5,8 @@ import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.keystone.model.Mappers;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 

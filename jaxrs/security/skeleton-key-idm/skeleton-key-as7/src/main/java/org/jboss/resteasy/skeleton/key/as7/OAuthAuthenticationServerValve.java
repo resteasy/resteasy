@@ -1,10 +1,14 @@
 package org.jboss.resteasy.skeleton.key.as7;
 
+import org.apache.catalina.Lifecycle;
+import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.authenticator.Constants;
 import org.apache.catalina.authenticator.FormAuthenticator;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.realm.GenericPrincipal;
 import org.bouncycastle.openssl.PEMWriter;
@@ -22,7 +26,6 @@ import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
 import org.jboss.resteasy.jwt.JsonSerialization;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
-import org.jboss.resteasy.security.DerUtils;
 import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.skeleton.key.EnvUtil;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
@@ -31,10 +34,8 @@ import org.jboss.resteasy.skeleton.key.as7.config.AuthServerConfig;
 import org.jboss.resteasy.skeleton.key.as7.config.ManagedResourceConfig;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
-import org.jboss.resteasy.skeleton.key.representations.idm.PublishedRealmRepresentation;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
-import org.jboss.resteasy.util.Base64;
 import org.jboss.resteasy.util.BasicAuthHelper;
 
 import javax.security.auth.login.LoginException;
@@ -47,6 +48,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -78,7 +80,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class OAuthAuthenticationServerValve extends FormAuthenticator
+public class OAuthAuthenticationServerValve extends FormAuthenticator implements LifecycleListener
 {
 
 
@@ -189,12 +191,40 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
    public void start() throws LifecycleException
    {
       super.start();
+      StandardContext standardContext = (StandardContext)context;
+      standardContext.addLifecycleListener(this);
+   }
+
+   @Override
+   public void lifecycleEvent(LifecycleEvent event)
+   {
+      if (event.getType() == Lifecycle.AFTER_START_EVENT) init();
+   }
+
+   protected void init()
+   {
       mapper = new ObjectMapper();
       mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_DEFAULT);
       accessTokenResponseWriter = mapper.writerWithType(AccessTokenResponse.class);
       mapWriter = mapper.writerWithType(mapper.getTypeFactory().constructMapType(Map.class, String.class, String.class));
 
-      InputStream is = context.getServletContext().getResourceAsStream("/WEB-INF/resteasy-oauth.json");
+      InputStream is = null;
+      String path = context.getServletContext().getInitParameter("skeleton.key.config.file");
+      if (path == null)
+      {
+         is = context.getServletContext().getResourceAsStream("/WEB-INF/resteasy-oauth.json");
+      }
+      else
+      {
+         try
+         {
+            is = new FileInputStream(path);
+         }
+         catch (FileNotFoundException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
       try
       {
          skeletonKeyConfig = mapper.readValue(is, AuthServerConfig.class);
@@ -237,10 +267,10 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator
       if (skeletonKeyConfig.getRealmKeyStore() != null)
       {
          if (skeletonKeyConfig.getRealmKeyAlias() == null) throw new RuntimeException("Must define realm-key-alias");
-         String path = EnvUtil.replace(skeletonKeyConfig.getRealmKeyStore());
+         String keystorePath = EnvUtil.replace(skeletonKeyConfig.getRealmKeyStore());
          try
          {
-            KeyStore ks = loadKeyStore(path, skeletonKeyConfig.getRealmKeystorePassword());
+            KeyStore ks = loadKeyStore(keystorePath, skeletonKeyConfig.getRealmKeystorePassword());
             if (realmPrivateKey == null)
             {
                realmPrivateKey = (PrivateKey)ks.getKey(skeletonKeyConfig.getRealmKeyAlias(), skeletonKeyConfig.getRealmPrivateKeyPassword().toCharArray());

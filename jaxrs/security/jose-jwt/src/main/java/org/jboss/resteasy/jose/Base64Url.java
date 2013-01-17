@@ -2,8 +2,6 @@ package org.jboss.resteasy.jose;
 
 import org.jboss.resteasy.util.Base64;
 
-import java.io.IOException;
-
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
