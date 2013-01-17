@@ -17,15 +17,18 @@ public class ResteasyViolationExceptionMapper implements ExceptionMapper<Resteas
 {
    public Response toResponse(ResteasyViolationExceptionExtension exception)
    {
-      exception.convertToStrings();
-      exception.setViolationsContainer(null);
+//      exception.convertToStrings();
+//      exception.setViolationsContainer(null);
       if (exception.getReturnValueViolations().size() == 0)
       {
-        return Response.status(Status.BAD_REQUEST).type("application/x-java-serialized-object").entity(exception).build();
+//        return Response.status(Status.BAD_REQUEST).type("application/x-java-serialized-object").entity(exception).build();
+         return Response.status(Status.BAD_REQUEST).entity(exception.getStrings()).build();
       }
       else
       {
-         return Response.status(Status.INTERNAL_SERVER_ERROR).type("application/x-java-serialized-object").entity(exception).build();
+//         return Response.status(Status.INTERNAL_SERVER_ERROR).type("application/x-java-serialized-object").entity(exception).build();
+         return Response.status(Status.INTERNAL_SERVER_ERROR).entity(exception.getStrings()).build();
+         
       }
    }
 }

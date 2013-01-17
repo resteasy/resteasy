@@ -31,6 +31,7 @@ public class ResteasyViolationException extends WebApplicationException
    private List<String> classViolations       = new ArrayList<String>();
    private List<String> parameterViolations   = new ArrayList<String>();
    private List<String> returnValueViolations = new ArrayList<String>();
+   private List<List<String>> allViolations;
    
    public ResteasyViolationException()
    {
@@ -64,26 +65,46 @@ public class ResteasyViolationException extends WebApplicationException
    
    public List<String> getFieldViolations()
    {
+      if (size() == 0)
+      {
+         convertToStrings();
+      }
       return fieldViolations;
    }
    
    public List<String> getPropertyViolations()
    {
+      if (size() == 0)
+      {
+         convertToStrings();
+      }
       return propertyViolations;
    }
    
    public List<String> getClassViolations()
    {
+      if (size() == 0)
+      {
+         convertToStrings();
+      }
       return classViolations;
    }
    
    public List<String> getParameterViolations()
    {
+      if (size() == 0)
+      {
+         convertToStrings();
+      }
       return parameterViolations;
    }
    
    public List<String> getReturnValueViolations()
    {
+      if (size() == 0)
+      {
+         convertToStrings();
+      }
       return returnValueViolations;
    }
    
@@ -94,6 +115,15 @@ public class ResteasyViolationException extends WebApplicationException
             classViolations.size() + 
             parameterViolations.size() +
             returnValueViolations.size();
+   }
+   
+   public List<List<String>> getStrings()
+   {
+      if (size() == 0)
+      {
+         convertToStrings();
+      }
+      return allViolations;
    }
    
    @SuppressWarnings("rawtypes")
@@ -111,40 +141,50 @@ public class ResteasyViolationException extends WebApplicationException
    @SuppressWarnings("rawtypes")
    protected void convertToStrings()
    {
+      if (allViolations != null)
+      {
+         return;
+      }
+      allViolations = new ArrayList<List<String>>();
       Iterator it = container.getFieldViolations().iterator();
       while (it.hasNext())
       {
          ConstraintViolation cv = (ConstraintViolation) it.next();
-         fieldViolations.add(cv.getMessage() + "; " + cv.getInvalidValue().toString());
+         fieldViolations.add("field " + cv.getPropertyPath() + ": " + cv.getMessage() + ": " + cv.getInvalidValue().toString());
       }
       
       it = container.getPropertyViolations().iterator();
       while (it.hasNext())
       {
          ConstraintViolation cv = (ConstraintViolation) it.next();
-         propertyViolations.add(cv.getMessage() + "; " + cv.getInvalidValue().toString());
+         propertyViolations.add("property " + cv.getPropertyPath() + ": " + cv.getMessage() + ": " + cv.getInvalidValue().toString());
       }
       
       it = container.getClassViolations().iterator();
       while (it.hasNext())
       {
          ConstraintViolation cv = (ConstraintViolation) it.next();
-         classViolations.add(cv.getMessage() + "; " + cv.getInvalidValue().toString());
+         classViolations.add(cv.getMessage() + ": " + cv.getInvalidValue().toString());
       }
       
       it = container.getParameterViolations().iterator();
       while (it.hasNext())
       {
          ConstraintViolation cv = (ConstraintViolation) it.next();
-         parameterViolations.add(cv.getMessage() + "; " + cv.getInvalidValue().toString());
+         parameterViolations.add("parameter " + cv.getPropertyPath() + ": " + cv.getMessage() + ": " + cv.getInvalidValue().toString());
       }
       
       it = container.getReturnValueViolations().iterator();
       while (it.hasNext())
       {
          ConstraintViolation cv = (ConstraintViolation) it.next();
-         returnValueViolations.add(cv.getMessage() + "; " + cv.getInvalidValue().toString());
+         returnValueViolations.add("return value: " + cv.getMessage() + ": " + cv.getInvalidValue().toString());
       }
+      allViolations.add(fieldViolations);
+      allViolations.add(propertyViolations);
+      allViolations.add(classViolations);
+      allViolations.add(parameterViolations);
+      allViolations.add(returnValueViolations);
    }
    
    protected String expandDelimiter(String s)
