@@ -54,6 +54,21 @@ public class ProductDatabaseClient
                  .hostnameVerification(AbstractClientBuilder.HostnameVerificationPolicy.ANY).build();
       try
       {
+         // invoke without the Authorization header
+         Response response = client.target("https://localhost:8443/database/products").request().get();
+         response.close();
+         if (response.getStatus() != 401)
+         {
+            response.close();
+            client.close();
+            throw new RuntimeException("Expecting an auth status code: " + response.getStatus());
+         }
+      }
+      finally
+      {
+      }
+      try
+      {
          Response response = client.target("https://localhost:8443/database/products").request()
                  .header(HttpHeaders.AUTHORIZATION, "Bearer " + token).get();
          return response.readEntity(new GenericType<List<String>>(){});
