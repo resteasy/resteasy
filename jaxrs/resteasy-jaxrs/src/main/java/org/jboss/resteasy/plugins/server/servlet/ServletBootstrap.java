@@ -48,7 +48,7 @@ public class ServletBootstrap extends ListenerBootstrap
    @Override
    public Set<String> getParameterNames()
    {
-      Set<String> set = super.getInitParameterNames();
+      Set<String> set = super.getServletContextNames();
       Enumeration<String> en = config.getInitParameterNames();
       while (en.hasMoreElements()) set.add(en.nextElement());
       return set;
