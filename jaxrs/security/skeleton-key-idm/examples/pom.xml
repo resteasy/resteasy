@@ -15,11 +15,11 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>sso/auth-server</module>
-        <module>sso/database-service</module>
-        <module>sso/customer-app</module>
-        <module>sso/product-app</module>
-        <module>sso/third-party</module>
-        <module>sso/client-grant</module>
+        <module>wars/auth-server</module>
+        <module>wars/database-service</module>
+        <module>wars/customer-app</module>
+        <module>wars/product-app</module>
+        <module>wars/third-party</module>
+        <module>wars/client-grant</module>
     </modules>
 </project>

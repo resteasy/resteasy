@@ -1,9 +1,0 @@
-<jboss-web>
-    <!--
- -->
-
-    <security-domain>java:/jaas/commerce</security-domain>
-    <valve>
-        <class-name>org.jboss.resteasy.skeleton.key.as7.OAuthAuthenticationServerValve</class-name>
-    </valve>
-</jboss-web>
