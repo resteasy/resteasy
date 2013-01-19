@@ -25,6 +25,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -120,91 +122,127 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
       return params.getActualTypeArguments()[0].equals(String.class) && params.getActualTypeArguments()[1].equals(String.class);
    }
 
+    public static boolean isFormData(Object obj) {
+        if (obj == null)
+            return false;
 
-   public Object inject(HttpRequest request, HttpResponse response)
-   {
-      Object o = getBody();
-      if (o != null)
-      {
-         return o;
-      }
-      MediaType mediaType = request.getHttpHeaders().getMediaType();
-      if (mediaType == null)
-      {
-         mediaType = MediaType.WILDCARD_TYPE;
-         //throw new BadRequestException("content-type was null and expecting to extract a body into " + this.target);
-      }
+        if (!MultivaluedMap.class.isAssignableFrom(obj.getClass()))
+            return false;
 
-      // We have to do this isFormData() hack because of servlets and servlet filters
-      // A filter that does getParameter() will screw up the input stream which will screw up the
-      // provider.  We do it here rather than hack the provider as the provider is reused for client side
-      // and also, the server may be using the client framework to make another remote call.
-      if (isFormData(type, genericType, annotations, mediaType))
-      {
-         boolean encoded = FindAnnotation.findAnnotation(annotations, Encoded.class) != null;
-         if (encoded) return request.getFormParameters();
-         else return request.getDecodedFormParameters();
-      }
-      else
-      {
-         MessageBodyReader reader = factory.getMessageBodyReader(type,
-                 genericType, annotations, mediaType);
-         if (reader == null)
-         {
+        Set keys = ((MultivaluedMap) obj).keySet();
+
+        if (keys.size() < 1) {
+            return false;
+        }
+
+        boolean isEmpty = true;
+        for (Object key : keys) {
+            if (!String.class.isAssignableFrom(key.getClass()))
+                return false;
+            if (!((String) key).trim().equals("")) {
+                isEmpty = false;
+                break;
+            }
+        }
+
+        if (isEmpty)
+            return false;
+
+        for (Object key : keys) {
+            Object values = ((MultivaluedMap) obj).get(key);
+            if (values != null) {
+                if (!List.class.isAssignableFrom(values.getClass()))
+                    return false;
+                for (Object value : (List) values) {
+                    if (value != null && !String.class.isAssignableFrom(value.getClass()))
+                        return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+
+    public Object inject(HttpRequest request, HttpResponse response) {
+        Object o = getBody();
+        if (o != null) {
+            return o;
+        }
+        MediaType mediaType = request.getHttpHeaders().getMediaType();
+        if (mediaType == null) {
+            mediaType = MediaType.WILDCARD_TYPE;
+            //throw new BadRequestException("content-type was null and expecting to extract a body into " + this.target);
+        }
+
+        // We have to do this isFormData() hack because of servlets and servlet filters
+        // A filter that does getParameter() will screw up the input stream which will screw up the
+        // provider.  We do it here rather than hack the provider as the provider is reused for client side
+        // and also, the server may be using the client framework to make another remote call.
+        MultivaluedMap<String, String> origFormData = null;
+        boolean paramIsFormData = isFormData(type, genericType, annotations, mediaType);
+        if (paramIsFormData) {
+            boolean encoded = FindAnnotation.findAnnotation(annotations, Encoded.class) != null;
+            if (encoded) {
+                origFormData = request.getFormParameters();
+            } else {
+                origFormData = request.getDecodedFormParameters();
+            }
+        }
+
+        MessageBodyReader reader = factory.getMessageBodyReader(type,
+                genericType, annotations, mediaType);
+        if (reader == null) {
             throw new BadRequestException(
                     "Could not find message body reader for type: "
                             + genericType + " of content type: " + mediaType);
-         }
+        }
 
-         try
-         {
+        try {
             InputStream is = request.getInputStream();
-            if (isMarshalledEntity)
-            {
-               is = new InputStreamToByteArray(is);
+            if (isMarshalledEntity) {
+                is = new InputStreamToByteArray(is);
 
             }
             AbstractReaderInterceptorContext messageBodyReaderContext = new ServerReaderInterceptorContext(interceptors, reader, type,
                     genericType, annotations, mediaType, request
                     .getHttpHeaders().getRequestHeaders(), is, request);
             final Object obj = messageBodyReaderContext.proceed();
-            if (isMarshalledEntity)
-            {
-               InputStreamToByteArray isba = (InputStreamToByteArray) is;
-               final byte[] bytes = isba.toByteArray();
-               return new MarshalledEntity()
-               {
-                  @Override
-                  public byte[] getMarshalledBytes()
-                  {
-                     return bytes;
-                  }
 
-                  @Override
-                  public Object getEntity()
-                  {
-                     return obj;
-                  }
-               };
+            if (paramIsFormData) {
+                if (isFormData(obj)) { // give user a chance to process form data in their message body reader
+                    return obj;
+                } else {
+                    return origFormData;
+                }
+            } else {
+                if (isMarshalledEntity) {
+                    InputStreamToByteArray isba = (InputStreamToByteArray) is;
+                    final byte[] bytes = isba.toByteArray();
+                    return new MarshalledEntity() {
+                        @Override
+                        public byte[] getMarshalledBytes() {
+                            return bytes;
+                        }
+
+                        @Override
+                        public Object getEntity() {
+                            return obj;
+                        }
+                    };
+                } else {
+                    return obj;
+                }
             }
-            else
-            {
-               return obj;
+        } catch (Exception e) {
+            if (e instanceof ReaderException) {
+                throw (ReaderException) e;
+            } else {
+                throw new ReaderException(e);
             }
-         }
-         catch (Exception e)
-         {
-            if (e instanceof ReaderException)
-            {
-               throw (ReaderException) e;
-            }
-            else
-            {
-               throw new ReaderException(e);
-            }
-         }
-      }
-   }
+        }
+
+    }
 
    public Object inject()
    {
