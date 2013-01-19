@@ -210,7 +210,7 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
             final Object obj = messageBodyReaderContext.proceed();
 
             if (paramIsFormData) {
-                if (isFormData(obj)) { // give user a chance to process form data in their message body reader
+                if (isFormData(obj)) { // give user a chance to rewrite form data in their reader interceptor
                     return obj;
                 } else {
                     return origFormData;
