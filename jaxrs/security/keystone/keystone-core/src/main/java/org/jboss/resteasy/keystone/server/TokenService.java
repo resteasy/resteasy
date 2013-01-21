@@ -1,8 +1,6 @@
 package org.jboss.resteasy.keystone.server;
 
 import org.infinispan.Cache;
-import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.security.smime.SignedOutput;
 import org.jboss.resteasy.keystone.model.Access;
 import org.jboss.resteasy.keystone.model.Authentication;
 import org.jboss.resteasy.keystone.model.Project;
@@ -10,6 +8,8 @@ import org.jboss.resteasy.keystone.model.Role;
 import org.jboss.resteasy.keystone.model.Roles;
 import org.jboss.resteasy.keystone.model.StoredUser;
 import org.jboss.resteasy.keystone.model.UrlToken;
+import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.security.smime.SignedOutput;
 import org.jboss.resteasy.util.Base64;
 
 import javax.annotation.security.RolesAllowed;

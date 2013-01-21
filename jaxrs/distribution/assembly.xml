@@ -35,6 +35,24 @@
             </excludes>
         </fileSet>
         <fileSet>
+            <directory>../examples/oauth1-examples</directory>
+            <outputDirectory>examples/oauth1-examples</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>../examples/oauth2-as7-example</directory>
+            <outputDirectory>examples/oauth2-as7-example</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
             <directory>../examples/digital-signatures</directory>
             <outputDirectory>examples/digital-signatures</outputDirectory>
             <excludes>
@@ -179,6 +197,8 @@
                 <include>org.jboss.resteasy:resteasy-jsapi</include>
                 <include>org.jboss.resteasy:resteasy-links</include>
                 <include>org.jboss.resteasy:resteasy-crypto</include>
+                <include>org.jboss.resteasy:jose-jwt</include>
+                <include>org.jboss.resteasy:skeleton-key-core</include>
             </includes>
             <excludes>
                 <exclude>org.jboss.resteasy:tjws</exclude>

@@ -33,7 +33,8 @@
         <module>async-job-service</module>
         <module>resteasy-springMVC</module>
         <module>oreilly-workbook</module>
-        <module>oauth-examples</module>
+        <module>oauth1-examples</module>
+        <module>oauth2-as7-example</module>
         <module>examples-jsapi</module>
         <module>smime</module>
         <module>digital-signatures</module>

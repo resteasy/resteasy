@@ -1,11 +1,11 @@
 package org.jboss.resteasy.keystone.as7;
 
 import org.apache.catalina.connector.Request;
-import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
 import org.jboss.resteasy.keystone.core.UserPrincipal;
 import org.jboss.resteasy.keystone.model.Access;
 import org.jboss.resteasy.keystone.model.Role;
+import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
 import org.jboss.security.JSSESecurityDomain;
 import org.jboss.security.SecurityConstants;
 import org.jboss.security.SecurityDomain;
