@@ -19,6 +19,5 @@
         <module>skeleton-key-idp</module>
         <module>skeleton-key-as7</module>
         <module>skeleton-key-idp-war</module>
-        <module>examples</module>
     </modules>
 </project>
