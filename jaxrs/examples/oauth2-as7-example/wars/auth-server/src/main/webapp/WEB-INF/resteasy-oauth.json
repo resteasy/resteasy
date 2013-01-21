@@ -1,0 +1,17 @@
+{
+   "realm" : "commerce",
+   "admin-role" : "admin",
+   "login-role" : "login",
+   "oauth-client-role" : "oauth",
+   "wildcard-role" : "*",
+   "realm-keystore" : "${jboss.server.config.dir}/realm.jks",
+   "realm-key-alias" : "commerce",
+   "realm-keystore-password" : "password",
+   "realm-private-key-password" : "password",
+   "truststore" : "${jboss.server.config.dir}/client-truststore.ts",
+   "truststore-password" : "password",
+   "resources" : [
+      "https://localhost:8443/customer-portal",
+      "https://localhost:8443/product-portal"
+   ]
+}

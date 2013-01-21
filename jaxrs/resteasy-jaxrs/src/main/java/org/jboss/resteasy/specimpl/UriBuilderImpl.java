@@ -613,7 +613,11 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder replaceMatrixParam(String name, Object... values) throws IllegalArgumentException
    {
-      if (path == null) return matrixParam(name, values);
+      if (path == null)
+      {
+         if (values != null) return matrixParam(name, values);
+         return this;
+      }
 
       // remove all path param expressions so we don't accidentally start replacing within a regular expression
       ArrayList<String> pathParams = new ArrayList<String>();
@@ -743,7 +747,11 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder replaceQueryParam(String name, Object... values) throws IllegalArgumentException
    {
-      if (query == null || query.equals("")) return queryParam(name, values);
+      if (query == null || query.equals(""))
+      {
+         if (values != null) return queryParam(name, values);
+         return this;
+      }
 
       String[] params = query.split("&");
       query = null;

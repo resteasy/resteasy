@@ -1,19 +1,15 @@
 package org.jboss.resteasy.keystone.as7;
 
 import org.apache.catalina.connector.Request;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
-import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.keystone.client.SkeletonKeyAdminClient;
 import org.jboss.resteasy.keystone.client.SkeletonKeyClientBuilder;
 import org.jboss.resteasy.keystone.core.UserPrincipal;
 import org.jboss.resteasy.keystone.model.Access;
 import org.jboss.resteasy.keystone.model.Role;
+import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.security.SimpleGroup;
 import org.jboss.security.SimplePrincipal;

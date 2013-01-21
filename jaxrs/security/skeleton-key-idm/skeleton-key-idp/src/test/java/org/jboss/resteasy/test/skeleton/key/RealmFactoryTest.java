@@ -2,10 +2,10 @@ package org.jboss.resteasy.test.skeleton.key;
 
 import junit.framework.Assert;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.skeleton.key.idm.adapters.infinispan.InfinispanIDM;
-import org.jboss.resteasy.skeleton.key.representations.idm.RealmRepresentation;
-import org.jboss.resteasy.skeleton.key.idm.service.RealmFactory;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyContextResolver;
+import org.jboss.resteasy.skeleton.key.idm.adapters.infinispan.InfinispanIDM;
+import org.jboss.resteasy.skeleton.key.idm.service.RealmFactory;
+import org.jboss.resteasy.skeleton.key.representations.idm.RealmRepresentation;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.BeforeClass;
 import org.junit.Test;

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.jose.jws.crypto;
 
-import org.jboss.resteasy.jose.jws.Algorithm;
 import org.jboss.resteasy.jose.Base64Url;
+import org.jboss.resteasy.jose.jws.Algorithm;
 import org.jboss.resteasy.jose.jws.JWSInput;
 
 import javax.crypto.Mac;

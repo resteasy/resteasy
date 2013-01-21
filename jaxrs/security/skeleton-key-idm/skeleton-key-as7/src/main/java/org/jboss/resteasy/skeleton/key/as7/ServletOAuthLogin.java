@@ -3,21 +3,20 @@ package org.jboss.resteasy.skeleton.key.as7;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
 import org.jboss.resteasy.skeleton.key.RealmConfiguration;
-import org.jboss.resteasy.skeleton.key.SkeletonKeyTokenVerification;
 import org.jboss.resteasy.skeleton.key.VerificationException;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
+import org.jboss.resteasy.util.BasicAuthHelper;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
-import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
-import java.security.cert.X509Certificate;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -121,7 +120,7 @@ public class ServletOAuthLogin
       return cookie.getValue();
    }
 
-   protected String getCode()
+   protected String getQueryParamValue(String paramName)
    {
       String query = request.getQueryString();
       if (query == null) return null;
@@ -131,16 +130,20 @@ public class ServletOAuthLogin
          int eq = param.indexOf('=');
          if (eq == -1) continue;
          String name = param.substring(0, eq);
-         if (!name.equals("code")) continue;
-         codePresent = true;
+         if (!name.equals(paramName)) continue;
          return param.substring(eq + 1);
       }
       return null;
    }
 
-   public boolean isCodePresent()
+   public String getError()
    {
-      return codePresent;
+      return getQueryParamValue("error");
+   }
+
+   public String getCode()
+   {
+      return getQueryParamValue("code");
    }
 
    protected void setCookie(String name, String value, String domain, String path, boolean secure)
@@ -212,6 +215,7 @@ public class ServletOAuthLogin
       response.addCookie(reset);
 
       String stateCookieValue = getCookieValue(realmInfo.getStateCookieName());
+      // its ok to call request.getParameter() because this should be a redirect
       String state = request.getParameter("state");
       if (state == null)
       {
@@ -243,16 +247,8 @@ public class ServletOAuthLogin
     *
     * @return true if an access token was obtained
     */
-   public boolean login()
+   public boolean resolveCode(String code)
    {
-      String code = getCode();
-      if (code == null)
-      {
-         log.info("There is no code, so redirect");
-         loginRedirect();
-         return false;
-      }
-
       // abort if not HTTPS
       if (realmInfo.isSslRequired() && !isRequestSecure())
       {
@@ -263,15 +259,16 @@ public class ServletOAuthLogin
 
       if (!checkStateCookie()) return false;
 
-      MultivaluedHashMap<String, String> creds = new MultivaluedHashMap<String, String>();
-      creds.putAll(realmInfo.getCredentials().asMap());
-      Form form = new Form(creds);
+      String client_id = realmInfo.getClientId();
+      String password = realmInfo.getCredentials().asMap().getFirst("password");
+      String authHeader = BasicAuthHelper.createHeader(client_id, password);
+      String redirectUri = stripOauthParametersFromRedirect();
+      Form form = new Form();
       form.param("grant_type", "authorization_code")
               .param("code", code)
-              .param("redirect_uri", getRequestUrl())
-              .param("client_id", realmInfo.getClientId());
+              .param("redirect_uri", redirectUri);
 
-      Response res = realmInfo.getCodeUrl().request().post(Entity.form(form));
+      Response res = realmInfo.getCodeUrl().request().header(HttpHeaders.AUTHORIZATION, authHeader).post(Entity.form(form));
       AccessTokenResponse tokenResponse;
       try
       {
@@ -302,29 +299,21 @@ public class ServletOAuthLogin
          sendError(Response.Status.FORBIDDEN.getStatusCode());
          return false;
       }
-      redirectAfterCodeProcessing();
+      // redirect to URL without oauth query parameters
+      sendRedirect(redirectUri);
       return true;
    }
 
    /**
     * strip out unwanted query parameters and redirect so bookmarks don't retain oauth protocol bits
     */
-   public void redirectAfterCodeProcessing()
+   protected String stripOauthParametersFromRedirect()
    {
       StringBuffer buf = request.getRequestURL().append("?").append(request.getQueryString());
       UriBuilder builder = UriBuilder.fromUri(buf.toString())
               .replaceQueryParam("code", null)
               .replaceQueryParam("state", null);
-      try
-      {
-         String location = builder.build().toString();
-         log.info("* redirect to stripped query parameters: " + location);
-         response.sendRedirect(location);
-      }
-      catch (IOException e)
-      {
-         throw new RuntimeException(e);
-      }
+      return builder.build().toString();
    }
 
 
