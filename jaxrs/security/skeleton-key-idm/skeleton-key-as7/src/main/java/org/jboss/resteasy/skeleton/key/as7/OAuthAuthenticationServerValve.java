@@ -647,8 +647,8 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       writer = new StringWriter();
       rep.getClientCredentials().put("password", "REQUIRED");
       rep.setClientId("REQUIRED");
-      rep.setTruststore("MIGHT-NEED");
-      rep.setTruststorePassword("MIGHT-NEED");
+      rep.setTruststore("REQUIRED");
+      rep.setTruststorePassword("REQUIRED");
       mapper.writeValue(writer, rep);
       json = writer.toString();
       html.append("<h3>OAuthManagedResourceValve Json Config</h3>");

@@ -1,0 +1,702 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="oauth2">
+    <title>OAuth 2.0 and Resteasy Skeleton Key</title>
+    <para>
+        The overall goal of Resteasy Skeleton Key is to provide a unified way for both Browser and JAX-RS clients
+        to be secured in an integrated and seemless fashion.  We want to support a network of applications and
+        services so that if one server needs to execute or forward requests to another, there is a secure and
+        scalable way to do this without hitting a central authentication server each and every request.
+    </para>
+    <para>
+        The <ulink url="http://tools.ietf.org/html/rfc6749">OAuth 2.0</ulink> Authorization Framework enables a
+        third-party to obtain access to an HTTP resource on behalf of a resource owner without the third-party
+        having to know the credentials of the resource owner.  It does this by issuing access tokens via a browser
+        redirect protocol, or by a direct grant.  The access tokens can then be transmitted by the <ulink url="http://tools.ietf.org/html/draft-ietf-oauth-v2-bearer-23">OAuth2 Bearer Token</ulink>
+        protocol to access the protected resource.
+    </para>
+    <para>
+        Resteasy Skeleton Key is an OAuth 2.0 implementation that allows you to use existing JBoss AS7 security infrastructure
+        to secure your web applications and restful services.  You can turn an existing web app into an OAuth 2.0 Access
+        Token Provider or you can turn a JBoss AS7 Security Domain into a central authentication and authorization
+        server that a whole host of applications and services can use.  Here are the features in a nutshell:
+    </para>
+    <para>
+    <itemizedlist>
+        <listitem>
+            <para>
+                Turn an existing servlet-form-auth-based web application into an OAuth 2.0 provider.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                Provide Distributed Single-Sign-On (SSO) from a central authentication server.  Log in once, and
+                you can securely access any browser-based app configured to work in the domain.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                Provide Distributed Logout.  Following one link from any application can log you out of all your
+                distributed applications configured to use SSO.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                Web apps can interact securely with any remote restful service by forwarding access tokens through
+                the standard Authorization header.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                Access tokens are digitally signed by the oauth2 framework and can be used to access any service
+                configured to work in the domain.  The tokens contain both identity and role mapping information.  Because
+                they are digitally signed, there's no need to overload the central authentication server with each request
+                to verify identity and to determine permissions.
+            </para>
+        </listitem>
+    </itemizedlist>
+    </para>
+    <important>
+        <para>The Resteasy distribution comes with an OAuth2 Skeleton key example.  This is a great way to see
+            OAuth2 in action and how it is configured.  You may also want to use this as a template for your applications.
+        </para>
+    </important>
+
+    <section>
+        <title>System Requirements</title>
+        <itemizedlist>
+            <listitem>
+                <para>JBoss AS 7.1.x or higher</para>
+            </listitem>
+            <listitem>
+                <para>HTTPS is required.  See the JBoss 7 documentation on how to enable SSL for web applications</para>
+            </listitem>
+            <listitem>
+                Resteasy 3.0 or higher must be installed within your AS7 distribution.  View how to <link linkend="upgrading-as7">upgrade AS7</link>
+                to the latest version of Resteasy.
+            </listitem>
+            <listitem>
+                <para>A username/password based JBoss security domain</para>
+            </listitem>
+            <listitem>
+                <para>Browser-based apps must be configured to use servlet FORM authentication and web.xml security
+                constraints</para>
+            </listitem>
+        </itemizedlist>
+     </section>
+    <section>
+        <title>Generate the Security Domain Key Pair</title>
+        <para>
+            Access tokens are digitally signed and verified by an RSA keypair.  You must generate this keypair using
+            the JDK's keytool command or by something like openssl.
+        </para>
+<programlisting><![CDATA[
+$ keytool -genkey -alias mydomain -keyalg rsa -keystore realm.jks
+]]></programlisting>
+        <para>
+            This will ask you a series of questions that will be used to create the X509 public certificate. Basic PKI
+            stuff that you hopefully are already familiar with.  Move this keystore file into a directory that you can
+            reference from a configuration file.  I suggest the standalone/configuration directory of your JBoss AS7
+            distribution.
+        </para>
+    </section>
+    <section>
+        <title>Setting up the Auth Server</title>
+        <para>The next thing you're gonna want to do is set up a web application to be your OAuth2 provider.
+        This can be an existing web app or you can create a new WAR to be your central authentication server.
+        An existing web app must be configured to use servlet FORM authentication.  Enabling OAuth2 within
+        this app will not change how normal users interact with it.</para>
+        <section>
+            <title>Setting up your Security Domain</title>
+            <para>
+                You can use any set of JBoss AS7 login modules you want to store your username, passwords and role mappings.
+                Each security domain will be comprised of regular users, oauth clients, and admins.  Oauth clients
+                represent either a web application that wants to use the auth-server to do SSO, or they are traditional
+                oauth clients that want access permision to act on behalf of another user (the traditional OAuth use case).
+                Every oauth client must have a username, password, and a specific role mapping that gives them various permissions to
+                participate in OAuth 2 protocols.  There is a role that grants an oauth client permission
+                to login as a specific user (default is <literal>login</literal>.  This is the SSO case.  There is a role that grants a client permission
+                to request permission to act on behalf of a user (default is <literal>oauth</literal>).  Additional
+                role mappings assigned to the oauth client define what additional permissions they are allowed to have.  These
+                additional permissions are the role mappings of the application and are the intersection of the permissions
+                given to the user the client is acting on behalf of.  This is better explained by an example role mapping file:
+           </para>
+<programlisting>
+wburke=user,admin
+loginclient=login
+oauthclient1=oauth,*
+oauthclient2=oauth,user
+</programlisting>
+            <para>
+                In the above role mapping file with have a simple user <literal>wburke</literal>.  He has application
+                role permissions of <literal>user</literal> and <literal>admin</literal>.  One oauth client user
+                is <literal>loginclient</literal>.  It has been given a role mapping of <literal>login</literal>.
+                This client is allowed to login as the user and is given all roles of the user.  The <literal>oauthclient1</literal>
+                user is not allowed to login as the user, but is allowed to obtain an OAuth grant to act on behalf of the
+                user.  The <literal>*</literal> role means that <literal>oauthclient1</literal> is granted the same
+                roles as the user it is acting on behalf of.  If <literal>oauthclient1</literal> acts on behalf of
+                <literal>wburke</literal> then it will have both <literal>user</literal> and <literal>admin</literal> permissions.
+                The <literal>oauthclient2</literal> is also allowed to use the oauth grant protocol, but it will only
+                ever be granted <literal>user</literal> permissions.
+            </para>
+            <para>
+                You are not confined to login, oauth, and * as role mapping names.  You can configure them to
+                be whatever you want.
+            </para>
+            <para>
+                <emphasis>Why have different login and oauth role mappings?</emphasis>  <literal>login</literal> clients
+                are allowed to bypass entering username and password if the user has already logged in once and has
+                an existing authenticated session with the server.  <literal>oauth</literal> clients are <emphasis>always</emphasis>
+                required to enter username and password.  You probably don't want to grant permission automatically to
+                an oauth client.  A user will want to look at who is requesting permission.  This role distinction
+                gives you this capability.
+            </para>
+        </section>
+        <section>
+            <title>Auth Server Config File</title>
+            <para>You must create a configuration file that holds all the configuration for OAuth2.  This is json formatted
+            If you name it <literal>resteasy-oauth.json</literal> and put it within the <literal>WEB-INF/</literal>
+            directory of your war, that's all you have to do.  Otherwise, you must specify the full path
+            to this configuration file within a context-param within your web.xml file.  The name of this param
+            is <literal>skeleton.key.config.file</literal>.  You can reference System properties within the
+            value of this context-param by enclosing them within <literal>${VARIABLE}</literal>.  Here's an
+            example configuration:</para>
+<programlisting><![CDATA[
+{
+   "realm" : "mydomain",
+   "admin-role" : "admin",
+   "login-role" : "login",
+   "oauth-client-role" : "oauth",
+   "wildcard-role" : "*",
+   "realm-keystore" : "${jboss.server.config.dir}/realm.jks",
+   "realm-key-alias" : "mydomain",
+   "realm-keystore-password" : "password",
+   "realm-private-key-password" : "password",
+   "truststore" : "${jboss.server.config.dir}/client-truststore.ts",
+   "truststore-password" : "password",
+   "resources" : [
+      "https://example.com/customer-portal",
+      "https://somewhere.com/product-portal"
+   ]
+}
+]]></programlisting>
+            <para>
+                Let's go over what each of these config variables represent:
+                <variablelist>
+                    <varlistentry>
+                        <term>realm</term>
+                        <listitem>
+                            <para>
+                                Name of the realm representing the users of your distributed applications and services
+                            </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>admin-role</term>
+                        <listitem>
+                            <para>
+                                Admin role mapping used for admins.  You must have this defined if you want to
+                                do distributed logout.
+                            </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>login-role</term>
+                        <listitem>
+                            <para>
+                                Role mapping for login clients.
+                            </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>oauth-client-role</term>
+                        <listitem>
+                            <para>
+                                Role mapping for regular oauth clients.
+                            </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>wildcard-role</term>
+                        <listitem>
+                            <para>
+                                Role mapping for assigning all roles to an oauth client wishing to act on behalf of a user.
+                            </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>realm-keystore</term>
+                        <listitem>
+                            <para>
+                                Absolute path pointing to the keystore that contains the realm's keypair.  This keypair
+                                is used to digitally sign access tokens.  You may use <literal>${VARIABLE}</literal>
+                                to reference System properties.  The example is referencing the JBoss config dir.
+                            </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>realm-key-alias</term>
+                        <listitem>
+                            <para>
+                                Key alias for the key pair stored in your realm-keystore file.
+                            </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>realm-keystore-password</term>
+                        <listitem>
+                            <para>
+                                Password to access the keystore.
+                            </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>realm-private-key-password</term>
+                        <listitem>
+                            <para>
+                                Password to access the private realm key within the keystore
+                            </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>truststore</term>
+                        <listitem>
+                            <para>
+                                Used for outgoing client HTTPS communications.  This contains one or more trusted
+                                host certificates or certificate authorities.  This is OPTIONAL if you are not
+                                using distributed logout.
+                            </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>truststore-password</term>
+                        <listitem>
+                            <para>
+                                Password for the truststore keystore.
+                            </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>resources</term>
+                        <listitem>
+                            <para>
+                                Root URLs of applications using this auth-server for SSO.  This is OPTIONAL and only
+                                needed if you want to allow distributed logout.
+                            </para>
+                        </listitem>
+                    </varlistentry>
+                </variablelist>
+            </para>
+        </section>
+        <section>
+            <title>Set up web.xml</title>
+            <para>
+                Set up your security constraints however you like.  You must though use FORM authentication.
+            </para>
+        </section>
+        <section>
+            <title>Set up jboss-web.xml</title>
+            <para>
+                In jboss-web.xml in your WEB-INF directory, point to your security domain as a normal secured web app does,
+                and also use a specific valve.
+            </para>
+            <programlisting><![CDATA[
+<jboss-web>
+    <security-domain>java:/jaas/commerce</security-domain>
+    <valve>
+        <class-name>org.jboss.resteasy.skeleton.key.as7.OAuthAuthenticationServerValve</class-name>
+    </valve>
+</jboss-web>]]></programlisting>
+        </section>
+        <section>
+            <title>Set up jboss-deployment-structure.xml</title>
+            <para>
+                You must import the skeleton key modules so that the classes are visible to this application.  Include
+                this file within WEB-INF
+            </para>
+            <programlisting><![CDATA[
+<jboss-deployment-structure>
+    <deployment>
+        <dependencies>
+            <module name="org.jboss.resteasy.resteasy-jaxrs" services="import"/>
+            <module name="org.jboss.resteasy.resteasy-jackson-provider" services="import"/>
+            <module name="org.jboss.resteasy.skeleton-key"/>
+        </dependencies>
+    </deployment>
+</jboss-deployment-structure>]]></programlisting>
+        </section>
+        <section>
+            <title>Tweak your login page</title>
+            <para>
+                The action url used by your login form is dependent on the oauth protocol.  Skeleton key defines
+                a request attribute called <literal>OAUTH_FORM_ACTION</literal> which is the URL you should
+                use for the form's action.  Here's an example login.jsp page that uses this attribute:
+            </para>
+            <programlisting><![CDATA[
+<form action="<%= request.getAttribute("OAUTH_FORM_ACTION")%>" method=post>
+    <p><strong>Please Enter Your User Name: </strong>
+    <input type="text" name="j_username" size="25">
+    <p><p><strong>Please Enter Your Password: </strong>
+    <input type="password" size="15" name="j_password">
+    <p><p>
+    <input type="submit" value="Submit">
+    <input type="reset" value="Reset">
+</form>
+]]></programlisting>
+        </section>
+    </section>
+    <section>
+        <title>Setting Up An App for SSO</title>
+        <para>
+            This section specifies how you can use the central auth-server for SSO.  Following these directions will
+            use the auth-server for browser log in.  The server will also be able to do bearer token authentication as well.
+        </para>
+        <section>
+            <title>SSO config file</title>
+            <para>
+                The best way to create the config file for your application is to ask the central authentication server
+                you configured in the last section.  So, boot up the auth server and go to https://<emphasis>auth-server-context-root</emphasis>/j_oauth_realm_info.html.
+                For example: <literal>https://localhost:8443/auth-server/j_oauth_realm_info.html</literal>. This will
+                show template configurations depending on which valve you are using.  You want the <literal>OAuthManagedResourceValve</literal> config.
+                It will look something like this.
+            </para>
+            <programlisting><![CDATA[
+{
+  "realm" : "mydomain",
+  "realm-public-key" : "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCO8XXyi7oAq5ecsYy+tJrl54N2TtKAkxuWEDmzvSPU+mUA2/3qHcxucZakG74Z49410tn5IIu2CXXlk9CuKcpXvKh+cPBzmC1Nmbd+4MelRVVZnvogyPICs8h3sNTAMNdfI6hDc5/MfVQQ9m5OZrKbNR3dY50mTi/ExnJ5IWPqxQIDAQAB",
+  "admin-role" : "admin",
+  "auth-url" : "https://localhost:8443/auth-server/login.jsp",
+  "code-url" : "https://localhost:8443/auth-server/j_oauth_resolve_access_code",
+  "truststore" : "REQUIRED",
+  "truststore-password" : "REQUIRED",
+  "client-id" : "REQUIRED",
+  "client-credentials" : {
+    "password" : "REQUIRED"
+  }
+}]]></programlisting>
+            Let's go over what each of these config variables represent:
+            <variablelist>
+                <varlistentry>
+                    <term>realm</term>
+                    <listitem>
+                        <para>
+                            Name of the realm representing the users of your distributed applications and services
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>realm-public-key</term>
+                    <listitem>
+                        <para>
+                            PEM format of public key.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>admin-role</term>
+                    <listitem>
+                        <para>
+                            Admin role mapping used for admins.  You must have this defined if you want to
+                            do distributed logout.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>auth-url</term>
+                    <listitem>
+                        <para>
+                            URL of the auth server's login page.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>code-url</term>
+                    <listitem>
+                        <para>
+                            URL to turn an access code into an access token. (Part of the OAuth2 protocol)
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>truststore</term>
+                    <listitem>
+                        <para>
+                            Used for outgoing client HTTPS communications.  This contains one or more trusted
+                            host certificates or certificate authorities.  This is REQUIRED as you must talk
+                            HTTPS to the auth server to turn an access code into an access token.  You can
+                            create this truststore by extracting the public certificate of the auth server's SSL
+                            keystore.  The google knows if you want to know how to do this.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>truststore-password</term>
+                    <listitem>
+                        <para>
+                            Password for the truststore keystore.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>client-id</term>
+                    <listitem>
+                        <para>
+                            Username of the login client.  This server will send client-id and password when
+                            turning an access code into an access token.  Internally, the server will do an HTTPS
+                            invocation to the auth-server passing this information using Basic AUTH.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>client-credentials</term>
+                    <listitem>
+                        <para>
+                            Must specify the password of the oauth login client.
+                        </para>
+                    </listitem>
+                </varlistentry>
+            </variablelist>
+        </section>
+        <section>
+            <title>Set up web.xml</title>
+            <para>
+                Set up your security constraints however you like.  You must though use FORM authentication.
+            </para>
+        </section>
+        <section>
+            <title>Set up jboss-web.xml</title>
+            <para>
+                In jboss-web.xml in your WEB-INF directory you need to use a specific valve.
+            </para>
+            <programlisting><![CDATA[
+<jboss-web>
+    <valve>
+        <class-name>org.jboss.resteasy.skeleton.key.as7.OAuthManagedResourceValve</class-name>
+    </valve>
+</jboss-web>]]></programlisting>
+        </section>
+        <section>
+            <title>Set up jboss-deployment-structure.xml</title>
+            <para>
+                You must import the skeleton key modules so that the classes are visible to this application.  Include
+                this file within WEB-INF
+            </para>
+            <programlisting><![CDATA[
+<jboss-deployment-structure>
+    <deployment>
+        <dependencies>
+            <module name="org.jboss.resteasy.resteasy-jaxrs" services="import"/>
+            <module name="org.jboss.resteasy.resteasy-jackson-provider" services="import"/>
+            <module name="org.jboss.resteasy.skeleton-key"/>
+        </dependencies>
+    </deployment>
+</jboss-deployment-structure>]]></programlisting>
+        </section>
+    </section>
+    <section>
+        <title>Bearer Token only Setup</title>
+        <para>
+            If you have a web app that you want only to allow Bearer token authentication, i.e. a set of JAX-RS services
+            then follow these directions.
+        </para>
+        <section>
+            <title>Bearer token auth config file</title>
+            <para>
+                The best way to create the config file for your application is to ask the central authentication server
+                you configured in the last section.  So, boot up the auth server and go to https://<emphasis>auth-server-context-root</emphasis>/j_oauth_realm_info.html.
+                For example: <literal>https://localhost:8443/auth-server/j_oauth_realm_info.html</literal>. This will
+                show template configurations depending on which valve you are using.  You want the <literal>BearerTokenAuthenticatorValve</literal> config.
+                It will look something like this.
+            </para>
+            <programlisting><![CDATA[
+{
+  "realm" : "mydomain",
+  "realm-public-key" : "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCO8XXyi7oAq5ecsYy+tJrl54N2TtKAkxuWEDmzvSPU+mUA2/3qHcxucZakG74Z49410tn5IIu2CXXlk9CuKcpXvKh+cPBzmC1Nmbd+4MelRVVZnvogyPICs8h3sNTAMNdfI6hDc5/MfVQQ9m5OZrKbNR3dY50mTi/ExnJ5IWPqxQIDAQAB",
+}]]></programlisting>
+            All that is needed is the realm name, and the public key of the realm.
+            Let's go over what each of these config variables represent:
+            <variablelist>
+                <varlistentry>
+                    <term>realm</term>
+                    <listitem>
+                        <para>
+                            Name of the realm representing the users of your distributed applications and services
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>realm-public-key</term>
+                    <listitem>
+                        <para>
+                            PEM format of the realm's public key.  Used to verify tokens.
+                        </para>
+                    </listitem>
+                </varlistentry>
+            </variablelist>
+        </section>
+        <section>
+            <title>Set up web.xml</title>
+            <para>
+                Set up your security constraints however you like.  You must though use FORM authentication.
+            </para>
+        </section>
+        <section>
+            <title>Set up jboss-web.xml</title>
+            <para>
+                In jboss-web.xml in your WEB-INF directory you need to use a specific valve.
+            </para>
+            <programlisting><![CDATA[
+<jboss-web>
+    <valve>
+        <class-name>org.jboss.resteasy.skeleton.key.as7.BearerTokenAuthenticatorValve</class-name>
+    </valve>
+</jboss-web>]]></programlisting>
+        </section>
+        <section>
+            <title>Set up jboss-deployment-structure.xml</title>
+            <para>
+                You must import the skeleton key modules so that the classes are visible to this application.  Include
+                this file within WEB-INF
+            </para>
+            <programlisting><![CDATA[
+<jboss-deployment-structure>
+    <deployment>
+        <dependencies>
+            <module name="org.jboss.resteasy.resteasy-jaxrs" services="import"/>
+            <module name="org.jboss.resteasy.resteasy-jackson-provider" services="import"/>
+            <module name="org.jboss.resteasy.skeleton-key"/>
+        </dependencies>
+    </deployment>
+</jboss-deployment-structure>]]></programlisting>
+        </section>
+    </section>
+    <section>
+        <title>Obtaining an access token programmatically.</title>
+        <para>
+            You can request an access token from the auth-server by doing a simple HTTPS invocation.  You must
+            use BASIC authentication to identify your user, and you will get back a signed access token for that user.
+            Here's an example using a JAX-RS 2.0 client:
+        </para>
+<programlisting>
+    ResteasyClient client = new ResteasyClientBuilder()
+                                .truststore(truststore)
+                                .build();
+
+    Form form = new Form().param("grant_type", "client_credentials");
+    ResteasyWebTarget target = client.target("https://localhost:8443/auth-server/j_oauth_token_grant");
+    target.configuration().register(new BasicAuthentication("bburke@redhat.com", "password"));
+    AccessTokenResponse res = target.request()
+                           .post(Entity.form(form), AccessTokenResponse.class);
+</programlisting>
+        <para>
+           The above makes a simple POST to the context root of the auth server with <literal>j_oauth_token_grant</literal>
+            at the end of the target URL.  This resource is responsible for creating access tokens.
+        </para>
+ <programlisting><![CDATA[
+    try
+    {
+       Response response = client.target("https://localhost:8443/database/products").request()
+                               .header(HttpHeaders.AUTHORIZATION, "Bearer " + res.getToken()).get();
+       String xml = response.readEntity(String.class);
+    }
+    finally
+    {
+       client.close();
+    }
+]]></programlisting>
+        <para>
+            The access token is a simple string.  To invoke on a service protected by bearer token auth, just
+            set the <literal>Authorization</literal> header of your HTTPS request with a value of <literal>Bearer</literal>
+            and then the access token string.
+        </para>
+
+    </section>
+    <section>
+        <title>Access remote services securely in a secure web session</title>
+        <para>
+            If you have an application secured by one of the methods described in this chapter, you can obtain
+            the access token of the current web session so that you can use it to invoke on other remote services
+            securely using bearer token authentication.  Each HttpServletRequest in a secure web session has an attribute
+            called <literal>org.jboss.resteasy.skeleton.key.SkeletonKeySession</literal> which points to an instance
+            of a class with the same  name.  This class contains the access token and also points to the truststore
+            you configured.  You can then extract this info and make secure remote invocations.  Here's an example of that.
+        </para>
+<programlisting><![CDATA[
+   public List<String> getCustomers(HttpServletRequest request)
+   {
+      SkeletonKeySession session = (SkeletonKeySession)request.getAttribute(SkeletonKeySession.class.getName());
+      ResteasyClient client = new ResteasyClientBuilder()
+                 .truststore(session.getMetadata().getTruststore())
+                 .build();
+      try
+      {
+         Response response = client.target("https://localhost:8443/database/customers").request()
+                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + session.getToken()).get();
+         return response.readEntity(new GenericType<List<String>>(){});
+      }
+      finally
+      {
+         client.close();
+      }
+   }
+        ]]>
+</programlisting>
+        <para>
+            If you are within a JAX-RS environment you can inject a <literal>SkeletonKeySession</literal> using the <literal>@Context</literal> annotation.
+        </para>
+    </section>
+    <section>
+        <title>Check Out the OAuth2 Example!</title>
+        <important>
+          <para>The Resteasy distribution comes with an example project that shows all of these different features in action!  Check it out!</para>
+        </important>
+    </section>
+    <section>
+        <title>Auth Server Action URLs</title>
+        <para>
+            For reference, here is the set of relative URL actions that the auth server will publish.
+            <variablelist>
+                <varlistentry>
+                    <term><emphasis>login page</emphasis></term>
+                    <listitem>
+                        <para>
+                            The is the url of your login page.  OAuth clients will redirect to it.  This is application
+                            specific.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>j_oauth_resolve_access_code</term>
+                    <listitem>
+                        <para>
+                            Used by oauth clients to turn an access code into an access token.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>j_oauth_logout</term>
+                    <listitem>
+                        <para>
+                            Do a GET request to this URL and it will perform a distributed logout.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>j_oauth_token_grant</term>
+                    <listitem>
+                        <para>
+                            Do a POST with BASIC Auth to obtain an access token for a specific user.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>j_oauth_realm_info.html</term>
+                    <listitem>
+                        <para>
+                            Displays an HTML page with template configurations for using this realm.
+                        </para>
+                    </listitem>
+                </varlistentry>
+            </variablelist>
+        </para>
+    </section>
+</chapter>
