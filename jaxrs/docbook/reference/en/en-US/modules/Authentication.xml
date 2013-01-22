@@ -15,13 +15,12 @@
     	</para>
     	<important>
     		<para>
-    			This API should be considered experimental and not suitable for production yet, especially for tight security.
-    			It is not final yet and subject to change. If you have comments, bugs, feature requests or questions, contact us
-    			through the <ulink url="https://lists.sourceforge.net/lists/listinfo/RESTEasy-developers">RESTEasy mailing list</ulink>.
+    			This API is deprecated and will be removed in subsequent versions of Resteasy unless there is an outcry from the community.
+                We're focusing on OAuth 2.0 protocols.  Please see our <link linkend='oauth2'>OAuth 2.0 Work</link>.
     		</para>
     	</important>
     	<section>
-    		<title>Authenticating with OAuth</title>
+    		<title>Authenticating with OAuth 1.0a</title>
     		<para>
 				OAuth authentication is the process in which Users grant access to their Protected Resources without sharing their credentials with the Consumer.
 			</para>
@@ -70,7 +69,7 @@
 				The following configuration options are available using <code>&lt;context-param&gt; elements</code>:
 			</para>
 			<table>
-				<caption>OAuth Servlet options</caption>
+				<caption>OAuth 1.0a Servlet options</caption>
 				<thead>
 					<tr>
 						<th>Option Name</th>
