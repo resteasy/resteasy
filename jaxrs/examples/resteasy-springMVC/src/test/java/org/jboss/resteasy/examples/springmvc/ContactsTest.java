@@ -2,6 +2,7 @@ package org.jboss.resteasy.examples.springmvc;
 
 import org.jboss.resteasy.client.ClientURI;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.springmvc.tjws.TJWSEmbeddedSpringMVCServer;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.junit.AfterClass;
@@ -48,7 +49,7 @@ public class ContactsTest
       server = new TJWSEmbeddedSpringMVCServer(
               "classpath:springmvc-servlet.xml", 8080);
       server.start();
-      client = new ResteasyClient();
+      client = new ResteasyClientBuilder().build();
       proxy = client.target(host).proxy(ContactProxy.class);
    }
 

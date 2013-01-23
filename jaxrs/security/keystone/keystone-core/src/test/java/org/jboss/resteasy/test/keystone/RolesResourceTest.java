@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.keystone;
 
 import junit.framework.Assert;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.keystone.model.Role;
 import org.jboss.resteasy.keystone.server.SkeletonKeyApplication;
@@ -65,7 +66,7 @@ public class RolesResourceTest
    public void testRole()
    {
       String newRole = "{ \"role\" : { \"name\" : \"admin\"} }";
-      ResteasyClient client = new ResteasyClient(deployment.getProviderFactory());
+      ResteasyClient client = new ResteasyClientBuilder().providerFactory(deployment.getProviderFactory()).build();
       Response response = client.target(generateURL("/roles")).request().post(Entity.json(newRole));
       Assert.assertEquals(response.getStatus(), 201);
       response.close();
@@ -83,7 +84,7 @@ public class RolesResourceTest
    @Test
    public void testRoleText()
    {
-      ResteasyClient client = new ResteasyClient(deployment.getProviderFactory());
+      ResteasyClient client = new ResteasyClientBuilder().providerFactory(deployment.getProviderFactory()).build();
       Response response = client.target(generateURL("/roles")).request().post(Entity.text("admin"));
       Assert.assertEquals(response.getStatus(), 201);
       response.close();
@@ -102,7 +103,7 @@ public class RolesResourceTest
    public void testRoleId()
    {
       String newRole = "{ \"role\" : { \"id\" : \"5\", \"name\" : \"admin\"} }";
-      ResteasyClient client = new ResteasyClient(deployment.getProviderFactory());
+      ResteasyClient client = new ResteasyClientBuilder().providerFactory(deployment.getProviderFactory()).build();
       Response response = client.target(generateURL("/roles")).request().post(Entity.json(newRole));
       Assert.assertEquals(response.getStatus(), 201);
       response.close();

@@ -6,6 +6,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.test.BaseResourceTest;
@@ -62,7 +63,7 @@ public class ClientExecutorShutdownTest extends BaseResourceTest
    public void testApacheHttpClient4ExecutorNonSharedHttpClientFinalize() throws Throwable
    {
       ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine();
-      ResteasyClient client = new ResteasyClient(engine);
+      ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
       Response response = client.target(generateURL("/test")).request().post(null);
       Assert.assertEquals(204, response.getStatus());
       engine.finalize();
@@ -88,7 +89,7 @@ public class ClientExecutorShutdownTest extends BaseResourceTest
    public void testApacheHttpClient4ExecutorNonSharedHttpClientClose() throws Throwable
    {
       ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine();
-      ResteasyClient client = new ResteasyClient(engine);
+      ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
       Response response = client.target(generateURL("/test")).request().post(null);
       Assert.assertEquals(204, response.getStatus());
       engine.close();
@@ -115,7 +116,7 @@ public class ClientExecutorShutdownTest extends BaseResourceTest
    {
       HttpClient httpClient = new DefaultHttpClient();
       ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
-      ResteasyClient client = new ResteasyClient(engine);
+      ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
       Response response = client.target(generateURL("/test")).request().post(null);
       Assert.assertEquals(204, response.getStatus());
       engine.finalize();
@@ -136,7 +137,7 @@ public class ClientExecutorShutdownTest extends BaseResourceTest
    {
       HttpClient httpClient = new DefaultHttpClient();
       ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
-      ResteasyClient client = new ResteasyClient(engine);
+      ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
       Response response = client.target(generateURL("/test")).request().post(null);
       Assert.assertEquals(204, response.getStatus());
       engine.close();

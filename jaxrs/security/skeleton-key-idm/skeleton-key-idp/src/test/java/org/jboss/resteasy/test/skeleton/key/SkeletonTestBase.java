@@ -7,6 +7,7 @@ import org.infinispan.eviction.EvictionStrategy;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.jwt.JsonSerialization;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyContextResolver;
 import org.jboss.resteasy.skeleton.key.idm.adapters.infinispan.InfinispanIDM;
@@ -48,7 +49,7 @@ public class SkeletonTestBase extends BaseResourceTest
       deployment.getRegistry().addSingletonResource(tokenManagement);
       RealmRepresentation r = loadJson(realmJson);
 
-      client = new ResteasyClient();
+      client = new ResteasyClientBuilder().build();
       WebTarget target = client.target(generateURL("/realms"));
       Response response = target.request().post(Entity.json(r));
       Assert.assertEquals(201, response.getStatus());

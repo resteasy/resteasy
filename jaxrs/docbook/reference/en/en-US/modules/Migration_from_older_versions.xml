@@ -9,7 +9,18 @@
 <chapter id="Migration_from_older_versions">
 <title>Migration from older versions</title>
 <sect1>
-    <title>Migrating from 2.x to 3.0</title>
+    <title>Migrating from 3.0-beta-1 and 3.0-beta-2</title>
+    <itemizedlist>
+        <listitem>
+            The constructors for ResteasyClient class are no longer public.  You need to use the new ResteasyClientBuilder
+            class.  One thing to note is that when a ResteasyClient is created by a builder, it no longer
+            uses ResteasyProviderFactory.getInstance(), but instead instantiates a new one.  This will probably
+            not effect most uses.
+        </listitem>
+    </itemizedlist>
+</sect1>
+<sect1>
+    <title>Migrating from 2.x to 3.0-beta-1</title>
     <itemizedlist>
         <listitem>
             Resteasy manual client API, interceptors, StringConverters, StringParamterConverters, and Async HTTP APIs have all been

@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.skeleton.key;
 
 import junit.framework.Assert;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.interceptors.RoleBasedSecurityFeature;
 import org.jboss.resteasy.skeleton.key.RealmConfiguration;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
@@ -42,7 +43,7 @@ public class JaxrsOAuthBearerTest extends SkeletonTestBase
       resourceMetadata.setResourceName("Application");
       resourceMetadata.setRealmKey(realmInfo.getPublicKey());
       config.setAuthUrl(UriBuilder.fromUri(realmInfo.getAuthorizationUrl()));
-      config.setClient(new ResteasyClient());
+      config.setClient(new ResteasyClientBuilder().build());
       config.setCodeUrl(config.getClient().target(realmInfo.getCodeUrl()));
       config.setSslRequired(false);
       config.setClientId("loginclient");

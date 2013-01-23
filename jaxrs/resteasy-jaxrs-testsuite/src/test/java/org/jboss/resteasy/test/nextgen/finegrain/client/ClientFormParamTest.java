@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.nextgen.finegrain.client;
 
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.Assert;
@@ -56,7 +57,7 @@ public class ClientFormParamTest
       try
       {
          dispatcher.getRegistry().addPerRequestResource(FormResourceImpl.class);
-         ResteasyClient client = new ResteasyClient();
+         ResteasyClient client = new ResteasyClientBuilder().build();
          final FormResource proxy = ProxyBuilder.builder(FormResource.class, client.target(generateBaseUrl())).build();
          final String result = proxy.put("value");
          Assert.assertEquals(result, "value");

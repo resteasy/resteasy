@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.nextgen.providers.jackson;
 import org.jboss.resteasy.annotations.providers.NoJackson;
 import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -196,7 +197,7 @@ public class JacksonTest extends BaseResourceTest
    {
       dispatcher.getRegistry().addPerRequestResource(JacksonService.class);
       dispatcher.getRegistry().addPerRequestResource(XmlService.class);
-      client = new ResteasyClient();
+      client = new ResteasyClientBuilder().build();
    }
 
 

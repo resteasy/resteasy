@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.nextgen.finegrain.methodparams;
 
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -63,7 +64,7 @@ public class QueryParamAsPrimitiveTest
       dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveArrayDefault.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveArrayDefaultNull.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveArrayDefaultOverride.class);
-      client = new ResteasyClient();
+      client = new ResteasyClientBuilder().build();
       resourceQueryPrimitives = ProxyBuilder.builder(IResourceQueryPrimitives.class, client.target(generateBaseUrl())).build();
       resourceQueryPrimitiveWrappers = ProxyBuilder.builder(IResourceQueryPrimitiveWrappers.class, client.target(generateBaseUrl())).build();
       resourceQueryPrimitiveList = ProxyBuilder.builder(IResourceQueryPrimitiveList.class, client.target(generateBaseUrl())).build();
@@ -73,6 +74,7 @@ public class QueryParamAsPrimitiveTest
    @AfterClass
    public static void after() throws Exception
    {
+      client.close();
       dispatcher.getRegistry().removeRegistrations(ResourceQueryPrimitives.class);
       dispatcher.getRegistry().removeRegistrations(ResourceQueryPrimitivesDefault.class);
       dispatcher.getRegistry().removeRegistrations(ResourceQueryPrimitivesDefaultOverride.class);

@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.nextgen;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
@@ -68,7 +69,7 @@ public class CharSetTest extends BaseResourceTest
    public static void setup()
    {
       addPerRequestResource(TestService.class);
-      client = new ResteasyClient();
+      client = new ResteasyClientBuilder().build();
    }
 
    @AfterClass
