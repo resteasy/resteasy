@@ -92,7 +92,7 @@ public class UsersResourceTest
    public void testUserId()
    {
       String newUser = "{ \"user\" : { \"id\" : \"5\", \"username\" : \"wburke\", \"name\" : \"Bill Burke\", \"email\" : \"bburke@redhat.com\", \"enabled\" : true, \"credentials\" : { \"password\" : \"geheim\" }} }";
-      ResteasyClient client = new ResteasyClient(deployment.getProviderFactory());
+      ResteasyClient client = new ResteasyClientBuilder().providerFactory(deployment.getProviderFactory()).build();
       Response response = client.target(generateURL("/users")).request().post(Entity.json(newUser));
       Assert.assertEquals(response.getStatus(), 201);
       response.close();

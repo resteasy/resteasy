@@ -3,6 +3,7 @@ package org.jboss.resteasy.tests.signature;
 import org.jboss.resteasy.annotations.security.doseta.Signed;
 import org.jboss.resteasy.annotations.security.doseta.Verify;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.security.doseta.DKIMSignature;
 import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
@@ -58,7 +59,7 @@ public class SigningTest
       repository.setKeyStorePassword("password");
       repository.setUseDns(false);
       repository.start();
-      client = new ResteasyClient();
+      client = new ResteasyClientBuilder().build();
    }
 
    @AfterClass

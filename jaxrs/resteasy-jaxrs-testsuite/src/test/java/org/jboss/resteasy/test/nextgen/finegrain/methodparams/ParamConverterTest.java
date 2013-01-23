@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.nextgen.finegrain.methodparams;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.Before;
@@ -119,11 +120,12 @@ public class ParamConverterTest extends BaseResourceTest
    @Test
    public void testIt() throws Exception
    {
-      ResteasyClient client = new ResteasyClient(deployment.getProviderFactory());
+      ResteasyClient client = new ResteasyClientBuilder().providerFactory(deployment.getProviderFactory()).build();
       MyClient proxy = client.target(generateBaseUrl()).proxy(MyClient.class);
       POJO pojo = new POJO();
       pojo.setName("pojo");
       proxy.put(pojo, pojo, pojo, pojo);
+      client.close();
    }
 
    @Path("/")
@@ -136,8 +138,9 @@ public class ParamConverterTest extends BaseResourceTest
    @Test
    public void testDefault() throws Exception
    {
-      ResteasyClient client = new ResteasyClient(deployment.getProviderFactory());
+      ResteasyClient client = new ResteasyClientBuilder().providerFactory(deployment.getProviderFactory()).build();
       MyDefaultClient proxy = client.target(generateBaseUrl()).proxy(MyDefaultClient.class);
       proxy.put();
+      client.close();
    }
 }

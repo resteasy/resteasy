@@ -26,19 +26,19 @@ public class ResteasyClient implements Client
    protected ClientConfiguration configuration;
 
 
-   public ResteasyClient()
+   ResteasyClient()
    {
       this(ResteasyProviderFactory.getInstance());
    }
 
-   public ResteasyClient(ResteasyProviderFactory factory)
+   ResteasyClient(ResteasyProviderFactory factory)
    {
       configuration = new ClientConfiguration(factory);
       httpEngine = new ApacheHttpClient4Engine(configuration());
       asyncInvocationExecutor = Executors.newFixedThreadPool(10);
    }
 
-   public ResteasyClient(ClientHttpEngine httpEngine)
+   ResteasyClient(ClientHttpEngine httpEngine)
    {
       this.httpEngine = httpEngine;
       configuration = new ClientConfiguration(ResteasyProviderFactory.getInstance());
@@ -46,7 +46,7 @@ public class ResteasyClient implements Client
 
    }
 
-   public ResteasyClient(ClientHttpEngine httpEngine, ExecutorService asyncInvocationExecutor, ClientConfiguration configuration)
+   ResteasyClient(ClientHttpEngine httpEngine, ExecutorService asyncInvocationExecutor, ClientConfiguration configuration)
    {
       this.httpEngine = httpEngine;
       this.asyncInvocationExecutor = asyncInvocationExecutor;

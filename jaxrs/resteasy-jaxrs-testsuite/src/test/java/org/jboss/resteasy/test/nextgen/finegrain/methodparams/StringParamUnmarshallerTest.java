@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.nextgen.finegrain.methodparams;
 
 import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -117,16 +118,18 @@ public class StringParamUnmarshallerTest extends BaseResourceTest
    @Test
    public void testMe() throws Exception
    {
-      ResteasyClient client = new ResteasyClient();
+      ResteasyClient client = new ResteasyClientBuilder().build();
       Invocation.Builder request = client.target(generateURL("/datetest/04-23-1977")).request();
       System.out.println(request.get(String.class));
+      client.close();
    }
 
    @Test
    public void testMe2() throws Exception
    {
-      ResteasyClient client = new ResteasyClient();
+      ResteasyClient client = new ResteasyClientBuilder().build();
       Invocation.Builder request = client.target(generateURL("/fromstring/ORANGE/football")).request();
       System.out.println(request.get(String.class));
+      client.close();
    }
 }

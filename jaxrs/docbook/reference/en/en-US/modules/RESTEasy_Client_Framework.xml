@@ -8,8 +8,8 @@
         interface is a builder of WebTarget instances.  WebTarget represents a distinct URL or URL template from which
         you can build more sub-resource WebTargets or invoke requests on.</para>
         <para>
-            There are really two ways to create a Client.  Standard way, or you can instantiate Resteasy's core class
-            directly.  The advantage of the latter is that you can work with Resteasy extension interfaces.
+            There are really two ways to create a Client.  Standard way, or you can use the ResteasyClientBuilder class.
+            The advantage of the latter is that it gives you helper methods to set up SSL and work with Resteasy extension interfaces.
         </para>
         <programlisting>
             Client client = ClientFactory.newClient();
@@ -18,7 +18,7 @@
             String value = response.readEntity(String.class);
             response.close();  // You should close connections!
 
-            ResteasyClient client = new ResteasyClient();
+            ResteasyClient client = new ResteasyClientBuilder().build();
             ResteasyWebTarget target = client.target("http://foo.com/resource");
         </programlisting>
         <para>
@@ -102,7 +102,7 @@ public interface SimpleClient
         </programlisting>
         Alternatively you can use the Resteasy client extension interfaces directly:
         <programlisting>
-            ResteasyClient client = new ResteasyClient();
+            ResteasyClient client = new ResteasyClientBuilder().build();
             ResteasyWebTarget target = client.target("http://example.com/base/uri");
 
             SimpleClient simple = target.proxy(SimpleClient.class);
@@ -216,9 +216,7 @@ public interface LibraryService {
      </para>
      
      <programlisting>
-ResteasyClient client = (ResteasyClient)ClientFactory.newClient();
-ClientHttpEngine engine = new ApacheHttpClient4Engine();
-client.httpEngine(engine);
+ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
      </programlisting>
      
      <para>
@@ -249,8 +247,7 @@ localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
 // 4. Create client executor and proxy
 httpClient = new DefaultHttpClient();
 ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient, localContext);
-ResteasyClient client = (ResteasyClient)ClientFactory.newClient();
-client.httpEngine(engine);
+ResteasyClient client = new RestasyClientBuilder().httpEngine(engine).build();
      </programlisting>
 
      <para>

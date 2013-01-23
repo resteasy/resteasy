@@ -5,6 +5,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.annotate.JsonTypeInfo.As;
 import org.codehaus.jackson.annotate.JsonTypeInfo.Id;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.After;
@@ -160,7 +161,7 @@ public class ProxyWithGenericReturnTypeJacksonTest
     @Test
     public void test() throws Exception
     {
-       ResteasyClient client = new ResteasyClient();
+       ResteasyClient client = new ResteasyClientBuilder().build();
         WebTarget target = client.target("http://localhost:8081/test/one/");
         System.out.println("Sending request");
         Response response = target.request().get();

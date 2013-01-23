@@ -4,6 +4,7 @@ import org.jboss.resteasy.annotations.security.doseta.After;
 import org.jboss.resteasy.annotations.security.doseta.Signed;
 import org.jboss.resteasy.annotations.security.doseta.Verify;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.security.doseta.DKIMSignature;
@@ -86,7 +87,7 @@ public class SigningTest extends BaseResourceTest
 
       dispatcher.getDefaultContextObjects().put(KeyRepository.class, repository);
       addPerRequestResource(SignedResource.class);
-      client = new ResteasyClient();
+      client = new ResteasyClientBuilder().build();
    }
 
    @AfterClass

@@ -11,6 +11,7 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.test.BaseResourceTest;
@@ -279,7 +280,7 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       HttpClient httpClient = new DefaultHttpClient(cm, params);
 
       final ApacheHttpClient4Engine executor = new ApacheHttpClient4Engine(httpClient);
-      ResteasyClient client = new ResteasyClient(executor);
+      ResteasyClient client = new ResteasyClientBuilder().httpEngine(executor).build();
       return client;
    }
 

@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.nextgen.client;
 
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.BaseResourceTest;
@@ -78,7 +79,7 @@ public class WhitespaceTest extends BaseResourceTest
    @Test
    public void testEcho()
    {
-      ResteasyClient client = new ResteasyClient();
+      ResteasyClient client = new ResteasyClientBuilder().build();
       HelloClient proxy = client.target(generateBaseUrl()).proxy(HelloClient.class);
       Assert.assertEquals(SPACES_REQUEST, proxy.sayHi(SPACES_REQUEST));
       client.close();
