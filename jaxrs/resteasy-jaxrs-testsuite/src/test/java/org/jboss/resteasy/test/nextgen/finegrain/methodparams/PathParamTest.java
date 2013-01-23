@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.nextgen.finegrain.methodparams;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.Assert;
@@ -145,7 +146,7 @@ public class PathParamTest extends BaseResourceTest
 
       String[] Headers = {"list=abcdef"};//, "list=fedcba"};
 
-      ResteasyClient client = new ResteasyClient();
+      ResteasyClient client = new ResteasyClientBuilder().build();
       for (String header : Headers)
       {
          Invocation.Builder request = client.target(TestPortProvider.generateURL("/PathParamTest/a/b/c/d/e/f")).request();
@@ -154,12 +155,13 @@ public class PathParamTest extends BaseResourceTest
          Assert.assertEquals(200, response.getStatus());
          Assert.assertEquals(header, response.readEntity(String.class));
       }
+      client.close();
    }
 
    @Test
    public void test178() throws Exception
    {
-      ResteasyClient client = new ResteasyClient();
+      ResteasyClient client = new ResteasyClientBuilder().build();
       {
          Invocation.Builder request = client.target(TestPortProvider.generateURL("/digits/5150")).request();
          Response response = request.get();
@@ -173,6 +175,7 @@ public class PathParamTest extends BaseResourceTest
          Assert.assertEquals(404, response.getStatus());
          response.close();
       }
+      client.close();
    }
 
    @Path("/cars/{make}")
@@ -241,7 +244,7 @@ public class PathParamTest extends BaseResourceTest
    @Test
    public void testCarResource() throws Exception
    {
-      ResteasyClient client = new ResteasyClient();
+      ResteasyClient client = new ResteasyClientBuilder().build();
       System.out.println("**** Via @MatrixParam ***");
       Invocation.Builder request = client.target(TestPortProvider.generateURL("/cars/mercedes/matrixparam/e55;color=black/2006")).request();
       Response response = request.get();
@@ -266,6 +269,7 @@ public class PathParamTest extends BaseResourceTest
       response = request.get();
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("A black 2006 mercedes e55", response.readEntity(String.class));
+      client.close();
    }
 
 

@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.nextgen.finegrain.methodparams;
 
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -52,7 +53,7 @@ public class UriParamAsPrimitiveTest
       deployment.getRegistry().addPerRequestResource(ResourceUriLongWrapper.class);
       deployment.getRegistry().addPerRequestResource(ResourceUriFloatWrapper.class);
       deployment.getRegistry().addPerRequestResource(ResourceUriDoubleWrapper.class);
-      client = new ResteasyClient();
+      client = new ResteasyClientBuilder().build();
       resourceUriBoolean = ProxyBuilder.builder(IResourceUriBoolean.class, client.target(generateBaseUrl())).build();
       resourceUriByte = ProxyBuilder.builder(IResourceUriByte.class, client.target(generateBaseUrl())).build();
    }
@@ -60,6 +61,7 @@ public class UriParamAsPrimitiveTest
    @AfterClass
    public static void after() throws Exception
    {
+      client.close();
       EmbeddedContainer.stop();
    }
 

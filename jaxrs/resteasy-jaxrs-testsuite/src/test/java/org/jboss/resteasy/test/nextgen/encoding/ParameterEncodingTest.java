@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.nextgen.encoding;
 
 import junit.framework.Assert;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -177,7 +178,7 @@ public class ParameterEncodingTest
    {
       deployment = EmbeddedContainer.start();
       deployment.getRegistry().addPerRequestResource(TestResource.class);
-      client = new ResteasyClient();
+      client = new ResteasyClientBuilder().build();
    }
 
    @AfterClass

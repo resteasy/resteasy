@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.client;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -85,7 +86,7 @@ public class SyncInvoketest extends BaseResourceTest
    @Test
    public void testMethods() throws Exception
    {
-      ResteasyClient client = new ResteasyClient();
+      ResteasyClient client = new ResteasyClientBuilder().build();
 
       {
          Response res = client.target(generateURL("/test")).request().get();
@@ -157,7 +158,7 @@ public class SyncInvoketest extends BaseResourceTest
    @Test
    public void testInvoke() throws Exception
    {
-      ResteasyClient client = new ResteasyClient();
+      ResteasyClient client = new ResteasyClientBuilder().build();
 
       {
          Response res = client.target(generateURL("/test")).request().buildGet().invoke();

@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.nextgen.encoding;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.util.Encode;
@@ -33,7 +34,7 @@ public class EncodingTest
       tjws.start();
       tjws.getDeployment().getDispatcher().getRegistry().addSingletonResource(new MyTestResource());
       String url = "http://localhost:" + TestPortProvider.getPort();
-      client = new ResteasyClient();
+      client = new ResteasyClientBuilder().build();
       testClient = client.target(url).proxy(TestClient.class);
 
    }

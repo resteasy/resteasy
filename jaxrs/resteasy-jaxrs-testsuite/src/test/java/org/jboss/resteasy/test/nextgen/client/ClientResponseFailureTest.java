@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.nextgen.client;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
@@ -59,7 +60,7 @@ public class ClientResponseFailureTest extends BaseResourceTest
    @Test
    public void testStreamStillOpen() throws Exception
    {
-      ResteasyClient client = new ResteasyClient();
+      ResteasyClient client = new ResteasyClientBuilder().build();
 
       final MyResource proxy = client.target( "http://localhost:8081").proxy(MyResource.class);
       boolean failed = true;

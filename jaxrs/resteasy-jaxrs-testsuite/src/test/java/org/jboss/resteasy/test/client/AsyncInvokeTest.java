@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.client;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -93,7 +94,7 @@ public class AsyncInvokeTest extends BaseResourceTest
    @Test
    public void testAsync() throws Exception
    {
-      ResteasyClient client = new ResteasyClient();
+      ResteasyClient client = new ResteasyClientBuilder().build();
 
       {
          Future<Response> future = client.target(generateURL("/test")).request().async().get();
@@ -177,7 +178,7 @@ public class AsyncInvokeTest extends BaseResourceTest
    @Test
    public void testAsyncCallback() throws Exception
    {
-      ResteasyClient client = new ResteasyClient();
+      ResteasyClient client = new ResteasyClientBuilder().build();
 
       {
          ok = false;
@@ -412,7 +413,7 @@ public class AsyncInvokeTest extends BaseResourceTest
    @Test
    public void testSubmit() throws Exception
    {
-      ResteasyClient client = new ResteasyClient();
+      ResteasyClient client = new ResteasyClientBuilder().build();
 
       {
          Future<Response> future = client.target(generateURL("/test")).request().buildGet().submit();

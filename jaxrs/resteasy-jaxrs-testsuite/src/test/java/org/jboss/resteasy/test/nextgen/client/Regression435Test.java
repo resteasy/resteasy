@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.nextgen.client;
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.Assert;
@@ -47,7 +48,7 @@ public class Regression435Test extends BaseResourceTest
    @Test
    public void testMe() throws Exception
    {
-      ResteasyClient client = new ResteasyClient();
+      ResteasyClient client = new ResteasyClientBuilder().build();
       MyTest proxy = client.target(TestPortProvider.generateURL("")).proxy(MyTest.class);
       try
       {
