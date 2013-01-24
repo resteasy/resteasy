@@ -1008,7 +1008,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       code.setClient(client_id);
       code.setSso(sso);
       code.setRedirect(redirect_uri);
-      int expiration = skeletonKeyConfig.getExpiration() == 0 ? 300 : skeletonKeyConfig.getExpiration();
+      int expiration = skeletonKeyConfig.getAccessCodeLifetime() == 0 ? 300 : skeletonKeyConfig.getAccessCodeLifetime();
       code.setExpiration((System.currentTimeMillis() / 1000) + expiration);
       accessCodeMap.put(code.getId(), code);
       log.info("--- sign access code");
@@ -1034,6 +1034,11 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       token.id(generateId());
       token.principal(gp.getName());
       token.audience(skeletonKeyConfig.getRealm());
+      int expiration = skeletonKeyConfig.getAccessCodeLifetime() == 0 ? 3600 : skeletonKeyConfig.getAccessCodeLifetime();
+      if (skeletonKeyConfig.getTokenLifetime() > 0)
+      {
+         token.expiration((System.currentTimeMillis() / 1000) + expiration);
+      }
       SkeletonKeyToken.Access realmAccess = new SkeletonKeyToken.Access();
       for (String role : gp.getRoles())
       {
