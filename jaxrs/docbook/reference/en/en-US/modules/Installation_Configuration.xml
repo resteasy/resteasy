@@ -10,10 +10,236 @@
 
     </para>
 
+    <sect1 id="upgrading-as7">
+        <title>Upgrading Resteasy Within JBoss AS 7</title>
+        <para>
+            Resteasy is bundled with JBoss AS 7.  You will likely have the need to upgrade Resteasy in AS7.  The Resteasy
+            distribution comes with a zip file called resteasy-jboss-modules-3.0-beta-2.zip.  Unzip this file while
+            with the modules/ directory of the JBoss AS7 distribution.  This will overwrite some of the existing files there.
+        </para>
+    </sect1>
+    <sect1>
+        <title>Configuring in JBoss AS 7</title>
+        <para>
+            RESTEasy is bundled with JBoss AS 7 and completely integrated as per the requirements of Java EE 6.
+            First you must at least provide an empty web.xml file.  You can of course deploy any custom servlet, filter
+            or security constraint you want to within your web.xml, but the least amount of work is to create an empty
+            web.xml file.  Also, resteasy context-params are available if you want to tweak turn on/off any specific
+            resteasy feature.
+        </para>
+        <para>
+            <programlisting>
+                <![CDATA[
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+</web-app>
+]]>
+            </programlisting>
+        </para>
+        <para>
+            Since we're not using a jax-rs servlet mapping, we must define an Application class that is annotated with
+            the @ApplicationPath annotation.  If you return any empty set for by classes and singletons, your WAR will
+            be scanned for JAX-RS annotation resource and provider classes.
+        </para>
+        <programlisting>
+            import javax.ws.rs.ApplicationPath;
+            import javax.ws.rs.core.Application;
+
+            @ApplicationPath("/root-path")
+            public class MyApplication extends Application
+            {
+            }
+        </programlisting>
+        <para>
+            The Resteasy distribution has ported the "Restful Java" O'Reilly workbook examples to AS7.  You can
+            find these under the directory examples/oreilly-workbook-as7.
+        </para>
+    </sect1>
+    <section>
+        <title>Resteasy Modules in AS7</title>
+        <para>
+            Resteasy and JAX-RS are automically loaded into your deployment's classpath, if and only if you are deploying
+            a JAX-RS Application.  If you only want to use the client library, you will have to create a dependency
+            for it within your deployment.  Also, only some resteasy features are automatically loaded.  To bring
+            in these libraries, you'll have to create a jboss-deployment-structure.xml file within your WEB-INF
+            directory of your WAR file.  Here's an example:
+        </para>
+        <programlisting>
+            <![CDATA[
+<jboss-deployment-structure>
+    <deployment>
+        <dependencies>
+            <module name="org.jboss.resteasy.resteasy-yaml-provider" services="import"/>
+        </dependencies>
+    </deployment>
+</jboss-deployment-structure>]]>
+
+        </programlisting>
+        <para>The <literal>services</literal> attribute must be set to import for modules that have default providers
+            that must be registered.  The following
+            table specifies which modules are loaded by default when JAX-RS services are deployed and which aren't.
+        </para>
+        <para>
+            <table>
+            <tgroup cols="3" rowsep="1" colsep="1">
+            <thead>
+                <row>
+                    <entry>
+                        Module Name
+                    </entry>
+                    <entry>
+                        Loaded by Default
+                    </entry>
+                    <entry>
+                        Description
+                    </entry>
+
+                 </row>
+            </thead>
+            <tbody>
+            <row>
+                <entry>
+                    org.jboss.resteasy.resteasy-jaxrs
+                </entry>
+                <entry>
+                    yes
+                </entry>
+                <entry>
+                    Core resteasy libraries for server and client.  You will need to include this in your deployment
+                    if you are only using JAX-RS client
+                </entry>
+            </row>
+                <row>
+                    <entry>
+                        org.jboss.resteasy.resteasy-cdi
+                    </entry>
+                    <entry>
+                        yes
+                    </entry>
+                    <entry>
+                        Resteasy CDI integration
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        org.jboss.resteasy.resteasy-jaxb-provider
+                    </entry>
+                    <entry>
+                        yes
+                    </entry>
+                    <entry>
+                        XML JAXB integration.
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        org.jboss.resteasy.resteasy-atom-provider
+                    </entry>
+                    <entry>
+                        yes
+                    </entry>
+                    <entry>
+                        Resteasy's atom library.
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        org.jboss.resteasy.resteasy-jackson-provider
+                    </entry>
+                    <entry>
+                        yes
+                    </entry>
+                    <entry>
+                        Integration with the JSON parser and object mapper, Jackson.
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        org.jboss.resteasy.resteasy-jsapi
+                    </entry>
+                    <entry>
+                        yes
+                    </entry>
+                    <entry>
+                        Resteasy's Javascript API.
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        org.jboss.resteasy.resteasy-multipart-provider
+                    </entry>
+                    <entry>
+                        yes
+                    </entry>
+                    <entry>
+                        Features for dealing with multipart formats.
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        org.jboss.resteasy.resteasy-crypto
+                    </entry>
+                    <entry>
+                        no
+                    </entry>
+                    <entry>
+                        S/MIME, DKIM, and support for other security formats.
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        org.jboss.resteasy.jose-jwt
+                    </entry>
+                    <entry>
+                        no
+                    </entry>
+                    <entry>
+                        JOSE-JWT library.  JSON Web Token.
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        org.jboss.resteasy.resteasy-jettison-provider
+                    </entry>
+                    <entry>
+                        no
+                    </entry>
+                    <entry>
+                        Alternative JAXB-like parser for JSON.
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        org.jboss.resteasy.resteasy-yaml-provider
+                    </entry>
+                    <entry>
+                        no
+                    </entry>
+                    <entry>
+                        YAML marshalling.
+                    </entry>
+                </row>
+                <row>
+                    <entry>
+                        org.jboss.resteasy.skeleton-key
+                    </entry>
+                    <entry>
+                        no
+                    </entry>
+                    <entry>
+                        OAuth2 support for AS7.
+                    </entry>
+                </row>
+            </tbody>
+            </tgroup>
+            </table>
+        </para>
+    </section>
     <sect1>
         <title>Standalone Resteasy</title>
         <para>
-            If you are using resteasy outside of JBoss AS 6, you will need to do a few manual steps to install and
+            If you are using resteasy outside of JBoss AS 7, you will need to do a few manual steps to install and
             configure resteasy.
             RESTeasy is deployed as a WAR archive and thus depends on a Servlet container. We strongly suggest that you
             use Maven to build your WAR files as RESTEasy is split into
@@ -427,52 +653,7 @@
 </web-app>]]>
         </programlisting>
     </sect1>
-    <sect1 id="upgrading-as7">
-        <title>Upgrading Resteasy Within JBoss AS 7</title>
-        <para>
-            Resteasy is bundled with JBoss AS 7.  You will likely have the need to upgrade Resteasy in AS7.  The Resteasy
-            distribution comes with a zip file called resteasy-jboss-modules-3.0-beta-2.zip.  Unzip this file while
-            with the modules/ directory of the JBoss AS7 distribution.  This will overwrite some of the existing files there.
-        </para>
-    </sect1>
-    <sect1>
-        <title>Configuring in JBoss AS 7</title>
-        <para>
-            RESTEasy is bundled with JBoss AS 7 and completely integrated as per the requirements of Java EE 6.
-            First you must at least provide an empty web.xml file.  You can of course deploy any custom servlet, filter
-            or security constraint you want to within your web.xml, but the least amount of work is to create an empty
-            web.xml file.  Also, resteasy context-params are available if you want to tweak turn on/off any specific
-            resteasy feature.
-        </para>
-        <para>
-            <programlisting>
-                <![CDATA[
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
-</web-app>
-]]>
-            </programlisting>
-        </para>
-        <para>
-            Since we're not using a jax-rs servlet mapping, we must define an Application class that is annotated with
-            the @ApplicationPath annotation.  If you return any empty set for by classes and singletons, your WAR will
-            be scanned for JAX-RS annotation resource and provider classes.
-        </para>
-        <programlisting>
-            import javax.ws.rs.ApplicationPath;
-            import javax.ws.rs.core.Application;
 
-            @ApplicationPath("/root-path")
-            public class MyApplication extends Application
-            {
-            }
-        </programlisting>
-        <para>
-            The Resteasy distribution has ported the "Restful Java" O'Reilly workbook examples to AS7.  You can
-            find these under the directory examples/oreilly-workbook-as7.
-        </para>
-    </sect1>
     <sect1 id="RESTEasyLogging">
         <title>RESTEasyLogging</title>
 

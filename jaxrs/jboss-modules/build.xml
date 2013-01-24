@@ -74,6 +74,10 @@
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-cdi"/>
         </module-def>
 
+        <module-def name="org.jboss.resteasy.resteasy-crypto">
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-crypto" jandex="true"/>
+        </module-def>
+
         <module-def name="org.jboss.resteasy.resteasy-jackson-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jackson-provider" jandex="true"/>
         </module-def>
@@ -90,7 +94,6 @@
             <maven-resource group="org.jboss.resteasy" artifact="async-http-servlet-3.0"/>
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jaxrs"/>
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-client"/>
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-crypto" jandex="true"/>
         </module-def>
 
         <module-def name="org.jboss.resteasy.jose-jwt">

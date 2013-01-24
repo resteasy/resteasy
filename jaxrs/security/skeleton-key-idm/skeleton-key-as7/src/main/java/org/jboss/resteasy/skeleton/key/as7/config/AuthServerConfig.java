@@ -32,8 +32,11 @@ public class AuthServerConfig
    @JsonProperty("realm-private-key-password")
    protected String realmPrivateKeyPassword;
 
-   @JsonProperty("access-code-expiration")
-   protected int expiration;
+   @JsonProperty("access-code-lifetime")
+   protected int accessCodeLifetime;
+
+   @JsonProperty("token-lifetime")
+   protected int tokenLifetime;
 
    @JsonProperty("admin-role")
    protected String adminRole;
@@ -99,14 +102,14 @@ public class AuthServerConfig
       this.realmPublicKey = realmPublicKey;
    }
 
-   public int getExpiration()
+   public int getAccessCodeLifetime()
    {
-      return expiration;
+      return accessCodeLifetime;
    }
 
-   public void setExpiration(int expiration)
+   public void setAccessCodeLifetime(int accessCodeLifetime)
    {
-      this.expiration = expiration;
+      this.accessCodeLifetime = accessCodeLifetime;
    }
 
    public String getTruststore()
@@ -262,5 +265,15 @@ public class AuthServerConfig
    public void setRealmPrivateKeyPassword(String realmPrivateKeyPassword)
    {
       this.realmPrivateKeyPassword = realmPrivateKeyPassword;
+   }
+
+   public int getTokenLifetime()
+   {
+      return tokenLifetime;
+   }
+
+   public void setTokenLifetime(int tokenLifetime)
+   {
+      this.tokenLifetime = tokenLifetime;
    }
 }

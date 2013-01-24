@@ -171,6 +171,8 @@ oauthclient2=oauth,user
    "realm-key-alias" : "mydomain",
    "realm-keystore-password" : "password",
    "realm-private-key-password" : "password",
+   "access-code-lifetime" : "300",
+   "token-lifetime" : "3600",
    "truststore" : "${jboss.server.config.dir}/client-truststore.ts",
    "truststore-password" : "password",
    "resources" : [
@@ -254,6 +256,27 @@ oauthclient2=oauth,user
                         <listitem>
                             <para>
                                 Password to access the private realm key within the keystore
+                            </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>access-code-lifetime</term>
+                        <listitem>
+                            <para>
+                                The access code is obtained via a browser redirect after you log into the central server.
+                                This access code is then transmitted in a separate request to the auth server to obtain
+                                an access token.  This variable is the lifetime of this access code.  In how many seconds
+                                will it expire.  You want to keep this value short.  The default is 300 seconds.
+                            </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>token-lifetime</term>
+                        <listitem>
+                            <para>
+                             This is how long in seconds the access token is viable after it was first created.  The
+                                default is one hour.  Depending on your security requirements you may want to extend
+                                or shorten this default.
                             </para>
                         </listitem>
                     </varlistentry>
