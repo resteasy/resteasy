@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -95,8 +95,7 @@ final class FactoryFinder {
      * @throws ClassNotFoundException if the given class could not be found
      *                                or could not be instantiated
      */
-    private static Object newInstance(final String className,
-                                      final ClassLoader classLoader) throws ClassNotFoundException {
+    private static Object newInstance(final String className, final ClassLoader classLoader) throws ClassNotFoundException {
         try {
             Class spiClass;
             if (classLoader == null) {
@@ -139,7 +138,8 @@ final class FactoryFinder {
      *                          there is no fallback class name
      * @return the <code>Class</code> object of the specified message factory;
      *         may not be <code>null</code>
-     * @throws WebServiceException if there is an error
+     * @throws ClassNotFoundException if the given class could not be found
+     *                                or could not be instantiated
      */
     static Object find(final String factoryId, final String fallbackClassName) throws ClassNotFoundException {
         ClassLoader classLoader = getContextClassLoader();

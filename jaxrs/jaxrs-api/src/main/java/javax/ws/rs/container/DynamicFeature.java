@@ -39,18 +39,17 @@
  */
 package javax.ws.rs.container;
 
-import javax.ws.rs.core.Configurable;
+import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.WriterInterceptor;
 
 /**
- * A JAX-RS provider for dynamic registration of <i>post-matching</i> providers
+ * A JAX-RS meta-provider for dynamic registration of <i>post-matching</i> providers
  * during a JAX-RS application setup at deployment time.
  *
- * Dynamic feature provider is used by JAX-RS runtime to register providers
- * that shall be applied to a particular resource class and method and
- * overrides any annotation-based binding definitions defined on any registered
- * resource filter or interceptor instance.
+ * Dynamic feature is used by JAX-RS runtime to register providers that shall be applied
+ * to a particular resource class and method and overrides any annotation-based binding
+ * definitions defined on any registered resource filter or interceptor instance.
  * <p>
  * Providers implementing this interface MAY be annotated with
  * {@link javax.ws.rs.ext.Provider &#64;Provider} annotation in order to be
@@ -69,7 +68,7 @@ public interface DynamicFeature {
     /**
      * A callback method called by the JAX-RS runtime during the application
      * deployment to register provider instances or classes in a
-     * {@link Configurable configurable} scope of a particular {@link javax.ws.rs.HttpMethod
+     * {@link javax.ws.rs.core.Configuration runtime configuration} scope of a particular {@link javax.ws.rs.HttpMethod
      * resource or sub-resource method}; i.e. the providers that should be dynamically bound
      * to the method.
      * <p>
@@ -81,6 +80,7 @@ public interface DynamicFeature {
      * <li>{@link ContainerResponseFilter}</li>
      * <li>{@link ReaderInterceptor}</li>
      * <li>{@link WriterInterceptor}</li>
+     * <li>{@link javax.ws.rs.core.Feature}</li>
      * </ul>
      * <p>
      * A provider instance or class that does not implement any of the interfaces
@@ -93,16 +93,15 @@ public interface DynamicFeature {
      * Conceptually, this callback method is called during a {@link javax.ws.rs.HttpMethod
      * resource or sub-resource method} discovery phase (typically once per each discovered
      * resource or sub-resource method) to register provider instances or classes in a
-     * {@code configurable} scope of each particular method identified by the supplied
+     * {@code configuration} scope of each particular method identified by the supplied
      * {@link ResourceInfo resource information}.
-     * The responsibility of the feature is to properly update the supplied {@code configurable}
+     * The responsibility of the feature is to properly update the supplied {@code configuration}
      * context.
      * </p>
      *
      * @param resourceInfo resource class and method information.
-     * @param configurable a resource or sub-resource method-level configurable context
+     * @param context      configurable resource or sub-resource method-level runtime context
      *                     associated with the {@code resourceInfo} in which the feature
-     *                     should be enabled.
      */
-    public void configure(ResourceInfo resourceInfo, Configurable configurable);
+    public void configure(ResourceInfo resourceInfo, FeatureContext context);
 }

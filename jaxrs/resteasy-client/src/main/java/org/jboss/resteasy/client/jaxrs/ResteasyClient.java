@@ -6,12 +6,14 @@ import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Configuration;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Configurable;
+import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,7 +36,7 @@ public class ResteasyClient implements Client
    ResteasyClient(ResteasyProviderFactory factory)
    {
       configuration = new ClientConfiguration(factory);
-      httpEngine = new ApacheHttpClient4Engine(configuration());
+      httpEngine = new ApacheHttpClient4Engine();
       asyncInvocationExecutor = Executors.newFixedThreadPool(10);
    }
 
@@ -77,9 +79,79 @@ public class ResteasyClient implements Client
    }
 
    @Override
-   public Configuration configuration()
+   public Configuration getConfiguration()
    {
       return configuration;
+   }
+
+   @Override
+   public ResteasyClient setProperty(String name, Object value)
+   {
+      configuration.setProperty(name, value);
+      return this;
+   }
+
+   @Override
+   public ResteasyClient register(Class<?> componentClass)
+   {
+      configuration.register(componentClass);
+      return this;
+   }
+
+   @Override
+   public ResteasyClient register(Class<?> componentClass, int priority)
+   {
+      configuration.register(componentClass, priority);
+      return this;
+   }
+
+   @Override
+   public ResteasyClient register(Class<?> componentClass, Class<?>... contracts)
+   {
+      configuration.register(componentClass, contracts);
+      return this;
+   }
+
+   @Override
+   public ResteasyClient register(Class<?> componentClass, Map<Class<?>, Integer> contracts)
+   {
+      configuration.register(componentClass, contracts);
+      return this;
+   }
+
+   @Override
+   public ResteasyClient register(Object component)
+   {
+      configuration.register(component);
+      return this;
+   }
+
+   @Override
+   public ResteasyClient register(Object component, int priority)
+   {
+      configuration.register(component, priority);
+      return this;
+   }
+
+   @Override
+   public ResteasyClient register(Object component, Class<?>... contracts)
+   {
+      configuration.register(component, contracts);
+      return this;
+   }
+
+   @Override
+   public ResteasyClient register(Object component, Map<Class<?>, Integer> contracts)
+   {
+      configuration.register(component, contracts);
+      return this;
+   }
+
+   @Override
+   public ResteasyClient replaceWith(Configuration config)
+   {
+      configuration.replaceWith(config);
+      return this;
    }
 
    @Override
@@ -113,4 +185,5 @@ public class ResteasyClient implements Client
       WebTarget target = target(link);
       return target.request(link.getType());
    }
+
 }

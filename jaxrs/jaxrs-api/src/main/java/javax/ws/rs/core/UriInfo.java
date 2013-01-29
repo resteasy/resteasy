@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -359,4 +359,74 @@ public interface UriInfo {
      * @return a read-only list of matched resource class instances.
      */
     public List<Object> getMatchedResources();
+
+    /**
+     * Resolve a relative URI with respect to the base URI of the application.
+     * This method is a shorthand for {@code uriInfo.resolve(uriInfo.getBaseUri(), uri)}.
+     * The resolved URI returned by this method is normalized. If the supplied URI is
+     * already resolved, it is just returned.
+     *
+     * @param uri URI to resolve against the base URI of the application.
+     * @return newly resolved URI or supplied URI if already resolved.
+     * @since 2.0
+     */
+    public URI resolve(URI uri);
+
+    /**
+     * Resolve a relative URI with respect to a base URI. The resolved URI returned by
+     * this method is normalized. If the supplied URI is already resolved, it is just returned.
+     *
+     * @param baseUri base URI used for resolution.
+     * @param uri URI to resolve against a base URI.
+     * @return newly resolved URI or supplied URI if already resolved.
+     * @since 2.0
+     */
+    public URI resolve(URI baseUri, URI uri);
+
+    /**
+     * Relativize a URI with respect to the current request URI. This method
+     * is a shorthand for {@code uriInfo.relativize(uriInfo.getRequestUri(), uri)}.
+     *
+     * @param uri URI to relativize against the request URI.
+     * @return newly relativized URI.
+     * @throws java.lang.IllegalStateException if called outside the scope of a request.
+     * @since 2.0
+     */
+    public URI relativize(URI uri);
+
+    /**
+     * <p>Relativize a URI as follows:
+     * <ol>
+     * <li>If URI to relativize is already relative, it is first resolved using
+     * {@link #resolve(java.net.URI)} and the result is normalized.</li>
+     * <li>The resulting URI is relativize with respect to the first URI passed to
+     * this method. If the two URIs do not share a prefix, the URI computed in
+     * step 1 is returned.</li>
+     * </ol>
+     * </p>
+     *
+     * <p>Examples:
+     * <br/>
+     * <br/><b>From URI:</b> <tt>http://host:port/app/root/a/b/c</tt>
+     * <br/><b>Supplied URI:</b> <tt>a/d/e</tt>
+     * <br/><b>Returned URI:</b> <tt>../../d/e</tt>
+     * <br/>
+     * <br/><b>From URI:</b> <tt>http://host:port/app/root/a/b/c</tt>
+     * <br/><b>Supplied URI:</b> <tt>http://host:port/app/root/a/d/e</tt>
+     * <br/><b>Returned URI:</b> <tt>../../d/e</tt>
+     * <br/>
+     * <br/><b>From URI:</b> <tt>http://host1:port1/app/root/a/b/c</tt>
+     * <br/><b>Supplied URI:</b> <tt>http://host2:port2/app/root/a/d/e</tt>
+     * <br/><b>Returned URI:</b> <tt>http://host2:port2/app/root/a/d/e</tt> <br/><p>
+     *
+     * <p>In the last example, the supplied URI is returned given that it is absolute
+     * and there is no common prefix between it and the from URI.</p>
+     *
+     * @param from URI from which to relativize.
+     * @param uri URI to relativize against the from URI.
+     * @return newly relativized URI.
+     * @since 2.0
+     */
+    public URI relativize(URI from, URI uri);
+
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,33 +37,42 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package javax.ws.rs.client;
+package javax.ws.rs;
 
 /**
- * A client-side processing runtime exception.
+ * A base JAX-RS runtime processing exception.
  *
- * The exception is thrown during HTTP request invocation processing,
- * to signal a failure to process the HTTP request or response. The exception
- * message or nested {@link Throwable} cause SHOULD contain additional information
- * about the reason of the processing failure.
+ * The exception of this type is thrown during HTTP request or response processing,
+ * to signal a runtime processing failure. Typical classes of failures covered by
+ * {@code ProcessingException} include
+ * <ul>
+ * <li>failures in filter or interceptor chain execution,</li>
+ * <li>errors caused by missing message body readers or writers for the particular Java type
+ * and media type combinations,</li>
+ * <li>propagated {@link java.io.IOException IO exceptions} thrown by
+ * entity {@link javax.ws.rs.ext.MessageBodyReader readers} and {@link javax.ws.rs.ext.MessageBodyWriter writers}
+ * during entity serialization and de-serialization.</li>
+ * </ul>
+ * as well as any other JAX-RS runtime processing errors.
+ * The exception message or nested {@link Throwable}
+ * cause SHOULD contain additional information about the reason of the processing
+ * failure.
  * <p>
- * Note that the exception is used to indicate client-side processing errors. It is
- * not used to indicate errors received in a response from a server. For the cases
- * when a response returned by a server does not contain a
- * {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL successful} response
- * status code a {@link javax.ws.rs.WebApplicationException} or one of it's sub-classes
- * is used, depending on the actual value of the returned response status code.
+ * Note that the exception is used to indicate (internal) JAX-RS processing errors.
+ * It is not used to indicate HTTP error response states. A HTTP error response is
+ * represented by a {@link javax.ws.rs.WebApplicationException} class or one of it's
+ * sub-classes.
  * </p>
  *
  * @author Marek Potociar
  * @since 2.0
  */
-public class ClientException extends RuntimeException {
+public class ProcessingException extends RuntimeException {
 
     private static final long serialVersionUID = -4232431597816056514L;
 
     /**
-     * Constructs a new client-side runtime exception with the specified cause
+     * Constructs a new JAX-RS runtime processing exception with the specified cause
      * and a detail message of {@code (cause==null ? null : cause.toString())}
      * (which typically contains the class and detail message of {@code cause}).
      * This constructor is useful for runtime exceptions that are little more
@@ -73,12 +82,12 @@ public class ClientException extends RuntimeException {
      *              {@link #getCause()} method). (A {@code null} value is permitted,
      *              and indicates that the cause is nonexistent or unknown.)
      */
-    public ClientException(final Throwable cause) {
+    public ProcessingException(final Throwable cause) {
         super(cause);
     }
 
     /**
-     * Constructs a new client-side runtime exception with the specified detail
+     * Constructs a new JAX-RS runtime processing exception with the specified detail
      * message and cause.
      * <p/>
      * Note that the detail message associated with {@code cause} is <i>not</i>
@@ -90,19 +99,19 @@ public class ClientException extends RuntimeException {
      *                {@link #getCause()} method). (A {@code null} value is permitted,
      *                and indicates that the cause is nonexistent or unknown.)
      */
-    public ClientException(final String message, final Throwable cause) {
+    public ProcessingException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
     /**
-     * Constructs a new client-side runtime exception with the specified detail
+     * Constructs a new JAX-RS runtime processing exception with the specified detail
      * message. The cause is not initialized, and may subsequently be initialized
      * by a call to {@link #initCause}.
      *
      * @param message the detail message (which is saved for later retrieval
      *                by the {@link #getMessage()} method).
      */
-    public ClientException(final String message) {
+    public ProcessingException(final String message) {
         super(message);
     }
 }

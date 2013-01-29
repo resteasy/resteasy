@@ -12,6 +12,7 @@ import org.jboss.resteasy.client.jaxrs.internal.proxy.extractors.EntityExtractor
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.InvocationProcessor;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.ProcessorFactory;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.WebTargetProcessor;
+import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
 import javax.ws.rs.Path;
@@ -53,7 +54,7 @@ public class ClientInvoker implements MethodInvoker
       }
       this.declaring = declaring;
       this.method = method;
-      invokerConfig = (ClientConfiguration) this.webTarget.configuration();
+      invokerConfig = (ClientConfiguration) this.webTarget.getConfiguration();
       ResourceInfo info = new ResourceInfo()
       {
          @Override
@@ -70,7 +71,7 @@ public class ClientInvoker implements MethodInvoker
       };
       for (DynamicFeature feature : invokerConfig.getDynamicFeatures())
       {
-         feature.configure(info, invokerConfig);
+         feature.configure(info, new FeatureContextDelegate(invokerConfig));
       }
 
 

@@ -1,9 +1,10 @@
 package org.jboss.resteasy.plugins.interceptors;
 
-import org.jboss.resteasy.spi.ForbiddenException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.BindingPriority;
+import javax.annotation.Priority;
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.SecurityContext;
@@ -13,7 +14,7 @@ import java.io.IOException;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@BindingPriority(BindingPriority.AUTHORIZATION)
+@Priority(Priorities.AUTHORIZATION)
 public class RoleBasedSecurityFilter implements ContainerRequestFilter
 {
    protected String[] rolesAllowed;

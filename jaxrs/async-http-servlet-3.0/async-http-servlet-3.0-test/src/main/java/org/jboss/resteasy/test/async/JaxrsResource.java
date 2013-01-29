@@ -107,16 +107,11 @@ public class JaxrsResource
             try
             {
                sync.countDown();
-               System.out.println("awaiting thread");
+               System.out.println("cancel awaiting thread");
                ready.await();
-               System.out.println("resuming");
+               System.out.println("cancel resuming");
                Response jaxrs = Response.ok("hello").type(MediaType.TEXT_PLAIN).build();
-               response.resume(jaxrs);
-            }
-            catch (IllegalStateException ie)
-            {
-               System.out.println("cancel caused exception");
-               cancelled = true;
+               cancelled = !response.resume(jaxrs);
             }
             catch (Exception e)
             {
@@ -127,6 +122,7 @@ public class JaxrsResource
       t.start();
 
       sync.await();
+      System.out.println("Cancelling...");
       response.cancel();
       ready.countDown();
    }

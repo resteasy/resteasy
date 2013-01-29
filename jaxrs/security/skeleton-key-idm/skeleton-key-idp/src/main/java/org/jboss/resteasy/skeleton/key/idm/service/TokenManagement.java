@@ -18,11 +18,11 @@ import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyScope;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 import org.jboss.resteasy.skeleton.key.representations.idm.RequiredCredentialRepresentation;
-import org.jboss.resteasy.spi.ForbiddenException;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.util.Base64;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
@@ -269,11 +269,11 @@ public class TokenManagement
             {
                if (!scopeMapping.getRoles().contains(role))
                {
-                  throw new ForbiddenException("Known client not authorized for the requested scope.", Response.status(403).entity("<h1>Security Alert</h1><p>Known client not authorized for the requested scope.</p>").type("text/html").build());
+                  throw new ForbiddenException(Response.status(403).entity("<h1>Security Alert</h1><p>Known client not authorized for the requested scope.</p>").type("text/html").build());
                }
                if (!roleMapping.getRoles().contains(role))
                {
-                  throw new ForbiddenException("", Response.status(403).entity("<h1>Security Alert</h1><p>You are not authorized for the requested scope.</p>").type("text/html").build());
+                  throw new ForbiddenException(Response.status(403).entity("<h1>Security Alert</h1><p>You are not authorized for the requested scope.</p>").type("text/html").build());
 
                }
                access.addRole(role);
@@ -289,7 +289,7 @@ public class TokenManagement
          ScopeMapping mapping = identityManager.getScopeMapping(realm, client);
          if (mapping == null || !mapping.getRoles().contains("login"))
          {
-            throw new ForbiddenException("", Response.status(403).entity("<h1>Security Alert</h1><p>Known client not authorized to request a user login.</p>").type("text/html").build());
+            throw new ForbiddenException(Response.status(403).entity("<h1>Security Alert</h1><p>Known client not authorized to request a user login.</p>").type("text/html").build());
          }
          token = createAccessToken(user, realm);
       }

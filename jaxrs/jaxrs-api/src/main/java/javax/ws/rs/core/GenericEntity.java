@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -120,7 +120,7 @@ public class GenericEntity<T> {
      * @param entity the entity instance, must not be {@code null}.
      * @throws IllegalArgumentException if entity is {@code null}.
      */
-    protected GenericEntity(final T entity) throws IllegalArgumentException {
+    protected GenericEntity(final T entity) {
         if (entity == null) {
             throw new IllegalArgumentException("The entity must not be null");
         }
@@ -143,7 +143,7 @@ public class GenericEntity<T> {
      *                                  a variable of the supplied generic type or if entity or genericType
      *                                  is null.
      */
-    public GenericEntity(final T entity, final Type genericType) throws IllegalArgumentException {
+    public GenericEntity(final T entity, final Type genericType) {
         if (entity == null || genericType == null) {
             throw new IllegalArgumentException("Arguments must not be null.");
         }

@@ -143,7 +143,7 @@ public class SkeletonKeyApplication
 
    protected String getConfigProperty(String name)
    {
-      String val = (String)configurable.getProperty(name);
+      String val = (String)configurable.getConfiguration().getProperty(name);
       if (val != null) return val;
       ResteasyConfiguration config = getResteasyConfiguration();
       if (config == null) return null;
@@ -158,7 +158,7 @@ public class SkeletonKeyApplication
 
    protected Cache findCache()
    {
-      Cache cache = (Cache)configurable.getProperty("skeleton.key.cache");
+      Cache cache = (Cache)configurable.getConfiguration().getProperty("skeleton.key.cache");
       if (cache != null) return cache;
       cache = getXmlCache();
       if (cache != null) return cache;

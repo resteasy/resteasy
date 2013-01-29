@@ -68,16 +68,17 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          }
 
          @Override
-         public void resume(Object entity) throws IllegalStateException
+         public boolean resume(Object entity)
          {
             synchronized (responseLock)
             {
-               if (done) throw new IllegalStateException("Response processing is finished");
-               if (cancelled) throw new IllegalStateException("Response processing is cancelled");
+               if (done) return false;
+               if (cancelled) return false;
                AsyncContext asyncContext = getAsyncContext();
                try
                {
                   super.resume(entity);
+                  return true;
                }
                finally
                {
@@ -89,16 +90,17 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          }
 
          @Override
-         public void resume(Throwable exc) throws IllegalStateException
+         public boolean resume(Throwable exc)
          {
             synchronized (responseLock)
             {
-               if (done) throw new IllegalStateException("Response processing is finished");
-               if (cancelled) throw new IllegalStateException("Response processing is cancelled");
+               if (done) return false;
+               if (cancelled) return false;
                AsyncContext asyncContext = getAsyncContext();
                try
                {
                   super.resume(exc);
+                  return true;
                }
                finally
                {
@@ -115,18 +117,23 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          }
 
          @Override
-         public void setTimeout(long time, TimeUnit unit) throws IllegalStateException
-         {
-            AsyncContext asyncContext = getAsyncContext();
-            asyncContext.setTimeout(unit.toMillis(time));
-         }
-
-         @Override
-         public void cancel()
+         public boolean setTimeout(long time, TimeUnit unit) throws IllegalStateException
          {
             synchronized (responseLock)
             {
-               if (done || cancelled) return;
+               if (done || cancelled) return false;
+            }
+            AsyncContext asyncContext = getAsyncContext();
+            asyncContext.setTimeout(unit.toMillis(time));
+            return true;
+         }
+
+         @Override
+         public boolean cancel()
+         {
+            synchronized (responseLock)
+            {
+               if (done || cancelled) return false;
                done = true;
                cancelled = true;
             }
@@ -134,6 +141,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
             try
             {
                sendResponse(Response.status(Response.Status.SERVICE_UNAVAILABLE).build());
+               return true;
             }
             finally
             {
@@ -142,11 +150,11 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          }
 
          @Override
-         public void cancel(int retryAfter)
+         public boolean cancel(int retryAfter)
          {
             synchronized (responseLock)
             {
-               if (done || cancelled) return;
+               if (done || cancelled) return false;
                done = true;
                cancelled = true;
             }
@@ -154,6 +162,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
             try
             {
                sendResponse(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
+               return true;
             }
             finally
             {
@@ -162,11 +171,11 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          }
 
          @Override
-         public void cancel(Date retryAfter)
+         public boolean cancel(Date retryAfter)
          {
             synchronized (responseLock)
             {
-               if (done || cancelled) return;
+               if (done || cancelled) return false;
                done = true;
                cancelled = true;
             }
@@ -174,6 +183,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
             try
             {
                sendResponse(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
+               return true;
             }
             finally
             {

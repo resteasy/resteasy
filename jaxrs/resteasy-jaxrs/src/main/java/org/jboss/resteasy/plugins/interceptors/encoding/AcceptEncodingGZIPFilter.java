@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.interceptors.encoding;
 
-import javax.ws.rs.BindingPriority;
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.core.HttpHeaders;
@@ -16,7 +17,7 @@ import java.io.IOException;
  * @version $Revision: 1 $
  */
 @Provider
-@BindingPriority(BindingPriority.HEADER_DECORATOR)
+@Priority(Priorities.HEADER_DECORATOR)
 public class AcceptEncodingGZIPFilter implements ClientRequestFilter
 {
 

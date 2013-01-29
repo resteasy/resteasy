@@ -60,19 +60,19 @@ package javax.ws.rs.ext;
 public interface ReaderInterceptor {
 
     /**
-     * Interceptor method wrapping calls to
-     * {@link javax.ws.rs.ext.MessageBodyReader#readFrom}. The parameters
-     * of the wrapped method called are available from <code>context</code>.
-     * Implementations of this method SHOULD explicitly call
-     * {@link javax.ws.rs.ext.ReaderInterceptorContext#proceed} to invoke
-     * the next interceptor in the chain, and ultimately the wrapped method.
+     * Interceptor method wrapping calls to {@link MessageBodyReader#readFrom} method.
+     *
+     * The parameters of the wrapped method called are available from {@code context}.
+     * Implementations of this method SHOULD explicitly call {@link ReaderInterceptorContext#proceed}
+     * to invoke the next interceptor in the chain, and ultimately the wrapped
+     * {@link MessageBodyReader#readFrom} method.
      *
      * @param context invocation context.
-     * @return result of next interceptor invoked or the wrapped method if
-     *         last interceptor in chain.
-     * @throws java.io.IOException if an IO error arises.
+     * @return result of next interceptor invoked or the wrapped method if last interceptor in chain.
+     * @throws java.io.IOException if an IO error arises or is thrown by the wrapped
+     *                             {@code MessageBodyReader.readFrom} method.
      * @throws javax.ws.rs.WebApplicationException
-     *                             thrown by wrapped method.
+     *                             thrown by the wrapped {@code MessageBodyReader.readFrom} method.
      */
     public Object aroundReadFrom(ReaderInterceptorContext context)
             throws java.io.IOException, javax.ws.rs.WebApplicationException;

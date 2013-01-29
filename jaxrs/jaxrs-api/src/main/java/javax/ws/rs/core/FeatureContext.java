@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,51 +37,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package javax.ws.rs;
+package javax.ws.rs.core;
 
 /**
- * The exception thrown by JAX-RS runtime in case the processing of a message
- * entity failed in a request or response filter.
+ * A configurable context passed to {@link Feature} and {@link javax.ws.rs.container.DynamicFeature}
+ * instances by JAX-RS runtime during the phase of their configuration.
  *
- * @author Marek Potociar
- * @since 2.0
+ * @author Marek Potociar (marek.potociar at oracle.com)
  */
-public class MessageProcessingException extends RuntimeException {
-    private static final long serialVersionUID = 1867031673462562629L;
-
-    /**
-     * Constructs a new message processing exception with the specified cause and
-     * a detail message of {@code (cause==null ? null : cause.toString())}.
-     *
-     * @param cause the cause (which is saved for later retrieval by the
-     *              {@link #getCause()} method).  (A {@code null} value is permitted, and
-     *              indicates that the cause is nonexistent or unknown.)
-     */
-    public MessageProcessingException(Throwable cause) {
-        super(cause);
-    }
-
-    /**
-     * Constructs a new message processing exception with the specified cause and
-     * a detail message.
-     *
-     * @param message detailed exception message.
-     * @param cause   the cause (which is saved for later retrieval by the
-     *                {@link #getCause()} method).  (A {@code null} value is permitted, and
-     *                indicates that the cause is nonexistent or unknown.)
-     */
-    public MessageProcessingException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    /**
-     * Constructs a new message processing exception with a specified detail
-     * message.
-     *
-     * @param message detailed exception message.
-     */
-    public MessageProcessingException(String message) {
-        super(message);
-    }
-
+public interface FeatureContext extends Configurable<FeatureContext> {
 }

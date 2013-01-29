@@ -42,6 +42,7 @@ package javax.ws.rs.ext;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 
 /**
@@ -61,13 +62,16 @@ public interface WriterInterceptorContext extends InterceptorContext {
     /**
      * Proceed to the next interceptor in the chain.
      *
-     * Interceptors MUST explicitly call this method to continue the execution
-     * chain; the call to this method in the last interceptor of the chain will
-     * invoke {@link javax.ws.rs.ext.MessageBodyWriter#writeTo} method.
+     * Interceptors MUST explicitly call this method to continue the execution chain;
+     * the call to this method in the last interceptor of the chain will invoke
+     * the wrapped {@link javax.ws.rs.ext.MessageBodyWriter#writeTo} method.
      *
-     * @throws IOException if an IO exception arises.
+     * @throws java.io.IOException if an IO error arises or is thrown by the wrapped
+     *                             {@code MessageBodyWriter.writeTo} method.
+     * @throws javax.ws.rs.WebApplicationException
+     *                             thrown by the wrapped {@code MessageBodyWriter.writeTo} method.
      */
-    void proceed() throws IOException;
+    void proceed() throws IOException, WebApplicationException;
 
     /**
      * Get object to be written as HTTP entity.

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,57 +39,56 @@
  */
 package javax.ws.rs;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import javax.ws.rs.core.Response;
 
 /**
- * <p>Filters and interceptors are grouped in chains for each of the extension
- * points: Pre, PreMatch, Post as well as ReadFrom and WriteTo.
- * Each of these chains is sorted by binding priorities which are represented
- * as integer numbers.
- * All chains except Post are sorted in ascending order; the lower
- * the number the higher the priority. The Post filter chain is sorted
- * in descending order to ensure that response filters are executed in
- * <em>reverse order</em>.</p>
+ * A runtime exception indicating that an access to a resource requested by
+ * a client has been {@link javax.ws.rs.core.Response.Status#FORBIDDEN forbidden}
+ * by the server.
  *
- * <p>This class defines a few built-in priority classes. Filters and interceptors
- * that belong to the same priority class (same integer value) are executed
- * in an implementation-defined manner. By default, i.e. when
- * this annotation is absent, a filter or interceptor is defined in the
- * {@link #USER} class.</p>
- *
- * @author Santiago Pericas-Geertsen
+ * @author Marek Potociar
  * @since 2.0
  */
-@Target(ElementType.TYPE)
-@Retention(value = RetentionPolicy.RUNTIME)
-public @interface BindingPriority {
+public class ForbiddenException extends ClientErrorException {
+
+    private static final long serialVersionUID = -2740045367479165061L;
 
     /**
-     * Security authentication filter/interceptor priority.
+     * Construct a new "forbidden" exception.
      */
-    public static final int AUTHENTICATION = 2000;
-    /**
-     * Security authorization filter/interceptor priority.
-     */
-    public static final int AUTHORIZATION = 3000;
-    /**
-     * Header decorator filter/interceptor priority.
-     */
-    public static final int HEADER_DECORATOR = 5000;
-    /**
-     * Message encoder or decoder filter/interceptor priority.
-     */
-    public static final int ENTITY_CODER = 6000;
-    /**
-     * User-level filter/interceptor priority.
-     */
-    public static final int USER = 7000;
+    public ForbiddenException() {
+        super(Response.Status.FORBIDDEN);
+    }
 
     /**
-     * Priority defined for a filter or interceptor.
+     * Construct a new "forbidden" exception.
+     *
+     * @param response error response.
+     * @throws IllegalArgumentException in case the status code set in the response
+     *                                  is not HTTP {@code 403}.
      */
-    int value();
+    public ForbiddenException(Response response) {
+        super(validate(response, Response.Status.FORBIDDEN));
+    }
+
+    /**
+     * Construct a new "forbidden" exception.
+     *
+     * @param cause the underlying cause of the exception.
+     */
+    public ForbiddenException(Throwable cause) {
+        super(Response.Status.FORBIDDEN, cause);
+    }
+
+    /**
+     * Construct a new "forbidden" exception.
+     *
+     * @param response error response.
+     * @param cause    the underlying cause of the exception.
+     * @throws IllegalArgumentException in case the status code set in the response
+     *                                  is not HTTP {@code 403}.
+     */
+    public ForbiddenException(Response response, Throwable cause) {
+        super(validate(response, Response.Status.FORBIDDEN), cause);
+    }
 }

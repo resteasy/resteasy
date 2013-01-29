@@ -41,7 +41,7 @@ package javax.ws.rs.client;
 
 import java.net.URL;
 
-import javax.ws.rs.core.Configurable;
+import javax.ws.rs.core.Configuration;
 
 /**
  * Main entry point to the client API used to bootstrap {@link javax.ws.rs.client.Client}
@@ -111,7 +111,7 @@ public abstract class ClientFactory {
      *                      client instance.
      * @return new configured client instance.
      */
-    public static Client newClient(final Configurable configuration) {
+    public static Client newClient(final Configuration configuration) {
         return getFactory().getClient(configuration);
     }
 
@@ -129,5 +129,5 @@ public abstract class ClientFactory {
      *                      the new client instance.
      * @return a new client instance.
      */
-    protected abstract Client getClient(final Configurable configuration);
+    protected abstract Client getClient(final Configuration configuration);
 }

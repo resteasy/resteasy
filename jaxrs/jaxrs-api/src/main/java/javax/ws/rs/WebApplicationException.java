@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -91,7 +91,7 @@ public class WebApplicationException extends RuntimeException {
      * @param status the HTTP status code that will be returned to the client.
      * @throws IllegalArgumentException if status is {@code null}.
      */
-    public WebApplicationException(final Response.Status status) throws IllegalArgumentException {
+    public WebApplicationException(final Response.Status status) {
         this(null, status);
     }
 
@@ -113,12 +113,29 @@ public class WebApplicationException extends RuntimeException {
      * @param cause    the underlying cause of the exception.
      */
     public WebApplicationException(final Throwable cause, final Response response) {
-        super(cause);
+        super(computeExceptionMessage(response), cause);
         if (response == null) {
             this.response = Response.serverError().build();
         } else {
             this.response = response;
         }
+    }
+
+    private static String computeExceptionMessage(Response response) {
+        String reason = Response.Status.INTERNAL_SERVER_ERROR.getReasonPhrase();
+        int statusCode = Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
+        if (response != null) {
+           statusCode = response.getStatus();
+           if (response.getStatusInfo() != null)
+           {
+              reason = response.getStatusInfo().getReasonPhrase();
+           }
+           else
+           {
+              reason = "Unknown Status Code";
+           }
+        }
+        return "HTTP " + statusCode + ' ' + reason;
     }
 
     /**
@@ -162,7 +179,7 @@ public class WebApplicationException extends RuntimeException {
      * @throws IllegalArgumentException if the response validation failed.
      * @since 2.0
      */
-    static Response validate(final Response response, Response.Status expectedStatus) throws IllegalArgumentException {
+    static Response validate(final Response response, Response.Status expectedStatus) {
         if (expectedStatus.getStatusCode() != response.getStatus()) {
             throw new IllegalArgumentException(String.format("Invalid response status code. Expected [%d], was [%d].",
                     expectedStatus.getStatusCode(), response.getStatus()));
@@ -180,9 +197,7 @@ public class WebApplicationException extends RuntimeException {
      * @throws IllegalArgumentException if the response validation failed.
      * @since 2.0
      */
-    static Response validate(final Response response, Response.Status.Family expectedStatusFamily)
-            throws IllegalArgumentException {
-
+    static Response validate(final Response response, Response.Status.Family expectedStatusFamily) {
         if (response.getStatusInfo().getFamily() != expectedStatusFamily) {
             throw new IllegalArgumentException(String.format(
                     "Status code of the supplied response [%d] is not from the required status code family \"%s\".",

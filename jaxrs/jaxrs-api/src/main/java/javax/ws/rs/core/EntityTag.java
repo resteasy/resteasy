@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -64,7 +64,7 @@ public class EntityTag {
      * @param value the value of the tag, quotes not included.
      * @throws IllegalArgumentException if value is {@code null}.
      */
-    public EntityTag(final String value) throws IllegalArgumentException {
+    public EntityTag(final String value) {
         this(value, false);
     }
 
@@ -75,7 +75,7 @@ public class EntityTag {
      * @param weak  {@code true} if this represents a weak tag, {@code false} otherwise.
      * @throws IllegalArgumentException if value is {@code null}.
      */
-    public EntityTag(final String value, final boolean weak) throws IllegalArgumentException {
+    public EntityTag(final String value, final boolean weak) {
         if (value == null) {
             throw new IllegalArgumentException("value==null");
         }
@@ -91,7 +91,7 @@ public class EntityTag {
      * @throws IllegalArgumentException if the supplied string cannot be parsed
      *                                  or is {@code null}.
      */
-    public static EntityTag valueOf(final String value) throws IllegalArgumentException {
+    public static EntityTag valueOf(final String value) {
         return HEADER_DELEGATE.fromString(value);
     }
 

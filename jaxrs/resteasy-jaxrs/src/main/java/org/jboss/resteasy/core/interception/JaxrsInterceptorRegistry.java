@@ -3,8 +3,9 @@ package org.jboss.resteasy.core.interception;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.AcceptedByMethod;
 
-import javax.ws.rs.BindingPriority;
+import javax.annotation.Priority;
 import javax.ws.rs.NameBinding;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.container.PreMatching;
 
 import java.lang.annotation.Annotation;
@@ -55,17 +56,17 @@ public class JaxrsInterceptorRegistry<T>
       return nameBound;
    }
 
-   public static int getBindingPriority(Class<?> declaring)
+   public static int getPriority(Class<?> declaring)
    {
-      BindingPriority priority = (BindingPriority) declaring.getAnnotation(BindingPriority.class);
+      Priority priority = (Priority) declaring.getAnnotation(Priority.class);
       if (priority != null) return priority.value();
-      return BindingPriority.USER;
+      return Priorities.USER;
    }
 
    public abstract class AbstractInterceptorFactory implements InterceptorFactory
    {
       protected final Class declaring;
-      protected int order = BindingPriority.USER;
+      protected int order = Priorities.USER;
       protected List<Class<? extends Annotation>> nameBound;
       protected volatile boolean initialized;
 
@@ -77,7 +78,7 @@ public class JaxrsInterceptorRegistry<T>
       protected void setPrecedence(Class<?> declaring)
       {
          nameBound = getNameBound(declaring);
-         order = getBindingPriority(declaring);
+         order = getPriority(declaring);
       }
 
       protected abstract void initialize();
@@ -407,10 +408,10 @@ public class JaxrsInterceptorRegistry<T>
       register(new OnDemandInterceptorFactory(declaring));
    }
 
-   public void registerClass(Class<? extends T> declaring, int bindingPriority)
+   public void registerClass(Class<? extends T> declaring, int Priority)
    {
       OnDemandInterceptorFactory factory = new OnDemandInterceptorFactory(declaring);
-      if (bindingPriority > Integer.MIN_VALUE) factory.setOrder(bindingPriority);
+      if (Priority > Integer.MIN_VALUE) factory.setOrder(Priority);
       register(factory);
    }
 
@@ -419,10 +420,10 @@ public class JaxrsInterceptorRegistry<T>
       register(new SingletonInterceptorFactory(interceptor.getClass(), interceptor));
    }
 
-   public void registerSingleton(T interceptor, int bindingPriority)
+   public void registerSingleton(T interceptor, int Priority)
    {
       SingletonInterceptorFactory factory = new SingletonInterceptorFactory(interceptor.getClass(), interceptor);
-      if (bindingPriority > Integer.MIN_VALUE) factory.setOrder(bindingPriority);
+      if (Priority > Integer.MIN_VALUE) factory.setOrder(Priority);
       register(factory);
    }
 }
