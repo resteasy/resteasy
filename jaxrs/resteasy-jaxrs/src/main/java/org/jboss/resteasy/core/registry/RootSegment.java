@@ -404,6 +404,7 @@ public class RootSegment extends Segment
          String val = pathParamExpr.get(name).remove(0);
          // double encode slashes, so that slashes stay where they are 
          val = val.replace("\\", "\\\\");
+         val = val.replace("$", "\\$");
          matcher.appendReplacement(newPath, "{$1:" + val + "}");
       }
       matcher.appendTail(newPath);
