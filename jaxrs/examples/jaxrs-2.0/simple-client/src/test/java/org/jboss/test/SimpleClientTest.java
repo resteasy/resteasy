@@ -11,7 +11,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientException;
 import javax.ws.rs.client.ClientFactory;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.WebTarget;
@@ -124,7 +123,7 @@ public class SimpleClientTest
             }
 
             @Override
-            public void failed(ClientException error)
+            public void failed(Throwable error)
             {
                latch.countDown();
             }

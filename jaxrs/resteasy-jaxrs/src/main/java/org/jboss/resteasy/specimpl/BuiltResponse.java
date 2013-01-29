@@ -8,7 +8,6 @@ import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
-import javax.ws.rs.MessageProcessingException;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.GenericType;
@@ -153,13 +152,13 @@ public class BuiltResponse extends Response
    }
 
    @Override
-   public <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException
+   public <T> T readEntity(Class<T> type, Annotation[] annotations)
    {
       return readEntity(type, null, annotations);
    }
 
    @Override
-   public <T> T readEntity(GenericType<T> entityType, Annotation[] annotations) throws MessageProcessingException
+   public <T> T readEntity(GenericType<T> entityType, Annotation[] annotations)
    {
       return readEntity((Class<T>) entityType.getRawType(), entityType.getType(), annotations);
    }
@@ -171,7 +170,7 @@ public class BuiltResponse extends Response
    }
 
    @Override
-   public <T> T readEntity(GenericType<T> entityType) throws MessageProcessingException
+   public <T> T readEntity(GenericType<T> entityType)
    {
       return readEntity((Class<T>) entityType.getRawType(), entityType.getType(), null);
    }
@@ -189,14 +188,14 @@ public class BuiltResponse extends Response
    }
 
    @Override
-   public boolean bufferEntity() throws MessageProcessingException
+   public boolean bufferEntity()
    {
       // no-op
       return false;
    }
 
    @Override
-   public void close() throws MessageProcessingException
+   public void close()
    {
       // no-op
    }
@@ -366,7 +365,7 @@ public class BuiltResponse extends Response
    public Link.Builder getLinkBuilder(String relation)
    {
       Link link = getLinkHeaders().getLinkByRelationship(relation);
-      Link.Builder builder = new Link.Builder();
+      Link.Builder builder = new LinkBuilderImpl();
       for (Map.Entry<String, String> entry : link.getParams().entrySet())
       {
          builder.param(entry.getKey(), entry.getValue());

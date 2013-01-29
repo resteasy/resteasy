@@ -54,22 +54,22 @@ public interface CompletionCallback {
     /**
      * A completion callback notification method that will be invoked when the request
      * processing is finished, after a response is processed and is sent back to the
-     * client.
-     */
-    public void onComplete();
-
-    /**
-     * Invoked in case an {@link javax.ws.rs.ext.ExceptionMapper exception mapper} for an
-     * exception or error thrown during request/response processing was not found and the
-     * unmapped exception or error is being propagated to the hosting I/O container.
+     * client or when an unmapped throwable has been propagated to the hosting I/O
+     * container.
      * <p>
-     * The {@code throwable} passed to the method is the actual unmapped exception thrown,
-     * during the request/response processing, i.e. not wrapped into a container-specific
-     * exception.
+     * An unmapped throwable is propagated to the hosting I/O container in case no
+     * {@link javax.ws.rs.ext.ExceptionMapper exception mapper} has been found for
+     * a throwable indicating a request processing failure.
+     * In this case a non-{@code null} unmapped throwable instance is passed to the method.
+     * Note that the throwable instance represents the actual unmapped exception thrown
+     * during the request processing, before it has been wrapped into an I/O container-specific
+     * exception that was used to propagate the throwable to the hosting I/O container.
      * </p>
      *
-     * @param throwable unmapped exception or error thrown during the request/response processing
-     *                  that is being propagated to the hosting I/O container.
+     * @param throwable is {@code null}, if the request processing has completed with a response
+     *                  that has been sent to the client. In case the request processing resulted
+     *                  in an unmapped exception or error that has been propagated to the hosting
+     *                  I/O container, this parameter contains the unmapped exception instance.
      */
-    public void onError(Throwable throwable);
+    public void onComplete(Throwable throwable);
 }

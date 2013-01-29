@@ -7,6 +7,7 @@ import javax.ws.rs.ext.ReaderInterceptor;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
@@ -35,23 +36,9 @@ public class ClientReaderInterceptorContext extends AbstractReaderInterceptorCon
    }
 
    @Override
-   public Enumeration<String> getPropertyNames()
+   public Collection<String> getPropertyNames()
    {
-      return new Enumeration<String>()
-      {
-         Iterator<String> it = properties.keySet().iterator();
-         @Override
-         public boolean hasMoreElements()
-         {
-            return it.hasNext();
-         }
-
-         @Override
-         public String nextElement()
-         {
-            return it.next();
-         }
-      };
+      return properties.keySet();
    }
 
    @Override

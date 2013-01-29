@@ -290,7 +290,7 @@ public interface ContainerResponseContext {
      * type is required.
      *
      * @param entity      entity object.
-     * @param annotations annotations attached to the entity.
+     * @param annotations annotations attached to the entity instance.
      * @param mediaType   entity media type.
      * @see MessageBodyWriter
      */
@@ -300,9 +300,17 @@ public interface ContainerResponseContext {
             final MediaType mediaType);
 
     /**
-     * Get the annotations attached to the entity.
+     * Get the annotations attached to the entity instance.
+     * <p>
+     * Note that the returned annotations array contains only those annotations
+     * explicitly attached to entity instance (such as the ones attached using
+     * {@link javax.ws.rs.core.Response.ResponseBuilder#entity(Object, java.lang.annotation.Annotation[])} method
+     * or the ones attached to the resource method that returned the response).
+     * The entity instance annotations array does not include annotations declared on the entity
+     * implementation class or its ancestors.
+     * </p>
      *
-     * @return entity annotations.
+     * @return annotations attached to the entity instance.
      */
     public Annotation[] getEntityAnnotations();
 

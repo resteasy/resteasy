@@ -132,8 +132,8 @@ public class SuperStringConverterTest extends BaseResourceTest
    public void testPerson() throws Exception
    {
       ResteasyClient client = new ResteasyClientBuilder().build();
-      client.configuration().register(PersonConverter.class);
-      client.configuration().register(CompanyConverter.class);
+      client.register(PersonConverter.class);
+      client.register(CompanyConverter.class);
 
       MyClient proxy = ProxyBuilder.builder(MyClient.class, client.target(generateBaseUrl())).build();
       Person person = new Person("name");
@@ -145,8 +145,8 @@ public class SuperStringConverterTest extends BaseResourceTest
    public void testCompany() throws Exception
    {
       ResteasyClient client = new ResteasyClientBuilder().build();
-      client.configuration().register(PersonConverter.class);
-      client.configuration().register(CompanyConverter.class);
+      client.register(PersonConverter.class);
+      client.register(CompanyConverter.class);
       MyClient proxy = ProxyBuilder.builder(MyClient.class, client.target(generateBaseUrl())).build();
       Company company = new Company("name");
       proxy.putCompany(company);

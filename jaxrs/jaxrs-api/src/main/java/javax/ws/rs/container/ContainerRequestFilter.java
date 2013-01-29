@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -83,8 +83,8 @@ public interface ContainerRequestFilter {
      * Filter method called before a request has been dispatched to a resource.
      *
      * <p>
-     * Filters in the filter chain are ordered according to their binding
-     * priority (see {@link javax.ws.rs.BindingPriority}). If a request filter
+     * Filters in the filter chain are ordered according to their priority
+     * (see {@link javax.annotation.Priority}). If a request filter
      * produces a response by calling {@link ContainerRequestContext#abortWith}
      * method, the execution of the (either pre-match or post-match) request filter
      * chain is stopped and the response is passed to the corresponding response

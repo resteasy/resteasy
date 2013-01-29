@@ -16,11 +16,10 @@ import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.AsyncInvoker;
-import javax.ws.rs.client.ClientException;
-import javax.ws.rs.client.Configuration;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -28,6 +27,7 @@ import javax.ws.rs.core.Response;
 import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -147,13 +147,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
    }
 
    @Override
-   public Configuration configuration()
-   {
-      return invocation.getConfiguration();
-   }
-
-   @Override
-   public Response get() throws ClientException
+   public Response get()
    {
       return buildGet().invoke();
    }
@@ -242,162 +236,237 @@ public class ClientInvocationBuilder implements Invocation.Builder
    }
 
    @Override
-   public <T> T get(Class<T> responseType) throws ClientException, WebApplicationException
+   public <T> T get(Class<T> responseType)
    {
       Response response = get();
       return extractResult(new GenericType<T>(responseType), response, null);
    }
 
    @Override
-   public <T> T get(GenericType<T> responseType) throws ClientException, WebApplicationException
+   public <T> T get(GenericType<T> responseType)
    {
       return extractResult(responseType, get(), null);
    }
 
    @Override
-   public Response put(Entity<?> entity) throws ClientException, WebApplicationException
+   public Response put(Entity<?> entity)
    {
       return buildPut(entity).invoke();
    }
 
    @Override
-   public <T> T put(Entity<?> entity, Class<T> responseType) throws ClientException, WebApplicationException
+   public <T> T put(Entity<?> entity, Class<T> responseType)
    {
       Response response = put(entity);
       return extractResult(new GenericType<T>(responseType), response, null);
    }
 
    @Override
-   public <T> T put(Entity<?> entity, GenericType<T> responseType) throws ClientException, WebApplicationException
+   public <T> T put(Entity<?> entity, GenericType<T> responseType)
    {
       Response response = put(entity);
       return extractResult(responseType, response, null);
    }
 
    @Override
-   public Response post(Entity<?> entity) throws ClientException
+   public Response post(Entity<?> entity)
    {
       return buildPost(entity).invoke();
    }
 
    @Override
-   public <T> T post(Entity<?> entity, Class<T> responseType) throws ClientException, WebApplicationException
+   public <T> T post(Entity<?> entity, Class<T> responseType)
    {
       Response response = post(entity);
       return extractResult(new GenericType<T>(responseType), response, null);
    }
 
    @Override
-   public <T> T post(Entity<?> entity, GenericType<T> responseType) throws ClientException, WebApplicationException
+   public <T> T post(Entity<?> entity, GenericType<T> responseType)
    {
       Response response = post(entity);
       return extractResult(responseType, response, null);
    }
 
    @Override
-   public Response delete() throws ClientException
+   public Response delete()
    {
       return buildDelete().invoke();
    }
 
    @Override
-   public <T> T delete(Class<T> responseType) throws ClientException, WebApplicationException
+   public <T> T delete(Class<T> responseType)
    {
       Response response = delete();
       return extractResult(new GenericType<T>(responseType), response, null);
    }
 
    @Override
-   public <T> T delete(GenericType<T> responseType) throws ClientException, WebApplicationException
+   public <T> T delete(GenericType<T> responseType)
    {
       Response response = delete();
       return extractResult(responseType, response, null);
    }
 
    @Override
-   public Response head() throws ClientException
+   public Response head()
    {
       return build(HttpMethod.HEAD).invoke();
    }
 
    @Override
-   public Response options() throws ClientException
+   public Response options()
    {
       return build(HttpMethod.OPTIONS).invoke();
    }
 
    @Override
-   public <T> T options(Class<T> responseType) throws ClientException, WebApplicationException
+   public <T> T options(Class<T> responseType)
    {
       Response response = options();
       return extractResult(new GenericType<T>(responseType), response, null);
    }
 
    @Override
-   public <T> T options(GenericType<T> responseType) throws ClientException, WebApplicationException
+   public <T> T options(GenericType<T> responseType)
    {
       Response response = options();
       return extractResult(responseType, response, null);
    }
 
    @Override
-   public Response trace() throws ClientException
+   public Response trace()
    {
       return build("TRACE").invoke();
    }
 
    @Override
-   public <T> T trace(Class<T> responseType) throws ClientException, WebApplicationException
+   public <T> T trace(Class<T> responseType)
    {
       Response response = trace();
       return extractResult(new GenericType<T>(responseType), response, null);
    }
 
    @Override
-   public <T> T trace(GenericType<T> responseType) throws ClientException, WebApplicationException
+   public <T> T trace(GenericType<T> responseType)
    {
       Response response = trace();
       return extractResult(responseType, response, null);
    }
 
    @Override
-   public Response method(String name) throws ClientException
+   public Response method(String name)
    {
       return build(name).invoke();
    }
 
    @Override
-   public <T> T method(String name, Class<T> responseType) throws ClientException, WebApplicationException
+   public <T> T method(String name, Class<T> responseType)
    {
       Response response = method(name);
       return extractResult(new GenericType<T>(responseType), response, null);
    }
 
    @Override
-   public <T> T method(String name, GenericType<T> responseType) throws ClientException, WebApplicationException
+   public <T> T method(String name, GenericType<T> responseType)
    {
       Response response = method(name);
       return extractResult(responseType, response, null);
    }
 
    @Override
-   public Response method(String name, Entity<?> entity) throws ClientException
+   public Response method(String name, Entity<?> entity)
    {
       return build(name, entity).invoke();
    }
 
    @Override
-   public <T> T method(String name, Entity<?> entity, Class<T> responseType) throws ClientException, WebApplicationException
+   public <T> T method(String name, Entity<?> entity, Class<T> responseType)
    {
       Response response = method(name, entity);
       return extractResult(new GenericType<T>(responseType), response, null);
    }
 
    @Override
-   public <T> T method(String name, Entity<?> entity, GenericType<T> responseType) throws ClientException, WebApplicationException
+   public <T> T method(String name, Entity<?> entity, GenericType<T> responseType)
    {
       Response response = method(name, entity);
       return extractResult(responseType, response, null);
    }
 
+   @Override
+   public Invocation.Builder setProperty(String name, Object value)
+   {
+      invocation.setProperty(name, value);
+      return this;
+   }
+
+   @Override
+   public Invocation.Builder register(Class<?> componentClass)
+   {
+      invocation.register(componentClass);
+      return this;
+   }
+
+   @Override
+   public Invocation.Builder register(Class<?> componentClass, int priority)
+   {
+      invocation.register(componentClass, priority);
+      return this;
+   }
+
+   @Override
+   public Invocation.Builder register(Class<?> componentClass, Class<?>... contracts)
+   {
+      invocation.register(componentClass, contracts);
+      return this;
+   }
+
+   @Override
+   public Invocation.Builder register(Class<?> componentClass, Map<Class<?>, Integer> contracts)
+   {
+      invocation.register(componentClass, contracts);
+      return this;
+   }
+
+   @Override
+   public Invocation.Builder register(Object component)
+   {
+      invocation.register(component);
+      return this;
+   }
+
+   @Override
+   public Invocation.Builder register(Object component, int priority)
+   {
+      invocation.register(component, priority);
+      return this;
+   }
+
+   @Override
+   public Invocation.Builder register(Object component, Class<?>... contracts)
+   {
+      invocation.register(component, contracts);
+      return this;
+   }
+
+   @Override
+   public Invocation.Builder register(Object component, Map<Class<?>, Integer> contracts)
+   {
+      invocation.register(component, contracts);
+      return this;
+   }
+
+   @Override
+   public Invocation.Builder replaceWith(Configuration config)
+   {
+      invocation.replaceWith(config);
+      return this;
+   }
+
+   @Override
+   public Configuration getConfiguration()
+   {
+      return invocation.getConfiguration();
+   }
 }

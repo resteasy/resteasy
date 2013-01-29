@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,7 +60,7 @@ public class ServerErrorException extends WebApplicationException {
      *                                  {@link javax.ws.rs.core.Response.Status.Family#SERVER_ERROR} status code
      *                                  family.
      */
-    public ServerErrorException(Response.Status status) throws IllegalArgumentException {
+    public ServerErrorException(Response.Status status) {
         super(null, validate(Response.status(status).build(), Response.Status.Family.SERVER_ERROR));
     }
 
@@ -72,7 +72,7 @@ public class ServerErrorException extends WebApplicationException {
      *                                  if it is not from the {@link javax.ws.rs.core.Response.Status.Family#SERVER_ERROR}
      *                                  status code family.
      */
-    public ServerErrorException(int status) throws IllegalArgumentException {
+    public ServerErrorException(int status) {
         super(null, validate(Response.status(status).build(), Response.Status.Family.SERVER_ERROR));
     }
 
@@ -84,7 +84,7 @@ public class ServerErrorException extends WebApplicationException {
      * @throws IllegalArgumentException in case the response status code is not from the
      *                                  {@link javax.ws.rs.core.Response.Status.Family#SERVER_ERROR} status code family.
      */
-    public ServerErrorException(Response response) throws IllegalArgumentException {
+    public ServerErrorException(Response response) {
         super(null, validate(response, Response.Status.Family.SERVER_ERROR));
     }
 
@@ -97,7 +97,7 @@ public class ServerErrorException extends WebApplicationException {
      *                                  {@link javax.ws.rs.core.Response.Status.Family#SERVER_ERROR} status code
      *                                  family.
      */
-    public ServerErrorException(Response.Status status, Throwable cause) throws IllegalArgumentException {
+    public ServerErrorException(Response.Status status, Throwable cause) {
         super(cause, validate(Response.status(status).build(), Response.Status.Family.SERVER_ERROR));
     }
 
@@ -110,7 +110,7 @@ public class ServerErrorException extends WebApplicationException {
      *                                  if it is not from the {@link javax.ws.rs.core.Response.Status.Family#SERVER_ERROR}
      *                                  status code family.
      */
-    public ServerErrorException(int status, Throwable cause) throws IllegalArgumentException {
+    public ServerErrorException(int status, Throwable cause) {
         super(cause, validate(Response.status(status).build(), Response.Status.Family.SERVER_ERROR));
     }
 
@@ -123,7 +123,7 @@ public class ServerErrorException extends WebApplicationException {
      * @throws IllegalArgumentException in case the response status code is not from the
      *                                  {@link javax.ws.rs.core.Response.Status.Family#SERVER_ERROR} status code family.
      */
-    public ServerErrorException(Response response, Throwable cause) throws IllegalArgumentException {
+    public ServerErrorException(Response response, Throwable cause) {
         super(cause, validate(response, Response.Status.Family.SERVER_ERROR));
     }
 }

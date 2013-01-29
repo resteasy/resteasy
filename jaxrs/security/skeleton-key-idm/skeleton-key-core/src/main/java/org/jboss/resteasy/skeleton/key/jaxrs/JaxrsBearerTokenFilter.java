@@ -9,7 +9,8 @@ import org.jboss.resteasy.skeleton.key.VerificationException;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.BindingPriority;
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
@@ -23,7 +24,7 @@ import java.security.Principal;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@BindingPriority(BindingPriority.AUTHENTICATION)
+@Priority(Priorities.AUTHENTICATION)
 public class JaxrsBearerTokenFilter implements ContainerRequestFilter
 {
    protected ResourceMetadata resourceMetadata;

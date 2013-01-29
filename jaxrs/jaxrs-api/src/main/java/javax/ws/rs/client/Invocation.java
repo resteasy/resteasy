@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,8 +42,10 @@ package javax.ws.rs.client;
 import java.util.Locale;
 import java.util.concurrent.Future;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -61,7 +63,7 @@ import javax.ws.rs.core.Response;
  * @author Marek Potociar
  * @see Invocation.Builder Invocation.Builder
  */
-public interface Invocation {
+public interface Invocation extends Configurable<Invocation> {
 
     /**
      * A client request invocation builder.
@@ -106,7 +108,7 @@ public interface Invocation {
      *           .header("Foo", "bar").async().get(String.class);
      * </pre>
      */
-    public static interface Builder extends SyncInvoker {
+    public static interface Builder extends SyncInvoker, Configurable<Builder> {
 
         // Invocation builder methods
 
@@ -230,13 +232,6 @@ public interface Invocation {
          * @return the updated builder.
          */
         public Builder headers(MultivaluedMap<String, Object> headers);
-
-        /**
-         * Get access to the underlying {@link Configuration configuration}.
-         *
-         * @return a mutable configuration bound to the instance.
-         */
-        public Configuration configuration();
     }
 
     /**
@@ -244,9 +239,12 @@ public interface Invocation {
      *
      * @return {@link Response response} object as a result of the request
      *         invocation.
-     * @throws ClientException in case the invocation processing has failed.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
      */
-    public Response invoke() throws ClientException;
+    public Response invoke();
 
     /**
      * Synchronously invoke the request and receive a response of the specified
@@ -256,13 +254,16 @@ public interface Invocation {
      * @param responseType Java type the response should be converted into.
      * @return response object of the specified type as a result of the request
      *         invocation.
-     * @throws ClientException         in case the invocation processing has failed.
-     * @throws WebApplicationException in case the response status code of the response
-     *                                 returned by the server is not
-     *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
-     *                                 successful}.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     * @throws WebApplicationException     in case the response status code of the response
+     *                                     returned by the server is not
+     *                                     {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                     successful}.
      */
-    public <T> T invoke(Class<T> responseType) throws ClientException, WebApplicationException;
+    public <T> T invoke(Class<T> responseType);
 
     /**
      * Synchronously invoke the request and receive a response of the specified
@@ -273,13 +274,16 @@ public interface Invocation {
      *                     response should be converted into.
      * @return response object of the specified generic type as a result of the
      *         request invocation.
-     * @throws ClientException         in case the invocation processing has failed.
-     * @throws WebApplicationException in case the response status code of the response
-     *                                 returned by the server is not
-     *                                 {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
-     *                                 successful}.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     * @throws WebApplicationException     in case the response status code of the response
+     *                                     returned by the server is not
+     *                                     {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                     successful}.
      */
-    public <T> T invoke(GenericType<T> responseType) throws ClientException, WebApplicationException;
+    public <T> T invoke(GenericType<T> responseType);
 
     /**
      * Submit the request for an asynchronous invocation and receive a future
@@ -287,8 +291,11 @@ public interface Invocation {
      * <p>
      * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
      * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
-     * that wraps an {@link ClientException} thrown in case of an invocation processing
+     * that wraps a {@link ProcessingException} thrown in case of an invocation processing
      * failure.
+     * In case a processing of a properly received response fails, the wrapped processing exception
+     * will be of {@link ResponseProcessingException} type and will contain the {@link Response}
+     * instance whose processing has failed.
      * </p>
      *
      * @return future {@link Response response} object as a result of the request
@@ -302,10 +309,13 @@ public interface Invocation {
      * <p>
      * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
      * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
-     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * that wraps either a {@link ProcessingException} thrown in case of an invocation processing
      * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
      * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
      * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * In case a processing of a properly received response fails, the wrapped processing exception
+     * will be of {@link ResponseProcessingException} type and will contain the {@link Response}
+     * instance whose processing has failed.
      * </p>
      *
      * @param <T>          response type
@@ -321,10 +331,13 @@ public interface Invocation {
      * <p>
      * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
      * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
-     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * that wraps either a {@link ProcessingException} thrown in case of an invocation processing
      * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
      * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
      * successful} and the specified response type is not {@link javax.ws.rs.core.Response}.
+     * In case a processing of a properly received response fails, the wrapped processing exception
+     * will be of {@link ResponseProcessingException} type and will contain the {@link Response}
+     * instance whose processing has failed.
      * </p>
      *
      * @param <T>          generic response type
@@ -341,11 +354,14 @@ public interface Invocation {
      * <p>
      * Note that calling the {@link java.util.concurrent.Future#get()} method on the returned
      * {@code Future} instance may throw an {@link java.util.concurrent.ExecutionException}
-     * that wraps either an {@link ClientException} thrown in case of an invocation processing
+     * that wraps either a {@link ProcessingException} thrown in case of an invocation processing
      * failure or a {@link WebApplicationException} or one of its subclasses thrown in case the
      * received response status code is not {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
      * successful} and the generic type of the supplied response callback is not
      * {@link javax.ws.rs.core.Response}.
+     * In case a processing of a properly received response fails, the wrapped processing exception
+     * will be of {@link ResponseProcessingException} type and will contain the {@link Response}
+     * instance whose processing has failed.
      * </p>
      *
      * @param <T>      response type
@@ -355,11 +371,4 @@ public interface Invocation {
      *         request invocation.
      */
     public <T> Future<T> submit(InvocationCallback<T> callback);
-
-    /**
-     * Get access to the underlying {@link Configuration configuration}.
-     *
-     * @return a mutable configuration bound to the instance.
-     */
-    public Configuration configuration();
 }

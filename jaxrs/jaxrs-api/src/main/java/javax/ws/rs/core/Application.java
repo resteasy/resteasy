@@ -46,13 +46,20 @@ import java.util.Set;
  * Defines the components of a JAX-RS application and supplies additional
  * meta-data. A JAX-RS application or implementation supplies a concrete
  * subclass of this abstract class.
- *
- * <p>The implementation-created instance of an Application subclass may be
+ * <p>
+ * The implementation-created instance of an Application subclass may be
  * injected into resource classes and providers using
- * {@link javax.ws.rs.core.Context}.<p>
+ * {@link javax.ws.rs.core.Context}.
+ * </p>
+ * <p>
+ * In case any of the {@code Application} subclass methods or it's constructor
+ * throws a {@link RuntimeException}, the deployment of the application SHOULD
+ * be aborted with a failure.
+ * </p>
  *
  * @author Paul Sandoz
  * @author Marc Hadley
+ * @author Marek Potociar
  * @since 1.0
  */
 public class Application {

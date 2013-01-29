@@ -42,6 +42,7 @@ package javax.ws.rs.ext;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 
 /**
@@ -62,13 +63,16 @@ public interface ReaderInterceptorContext extends InterceptorContext {
      * Proceed to the next interceptor in the chain. Return the result of the
      * next interceptor invoked. Interceptors MUST explicitly call this method
      * to continue the execution chain; the call to this method in the
-     * last interceptor of the chain will invoke
+     * last interceptor of the chain will invoke the wrapped
      * {@link javax.ws.rs.ext.MessageBodyReader#readFrom}.
      *
-     * @return result of next interceptor invoked
-     * @throws IOException if an IO error arises
+     * @return result of next interceptor invoked.
+     * @throws IOException if an IO error arises or is
+     *                     thrown by the wrapped {@code MessageBodyReader.readFrom} method.
+     * @throws javax.ws.rs.WebApplicationException
+     *                     thrown by the wrapped {@code MessageBodyReader.readFrom} method.
      */
-    public Object proceed() throws IOException;
+    public Object proceed() throws IOException, WebApplicationException;
 
     /**
      * Get the input stream of the object to be read.

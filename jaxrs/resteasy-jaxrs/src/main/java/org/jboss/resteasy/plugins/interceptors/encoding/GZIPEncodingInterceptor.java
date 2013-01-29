@@ -2,7 +2,8 @@ package org.jboss.resteasy.plugins.interceptors.encoding;
 
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
 
-import javax.ws.rs.BindingPriority;
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.ext.Provider;
@@ -17,7 +18,7 @@ import java.util.zip.GZIPOutputStream;
  * @version $Revision: 1 $
  */
 @Provider
-@BindingPriority(BindingPriority.ENTITY_CODER)
+@Priority(Priorities.ENTITY_CODER)
 public class GZIPEncodingInterceptor implements WriterInterceptor
 {
    public static class EndableGZIPOutputStream extends GZIPOutputStream

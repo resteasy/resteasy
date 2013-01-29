@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -63,7 +63,7 @@ public class RedirectionException extends WebApplicationException {
      *                                  {@link javax.ws.rs.core.Response.Status.Family#REDIRECTION} status code
      *                                  family.
      */
-    public RedirectionException(Response.Status status, URI location) throws IllegalArgumentException {
+    public RedirectionException(Response.Status status, URI location) {
         super(null, validate(Response.status(status).location(location).build(), Response.Status.Family.REDIRECTION));
     }
 
@@ -76,7 +76,7 @@ public class RedirectionException extends WebApplicationException {
      *                                  if it is not from the {@link javax.ws.rs.core.Response.Status.Family#REDIRECTION}
      *                                  status code family.
      */
-    public RedirectionException(int status, URI location) throws IllegalArgumentException {
+    public RedirectionException(int status, URI location) {
         super(null, validate(Response.status(status).location(location).build(), Response.Status.Family.REDIRECTION));
     }
 
@@ -88,7 +88,7 @@ public class RedirectionException extends WebApplicationException {
      * @throws IllegalArgumentException in case the response status code is not from the
      *                                  {@link javax.ws.rs.core.Response.Status.Family#REDIRECTION} status code family.
      */
-    public RedirectionException(Response response) throws IllegalArgumentException {
+    public RedirectionException(Response response) {
         super(null, validate(response, Response.Status.Family.REDIRECTION));
     }
 
