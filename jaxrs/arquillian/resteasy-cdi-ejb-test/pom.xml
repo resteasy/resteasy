@@ -13,6 +13,11 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!--as-version>7.1.1.Final</as-version-->
+    <as-version>7.1.1.Final.cdi-ejb</as-version>
+    <weld-version>1.2.0.Beta1</weld-version>
+    <!--weld-api-version>1.2-SNAPSHOT</weld-api-version>
+    <weld-spi-version>1.2-SNAPSHOT</weld-spi-version-->
   </properties>
   
   <dependencyManagement>
@@ -47,7 +52,7 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <id>unpack</id>
+            <id>unpack AS7</id>
             <phase>process-test-classes</phase>
             <goals>
               <goal>unpack</goal>
@@ -59,12 +64,173 @@
                   <artifactId>as7-dist-cdi-ejb-7.1.1.Final</artifactId>
                   <version>1.0</version>
                   <type>jar</type>
+                  <!--groupId>org.jboss.as</groupId>
+                  <artifactId>jboss-as-dist</artifactId>
+                  <version>${as-version}</version>
+                  <type>zip</type-->
                   <overWrite>false</overWrite>
                   <outputDirectory>target</outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>
           </execution>
+          <!--execution>
+            <id>update weld-core</id>
+            <phase>process-test-classes</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.jboss.weld</groupId>
+                  <artifactId>weld-core</artifactId>
+                  <version>${weld-version}</version>
+                  <outputDirectory>target/jboss-as-${as-version}/modules/org/jboss/weld/core/main/</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>update weld-api</id>
+            <phase>process-test-classes</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.jboss.weld</groupId>
+                  <artifactId>weld-api</artifactId>
+                  <version>${weld-version}</version>
+                  <outputDirectory>target/jboss-as-${as-version}/modules/org/jboss/weld/api/main/</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>update weld-spi</id>
+            <phase>process-test-classes</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.jboss.weld</groupId>
+                  <artifactId>weld-spi</artifactId>
+                  <version>${weld-version}</version>
+                  <outputDirectory>target/jboss-as-${as-version}/modules/org/jboss/weld/spi/main/</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution-->
+        
+          <!--execution>
+            <id>unpack Resteasy</id>
+            <phase>process-test-classes</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.jboss.resteasy</groupId>
+                  <artifactId>resteasy-jboss-modules</artifactId>
+                  <version>${version}</version>
+                  <type>pom</type>
+                  <outputDirectory>${project.build.directory}/jboss-as-7.1.1.Final.cdi-ejb/modules</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution-->
+        </executions>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.6</version>
+        <executions>
+          <execution>
+            <id>unpack resteasy</id>
+            <phase>process-test-classes</phase>
+            <configuration>
+              <target>
+                <unzip src="../../jboss-modules/target/resteasy-jboss-modules-${version}.zip"
+                       dest="${project.build.directory}/jboss-as-${as-version}/modules"
+                       overwrite="false" />
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>update AS7 application-roles.properties</id>
+            <phase>process-test-classes</phase>
+            <configuration>
+              <target>
+                <copy file="${basedir}/src/test/resources/application-roles.properties"
+                      todir="${project.build.directory}/jboss-as-${as-version}/standalone/configuration" />
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>update AS7 application-users.properties</id>
+            <phase>process-test-classes</phase>
+            <configuration>
+              <target>
+                <copy file="${basedir}/src/test/resources/application-users.properties"
+                      todir="${project.build.directory}/jboss-as-${as-version}/standalone/configuration/" />
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <!--execution>
+            <id>update weld core module.xml</id>
+            <phase>process-test-classes</phase>
+            <configuration>
+              <target>
+                <copy file="${basedir}/src/test/resources/weld-core-module.xml"
+                      tofile="${project.build.directory}/jboss-as-${as-version}/modules/org/jboss/weld/core/main/module.xml" />
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>update weld api module.xml</id>
+            <phase>process-test-classes</phase>
+            <configuration>
+              <target>
+                <copy file="${basedir}/src/test/resources/weld-api-module.xml"
+                      tofile="${project.build.directory}/jboss-as-${as-version}/modules/org/jboss/weld/api/main/module.xml" />
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>update weld spi module.xml</id>
+            <phase>process-test-classes</phase>
+            <configuration>
+              <target>
+                <copy file="${basedir}/src/test/resources/weld-spi-module.xml"
+                      tofile="${project.build.directory}/jboss-as-${as-version}/modules/org/jboss/weld/spi/main/module.xml" />
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution-->
         </executions>
       </plugin>
     </plugins>
