@@ -85,9 +85,15 @@ public interface MessageBodyWriter<T> {
                                Annotation[] annotations, MediaType mediaType);
 
     /**
-     * Called before {@code writeTo} to ascertain the length in bytes of
-     * the serialized form of {@code t}. A non-negative return value is
-     * used in a HTTP {@code Content-Length} header.
+     * Originally, the method has been called before {@code writeTo} to ascertain the length in bytes of
+     * the serialized form of {@code t}. A non-negative return value has been used in a HTTP
+     * {@code Content-Length} header.
+     * <p>
+     * As of JAX-RS 2.0, the method has been deprecated and the value returned by the method is ignored
+     * by a JAX-RS runtime. All {@code MessageBodyWriter} implementations are advised to return {@code -1}
+     * from the method. Responsibility to compute the actual {@code Content-Length} header value has been
+     * delegated to JAX-RS runtime.
+     * </p>
      *
      * @param t           the instance to write
      * @param type        the class of instance that is to be written.

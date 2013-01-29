@@ -4,15 +4,18 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 
+import javax.ws.rs.container.CompletionCallback;
 import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.container.ResumeCallback;
 import javax.ws.rs.container.TimeoutHandler;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.WriterInterceptor;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -28,7 +31,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
    protected WriterInterceptor[] writerInterceptors;
    protected Annotation[] annotations;
    protected TimeoutHandler timeoutHandler;
-   protected List<ResumeCallback> resumeCallbacks = new ArrayList<ResumeCallback>();
+   protected List<CompletionCallback> completionCallbacks = new ArrayList<CompletionCallback>();
 
    protected AbstractAsynchronousResponse(SynchronousDispatcher dispatcher, HttpRequest request, HttpResponse response)
    {
@@ -37,8 +40,10 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
       this.response = response;
    }
 
+
+
    @Override
-   public boolean register(Class<?> callback) throws NullPointerException
+   public Collection<Class<?>> register(Class<?> callback) throws NullPointerException
    {
       if (callback == null) throw new NullPointerException("Callback was null");
       Object cb = dispatcher.getProviderFactory().createProviderInstance(callback);
@@ -46,40 +51,40 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
    }
 
    @Override
-   public boolean register(Object callback) throws NullPointerException
+   public Collection<Class<?>> register(Object callback) throws NullPointerException
    {
       if (callback == null) throw new NullPointerException("Callback was null");
-      boolean registered = false;
-      if (callback instanceof ResumeCallback)
+      ArrayList<Class<?>> registered = new ArrayList<Class<?>>();
+      if (callback instanceof CompletionCallback)
       {
-         registered = true;
-         resumeCallbacks.add((ResumeCallback)callback);
+         completionCallbacks.add((CompletionCallback) callback);
+         registered.add(CompletionCallback.class);
       }
       return registered;
    }
 
    @Override
-   public boolean[] register(Class<?> callback, Class<?>... callbacks) throws NullPointerException
+   public Map<Class<?>, Collection<Class<?>>> register(Class<?> callback, Class<?>... callbacks) throws NullPointerException
    {
-      boolean[] results = new boolean[1 + callbacks.length];
-      results[0] = register(callback);
-      for (int i = 0; i < callbacks.length; i++)
+      Map<Class<?>, Collection<Class<?>>> map = new HashMap<Class<?>, Collection<Class<?>>>();
+      map.put(callback, register(callback));
+      for (Class<?> call : callbacks)
       {
-         results[i + 1] = register(callbacks[i]);
+         map.put(call, register(call));
       }
-      return results;
+      return map;
    }
 
    @Override
-   public boolean[] register(Object callback, Object... callbacks) throws NullPointerException
+   public Map<Class<?>, Collection<Class<?>>> register(Object callback, Object... callbacks) throws NullPointerException
    {
-      boolean[] results = new boolean[1 + callbacks.length];
-      results[0] = register(callback);
-      for (int i = 0; i < callbacks.length; i++)
+      Map<Class<?>, Collection<Class<?>>> map = new HashMap<Class<?>, Collection<Class<?>>>();
+      map.put(callback.getClass(), register(callback));
+      for (Object call : callbacks)
       {
-         results[i + 1] = register(callbacks[i]);
+         map.put(call.getClass(), register(call));
       }
-      return results;
+      return map;
    }
 
    @Override
@@ -136,32 +141,30 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
       this.annotations = annotations;
    }
 
-   protected void sendResponse(Response response) throws IllegalStateException
+   protected void completionCallbacks(Throwable throwable)
    {
-      dispatcher.asynchronousDelivery(this.request, this.response, response);
+      for (CompletionCallback callback : completionCallbacks)
+      {
+         callback.onComplete(throwable);
+      }
    }
 
-   protected void sendResponseObject(Object entity, int status)
+   protected void sendResponse(Response response)
    {
-      if (entity == null)
+      try
       {
-         sendResponse(Response.status(status).build());
+         dispatcher.asynchronousDelivery(this.request, this.response, response);
       }
-      else if (entity instanceof Response)
+      catch (RuntimeException e)
       {
-         sendResponse((Response) entity);
+         completionCallbacks(e);
+         throw e;
       }
-      else
-      {
-         if (method == null) throw new IllegalStateException("Unknown media type for response entity");
-         MediaType type = method.resolveContentType(request, entity);
-         sendResponse(Response.status(status).entity(entity).type(type).build());
-      }
-
+      completionCallbacks(null);
    }
 
    @Override
-   public void resume(Object entity) throws IllegalStateException
+   public boolean resume(Object entity)
    {
       if (entity == null)
       {
@@ -177,17 +180,23 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
          MediaType type = method.resolveContentType(request, entity);
          sendResponse(Response.ok(entity, type).build());
       }
+      return true;
    }
 
    @Override
-   public void resume(Throwable exc) throws IllegalStateException
+   public boolean resume(Throwable exc)
    {
-      dispatcher.handleException(request, response, exc);
+      try
+      {
+         dispatcher.handleException(request, response, exc);
+      }
+      catch (RuntimeException e)
+      {
+         completionCallbacks(e);
+         throw e;
+      }
+      completionCallbacks(null);
+      return true;
    }
-
-
-
-
-
 
 }

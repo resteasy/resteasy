@@ -13,6 +13,8 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -50,9 +52,15 @@ public class PreMatchContainerRequestContext implements ContainerRequestContext
    }
 
    @Override
-   public Enumeration<String> getPropertyNames()
+   public Collection<String> getPropertyNames()
    {
-      return httpRequest.getAttributeNames();
+      ArrayList<String> names = new ArrayList<String>();
+      Enumeration<String> enames = httpRequest.getAttributeNames();
+      while (enames.hasMoreElements())
+      {
+         names.add(enames.nextElement());
+      }
+      return names;
    }
 
    @Override

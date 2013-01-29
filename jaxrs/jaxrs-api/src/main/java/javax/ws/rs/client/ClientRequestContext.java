@@ -43,12 +43,13 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -89,17 +90,17 @@ public interface ClientRequestContext {
 
 
     /**
-     * Returns an {@link java.util.Enumeration enumeration} containing the property names
+     * Returns an immutable {@link Collection collection} containing the property names
      * available within the context of the current request/response exchange context.
      * <p>
      * Use the {@link #getProperty} method with a property name to get the value of
      * a property.
      * </p>
      *
-     * @return an {@link java.util.Enumeration enumeration} of property names.
+     * @return an immutable {@link Collection collection} of property names.
      * @see #getProperty
      */
-    public Enumeration<String> getPropertyNames();
+    public Collection<String> getPropertyNames();
 
 
     /**
@@ -299,7 +300,7 @@ public interface ClientRequestContext {
      * type is required.
      *
      * @param entity      entity object.
-     * @param annotations annotations attached to the entity.
+     * @param annotations annotations attached to the entity instance.
      * @param mediaType   entity media type.
      * @see MessageBodyWriter
      */
@@ -309,9 +310,16 @@ public interface ClientRequestContext {
             final MediaType mediaType);
 
     /**
-     * Get the annotations attached to the entity.
+     * Get the annotations attached to the entity instance.
+     * <p>
+     * Note that the returned annotations array contains only those annotations
+     * explicitly attached to entity instance (such as the ones attached using
+     * {@link Entity#Entity(Object, javax.ws.rs.core.MediaType, java.lang.annotation.Annotation[])} method).
+     * The entity instance annotations array does not include annotations declared on the entity
+     * implementation class or its ancestors.
+     * </p>
      *
-     * @return entity annotations.
+     * @return annotations attached to the entity instance.
      */
     public Annotation[] getEntityAnnotations();
 
@@ -338,9 +346,9 @@ public interface ClientRequestContext {
     public Client getClient();
 
     /**
-     * Get the configuration of the request.
+     * Get the immutable configuration of the request.
      *
-     * @return request configuration.
+     * @return immutable request configuration.
      */
     public Configuration getConfiguration();
 

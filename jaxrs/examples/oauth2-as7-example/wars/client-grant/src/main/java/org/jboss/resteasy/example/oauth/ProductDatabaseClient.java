@@ -28,7 +28,7 @@ public class ProductDatabaseClient
       Form form = new Form().param("grant_type", "client_credentials");
       ResteasyWebTarget target = client.target("https://localhost:8443/auth-server/j_oauth_token_grant");
       // this is resteasy specific, check spec to make sure it hasn't added a way to do basic auth
-      target.configuration().register(new BasicAuthentication("bburke@redhat.com", "password"));
+      target.register(new BasicAuthentication("bburke@redhat.com", "password"));
       AccessTokenResponse res = target
               .request()
               .post(Entity.form(form), AccessTokenResponse.class);

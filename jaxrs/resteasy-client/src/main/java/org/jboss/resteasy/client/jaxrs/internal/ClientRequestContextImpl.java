@@ -2,8 +2,8 @@ package org.jboss.resteasy.client.jaxrs.internal;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.Configuration;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -45,23 +46,9 @@ public class ClientRequestContextImpl implements ClientRequestContext
    }
 
    @Override
-   public Enumeration<String> getPropertyNames()
+   public Collection<String> getPropertyNames()
    {
-      return new Enumeration<String>()
-      {
-         private final Iterator<String> it = invocation.getMutableProperties().keySet().iterator();
-         @Override
-         public boolean hasMoreElements()
-         {
-            return it.hasNext();
-         }
-
-         @Override
-         public String nextElement()
-         {
-            return it.next();
-         }
-      };
+      return invocation.getMutableProperties().keySet();
    }
 
    @Override

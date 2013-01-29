@@ -56,21 +56,20 @@
  * <h2>Client API Bootstrapping and Configuration</h2>
  * The main entry point to the API is a {@link javax.ws.rs.client.ClientFactory}
  * that is used to bootstrap {@link javax.ws.rs.client.Client} instances -
- * {@link javax.ws.rs.client.Configuration configurable}, heavy-weight objects
+ * {@link javax.ws.rs.core.Configurable configurable}, heavy-weight objects
  * that manage the underlying communication infrastructure and serve as the root
  * objects for accessing any Web resource. The following example illustrates the
  * bootstrapping and configuration of a {@code Client} instance:
  * <pre>
  *   Client client = ClientFactory.newClient();
  *
- *   client.configuration()
- *       .setProperty("MyProperty", "MyValue")
- *       .register(MyProvider.class)
- *       .enable(MyFeature.class);
+ *   client.setProperty("MyProperty", "MyValue")
+ *         .register(MyProvider.class)
+ *         .enable(MyFeature.class);
  * </pre>
  *
  * <h2>Accessing Web Resources</h2>
- * A Web resource can be accessed using a fluent API in which methods invocations
+ * A Web resource can be accessed using a fluent API in which method invocations
  * are chained to configure and ultimately submit an HTTP request. The following
  * example gets a {@code text/plain} representation of the resource identified by
  * {@code "http://example.org/hello"}:
@@ -81,8 +80,8 @@
  * Conceptually, the steps required to submit a request are the following:
  * <ol>
  *   <li>obtain an {@link javax.ws.rs.client.Client} instance</li>
- *   <li>create a resource {@link javax.ws.rs.client.WebTarget WebTarget}</li>
- *   <li>{@link javax.ws.rs.client.Invocation.Builder build} a request invocation</li>
+ *   <li>create a {@link javax.ws.rs.client.WebTarget WebTarget} pointing at a Web resource</li>
+ *   <li>{@link javax.ws.rs.client.Invocation.Builder build} a request</li>
  *   <li>submit a request to directly retrieve a response or get a prepared
  *       {@link javax.ws.rs.client.Invocation} for later submission</li>
  * </ol>

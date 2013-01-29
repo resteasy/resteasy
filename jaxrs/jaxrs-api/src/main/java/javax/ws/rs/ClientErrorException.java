@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,7 +60,7 @@ public class ClientErrorException extends WebApplicationException {
      *                                  {@link javax.ws.rs.core.Response.Status.Family#CLIENT_ERROR} status code
      *                                  family.
      */
-    public ClientErrorException(Response.Status status) throws IllegalArgumentException {
+    public ClientErrorException(Response.Status status) {
         super(null, validate(Response.status(status).build(), Response.Status.Family.CLIENT_ERROR));
     }
 
@@ -72,7 +72,7 @@ public class ClientErrorException extends WebApplicationException {
      *                                  if it is not from the {@link javax.ws.rs.core.Response.Status.Family#CLIENT_ERROR}
      *                                  status code family.
      */
-    public ClientErrorException(int status) throws IllegalArgumentException {
+    public ClientErrorException(int status) {
         super(null, validate(Response.status(status).build(), Response.Status.Family.CLIENT_ERROR));
     }
 
@@ -84,7 +84,7 @@ public class ClientErrorException extends WebApplicationException {
      * @throws IllegalArgumentException in case the response status code is not from the
      *                                  {@link javax.ws.rs.core.Response.Status.Family#CLIENT_ERROR} status code family.
      */
-    public ClientErrorException(Response response) throws IllegalArgumentException {
+    public ClientErrorException(Response response) {
         super(null, validate(response, Response.Status.Family.CLIENT_ERROR));
     }
 
@@ -97,7 +97,7 @@ public class ClientErrorException extends WebApplicationException {
      *                                  {@link javax.ws.rs.core.Response.Status.Family#CLIENT_ERROR} status code
      *                                  family.
      */
-    public ClientErrorException(Response.Status status, Throwable cause) throws IllegalArgumentException {
+    public ClientErrorException(Response.Status status, Throwable cause) {
         super(cause, validate(Response.status(status).build(), Response.Status.Family.CLIENT_ERROR));
     }
 
@@ -110,7 +110,7 @@ public class ClientErrorException extends WebApplicationException {
      *                                  if it is not from the {@link javax.ws.rs.core.Response.Status.Family#CLIENT_ERROR}
      *                                  status code family.
      */
-    public ClientErrorException(int status, Throwable cause) throws IllegalArgumentException {
+    public ClientErrorException(int status, Throwable cause) {
         super(cause, validate(Response.status(status).build(), Response.Status.Family.CLIENT_ERROR));
     }
 
@@ -123,7 +123,7 @@ public class ClientErrorException extends WebApplicationException {
      * @throws IllegalArgumentException in case the response status code is not from the
      *                                  {@link javax.ws.rs.core.Response.Status.Family#CLIENT_ERROR} status code family.
      */
-    public ClientErrorException(Response response, Throwable cause) throws IllegalArgumentException {
+    public ClientErrorException(Response response, Throwable cause) {
         super(cause, validate(response, Response.Status.Family.CLIENT_ERROR));
     }
 }

@@ -1,6 +1,8 @@
 package org.jboss.resteasy.client.jaxrs;
 
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Configurable;
+import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MultivaluedMap;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -64,4 +66,36 @@ public interface ResteasyWebTarget extends WebTarget
    ResteasyWebTarget path(Method method) throws IllegalArgumentException;
 
    ResteasyWebTarget clone();
+
+   @Override
+   ResteasyWebTarget setProperty(String name, Object value);
+
+   @Override
+   ResteasyWebTarget register(Class<?> componentClass);
+
+   @Override
+   ResteasyWebTarget register(Class<?> componentClass, int priority);
+
+   @Override
+   ResteasyWebTarget register(Class<?> componentClass, Class<?>... contracts);
+
+   @Override
+   ResteasyWebTarget register(Class<?> componentClass, Map<Class<?>, Integer> contracts);
+
+   @Override
+   ResteasyWebTarget register(Object component);
+
+   @Override
+   ResteasyWebTarget register(Object component, int priority);
+
+   @Override
+   ResteasyWebTarget register(Object component, Class<?>... contracts);
+
+   @Override
+   ResteasyWebTarget register(Object component, Map<Class<?>, Integer> contracts);
+
+   @Override
+   ResteasyWebTarget replaceWith(Configuration config);
+
+
 }

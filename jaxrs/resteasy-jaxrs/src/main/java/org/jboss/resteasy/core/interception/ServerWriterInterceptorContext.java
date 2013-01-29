@@ -9,6 +9,8 @@ import javax.ws.rs.ext.WriterInterceptor;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 
 /**
@@ -36,9 +38,15 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
    }
 
    @Override
-   public Enumeration<String> getPropertyNames()
+   public Collection<String> getPropertyNames()
    {
-      return request.getAttributeNames();
+      ArrayList<String> names = new ArrayList<String>();
+      Enumeration<String> enames = request.getAttributeNames();
+      while (enames.hasMoreElements())
+      {
+         names.add(enames.nextElement());
+      }
+      return names;
    }
 
    @Override
