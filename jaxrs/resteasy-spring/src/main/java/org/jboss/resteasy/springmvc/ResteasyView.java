@@ -96,12 +96,12 @@ public class ResteasyView implements View
                   BuiltResponse responseInvoker = getResponse(model, resolvedContentType);
                   if (responseInvoker != null)
                   {
-                     ServerResponseWriter.writeResponse(responseInvoker, httpRequest, response, dispatcher.getProviderFactory());
+                     ServerResponseWriter.writeNomapResponse(responseInvoker, httpRequest, response, dispatcher.getProviderFactory());
                   }
                }
                catch (Exception e)
                {
-                  dispatcher.handleWriteResponseException(httpRequest, response, e);
+                  dispatcher.writeException(httpRequest, response, e);
                }
                return null;
             }

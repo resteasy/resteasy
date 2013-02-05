@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class SynchronousExecutionContext extends AbstractExecutionContext
 {
-
    protected final CountDownLatch syncLatch = new CountDownLatch(1);
    protected long timeout;
    protected TimeUnit timeoutUnit = TimeUnit.MILLISECONDS;
@@ -85,8 +84,7 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
             if (cancelled) return false;
             try
             {
-               super.resume(entity);
-               return true;
+               return internalResume(entity);
             }
             finally
             {
@@ -106,8 +104,7 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
             if (cancelled) return false;
             try
             {
-               super.resume(exc);
-               return true;
+               return internalResume(exc);
             }
             finally
             {
@@ -145,7 +142,7 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
                   {
                      try
                      {
-                        sendResponse(Response.status(503).build());
+                        internalResume(Response.status(503).build());
                      }
                      catch (Exception e)
                      {
@@ -179,8 +176,7 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
             done = true;
             cancelled = true;
          }
-         sendResponse(Response.status(Response.Status.SERVICE_UNAVAILABLE).build());
-         return true;
+         return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).build());
       }
 
       @Override
@@ -192,8 +188,7 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
             done = true;
             cancelled = true;
          }
-         sendResponse(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
-         return true;
+         return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
       }
 
       @Override
@@ -205,8 +200,7 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
             done = true;
             cancelled = true;
          }
-         sendResponse(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
-         return true;
+         return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
       }
 
       @Override

@@ -139,10 +139,6 @@ public class TestSmoke
          dispatcher.invoke(request, response);
 
          Assert.assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
-
-         // XXX Should this be SC_NOT_FOUND?
-         // Assert.assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
-         Assert.assertEquals("", response.getContentAsString());
       }
 
    }
@@ -163,7 +159,6 @@ public class TestSmoke
          dispatcher.invoke(request, response);
 
          Assert.assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
-         Assert.assertEquals("", response.getContentAsString());
       }
 
    }
@@ -184,7 +179,6 @@ public class TestSmoke
          dispatcher.invoke(request, response);
 
          Assert.assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
-         Assert.assertEquals("", response.getContentAsString());
       }
 
    }
