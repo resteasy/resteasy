@@ -87,7 +87,31 @@ public class BuiltResponse extends Response
    @Override
    public StatusType getStatusInfo()
    {
-      return Status.fromStatusCode(status);
+      StatusType statusType = Status.fromStatusCode(status);
+      if (statusType == null)
+      {
+         statusType = new StatusType()
+         {
+            @Override
+            public int getStatusCode()
+            {
+               return status;
+            }
+
+            @Override
+            public Status.Family getFamily()
+            {
+               return Status.Family.OTHER;
+            }
+
+            @Override
+            public String getReasonPhrase()
+            {
+               return "Unknown Code";
+            }
+         };
+      }
+      return statusType;
    }
 
    @Override
