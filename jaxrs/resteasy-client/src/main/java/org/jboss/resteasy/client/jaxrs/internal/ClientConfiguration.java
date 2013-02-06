@@ -2,7 +2,6 @@ package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.spi.HeaderValueProcessor;
-import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.RuntimeType;
@@ -206,9 +205,9 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
    }
 
    @Override
-   public ClientConfiguration setProperty(String name, Object value)
+   public ClientConfiguration property(String name, Object value)
    {
-      providerFactory.setProperty(name, value);
+      providerFactory.property(name, value);
       return this;
    }
 

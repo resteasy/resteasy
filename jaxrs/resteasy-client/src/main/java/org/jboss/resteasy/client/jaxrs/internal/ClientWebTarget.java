@@ -6,7 +6,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -272,9 +271,9 @@ public class ClientWebTarget implements ResteasyWebTarget
    }
 
    @Override
-   public ResteasyWebTarget setProperty(String name, Object value)
+   public ResteasyWebTarget property(String name, Object value)
    {
-      configuration.setProperty(name, value);
+      configuration.property(name, value);
       return this;
    }
 

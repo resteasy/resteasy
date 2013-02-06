@@ -83,7 +83,7 @@ public interface AsyncInvoker {
      * In case a processing of a properly received response fails, the wrapped processing exception
      * will be of {@link ResponseProcessingException} type and will contain the {@link Response}
      * instance whose processing has failed.
-§     * </p>
+     * §     * </p>
      *
      * @param <T>          response entity type.
      * @param responseType Java type the response entity will be converted to.
@@ -147,7 +147,10 @@ public interface AsyncInvoker {
      * instance whose processing has failed.
      * </p>
      *
-     * @param entity request entity.
+     * @param entity request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *               Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *               {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *               the entity variant information.
      * @return invocation response {@link Future future}.
      */
     Future<Response> put(Entity<?> entity);
@@ -167,7 +170,10 @@ public interface AsyncInvoker {
      * </p>
      *
      * @param <T>          response entity type.
-     * @param entity       request entity.
+     * @param entity       request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *                     Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *                     {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *                     the entity variant information.
      * @param responseType Java type the response entity will be converted to.
      * @return invocation response {@link Future future}.
      */
@@ -188,7 +194,10 @@ public interface AsyncInvoker {
      * </p>
      *
      * @param <T>          generic response entity type.
-     * @param entity       request entity.
+     * @param entity       request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *                     Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *                     {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *                     the entity variant information.
      * @param responseType representation of a generic Java type the response
      *                     entity will be converted to.
      * @return invocation response {@link Future future}.
@@ -211,7 +220,10 @@ public interface AsyncInvoker {
      * </p>
      *
      * @param <T>      generic response entity type.
-     * @param entity   request entity.
+     * @param entity   request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *                 Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *                 {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *                 the entity variant information.
      * @param callback asynchronous invocation callback.
      * @return invocation response {@link Future future}.
      */
@@ -231,9 +243,13 @@ public interface AsyncInvoker {
      * instance whose processing has failed.
      * </p>
      *
-     * @param entity request entity.
+     * @param entity request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *               Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *               {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *               the entity variant information.
      * @return invocation response {@link Future future}.
-     * @throws javax.ws.rs.ProcessingException in case the invocation processing has failed.
+     * @throws javax.ws.rs.ProcessingException
+     *          in case the invocation processing has failed.
      */
     Future<Response> post(Entity<?> entity);
 
@@ -252,7 +268,10 @@ public interface AsyncInvoker {
      * </p>
      *
      * @param <T>          response entity type.
-     * @param entity       request entity.
+     * @param entity       request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *                     Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *                     {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *                     the entity variant information.
      * @param responseType Java type the response entity will be converted to.
      * @return invocation response {@link Future future}.
      */
@@ -273,7 +292,10 @@ public interface AsyncInvoker {
      * </p>
      *
      * @param <T>          generic response entity type.
-     * @param entity       request entity.
+     * @param entity       request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *                     Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *                     {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *                     the entity variant information.
      * @param responseType representation of a generic Java type the response
      *                     entity will be converted to.
      * @return invocation response {@link Future future}.
@@ -296,7 +318,10 @@ public interface AsyncInvoker {
      * </p>
      *
      * @param <T>      generic response entity type.
-     * @param entity   request entity.
+     * @param entity   request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *                 Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *                 {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *                 the entity variant information.
      * @param callback asynchronous invocation callback.
      * @return invocation response {@link Future future}.
      */
@@ -674,7 +699,10 @@ public interface AsyncInvoker {
      * </p>
      *
      * @param name   method name.
-     * @param entity request entity.
+     * @param entity request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *               Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *               {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *               the entity variant information.
      * @return invocation response {@link Future future}.
      */
     Future<Response> method(String name, Entity<?> entity);
@@ -695,7 +723,10 @@ public interface AsyncInvoker {
      *
      * @param <T>          response entity type.
      * @param name         method name.
-     * @param entity       request entity.
+     * @param entity       request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *                     Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *                     {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *                     the entity variant information.
      * @param responseType Java type the response entity will be converted to.
      * @return invocation response {@link Future future}.
      */
@@ -717,7 +748,10 @@ public interface AsyncInvoker {
      *
      * @param <T>          generic response entity type.
      * @param name         method name.
-     * @param entity       request entity.
+     * @param entity       request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *                     Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *                     {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *                     the entity variant information.
      * @param responseType representation of a generic Java type the response
      *                     entity will be converted to.
      * @return invocation response {@link Future future}.
@@ -741,7 +775,10 @@ public interface AsyncInvoker {
      *
      * @param <T>      generic response entity type.
      * @param name     method name.
-     * @param entity   request entity.
+     * @param entity   request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *                 Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *                 {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *                 the entity variant information.
      * @param callback asynchronous invocation callback.
      * @return invocation response {@link Future future}.
      */

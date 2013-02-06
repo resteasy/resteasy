@@ -1,6 +1,5 @@
 package org.jboss.resteasy.example.oauth;
 
-import org.jboss.resteasy.client.jaxrs.AbstractClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
@@ -26,8 +25,8 @@ public class ProductDatabaseClient
       RegisterBuiltin.register(factory);
       ResteasyClient client = new ResteasyClientBuilder()
 //                 .providerFactory(factory)
-                 .truststore(session.getMetadata().getTruststore())
-                 .hostnameVerification(AbstractClientBuilder.HostnameVerificationPolicy.ANY).build();
+                 .trustStore(session.getMetadata().getTruststore())
+                 .hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.ANY).build();
       try
       {
          Response response = client.target("https://localhost:8443/database/products").request()
