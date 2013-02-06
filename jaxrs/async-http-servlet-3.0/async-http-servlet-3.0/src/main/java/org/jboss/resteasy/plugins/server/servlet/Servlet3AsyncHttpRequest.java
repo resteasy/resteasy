@@ -77,8 +77,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                AsyncContext asyncContext = getAsyncContext();
                try
                {
-                  super.resume(entity);
-                  return true;
+                  return internalResume(entity);
                }
                finally
                {
@@ -99,8 +98,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                AsyncContext asyncContext = getAsyncContext();
                try
                {
-                  super.resume(exc);
-                  return true;
+                  return internalResume(exc);
                }
                finally
                {
@@ -136,16 +134,15 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                if (done || cancelled) return false;
                done = true;
                cancelled = true;
-            }
-            AsyncContext asyncContext = getAsyncContext();
-            try
-            {
-               sendResponse(Response.status(Response.Status.SERVICE_UNAVAILABLE).build());
-               return true;
-            }
-            finally
-            {
-               asyncContext.complete();
+               AsyncContext asyncContext = getAsyncContext();
+               try
+               {
+                  return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).build());
+               }
+               finally
+               {
+                  asyncContext.complete();
+               }
             }
          }
 
@@ -157,16 +154,15 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                if (done || cancelled) return false;
                done = true;
                cancelled = true;
-            }
-            AsyncContext asyncContext = getAsyncContext();
-            try
-            {
-               sendResponse(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
-               return true;
-            }
-            finally
-            {
-               asyncContext.complete();
+               AsyncContext asyncContext = getAsyncContext();
+               try
+               {
+                  return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
+               }
+               finally
+               {
+                  asyncContext.complete();
+               }
             }
          }
 
@@ -178,16 +174,15 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                if (done || cancelled) return false;
                done = true;
                cancelled = true;
-            }
-            AsyncContext asyncContext = getAsyncContext();
-            try
-            {
-               sendResponse(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
-               return true;
-            }
-            finally
-            {
-               asyncContext.complete();
+               AsyncContext asyncContext = getAsyncContext();
+               try
+               {
+                  return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
+               }
+               finally
+               {
+                  asyncContext.complete();
+               }
             }
          }
 

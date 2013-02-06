@@ -10,6 +10,7 @@ import javax.ws.rs.container.TimeoutHandler;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.WriterInterceptor;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -149,53 +150,45 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
       }
    }
 
-   protected void sendResponse(Response response)
+   protected boolean internalResume(Object entity)
    {
-      try
-      {
-         dispatcher.asynchronousDelivery(this.request, this.response, response);
-      }
-      catch (RuntimeException e)
-      {
-         completionCallbacks(e);
-         throw e;
-      }
-      completionCallbacks(null);
-   }
-
-   @Override
-   public boolean resume(Object entity)
-   {
+      Response response = null;
       if (entity == null)
       {
-         sendResponse(Response.noContent().build());
+         response = Response.noContent().build();
       }
       else if (entity instanceof Response)
       {
-         sendResponse((Response) entity);
+         response = (Response) entity;
       }
       else
       {
          if (method == null) throw new IllegalStateException("Unknown media type for response entity");
          MediaType type = method.resolveContentType(request, entity);
-         sendResponse(Response.ok(entity, type).build());
+         response = Response.ok(entity, type).build();
       }
+      try
+      {
+         dispatcher.asynchronousDelivery(this.request, this.response, response);
+      }
+      catch (Throwable e)
+      {
+         return internalResume(e);
+      }
+      completionCallbacks(null);
       return true;
    }
 
-   @Override
-   public boolean resume(Throwable exc)
+   protected boolean internalResume(Throwable exc)
    {
       try
       {
-         dispatcher.handleException(request, response, exc);
+         dispatcher.asynchronousExceptionDelivery(request, response, exc);
       }
-      catch (RuntimeException e)
+      finally
       {
-         completionCallbacks(e);
-         throw e;
+         completionCallbacks(exc);
       }
-      completionCallbacks(null);
       return true;
    }
 

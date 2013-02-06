@@ -9,6 +9,7 @@ import org.jboss.resteasy.spi.ResteasyUriInfo;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 
 /**
@@ -23,6 +24,7 @@ public class ResteasyRequestWrapper
    private ResourceInvoker invoker;
    private Integer errorCode = null;
    private String errorMessage;
+   private Response abortedResponse;
 
    public ResteasyRequestWrapper(HttpServletRequest request) throws ServletException, IOException
    {
@@ -95,5 +97,13 @@ public class ResteasyRequestWrapper
       setErrorMessage(errorMessage);
    }
 
+   public Response getAbortedResponse()
+   {
+      return abortedResponse;
+   }
 
+   public void setAbortedResponse(Response abortedResponse)
+   {
+      this.abortedResponse = abortedResponse;
+   }
 }
