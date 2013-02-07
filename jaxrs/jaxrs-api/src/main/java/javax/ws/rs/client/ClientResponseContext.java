@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -230,14 +230,16 @@ public interface ClientResponseContext {
     public boolean hasEntity();
 
     /**
-     * Get the entity input stream.
+     * Get the entity input stream. The JAX-RS runtime is responsible for
+     * closing the input stream.
      *
      * @return entity input stream.
      */
     public InputStream getEntityStream();
 
     /**
-     * Set a new entity input stream.
+     * Set a new entity input stream. The JAX-RS runtime is responsible for
+     * closing the input stream.
      *
      * @param input new entity input stream.
      */

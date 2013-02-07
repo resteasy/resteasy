@@ -67,6 +67,13 @@ public class ClientInvocationBuilder implements Invocation.Builder
    }
 
    @Override
+   public Invocation.Builder acceptEncoding(String... encodings)
+   {
+      getHeaders().acceptEncoding(encodings);
+      return this;
+   }
+
+   @Override
    public Invocation.Builder cookie(Cookie cookie)
    {
       getHeaders().cookie(cookie);
@@ -395,9 +402,9 @@ public class ClientInvocationBuilder implements Invocation.Builder
    }
 
    @Override
-   public Invocation.Builder setProperty(String name, Object value)
+   public Invocation.Builder property(String name, Object value)
    {
-      invocation.setProperty(name, value);
+      invocation.property(name, value);
       return this;
    }
 

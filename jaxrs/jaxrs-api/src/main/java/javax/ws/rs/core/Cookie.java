@@ -60,11 +60,11 @@ public class Cookie {
     public static final int DEFAULT_VERSION = 1;
     private static final HeaderDelegate<Cookie> HEADER_DELEGATE =
             RuntimeDelegate.getInstance().createHeaderDelegate(Cookie.class);
-    private String name;
-    private String value;
-    private int version;
-    private String path;
-    private String domain;
+    private final String name;
+    private final String value;
+    private final int version;
+    private final String path;
+    private final String domain;
 
     /**
      * Create a new instance.
@@ -205,6 +205,7 @@ public class Cookie {
      * @return {@code true}, if the object is a {@code Cookie} with the same
      *         value for all properties, {@code false} otherwise.
      */
+    @SuppressWarnings({"StringEquality", "RedundantIfStatement"})
     @Override
     public boolean equals(final Object obj) {
         if (obj == null) {

@@ -74,7 +74,7 @@ public interface Invocation extends Configurable<Invocation> {
      * the invocation builder can be either used to build an {@link Invocation}
      * with a generic execution interface:
      * <pre>
-     *   Client client = ClientFactory.newClient();
+     *   Client client = ClientBuilder.newClient();
      *   WebTarget resourceTarget = client.target("http://examples.jaxrs.com/");
      *
      *   // Build a HTTP GET request that accepts "text/plain" response type
@@ -89,7 +89,7 @@ public interface Invocation extends Configurable<Invocation> {
      * methods} can be used to invoke the prepared request and return the server
      * response in a single step, e.g.:
      * <pre>
-     *   Client client = ClientFactory.newClient();
+     *   Client client = ClientBuilder.newClient();
      *   WebTarget resourceTarget = client.target("http://examples.jaxrs.com/");
      *
      *   // Build and invoke the get request in a single step
@@ -100,7 +100,7 @@ public interface Invocation extends Configurable<Invocation> {
      * {@link AsyncInvoker asynchronous invocation} mode is possible by
      * calling the {@link #async() } method on the builder, e.g.:
      * <pre>
-     *   Client client = ClientFactory.newClient();
+     *   Client client = ClientBuilder.newClient();
      *   WebTarget resourceTarget = client.target("http://examples.jaxrs.com/");
      *
      *   // Build and invoke the get request asynchronously in a single step
@@ -125,7 +125,10 @@ public interface Invocation extends Configurable<Invocation> {
          * request entity.
          *
          * @param method request method name.
-         * @param entity request entity.
+         * @param entity request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+         *               Any variant-related HTTP headers previously set (namely {@code Content-Type},
+         *               {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+         *               the entity variant information.
          * @return invocation encapsulating the built request.
          */
         public Invocation build(String method, Entity<?> entity);
@@ -147,7 +150,10 @@ public interface Invocation extends Configurable<Invocation> {
         /**
          * Build a POST request invocation.
          *
-         * @param entity request entity
+         * @param entity request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+         *               Any variant-related HTTP headers previously set (namely {@code Content-Type},
+         *               {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+         *               the entity variant information.
          * @return invocation encapsulating the built POST request.
          */
         public Invocation buildPost(Entity<?> entity);
@@ -155,7 +161,10 @@ public interface Invocation extends Configurable<Invocation> {
         /**
          * Build a PUT request invocation.
          *
-         * @param entity request entity
+         * @param entity request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+         *               Any variant-related HTTP headers previously set (namely {@code Content-Type},
+         *               {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+         *               the entity variant information.
          * @return invocation encapsulating the built PUT request.
          */
         public Invocation buildPut(Entity<?> entity);
@@ -171,7 +180,7 @@ public interface Invocation extends Configurable<Invocation> {
         /**
          * Add acceptable languages.
          *
-         * @param locales an array of the acceptable languages
+         * @param locales an array of the acceptable languages.
          * @return the updated builder.
          */
         public Builder acceptLanguage(Locale... locales);
@@ -179,10 +188,18 @@ public interface Invocation extends Configurable<Invocation> {
         /**
          * Add acceptable languages.
          *
-         * @param locales an array of the acceptable languages
+         * @param locales an array of the acceptable languages.
          * @return the updated builder.
          */
         public Builder acceptLanguage(String... locales);
+
+        /**
+         * Add acceptable encodings.
+         *
+         * @param encodings an array of the acceptable encodings.
+         * @return the updated builder.
+         */
+        public Builder acceptEncoding(String... encodings);
 
         /**
          * Add a cookie to be set.

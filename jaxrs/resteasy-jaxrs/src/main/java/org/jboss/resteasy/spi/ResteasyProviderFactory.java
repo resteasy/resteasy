@@ -1871,7 +1871,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
    @Override
-   public ResteasyProviderFactory setProperty(String name, Object value)
+   public ResteasyProviderFactory property(String name, Object value)
    {
       properties.put(name, value);
       return this;

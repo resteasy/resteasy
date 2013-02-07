@@ -113,8 +113,8 @@ public class PersistenceTest
       deployment.setApplicationClass(SApp.class.getName());
       ResteasyProviderFactory factory = new ResteasyProviderFactory();
       deployment.setProviderFactory(factory);
-      factory.setProperty(SkeletonKeyApplication.SKELETON_KEY_INFINISPAN_CONFIG_FILE, "cache.xml");
-      factory.setProperty(SkeletonKeyApplication.SKELETON_KEY_INFINISPAN_CACHE_NAME, "idp-store");
+      factory.property(SkeletonKeyApplication.SKELETON_KEY_INFINISPAN_CONFIG_FILE, "cache.xml");
+      factory.property(SkeletonKeyApplication.SKELETON_KEY_INFINISPAN_CACHE_NAME, "idp-store");
 
       EmbeddedContainer.start(deployment);
       app = ((SApp)deployment.getApplication()).app;

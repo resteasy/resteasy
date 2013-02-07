@@ -26,7 +26,7 @@ public class BrowserCacheFeature implements Feature
    public boolean configure(FeatureContext configuration)
    {
       if (cache == null) cache = new LightweightBrowserCache();
-      configuration.setProperty(BrowserCache.class.getName(), cache);
+      configuration.property(BrowserCache.class.getName(), cache);
       configuration.register(new CacheInterceptor(cache));
       return true;
    }

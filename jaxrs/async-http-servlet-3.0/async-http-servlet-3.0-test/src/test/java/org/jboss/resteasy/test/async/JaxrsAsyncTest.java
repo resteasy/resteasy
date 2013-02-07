@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientFactory;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
 /**
@@ -16,7 +16,7 @@ public class JaxrsAsyncTest
    @Test
    public void testAsync() throws Exception
    {
-      Client client = ClientFactory.newClient();
+      Client client = ClientBuilder.newClient();
       Response response = client.target("http://localhost:8080/jaxrs").request().get();
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("hello", response.readEntity(String.class));
@@ -27,7 +27,7 @@ public class JaxrsAsyncTest
    @Test
    public void testTimeout() throws Exception
    {
-      Client client = ClientFactory.newClient();
+      Client client = ClientBuilder.newClient();
       Response response = client.target("http://localhost:8080/jaxrs/timeout").request().get();
       Assert.assertEquals(503, response.getStatus());
       response.close();
@@ -37,7 +37,7 @@ public class JaxrsAsyncTest
    @Test
    public void testCancel() throws Exception
    {
-      Client client = ClientFactory.newClient();
+      Client client = ClientBuilder.newClient();
       Response response = client.target("http://localhost:8080/jaxrs/cancel").request().get();
       Assert.assertEquals(503, response.getStatus());
       response.close();

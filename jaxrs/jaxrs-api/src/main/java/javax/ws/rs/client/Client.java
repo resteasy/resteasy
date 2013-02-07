@@ -45,6 +45,8 @@ import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.UriBuilder;
 
+import javax.net.ssl.SSLContext;
+
 /**
  * Client is the main entry point to the fluent API used to build and execute client
  * requests in order to consume responses returned.
@@ -121,4 +123,11 @@ public interface Client extends Configurable<Client> {
      * @throws NullPointerException     in case link is {@code null}.
      */
     public Invocation.Builder invocation(Link link);
+
+    /**
+     * Get the SSL context configured to be used with the current client run-time.
+     *
+     * @return SSL context configured to be used with the current client run-time.
+     */
+    public SSLContext getSslContext();
 }

@@ -415,7 +415,11 @@ public abstract class Response {
     public abstract URI getLocation();
 
     /**
-     * Get the links attached to the message as header.
+     * Get the links attached to the message as headers. Any links in the message
+     * that are relative must be resolved with respect to the actual request URI
+     * that produced this response. Note that request URIs may be updated by
+     * filters, so the actual request URI may differ from that in the original
+     * invocation.
      *
      * @return links, may return empty {@link Set} if no links are present. Does
      *         not return {@code null}.
@@ -434,7 +438,10 @@ public abstract class Response {
     public abstract boolean hasLink(String relation);
 
     /**
-     * Get the link for the relation.
+     * Get the link for the relation. A relative link is resolved with respect
+     * to the actual request URI that produced this response. Note that request
+     * URIs may be updated by filters, so the actual request URI may differ from
+     * that in the original invocation.
      *
      * @param relation link relation.
      * @return the link for the relation, otherwise {@code null} if not present.
@@ -444,6 +451,7 @@ public abstract class Response {
 
     /**
      * Convenience method that returns a {@link Link.Builder} for the relation.
+     * See {@link #getLink} for more information.
      *
      * @param relation link relation.
      * @return the link builder for the relation, otherwise {@code null} if not

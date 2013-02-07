@@ -8,7 +8,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientFactory;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.MediaType;
@@ -84,7 +84,7 @@ public class JaxrsAsyncTest extends BaseResourceTest
    public void testSuccess() throws Exception
    {
       addPerRequestResource(MyResource.class);
-      Client client = ClientFactory.newClient();
+      Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("")).request().get();
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("hello", response.readEntity(String.class));
@@ -97,7 +97,7 @@ public class JaxrsAsyncTest extends BaseResourceTest
    {
       addPerRequestResource(MyResource.class);
 
-      Client client = ClientFactory.newClient();
+      Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/timeout")).request().get();
       Assert.assertEquals(503, response.getStatus());
       response.close();

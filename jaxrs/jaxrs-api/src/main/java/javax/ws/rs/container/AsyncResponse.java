@@ -108,14 +108,22 @@ public interface AsyncResponse {
 
     /**
      * Resume the suspended request processing using the provided response data.
-     * <p>
+     *
      * The provided response data can be of any Java type that can be
      * returned from a {@link javax.ws.rs.HttpMethod JAX-RS resource method}.
-     * The processing of the data by JAX-RS framework follows the same path as
-     * it would for the response data returned synchronously by a JAX-RS resource
-     * method.
+     * <p>
      * The asynchronous response must be still in a {@link #isSuspended() suspended} state
      * for this method to succeed.
+     * </p>
+     * <p>
+     * By executing this method, the request is guaranteed to complete either successfully or
+     * with an error. The data processing by the JAX-RS runtime follows the same path
+     * as it would for the response data returned synchronously by a JAX-RS resource,
+     * except that unmapped exceptions are not re-thrown by JAX-RS runtime to be handled by
+     * a hosting I/O container. Instead, any unmapped exceptions are propagated to the hosting
+     * I/O container via a container-specific callback mechanism. Depending on the container
+     * implementation, propagated unmapped exceptions typically result in an error status
+     * being sent to the client and/or the connection being closed.
      * </p>
      *
      * @param response data to be sent back in response to the suspended request.
@@ -128,13 +136,17 @@ public interface AsyncResponse {
     /**
      * Resume the suspended request processing using the provided throwable.
      *
-     * <p>
      * For the provided throwable same rules apply as for an exception thrown
      * by a {@link javax.ws.rs.HttpMethod JAX-RS resource method}.
-     * The processing of the throwable by JAX-RS framework follows the same path
-     * as it would for any exception thrown by a JAX-RS resource method.
-     * The asynchronous response must be still in a {@link #isSuspended() suspended} state
-     * for this method to succeed.
+     * <p>
+     * By executing this method, the request is guaranteed to complete either successfully or
+     * with an error. The throwable processing by the JAX-RS runtime follows the same path
+     * as it would for the response data returned synchronously by a JAX-RS resource,
+     * except that unmapped exceptions are not re-thrown by JAX-RS runtime to be handled by
+     * a hosting I/O container. Instead, any unmapped exceptions are propagated to the hosting
+     * I/O container via a container-specific callback mechanism. Depending on the container
+     * implementation, propagated unmapped exceptions typically result in an error status
+     * being sent to the client and/or the connection being closed.
      * </p>
      *
      * @param response an exception to be raised in response to the suspended
