@@ -17,7 +17,6 @@ import org.codehaus.jackson.map.ObjectWriter;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.client.jaxrs.AbstractClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.jose.jws.JWSBuilder;
@@ -570,9 +569,9 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
          String tokenString = buildTokenString(realmPrivateKey, token);
          ResteasyClient client = new ResteasyClientBuilder()
                  .providerFactory(providers)
-                 .hostnameVerification(AbstractClientBuilder.HostnameVerificationPolicy.ANY)
-                 .truststore(resourceMetadata.getTruststore())
-                 .clientKeyStore(resourceMetadata.getClientKeystore(), resourceMetadata.getClientKeyPassword())
+                 .hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.ANY)
+                 .trustStore(resourceMetadata.getTruststore())
+                 .keyStore(resourceMetadata.getClientKeystore(), resourceMetadata.getClientKeyPassword())
                  .build();
          try
          {

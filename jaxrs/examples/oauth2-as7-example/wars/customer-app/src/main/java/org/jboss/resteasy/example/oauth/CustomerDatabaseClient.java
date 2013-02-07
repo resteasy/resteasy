@@ -1,6 +1,5 @@
 package org.jboss.resteasy.example.oauth;
 
-import org.jboss.resteasy.client.jaxrs.AbstractClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.skeleton.key.SkeletonKeySession;
@@ -21,8 +20,8 @@ public class CustomerDatabaseClient
    {
       SkeletonKeySession session = (SkeletonKeySession)request.getAttribute(SkeletonKeySession.class.getName());
       ResteasyClient client = new ResteasyClientBuilder()
-                 .truststore(session.getMetadata().getTruststore())
-                 .hostnameVerification(AbstractClientBuilder.HostnameVerificationPolicy.ANY).build();
+                 .trustStore(session.getMetadata().getTruststore())
+                 .hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.ANY).build();
       try
       {
          Response response = client.target("https://localhost:8443/database/customers").request()

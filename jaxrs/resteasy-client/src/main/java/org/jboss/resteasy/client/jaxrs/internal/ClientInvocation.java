@@ -509,9 +509,9 @@ public class ClientInvocation implements Invocation
    }
 
    @Override
-   public Invocation setProperty(String name, Object value)
+   public Invocation property(String name, Object value)
    {
-      configuration.setProperty(name, value);
+      configuration.property(name, value);
       return this;
    }
 

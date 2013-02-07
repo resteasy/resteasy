@@ -61,7 +61,7 @@ import java.util.Map;
  * </p>
  * <h3>Setting properties.</h3>
  * <p>
- * New properties can be set using the {@link #setProperty} method. Similarly, updating a value of
+ * New properties can be set using the {@link #property} method. Similarly, updating a value of
  * an existing property can be achieved using the same method. Information about the configured set of
  * properties is available via the underlying {@code Configuration} object. An existing property
  * can be removed by assigning a {@code null} value to the property.
@@ -185,7 +185,7 @@ public interface Configurable<C extends Configurable> {
      *              with the given name.
      * @return the updated configurable instance.
      */
-    public C setProperty(String name, Object value);
+    public C property(String name, Object value);
 
     /**
      * Register a class of a custom JAX-RS component (such as an extension provider or

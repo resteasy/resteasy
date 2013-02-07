@@ -17,10 +17,14 @@ import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.client.jaxrs.engines.PassthroughTrustManager;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.Configuration;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.util.HashMap;
@@ -36,8 +40,23 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ResteasyClientBuilder extends AbstractClientBuilder
+public class ResteasyClientBuilder extends ClientBuilder
 {
+   public static enum HostnameVerificationPolicy
+   {
+      /**
+       * Hostname verification is not done on the server's certificate
+       */
+      ANY,
+      /**
+       * Allows wildcards in subdomain names i.e. *.foo.com
+       */
+      WILDCARD,
+      /**
+       * CN must match hostname connecting to
+       */
+      STRICT
+   }
 
    protected KeyStore truststore;
    protected KeyStore clientKeyStore;
@@ -55,83 +74,14 @@ public class ResteasyClientBuilder extends AbstractClientBuilder
    protected TimeUnit connectionTTLUnit = TimeUnit.MILLISECONDS;
 
    /**
-    * SSLContext used to create socket connections.  This will negate any other SSL settings.
+    * Changing the providerFactory will wipe clean any registered components or properties.
     *
-    * @param sslContext
+    * @param providerFactory
     * @return
     */
-   @Override
-   public ResteasyClientBuilder sslContext(SSLContext sslContext)
+   public ResteasyClientBuilder providerFactory(ResteasyProviderFactory providerFactory)
    {
-      this.sslContext = sslContext;
-      return this;
-   }
-
-   @Override
-   public ResteasyClientBuilder connectionTTL(long ttl, TimeUnit unit)
-   {
-      this.connectionTTL = ttl;
-      this.connectionTTLUnit = unit;
-      return this;
-   }
-
-   @Override
-   public ResteasyClientBuilder maxPooledPerRoute(int maxPooledPerRoute)
-   {
-      this.maxPooledPerRoute = maxPooledPerRoute;
-      return this;
-   }
-
-   @Override
-   public ResteasyClientBuilder connectionPoolSize(int connectionPoolSize)
-   {
-      this.connectionPoolSize = connectionPoolSize;
-      return this;
-   }
-
-   @Override
-   public ResteasyClientBuilder truststore(KeyStore truststore)
-   {
-      this.truststore = truststore;
-      return this;
-   }
-
-   /**
-    * Client keystore to use when doing 2-way TLS (client cert auth).
-    *
-    * @param clientKeyStore
-    * @param password private key password
-    * @return
-    */
-   @Override
-   public ResteasyClientBuilder clientKeyStore(KeyStore clientKeyStore, String password)
-   {
-      this.clientKeyStore = clientKeyStore;
-      this.clientPrivateKeyPassword = password;
-      return this;
-   }
-
-   /**
-    * Turns off server certificate verification.  This will allow MITM attacks so use this feature with caution!
-    *
-    */
-   @Override
-   public ResteasyClientBuilder disableTrustManager()
-   {
-      this.disableTrustManager = true;
-      return this;
-   }
-
-   /**
-    * SSL policy used to verify hostnames
-    *
-    * @param policy
-    * @return
-    */
-   @Override
-   public ResteasyClientBuilder hostnameVerification(HostnameVerificationPolicy policy)
-   {
-      this.policy = policy;
+      this.providerFactory = providerFactory;
       return this;
    }
 
@@ -147,16 +97,46 @@ public class ResteasyClientBuilder extends AbstractClientBuilder
       return this;
    }
 
-   public ResteasyClientBuilder providerFactory(ResteasyProviderFactory providerFactory)
+   public ResteasyClientBuilder connectionTTL(long ttl, TimeUnit unit)
    {
-      this.providerFactory = providerFactory;
+      this.connectionTTL = ttl;
+      this.connectionTTLUnit = unit;
       return this;
    }
 
-   @Override
-   public ResteasyClientBuilder property(String name, Object value)
+   public ResteasyClientBuilder maxPooledPerRoute(int maxPooledPerRoute)
    {
-      properties.put(name, value);
+      this.maxPooledPerRoute = maxPooledPerRoute;
+      return this;
+   }
+
+   public ResteasyClientBuilder connectionPoolSize(int connectionPoolSize)
+   {
+      this.connectionPoolSize = connectionPoolSize;
+      return this;
+   }
+
+   /**
+    * Disable trust management and hostname verification.  <i>NOTE</i> this is a security
+    * hole, so only set this option if you cannot or do not want to verify the identity of the
+    * host you are communicating with.
+    *
+    */
+   public ResteasyClientBuilder disableTrustManager()
+   {
+      this.disableTrustManager = true;
+      return this;
+   }
+
+   /**
+    * SSL policy used to verify hostnames
+    *
+    * @param policy
+    * @return
+    */
+   public ResteasyClientBuilder hostnameVerification(HostnameVerificationPolicy policy)
+   {
+      this.policy = policy;
       return this;
    }
 
@@ -173,7 +153,43 @@ public class ResteasyClientBuilder extends AbstractClientBuilder
    }
 
    @Override
-   public ResteasyClient build()
+   public ResteasyClientBuilder sslContext(SSLContext sslContext)
+   {
+      this.sslContext = sslContext;
+      return this;
+   }
+
+   @Override
+   public ResteasyClientBuilder trustStore(KeyStore truststore)
+   {
+      this.truststore = truststore;
+      return this;
+   }
+
+   @Override
+   public ResteasyClientBuilder keyStore(KeyStore keyStore, String password)
+   {
+      this.clientKeyStore = keyStore;
+      this.clientPrivateKeyPassword = password;
+      return this;
+   }
+
+   @Override
+   public ResteasyClientBuilder keyStore(KeyStore keyStore, char[] password)
+   {
+      this.clientKeyStore = keyStore;
+      this.clientPrivateKeyPassword = new String(password);
+      return this;
+   }
+
+   @Override
+   public ResteasyClientBuilder property(String name, Object value)
+   {
+      getProviderFactory().property(name, value);
+      return this;
+   }
+
+   protected ResteasyProviderFactory getProviderFactory()
    {
       if (providerFactory == null)
       {
@@ -181,10 +197,16 @@ public class ResteasyClientBuilder extends AbstractClientBuilder
          providerFactory = new ResteasyProviderFactory();
          RegisterBuiltin.register(providerFactory);
       }
-      ClientConfiguration config = new ClientConfiguration(providerFactory);
+      return providerFactory;
+   }
+
+   @Override
+   public ResteasyClient build()
+   {
+      ClientConfiguration config = new ClientConfiguration(getProviderFactory());
       for (Map.Entry<String, Object> entry : properties.entrySet())
       {
-         config.setProperty(entry.getKey(), entry.getValue());
+         config.property(entry.getKey(), entry.getValue());
       }
       if (asyncExecutor == null)
       {
@@ -274,5 +296,78 @@ public class ResteasyClientBuilder extends AbstractClientBuilder
       }
    }
 
+   @Override
+   public ClientBuilder hostnameVerifier(HostnameVerifier verifier)
+   {
+      throw new NotImplementedYetException();
+   }
 
+   @Override
+   public Configuration getConfiguration()
+   {
+      return getProviderFactory().getConfiguration();
+   }
+
+   @Override
+   public ClientBuilder register(Class<?> componentClass)
+   {
+      getProviderFactory().register(componentClass);
+      return this;
+   }
+
+   @Override
+   public ClientBuilder register(Class<?> componentClass, int priority)
+   {
+      getProviderFactory().register(componentClass, priority);
+      return this;
+   }
+
+   @Override
+   public ClientBuilder register(Class<?> componentClass, Class<?>... contracts)
+   {
+      getProviderFactory().register(componentClass, contracts);
+      return this;
+   }
+
+   @Override
+   public ClientBuilder register(Class<?> componentClass, Map<Class<?>, Integer> contracts)
+   {
+      getProviderFactory().register(componentClass, contracts);
+      return this;
+   }
+
+   @Override
+   public ClientBuilder register(Object component)
+   {
+      getProviderFactory().register(component);
+      return this;
+   }
+
+   @Override
+   public ClientBuilder register(Object component, int priority)
+   {
+      getProviderFactory().register(component, priority);
+      return this;
+   }
+
+   @Override
+   public ClientBuilder register(Object component, Class<?>... contracts)
+   {
+      getProviderFactory().register(component, contracts);
+      return this;
+   }
+
+   @Override
+   public ClientBuilder register(Object component, Map<Class<?>, Integer> contracts)
+   {
+      getProviderFactory().register(component, contracts);
+      return this;
+   }
+
+   @Override
+   public ClientBuilder replaceWith(Configuration config)
+   {
+      getProviderFactory().replaceWith(config);
+      return this;
+   }
 }

@@ -13,7 +13,6 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.realm.GenericPrincipal;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.client.jaxrs.AbstractClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
@@ -97,9 +96,9 @@ public class OAuthManagedResourceValve extends FormAuthenticator implements Life
       int size = 10;
       if (managedResourceConfigLoader.getRemoteSkeletonKeyConfig().getConnectionPoolSize() > 0)
          size = managedResourceConfigLoader.getRemoteSkeletonKeyConfig().getConnectionPoolSize();
-      AbstractClientBuilder.HostnameVerificationPolicy policy = AbstractClientBuilder.HostnameVerificationPolicy.WILDCARD;
+      ResteasyClientBuilder.HostnameVerificationPolicy policy = ResteasyClientBuilder.HostnameVerificationPolicy.WILDCARD;
       if (managedResourceConfigLoader.getRemoteSkeletonKeyConfig().isAllowAnyHostname())
-         policy = AbstractClientBuilder.HostnameVerificationPolicy.ANY;
+         policy = ResteasyClientBuilder.HostnameVerificationPolicy.ANY;
       ResteasyProviderFactory providerFactory = new ResteasyProviderFactory();
       ClassLoader old = Thread.currentThread().getContextClassLoader();
       Thread.currentThread().setContextClassLoader(OAuthManagedResourceValve.class.getClassLoader());
@@ -116,8 +115,8 @@ public class OAuthManagedResourceValve extends FormAuthenticator implements Life
               .providerFactory(providerFactory)
               .connectionPoolSize(size)
               .hostnameVerification(policy)
-              .truststore(resourceMetadata.getTruststore())
-              .clientKeyStore(resourceMetadata.getClientKeystore(), resourceMetadata.getClientKeyPassword())
+              .trustStore(resourceMetadata.getTruststore())
+              .keyStore(resourceMetadata.getClientKeystore(), resourceMetadata.getClientKeyPassword())
               .build();
       realmConfiguration.setClient(client);
       realmConfiguration.setAuthUrl(UriBuilder.fromUri(authUrl).queryParam("client_id", client_id));

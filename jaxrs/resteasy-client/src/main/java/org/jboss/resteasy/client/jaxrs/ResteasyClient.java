@@ -3,12 +3,13 @@ package org.jboss.resteasy.client.jaxrs;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
+import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
+import javax.net.ssl.SSLContext;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.UriBuilder;
@@ -85,9 +86,15 @@ public class ResteasyClient implements Client
    }
 
    @Override
-   public ResteasyClient setProperty(String name, Object value)
+   public SSLContext getSslContext()
    {
-      configuration.setProperty(name, value);
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public ResteasyClient property(String name, Object value)
+   {
+      configuration.property(name, value);
       return this;
    }
 

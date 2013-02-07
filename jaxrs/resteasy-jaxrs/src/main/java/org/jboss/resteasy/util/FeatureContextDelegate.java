@@ -25,9 +25,9 @@ public class FeatureContextDelegate implements FeatureContext
    }
 
    @Override
-   public FeatureContext setProperty(String name, Object value)
+   public FeatureContext property(String name, Object value)
    {
-      configurable.setProperty(name, value);
+      configurable.property(name, value);
       return this;
    }
 

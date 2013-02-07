@@ -11,7 +11,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientFactory;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
@@ -29,7 +29,7 @@ public class SimpleClientTest
    public void testResponse() throws Exception
    {
       // fill out a query param and execute a get request
-      Client client = ClientFactory.newClient();
+      Client client = ClientBuilder.newClient();
       WebTarget target = client.target("http://localhost:9095/customers");
       Response response = target.queryParam("name", "Bill").request().get();
       try
@@ -48,7 +48,7 @@ public class SimpleClientTest
    public void testCustomer() throws Exception
    {
       // fill out a query param and execute a get request
-      Client client = ClientFactory.newClient();
+      Client client = ClientBuilder.newClient();
       WebTarget target = client.target("http://localhost:9095/customers");
       try
       {
@@ -67,7 +67,7 @@ public class SimpleClientTest
    public void testTemplate() throws Exception
    {
       // fill out a path param and execute a get request
-      Client client = ClientFactory.newClient();
+      Client client = ClientBuilder.newClient();
       WebTarget target = client.target("http://localhost:9095/customers/{id}");
       Response response = target.resolveTemplate("id", "12345").request().get();
       try
@@ -87,7 +87,7 @@ public class SimpleClientTest
    public void testAsync() throws Exception
    {
       // fill out a query param and execute a get request
-      Client client = ClientFactory.newClient();
+      Client client = ClientBuilder.newClient();
       WebTarget target = client.target("http://localhost:9095/customers");
       try
       {
@@ -107,7 +107,7 @@ public class SimpleClientTest
    public void testAsyncCallback() throws Exception
    {
       // fill out a query param and execute a get request
-      Client client = ClientFactory.newClient();
+      Client client = ClientBuilder.newClient();
       WebTarget target = client.target("http://localhost:9095/customers");
       try
       {
@@ -151,7 +151,7 @@ public class SimpleClientTest
    {
       ResteasyClient client = new ResteasyClientBuilder().build();
       // or you can do...
-      // ResteasyClient client = (ResteasyClient)ClientFactory.newClient();
+      // ResteasyClient client = (ResteasyClient)ClientBuilder.newClient();
       CustomerProxy proxy = client.target("http://localhost:9095").proxy(CustomerProxy.class);
       Customer cust = proxy.getCustomer("Monica");
       Assert.assertEquals("Monica", cust.getName());

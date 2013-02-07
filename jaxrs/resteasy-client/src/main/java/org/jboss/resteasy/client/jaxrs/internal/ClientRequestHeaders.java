@@ -102,6 +102,27 @@ public class ClientRequestHeaders
       headers.putSingle(HttpHeaders.ACCEPT_LANGUAGE, builder.toString());
    }
 
+   public void acceptEncoding(String... encodings)
+   {
+      headers.remove(HttpHeaders.ACCEPT_ENCODING);
+      StringBuilder builder = new StringBuilder();
+      boolean isFirst = true;
+      for (String l : encodings)
+      {
+         if (isFirst)
+         {
+            isFirst = false;
+         }
+         else
+         {
+            builder.append(", ");
+         }
+         builder.append(l.toString());
+      }
+      headers.putSingle(HttpHeaders.ACCEPT_ENCODING, builder.toString());
+   }
+
+
    public void accept(String... types)
    {
       headers.remove(HttpHeaders.ACCEPT);

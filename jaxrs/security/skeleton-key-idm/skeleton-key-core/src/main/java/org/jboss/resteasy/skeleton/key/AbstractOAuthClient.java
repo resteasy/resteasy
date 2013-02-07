@@ -1,6 +1,5 @@
 package org.jboss.resteasy.skeleton.key;
 
-import org.jboss.resteasy.client.jaxrs.AbstractClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
 import org.jboss.resteasy.util.BasicAuthHelper;
@@ -41,8 +40,8 @@ public class AbstractOAuthClient
    {
       if (client == null)
       {
-         client = new ResteasyClientBuilder().truststore(truststore)
-                 .hostnameVerification(AbstractClientBuilder.HostnameVerificationPolicy.ANY)
+         client = new ResteasyClientBuilder().trustStore(truststore)
+                 .hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.ANY)
                  .connectionPoolSize(10)
                  .build();
       }

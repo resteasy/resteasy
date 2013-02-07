@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,9 +50,16 @@ import java.lang.annotation.Target;
  * Values are URL decoded unless this is disabled using the {@link Encoded}
  * annotation. A default value can be specified using the {@link DefaultValue}
  * annotation.
- *
+ * <p>
+ * Note that the {@code @MatrixParam} {@link #value() annotation value} refers
+ * to a name of a matrix parameter that resides in the last matched path segment
+ * of the {@link Path}-annotated Java structure that injects the value of the matrix
+ * parameter.
+ * </p>
+ * <p>
  * The type {@code T} of the annotated parameter, field or property must
  * either:
+ * </p>
  * <ol>
  * <li>Be a primitive type</li>
  * <li>Have a constructor that accepts a single {@code String} argument</li>

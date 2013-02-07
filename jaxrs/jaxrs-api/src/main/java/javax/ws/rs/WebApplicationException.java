@@ -122,20 +122,13 @@ public class WebApplicationException extends RuntimeException {
     }
 
     private static String computeExceptionMessage(Response response) {
-        String reason = Response.Status.INTERNAL_SERVER_ERROR.getReasonPhrase();
-        int statusCode = Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
+        final Response.StatusType statusInfo;
         if (response != null) {
-           statusCode = response.getStatus();
-           if (response.getStatusInfo() != null)
-           {
-              reason = response.getStatusInfo().getReasonPhrase();
-           }
-           else
-           {
-              reason = "Unknown Status Code";
-           }
+            statusInfo = response.getStatusInfo();
+        } else {
+            statusInfo = Response.Status.INTERNAL_SERVER_ERROR;
         }
-        return "HTTP " + statusCode + ' ' + reason;
+        return "HTTP " + statusInfo.getStatusCode() + ' ' + statusInfo.getReasonPhrase();
     }
 
     /**

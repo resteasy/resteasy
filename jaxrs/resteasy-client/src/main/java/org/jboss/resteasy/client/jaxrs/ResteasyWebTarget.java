@@ -68,7 +68,7 @@ public interface ResteasyWebTarget extends WebTarget
    ResteasyWebTarget clone();
 
    @Override
-   ResteasyWebTarget setProperty(String name, Object value);
+   ResteasyWebTarget property(String name, Object value);
 
    @Override
    ResteasyWebTarget register(Class<?> componentClass);
