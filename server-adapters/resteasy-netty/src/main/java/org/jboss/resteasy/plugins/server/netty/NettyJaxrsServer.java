@@ -123,7 +123,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
       RequestDispatcher dispatcher = new RequestDispatcher((SynchronousDispatcher)deployment.getDispatcher(), deployment.getProviderFactory(), domain);
 
       // Configure the server.
-      ServerBootstrap bootstrap = new ServerBootstrap(
+      bootstrap = new ServerBootstrap(
               new NioServerSocketChannelFactory(
                       Executors.newCachedThreadPool(),
                       Executors.newCachedThreadPool(), 
@@ -147,7 +147,9 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    public void stop()
    {
       allChannels.close().awaitUninterruptibly();
-      bootstrap.releaseExternalResources();
+      if (bootstrap != null) {
+          bootstrap.releaseExternalResources();
+      }
       deployment.stop();
    }
 }
