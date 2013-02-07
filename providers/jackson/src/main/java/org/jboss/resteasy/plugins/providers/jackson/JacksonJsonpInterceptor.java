@@ -12,6 +12,7 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterContext;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
@@ -33,6 +34,7 @@ import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
  * @version $Revision: 1 $
  */
 @Provider
+@ServerInterceptor
 public class JacksonJsonpInterceptor implements MessageBodyWriterInterceptor{
 
     /**
