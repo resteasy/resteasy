@@ -146,7 +146,9 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    public void stop()
    {
       allChannels.close().awaitUninterruptibly();
-      bootstrap.releaseExternalResources();
+      if (bootstrap != null) {
+          bootstrap.releaseExternalResources();
+      }
       deployment.stop();
    }
 }
