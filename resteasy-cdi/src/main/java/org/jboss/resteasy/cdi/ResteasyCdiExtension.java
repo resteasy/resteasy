@@ -3,6 +3,7 @@ package org.jboss.resteasy.cdi;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.util.GetRestful;
 
+import javax.decorator.Decorator;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
@@ -90,7 +91,7 @@ public class ResteasyCdiExtension implements Extension
             log.debug("Discovered CDI bean which is a JAX-RS provider {0}.", type.getJavaClass().getCanonicalName());
             event.setAnnotatedType(wrapAnnotatedType(type, applicationScopedLiteral));
          }
-         else if (GetRestful.isRootResource(type.getJavaClass()))
+         else if (GetRestful.isRootResource(type.getJavaClass()) && !type.isAnnotationPresent(Decorator.class))
          {
             log.debug("Discovered CDI bean which is a JAX-RS resource {0}.", type.getJavaClass().getCanonicalName());
             event.setAnnotatedType(wrapAnnotatedType(type, requestScopedLiteral));
