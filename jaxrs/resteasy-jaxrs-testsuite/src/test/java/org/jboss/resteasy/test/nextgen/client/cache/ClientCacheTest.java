@@ -144,7 +144,7 @@ public class ClientCacheTest extends BaseResourceTest
    {
       ResteasyClient client = new ResteasyClientBuilder().build();
       ResteasyWebTarget target = client.target(generateBaseUrl());
-      target.configuration().register(BrowserCacheFeature.class);
+      target.register(BrowserCacheFeature.class);
 
       MyProxy proxy = target.proxy(MyProxy.class);
       String rtn = null;
@@ -216,8 +216,8 @@ public class ClientCacheTest extends BaseResourceTest
    {
       ResteasyClient client = new ResteasyClientBuilder().build();
       ResteasyWebTarget target = client.target(generateBaseUrl());
-      target.configuration().register(BrowserCacheFeature.class);
-      LightweightBrowserCache cache = (LightweightBrowserCache)target.configuration().getProperty(BrowserCache.class.getName());
+      target.register(BrowserCacheFeature.class);
+      LightweightBrowserCache cache = (LightweightBrowserCache)target.getConfiguration().getProperty(BrowserCache.class.getName());
       cache.setMaxBytes(20);
       MyProxy proxy = target.proxy(MyProxy.class);
 

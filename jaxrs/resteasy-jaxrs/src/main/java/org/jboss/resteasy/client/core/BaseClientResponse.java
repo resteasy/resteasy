@@ -19,7 +19,6 @@ import org.jboss.resteasy.util.InputStreamToByteArray;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.util.Types;
 
-import javax.ws.rs.MessageProcessingException;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -520,7 +519,31 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    @Override
    public StatusType getStatusInfo()
    {
-      return Status.fromStatusCode(status);
+      StatusType statusType = Status.fromStatusCode(status);
+      if (statusType == null)
+      {
+         statusType = new StatusType()
+         {
+            @Override
+            public int getStatusCode()
+            {
+               return status;
+            }
+
+            @Override
+            public Status.Family getFamily()
+            {
+               return Status.Family.OTHER;
+            }
+
+            @Override
+            public String getReasonPhrase()
+            {
+               return "Unknown Code";
+            }
+         };
+      }
+      return statusType;
    }
 
    public void checkFailureStatus()
@@ -572,25 +595,25 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    }
 
    @Override
-   public <T> T readEntity(Class<T> entityType) throws MessageProcessingException, IllegalStateException
+   public <T> T readEntity(Class<T> entityType)
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public <T> T readEntity(javax.ws.rs.core.GenericType<T> entityType) throws MessageProcessingException, IllegalStateException
+   public <T> T readEntity(javax.ws.rs.core.GenericType<T> entityType)
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public <T> T readEntity(Class<T> entityType, Annotation[] annotations) throws MessageProcessingException, IllegalStateException
+   public <T> T readEntity(Class<T> entityType, Annotation[] annotations)
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public <T> T readEntity(javax.ws.rs.core.GenericType<T> entityType, Annotation[] annotations) throws MessageProcessingException, IllegalStateException
+   public <T> T readEntity(javax.ws.rs.core.GenericType<T> entityType, Annotation[] annotations)
    {
       throw new NotImplementedYetException();
    }
@@ -602,13 +625,13 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    }
 
    @Override
-   public boolean bufferEntity() throws MessageProcessingException
+   public boolean bufferEntity()
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public void close() throws MessageProcessingException
+   public void close()
    {
       releaseConnection();
    }

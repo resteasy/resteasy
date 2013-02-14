@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0-beta-2</version>
+        <version>3.0-beta-4</version>
     </parent>
     <name>Resteasy Http Adapter Plugins</name>
     <description/>

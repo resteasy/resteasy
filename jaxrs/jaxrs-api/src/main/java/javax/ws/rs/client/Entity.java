@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -95,7 +95,7 @@ public final class Entity<T> {
      * @throws IllegalArgumentException if the supplied string cannot be parsed
      *                                  or is {@code null}.
      */
-    public static <T> Entity<T> entity(final T entity, final String mediaType) throws IllegalArgumentException {
+    public static <T> Entity<T> entity(final T entity, final String mediaType) {
         return new Entity<T>(entity, MediaType.valueOf(mediaType));
     }
 

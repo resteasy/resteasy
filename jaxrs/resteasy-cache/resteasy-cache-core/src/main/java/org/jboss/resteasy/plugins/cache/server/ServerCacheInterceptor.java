@@ -4,6 +4,7 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 
 import javax.ws.rs.ConstrainedTo;
+import javax.ws.rs.RuntimeType;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
@@ -23,7 +24,7 @@ import java.security.NoSuchAlgorithmException;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@ConstrainedTo(ConstrainedTo.Type.SERVER)
+@ConstrainedTo(RuntimeType.SERVER)
 public class ServerCacheInterceptor implements WriterInterceptor
 {
    protected ServerCache cache;

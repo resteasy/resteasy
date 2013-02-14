@@ -6,6 +6,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Configurable;
+import javax.ws.rs.core.FeatureContext;
 import java.lang.reflect.Method;
 
 /**
@@ -16,7 +17,7 @@ public class RoleBasedSecurityFeature implements DynamicFeature
 {
 
    @Override
-   public void configure(ResourceInfo resourceInfo, Configurable configurable)
+   public void configure(ResourceInfo resourceInfo, FeatureContext configurable)
    {
       final Class declaring = resourceInfo.getResourceClass();
       final Method method = resourceInfo.getResourceMethod();

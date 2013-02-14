@@ -36,31 +36,24 @@ import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
+import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.PickConstructor;
 import org.jboss.resteasy.util.ThreadLocalStack;
 import org.jboss.resteasy.util.Types;
 
-import javax.ws.rs.BindingPriority;
+import javax.annotation.Priority;
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.Produces;
+import javax.ws.rs.RuntimeType;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.DynamicFeature;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.Configurable;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.Variant;
+import javax.ws.rs.core.*;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -85,6 +78,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -92,7 +86,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @version $Revision: 1 $
  */
 @SuppressWarnings("unchecked")
-public class ResteasyProviderFactory extends RuntimeDelegate implements Providers, HeaderValueProcessor, Configurable
+public class ResteasyProviderFactory extends RuntimeDelegate implements Providers, HeaderValueProcessor, Configurable<ResteasyProviderFactory>, Configuration
 {
    /**
     * Allow us to sort message body implementations that are more specific for their types
@@ -217,7 +211,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       featureInstances = new HashSet<Object>();
       providerClasses = new HashSet<Class<?>>();
       providerInstances = new HashSet<Object>();
-      properties = Collections.synchronizedMap(new HashMap<String, Object>());
+      properties = new ConcurrentHashMap<String, Object>();
       properties.putAll(parent.getProperties());
       enabledFeatures = new HashSet<Feature>();
    }
@@ -227,7 +221,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       serverDynamicFeatures = new HashSet<DynamicFeature>();
       clientDynamicFeatures = new HashSet<DynamicFeature>();
       enabledFeatures = new HashSet<Feature>();
-      properties = Collections.synchronizedMap(new HashMap<String, Object>());
+      properties = new ConcurrentHashMap<String, Object>();
       featureClasses = new HashSet<Class<?>>();
       featureInstances = new HashSet<Object>();
       providerClasses = new HashSet<Class<?>>();
@@ -387,11 +381,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected void registerDefaultInterceptorPrecedences()
    {
-      precedence.addPrecedence(SecurityPrecedence.PRECEDENCE_STRING, BindingPriority.AUTHENTICATION);
-      precedence.addPrecedence(HeaderDecoratorPrecedence.PRECEDENCE_STRING, BindingPriority.HEADER_DECORATOR);
-      precedence.addPrecedence(EncoderPrecedence.PRECEDENCE_STRING, BindingPriority.ENTITY_CODER);
-      precedence.addPrecedence(RedirectPrecedence.PRECEDENCE_STRING, BindingPriority.ENTITY_CODER + 50);
-      precedence.addPrecedence(DecoderPrecedence.PRECEDENCE_STRING, BindingPriority.ENTITY_CODER);
+      precedence.addPrecedence(SecurityPrecedence.PRECEDENCE_STRING, Priorities.AUTHENTICATION);
+      precedence.addPrecedence(HeaderDecoratorPrecedence.PRECEDENCE_STRING, Priorities.HEADER_DECORATOR);
+      precedence.addPrecedence(EncoderPrecedence.PRECEDENCE_STRING, Priorities.ENTITY_CODER);
+      precedence.addPrecedence(RedirectPrecedence.PRECEDENCE_STRING, Priorities.ENTITY_CODER + 50);
+      precedence.addPrecedence(DecoderPrecedence.PRECEDENCE_STRING, Priorities.ENTITY_CODER);
 
       registerDefaultInterceptorPrecedences(getClientExecutionInterceptorRegistry());
    }
@@ -1088,27 +1082,33 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public void registerProvider(Class provider, boolean isBuiltin)
    {
-      registerProvider(provider, isBuiltin, Integer.MIN_VALUE);
+      registerProvider(provider, isBuiltin, Integer.MIN_VALUE, null);
    }
 
-   protected boolean isA(Class target, Class type, Class<?>[] contracts)
+   protected boolean isA(Class target, Class type, Map<Class<?>, Integer> contracts)
    {
       if (!type.isAssignableFrom(target)) return false;
-      if (contracts == null || contracts.length == 0) return true;
-      for (Class<?> contract : contracts)
+      if (contracts == null || contracts.size() == 0) return true;
+      for (Class<?> contract : contracts.keySet())
       {
          if (contract.equals(type)) return true;
       }
       return false;
    }
 
-   protected boolean isA(Object target, Class type, Class<?>[] contracts)
+   protected boolean isA(Object target, Class type, Map<Class<?>, Integer> contracts)
    {
       return isA(target.getClass(), type, contracts);
    }
+   
+   protected int getPriority(Map<Class<?>, Integer> contracts, int defaultPriority, Class type)
+   {
+      if (contracts == null || contracts.size() == 0) return defaultPriority;
+      return contracts.get(type);
+   }
 
 
-   public void registerProvider(Class provider, boolean isBuiltin, int bindingPriority, Class<?>... contracts)
+   public void registerProvider(Class provider, boolean isBuiltin, int defaultPriority, Map<Class<?>, Integer> contracts)
    {
       if (isA(provider, ParamConverterProvider.class, contracts))
       {
@@ -1171,7 +1171,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             clientRequestFilters = parent.getClientRequestFilters().clone(this);
          }
-         clientRequestFilters.registerClass(provider, bindingPriority);
+         clientRequestFilters.registerClass(provider, getPriority(contracts, defaultPriority, ClientResponseFilter.class));
       }
       if (isA(provider, ClientResponseFilter.class, contracts))
       {
@@ -1179,7 +1179,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             clientResponseFilters = parent.getClientResponseFilters().clone(this);
          }
-         clientResponseFilters.registerClass(provider, bindingPriority);
+         clientResponseFilters.registerClass(provider, getPriority(contracts, defaultPriority, ClientResponseFilter.class));
       }
       if (isA(provider, ClientExecutionInterceptor.class, contracts))
       {
@@ -1224,21 +1224,21 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (isA(provider, ReaderInterceptor.class, contracts))
       {
          ConstrainedTo constrainedTo = (ConstrainedTo)provider.getAnnotation(ConstrainedTo.class);
-         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.SERVER)
+         if (constrainedTo != null && constrainedTo.value() == RuntimeType.SERVER)
          {
             if (serverReaderInterceptorRegistry == null)
             {
                serverReaderInterceptorRegistry = parent.getServerReaderInterceptorRegistry().clone(this);
             }
-            serverReaderInterceptorRegistry.registerClass(provider, bindingPriority);
+            serverReaderInterceptorRegistry.registerClass(provider, getPriority(contracts, defaultPriority, ReaderInterceptor.class));
          }
-         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.CLIENT)
+         if (constrainedTo != null && constrainedTo.value() == RuntimeType.CLIENT)
          {
             if (clientReaderInterceptorRegistry == null)
             {
                clientReaderInterceptorRegistry = parent.getClientReaderInterceptorRegistry().clone(this);
             }
-            clientReaderInterceptorRegistry.registerClass(provider, bindingPriority);
+            clientReaderInterceptorRegistry.registerClass(provider, getPriority(contracts, defaultPriority, ReaderInterceptor.class));
          }
          if (constrainedTo == null)
          {
@@ -1246,32 +1246,32 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             {
                serverReaderInterceptorRegistry = parent.getServerReaderInterceptorRegistry().clone(this);
             }
-            serverReaderInterceptorRegistry.registerClass(provider, bindingPriority);
+            serverReaderInterceptorRegistry.registerClass(provider, getPriority(contracts, defaultPriority, ReaderInterceptor.class));
             if (clientReaderInterceptorRegistry == null)
             {
                clientReaderInterceptorRegistry = parent.getClientReaderInterceptorRegistry().clone(this);
             }
-            clientReaderInterceptorRegistry.registerClass(provider, bindingPriority);
+            clientReaderInterceptorRegistry.registerClass(provider, getPriority(contracts, defaultPriority, ReaderInterceptor.class));
          }
       }
       if (isA(provider, WriterInterceptor.class, contracts))
       {
          ConstrainedTo constrainedTo = (ConstrainedTo)provider.getAnnotation(ConstrainedTo.class);
-         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.SERVER)
+         if (constrainedTo != null && constrainedTo.value() == RuntimeType.SERVER)
          {
             if (serverWriterInterceptorRegistry == null)
             {
                serverWriterInterceptorRegistry = parent.getServerWriterInterceptorRegistry().clone(this);
             }
-            serverWriterInterceptorRegistry.registerClass(provider, bindingPriority);
+            serverWriterInterceptorRegistry.registerClass(provider, getPriority(contracts, defaultPriority, WriterInterceptor.class));
          }
-         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.CLIENT)
+         if (constrainedTo != null && constrainedTo.value() == RuntimeType.CLIENT)
          {
             if (clientWriterInterceptorRegistry == null)
             {
                clientWriterInterceptorRegistry = parent.getClientWriterInterceptorRegistry().clone(this);
             }
-            clientWriterInterceptorRegistry.registerClass(provider, bindingPriority);
+            clientWriterInterceptorRegistry.registerClass(provider, getPriority(contracts, defaultPriority, WriterInterceptor.class));
          }
          if (constrainedTo == null)
          {
@@ -1279,12 +1279,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             {
                serverWriterInterceptorRegistry = parent.getServerWriterInterceptorRegistry().clone(this);
             }
-            serverWriterInterceptorRegistry.registerClass(provider, bindingPriority);
+            serverWriterInterceptorRegistry.registerClass(provider, getPriority(contracts, defaultPriority, WriterInterceptor.class));
             if (clientWriterInterceptorRegistry == null)
             {
                clientWriterInterceptorRegistry = parent.getClientWriterInterceptorRegistry().clone(this);
             }
-            clientWriterInterceptorRegistry.registerClass(provider, bindingPriority);
+            clientWriterInterceptorRegistry.registerClass(provider, getPriority(contracts, defaultPriority, WriterInterceptor.class));
          }
       }
       if (isA(provider, MessageBodyWriterInterceptor.class, contracts))
@@ -1368,7 +1368,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (isA(provider, DynamicFeature.class, contracts))
       {
          ConstrainedTo constrainedTo = (ConstrainedTo)provider.getAnnotation(ConstrainedTo.class);
-         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.SERVER)
+         if (constrainedTo != null && constrainedTo.value() == RuntimeType.SERVER)
          {
             if (serverDynamicFeatures == null)
             {
@@ -1377,7 +1377,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             }
             serverDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
          }
-         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.CLIENT)
+         if (constrainedTo != null && constrainedTo.value() == RuntimeType.CLIENT)
          {
             if (clientDynamicFeatures == null)
             {
@@ -1405,7 +1405,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (isA(provider, Feature.class, contracts))
       {
          Feature feature = injectedInstance((Class<? extends Feature>)provider);
-         if (feature.configure(this))
+         if (feature.configure(new FeatureContextDelegate(this)))
          {
             enabledFeatures.add(feature);
          }
@@ -1425,9 +1425,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public void registerProviderInstance(Object provider)
    {
-      registerProviderInstance(provider, Integer.MIN_VALUE);
+      registerProviderInstance(provider, Integer.MIN_VALUE, null);
    }
-   public void registerProviderInstance(Object provider, int bindingPriority, Class<?>... contracts)
+   
+   public void registerProviderInstance(Object provider, int defaultPriority, Map<Class<?>, Integer> contracts)
    {
       if (isA(provider, ParamConverterProvider.class, contracts))
       {
@@ -1500,7 +1501,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             clientRequestFilters = parent.getClientRequestFilters().clone(this);
          }
-         clientRequestFilters.registerSingleton((ClientRequestFilter)provider, bindingPriority);
+         clientRequestFilters.registerSingleton((ClientRequestFilter)provider, getPriority(contracts, defaultPriority, ClientRequestFilter.class));
       }
       if (isA(provider, ClientResponseFilter.class, contracts))
       {
@@ -1508,7 +1509,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             clientResponseFilters = parent.getClientResponseFilters().clone(this);
          }
-         clientResponseFilters.registerSingleton((ClientResponseFilter)provider, bindingPriority);
+         clientResponseFilters.registerSingleton((ClientResponseFilter)provider, getPriority(contracts, defaultPriority, ClientResponseFilter.class));
       }
       if (isA(provider, ClientExecutionInterceptor.class, contracts))
       {
@@ -1553,21 +1554,21 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (isA(provider, ReaderInterceptor.class, contracts))
       {
          ConstrainedTo constrainedTo = (ConstrainedTo)provider.getClass().getAnnotation(ConstrainedTo.class);
-         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.SERVER)
+         if (constrainedTo != null && constrainedTo.value() == RuntimeType.SERVER)
          {
             if (serverReaderInterceptorRegistry == null)
             {
                serverReaderInterceptorRegistry = parent.getServerReaderInterceptorRegistry().clone(this);
             }
-            serverReaderInterceptorRegistry.registerSingleton((ReaderInterceptor) provider, bindingPriority);
+            serverReaderInterceptorRegistry.registerSingleton((ReaderInterceptor) provider, getPriority(contracts, defaultPriority, ReaderInterceptor.class));
          }
-         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.CLIENT)
+         if (constrainedTo != null && constrainedTo.value() == RuntimeType.CLIENT)
          {
             if (clientReaderInterceptorRegistry == null)
             {
                clientReaderInterceptorRegistry = parent.getClientReaderInterceptorRegistry().clone(this);
             }
-            clientReaderInterceptorRegistry.registerSingleton((ReaderInterceptor) provider, bindingPriority);
+            clientReaderInterceptorRegistry.registerSingleton((ReaderInterceptor) provider, getPriority(contracts, defaultPriority, ReaderInterceptor.class));
          }
          if (constrainedTo == null)
          {
@@ -1575,32 +1576,32 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             {
                serverReaderInterceptorRegistry = parent.getServerReaderInterceptorRegistry().clone(this);
             }
-            serverReaderInterceptorRegistry.registerSingleton((ReaderInterceptor) provider, bindingPriority);
+            serverReaderInterceptorRegistry.registerSingleton((ReaderInterceptor) provider, getPriority(contracts, defaultPriority, ReaderInterceptor.class));
             if (clientReaderInterceptorRegistry == null)
             {
                clientReaderInterceptorRegistry = parent.getClientReaderInterceptorRegistry().clone(this);
             }
-            clientReaderInterceptorRegistry.registerSingleton((ReaderInterceptor) provider, bindingPriority);
+            clientReaderInterceptorRegistry.registerSingleton((ReaderInterceptor) provider, getPriority(contracts, defaultPriority, ReaderInterceptor.class));
          }
       }
       if (isA(provider, WriterInterceptor.class, contracts))
       {
          ConstrainedTo constrainedTo = (ConstrainedTo)provider.getClass().getAnnotation(ConstrainedTo.class);
-         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.SERVER)
+         if (constrainedTo != null && constrainedTo.value() == RuntimeType.SERVER)
          {
             if (serverWriterInterceptorRegistry == null)
             {
                serverWriterInterceptorRegistry = parent.getServerWriterInterceptorRegistry().clone(this);
             }
-            serverWriterInterceptorRegistry.registerSingleton((WriterInterceptor) provider, bindingPriority);
+            serverWriterInterceptorRegistry.registerSingleton((WriterInterceptor) provider, getPriority(contracts, defaultPriority, WriterInterceptor.class));
          }
-         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.CLIENT)
+         if (constrainedTo != null && constrainedTo.value() == RuntimeType.CLIENT)
          {
             if (clientWriterInterceptorRegistry == null)
             {
                clientWriterInterceptorRegistry = parent.getClientWriterInterceptorRegistry().clone(this);
             }
-            clientWriterInterceptorRegistry.registerSingleton((WriterInterceptor) provider, bindingPriority);
+            clientWriterInterceptorRegistry.registerSingleton((WriterInterceptor) provider, getPriority(contracts, defaultPriority, WriterInterceptor.class));
          }
          if (constrainedTo == null)
          {
@@ -1608,12 +1609,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             {
                serverWriterInterceptorRegistry = parent.getServerWriterInterceptorRegistry().clone(this);
             }
-            serverWriterInterceptorRegistry.registerSingleton((WriterInterceptor) provider, bindingPriority);
+            serverWriterInterceptorRegistry.registerSingleton((WriterInterceptor) provider, getPriority(contracts, defaultPriority, WriterInterceptor.class));
             if (clientWriterInterceptorRegistry == null)
             {
                clientWriterInterceptorRegistry = parent.getClientWriterInterceptorRegistry().clone(this);
             }
-            clientWriterInterceptorRegistry.registerSingleton((WriterInterceptor) provider, bindingPriority);
+            clientWriterInterceptorRegistry.registerSingleton((WriterInterceptor) provider, getPriority(contracts, defaultPriority, WriterInterceptor.class));
          }
       }
       if (isA(provider, MessageBodyWriterInterceptor.class, contracts))
@@ -1675,7 +1676,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (isA(provider, DynamicFeature.class, contracts))
       {
          ConstrainedTo constrainedTo = (ConstrainedTo)provider.getClass().getAnnotation(ConstrainedTo.class);
-         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.SERVER)
+         if (constrainedTo != null && constrainedTo.value() == RuntimeType.SERVER)
          {
             if (serverDynamicFeatures == null)
             {
@@ -1684,7 +1685,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             }
             serverDynamicFeatures.add((DynamicFeature) provider);
          }
-         if (constrainedTo != null && constrainedTo.value() == ConstrainedTo.Type.CLIENT)
+         if (constrainedTo != null && constrainedTo.value() == RuntimeType.CLIENT)
          {
             if (clientDynamicFeatures == null)
             {
@@ -1713,7 +1714,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          Feature feature = (Feature)provider;
          injectProperties(provider.getClass(), provider);
-         if (feature.configure(this))
+         if (feature.configure(new FeatureContextDelegate(this)))
          {
             enabledFeatures.add(feature);
          }
@@ -1861,8 +1862,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return properties.get(name);
    }
 
-   @Override
-   public Configurable setProperties(Map<String, ?> properties)
+   public ResteasyProviderFactory setProperties(Map<String, ?> properties)
    {
       Map<String, Object> newProp = Collections.synchronizedMap(new HashMap<String, Object>());
       newProp.putAll(properties);
@@ -1871,13 +1871,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
    @Override
-   public Configurable setProperty(String name, Object value)
+   public ResteasyProviderFactory property(String name, Object value)
    {
       properties.put(name, value);
       return this;
    }
 
-   @Override
    public Collection<Feature> getEnabledFeatures()
    {
       if (enabledFeatures == null && parent != null) return parent.getEnabledFeatures();
@@ -1887,7 +1886,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return set;
    }
 
-   @Override
    public Set<Class<?>> getFeatureClasses()
    {
       if (featureClasses == null && parent != null) return parent.getFeatureClasses();
@@ -1897,7 +1895,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return set;
    }
 
-   @Override
    public Set<Object> getFeatureInstances()
    {
       if (featureInstances == null && parent != null) return parent.getFeatureInstances();
@@ -1908,58 +1905,140 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
    @Override
-   public Configurable register(Class<?> providerClass)
+   public ResteasyProviderFactory register(Class<?> providerClass)
    {
       registerProvider(providerClass);
       return this;
    }
 
    @Override
-   public Configurable register(Class<?> providerClass, int bindingPriority)
-   {
-      registerProvider(providerClass, false, bindingPriority);
-      return this;
-   }
-
-   @Override
-   public <T> Configurable register(Class<T> providerClass, Class<? super T>... contracts)
-   {
-      registerProvider(providerClass, false, Integer.MIN_VALUE, contracts);
-      return this;
-   }
-
-   @Override
-   public <T> Configurable register(Class<T> providerClass, int bindingPriority, Class<? super T>... contracts)
-   {
-      registerProvider(providerClass, false, bindingPriority, contracts);
-      return this;
-   }
-
-   @Override
-   public Configurable register(Object provider)
+   public ResteasyProviderFactory register(Object provider)
    {
       registerProviderInstance(provider);
       return this;
    }
 
    @Override
-   public Configurable register(Object provider, int bindingPriority)
+   public ResteasyProviderFactory register(Class<?> componentClass, int priority)
    {
-      registerProviderInstance(provider, bindingPriority);
+      registerProvider(componentClass, false, priority, null);
       return this;
    }
 
    @Override
-   public <T> Configurable register(Object provider, Class<? super T>... contracts)
+   public ResteasyProviderFactory register(Class<?> componentClass, Class<?>... contracts)
    {
-      registerProviderInstance(provider, Integer.MIN_VALUE, contracts);
+      Map<Class<?>, Integer> cons = new HashMap<Class<?>, Integer>();
+      for (Class<?> clazz : contracts)
+      {
+         cons.put(clazz, Integer.MIN_VALUE);
+      }
+      registerProvider(componentClass, false, Integer.MIN_VALUE, cons);
       return this;
    }
 
    @Override
-   public <T> Configurable register(Object provider, int bindingPriority, Class<? super T>... contracts)
+   public ResteasyProviderFactory register(Object component, int priority)
    {
-      registerProviderInstance(provider, bindingPriority, contracts);
+      registerProviderInstance(component, priority, null);
       return this;
+   }
+
+   @Override
+   public ResteasyProviderFactory register(Object component, Class<?>... contracts)
+   {
+      Map<Class<?>, Integer> cons = new HashMap<Class<?>, Integer>();
+      for (Class<?> clazz : contracts)
+      {
+         cons.put(clazz, Integer.MIN_VALUE);
+      }
+      registerProviderInstance(component, Integer.MIN_VALUE, cons);
+      return this;
+   }
+
+   @Override
+   public ResteasyProviderFactory register(Class<?> componentClass, Map<Class<?>, Integer> contracts)
+   {
+      registerProvider(componentClass, false, Integer.MIN_VALUE, contracts);
+      return this;
+   }
+
+   @Override
+   public ResteasyProviderFactory register(Object component, Map<Class<?>, Integer> contracts)
+   {
+      registerProviderInstance(component, Integer.MIN_VALUE, contracts);
+      return this;
+   }
+
+   @Override
+   public Configuration getConfiguration()
+   {
+      return this;
+   }
+
+   @Override
+   public ResteasyProviderFactory replaceWith(Configuration config)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public RuntimeType getRuntimeType()
+   {
+      return RuntimeType.SERVER;
+   }
+
+   @Override
+   public Collection<String> getPropertyNames()
+   {
+      return getProperties().keySet();
+   }
+
+   @Override
+   public boolean isEnabled(Feature feature)
+   {
+      return getFeatureInstances().contains(feature);
+   }
+
+   @Override
+   public boolean isEnabled(Class<? extends Feature> featureClass)
+   {
+      return getFeatureClasses().contains(featureClass);
+   }
+
+   @Override
+   public boolean isRegistered(Object component)
+   {
+      return getProviderClasses().contains(component);
+   }
+
+   @Override
+   public boolean isRegistered(Class<?> componentClass)
+   {
+      return getProviderInstances().contains(componentClass);
+   }
+
+   @Override
+   public Map<Class<?>, Integer> getContracts(Class<?> componentClass)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Set<Class<?>> getClasses()
+   {
+      return getProviderClasses();
+   }
+
+   @Override
+   public Set<Object> getInstances()
+   {
+      return getProviderInstances();
+   }
+
+   @Override
+   public Link.Builder createLinkBuilder()
+   {
+      throw new NotImplementedYetException();
    }
 }

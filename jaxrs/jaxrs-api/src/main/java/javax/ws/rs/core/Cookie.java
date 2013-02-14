@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,11 +60,11 @@ public class Cookie {
     public static final int DEFAULT_VERSION = 1;
     private static final HeaderDelegate<Cookie> HEADER_DELEGATE =
             RuntimeDelegate.getInstance().createHeaderDelegate(Cookie.class);
-    private String name;
-    private String value;
-    private int version;
-    private String path;
-    private String domain;
+    private final String name;
+    private final String value;
+    private final int version;
+    private final String path;
+    private final String domain;
 
     /**
      * Create a new instance.
@@ -122,7 +122,7 @@ public class Cookie {
      * @throws IllegalArgumentException if the supplied string cannot be parsed
      *                                  or is {@code null}.
      */
-    public static Cookie valueOf(final String value) throws IllegalArgumentException {
+    public static Cookie valueOf(final String value) {
         return HEADER_DELEGATE.fromString(value);
     }
 
@@ -205,6 +205,7 @@ public class Cookie {
      * @return {@code true}, if the object is a {@code Cookie} with the same
      *         value for all properties, {@code false} otherwise.
      */
+    @SuppressWarnings({"StringEquality", "RedundantIfStatement"})
     @Override
     public boolean equals(final Object obj) {
         if (obj == null) {

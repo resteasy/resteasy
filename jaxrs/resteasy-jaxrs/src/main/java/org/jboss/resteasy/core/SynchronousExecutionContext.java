@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class SynchronousExecutionContext extends AbstractExecutionContext
 {
-
    protected final CountDownLatch syncLatch = new CountDownLatch(1);
    protected long timeout;
    protected TimeUnit timeoutUnit = TimeUnit.MILLISECONDS;
@@ -77,15 +76,15 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
 
 
       @Override
-      public void resume(Object entity) throws IllegalStateException
+      public boolean resume(Object entity)
       {
          synchronized (responseLock)
          {
-            if (done) throw new IllegalStateException("Response processing is finished");
-            if (cancelled) throw new IllegalStateException("Response processing is cancelled");
+            if (done) return false;
+            if (cancelled) return false;
             try
             {
-               super.resume(entity);
+               return internalResume(entity);
             }
             finally
             {
@@ -97,15 +96,15 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
 
 
       @Override
-      public void resume(Throwable exc) throws IllegalStateException
+      public boolean resume(Throwable exc) throws IllegalStateException
       {
          synchronized (responseLock)
          {
-            if (done) throw new IllegalStateException("Response processing is finished");
-            if (cancelled) throw new IllegalStateException("Response processing is cancelled");
+            if (done) return false;
+            if (cancelled) return false;
             try
             {
-               super.resume(exc);
+               return internalResume(exc);
             }
             finally
             {
@@ -143,7 +142,7 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
                   {
                      try
                      {
-                        sendResponse(Response.status(503).build());
+                        internalResume(Response.status(503).build());
                      }
                      catch (Exception e)
                      {
@@ -160,46 +159,48 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
       }
 
       @Override
-      public void setTimeout(long time, TimeUnit unit) throws IllegalStateException
+      public boolean setTimeout(long time, TimeUnit unit) throws IllegalStateException
       {
          timeout = time;
          timeoutUnit = unit;
+         if (done || cancelled) return false;
+         return true;
       }
 
       @Override
-      public void cancel()
+      public boolean cancel()
       {
          synchronized (responseLock)
          {
-            if (done || cancelled) return;
+            if (done || cancelled) return false;
             done = true;
             cancelled = true;
          }
-         sendResponse(Response.status(Response.Status.SERVICE_UNAVAILABLE).build());
+         return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).build());
       }
 
       @Override
-      public void cancel(int retryAfter)
+      public boolean cancel(int retryAfter)
       {
          synchronized (responseLock)
          {
-            if (done || cancelled) return;
+            if (done || cancelled) return false;
             done = true;
             cancelled = true;
          }
-         sendResponse(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
+         return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
       }
 
       @Override
-      public void cancel(Date retryAfter)
+      public boolean cancel(Date retryAfter)
       {
          synchronized (responseLock)
          {
-            if (done || cancelled) return;
+            if (done || cancelled) return false;
             done = true;
             cancelled = true;
          }
-         sendResponse(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
+         return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
       }
 
       @Override

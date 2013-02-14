@@ -1,6 +1,5 @@
 package org.jboss.resteasy.example.oauth;
 
-import org.jboss.resteasy.client.jaxrs.AbstractClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.skeleton.key.servlet.ServletOAuthClient;
@@ -47,8 +46,8 @@ public class ProductDatabaseClient
       ServletOAuthClient oAuthClient = (ServletOAuthClient)request.getServletContext().getAttribute(ServletOAuthClient.class.getName());
       String token = oAuthClient.getBearerToken(request);
       ResteasyClient client = new ResteasyClientBuilder()
-                 .truststore(oAuthClient.getTruststore())
-                 .hostnameVerification(AbstractClientBuilder.HostnameVerificationPolicy.ANY).build();
+                 .trustStore(oAuthClient.getTruststore())
+                 .hostnameVerification(ResteasyClientBuilder.HostnameVerificationPolicy.ANY).build();
       try
       {
          // invoke without the Authorization header

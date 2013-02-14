@@ -12,7 +12,7 @@ import org.junit.Test;
 import se.unlogic.eagledns.EagleDNS;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientFactory;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
@@ -43,7 +43,7 @@ public class SigningTest
       repository.start();
 
       configureDNS();
-      client = ClientFactory.newClient();
+      client = ClientBuilder.newClient();
    }
 
    private static EagleDNS dns;
@@ -72,7 +72,7 @@ public class SigningTest
 
       WebTarget target = client.target("http://localhost:9095/signed");
       Invocation.Builder request = target.request();
-      request.configuration().setProperty(Verifier.class.getName(), verifier);
+      request.property(Verifier.class.getName(), verifier);
       Response response = request.get();
 
       System.out.println("Client: ");
@@ -92,7 +92,7 @@ public class SigningTest
       DKIMSignature contentSignature = new DKIMSignature();
       contentSignature.setSelector("bill");
       contentSignature.setDomain("client.com");
-      request.configuration().setProperty(KeyRepository.class.getName(), repository);
+      request.property(KeyRepository.class.getName(), repository);
 
       request.header(DKIMSignature.DKIM_SIGNATURE, contentSignature);
       Response response = request.post(Entity.text("hello world"));

@@ -4,23 +4,28 @@ import org.jboss.resteasy.core.interception.AbstractWriterInterceptorContext;
 import org.jboss.resteasy.core.interception.ContainerResponseContextImpl;
 import org.jboss.resteasy.core.interception.ResponseContainerRequestContext;
 import org.jboss.resteasy.core.interception.ServerWriterInterceptorContext;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.spi.WriterException;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.WriterInterceptor;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,47 +35,14 @@ import java.util.List;
  */
 public class ServerResponseWriter
 {
-   /**
-    * If there is an entity, headers are not converted to a string and set on the HttpResponse until the output stream is written to.  If there is an exception
-    * thrown then the headers are never written to the response.  We do this so that on error conditions there is a clean response.
-    *
-    * @param request
-    * @param response
-    * @param providerFactory
-    * @throws org.jboss.resteasy.spi.WriterException
-    */
-   public static void writeResponse(final BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, final ResteasyProviderFactory providerFactory) throws WriterException
+   private final static Logger logger = Logger.getLogger(ServerResponseWriter.class);
+
+   public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, final ResteasyProviderFactory providerFactory) throws IOException
    {
       ResourceMethod method = (ResourceMethod) request.getAttribute(ResourceMethod.class.getName());
 
-      ContainerResponseFilter[] responseFilters = null;
+      executeFilters(jaxrsResponse, request, response, providerFactory, method);
 
-      if (method != null)
-      {
-         responseFilters = method.getResponseFilters();
-      }
-      else
-      {
-         // todo global ones?
-         responseFilters = providerFactory.getContainerResponseFilterRegistry().postMatch(null, null);
-      }
-
-      if (responseFilters != null)
-      {
-         ResponseContainerRequestContext requestContext = new ResponseContainerRequestContext(request);
-         ContainerResponseContextImpl responseContext = new ContainerResponseContextImpl(request, response, jaxrsResponse);
-         for (ContainerResponseFilter filter : responseFilters)
-         {
-            try
-            {
-               filter.filter(requestContext, responseContext);
-            }
-            catch (IOException e)
-            {
-               throw new RuntimeException(e);
-            }
-         }
-      }
       if (jaxrsResponse.getEntity() == null)
       {
          response.setStatus(jaxrsResponse.getStatus());
@@ -99,58 +71,68 @@ public class ServerResponseWriter
          throw new NoMessageBodyWriterFoundFailure(type, contentType);
       }
 
-      try
+      response.setStatus(jaxrsResponse.getStatus());
+      final BuiltResponse built = jaxrsResponse;
+      CommitHeaderOutputStream.CommitCallback callback = new CommitHeaderOutputStream.CommitCallback()
       {
-         response.setStatus(jaxrsResponse.getStatus());
-         CommitHeaderOutputStream.CommitCallback callback = new CommitHeaderOutputStream.CommitCallback()
-         {
-            private boolean committed;
+         private boolean committed;
 
-            @Override
-            public void commit()
-            {
-               if (committed) return;
-               committed = true;
-               commitHeaders(jaxrsResponse, response);
-            }
-         };
-         OutputStream os = new CommitHeaderOutputStream(response.getOutputStream(), callback);
+         @Override
+         public void commit()
+         {
+            if (committed) return;
+            committed = true;
+            commitHeaders(built, response);
+         }
+      };
+      OutputStream os = new CommitHeaderOutputStream(response.getOutputStream(), callback);
 
-         long size = writer.getSize(ent, type, generic, annotations, contentType);
-         if (size > -1) jaxrsResponse.getMetadata().putSingle(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(size));
+      long size = writer.getSize(ent, type, generic, annotations, contentType);
+      if (size > -1) jaxrsResponse.getMetadata().putSingle(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(size));
 
-         WriterInterceptor[] writerInterceptors = null;
-         if (method != null)
-         {
-            writerInterceptors = method.getWriterInterceptors();
-         }
-         else
-         {
-            // todo still match?
-            writerInterceptors = providerFactory.getServerWriterInterceptorRegistry().postMatch(null, null);
-         }
-
-         if (writerInterceptors == null || writerInterceptors.length == 0)
-         {
-            writer.writeTo(ent, type, generic, annotations,
-                    contentType, jaxrsResponse.getMetadata(), os);
-         }
-         else
-         {
-            AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors, writer, ent, type, generic, annotations, contentType, jaxrsResponse.getMetadata(), os, request);
-            writerContext.proceed();
-         }
-         callback.commit(); // just in case the output stream is never used
+      WriterInterceptor[] writerInterceptors = null;
+      if (method != null)
+      {
+         writerInterceptors = method.getWriterInterceptors();
       }
-      catch (Exception ex)
+      else
       {
-         if (ex instanceof WriterException)
+         writerInterceptors = providerFactory.getServerWriterInterceptorRegistry().postMatch(null, null);
+      }
+
+      if (writerInterceptors == null || writerInterceptors.length == 0)
+      {
+         writer.writeTo(ent, type, generic, annotations,
+                 contentType, jaxrsResponse.getMetadata(), os);
+      }
+      else
+      {
+         AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors, writer, ent, type, generic, annotations, contentType, jaxrsResponse.getMetadata(), os, request);
+         writerContext.proceed();
+      }
+      callback.commit(); // just in case the output stream is never used
+   }
+
+   private static void executeFilters(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory, ResourceMethod method) throws IOException
+   {
+      ContainerResponseFilter[] responseFilters = null;
+
+      if (method != null)
+      {
+         responseFilters = method.getResponseFilters();
+      }
+      else
+      {
+         responseFilters = providerFactory.getContainerResponseFilterRegistry().postMatch(null, null);
+      }
+
+      if (responseFilters != null)
+      {
+         ResponseContainerRequestContext requestContext = new ResponseContainerRequestContext(request);
+         ContainerResponseContextImpl responseContext = new ContainerResponseContextImpl(request, response, jaxrsResponse);
+         for (ContainerResponseFilter filter : responseFilters)
          {
-            throw (WriterException) ex;
-         }
-         else
-         {
-            throw new WriterException(ex);
+            filter.filter(requestContext, responseContext);
          }
       }
    }

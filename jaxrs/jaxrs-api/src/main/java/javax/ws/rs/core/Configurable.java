@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,85 +39,141 @@
  */
 package javax.ws.rs.core;
 
-import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 /**
- * A configurable JAX-RS runtime context.
+ * Represents a client or server-side configurable context in JAX-RS.
  *
- * The exact scope of the configurable context is typically determined by a
- * use case scenario in which the configurable context is accessed.
+ * A configurable context can be used to define the JAX-RS components as well as
+ * additional meta-data that should be used in the scope of the configured context.
+ * The modification of the context typically involves setting properties or registering
+ * custom JAX-RS components, such as providers and/or features.
+ * All modifications of a {@code Configurable} context are reflected in the associated
+ * {@link Configuration} state which is exposed via {@link #getConfiguration()} method.
  * <p>
- * A configurable context may be used to retrieve or updated configuration
- * of the bound run-time component. The modification of the context typically
- * involves setting properties or registering new providers and/or features.
+ * A configurable context can be either indirectly associated with a particular JAX-RS component
+ * (such as application or resource method configurable context passed to a {@link Feature}
+ * or {@link javax.ws.rs.container.DynamicFeature} meta-providers) or can be directly represented
+ * by a concrete JAX-RS component implementing the {@code Configurable} interface
+ * (such as {@link javax.ws.rs.client.Client} or {@link javax.ws.rs.client.WebTarget}).
+ * As such, the exact scope of a configuration context is typically determined by a use case
+ * scenario in which the context is accessed.
  * </p>
- * <h3>Registering providers and/or features.</h3>
+ * <h3>Setting properties.</h3>
  * <p>
- * In some situations a provider class or instance may implement multiple contracts
- * recognized by a JAX-RS implementation (e.g. filter, interceptor or entity provider).
- * By default, the JAX-RS implementation will register the provider as
- * a provider for all the recognized implemented contracts. For example:
+ * New properties can be set using the {@link #property} method. Similarly, updating a value of
+ * an existing property can be achieved using the same method. Information about the configured set of
+ * properties is available via the underlying {@code Configuration} object. An existing property
+ * can be removed by assigning a {@code null} value to the property.
  * </p>
+ * <h3>Registering JAX-RS components.</h3>
+ * <p>
+ * Registered custom JAX-RS component classes and instances are important part of the contextual
+ * configuration information as these are the main factors that determine the capabilities of
+ * a configured runtime.
+ * Implementations SHOULD warn about and ignore registrations that do not conform to the requirements
+ * of supported JAX-RS components in a given configurable context.
+ * </p>
+ * <p>
+ * In most cases, when registering a JAX-RS component, the simplest form of methods
+ * ({@link #register(Class)} or {@link #register(Object)}) of the available registration API
+ * is sufficient.
+ * </p>
+ * <p>
+ * For example:
  * <pre>
- * public class MyProvider
+ * config.register(HtmlDocumentReader.class);
+ * config.register(new HtmlDocumentWriter(writerConfig));
+ * </pre>
+ * </p>
+ * <p>
+ * In some situations a JAX-RS component class or instance may implement multiple
+ * provider contracts recognized by a JAX-RS implementation (e.g. filter, interceptor or entity provider).
+ * By default, the JAX-RS implementation MUST register the new component class or instance as
+ * a provider for all the recognized provider contracts implemented by the component class.
+ * </p>
+ * <p>
+ * For example:
+ * <pre>
+ * &#64;Priority(ENTITY_CODER)
+ * public class GzipInterceptor
  *         implements ReaderInterceptor, WriterInterceptor { ... }
  *
  * ...
  *
- * // register MyProvider as a ReaderInterceptor
+ * // register GzipInterceptor as a ReaderInterceptor
  * // as well as a WriterInterceptor
- * configuration.register(MyProvider.class);
+ * config.register(GzipInterceptor.class);
  * </pre>
- * <p>
- * However there are some situations when the default registration to all the recognized
- * contracts is not desirable. In such case the users may use a version of the {@code register(...)}
- * method that allows to explicitly list the {@code contracts} for which the provider class should
- * be registered, effectively limiting the scope of the provider. For example:
  * </p>
  * <p>
+ * There are however situations when the default registration of a JAX-RS component to all the
+ * recognized provider contracts is not desirable. In such cases users may use other versions of the
+ * {@code register(...)} method to explicitly specify the collection of the provider contracts
+ * for which the JAX-RS component should be registered and/or the priority of each registered
+ * provider contract.
+ * </p>
+ * <p>
+ * For example:
  * <pre>
+ * &#64;Priority(USER)
  * public class ClientLoggingFilter
  *         implements ClientRequestFilter, ClientResponseFilter { ... }
  *
+ * &#64;Priority(ENTITY_CODER)
+ * public class GzipInterceptor
+ *         implements ReaderInterceptor, WriterInterceptor { ... }
+ *
  * ...
  *
- * ClientLoggingFilter loggingFilter = ...;
- * // register loggingFilter as a ClientResponseFilter only
- * configuration.register(loggingFilter, ClientResponseFilter.class);
+ * // register ClientLoggingFilter as a ClientResponseFilter only
+ * config.register(ClientLoggingFilter.class, ClientResponseFilter.class);
+ *
+ * // override the priority of registered GzipInterceptor
+ * // and both of it's provider contracts
+ * config.register(GzipInterceptor.class, 6500);
+ * </pre>
+ * </p>
+ * <p>
+ * As a general rule, for each JAX-RS component class there can be at most one registration
+ * &mdash; class-based or instance-based &mdash; configured at any given moment. Implementations
+ * MUST reject any attempts to configure a new registration for a provider class that has been
+ * already registered in the given configurable context earlier. Implementations SHOULD also raise
+ * a warning to inform the user about the rejected component registration.
+ * </p>
+ * <p>
+ * For example:
+ * <pre>
+ * config.register(GzipInterceptor.class, WriterInterceptor.class);
+ * config.register(GzipInterceptor.class);       // Rejected by runtime.
+ * config.register(new GzipInterceptor());       // Rejected by runtime.
+ * config.register(GzipInterceptor.class, 6500); // Rejected by runtime.
+ *
+ * config.register(new ClientLoggingFilter());
+ * config.register(ClientLoggingFilter.class);   // rejected by runtime.
+ * config.register(ClientLoggingFilter.class,
+ *                 ClientResponseFilter.class);  // Rejected by runtime.
  * </pre>
  * </p>
  *
  * @author Marek Potociar
  * @since 2.0
  */
-public interface Configurable {
-    /**
-     * Get the immutable bag of configuration properties.
-     *
-     * @return the immutable view of configuration properties.
-     */
-    public Map<String, Object> getProperties();
+public interface Configurable<C extends Configurable> {
 
     /**
-     * Get the value for the property with a given name.
+     * Get a live view of an internal configuration state of this configurable instance.
      *
-     * @param name property name.
-     * @return the property value for the specified property name or {@code null}
-     *         if the property with such name is not configured.
-     */
-    public Object getProperty(String name);
-
-    /**
-     * Set new configuration properties replacing all previously set properties.
+     * Any changes made using methods of this {@code Configurable} instance will be reflected
+     * in the returned {@code Configuration} instance.
+     * <p>
+     * The returned {@code Configuration} instance and the collection data it provides are not
+     * thread-safe wrt. modification made using methods on the parent configurable object.
+     * </p>
      *
-     * @param properties new set of configuration properties. The content of
-     *                   the map will replace any existing properties set on the configurable
-     *                   instance.
-     * @return the updated configurable instance.
+     * @return configuration live view of the internal configuration state.
      */
-    public Configurable setProperties(Map<String, ?> properties);
+    public Configuration getConfiguration();
 
     /**
      * Set the new configuration property, if already set, the existing value of
@@ -129,256 +185,236 @@ public interface Configurable {
      *              with the given name.
      * @return the updated configurable instance.
      */
-    public Configurable setProperty(String name, Object value);
+    public C property(String name, Object value);
 
     /**
-     * Get the immutable set of features that have been successfully configured within the current
-     * configurable context.
-     * <p>
-     * The returned set contains the features that have already been successfully
-     * {@link Feature#configure(Configurable) configured} in this configuration context.
-     * </p>
-     * <p>
-     * Note that a registered features may not be immediately available in the collection
-     * of enabled features returned this method. Implementations MAY decide to defer the feature
-     * instantiation and/or {@link Feature#configure(Configurable) configuration} to a later point
-     * in time, yet the order in which features have been registered MUST be preserved during
-     * the feature configuration phase. This method is expected to provide up-to-date information only
-     * when invoked from a {@link Feature#configure(Configurable) feature configuration} method or
-     * once the configured instance has been fully initialized.
-     * </p>
+     * Register a class of a custom JAX-RS component (such as an extension provider or
+     * a {@link javax.ws.rs.core.Feature feature} meta-provider) to be instantiated
+     * and used in the scope of this configurable context.
      *
-     * @return the enabled feature set. The returned value shall never be {@code null}.
-     */
-    public Collection<Feature> getEnabledFeatures();
-
-    /**
-     * Get the immutable set of registered feature classes to be instantiated,
-     * injected and {@link Feature#configure(Configurable)} configured}
-     * in the scope of the configured instance.
+     * Implementations SHOULD warn about and ignore registrations that do not
+     * conform to the requirements of supported JAX-RS component types in the
+     * given configurable context. Any subsequent registration attempts for a component
+     * type, for which a class or instance-based registration already exists in the system
+     * MUST be rejected by the JAX-RS implementation and a warning SHOULD be raised to
+     * inform the user about the rejected registration.
      *
-     * @return the immutable set of registered feature classes. The returned
-     *         value shall never be {@code null}.
-     * @see #getFeatureInstances()
-     */
-    public Set<Class<?>> getFeatureClasses();
-
-    /**
-     * Get the immutable set of registered feature instances to be
-     * {@link Feature#configure(Configurable)} configured} in the scope
-     * of the configured instance.
+     * The registered JAX-RS component class is registered as a contract provider of
+     * all the recognized JAX-RS or implementation-specific extension contracts including
+     * meta-provider contracts, such as {@code Feature} or {@link javax.ws.rs.container.DynamicFeature}.
      * <p>
-     * When the configured instance is initialized the set of feature instances
-     * will be combined with and take precedence over the instantiated registered feature
-     * classes.
+     * As opposed to component instances registered via {@link #register(Object)} method,
+     * the lifecycle of components registered using this class-based {@code register(...)}
+     * method is fully managed by the JAX-RS implementation or any underlying IoC
+     * container supported by the implementation.
      * </p>
      *
-     * @return the immutable set of registered feature instances. The returned
-     *         value shall never be {@code null}.
-     * @see #getFeatureClasses()
+     * @param componentClass JAX-RS component class to be configured in the scope of this
+     *                       configurable context.
+     * @return the updated configurable context.
      */
-    public Set<Object> getFeatureInstances();
+    public C register(Class<?> componentClass);
 
     /**
-     * Get the immutable set of registered provider classes to be instantiated,
-     * injected and utilized in the scope of the configured instance (excluding
-     * pure {@link Feature feature} providers).
-     *
-     * @return the immutable set of registered provider classes. The returned
-     *         value shall never be {@code null}.
-     * @see #getProviderInstances()
-     */
-    public Set<Class<?>> getProviderClasses();
-
-    /**
-     * Get the immutable set of registered provider instances to be utilized by
-     * the configured instance (excluding pure {@link Feature feature} providers).
+     * Register a class of a custom JAX-RS component (such as an extension provider or
+     * a {@link javax.ws.rs.core.Feature feature} meta-provider) to be instantiated
+     * and used in the scope of this configurable context.
      * <p>
-     * When the configured instance is initialized the set of provider instances
-     * will be combined with and take precedence over the instantiated registered provider
-     * classes.
-     * </p>
-     *
-     * @return the immutable set of registered provider instances. The returned
-     *         value shall never be {@code null}.
-     * @see #getProviderClasses()
-     */
-    public Set<Object> getProviderInstances();
-
-    /**
-     * Register a provider or a {@link Feature feature} class to be instantiated
-     * and used in the scope of the configured instance.
-     *
-     * The registered class is registered as a provider of all the recognized JAX-RS or
-     * implementation-specific extension contracts including {@code Feature} contract.
-     * <p>
-     * As opposed to the instances registered via {@link #register(Object)} method, classes
-     * registered using this method are instantiated and properly injected
-     * by the JAX-RS implementation provider. In case of a conflict between
-     * a registered feature and/or provider instance and instantiated registered class,
-     * the registered instance takes precedence and the registered class will not be
-     * instantiated in such case.
-     * </p>
-     *
-     * @param providerClass provider class to be instantiated and used in the scope
-     *                      of the configured instance.
-     * @return the updated configurable instance.
-     */
-    public Configurable register(Class<?> providerClass);
-
-    /**
-     * Register a provider or a {@link Feature feature} class to be instantiated and used
-     * in the scope of the configured instance.
-     * <p>
-     * This registration method provides same functionality as {@link #register(Class)}
-     * except that any provider binding priority specified on the provider class using
-     * {@link javax.ws.rs.BindingPriority &#64;BindingPriority} annotation is overridden
-     * with the supplied {@code bindingPriority} value.
+     * This registration method provides the same functionality as {@link #register(Class)}
+     * except that any priority specified on the registered JAX-RS component class via
+     * {@link javax.annotation.Priority &#64;Priority} annotation is overridden
+     * with the supplied {@code priority} value.
      * </p>
      * <p>
-     * Note that in case the binding priority is not applicable to any particular provider
-     * contract registered for the provider class, the supplied {@code bindingPriority} value
-     * will be ignored for that contract.
+     * Note that in case the priority is not applicable to a particular
+     * provider contract implemented by the class of the registered component, the supplied
+     * {@code priority} value will be ignored for that contract.
      * </p>
      *
-     * @param providerClass   provider class to be instantiated and used in the scope
-     *                        of the configured instance.
-     * @param bindingPriority the overriding binding priority for the registered contract(s).
-     * @return the updated configurable instance.
+     * @param componentClass JAX-RS component class to be configured in the scope of this
+     *                       configurable context.
+     * @param priority       the overriding priority for the registered component
+     *                       and all the provider contracts the component implements.
+     * @return the updated configurable context.
      */
-    public Configurable register(Class<?> providerClass, int bindingPriority);
+    public C register(Class<?> componentClass, int priority);
 
     /**
-     * Register a provider or a {@link Feature feature} class to be instantiated
-     * and used in the scope of the configured instance.
+     * Register a class of a custom JAX-RS component (such as an extension provider or
+     * a {@link javax.ws.rs.core.Feature feature} meta-provider) to be instantiated
+     * and used in the scope of this configurable context.
      * <p>
-     * This registration method provides same functionality as {@link #register(Class)}
-     * except the provider class is only registered as a provider of the listed
-     * {@code contracts}. Note that in case the {@link Feature} interface is not listed
-     * explicitly, the provider class is not recognized as a JAX-RS feature.
+     * This registration method provides the same functionality as {@link #register(Class)}
+     * except the JAX-RS component class is only registered as a provider of the listed
+     * extension provider or meta-provider {@code contracts}.
+     * All explicitly enumerated contract types must represent a class or an interface
+     * implemented or extended by the registered component. Contracts that are not
+     * {@link Class#isAssignableFrom(Class) assignable from} the registered component class
+     * MUST be ignored and implementations SHOULD raise a warning to inform users about the
+     * ignored contract(s).
      * </p>
      *
-     * @param providerClass provider class to be instantiated and used in the scope
-     *                      of the configured instance.
-     * @param contracts     the specific set of contracts implemented by the provider class
-     *                      for which the provider should be registered. If omitted, the
-     *                      provider class will be registered as a provider of all recognized
-     *                      contracts implemented by the provider class.
-     * @return the updated configurable instance.
+     * @param componentClass JAX-RS component class to be configured in the scope of this
+     *                       configurable context.
+     * @param contracts      the specific extension provider or meta-provider contracts
+     *                       implemented by the component for which the component should
+     *                       be registered.
+     *                       Implementations MUST ignore attempts to register a component
+     *                       class for an empty or {@code null} collection of contracts via
+     *                       this method and SHOULD raise a warning about such event.
+     * @return the updated configurable context.
      */
-    public <T> Configurable register(Class<T> providerClass, Class<? super T>... contracts);
+    public C register(Class<?> componentClass, Class<?>... contracts);
 
     /**
-     * Register a provider or a {@link Feature feature} class to be instantiated
-     * and used in the scope of the configured instance.
+     * Register a class of a custom JAX-RS component (such as an extension provider or
+     * a {@link javax.ws.rs.core.Feature feature} meta-provider) to be instantiated
+     * and used in the scope of this configurable context.
      * <p>
      * This registration method provides same functionality as {@link #register(Class, Class[])}
-     * except that any provider binding priority specified on the provider class using
-     * {@link javax.ws.rs.BindingPriority &#64;BindingPriority} annotation is overridden
-     * with the supplied {@code bindingPriority} value.
+     * except that any priority specified on the registered JAX-RS component class using
+     * {@link javax.annotation.Priority &#64;Priority} annotation is overridden
+     * for each extension provider contract type separately with an integer priority value
+     * specified as a value in the supplied map of [contract type, priority] pairs.
      * </p>
      * <p>
-     * Note that in case the binding priority is not applicable to any particular provider
-     * contract registered for the provider class, the supplied {@code bindingPriority} value
-     * will be ignored for that contract.
+     * Note that in case a priority is not applicable to a provider contract registered
+     * for the JAX-RS component, the supplied priority value is ignored for such
+     * contract.
      * </p>
      *
-     * @param providerClass   provider class to be instantiated and used in the scope
-     *                        of the configured instance.
-     * @param bindingPriority the overriding binding priority for the registered contract(s).
-     * @param contracts       the specific set of contracts implemented by the provider class
-     *                        for which the provider should be registered. If omitted, the
-     *                        provider class will be registered as a provider of all recognized
-     *                        contracts implemented by the provider class.
-     * @return the updated configurable instance.
+     * @param componentClass JAX-RS component class to be configured in the scope of this
+     *                       configurable context.
+     * @param contracts      map of the specific extension provider and meta-provider contracts
+     *                       and their associated priorities for which the JAX-RS component
+     *                       is registered.
+     *                       All contracts in the map must represent a class or an interface
+     *                       implemented or extended by the JAX-RS component. Contracts that are
+     *                       not {@link Class#isAssignableFrom(Class) assignable from} the registered
+     *                       component class MUST be ignored and implementations SHOULD raise a warning
+     *                       to inform users about the ignored contract(s).
+     * @return the updated configurable context.
      */
-    public <T> Configurable register(Class<T> providerClass, int bindingPriority, Class<? super T>... contracts);
+    public C register(Class<?> componentClass, Map<Class<?>, Integer> contracts);
 
     /**
-     * Register a provider or a {@link Feature feature} ("singleton") instance to be used
-     * in the scope of the configured instance.
+     * Register an instance of a custom JAX-RS component (such as an extension provider or
+     * a {@link javax.ws.rs.core.Feature feature} meta-provider) to be instantiated
+     * and used in the scope of this configurable context.
      *
-     * The registered instance is registered as a provider of all the recognized JAX-RS or
-     * implementation-specific extension contracts including {@code Feature} contract.
-     * <p>
-     * As opposed to the instances registered via {@link #register(Object)} method, classes
-     * registered using this method used "as is", i.e. are not managed or
-     * injected by the JAX-RS implementation provider. In case of a conflict between
-     * a registered feature and/or provider instance and instantiated registered class,
-     * the registered instance takes precedence and the registered class will not be
-     * instantiated in such case.
+     * Implementations SHOULD warn about and ignore registrations that do not
+     * conform to the requirements of supported JAX-RS component types in the
+     * given configurable context. Any subsequent registration attempts for a component
+     * type, for which a class or instance-based registration already exists in the system
+     * MUST be rejected by the JAX-RS implementation and a warning SHOULD be raised to
+     * inform the user about the rejected registration.
      *
-     * @param provider a provider instance to be registered in the scope of the configured
-     *                 instance.
-     * @return the updated configurable instance.
-     */
-    public Configurable register(Object provider);
-
-    /**
-     * Register a provider or a {@link Feature feature} ("singleton") instance to be used
-     * in the scope of the configured instance.
+     * The registered JAX-RS component is registered as a contract provider of
+     * all the recognized JAX-RS or implementation-specific extension contracts including
+     * meta-provider contracts, such as {@code Feature} or {@link javax.ws.rs.container.DynamicFeature}.
      * <p>
-     * This registration method provides same functionality as {@link #register(Object)}
-     * except that any provider binding priority specified on the provider using
-     * {@link javax.ws.rs.BindingPriority &#64;BindingPriority} annotation is overridden
-     * with the supplied {@code bindingPriority} value.
-     * </p>
-     * <p>
-     * Note that in case the binding priority is not applicable to any particular provider
-     * contract registered for the provider, the supplied {@code bindingPriority} value
-     * will be ignored for that contract.
+     * As opposed to components registered via {@link #register(Class)} method,
+     * the lifecycle of providers registered using this instance-based {@code register(...)}
+     * is not managed by JAX-RS runtime. The same registered component instance is used during
+     * the whole lifespan of the configurable context.
+     * Fields and properties of all registered JAX-RS component instances are injected with their
+     * declared dependencies (see {@link Context}) by the JAX-RS runtime prior to use.
      * </p>
      *
-     * @param provider        provider class to be instantiated and used in the scope
-     *                        of the configured instance.
-     * @param bindingPriority the overriding binding priority for the registered contract(s).
-     * @return the updated configurable instance.
+     * @param component JAX-RS component instance to be configured in the scope of this
+     *                  configurable context.
+     * @return the updated configurable context.
      */
-    public Configurable register(Object provider, int bindingPriority);
+    public C register(Object component);
 
     /**
-     * Register a provider or a {@link Feature feature} ("singleton") instance to be used
-     * in the scope of the configured instance.
+     * Register an instance of a custom JAX-RS component (such as an extension provider or
+     * a {@link javax.ws.rs.core.Feature feature} meta-provider) to be instantiated
+     * and used in the scope of this configurable context.
      * <p>
-     * This registration method provides same functionality as {@link #register(Object)}
-     * except the provider is only registered as a provider of the listed
-     * {@code contracts}. Note that in case the {@link Feature} interface is not listed
-     * explicitly, the provider is not recognized as a JAX-RS feature.
+     * This registration method provides the same functionality as {@link #register(Object)}
+     * except that any priority specified on the registered JAX-RS component class via
+     * {@link javax.annotation.Priority &#64;Priority} annotation is overridden
+     * with the supplied {@code priority} value.
+     * </p>
+     * <p>
+     * Note that in case the priority is not applicable to a particular
+     * provider contract implemented by the class of the registered component, the supplied
+     * {@code priority} value will be ignored for that contract.
      * </p>
      *
-     * @param provider  a provider instance to be registered in the scope of the configured
-     *                  instance.
-     * @param contracts the specific set of contracts implemented by the provider class
-     *                  for which the provider should be registered. If omitted, the
-     *                  provider class will be registered as a provider of all recognized
-     *                  contracts implemented by the provider class.
-     * @return the updated configurable instance.
+     * @param component JAX-RS component instance to be configured in the scope of this
+     *                  configurable context.
+     * @param priority  the overriding priority for the registered component
+     *                  and all the provider contracts the component implements.
+     * @return the updated configurable context.
      */
-    public <T> Configurable register(Object provider, Class<? super T>... contracts);
+    public C register(Object component, int priority);
 
     /**
-     * Register a provider or a {@link Feature feature} ("singleton") instance to be used
-     * in the scope of the configured instance.
+     * Register an instance of a custom JAX-RS component (such as an extension provider or
+     * a {@link javax.ws.rs.core.Feature feature} meta-provider) to be instantiated
+     * and used in the scope of this configurable context.
+     * <p>
+     * This registration method provides the same functionality as {@link #register(Object)}
+     * except the JAX-RS component class is only registered as a provider of the listed
+     * extension provider or meta-provider {@code contracts}.
+     * All explicitly enumerated contract types must represent a class or an interface
+     * implemented or extended by the registered component. Contracts that are not
+     * {@link Class#isAssignableFrom(Class) assignable from} the registered component class
+     * MUST be ignored and implementations SHOULD raise a warning to inform users about the
+     * ignored contract(s).
+     * </p>
+     *
+     * @param component JAX-RS component instance to be configured in the scope of this
+     *                  configurable context.
+     * @param contracts the specific extension provider or meta-provider contracts
+     *                  implemented by the component for which the component should
+     *                  be registered.
+     *                  Implementations MUST ignore attempts to register a component
+     *                  class for an empty or {@code null} collection of contracts via
+     *                  this method and SHOULD raise a warning about such event.
+     * @return the updated configurable context.
+     */
+    public C register(Object component, Class<?>... contracts);
+
+    /**
+     * Register an instance of a custom JAX-RS component (such as an extension provider or
+     * a {@link javax.ws.rs.core.Feature feature} meta-provider) to be instantiated
+     * and used in the scope of this configurable context.
      * <p>
      * This registration method provides same functionality as {@link #register(Object, Class[])}
-     * except that any provider binding priority specified on the provider using
-     * {@link javax.ws.rs.BindingPriority &#64;BindingPriority} annotation is overridden
-     * with the supplied {@code bindingPriority} value.
+     * except that any priority specified on the registered JAX-RS component class using
+     * {@link javax.annotation.Priority &#64;Priority} annotation is overridden
+     * for each extension provider contract type separately with an integer priority value
+     * specified as a value in the supplied map of [contract type, priority] pairs.
      * </p>
      * <p>
-     * Note that in case the binding priority is not applicable to any particular provider
-     * contract registered for the provider, the supplied {@code bindingPriority} value
-     * will be ignored for that contract.
+     * Note that in case a priority is not applicable to a provider contract registered
+     * for the JAX-RS component, the supplied priority value is ignored for such
+     * contract.
      * </p>
      *
-     * @param provider  a provider instance to be registered in the scope of the configured
-     *                  instance.
-     * @param bindingPriority the overriding binding priority for the registered contract(s).
-     * @param contracts the specific set of contracts implemented by the provider class
-     *                  for which the provider should be registered. If omitted, the
-     *                  provider class will be registered as a provider of all recognized
-     *                  contracts implemented by the provider class.
-     * @return the updated configurable instance.
+     * @param component JAX-RS component instance to be configured in the scope of this
+     *                  configurable context.
+     * @param contracts map of the specific extension provider and meta-provider contracts
+     *                  and their associated priorities for which the JAX-RS component
+     *                  is registered.
+     *                  All contracts in the map must represent a class or an interface
+     *                  implemented or extended by the JAX-RS component. Contracts that are
+     *                  not {@link Class#isAssignableFrom(Class) assignable from} the registered
+     *                  component class MUST be ignored and implementations SHOULD raise a warning
+     *                  to inform users about the ignored contract(s).
+     * @return the updated configurable context.
      */
-    public <T> Configurable register(Object provider, int bindingPriority, Class<? super T>... contracts);
+    public C register(Object component, Map<Class<?>, Integer> contracts);
+
+    /**
+     * Replace the existing configuration state with an externally provided configuration state.
+     *
+     * @param config external configuration state to replace the configuration of this configurable
+     *               instance.
+     * @return the updated configurable context.
+     */
+    public C replaceWith(Configuration config);
 }

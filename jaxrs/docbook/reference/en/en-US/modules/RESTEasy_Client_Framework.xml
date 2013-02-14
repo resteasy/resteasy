@@ -9,10 +9,12 @@
         you can build more sub-resource WebTargets or invoke requests on.</para>
         <para>
             There are really two ways to create a Client.  Standard way, or you can use the ResteasyClientBuilder class.
-            The advantage of the latter is that it gives you helper methods to set up SSL and work with Resteasy extension interfaces.
+            The advantage of the latter is that it gives you a few more helper methods to configure your client.
         </para>
         <programlisting>
-            Client client = ClientFactory.newClient();
+            Client client = ClientBuilder.newClient();
+            ... or...
+            Client client = ClientBuilder.newBuilder().build();
             WebTarget target = client.target("http://foo.com/resource");
             Response response = target.request().get();
             String value = response.readEntity(String.class);

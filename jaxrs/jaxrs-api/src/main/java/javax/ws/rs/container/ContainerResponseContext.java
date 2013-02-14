@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -290,7 +290,7 @@ public interface ContainerResponseContext {
      * type is required.
      *
      * @param entity      entity object.
-     * @param annotations annotations attached to the entity.
+     * @param annotations annotations attached to the entity instance.
      * @param mediaType   entity media type.
      * @see MessageBodyWriter
      */
@@ -300,21 +300,31 @@ public interface ContainerResponseContext {
             final MediaType mediaType);
 
     /**
-     * Get the annotations attached to the entity.
+     * Get the annotations attached to the entity instance.
+     * <p>
+     * Note that the returned annotations array contains only those annotations
+     * explicitly attached to entity instance (such as the ones attached using
+     * {@link javax.ws.rs.core.Response.ResponseBuilder#entity(Object, java.lang.annotation.Annotation[])} method
+     * or the ones attached to the resource method that returned the response).
+     * The entity instance annotations array does not include annotations declared on the entity
+     * implementation class or its ancestors.
+     * </p>
      *
-     * @return entity annotations.
+     * @return annotations attached to the entity instance.
      */
     public Annotation[] getEntityAnnotations();
 
     /**
-     * Get the entity output stream.
+     * Get the entity output stream. The JAX-RS runtime is responsible for
+     * closing the output stream.
      *
      * @return entity output stream.
      */
     public OutputStream getEntityStream();
 
     /**
-     * Set a new entity output stream.
+     * Set a new entity output stream. The JAX-RS runtime is responsible for
+     * closing the output stream.
      *
      * @param outputStream new entity output stream.
      */

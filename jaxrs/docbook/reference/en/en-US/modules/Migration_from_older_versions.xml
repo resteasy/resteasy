@@ -9,7 +9,22 @@
 <chapter id="Migration_from_older_versions">
 <title>Migration from older versions</title>
 <sect1>
-    <title>Migrating from 3.0-beta-1 and 3.0-beta-2</title>
+    <title>Migrating from 3.0-beta-4 and 3.0-beta-4</title>
+    <itemizedlist>
+        <listitem>
+            The JAX-RS 2.0 class ClientFactory no longer exists.  It has been replaced with ClientBuilder.  You can
+            still call newClient(), but there is now an additional builder interface.  Likewise, there is no
+            ResteasyClientFactory.  We also have an extension to ClientBuilder called ResteasyClientBuilder.  So docs
+            for more details.
+        </listitem>
+        <listitem>
+            Filter execution and exception handling now matches the JAX-RS 2.0 spec.  Exceptions thrown from filters/interceptors
+            can now be mapped if possible.  Responses returned from ExceptionMappers are now filtered.
+        </listitem>
+    </itemizedlist>
+</sect1>
+<sect1>
+    <title>Migrating from 3.0-beta-1 and 3.0-beta-4</title>
     <itemizedlist>
         <listitem>
             The constructors for ResteasyClient class are no longer public.  You need to use the new ResteasyClientBuilder

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -67,7 +67,7 @@ public class InternalServerErrorException extends ServerErrorException {
      * @throws IllegalArgumentException in case the status code set in the response
      *                                  is not HTTP {@code 500}.
      */
-    public InternalServerErrorException(Response response) throws IllegalArgumentException {
+    public InternalServerErrorException(Response response) {
         super(validate(response, Response.Status.INTERNAL_SERVER_ERROR));
     }
 
@@ -88,7 +88,7 @@ public class InternalServerErrorException extends ServerErrorException {
      * @throws IllegalArgumentException in case the status code set in the response
      *                                  is not HTTP {@code 500}.
      */
-    public InternalServerErrorException(Response response, Throwable cause) throws IllegalArgumentException {
+    public InternalServerErrorException(Response response, Throwable cause) {
         super(validate(response, Response.Status.INTERNAL_SERVER_ERROR), cause);
     }
 }

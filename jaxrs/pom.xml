@@ -8,7 +8,7 @@
     </description>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>3.0-beta-2</version>
+    <version>3.0-beta-4</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -103,7 +103,7 @@
         <module>async-http-servlet-3.0</module>
         <module>jboss-modules</module>
         <module>profiling-tests</module>
-        <module>arquillian</module>
+        <!-- <module>arquillian</module> -->
         <!-- <module>as7-integration-testing/modules-test</module> -->
     </modules>
 

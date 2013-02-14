@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,16 +48,19 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.MessageProcessingException;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
  * Defines the contract between a returned instance and the runtime when
- * an application needs to provide meta-data to the runtime. An application
- * class can extend this class directly or can use one of the static
- * methods to create an instance using a ResponseBuilder.
+ * an application needs to provide meta-data to the runtime.
+ * <p>
+ * An application class should not extend this class directly. {@code Response} class is
+ * reserved for an extension by a JAX-RS implementation providers. An application should use one
+ * of the static methods to create a {@code Response} instance using a ResponseBuilder.
+ * </p>
  * <p>
  * Several methods have parameters of type URI, {@link UriBuilder} provides
  * convenient methods to create such values as does {@link URI#create(java.lang.String)}.
@@ -108,35 +111,35 @@ public abstract class Response {
      *                               as an {@link InputStream input stream}, or
      *                               if the response has been {@link #close() closed}.
      */
-    public abstract Object getEntity() throws IllegalStateException;
+    public abstract Object getEntity();
 
     /**
      * Read the message entity input stream as an instance of specified Java type
      * using a {@link javax.ws.rs.ext.MessageBodyReader} that supports mapping the
      * message entity stream onto the requested type.
      * <p>
-     * Method throws an {@link MessageProcessingException} if the content of the
+     * Method throws an {@link ProcessingException} if the content of the
      * message cannot be mapped to an entity of the requested type and
      * {@link IllegalStateException} in case the entity is not backed by an input
-     * stream or if the entity input stream has already been consumed and has not
-     * been {@link #bufferEntity() buffered} prior consuming.
+     * stream or if the original entity input stream has already been consumed
+     * without {@link #bufferEntity() buffering} the entity data prior consuming.
      * </p>
      * <p>
      * If the message does not contain an entity body {@code null} is returned.
      * A non-null message instance returned from this method will be cached for
      * subsequent retrievals via {@link #getEntity()}. Unless the supplied entity
      * type is an {@link java.io.InputStream input stream}, this method automatically
-     * {@link #close() closes} the consumed response entity stream if it is not
-     * buffered. In case he entity input stream has been buffered, it will be
-     * {@link InputStream#reset() reset} when the method returns to enable
-     * subsequent invocations of the {@code readEntity(...)} methods on this response.
+     * {@link #close() closes} the an unconsumed original response entity data stream
+     * if open. In case the entity data has been buffered, the buffer will be reset
+     * prior consuming the buffered data to enable subsequent invocations of
+     * {@code readEntity(...)} methods on this response.
      * </p>
      *
      * @param <T>        entity instance Java type.
      * @param entityType the type of entity.
-     * @return the message entity or {@code null} if message does not contain an
-     *         entity body.
-     * @throws MessageProcessingException if the content of the message cannot be
+     * @return the message entity; for a zero-length response entities returns {@code null}
+     *         or a corresponding Java object that represents zero-length data.
+     * @throws ProcessingException if the content of the message cannot be
      *                                    mapped to an entity of the requested type.
      * @throws IllegalStateException      if the entity is not backed by an input stream,
      *                                    the response has been {@link #close() closed} already,
@@ -145,35 +148,35 @@ public abstract class Response {
      * @see javax.ws.rs.ext.MessageBodyReader
      * @since 2.0
      */
-    public abstract <T> T readEntity(Class<T> entityType) throws MessageProcessingException, IllegalStateException;
+    public abstract <T> T readEntity(Class<T> entityType);
 
     /**
      * Read the message entity input stream as an instance of specified Java type
      * using a {@link javax.ws.rs.ext.MessageBodyReader} that supports mapping the
      * message entity stream onto the requested type.
      * <p>
-     * Method throws an {@link MessageProcessingException} if the content of the
+     * Method throws an {@link ProcessingException} if the content of the
      * message cannot be mapped to an entity of the requested type and
      * {@link IllegalStateException} in case the entity is not backed by an input
-     * stream or if the entity input stream has already been consumed and has not
-     * been {@link #bufferEntity() buffered} prior consuming.
+     * stream or if the original entity input stream has already been consumed
+     * without {@link #bufferEntity() buffering} the entity data prior consuming.
      * </p>
      * <p>
      * If the message does not contain an entity body {@code null} is returned.
      * A non-null message instance returned from this method will be cached for
      * subsequent retrievals via {@link #getEntity()}. Unless the supplied entity
      * type is an {@link java.io.InputStream input stream}, this method automatically
-     * {@link #close() closes} the consumed response entity stream if it is not
-     * buffered. In case he entity input stream has been buffered, it will be
-     * {@link InputStream#reset() reset} when the method returns to enable
-     * subsequent invocations of the {@code readEntity(...)} methods on this response.
+     * {@link #close() closes} the an unconsumed original response entity data stream
+     * if open. In case the entity data has been buffered, the buffer will be reset
+     * prior consuming the buffered data to enable subsequent invocations of
+     * {@code readEntity(...)} methods on this response.
      * </p>
      *
      * @param <T>        entity instance Java type.
      * @param entityType the type of entity; may be generic.
-     * @return the message entity or {@code null} if message does not contain an
-     *         entity body.
-     * @throws MessageProcessingException if the content of the message cannot be
+     * @return the message entity; for a zero-length response entities returns {@code null}
+     *         or a corresponding Java object that represents zero-length data.
+     * @throws ProcessingException if the content of the message cannot be
      *                                    mapped to an entity of the requested type.
      * @throws IllegalStateException      if the entity is not backed by an input stream,
      *                                    the response has been {@link #close() closed} already,
@@ -182,36 +185,36 @@ public abstract class Response {
      * @see javax.ws.rs.ext.MessageBodyReader
      * @since 2.0
      */
-    public abstract <T> T readEntity(GenericType<T> entityType) throws MessageProcessingException, IllegalStateException;
+    public abstract <T> T readEntity(GenericType<T> entityType);
 
     /**
      * Read the message entity input stream as an instance of specified Java type
      * using a {@link javax.ws.rs.ext.MessageBodyReader} that supports mapping the
      * message entity stream onto the requested type.
      * <p>
-     * Method throws an {@link MessageProcessingException} if the content of the
+     * Method throws an {@link ProcessingException} if the content of the
      * message cannot be mapped to an entity of the requested type and
      * {@link IllegalStateException} in case the entity is not backed by an input
-     * stream or if the entity input stream has already been consumed and has not
-     * been {@link #bufferEntity() buffered} prior consuming.
+     * stream or if the original entity input stream has already been consumed
+     * without {@link #bufferEntity() buffering} the entity data prior consuming.
      * </p>
      * <p>
      * If the message does not contain an entity body {@code null} is returned.
      * A non-null message instance returned from this method will be cached for
      * subsequent retrievals via {@link #getEntity()}. Unless the supplied entity
      * type is an {@link java.io.InputStream input stream}, this method automatically
-     * {@link #close() closes} the consumed response entity stream if it is not
-     * buffered. In case he entity input stream has been buffered, it will be
-     * {@link InputStream#reset() reset} when the method returns to enable
-     * subsequent invocations of the {@code readEntity(...)} methods on this response.
+     * {@link #close() closes} the an unconsumed original response entity data stream
+     * if open. In case the entity data has been buffered, the buffer will be reset
+     * prior consuming the buffered data to enable subsequent invocations of
+     * {@code readEntity(...)} methods on this response.
      * </p>
      *
      * @param <T>         entity instance Java type.
      * @param entityType  the type of entity.
      * @param annotations annotations that will be passed to the {@link MessageBodyReader}.
-     * @return the message entity or {@code null} if message does not contain an
-     *         entity body.
-     * @throws MessageProcessingException if the content of the message cannot be
+     * @return the message entity; for a zero-length response entities returns {@code null}
+     *         or a corresponding Java object that represents zero-length data.
+     * @throws ProcessingException if the content of the message cannot be
      *                                    mapped to an entity of the requested type.
      * @throws IllegalStateException      if the entity is not backed by an input stream,
      *                                    the response has been {@link #close() closed} already,
@@ -220,37 +223,36 @@ public abstract class Response {
      * @see javax.ws.rs.ext.MessageBodyReader
      * @since 2.0
      */
-    public abstract <T> T readEntity(Class<T> entityType, Annotation[] annotations)
-            throws MessageProcessingException, IllegalStateException;
+    public abstract <T> T readEntity(Class<T> entityType, Annotation[] annotations);
 
     /**
      * Read the message entity input stream as an instance of specified Java type
      * using a {@link javax.ws.rs.ext.MessageBodyReader} that supports mapping the
      * message entity stream onto the requested type.
      * <p>
-     * Method throws an {@link MessageProcessingException} if the content of the
+     * Method throws an {@link ProcessingException} if the content of the
      * message cannot be mapped to an entity of the requested type and
      * {@link IllegalStateException} in case the entity is not backed by an input
-     * stream or if the entity input stream has already been consumed and has not
-     * been {@link #bufferEntity() buffered} prior consuming.
+     * stream or if the original entity input stream has already been consumed
+     * without {@link #bufferEntity() buffering} the entity data prior consuming.
      * </p>
      * <p>
      * If the message does not contain an entity body {@code null} is returned.
      * A non-null message instance returned from this method will be cached for
      * subsequent retrievals via {@link #getEntity()}. Unless the supplied entity
      * type is an {@link java.io.InputStream input stream}, this method automatically
-     * {@link #close() closes} the consumed response entity stream if it is not
-     * buffered. In case he entity input stream has been buffered, it will be
-     * {@link InputStream#reset() reset} when the method returns to enable
-     * subsequent invocations of the {@code readEntity(...)} methods on this response.
+     * {@link #close() closes} the an unconsumed original response entity data stream
+     * if open. In case the entity data has been buffered, the buffer will be reset
+     * prior consuming the buffered data to enable subsequent invocations of
+     * {@code readEntity(...)} methods on this response.
      * </p>
      *
      * @param <T>         entity instance Java type.
      * @param entityType  the type of entity; may be generic.
      * @param annotations annotations that will be passed to the {@link MessageBodyReader}.
-     * @return the message entity or {@code null} if message does not contain an
-     *         entity body.
-     * @throws MessageProcessingException if the content of the message cannot be
+     * @return the message entity; for a zero-length response entities returns {@code null}
+     *         or a corresponding Java object that represents zero-length data.
+     * @throws ProcessingException if the content of the message cannot be
      *                                    mapped to an entity of the requested type.
      * @throws IllegalStateException      if the entity is not backed by an input stream,
      *                                    the response has been {@link #close() closed} already,
@@ -259,8 +261,7 @@ public abstract class Response {
      * @see javax.ws.rs.ext.MessageBodyReader
      * @since 2.0
      */
-    public abstract <T> T readEntity(GenericType<T> entityType, Annotation[] annotations)
-            throws MessageProcessingException, IllegalStateException;
+    public abstract <T> T readEntity(GenericType<T> entityType, Annotation[] annotations);
 
     /**
      * Check if there is an entity available in the response. The method returns
@@ -271,14 +272,14 @@ public abstract class Response {
      * @throws IllegalStateException in case the response has been {@link #close() closed}.
      * @since 2.0
      */
-    public abstract boolean hasEntity() throws IllegalStateException;
+    public abstract boolean hasEntity();
 
     /**
      * Buffer the message entity data.
      * <p>
      * In case the message entity is backed by an unconsumed entity input stream,
-     * all the bytes of the original entity input stream are read and stored locally.
-     * The original entity input stream is consumed and automatically
+     * all the bytes of the original entity input stream are read and stored in a
+     * local buffer. The original entity input stream is consumed and automatically
      * closed as part of the operation and the method returns {@code true}.
      * </p>
      * <p>
@@ -298,7 +299,7 @@ public abstract class Response {
      * Buffering the message entity data allows for multiple invocations of
      * {@code readEntity(...)} methods on the response instance. Note however, that
      * once the response instance itself is {@link #close() closed}, the implementations
-     * are expected to release the buffered message entity data. Therefore any subsequent
+     * are expected to release the buffered message entity data too. Therefore any subsequent
      * attempts to read a message entity stream on such closed response will result in an
      * {@link IllegalStateException} being thrown.
      * </p>
@@ -306,12 +307,12 @@ public abstract class Response {
      * @return {@code true} if the message entity input stream was available and
      *         was buffered successfully, returns {@code false} if the entity stream
      *         was not available.
-     * @throws MessageProcessingException if there was an error while buffering the entity
+     * @throws ProcessingException if there was an error while buffering the entity
      *                                    input stream.
      * @throws IllegalStateException      in case the response has been {@link #close() closed}.
      * @since 2.0
      */
-    public abstract boolean bufferEntity() throws MessageProcessingException, IllegalStateException;
+    public abstract boolean bufferEntity();
 
     /**
      * Close the underlying message entity input stream (if available and open)
@@ -334,10 +335,10 @@ public abstract class Response {
      * will result in an {@link IllegalStateException} being thrown.
      * </p>
      *
-     * @throws MessageProcessingException if there is an error closing the response.
+     * @throws ProcessingException if there is an error closing the response.
      * @since 2.0
      */
-    public abstract void close() throws MessageProcessingException;
+    public abstract void close();
 
     /**
      * Get the media type of the message entity.
@@ -414,7 +415,11 @@ public abstract class Response {
     public abstract URI getLocation();
 
     /**
-     * Get the links attached to the message as header.
+     * Get the links attached to the message as headers. Any links in the message
+     * that are relative must be resolved with respect to the actual request URI
+     * that produced this response. Note that request URIs may be updated by
+     * filters, so the actual request URI may differ from that in the original
+     * invocation.
      *
      * @return links, may return empty {@link Set} if no links are present. Does
      *         not return {@code null}.
@@ -433,7 +438,10 @@ public abstract class Response {
     public abstract boolean hasLink(String relation);
 
     /**
-     * Get the link for the relation.
+     * Get the link for the relation. A relative link is resolved with respect
+     * to the actual request URI that produced this response. Note that request
+     * URIs may be updated by filters, so the actual request URI may differ from
+     * that in the original invocation.
      *
      * @param relation link relation.
      * @return the link for the relation, otherwise {@code null} if not present.
@@ -443,6 +451,7 @@ public abstract class Response {
 
     /**
      * Convenience method that returns a {@link Link.Builder} for the relation.
+     * See {@link #getLink} for more information.
      *
      * @param relation link relation.
      * @return the link builder for the relation, otherwise {@code null} if not
@@ -843,6 +852,7 @@ public abstract class Response {
          * @return a copy of the ResponseBuilder.
          */
         @Override
+        @SuppressWarnings("CloneDoesntDeclareCloneNotSupportedException")
         public abstract ResponseBuilder clone();
 
         /**

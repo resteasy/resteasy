@@ -3,8 +3,10 @@ package org.jboss.resteasy.plugins.interceptors.encoding;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.util.AcceptParser;
 
-import javax.ws.rs.BindingPriority;
+import javax.annotation.Priority;
 import javax.ws.rs.ConstrainedTo;
+import javax.ws.rs.Priorities;
+import javax.ws.rs.RuntimeType;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -18,8 +20,8 @@ import java.util.Set;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@ConstrainedTo(ConstrainedTo.Type.SERVER)
-@BindingPriority(BindingPriority.HEADER_DECORATOR)
+@ConstrainedTo(RuntimeType.SERVER)
+@Priority(Priorities.HEADER_DECORATOR)
 public class ServerContentEncodingAnnotationFilter implements WriterInterceptor
 {
    protected

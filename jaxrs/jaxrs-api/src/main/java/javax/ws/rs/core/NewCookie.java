@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,40 +56,71 @@ public class NewCookie extends Cookie {
      * Specifies that the cookie expires with the current application/browser session.
      */
     public static final int DEFAULT_MAX_AGE = -1;
+
     private static final HeaderDelegate<NewCookie> delegate =
             RuntimeDelegate.getInstance().createHeaderDelegate(NewCookie.class);
-    private String comment = null;
-    private int maxAge = DEFAULT_MAX_AGE;
-    private boolean secure = false;
+
+    private final String comment;
+    private final int maxAge;
+    private final boolean secure;
+    private final boolean httpOnly;
 
     /**
      * Create a new instance.
      *
-     * @param name  the name of the cookie
-     * @param value the value of the cookie
-     * @throws IllegalArgumentException if name is null
+     * @param name  the name of the cookie.
+     * @param value the value of the cookie.
+     * @throws IllegalArgumentException if name is {@code null}.
      */
     public NewCookie(String name, String value) {
-        super(name, value);
+        this(name, value, null, null, DEFAULT_VERSION, null, DEFAULT_MAX_AGE, false, false);
     }
 
     /**
      * Create a new instance.
      *
-     * @param name    the name of the cookie
-     * @param value   the value of the cookie
-     * @param path    the URI path for which the cookie is valid
-     * @param domain  the host domain for which the cookie is valid
-     * @param comment the comment
-     * @param maxAge  the maximum age of the cookie in seconds
-     * @param secure  specifies whether the cookie will only be sent over a secure connection
-     * @throws IllegalArgumentException if name is null
+     * @param name    the name of the cookie.
+     * @param value   the value of the cookie.
+     * @param path    the URI path for which the cookie is valid.
+     * @param domain  the host domain for which the cookie is valid.
+     * @param comment the comment.
+     * @param maxAge  the maximum age of the cookie in seconds.
+     * @param secure  specifies whether the cookie will only be sent over a secure connection.
+     * @throws IllegalArgumentException if name is {@code null}.
      */
-    public NewCookie(String name, String value, String path, String domain, String comment, int maxAge, boolean secure) {
-        super(name, value, path, domain);
-        this.comment = comment;
-        this.maxAge = maxAge;
-        this.secure = secure;
+    public NewCookie(String name,
+                     String value,
+                     String path,
+                     String domain,
+                     String comment,
+                     int maxAge,
+                     boolean secure) {
+        this(name, value, path, domain, DEFAULT_VERSION, comment, maxAge, secure, false);
+    }
+
+    /**
+     * Create a new instance.
+     *
+     * @param name     the name of the cookie.
+     * @param value    the value of the cookie.
+     * @param path     the URI path for which the cookie is valid.
+     * @param domain   the host domain for which the cookie is valid.
+     * @param comment  the comment.
+     * @param maxAge   the maximum age of the cookie in seconds.
+     * @param secure   specifies whether the cookie will only be sent over a secure connection.
+     * @param httpOnly if {@code true} make the cookie HTTP only, i.e. only visible as part of an HTTP request.
+     * @throws IllegalArgumentException if name is {@code null}.
+     * @since 2.0
+     */
+    public NewCookie(String name,
+                     String value,
+                     String path,
+                     String domain,
+                     String comment,
+                     int maxAge,
+                     boolean secure,
+                     boolean httpOnly) {
+        this(name, value, path, domain, DEFAULT_VERSION, comment, maxAge, secure, httpOnly);
     }
 
     /**
@@ -103,54 +134,105 @@ public class NewCookie extends Cookie {
      * @param comment the comment
      * @param maxAge  the maximum age of the cookie in seconds
      * @param secure  specifies whether the cookie will only be sent over a secure connection
-     * @throws IllegalArgumentException if name is null
+     * @throws IllegalArgumentException if name is {@code null}.
      */
-    public NewCookie(String name, String value, String path, String domain, int version, String comment, int maxAge, boolean secure) {
+    public NewCookie(String name,
+                     String value,
+                     String path,
+                     String domain,
+                     int version,
+                     String comment,
+                     int maxAge,
+                     boolean secure) {
+        this(name, value, path, domain, version, comment, maxAge, secure, false);
+    }
+
+    /**
+     * Create a new instance.
+     *
+     * @param name     the name of the cookie
+     * @param value    the value of the cookie
+     * @param path     the URI path for which the cookie is valid
+     * @param domain   the host domain for which the cookie is valid
+     * @param version  the version of the specification to which the cookie complies
+     * @param comment  the comment
+     * @param maxAge   the maximum age of the cookie in seconds
+     * @param secure   specifies whether the cookie will only be sent over a secure connection
+     * @param httpOnly if {@code true} make the cookie HTTP only, i.e. only visible as part of an HTTP request.
+     * @throws IllegalArgumentException if name is {@code null}.
+     * @since 2.0
+     */
+    public NewCookie(String name,
+                     String value,
+                     String path,
+                     String domain,
+                     int version,
+                     String comment,
+                     int maxAge,
+                     boolean secure,
+                     boolean httpOnly) {
         super(name, value, path, domain, version);
         this.comment = comment;
         this.maxAge = maxAge;
         this.secure = secure;
+        this.httpOnly = httpOnly;
     }
 
     /**
      * Create a new instance copying the information in the supplied cookie.
      *
-     * @param cookie the cookie to clone
-     * @throws IllegalArgumentException if cookie is null
+     * @param cookie the cookie to clone.
+     * @throws IllegalArgumentException if cookie is {@code null}.
      */
     public NewCookie(Cookie cookie) {
-        super(cookie == null ? null : cookie.getName(),
-                cookie == null ? null : cookie.getValue(),
-                cookie == null ? null : cookie.getPath(),
-                cookie == null ? null : cookie.getDomain(),
-                cookie == null ? Cookie.DEFAULT_VERSION : cookie.getVersion());
+        this(cookie, null, DEFAULT_MAX_AGE, false, false);
     }
 
     /**
      * Create a new instance supplementing the information in the supplied cookie.
      *
-     * @param cookie  the cookie to clone
-     * @param comment the comment
-     * @param maxAge  the maximum age of the cookie in seconds
-     * @param secure  specifies whether the cookie will only be sent over a secure connection
-     * @throws IllegalArgumentException if cookie is null
+     * @param cookie  the cookie to clone.
+     * @param comment the comment.
+     * @param maxAge  the maximum age of the cookie in seconds.
+     * @param secure  specifies whether the cookie will only be sent over a secure connection.
+     * @throws IllegalArgumentException if cookie is {@code null}.
      */
     public NewCookie(Cookie cookie, String comment, int maxAge, boolean secure) {
-        this(cookie);
+        this(cookie, comment, maxAge, secure, false);
+    }
+
+    /**
+     * Create a new instance supplementing the information in the supplied cookie.
+     *
+     * @param cookie   the cookie to clone.
+     * @param comment  the comment.
+     * @param maxAge   the maximum age of the cookie in seconds.
+     * @param secure   specifies whether the cookie will only be sent over a secure connection.
+     * @param httpOnly if {@code true} make the cookie HTTP only, i.e. only visible as part of an HTTP request.
+     * @throws IllegalArgumentException if cookie is {@code null}.
+     * @since 2.0
+     */
+    public NewCookie(Cookie cookie, String comment, int maxAge, boolean secure, boolean httpOnly) {
+        super(cookie == null ? null : cookie.getName(),
+                cookie == null ? null : cookie.getValue(),
+                cookie == null ? null : cookie.getPath(),
+                cookie == null ? null : cookie.getDomain(),
+                cookie == null ? Cookie.DEFAULT_VERSION : cookie.getVersion());
         this.comment = comment;
         this.maxAge = maxAge;
         this.secure = secure;
+        this.httpOnly = httpOnly;
     }
 
     /**
      * Creates a new instance of NewCookie by parsing the supplied string.
      *
-     * @param value the cookie string
-     * @return the newly created NewCookie
+     * @param value the cookie string.
+     * @return the newly created {@code NewCookie}.
      * @throws IllegalArgumentException if the supplied string cannot be parsed
-     *                                  or is null
+     *                                  or is {@code null}.
      */
-    public static NewCookie valueOf(String value) throws IllegalArgumentException {
+    public static NewCookie valueOf(String value) {
         return delegate.fromString(value);
     }
 
@@ -167,10 +249,10 @@ public class NewCookie extends Cookie {
      * Get the maximum age of the the cookie in seconds. Cookies older than
      * the maximum age are discarded. A cookie can be unset by sending a new
      * cookie with maximum age of 0 since it will overwrite any existing cookie
-     * and then be immediately discarded. The default value of -1 indicates that the cookie
-     * will be discarded at the end of the browser/application session.
+     * and then be immediately discarded. The default value of {@code -1} indicates
+     * that the cookie will be discarded at the end of the browser/application session.
      *
-     * @return the maximum age in seconds
+     * @return the maximum age in seconds.
      */
     public int getMaxAge() {
         return maxAge;
@@ -178,13 +260,26 @@ public class NewCookie extends Cookie {
 
     /**
      * Whether the cookie will only be sent over a secure connection. Defaults
-     * to false.
+     * to {@code false}.
      *
-     * @return true if the cookie will only be sent over a secure connection,
-     *         false otherwise.
+     * @return {@code true} if the cookie will only be sent over a secure connection,
+     *         {@code false} otherwise.
      */
     public boolean isSecure() {
         return secure;
+    }
+
+    /**
+     * Returns {@code true} if this cookie contains the {@code HttpOnly} attribute.
+     * This means that the cookie should not be accessible to scripting engines,
+     * like javascript.
+     *
+     * @return {@code true} if this cookie should be considered http only, {@code false}
+     *         otherwise.
+     * @since 2.0
+     */
+    public boolean isHttpOnly() {
+        return httpOnly;
     }
 
     /**
@@ -204,7 +299,7 @@ public class NewCookie extends Cookie {
      * Convert the cookie to a string suitable for use as the value of the
      * corresponding HTTP header.
      *
-     * @return a stringified cookie
+     * @return a stringified cookie.
      */
     @Override
     public String toString() {
@@ -212,9 +307,9 @@ public class NewCookie extends Cookie {
     }
 
     /**
-     * Generate a hashcode by hashing all of the properties.
+     * Generate a hash code by hashing all of the properties.
      *
-     * @return the hashcode
+     * @return the hash code.
      */
     @Override
     public int hashCode() {
@@ -222,6 +317,7 @@ public class NewCookie extends Cookie {
         hash = 59 * hash + (this.comment != null ? this.comment.hashCode() : 0);
         hash = 59 * hash + this.maxAge;
         hash = 59 * hash + (this.secure ? 1 : 0);
+        hash = 59 * hash + (this.httpOnly ? 1 : 0);
         return hash;
     }
 
@@ -234,6 +330,7 @@ public class NewCookie extends Cookie {
      * @return true if the object is a {@code NewCookie} with the same value for
      *         all properties, false otherwise.
      */
+    @SuppressWarnings({"StringEquality", "RedundantIfStatement"})
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -265,6 +362,9 @@ public class NewCookie extends Cookie {
             return false;
         }
         if (this.secure != other.secure) {
+            return false;
+        }
+        if (this.httpOnly != other.httpOnly) {
             return false;
         }
         return true;

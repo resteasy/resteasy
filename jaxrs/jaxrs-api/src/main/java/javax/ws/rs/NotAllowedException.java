@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -57,6 +57,7 @@ public class NotAllowedException extends ClientErrorException {
      * Construct a new method not allowed exception.
      *
      * @param allowedMethods allowed request methods.
+     * @throws IllegalArgumentException in case the allowed methods varargs are {@code null}.
      */
     public NotAllowedException(String... allowedMethods) {
         super(validateAllow(Response.status(Response.Status.METHOD_NOT_ALLOWED).allow(allowedMethods).build()));
@@ -64,13 +65,19 @@ public class NotAllowedException extends ClientErrorException {
 
     /**
      * Construct a new method not allowed exception.
+     * <p>
+     * Note that this constructor does not validate the presence of HTTP
+     * {@code Allow} header. I.e. it is possible
+     * to use the constructor to create a client-side exception instance
+     * even for an invalid HTTP {@code 405} response content returned from a server.
+     * </p>
      *
      * @param response error response.
      * @throws IllegalArgumentException in case the status code set in the response
      *                                  is not HTTP {@code 405}.
      */
-    public NotAllowedException(Response response) throws IllegalArgumentException {
-        super(validateAllow(validate(response, Response.Status.METHOD_NOT_ALLOWED)));
+    public NotAllowedException(Response response) {
+        super(validate(response, Response.Status.METHOD_NOT_ALLOWED));
     }
 
     /**
@@ -78,6 +85,7 @@ public class NotAllowedException extends ClientErrorException {
      *
      * @param cause          the underlying cause of the exception.
      * @param allowedMethods allowed request methods.
+     * @throws IllegalArgumentException in case the allowed methods varargs are {@code null}.
      */
     public NotAllowedException(Throwable cause, String... allowedMethods) {
         super(validateAllow(Response.status(Response.Status.METHOD_NOT_ALLOWED).allow(allowedMethods).build()), cause);
@@ -89,13 +97,14 @@ public class NotAllowedException extends ClientErrorException {
      * @param response error response.
      * @param cause    the underlying cause of the exception.
      * @throws IllegalArgumentException in case the status code set in the response
-     *                                  is not HTTP {@code 405}.
+     *                                  is not HTTP {@code 405} or does not contain
+     *                                  an HTTP {@code Allow} header.
      */
-    public NotAllowedException(Response response, Throwable cause) throws IllegalArgumentException {
+    public NotAllowedException(Response response, Throwable cause) {
         super(validateAllow(validate(response, Response.Status.METHOD_NOT_ALLOWED)), cause);
     }
 
-    private static Response validateAllow(final Response response) throws IllegalArgumentException {
+    private static Response validateAllow(final Response response) {
         if (!response.getHeaders().containsKey(HttpHeaders.ALLOW)) {
             throw new IllegalArgumentException("Response does not contain required 'Allow' HTTP header.");
         }

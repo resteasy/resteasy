@@ -12,7 +12,7 @@ import org.jboss.resteasy.util.InputStreamToByteArray;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.util.Types;
 
-import javax.ws.rs.MessageProcessingException;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -42,7 +42,7 @@ public abstract class ClientResponse extends BuiltResponse
 
    protected ClientResponse(ClientConfiguration configuration)
    {
-      setConfiguration(configuration);
+      setClientConfiguration(configuration);
    }
 
    public void setHeaders(MultivaluedMap<String, String> headers)
@@ -61,7 +61,7 @@ public abstract class ClientResponse extends BuiltResponse
       return properties;
    }
 
-   public void setConfiguration(ClientConfiguration configuration)
+   public void setClientConfiguration(ClientConfiguration configuration)
    {
       this.configuration = configuration;
       this.processor = configuration;
@@ -74,7 +74,7 @@ public abstract class ClientResponse extends BuiltResponse
    }
 
    @Override
-   public void close() throws MessageProcessingException
+   public void close()
    {
       if (isClosed) return;
       releaseConnection();
@@ -92,7 +92,7 @@ public abstract class ClientResponse extends BuiltResponse
    protected InputStream getEntityStream()
    {
       if (bufferedEntity != null) return new ByteArrayInputStream(bufferedEntity);
-      if (isClosed) throw new MessageProcessingException("Stream is closed");
+      if (isClosed) throw new ProcessingException("Stream is closed");
       return getInputStream();
    }
 
@@ -163,7 +163,7 @@ public abstract class ClientResponse extends BuiltResponse
               useGeneric, annotations, media);
       if (reader1 == null)
       {
-         throw new MessageProcessingException(format(
+         throw new ProcessingException(format(
                  "Unable to find a MessageBodyReader of content-type %s and type %s",
                  media, useType));
       }
@@ -178,7 +178,7 @@ public abstract class ClientResponse extends BuiltResponse
          InputStream is = getEntityStream();
          if (is == null)
          {
-            throw new MessageProcessingException("Input stream was empty, there is no entity");
+            throw new ProcessingException("Input stream was empty, there is no entity");
          }
          if (isMarshalledEntity)
          {
@@ -236,8 +236,9 @@ public abstract class ClientResponse extends BuiltResponse
    }
 
    @Override
-   public boolean bufferEntity() throws MessageProcessingException
+   public boolean bufferEntity()
    {
+      if (isClosed) throw new IllegalStateException("Response is closed");
       if (bufferedEntity != null) return true;
       if (entity != null) return false;
       if (metadata.getFirst(HttpHeaderNames.CONTENT_TYPE) == null) return false;
@@ -247,7 +248,7 @@ public abstract class ClientResponse extends BuiltResponse
       }
       catch (IOException e)
       {
-         throw new MessageProcessingException(e);
+         throw new ProcessingException(e);
       }
       return true;
    }
