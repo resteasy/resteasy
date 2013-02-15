@@ -220,7 +220,7 @@ public class ClientInvocation implements Invocation
                       entityAnnotations, this.getHeaders().getMediaType());
       if (writer == null)
       {
-         throw new RuntimeException("could not find writer for content-type "
+         throw new ProcessingException("could not find writer for content-type "
                  + this.getHeaders().getMediaType() + " type: " + entityClass.getName());
       }
       return writer;
@@ -269,7 +269,8 @@ public class ClientInvocation implements Invocation
                   filter.filter(requestContext);
                   if (requestContext.getAbortedWithResponse() != null)
                   {
-                     if (requestContext.getAbortedWithResponse() instanceof ClientResponse) return requestContext.getAbortedWithResponse();
+                     if (requestContext.getAbortedWithResponse() instanceof ClientResponse)
+                        return requestContext.getAbortedWithResponse();
                      else return new AbortedResponse(configuration, requestContext.getAbortedWithResponse());
                   }
                }
@@ -462,17 +463,25 @@ public class ClientInvocation implements Invocation
             @Override
             public Response call() throws Exception
             {
+               Response res = null;
                try
                {
-                  Response res = invoke();
+                  res = invoke();
+               }
+               catch (Exception t)
+               {
+                  cb.failed(t);
+                  throw t;
+               }
+               try
+               {
                   cb.completed((T) res);
                   return res;
                }
-               catch (Throwable e)
+               finally
                {
-                  cb.failed(e);
+                  res.close();
                }
-               return null;
             }
          });
          return (Future<T>) future;
@@ -487,21 +496,30 @@ public class ClientInvocation implements Invocation
             @Override
             public T call() throws Exception
             {
+               Response res = invoke();
+               T obj = null;
                try
                {
-                  Response res = invoke();
-                  GenericType<T> gt = null;
-                  if (theGenericType != null) gt = new GenericType<T>(theGenericType);
-                  else gt = new GenericType<T>(theType);
-                  T obj = res.readEntity(gt);
+                  try
+                  {
+                     GenericType<T> gt = null;
+                     if (theGenericType != null) gt = new GenericType<T>(theGenericType);
+                     else gt = new GenericType<T>(theType);
+                     obj = res.readEntity(gt);
+                  }
+                  catch (Exception ex)
+                  {
+                     ResponseProcessingException rpe = new ResponseProcessingException(res, ex);
+                     cb.failed(rpe);
+                     throw ex;
+                  }
                   cb.completed(obj);
                   return obj;
                }
-               catch (Throwable e)
+               finally
                {
-                  cb.failed(e);
+                  res.close();
                }
-               return null;
             }
          });
          return future;

@@ -18,6 +18,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.AsyncInvoker;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Cookie;
@@ -184,9 +185,17 @@ public class ClientInvocationBuilder implements Invocation.Builder
                return response.readEntity(responseType, annotations);
             }
          }
+         catch (WebApplicationException wae)
+         {
+            throw wae;
+         }
+         catch (Throwable throwable)
+         {
+            throw new ResponseProcessingException(response, throwable);
+         }
          finally
          {
-            response.close();
+            if (response.getMediaType() == null) response.close();
          }
       }
       try
