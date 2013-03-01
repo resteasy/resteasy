@@ -26,14 +26,17 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
       final ModuleProcessor processor = new ModuleProcessor(registry, providerFactory);
       final List<Module> modules = getModules(context);
       final Stage stage = getStage(context);
-      if (stage == null)
-      {
-         processor.process(modules);
-      }
-      else
-      {
-         processor.process(stage, modules);
-      }
+      final Injector injector = (stage == null) ? processor.process(modules) : processor.process(stage, modules);
+      // Set context attribute
+      context.setAttribute(Injector.class.getName(), injector);
+      // if (stage == null)
+      // {
+      //    processor.process(modules);
+      // }
+      // else
+      // {
+      //    processor.process(stage, modules);
+      // }
    }
 
    private Stage getStage(ServletContext context)

@@ -27,28 +27,32 @@ public class ModuleProcessor
       this.providerFactory = providerFactory;
    }
 
-   public void process(final Module... modules)
+   public Injector process(final Module... modules)
    {
       final Injector injector = Guice.createInjector(modules);
       processInjector(injector);
+      return injector;
    }
 
-   public void process(final Stage stage, final Module... modules)
+   public Injector process(final Stage stage, final Module... modules)
    {
       final Injector injector = Guice.createInjector(stage, modules);
       processInjector(injector);
+      return injector;
    }
 
-   public void process(final Iterable<Module> modules)
+   public Injector process(final Iterable<Module> modules)
    {
       final Injector injector = Guice.createInjector(modules);
       processInjector(injector);
+      return injector;
    }
 
-   public void process(final Stage stage, final Iterable<Module> modules)
+   public Injector process(final Stage stage, final Iterable<Module> modules)
    {
       final Injector injector = Guice.createInjector(stage, modules);
       processInjector(injector);
+      return injector;
    }
 
    private void processInjector(final Injector injector)
