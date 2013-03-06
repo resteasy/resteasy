@@ -13,7 +13,7 @@
         </servlet-class>
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>
-            <param-value>org.jboss.resteasy.resteasy802.TestApplication</param-value>
+            <param-value>org.jboss.resteasy.resteasy800.TestApplication</param-value>
         </init-param>
         <async-supported>true</async-supported>
     </servlet>

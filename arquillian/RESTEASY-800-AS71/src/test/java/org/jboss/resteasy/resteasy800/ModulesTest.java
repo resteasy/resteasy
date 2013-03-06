@@ -1,4 +1,4 @@
-package org.jboss.resteasy.resteasy802;
+package org.jboss.resteasy.resteasy800;
 
 import static org.junit.Assert.assertEquals;
 
@@ -6,6 +6,8 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.resteasy800.TestApplication;
+import org.jboss.resteasy.resteasy800.TestResource;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -29,7 +31,7 @@ public class ModulesTest
    @Deployment
    public static Archive<?> createTestArchive()
    {
-      WebArchive war = ShrinkWrap.create(WebArchive.class, "RESTEASY-802.war")
+      WebArchive war = ShrinkWrap.create(WebArchive.class, "RESTEASY-800.war")
             .addClasses(TestApplication.class, TestResource.class)
             .addAsWebInfResource("web.xml");
       System.out.println(war.toString(true));
@@ -39,7 +41,7 @@ public class ModulesTest
    @Test
    public void testModules() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-802/test");
+      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-800/test");
       ClientResponse<String> response = request.get(String.class);
       log.info("status: " + response.getStatus());
       log.info("entity: " + response.getEntity());

@@ -16,7 +16,7 @@
         <module>RESTEASY-752-jetty</module>
         <module>RESTEASY-760-jetty</module>
         <module>RESTEASY-767-jetty</module>
-        <module>RESTEASY-802-AS71</module>
+        <module>RESTEASY-800-AS71</module>
   </modules>
     
     <artifactId>arquillian</artifactId>

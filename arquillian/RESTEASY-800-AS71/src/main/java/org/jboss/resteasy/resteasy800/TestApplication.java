@@ -1,4 +1,4 @@
-package org.jboss.resteasy.resteasy802;
+package org.jboss.resteasy.resteasy800;
 
 import java.util.HashSet;
 import java.util.Set;
