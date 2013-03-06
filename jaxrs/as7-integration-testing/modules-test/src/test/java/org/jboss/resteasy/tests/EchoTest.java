@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientFactory;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
@@ -18,7 +18,7 @@ public class EchoTest
    @Test
    public void testIt2() throws Exception
    {
-      Client client = ClientFactory.newClient();
+      Client client = ClientBuilder.newClient();
       WebTarget target = client.target("http://localhost:8080/modules-test/jaxrs");
       String data = target.path("test/signed/text").request().get(String.class);
       System.out.println(data);
@@ -28,7 +28,7 @@ public class EchoTest
    @Test
    public void testPKCS7SignedOutput() throws Exception
    {
-      Client client = ClientFactory.newClient();
+      Client client = ClientBuilder.newClient();
       WebTarget target = client.target("http://localhost:8080/modules-test/jaxrs");
 
 

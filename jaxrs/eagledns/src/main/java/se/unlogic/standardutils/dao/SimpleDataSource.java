@@ -12,6 +12,8 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
 
 
 public class SimpleDataSource implements DataSource {
@@ -68,4 +70,9 @@ public class SimpleDataSource implements DataSource {
 	public <T> T unwrap(Class<T> arg0) throws SQLException {
 		return null;
 	}
+
+   public Logger getParentLogger() throws SQLFeatureNotSupportedException
+   {
+      return null;
+   }
 }

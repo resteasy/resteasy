@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -124,30 +125,30 @@ public class MediaTypeMap<T>
 
    private static class SubtypeMap<T>
    {
-      private Map<String, List<Entry<T>>> index = new HashMap<String, List<Entry<T>>>();
-      private Map<String, List<Entry<T>>> compositeIndex = new HashMap<String, List<Entry<T>>>();
-      private Map<String, List<Entry<T>>> wildCompositeIndex = new HashMap<String, List<Entry<T>>>();
-      private List<Entry<T>> wildcards = new ArrayList<Entry<T>>();
-      private List<Entry<T>> all = new ArrayList<Entry<T>>();
+      private Map<String, List<Entry<T>>> index = new ConcurrentHashMap<String, java.util.List<Entry<T>>>();
+      private Map<String, List<Entry<T>>> compositeIndex = new ConcurrentHashMap<String, List<Entry<T>>>();
+      private Map<String, List<Entry<T>>> wildCompositeIndex = new ConcurrentHashMap<String, List<Entry<T>>>();
+      private List<Entry<T>> wildcards = new CopyOnWriteArrayList<Entry<T>>();
+      private List<Entry<T>> all = new CopyOnWriteArrayList<Entry<T>>();
 
       public SubtypeMap<T> clone()
       {
          SubtypeMap<T> clone = new SubtypeMap<T>();
          for (Map.Entry<String, List<Entry<T>>> entry : index.entrySet())
          {
-            ArrayList<Entry<T>> newList = new ArrayList<Entry<T>>();
+            List<Entry<T>> newList = new CopyOnWriteArrayList<Entry<T>>();
             newList.addAll(entry.getValue());
             clone.index.put(entry.getKey(), newList);
          }
          for (Map.Entry<String, List<Entry<T>>> entry : compositeIndex.entrySet())
          {
-            ArrayList<Entry<T>> newList = new ArrayList<Entry<T>>();
+            List<Entry<T>> newList = new CopyOnWriteArrayList<Entry<T>>();
             newList.addAll(entry.getValue());
             clone.compositeIndex.put(entry.getKey(), newList);
          }
          for (Map.Entry<String, List<Entry<T>>> entry : wildCompositeIndex.entrySet())
          {
-            ArrayList<Entry<T>> newList = new ArrayList<Entry<T>>();
+            List<Entry<T>> newList = new CopyOnWriteArrayList<Entry<T>>();
             newList.addAll(entry.getValue());
             clone.wildCompositeIndex.put(entry.getKey(), newList);
          }
@@ -172,7 +173,7 @@ public class MediaTypeMap<T>
             List<Entry<T>> list = compositeIndex.get(main);
             if (list == null)
             {
-               list = new ArrayList<Entry<T>>();
+               list = new CopyOnWriteArrayList<Entry<T>>();
                compositeIndex.put(main, list);
             }
             list.add(entry);
@@ -183,7 +184,7 @@ public class MediaTypeMap<T>
             List<Entry<T>> list = wildCompositeIndex.get(main);
             if (list == null)
             {
-               list = new ArrayList<Entry<T>>();
+               list = new CopyOnWriteArrayList<Entry<T>>();
                wildCompositeIndex.put(main, list);
             }
             list.add(entry);
@@ -193,7 +194,7 @@ public class MediaTypeMap<T>
             List<Entry<T>> list = index.get(type.getSubtype());
             if (list == null)
             {
-               list = new ArrayList<Entry<T>>();
+               list = new CopyOnWriteArrayList<Entry<T>>();
                index.put(type.getSubtype(), list);
             }
             list.add(entry);
@@ -230,10 +231,10 @@ public class MediaTypeMap<T>
       }
    }
 
-   private Map<String, SubtypeMap<T>> index = new HashMap<String, SubtypeMap<T>>();
-   private List<Entry<T>> wildcards = new ArrayList<Entry<T>>();
-   private List<Entry<T>> all = new ArrayList<Entry<T>>();
-   private List<T> everything = new ArrayList<T>();
+   private Map<String, SubtypeMap<T>> index = new ConcurrentHashMap<String, MediaTypeMap.SubtypeMap<T>>();
+   private volatile List<Entry<T>> wildcards = new ArrayList<Entry<T>>();
+   private volatile List<Entry<T>> all = new ArrayList<Entry<T>>();
+   private volatile List<T> everything = new ArrayList<T>();
    private Map<CachedMediaTypeAndClass, List<T>> classCache = new ConcurrentHashMap<CachedMediaTypeAndClass, List<T>>();
 
    public MediaTypeMap<T> clone()
@@ -319,11 +320,20 @@ public class MediaTypeMap<T>
       classCache.clear();
       type = new MediaType(type.getType().toLowerCase(), type.getSubtype().toLowerCase(), type.getParameters());
       Entry<T> entry = new Entry<T>(type, obj);
-      all.add(entry);
-      Collections.sort(all);
-      everything = convert(all);
+      List<Entry<T>> newall = new ArrayList<Entry<T>>(all.size() + 1);
+      newall.addAll(all);
+      newall.add(entry);
+      Collections.sort(newall);
+      all = newall;
+      everything = convert(newall);
 
-      if (type.isWildcardType()) wildcards.add(entry);
+      if (type.isWildcardType())
+      {
+         List<Entry<T>> newwildcards = new ArrayList<Entry<T>>(wildcards.size() + 1);
+         newwildcards.addAll(wildcards);
+         newwildcards.add(entry);
+         wildcards = newwildcards;
+      }
       else
       {
          SubtypeMap<T> subtype = index.get(type.getType());
@@ -339,7 +349,7 @@ public class MediaTypeMap<T>
 
    private static <T> List<T> convert(List<Entry<T>> list)
    {
-      ArrayList<T> newList = new ArrayList<T>(list.size());
+      List<T> newList = new ArrayList<T>(list.size());
       for (Entry<T> entry : list)
       {
          newList.add(entry.object);

@@ -41,7 +41,6 @@ import org.jboss.resteasy.util.PickConstructor;
 import org.jboss.resteasy.util.ThreadLocalStack;
 import org.jboss.resteasy.util.Types;
 
-import javax.annotation.Priority;
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Priorities;
@@ -79,6 +78,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -207,35 +208,35 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public ResteasyProviderFactory(ResteasyProviderFactory parent)
    {
       this.parent = parent;
-      featureClasses = new HashSet<Class<?>>();
-      featureInstances = new HashSet<Object>();
-      providerClasses = new HashSet<Class<?>>();
-      providerInstances = new HashSet<Object>();
+      featureClasses = new CopyOnWriteArraySet<Class<?>>();
+      featureInstances = new CopyOnWriteArraySet<Object>();
+      providerClasses = new CopyOnWriteArraySet<Class<?>>();
+      providerInstances = new CopyOnWriteArraySet<Object>();
       properties = new ConcurrentHashMap<String, Object>();
       properties.putAll(parent.getProperties());
-      enabledFeatures = new HashSet<Feature>();
+      enabledFeatures = new CopyOnWriteArraySet<Feature>();
    }
 
    protected void initialize()
    {
-      serverDynamicFeatures = new HashSet<DynamicFeature>();
-      clientDynamicFeatures = new HashSet<DynamicFeature>();
-      enabledFeatures = new HashSet<Feature>();
+      serverDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>();
+      clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>();
+      enabledFeatures = new CopyOnWriteArraySet<Feature>();
       properties = new ConcurrentHashMap<String, Object>();
-      featureClasses = new HashSet<Class<?>>();
-      featureInstances = new HashSet<Object>();
-      providerClasses = new HashSet<Class<?>>();
-      providerInstances = new HashSet<Object>();
+      featureClasses = new CopyOnWriteArraySet<Class<?>>();
+      featureInstances = new CopyOnWriteArraySet<Object>();
+      providerClasses = new CopyOnWriteArraySet<Class<?>>();
+      providerInstances = new CopyOnWriteArraySet<Object>();
       messageBodyReaders = new MediaTypeMap<SortedKey<MessageBodyReader>>();
       messageBodyWriters = new MediaTypeMap<SortedKey<MessageBodyWriter>>();
-      exceptionMappers = new HashMap<Class<?>, ExceptionMapper>();
-      clientExceptionMappers = new HashMap<Class<?>, ClientExceptionMapper>();
-      contextResolvers = new HashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
-      paramConverterProviders = new ArrayList<ParamConverterProvider>();
-      stringConverters = new HashMap<Class<?>, StringConverter>();
-      stringParameterUnmarshallers = new HashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
+      exceptionMappers = new ConcurrentHashMap<Class<?>, ExceptionMapper>();
+      clientExceptionMappers = new ConcurrentHashMap<Class<?>, ClientExceptionMapper>();
+      contextResolvers = new ConcurrentHashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
+      paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>();
+      stringConverters = new ConcurrentHashMap<Class<?>, StringConverter>();
+      stringParameterUnmarshallers = new ConcurrentHashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
 
-      headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
+      headerDelegates = new ConcurrentHashMap<Class<?>, HeaderDelegate>();
 
       precedence = new LegacyPrecedence();
       serverReaderInterceptorRegistry = new ReaderInterceptorRegistry(this, precedence);
@@ -249,7 +250,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       clientWriterInterceptorRegistry = new WriterInterceptorRegistry(this, precedence);
       clientExecutionInterceptorRegistry = new InterceptorRegistry<ClientExecutionInterceptor>(ClientExecutionInterceptor.class, this);
 
-      clientErrorInterceptors = new ArrayList<ClientErrorInterceptor>();
+      clientErrorInterceptors = new CopyOnWriteArrayList<ClientErrorInterceptor>();
 
       builtinsRegistered = false;
       registerBuiltins = true;
@@ -670,7 +671,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (headerDelegates == null)
       {
-         headerDelegates = new HashMap<Class<?>, HeaderDelegate>();
+         headerDelegates = new ConcurrentHashMap<Class<?>, HeaderDelegate>();
          headerDelegates.putAll(parent.getHeaderDelegates());
       }
       headerDelegates.put(clazz, header);
@@ -809,7 +810,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       if (exceptionMappers == null)
       {
-         exceptionMappers = new HashMap<Class<?>, ExceptionMapper>();
+         exceptionMappers = new ConcurrentHashMap<Class<?>, ExceptionMapper>();
          exceptionMappers.putAll(parent.getExceptionMappers());
       }
       exceptionMappers.put(exceptionClass, provider);
@@ -844,7 +845,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       if (clientExceptionMappers == null)
       {
-    	  clientExceptionMappers = new HashMap<Class<?>, ClientExceptionMapper>();
+    	  clientExceptionMappers = new ConcurrentHashMap<Class<?>, ClientExceptionMapper>();
     	  clientExceptionMappers.putAll(parent.getClientExceptionMappers());
       }
       clientExceptionMappers.put(exceptionClass, provider);
@@ -858,8 +859,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (clientErrorInterceptors == null)
       {
-         clientErrorInterceptors = new ArrayList<ClientErrorInterceptor>();
-         clientErrorInterceptors.addAll(parent.getClientErrorInterceptors());
+         clientErrorInterceptors = new CopyOnWriteArrayList<ClientErrorInterceptor>(parent.getClientErrorInterceptors());
       }
       if (!clientErrorInterceptors.contains(handler))
       {
@@ -904,7 +904,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       Class<?> parameterClass = Types.getRawType(typeParameter);
       if (contextResolvers == null)
       {
-         contextResolvers = new HashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
+         contextResolvers = new ConcurrentHashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
          for (Map.Entry<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> entry : parent.getContextResolvers().entrySet())
          {
             contextResolvers.put(entry.getKey(), entry.getValue().clone());
@@ -955,7 +955,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       Class<?> parameterClass = Types.getRawType(typeParameter);
       if (stringConverters == null)
       {
-         stringConverters = new HashMap<Class<?>, StringConverter>();
+         stringConverters = new ConcurrentHashMap<Class<?>, StringConverter>();
          stringConverters.putAll(parent.getStringConverters());
       }
       stringConverters.put(parameterClass, provider);
@@ -966,7 +966,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (stringParameterUnmarshallers == null)
       {
-         stringParameterUnmarshallers = new HashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
+         stringParameterUnmarshallers = new ConcurrentHashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
          stringParameterUnmarshallers.putAll(parent.getStringParameterUnmarshallers());
       }
       Type[] intfs = provider.getGenericInterfaces();
@@ -1116,8 +1116,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          injectProperties(provider);
          if (paramConverterProviders == null)
          {
-            paramConverterProviders = new ArrayList<ParamConverterProvider>();
-            paramConverterProviders.addAll(parent.getParamConverterProviders());
+            paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>(parent.getParamConverterProviders());
          }
          paramConverterProviders.add(paramConverterProvider);
       }
@@ -1372,8 +1371,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             if (serverDynamicFeatures == null)
             {
-               serverDynamicFeatures = new HashSet<DynamicFeature>();
-               serverDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+               serverDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
             }
             serverDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
          }
@@ -1381,8 +1379,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             if (clientDynamicFeatures == null)
             {
-               clientDynamicFeatures = new HashSet<DynamicFeature>();
-               clientDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
             }
             clientDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
          }
@@ -1390,14 +1387,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             if (serverDynamicFeatures == null)
             {
-               serverDynamicFeatures = new HashSet<DynamicFeature>();
-               serverDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+               serverDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
             }
             serverDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
             if (clientDynamicFeatures == null)
             {
-               clientDynamicFeatures = new HashSet<DynamicFeature>();
-               clientDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
             }
             clientDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
          }
@@ -1435,8 +1430,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          injectProperties(provider);
          if (paramConverterProviders == null)
          {
-            paramConverterProviders = new ArrayList<ParamConverterProvider>();
-            paramConverterProviders.addAll(parent.getParamConverterProviders());
+            paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>(parent.getParamConverterProviders());
          }
          paramConverterProviders.add((ParamConverterProvider)provider);
       }
@@ -1680,8 +1674,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             if (serverDynamicFeatures == null)
             {
-               serverDynamicFeatures = new HashSet<DynamicFeature>();
-               serverDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+               serverDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
             }
             serverDynamicFeatures.add((DynamicFeature) provider);
          }
@@ -1689,8 +1682,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             if (clientDynamicFeatures == null)
             {
-               clientDynamicFeatures = new HashSet<DynamicFeature>();
-               clientDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
             }
             serverDynamicFeatures.add((DynamicFeature) provider);
          }
@@ -1698,14 +1690,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             if (serverDynamicFeatures == null)
             {
-               serverDynamicFeatures = new HashSet<DynamicFeature>();
-               serverDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+               serverDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
             }
             serverDynamicFeatures.add((DynamicFeature) provider);
             if (clientDynamicFeatures == null)
             {
-               clientDynamicFeatures = new HashSet<DynamicFeature>();
-               clientDynamicFeatures.addAll(parent.getServerDynamicFeatures());
+               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
             }
             serverDynamicFeatures.add((DynamicFeature) provider);
          }
@@ -1864,7 +1854,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public ResteasyProviderFactory setProperties(Map<String, ?> properties)
    {
-      Map<String, Object> newProp = Collections.synchronizedMap(new HashMap<String, Object>());
+      Map<String, Object> newProp = new ConcurrentHashMap<String, Object>();
       newProp.putAll(properties);
       this.properties = newProp;
       return this;
