@@ -132,6 +132,8 @@
         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- Used by org.jboss.resteasy.plugins.server.tjws.* -->

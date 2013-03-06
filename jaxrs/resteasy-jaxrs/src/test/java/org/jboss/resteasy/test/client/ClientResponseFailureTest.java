@@ -1,10 +1,7 @@
 package org.jboss.resteasy.test.client;
 
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.params.HttpClientParams;
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
@@ -77,47 +74,6 @@ public class ClientResponseFailureTest extends BaseResourceTest
       }
 
       Assert.assertTrue(failed);
-   }
-
-   @Test
-   public void test31ConnectionCleanupOnError() throws Exception
-   {
-      HttpClientParams params = new HttpClientParams();
-      params.setSoTimeout(5000);
-      params.setConnectionManagerTimeout(5000);
-
-
-      MultiThreadedHttpConnectionManager cm = new
-              MultiThreadedHttpConnectionManager();
-      cm.setMaxConnectionsPerHost(10);
-      cm.setMaxTotalConnections(100);
-
-      org.apache.commons.httpclient.HttpClient client = new org.apache.commons.httpclient.HttpClient();
-      client.setParams(params);
-      client.setHttpConnectionManager(cm);
-
-      final MyResource proxy = ProxyFactory.create(
-              MyResource.class, "http://localhost:8081", new
-                      ApacheHttpClientExecutor(client));
-
-      Background[] threads = new Background[31];
-      for (int i = 0; i < 31; i++)
-      {
-         threads[i] = new Background(proxy);
-      }
-      for (int i = 0; i < 31; i++)
-      {
-         threads[i].start();
-      }
-      for (int i = 0; i < 31; i++)
-      {
-         threads[i].join();
-      }
-
-      for (int i = 0; i < 31; i++)
-      {
-         Assert.assertTrue("Deveria finalizar", threads[i].finished);
-      }
    }
 
    public static class Background extends Thread
