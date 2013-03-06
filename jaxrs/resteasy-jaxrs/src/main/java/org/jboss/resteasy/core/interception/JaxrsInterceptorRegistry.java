@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -318,8 +319,8 @@ public class JaxrsInterceptorRegistry<T>
       }
    }
 
-   protected List<InterceptorFactory> interceptors = new ArrayList<InterceptorFactory>();
-   protected List<JaxrsInterceptorRegistryListener> listeners = new ArrayList<JaxrsInterceptorRegistryListener>();
+   protected List<InterceptorFactory> interceptors = new CopyOnWriteArrayList<InterceptorFactory>();
+   protected List<JaxrsInterceptorRegistryListener> listeners = new CopyOnWriteArrayList<JaxrsInterceptorRegistryListener>();
    protected ResteasyProviderFactory providerFactory;
    protected Class<T> intf;
 

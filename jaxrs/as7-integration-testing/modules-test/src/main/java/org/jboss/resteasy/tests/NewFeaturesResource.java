@@ -8,6 +8,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.security.BouncyIntegration;
 import org.jboss.resteasy.security.KeyTools;
@@ -94,12 +95,11 @@ public class NewFeaturesResource
    public SignedOutput getText()
    {
       // just allocate a client to test that resteasy client is available and Apache HC4 is exposed.
-      ResteasyClient client = new ResteasyClient();
+      ResteasyClient client = new ResteasyClientBuilder().build();
       ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager();
       cm.setMaxTotal(100);
       cm.setDefaultMaxPerRoute(100);
       HttpClient httpClient = new DefaultHttpClient(cm);
-      client.httpEngine(new ApacheHttpClient4Engine(httpClient));
 
       SignedOutput output = new SignedOutput("hello world", "text/plain");
       output.setCertificate(cert);

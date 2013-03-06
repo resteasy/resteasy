@@ -32,6 +32,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericType;
@@ -787,8 +788,9 @@ public class SigningTest extends BaseResourceTest
          String output = proxy.bad();
          throw new Exception("UNREACHABLE");
       }
-      catch (UnauthorizedSignatureException e)
+      catch (ResponseProcessingException e)
       {
+         Assert.assertTrue(e.getCause() instanceof UnauthorizedSignatureException);
       }
    }
 

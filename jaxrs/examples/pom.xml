@@ -28,6 +28,7 @@
     </build>
 
     <modules>
+        <module>jaxrs2-async-pubsub-example</module>
         <module>jaxb-json</module>
         <module>guice-hello</module>
         <module>async-job-service</module>
