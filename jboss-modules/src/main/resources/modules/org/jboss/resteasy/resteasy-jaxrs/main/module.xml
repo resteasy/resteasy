@@ -42,5 +42,9 @@
         <module name="org.scannotation.scannotation" />
         <module name="org.slf4j" />
         <module name="javax.servlet.api"/>
+        <module name="org.apache.commons.io"/>
+        
+        <!-- exported -->
+        <module name="org.apache.httpcomponents" export="true"/>
     </dependencies>
 </module>

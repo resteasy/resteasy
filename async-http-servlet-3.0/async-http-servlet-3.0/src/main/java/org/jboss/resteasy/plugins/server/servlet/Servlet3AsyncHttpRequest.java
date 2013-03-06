@@ -1,10 +1,14 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import java.lang.annotation.Annotation;
+
 import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
+import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
@@ -62,6 +66,12 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
             }
          }
       };
+      asynchronousResponse.setAnnotations((Annotation[]) getAttribute(Annotation.class.getName()));
+      asynchronousResponse.setMessageBodyWriterInterceptors((MessageBodyWriterInterceptor[]) getAttribute(MessageBodyWriterInterceptor.class.getName()));
+      asynchronousResponse.setPostProcessInterceptors((PostProcessInterceptor[]) getAttribute((PostProcessInterceptor.class.getName())));
+      removeAttribute(Annotation.class.getName());
+      removeAttribute(MessageBodyWriterInterceptor.class.getName());
+      removeAttribute(PostProcessInterceptor.class.getName());
       return asynchronousResponse;
    }
 
