@@ -423,7 +423,6 @@ public class ExampleInterceptor implements ClientErrorInterceptor
      </para>
      
      <itemizedlist>
-         <listitem>ApacheHttpClientExecutor: uses HttpClient (3.x);</listitem>
          <listitem>
              URLConnectionClientExecutor: uses <classname>java.net.HttpURLConnection</classname>;
          </listitem>

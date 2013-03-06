@@ -70,13 +70,6 @@
             <artifactId>activation</artifactId>
         </dependency>
 
-        <!-- Used for org.jboss.resteasy.plugins.client.httpclient.* -->
-        <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-        </dependency>
-
-
         <!-- 4.0 refactor of apache httpclient -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -87,6 +80,13 @@
             <groupId>commons-io</groupId>
 	        <artifactId>commons-io</artifactId>
             <version>1.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
