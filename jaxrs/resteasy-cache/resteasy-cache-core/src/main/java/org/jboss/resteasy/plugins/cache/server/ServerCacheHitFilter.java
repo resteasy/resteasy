@@ -43,17 +43,14 @@ public class ServerCacheHitFilter implements ContainerRequestFilter
       }
    }
 
-   private void handleGET(ContainerRequestContext request,String key)
+   private void handleGET(ContainerRequestContext request, String key)
    {
       ServerCache.Entry entry = null;
       List<MediaType> acceptableMediaTypes = request.getAcceptableMediaTypes();
       if (acceptableMediaTypes != null && acceptableMediaTypes.size() > 0)
       {
-      for (MediaType acceptable : acceptableMediaTypes)
-      {
-         entry = cache.get(key, acceptable);
-         if (entry != null) break;
-      }
+         // only see if most desired is cached.
+         entry = cache.get(key, acceptableMediaTypes.get(0));
       }
       else
       {
