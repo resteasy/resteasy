@@ -1,5 +1,8 @@
 package org.jboss.resteasy.core;
 
+import static org.jboss.resteasy.util.FindAnnotation.findAnnotation;
+
+import org.jboss.resteasy.annotations.Suspend;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.core.interception.InterceptorRegistryListener;
 import org.jboss.resteasy.core.registry.Segment;
@@ -23,6 +26,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -250,6 +255,13 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
             return prepareResponse(serverResponse);
          }
       }
+      
+      if (isSuspendable(method))
+      {
+         request.setAttribute(Annotation.class.getName(), method.getAnnotations());
+         request.setAttribute(MessageBodyWriterInterceptor.class.getName(), writerInterceptors);
+         request.setAttribute(PostProcessInterceptor.class.getName(), postProcessInterceptors);
+      }
 
       Object rtn = null;
       try
@@ -264,11 +276,6 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
 
       if (request.isSuspended())
       {
-         AbstractAsynchronousResponse asyncResponse = (AbstractAsynchronousResponse) request.getAsynchronousResponse();
-         if (asyncResponse == null) return null;
-         asyncResponse.setAnnotations(method.getAnnotations());
-         asyncResponse.setMessageBodyWriterInterceptors(writerInterceptors);
-         asyncResponse.setPostProcessInterceptors(postProcessInterceptors);
          return null;
       }
       if (rtn == null || method.getReturnType().equals(void.class))
@@ -430,5 +437,18 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
    public MediaType[] getConsumes()
    {
       return consumes;
+   }
+   
+   private boolean isSuspendable(Method method)
+   {
+      Annotation[][] allAnnotations = method.getParameterAnnotations();
+      for (int i = 0; i < allAnnotations.length; i++)
+      {
+         if (findAnnotation(allAnnotations[i], Suspend.class) != null)
+         {
+            return true;
+         }
+      }
+      return false;
    }
 }
