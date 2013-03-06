@@ -28,6 +28,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -58,6 +59,7 @@ public class ValidationTest
       return war;
    }
    
+   @Ignore
    @Test
    public void testCorrectValues() throws Exception
    {
@@ -71,6 +73,7 @@ public class ValidationTest
       response.releaseConnection();
    }
    
+   @Ignore
    @SuppressWarnings("unchecked")
    @Test
    public void testIncorrectInputValues() throws Exception
@@ -97,6 +100,7 @@ public class ValidationTest
       Assert.assertEquals(0, returnValueViolations.size());
    }
    
+   @Ignore
    @SuppressWarnings("unchecked")
    @Test
    public void testIncorrectReturnValue() throws Exception
