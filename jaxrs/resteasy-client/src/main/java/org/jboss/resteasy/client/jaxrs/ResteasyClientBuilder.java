@@ -22,11 +22,16 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Configuration;
+import java.io.IOException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -72,6 +77,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    protected int maxPooledPerRoute = 0;
    protected long connectionTTL = -1;
    protected TimeUnit connectionTTLUnit = TimeUnit.MILLISECONDS;
+   protected HostnameVerifier verifier = null;
 
    /**
     * Changing the providerFactory will wipe clean any registered components or properties.
@@ -120,7 +126,6 @@ public class ResteasyClientBuilder extends ClientBuilder
     * Disable trust management and hostname verification.  <i>NOTE</i> this is a security
     * hole, so only set this option if you cannot or do not want to verify the identity of the
     * host you are communicating with.
-    *
     */
    public ResteasyClientBuilder disableTrustManager()
    {
@@ -219,40 +224,77 @@ public class ResteasyClientBuilder extends ClientBuilder
 
    }
 
+   static class VerifierWrapper implements X509HostnameVerifier
+   {
+      protected HostnameVerifier verifier;
+
+      VerifierWrapper(HostnameVerifier verifier)
+      {
+         this.verifier = verifier;
+      }
+
+      @Override
+      public void verify(String host, SSLSocket ssl) throws IOException
+      {
+         if (!verifier.verify(host, ssl.getSession())) throw new SSLException("Hostname verification failure");
+      }
+
+      @Override
+      public void verify(String host, X509Certificate cert) throws SSLException
+      {
+         throw new SSLException("This verification path not implemented");
+      }
+
+      @Override
+      public void verify(String host, String[] cns, String[] subjectAlts) throws SSLException
+      {
+         throw new SSLException("This verification path not implemented");
+      }
+
+      @Override
+      public boolean verify(String s, SSLSession sslSession)
+      {
+         return verifier.verify(s, sslSession);
+      }
+   }
+
    protected ClientHttpEngine initDefaultEngine()
    {
       DefaultHttpClient httpClient = null;
 
       X509HostnameVerifier verifier = null;
-      switch (policy)
+      if (this.verifier != null) verifier = new VerifierWrapper(this.verifier);
+      else
       {
-         case ANY:
-            verifier = new AllowAllHostnameVerifier();
-            break;
-         case WILDCARD:
-            verifier = new BrowserCompatHostnameVerifier();
-            break;
-         case STRICT:
-            verifier = new StrictHostnameVerifier();
-            break;
+         switch (policy)
+         {
+            case ANY:
+               verifier = new AllowAllHostnameVerifier();
+               break;
+            case WILDCARD:
+               verifier = new BrowserCompatHostnameVerifier();
+               break;
+            case STRICT:
+               verifier = new StrictHostnameVerifier();
+               break;
+         }
       }
       try
       {
          SSLSocketFactory sslsf = null;
+         SSLContext theContext = sslContext;
          if (disableTrustManager)
          {
-            SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, new TrustManager[]{new PassthroughTrustManager()},
+            theContext = SSLContext.getInstance("SSL");
+            theContext.init(null, new TrustManager[]{new PassthroughTrustManager()},
                     new SecureRandom());
-
-            sslsf = new SSLSocketFactory(sslContext);
-            sslsf.setHostnameVerifier(new AllowAllHostnameVerifier());
+            verifier =  new AllowAllHostnameVerifier();
+            sslsf = new SSLSocketFactory(theContext, verifier);
          }
-         else if (sslContext != null)
+         else if (theContext != null)
          {
-            sslsf = new SSLSocketFactory(sslContext);
-            sslsf.setHostnameVerifier(verifier);
-        }
+            sslsf = new SSLSocketFactory(theContext, verifier);
+         }
          else if (clientKeyStore != null || truststore != null)
          {
             sslsf = new SSLSocketFactory(clientKeyStore, clientPrivateKeyPassword, truststore);
@@ -288,7 +330,11 @@ public class ResteasyClientBuilder extends ClientBuilder
             cm = new SingleClientConnManager(registry);
          }
          httpClient = new DefaultHttpClient(cm, new BasicHttpParams());
-         return new ApacheHttpClient4Engine(httpClient, true);
+         ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient, true);
+         engine.setHostnameVerifier(verifier);
+         // this may be null.  We can't really support this with Apache Client.
+         engine.setSslContext(theContext);
+         return engine;
       }
       catch (Exception e)
       {
@@ -297,9 +343,10 @@ public class ResteasyClientBuilder extends ClientBuilder
    }
 
    @Override
-   public ClientBuilder hostnameVerifier(HostnameVerifier verifier)
+   public ResteasyClientBuilder hostnameVerifier(HostnameVerifier verifier)
    {
-      throw new NotImplementedYetException();
+      this.verifier = verifier;
+      return this;
    }
 
    @Override
@@ -309,63 +356,63 @@ public class ResteasyClientBuilder extends ClientBuilder
    }
 
    @Override
-   public ClientBuilder register(Class<?> componentClass)
+   public ResteasyClientBuilder register(Class<?> componentClass)
    {
       getProviderFactory().register(componentClass);
       return this;
    }
 
    @Override
-   public ClientBuilder register(Class<?> componentClass, int priority)
+   public ResteasyClientBuilder register(Class<?> componentClass, int priority)
    {
       getProviderFactory().register(componentClass, priority);
       return this;
    }
 
    @Override
-   public ClientBuilder register(Class<?> componentClass, Class<?>... contracts)
+   public ResteasyClientBuilder register(Class<?> componentClass, Class<?>... contracts)
    {
       getProviderFactory().register(componentClass, contracts);
       return this;
    }
 
    @Override
-   public ClientBuilder register(Class<?> componentClass, Map<Class<?>, Integer> contracts)
+   public ResteasyClientBuilder register(Class<?> componentClass, Map<Class<?>, Integer> contracts)
    {
       getProviderFactory().register(componentClass, contracts);
       return this;
    }
 
    @Override
-   public ClientBuilder register(Object component)
+   public ResteasyClientBuilder register(Object component)
    {
       getProviderFactory().register(component);
       return this;
    }
 
    @Override
-   public ClientBuilder register(Object component, int priority)
+   public ResteasyClientBuilder register(Object component, int priority)
    {
       getProviderFactory().register(component, priority);
       return this;
    }
 
    @Override
-   public ClientBuilder register(Object component, Class<?>... contracts)
+   public ResteasyClientBuilder register(Object component, Class<?>... contracts)
    {
       getProviderFactory().register(component, contracts);
       return this;
    }
 
    @Override
-   public ClientBuilder register(Object component, Map<Class<?>, Integer> contracts)
+   public ResteasyClientBuilder register(Object component, Map<Class<?>, Integer> contracts)
    {
       getProviderFactory().register(component, contracts);
       return this;
    }
 
    @Override
-   public ClientBuilder replaceWith(Configuration config)
+   public ResteasyClientBuilder replaceWith(Configuration config)
    {
       getProviderFactory().replaceWith(config);
       return this;

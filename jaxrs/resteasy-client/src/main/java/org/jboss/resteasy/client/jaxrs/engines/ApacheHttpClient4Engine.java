@@ -19,6 +19,8 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.ByteArrayOutputStream;
@@ -37,6 +39,8 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
    protected boolean createdHttpClient;
    protected HttpContext httpContext;
    protected boolean closed;
+   protected SSLContext sslContext;
+   protected HostnameVerifier hostnameVerifier;
 
 
    public ApacheHttpClient4Engine()
@@ -76,6 +80,28 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
    public void setHttpContext(HttpContext httpContext)
    {
       this.httpContext = httpContext;
+   }
+
+   @Override
+   public SSLContext getSslContext()
+   {
+      return sslContext;
+   }
+
+   public void setSslContext(SSLContext sslContext)
+   {
+      this.sslContext = sslContext;
+   }
+
+   @Override
+   public HostnameVerifier getHostnameVerifier()
+   {
+      return hostnameVerifier;
+   }
+
+   public void setHostnameVerifier(HostnameVerifier hostnameVerifier)
+   {
+      this.hostnameVerifier = hostnameVerifier;
    }
 
    public static CaseInsensitiveMap<String> extractHeaders(
