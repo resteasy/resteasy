@@ -340,20 +340,9 @@ public class ResteasyUriInfo implements UriInfo
    }
 
    @Override
-   public URI resolve(URI baseUri, URI uri)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
    public URI relativize(URI uri)
    {
       return baseURI.relativize(uri);
    }
 
-   @Override
-   public URI relativize(URI from, URI uri)
-   {
-      throw new NotImplementedYetException();
-   }
 }

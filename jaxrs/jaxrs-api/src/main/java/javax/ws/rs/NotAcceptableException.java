@@ -64,12 +64,35 @@ public class NotAcceptableException extends ClientErrorException {
     /**
      * Construct a new "request not acceptable" exception.
      *
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
+     */
+    public NotAcceptableException(String message) {
+        super(message, Response.Status.NOT_ACCEPTABLE);
+    }
+
+    /**
+     * Construct a new "request not acceptable" exception.
+     *
      * @param response error response.
      * @throws IllegalArgumentException in case the status code set in the response
      *                                  is not HTTP {@code 406}.
      */
     public NotAcceptableException(Response response) {
         super(validate(response, Response.Status.NOT_ACCEPTABLE));
+    }
+
+    /**
+     * Construct a new "request not acceptable" exception.
+     *
+     * @param message  the detail message (which is saved for later retrieval
+     *                 by the {@link #getMessage()} method).
+     * @param response error response.
+     * @throws IllegalArgumentException in case the status code set in the response
+     *                                  is not HTTP {@code 406}.
+     */
+    public NotAcceptableException(String message, Response response) {
+        super(message, validate(response, Response.Status.NOT_ACCEPTABLE));
     }
 
     /**
@@ -84,6 +107,17 @@ public class NotAcceptableException extends ClientErrorException {
     /**
      * Construct a new "request not acceptable" exception.
      *
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
+     * @param cause   the underlying cause of the exception.
+     */
+    public NotAcceptableException(String message, Throwable cause) {
+        super(message, Response.Status.NOT_ACCEPTABLE, cause);
+    }
+
+    /**
+     * Construct a new "request not acceptable" exception.
+     *
      * @param response error response.
      * @param cause    the underlying cause of the exception.
      * @throws IllegalArgumentException in case the status code set in the response
@@ -91,5 +125,19 @@ public class NotAcceptableException extends ClientErrorException {
      */
     public NotAcceptableException(Response response, Throwable cause) {
         super(validate(response, Response.Status.NOT_ACCEPTABLE), cause);
+    }
+
+    /**
+     * Construct a new "request not acceptable" exception.
+     *
+     * @param message  the detail message (which is saved for later retrieval
+     *                 by the {@link #getMessage()} method).
+     * @param response error response.
+     * @param cause    the underlying cause of the exception.
+     * @throws IllegalArgumentException in case the status code set in the response
+     *                                  is not HTTP {@code 406}.
+     */
+    public NotAcceptableException(String message, Response response, Throwable cause) {
+        super(message, validate(response, Response.Status.NOT_ACCEPTABLE), cause);
     }
 }

@@ -292,6 +292,12 @@ public interface WebTarget extends Configurable<WebTarget> {
     /**
      * Start building a request to the targeted web resource and define the accepted
      * response media types.
+     * <p>
+     * Invoking this method is identical to:
+     * </p>
+     * <pre>
+     * webTarget.request().accept(types);
+     * </pre>
      *
      * @param acceptedResponseTypes accepted response media types.
      * @return builder for a request targeted at the URI referenced by this target instance.
@@ -301,6 +307,12 @@ public interface WebTarget extends Configurable<WebTarget> {
     /**
      * Start building a request to the targeted web resource and define the accepted
      * response media types.
+     * <p>
+     * Invoking this method is identical to:
+     * </p>
+     * <pre>
+     * webTarget.request().accept(types);
+     * </pre>
      *
      * @param acceptedResponseTypes accepted response media types.
      * @return builder for a request targeted at the URI referenced by this target instance.

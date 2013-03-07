@@ -63,12 +63,35 @@ public class InternalServerErrorException extends ServerErrorException {
     /**
      * Construct a new internal server error exception.
      *
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
+     */
+    public InternalServerErrorException(String message) {
+        super(message, Response.Status.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Construct a new internal server error exception.
+     *
      * @param response internal server error response.
      * @throws IllegalArgumentException in case the status code set in the response
      *                                  is not HTTP {@code 500}.
      */
     public InternalServerErrorException(Response response) {
         super(validate(response, Response.Status.INTERNAL_SERVER_ERROR));
+    }
+
+    /**
+     * Construct a new internal server error exception.
+     *
+     * @param message  the detail message (which is saved for later retrieval
+     *                 by the {@link #getMessage()} method).
+     * @param response internal server error response.
+     * @throws IllegalArgumentException in case the status code set in the response
+     *                                  is not HTTP {@code 500}.
+     */
+    public InternalServerErrorException(String message, Response response) {
+        super(message, validate(response, Response.Status.INTERNAL_SERVER_ERROR));
     }
 
     /**
@@ -83,6 +106,17 @@ public class InternalServerErrorException extends ServerErrorException {
     /**
      * Construct a new internal server error exception.
      *
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
+     * @param cause   the underlying cause of the exception.
+     */
+    public InternalServerErrorException(String message, Throwable cause) {
+        super(message, Response.Status.INTERNAL_SERVER_ERROR, cause);
+    }
+
+    /**
+     * Construct a new internal server error exception.
+     *
      * @param response internal server error response.
      * @param cause    the underlying cause of the exception.
      * @throws IllegalArgumentException in case the status code set in the response
@@ -90,5 +124,19 @@ public class InternalServerErrorException extends ServerErrorException {
      */
     public InternalServerErrorException(Response response, Throwable cause) {
         super(validate(response, Response.Status.INTERNAL_SERVER_ERROR), cause);
+    }
+
+    /**
+     * Construct a new internal server error exception.
+     *
+     * @param message  the detail message (which is saved for later retrieval
+     *                 by the {@link #getMessage()} method).
+     * @param response internal server error response.
+     * @param cause    the underlying cause of the exception.
+     * @throws IllegalArgumentException in case the status code set in the response
+     *                                  is not HTTP {@code 500}.
+     */
+    public InternalServerErrorException(String message, Response response, Throwable cause) {
+        super(message, validate(response, Response.Status.INTERNAL_SERVER_ERROR), cause);
     }
 }

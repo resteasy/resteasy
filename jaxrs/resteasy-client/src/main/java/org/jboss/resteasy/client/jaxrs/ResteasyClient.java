@@ -6,6 +6,7 @@ import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation;
@@ -87,6 +88,12 @@ public class ResteasyClient implements Client
 
    @Override
    public SSLContext getSslContext()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public HostnameVerifier getHostnameVerifier()
    {
       throw new NotImplementedYetException();
    }

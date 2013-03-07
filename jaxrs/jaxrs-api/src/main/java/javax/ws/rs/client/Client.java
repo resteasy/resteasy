@@ -45,6 +45,7 @@ import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.UriBuilder;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
 /**
@@ -130,4 +131,12 @@ public interface Client extends Configurable<Client> {
      * @return SSL context configured to be used with the current client run-time.
      */
     public SSLContext getSslContext();
+
+    /**
+     * Get the hostname verifier configured in the client or {@code null} in case
+     * no hostname verifier has been configured.
+     *
+     * @return client hostname verifier or {@code null} if not set.
+     */
+    public HostnameVerifier getHostnameVerifier();
 }

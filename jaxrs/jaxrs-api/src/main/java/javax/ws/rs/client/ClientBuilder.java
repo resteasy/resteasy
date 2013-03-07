@@ -67,7 +67,7 @@ public abstract class ClientBuilder implements Configurable<ClientBuilder> {
      * Default client builder implementation class name.
      */
     private static final String JAXRS_DEFAULT_CLIENT_BUILDER =
-            "org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder";
+            "org.glassfish.jersey.client.JerseyClientBuilder";
 
     /**
      * Allows custom implementations to extend the {@code ClientBuilder} class.
@@ -131,48 +131,66 @@ public abstract class ClientBuilder implements Configurable<ClientBuilder> {
      * to server endpoints from {@link WebTarget web targets} created by the client
      * instance that is using this SSL context. The SSL context is expected to have all the
      * security infrastructure initialized, including the key and trust managers.
+     * <p>
+     * Setting a SSL context instance resets any {@link #keyStore(java.security.KeyStore, char[])
+     * key store} or {@link #trustStore(java.security.KeyStore) trust store} values previously
+     * specified.
+     * </p>
      *
      * @param sslContext secure socket protocol implementation which acts as a factory
      *                   for secure socket factories or {@link javax.net.ssl.SSLEngine
-     *                   SSL engines}.
+     *                   SSL engines}. Must not be {@code null}.
      * @return an updated client builder instance.
-     * @throws IllegalStateException in case either a {@link #keyStore(java.security.KeyStore, char[]) key store}
-     *                               or {@link #trustStore(java.security.KeyStore) trust store} has been previously
-     *                               set.
+     * @throws NullPointerException in case the {@code sslContext} parameter is {@code null}.
+     * @see #keyStore(java.security.KeyStore, char[])
+     * @see #keyStore(java.security.KeyStore, String)
+     * @see #trustStore
      */
     public abstract ClientBuilder sslContext(final SSLContext sslContext);
 
     /**
      * Set the client-side key store. Key store contains client's private keys, and the certificates with their
      * corresponding public keys.
-     *
-     * A custom key store is only required if you want to enable a custom setup of a 2-way SSL connections
+     * <p>
+     * Setting a key store instance resets any {@link #sslContext(javax.net.ssl.SSLContext) SSL context instance}
+     * value previously specified.
+     * </p>
+     * <p>
+     * Note that a custom key store is only required if you want to enable a custom setup of a 2-way SSL connections
      * (client certificate authentication).
+     * </p>
      *
-     * @param keyStore client-side key store.
-     * @param password client key password.
+     * @param keyStore client-side key store. Must not be {@code null}.
+     * @param password client key password. Must not be {@code null}.
      * @return an updated client builder instance.
-     * @throws IllegalStateException in case the {@link #sslContext(javax.net.ssl.SSLContext) SSL context}
-     *                               has been previously set.
+     * @throws NullPointerException in case any of the supplied parameters is {@code null}.
+     * @see #sslContext
+     * @see #keyStore(java.security.KeyStore, String)
+     * @see #trustStore
      */
     public abstract ClientBuilder keyStore(final KeyStore keyStore, final char[] password);
 
     /**
      * Set the client-side key store. Key store contains client's private keys, and the certificates with their
      * corresponding public keys.
-     *
-     * A custom key store is only required if you want to enable a custom setup of a 2-way SSL connections
-     * (client certificate authentication).
+     * <p>
+     * Setting a key store instance resets any {@link #sslContext(javax.net.ssl.SSLContext) SSL context instance}
+     * value previously specified.
+     * </p>
      * <p>
      * Note that for improved security of working with password data and avoid storing passwords in Java string
      * objects, the {@link #keyStore(java.security.KeyStore, char[])} version of the method can be utilized.
+     * Also note that a custom key store is only required if you want to enable a custom setup of a 2-way SSL
+     * connections (client certificate authentication).
      * </p>
      *
-     * @param keyStore client-side key store.
-     * @param password client key password.
+     * @param keyStore client-side key store. Must not be {@code null}.
+     * @param password client key password. Must not be {@code null}.
      * @return an updated client builder instance.
-     * @throws IllegalStateException in case the {@link #sslContext(javax.net.ssl.SSLContext) SSL context}
-     *                               has been previously set.
+     * @throws NullPointerException in case any of the supplied parameters is {@code null}.
+     * @see #sslContext
+     * @see #keyStore(java.security.KeyStore, char[])
+     * @see #trustStore
      */
     public ClientBuilder keyStore(final KeyStore keyStore, final String password) {
         return keyStore(keyStore, password.toCharArray());
@@ -183,14 +201,20 @@ public abstract class ClientBuilder implements Configurable<ClientBuilder> {
      * the client is you expect to communicate with, or from Certificate Authorities that are trusted to
      * identify other parties.
      * <p>
+     * Setting a trust store instance resets any {@link #sslContext(javax.net.ssl.SSLContext) SSL context instance}
+     * value previously specified.
+     * </p>
+     * <p>
      * In case a custom trust store or custom SSL context is not specified, the trust management will be
      * configured to use the default Java runtime settings.
      * </p>
      *
-     * @param trustStore client-side trust store.
+     * @param trustStore client-side trust store. Must not be {@code null}.
      * @return an updated client builder instance.
-     * @throws IllegalStateException in case the {@link #sslContext(javax.net.ssl.SSLContext) SSL context}
-     *                               has been previously set.
+     * @throws NullPointerException in case the supplied trust store parameter is {@code null}.
+     * @see #sslContext
+     * @see #keyStore(java.security.KeyStore, char[])
+     * @see #keyStore(java.security.KeyStore, String)
      */
     public abstract ClientBuilder trustStore(final KeyStore trustStore);
 

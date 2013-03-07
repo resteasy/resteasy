@@ -55,6 +55,10 @@ public interface InvocationCallback<RESPONSE> {
      * Called when the invocation was successfully completed. Note that this does
      * not necessarily mean the response has bean fully read, which depends on the
      * parameterized invocation callback response type.
+     * <p>
+     * Once this invocation callback method returns, the underlying {@link javax.ws.rs.core.Response}
+     * instance will be automatically closed by the runtime.
+     * </p>
      *
      * @param response response data.
      */
@@ -76,6 +80,10 @@ public interface InvocationCallback<RESPONSE> {
      * has been cancelled.
      * An {@link InterruptedException} would indicate that the thread executing the invocation has
      * been interrupted.
+     * </p>
+     * <p>
+     * Once this invocation callback method returns, the underlying {@link javax.ws.rs.core.Response}
+     * instance will be automatically closed by the runtime.
      * </p>
      *
      * @param throwable contains failure details.

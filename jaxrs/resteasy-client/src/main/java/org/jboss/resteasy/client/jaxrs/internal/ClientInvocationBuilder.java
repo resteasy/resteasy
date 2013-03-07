@@ -23,6 +23,7 @@ import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.lang.annotation.Annotation;
@@ -51,6 +52,20 @@ public class ClientInvocationBuilder implements Invocation.Builder
    public ClientRequestHeaders getHeaders()
    {
       return invocation.headers;
+   }
+
+   @Override
+   public Invocation.Builder accept(String... mediaTypes)
+   {
+      getHeaders().accept(mediaTypes);
+      return this;
+   }
+
+   @Override
+   public Invocation.Builder accept(MediaType... mediaTypes)
+   {
+      getHeaders().accept(mediaTypes);
+      return this;
    }
 
    @Override

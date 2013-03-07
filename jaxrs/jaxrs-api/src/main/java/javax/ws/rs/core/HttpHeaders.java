@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -199,9 +199,17 @@ public interface HttpHeaders {
      */
     public static final String CACHE_CONTROL = "Cache-Control";
     /**
+     * See {@link <a href="http://tools.ietf.org/html/rfc2183">IETF RFC-2183</a>}.
+     */
+    public static final String CONTENT_DISPOSITION = "Content-Disposition";
+    /**
      * See {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.11">HTTP/1.1 documentation</a>}.
      */
     public static final String CONTENT_ENCODING = "Content-Encoding";
+    /**
+     * See {@link <a href="http://tools.ietf.org/html/rfc2392">IETF RFC-2392</a>}.
+     */
+    public static final String CONTENT_ID = "Content-ID";
     /**
      * See {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.12">HTTP/1.1 documentation</a>}.
      */

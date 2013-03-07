@@ -61,7 +61,22 @@ public class ClientErrorException extends WebApplicationException {
      *                                  family.
      */
     public ClientErrorException(Response.Status status) {
-        super(null, validate(Response.status(status).build(), Response.Status.Family.CLIENT_ERROR));
+        super((Throwable) null, validate(Response.status(status).build(), Response.Status.Family.CLIENT_ERROR));
+    }
+
+
+    /**
+     * Construct a new client error exception.
+     *
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
+     * @param status  client error status. Must be a {@code 4xx} status code.
+     * @throws IllegalArgumentException in case the status code is {@code null} or is not from
+     *                                  {@link javax.ws.rs.core.Response.Status.Family#CLIENT_ERROR} status code
+     *                                  family.
+     */
+    public ClientErrorException(String message, Response.Status status) {
+        super(message, null, validate(Response.status(status).build(), Response.Status.Family.CLIENT_ERROR));
     }
 
     /**
@@ -73,7 +88,21 @@ public class ClientErrorException extends WebApplicationException {
      *                                  status code family.
      */
     public ClientErrorException(int status) {
-        super(null, validate(Response.status(status).build(), Response.Status.Family.CLIENT_ERROR));
+        super((Throwable) null, validate(Response.status(status).build(), Response.Status.Family.CLIENT_ERROR));
+    }
+
+    /**
+     * Construct a new client error exception.
+     *
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
+     * @param status  client error status. Must be a {@code 4xx} status code.
+     * @throws IllegalArgumentException in case the status code is not a valid HTTP status code or
+     *                                  if it is not from the {@link javax.ws.rs.core.Response.Status.Family#CLIENT_ERROR}
+     *                                  status code family.
+     */
+    public ClientErrorException(String message, int status) {
+        super(message, null, validate(Response.status(status).build(), Response.Status.Family.CLIENT_ERROR));
     }
 
     /**
@@ -85,7 +114,21 @@ public class ClientErrorException extends WebApplicationException {
      *                                  {@link javax.ws.rs.core.Response.Status.Family#CLIENT_ERROR} status code family.
      */
     public ClientErrorException(Response response) {
-        super(null, validate(response, Response.Status.Family.CLIENT_ERROR));
+        super((Throwable) null, validate(response, Response.Status.Family.CLIENT_ERROR));
+    }
+
+    /**
+     * Construct a new client error exception.
+     *
+     * @param message  the detail message (which is saved for later retrieval
+     *                 by the {@link #getMessage()} method).
+     * @param response client error response. Must have a status code set to a {@code 4xx}
+     *                 status code.
+     * @throws IllegalArgumentException in case the response status code is not from the
+     *                                  {@link javax.ws.rs.core.Response.Status.Family#CLIENT_ERROR} status code family.
+     */
+    public ClientErrorException(String message, Response response) {
+        super(message, null, validate(response, Response.Status.Family.CLIENT_ERROR));
     }
 
     /**
@@ -104,6 +147,21 @@ public class ClientErrorException extends WebApplicationException {
     /**
      * Construct a new client error exception.
      *
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
+     * @param status  client error status. Must be a {@code 4xx} status code.
+     * @param cause   the underlying cause of the exception.
+     * @throws IllegalArgumentException in case the status code is {@code null} or is not from
+     *                                  {@link javax.ws.rs.core.Response.Status.Family#CLIENT_ERROR} status code
+     *                                  family.
+     */
+    public ClientErrorException(String message, Response.Status status, Throwable cause) {
+        super(message, cause, validate(Response.status(status).build(), Response.Status.Family.CLIENT_ERROR));
+    }
+
+    /**
+     * Construct a new client error exception.
+     *
      * @param status client error status. Must be a {@code 4xx} status code.
      * @param cause  the underlying cause of the exception.
      * @throws IllegalArgumentException in case the status code is not a valid HTTP status code or
@@ -117,6 +175,21 @@ public class ClientErrorException extends WebApplicationException {
     /**
      * Construct a new client error exception.
      *
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
+     * @param status  client error status. Must be a {@code 4xx} status code.
+     * @param cause   the underlying cause of the exception.
+     * @throws IllegalArgumentException in case the status code is not a valid HTTP status code or
+     *                                  if it is not from the {@link javax.ws.rs.core.Response.Status.Family#CLIENT_ERROR}
+     *                                  status code family.
+     */
+    public ClientErrorException(String message, int status, Throwable cause) {
+        super(message, cause, validate(Response.status(status).build(), Response.Status.Family.CLIENT_ERROR));
+    }
+
+    /**
+     * Construct a new client error exception.
+     *
      * @param response client error response. Must have a status code set to a {@code 4xx}
      *                 status code.
      * @param cause    the underlying cause of the exception.
@@ -125,5 +198,20 @@ public class ClientErrorException extends WebApplicationException {
      */
     public ClientErrorException(Response response, Throwable cause) {
         super(cause, validate(response, Response.Status.Family.CLIENT_ERROR));
+    }
+
+    /**
+     * Construct a new client error exception.
+     *
+     * @param message  the detail message (which is saved for later retrieval
+     *                 by the {@link #getMessage()} method).
+     * @param response client error response. Must have a status code set to a {@code 4xx}
+     *                 status code.
+     * @param cause    the underlying cause of the exception.
+     * @throws IllegalArgumentException in case the response status code is not from the
+     *                                  {@link javax.ws.rs.core.Response.Status.Family#CLIENT_ERROR} status code family.
+     */
+    public ClientErrorException(String message, Response response, Throwable cause) {
+        super(message, cause, validate(response, Response.Status.Family.CLIENT_ERROR));
     }
 }
