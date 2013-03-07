@@ -92,7 +92,8 @@ public interface ContainerResponseContext {
     public Response.StatusType getStatusInfo();
 
     /**
-     * Set the complete status information associated with the response.
+     * Set the complete status information (status code and reason phrase) associated
+     * with the response.
      *
      * @param statusInfo the response status information.
      */
@@ -283,15 +284,32 @@ public interface ContainerResponseContext {
     public Type getEntityType();
 
     /**
-     * Set a new response message entity.
-     *
+     * Set a new message entity. The existing entity {@link #getEntityAnnotations() annotations}
+     * and {@link #getMediaType() media type} are preserved.
+     * <p>
      * It is the callers responsibility to wrap the actual entity with
      * {@link javax.ws.rs.core.GenericEntity} if preservation of its generic
      * type is required.
+     * </p>
+     *
+     * @param entity entity object.
+     * @see #setEntity(Object, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType)
+     * @see MessageBodyWriter
+     */
+    public void setEntity(final Object entity);
+
+    /**
+     * Set a new message entity, including the attached annotations and the media type.
+     * <p>
+     * It is the callers responsibility to wrap the actual entity with
+     * {@link javax.ws.rs.core.GenericEntity} if preservation of its generic
+     * type is required.
+     * </p>
      *
      * @param entity      entity object.
      * @param annotations annotations attached to the entity instance.
      * @param mediaType   entity media type.
+     * @see #setEntity(Object)
      * @see MessageBodyWriter
      */
     public void setEntity(

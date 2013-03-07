@@ -76,8 +76,8 @@ public class NotAuthorizedException extends ClientErrorException {
     /**
      * Construct a new "not authorized" exception.
      *
-     * @param challenge authorization challenge applicable to the resource requested
-     *                  by the client.
+     * @param challenge      authorization challenge applicable to the resource requested
+     *                       by the client.
      * @param moreChallenges additional authorization challenge applicable to the
      *                       requested resource.
      * @throws NullPointerException in case the {@code challenge} parameter is {@code null}.
@@ -90,12 +90,41 @@ public class NotAuthorizedException extends ClientErrorException {
     /**
      * Construct a new "not authorized" exception.
      *
+     * @param message        the detail message (which is saved for later retrieval
+     *                       by the {@link #getMessage()} method).
+     * @param challenge      authorization challenge applicable to the resource requested
+     *                       by the client.
+     * @param moreChallenges additional authorization challenge applicable to the
+     *                       requested resource.
+     * @throws NullPointerException in case the {@code challenge} parameter is {@code null}.
+     */
+    public NotAuthorizedException(String message, Object challenge, Object... moreChallenges) {
+        super(message, createUnauthorizedResponse(challenge, moreChallenges));
+        this.challenges = cacheChallenges(challenge, moreChallenges);
+    }
+
+    /**
+     * Construct a new "not authorized" exception.
+     *
      * @param response error response.
      * @throws IllegalArgumentException in case the status code set in the response
      *                                  is not HTTP {@code 401}.
      */
     public NotAuthorizedException(Response response) {
         super(validate(response, UNAUTHORIZED));
+    }
+
+    /**
+     * Construct a new "not authorized" exception.
+     *
+     * @param message  the detail message (which is saved for later retrieval
+     *                 by the {@link #getMessage()} method).
+     * @param response error response.
+     * @throws IllegalArgumentException in case the status code set in the response
+     *                                  is not HTTP {@code 401}.
+     */
+    public NotAuthorizedException(String message, Response response) {
+        super(message, validate(response, UNAUTHORIZED));
     }
 
     /**
@@ -114,6 +143,21 @@ public class NotAuthorizedException extends ClientErrorException {
     /**
      * Construct a new "not authorized" exception.
      *
+     * @param message        the detail message (which is saved for later retrieval
+     *                       by the {@link #getMessage()} method).
+     * @param cause          the underlying cause of the exception.
+     * @param challenge      authorization challenge applicable to the requested resource.
+     * @param moreChallenges additional authorization challenge applicable to the
+     *                       requested resource.
+     */
+    public NotAuthorizedException(String message, Throwable cause, Object challenge, Object... moreChallenges) {
+        super(message, createUnauthorizedResponse(challenge, moreChallenges), cause);
+        this.challenges = cacheChallenges(challenge, moreChallenges);
+    }
+
+    /**
+     * Construct a new "not authorized" exception.
+     *
      * @param response error response.
      * @param cause    the underlying cause of the exception.
      * @throws IllegalArgumentException in case the status code set in the response
@@ -121,6 +165,20 @@ public class NotAuthorizedException extends ClientErrorException {
      */
     public NotAuthorizedException(Response response, Throwable cause) {
         super(validate(response, UNAUTHORIZED), cause);
+    }
+
+    /**
+     * Construct a new "not authorized" exception.
+     *
+     * @param message  the detail message (which is saved for later retrieval
+     *                 by the {@link #getMessage()} method).
+     * @param response error response.
+     * @param cause    the underlying cause of the exception.
+     * @throws IllegalArgumentException in case the status code set in the response
+     *                                  is not HTTP {@code 401}.
+     */
+    public NotAuthorizedException(String message, Response response, Throwable cause) {
+        super(message, validate(response, UNAUTHORIZED), cause);
     }
 
     /**

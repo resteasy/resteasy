@@ -38,7 +38,7 @@ public class ContainerResponseFilterRegistry extends JaxrsInterceptorRegistry<Co
       public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException
       {
          ContainerResponseContextImpl ctx = (ContainerResponseContextImpl)responseContext;
-         BuiltResponse jaxrsResposne = ctx.getJaxrsResposne();
+         BuiltResponse jaxrsResposne = ctx.getJaxrsResponse();
          ServerResponse serverResponse = new ServerResponse(jaxrsResposne);
          try
          {

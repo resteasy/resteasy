@@ -67,6 +67,17 @@ public class ServiceUnavailableException extends ServerErrorException {
     }
 
     /**
+     * Construct a new "service unavailable" exception without any "Retry-After" information
+     * specified for the failed request.
+     *
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
+     */
+    public ServiceUnavailableException(String message) {
+        super(message, Response.status(SERVICE_UNAVAILABLE).build());
+    }
+
+    /**
      * Construct a new "service unavailable" exception with an interval specifying
      * the "Retry-After" information for the failed request.
      *
@@ -80,10 +91,34 @@ public class ServiceUnavailableException extends ServerErrorException {
      * Construct a new "service unavailable" exception with an interval specifying
      * the "Retry-After" information for the failed request.
      *
+     * @param message    the detail message (which is saved for later retrieval
+     *                   by the {@link #getMessage()} method).
+     * @param retryAfter decimal interval in seconds after which the failed request may be retried.
+     */
+    public ServiceUnavailableException(String message, Long retryAfter) {
+        super(message, Response.status(SERVICE_UNAVAILABLE).header(RETRY_AFTER, retryAfter).build());
+    }
+
+    /**
+     * Construct a new "service unavailable" exception with an interval specifying
+     * the "Retry-After" information for the failed request.
+     *
      * @param retryAfter a date/time after which the failed request may be retried.
      */
     public ServiceUnavailableException(Date retryAfter) {
         super(Response.status(SERVICE_UNAVAILABLE).header(RETRY_AFTER, retryAfter).build());
+    }
+
+    /**
+     * Construct a new "service unavailable" exception with an interval specifying
+     * the "Retry-After" information for the failed request.
+     *
+     * @param message    the detail message (which is saved for later retrieval
+     *                   by the {@link #getMessage()} method).
+     * @param retryAfter a date/time after which the failed request may be retried.
+     */
+    public ServiceUnavailableException(String message, Date retryAfter) {
+        super(message, Response.status(SERVICE_UNAVAILABLE).header(RETRY_AFTER, retryAfter).build());
     }
 
     /**
@@ -95,6 +130,19 @@ public class ServiceUnavailableException extends ServerErrorException {
      */
     public ServiceUnavailableException(Response response) {
         super(validate(response, SERVICE_UNAVAILABLE));
+    }
+
+    /**
+     * Construct a new "service unavailable" exception.
+     *
+     * @param message  the detail message (which is saved for later retrieval
+     *                 by the {@link #getMessage()} method).
+     * @param response error response.
+     * @throws IllegalArgumentException in case the status code set in the response
+     *                                  is not HTTP {@code 503}.
+     */
+    public ServiceUnavailableException(String message, Response response) {
+        super(message, validate(response, SERVICE_UNAVAILABLE));
     }
 
     /**
@@ -110,6 +158,20 @@ public class ServiceUnavailableException extends ServerErrorException {
     }
 
     /**
+     * Construct a new "service unavailable" exception with a date specifying
+     * the "Retry-After" information for the failed request and an underlying
+     * request failure cause.
+     *
+     * @param message    the detail message (which is saved for later retrieval
+     *                   by the {@link #getMessage()} method).
+     * @param retryAfter a date/time after which the failed request may be retried.
+     * @param cause      the underlying cause of the exception.
+     */
+    public ServiceUnavailableException(String message, Date retryAfter, Throwable cause) {
+        super(message, Response.status(SERVICE_UNAVAILABLE).header(RETRY_AFTER, retryAfter).build(), cause);
+    }
+
+    /**
      * Construct a new "service unavailable" exception with an interval specifying
      * the "Retry-After" information for the failed request and an underlying
      * request failure cause.
@@ -122,6 +184,20 @@ public class ServiceUnavailableException extends ServerErrorException {
     }
 
     /**
+     * Construct a new "service unavailable" exception with an interval specifying
+     * the "Retry-After" information for the failed request and an underlying
+     * request failure cause.
+     *
+     * @param message    the detail message (which is saved for later retrieval
+     *                   by the {@link #getMessage()} method).
+     * @param retryAfter decimal interval in seconds after which the failed request may be retried.
+     * @param cause      the underlying cause of the exception.
+     */
+    public ServiceUnavailableException(String message, Long retryAfter, Throwable cause) {
+        super(message, Response.status(SERVICE_UNAVAILABLE).header(RETRY_AFTER, retryAfter).build(), cause);
+    }
+
+    /**
      * Construct a new "service unavailable" exception.
      *
      * @param response error response.
@@ -131,6 +207,20 @@ public class ServiceUnavailableException extends ServerErrorException {
      */
     public ServiceUnavailableException(Response response, Throwable cause) {
         super(validate(response, SERVICE_UNAVAILABLE), cause);
+    }
+
+    /**
+     * Construct a new "service unavailable" exception.
+     *
+     * @param message  the detail message (which is saved for later retrieval
+     *                 by the {@link #getMessage()} method).
+     * @param response error response.
+     * @param cause    the underlying cause of the exception.
+     * @throws IllegalArgumentException in case the status code set in the response
+     *                                  is not HTTP {@code 503}.
+     */
+    public ServiceUnavailableException(String message, Response response, Throwable cause) {
+        super(message, validate(response, SERVICE_UNAVAILABLE), cause);
     }
 
     /**

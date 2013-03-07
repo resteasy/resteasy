@@ -62,8 +62,20 @@ public class WebApplicationException extends RuntimeException {
      * Construct a new instance with a blank message and default HTTP status code of 500.
      */
     public WebApplicationException() {
-        this(null, Response.Status.INTERNAL_SERVER_ERROR);
+        this((Throwable) null, Response.Status.INTERNAL_SERVER_ERROR);
     }
+
+    /**
+     * Construct a new instance with a blank message and default HTTP status code of 500.
+     *
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
+     * @since 2.0
+     */
+    public WebApplicationException(String message) {
+        this(message, null, Response.Status.INTERNAL_SERVER_ERROR);
+    }
+
 
     /**
      * Construct a new instance using the supplied response.
@@ -73,7 +85,21 @@ public class WebApplicationException extends RuntimeException {
      *                 code 500).
      */
     public WebApplicationException(final Response response) {
-        this(null, response);
+        this((Throwable) null, response);
+    }
+
+    /**
+     * Construct a new instance using the supplied response.
+     *
+     * @param message  the detail message (which is saved for later retrieval
+     *                 by the {@link #getMessage()} method).
+     * @param response the response that will be returned to the client, a value
+     *                 of null will be replaced with an internal server error response (status
+     *                 code 500).
+     * @since 2.0
+     */
+    public WebApplicationException(final String message, final Response response) {
+        this(message, null, response);
     }
 
     /**
@@ -82,7 +108,19 @@ public class WebApplicationException extends RuntimeException {
      * @param status the HTTP status code that will be returned to the client.
      */
     public WebApplicationException(final int status) {
-        this(null, status);
+        this((Throwable) null, status);
+    }
+
+    /**
+     * Construct a new instance with a blank message and specified HTTP status code.
+     *
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
+     * @param status  the HTTP status code that will be returned to the client.
+     * @since 2.0
+     */
+    public WebApplicationException(final String message, final int status) {
+        this(message, null, status);
     }
 
     /**
@@ -92,7 +130,20 @@ public class WebApplicationException extends RuntimeException {
      * @throws IllegalArgumentException if status is {@code null}.
      */
     public WebApplicationException(final Response.Status status) {
-        this(null, status);
+        this((Throwable) null, status);
+    }
+
+    /**
+     * Construct a new instance with a blank message and specified HTTP status code.
+     *
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
+     * @param status  the HTTP status code that will be returned to the client.
+     * @throws IllegalArgumentException if status is {@code null}.
+     * @since 2.0
+     */
+    public WebApplicationException(final String message, final Response.Status status) {
+        this(message, null, status);
     }
 
     /**
@@ -105,6 +156,18 @@ public class WebApplicationException extends RuntimeException {
     }
 
     /**
+     * Construct a new instance with a blank message and default HTTP status code of 500.
+     *
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
+     * @param cause   the underlying cause of the exception.
+     * @since 2.0
+     */
+    public WebApplicationException(final String message, final Throwable cause) {
+        this(message, cause, Response.Status.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
      * Construct a new instance using the supplied response.
      *
      * @param response the response that will be returned to the client,
@@ -113,7 +176,22 @@ public class WebApplicationException extends RuntimeException {
      * @param cause    the underlying cause of the exception.
      */
     public WebApplicationException(final Throwable cause, final Response response) {
-        super(computeExceptionMessage(response), cause);
+        this(computeExceptionMessage(response), cause, response);
+    }
+
+    /**
+     * Construct a new instance using the supplied response.
+     *
+     * @param message  the detail message (which is saved for later retrieval
+     *                 by the {@link #getMessage()} method).
+     * @param response the response that will be returned to the client,
+     *                 a value of null will be replaced with an internal server error
+     *                 response (status code 500).
+     * @param cause    the underlying cause of the exception.
+     * @since 2.0
+     */
+    public WebApplicationException(final String message, final Throwable cause, final Response response) {
+        super(message, cause);
         if (response == null) {
             this.response = Response.serverError().build();
         } else {
@@ -144,6 +222,19 @@ public class WebApplicationException extends RuntimeException {
     /**
      * Construct a new instance with a blank message and specified HTTP status code.
      *
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
+     * @param status  the HTTP status code that will be returned to the client.
+     * @param cause   the underlying cause of the exception.
+     * @since 2.0
+     */
+    public WebApplicationException(final String message, final Throwable cause, final int status) {
+        this(message, cause, Response.status(status).build());
+    }
+
+    /**
+     * Construct a new instance with a blank message and specified HTTP status code.
+     *
      * @param status the HTTP status code that will be returned to the client.
      * @param cause  the underlying cause of the exception.
      * @throws IllegalArgumentException if status is {@code null}.
@@ -151,6 +242,20 @@ public class WebApplicationException extends RuntimeException {
     public WebApplicationException(final Throwable cause, final Response.Status status)
             throws IllegalArgumentException {
         this(cause, Response.status(status).build());
+    }
+
+    /**
+     * Construct a new instance with a blank message and specified HTTP status code.
+     *
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
+     * @param status  the HTTP status code that will be returned to the client.
+     * @param cause   the underlying cause of the exception.
+     * @since 2.0
+     */
+    public WebApplicationException(final String message, final Throwable cause, final Response.Status status)
+            throws IllegalArgumentException {
+        this(message, cause, Response.status(status).build());
     }
 
     /**

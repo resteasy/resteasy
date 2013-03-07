@@ -48,6 +48,7 @@ import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
@@ -176,6 +177,22 @@ public interface Invocation extends Configurable<Invocation> {
          * @return asynchronous uniform request invocation interface.
          */
         public AsyncInvoker async();
+
+        /**
+         * Add the accepted response media types.
+         *
+         * @param mediaTypes accepted response media types.
+         * @return the updated builder.
+         */
+        public Builder accept(String... mediaTypes);
+
+        /**
+         * Add the accepted response media types.
+         *
+         * @param mediaTypes accepted response media types.
+         * @return the updated builder.
+         */
+        public Builder accept(MediaType... mediaTypes);
 
         /**
          * Add acceptable languages.

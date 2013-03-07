@@ -63,12 +63,35 @@ public class NotFoundException extends ClientErrorException {
     /**
      * Construct a new "not found" exception.
      *
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
+     */
+    public NotFoundException(String message) {
+        super(message, Response.Status.NOT_FOUND);
+    }
+
+    /**
+     * Construct a new "not found" exception.
+     *
      * @param response error response.
      * @throws IllegalArgumentException in case the status code set in the response
      *                                  is not HTTP {@code 404}.
      */
     public NotFoundException(Response response) {
         super(validate(response, Response.Status.NOT_FOUND));
+    }
+
+    /**
+     * Construct a new "not found" exception.
+     *
+     * @param message  the detail message (which is saved for later retrieval
+     *                 by the {@link #getMessage()} method).
+     * @param response error response.
+     * @throws IllegalArgumentException in case the status code set in the response
+     *                                  is not HTTP {@code 404}.
+     */
+    public NotFoundException(String message, Response response) {
+        super(message, validate(response, Response.Status.NOT_FOUND));
     }
 
     /**
@@ -83,6 +106,17 @@ public class NotFoundException extends ClientErrorException {
     /**
      * Construct a new "not found" exception.
      *
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
+     * @param cause   the underlying cause of the exception.
+     */
+    public NotFoundException(String message, Throwable cause) {
+        super(message, Response.Status.NOT_FOUND, cause);
+    }
+
+    /**
+     * Construct a new "not found" exception.
+     *
      * @param response error response.
      * @param cause    the underlying cause of the exception.
      * @throws IllegalArgumentException in case the status code set in the response
@@ -90,5 +124,19 @@ public class NotFoundException extends ClientErrorException {
      */
     public NotFoundException(Response response, Throwable cause) {
         super(validate(response, Response.Status.NOT_FOUND), cause);
+    }
+
+    /**
+     * Construct a new "not found" exception.
+     *
+     * @param message  the detail message (which is saved for later retrieval
+     *                 by the {@link #getMessage()} method).
+     * @param response error response.
+     * @param cause    the underlying cause of the exception.
+     * @throws IllegalArgumentException in case the status code set in the response
+     *                                  is not HTTP {@code 404}.
+     */
+    public NotFoundException(String message, Response response, Throwable cause) {
+        super(message, validate(response, Response.Status.NOT_FOUND), cause);
     }
 }

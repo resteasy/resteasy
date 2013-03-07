@@ -6,6 +6,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -29,18 +30,18 @@ public class ContainerResponseContextImpl implements ContainerResponseContext
 {
    protected final HttpRequest request;
    protected final HttpResponse httpResponse;
-   protected final BuiltResponse jaxrsResposne;
+   protected final BuiltResponse jaxrsResponse;
 
    public ContainerResponseContextImpl(HttpRequest request, HttpResponse httpResponse, BuiltResponse serverResponse)
    {
       this.request = request;
       this.httpResponse = httpResponse;
-      this.jaxrsResposne = serverResponse;
+      this.jaxrsResponse = serverResponse;
    }
 
-   public BuiltResponse getJaxrsResposne()
+   public BuiltResponse getJaxrsResponse()
    {
-      return jaxrsResposne;
+      return jaxrsResponse;
    }
 
    public HttpResponse getHttpResponse()
@@ -75,118 +76,124 @@ public class ContainerResponseContextImpl implements ContainerResponseContext
    @Override
    public Class<?> getEntityClass()
    {
-      if (jaxrsResposne.getEntity() == null) return null;
-      return jaxrsResposne.getEntity().getClass();
+      if (jaxrsResponse.getEntity() == null) return null;
+      return jaxrsResponse.getEntity().getClass();
    }
 
    @Override
    public Type getEntityType()
    {
-      return jaxrsResposne.getGenericType();
+      return jaxrsResponse.getGenericType();
+   }
+
+   @Override
+   public void setEntity(Object entity)
+   {
+      jaxrsResponse.setEntity(entity);
    }
 
    @Override
    public void setEntity(Object entity, Annotation[] annotations, MediaType mediaType)
    {
-      jaxrsResposne.setEntity(entity);
-      jaxrsResposne.setAnnotations(annotations);
-      jaxrsResposne.setAnnotations(annotations);
+      jaxrsResponse.setEntity(entity);
+      jaxrsResponse.setAnnotations(annotations);
+      jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mediaType);
    }
 
    @Override
    public MultivaluedMap<String, Object> getHeaders()
    {
-      return jaxrsResposne.getMetadata();
+      return jaxrsResponse.getMetadata();
    }
 
    @Override
    public Set<String> getAllowedMethods()
    {
-     return jaxrsResposne.getAllowedMethods();
+     return jaxrsResponse.getAllowedMethods();
    }
 
    @Override
    public Date getDate()
    {
-      return jaxrsResposne.getDate();
+      return jaxrsResponse.getDate();
    }
 
    @Override
    public Locale getLanguage()
    {
-      return jaxrsResposne.getLanguage();
+      return jaxrsResponse.getLanguage();
    }
 
    @Override
    public int getLength()
    {
-      return jaxrsResposne.getLength();
+      return jaxrsResponse.getLength();
    }
 
    @Override
    public MediaType getMediaType()
    {
-      return jaxrsResposne.getMediaType();
+      return jaxrsResponse.getMediaType();
    }
 
    @Override
    public Map<String, NewCookie> getCookies()
    {
-      return jaxrsResposne.getCookies();
+      return jaxrsResponse.getCookies();
    }
 
    @Override
    public EntityTag getEntityTag()
    {
-      return jaxrsResposne.getEntityTag();
+      return jaxrsResponse.getEntityTag();
    }
 
    @Override
    public Date getLastModified()
    {
-      return jaxrsResposne.getLastModified();
+      return jaxrsResponse.getLastModified();
    }
 
    @Override
    public URI getLocation()
    {
-      return jaxrsResposne.getLocation();
+      return jaxrsResponse.getLocation();
    }
 
    @Override
    public Set<Link> getLinks()
    {
-      return jaxrsResposne.getLinks();
+      return jaxrsResponse.getLinks();
    }
 
    @Override
    public boolean hasLink(String relation)
    {
-      return jaxrsResposne.hasLink(relation);
+      return jaxrsResponse.hasLink(relation);
    }
 
    @Override
    public Link getLink(String relation)
    {
-      return jaxrsResposne.getLink(relation);
+      return jaxrsResponse.getLink(relation);
    }
 
    @Override
    public Link.Builder getLinkBuilder(String relation)
    {
-      return jaxrsResposne.getLinkBuilder(relation);
+      return jaxrsResponse.getLinkBuilder(relation);
    }
 
    @Override
    public boolean hasEntity()
    {
-      return jaxrsResposne.hasEntity();
+      return jaxrsResponse.hasEntity();
    }
 
    @Override
    public Object getEntity()
    {
-      return jaxrsResposne.getEntity();
+      return jaxrsResponse.getEntity();
    }
 
    @Override
@@ -211,18 +218,18 @@ public class ContainerResponseContextImpl implements ContainerResponseContext
    @Override
    public Annotation[] getEntityAnnotations()
    {
-      return jaxrsResposne.getAnnotations();
+      return jaxrsResponse.getAnnotations();
    }
 
    @Override
    public MultivaluedMap<String, String> getStringHeaders()
    {
-      return jaxrsResposne.getStringHeaders();
+      return jaxrsResponse.getStringHeaders();
    }
 
    @Override
    public String getHeaderString(String name)
    {
-      return jaxrsResposne.getHeaderString(name);
+      return jaxrsResponse.getHeaderString(name);
    }
 }

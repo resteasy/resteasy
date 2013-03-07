@@ -78,7 +78,7 @@ public interface ReaderInterceptorContext extends InterceptorContext {
      * Get the input stream of the object to be read. The JAX-RS runtime is responsible
      * for closing the input stream.
      *
-     * @return input stream of the object to be read
+     * @return input stream of the object to be read.
      */
     public InputStream getInputStream();
 
@@ -87,14 +87,20 @@ public interface ReaderInterceptorContext extends InterceptorContext {
      * it with another input stream. The JAX-RS runtime is responsible for closing
      * the input stream.
      *
-     * @param is new input stream
+     * @param is new input stream.
      */
     public void setInputStream(InputStream is);
 
     /**
      * Get mutable map of HTTP headers.
+     * <p>
+     * Note that while the headers are mutable, a {@link ReaderInterceptor reader interceptor}
+     * should typically roll-back any header modifications once the call to {@link #proceed()
+     * context.proceed()} returns, to avoid externally visible side-effects of the interceptor
+     * invocation.
+     * </p>
      *
-     * @return map of HTTP headers
+     * @return map of HTTP headers.
      */
     public MultivaluedMap<String, String> getHeaders();
 }

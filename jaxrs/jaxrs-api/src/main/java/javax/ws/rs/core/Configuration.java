@@ -55,6 +55,9 @@ import javax.ws.rs.RuntimeType;
  * Configuration information consists of properties, registered JAX-RS component classes
  * and/or instances.
  * </p>
+ * <p>
+ * This interface can be injected using the {@link Context} annotation.
+ * </p>
  *
  * @author Marek Potociar
  * @since 2.0

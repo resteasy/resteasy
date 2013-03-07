@@ -39,6 +39,10 @@
  */
 package javax.ws.rs;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
@@ -56,11 +60,41 @@ public class NotAllowedException extends ClientErrorException {
     /**
      * Construct a new method not allowed exception.
      *
-     * @param allowedMethods allowed request methods.
-     * @throws IllegalArgumentException in case the allowed methods varargs are {@code null}.
+     * @param allowed     allowed request method.
+     * @param moreAllowed more allowed request methods.
+     * @throws NullPointerException in case the allowed method is {@code null}.
      */
-    public NotAllowedException(String... allowedMethods) {
-        super(validateAllow(Response.status(Response.Status.METHOD_NOT_ALLOWED).allow(allowedMethods).build()));
+    public NotAllowedException(String allowed, String... moreAllowed) {
+        super(validateAllow(createNotAllowedResponse(allowed, moreAllowed)));
+    }
+
+    /**
+     * Construct a new method not allowed exception.
+     *
+     * @param message     the detail message (which is saved for later retrieval
+     *                    by the {@link #getMessage()} method).
+     * @param allowed     allowed request method.
+     * @param moreAllowed more allowed request methods.
+     * @throws NullPointerException in case the allowed method is {@code null}.
+     */
+    public NotAllowedException(String message, String allowed, String... moreAllowed) {
+        super(message, validateAllow(createNotAllowedResponse(allowed, moreAllowed)));
+    }
+
+    private static Response createNotAllowedResponse(String allowed, String... moreAllowed) {
+        if (allowed == null) {
+            throw new NullPointerException("No allowed method specified.");
+        }
+        Set<String> methods;
+        if (moreAllowed != null && moreAllowed.length > 0) {
+            methods = new HashSet<String>(moreAllowed.length + 1);
+            methods.add(allowed);
+            Collections.addAll(methods, moreAllowed);
+        } else {
+            methods = Collections.singleton(allowed);
+        }
+
+        return Response.status(Response.Status.METHOD_NOT_ALLOWED).allow(methods).build();
     }
 
     /**
@@ -82,6 +116,25 @@ public class NotAllowedException extends ClientErrorException {
 
     /**
      * Construct a new method not allowed exception.
+     * <p>
+     * Note that this constructor does not validate the presence of HTTP
+     * {@code Allow} header. I.e. it is possible
+     * to use the constructor to create a client-side exception instance
+     * even for an invalid HTTP {@code 405} response content returned from a server.
+     * </p>
+     *
+     * @param message  the detail message (which is saved for later retrieval
+     *                 by the {@link #getMessage()} method).
+     * @param response error response.
+     * @throws IllegalArgumentException in case the status code set in the response
+     *                                  is not HTTP {@code 405}.
+     */
+    public NotAllowedException(String message, Response response) {
+        super(message, validate(response, Response.Status.METHOD_NOT_ALLOWED));
+    }
+
+    /**
+     * Construct a new method not allowed exception.
      *
      * @param cause          the underlying cause of the exception.
      * @param allowedMethods allowed request methods.
@@ -89,6 +142,19 @@ public class NotAllowedException extends ClientErrorException {
      */
     public NotAllowedException(Throwable cause, String... allowedMethods) {
         super(validateAllow(Response.status(Response.Status.METHOD_NOT_ALLOWED).allow(allowedMethods).build()), cause);
+    }
+
+    /**
+     * Construct a new method not allowed exception.
+     *
+     * @param message        the detail message (which is saved for later retrieval
+     *                       by the {@link #getMessage()} method).
+     * @param cause          the underlying cause of the exception.
+     * @param allowedMethods allowed request methods.
+     * @throws IllegalArgumentException in case the allowed methods varargs are {@code null}.
+     */
+    public NotAllowedException(String message, Throwable cause, String... allowedMethods) {
+        super(message, validateAllow(Response.status(Response.Status.METHOD_NOT_ALLOWED).allow(allowedMethods).build()), cause);
     }
 
     /**
@@ -102,6 +168,21 @@ public class NotAllowedException extends ClientErrorException {
      */
     public NotAllowedException(Response response, Throwable cause) {
         super(validateAllow(validate(response, Response.Status.METHOD_NOT_ALLOWED)), cause);
+    }
+
+    /**
+     * Construct a new method not allowed exception.
+     *
+     * @param message  the detail message (which is saved for later retrieval
+     *                 by the {@link #getMessage()} method).
+     * @param response error response.
+     * @param cause    the underlying cause of the exception.
+     * @throws IllegalArgumentException in case the status code set in the response
+     *                                  is not HTTP {@code 405} or does not contain
+     *                                  an HTTP {@code Allow} header.
+     */
+    public NotAllowedException(String message, Response response, Throwable cause) {
+        super(message, validateAllow(validate(response, Response.Status.METHOD_NOT_ALLOWED)), cause);
     }
 
     private static Response validateAllow(final Response response) {
