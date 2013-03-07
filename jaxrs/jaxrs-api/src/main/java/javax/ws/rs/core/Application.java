@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@
 package javax.ws.rs.core;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -66,6 +67,7 @@ public class Application {
 
     /**
      * Get a set of root resource, provider and {@link Feature feature} classes.
+     *
      * The default life-cycle for resource class instances is per-request. The default
      * life-cycle for providers (registered directly or via a feature) is singleton.
      * <p>
@@ -88,6 +90,7 @@ public class Application {
 
     /**
      * Get a set of root resource, provider and {@link Feature feature} instances.
+     *
      * Fields and properties of returned instances are injected with their declared
      * dependencies (see {@link Context}) by the runtime prior to use.
      * <p>
@@ -106,5 +109,30 @@ public class Application {
      */
     public Set<Object> getSingletons() {
         return Collections.emptySet();
+    }
+
+    /**
+     * Get a map of custom application-wide properties.
+     * <p>
+     * The returned properties are reflected in the application {@link Configuration configuration}
+     * passed to the server-side features or injected into server-side JAX-RS components.
+     * </p>
+     * <p>
+     * The set of returned properties may be further extended or customized at deployment time
+     * using container-specific features and deployment descriptors. For example, in a Servlet-based
+     * deployment scenario, web application's {@code <context-param>} and Servlet {@code <init-param>}
+     * values may be used to extend or override values of the properties programmatically returned
+     * by this method.
+     * </p>
+     * <p>
+     * The default implementation returns an empty set.
+     * </p>
+     *
+     * @return a map of custom application-wide properties. Returning {@code null}
+     *         is equivalent to returning an empty set.
+     * @since 2.0
+     */
+    public Map<String, Object> getProperties() {
+        return Collections.emptyMap();
     }
 }

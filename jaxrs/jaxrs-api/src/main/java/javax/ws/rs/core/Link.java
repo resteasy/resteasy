@@ -383,13 +383,13 @@ public abstract class Link {
 
         /**
          * <p>Finish building this link using the supplied values as URI parameters
-         * and relativize the result with respect to the current request URI.
-         * Link relativization is as described in {@link UriInfo#relativize(java.net.URI)}.
+         * and relativize the result with respect to a supplied URI.
+         * Link relativization is described in {@link UriInfo#relativize(java.net.URI)}.
          * If the two links do not share a prefix, the relativization step is skipped
          * and this method is equivalent to calling
          * {@link Link.Builder#build(java.lang.Object[])}.</p>
          *
-         * @param uriInfo supplied instance of UriInfo for relativization.
+         * @param uri URI used for relativization.
          * @param values parameters used to build underlying URI.
          * @return newly built link.
          * @throws IllegalArgumentException if there are any URI template parameters
@@ -398,17 +398,17 @@ public abstract class Link {
          *                             state of the underlying URI builder.
          * @throws IllegalStateException if the request URI is not available in context.
          * @see UriInfo#relativize(java.net.URI)
+         * @see UriInfo#getRequestUri() 
          */
-        public Link buildRelativized(UriInfo uriInfo, Object... values);
+        public Link buildRelativized(URI uri, Object... values);
 
         /**
          * <p>Finish building this link using the supplied values as URI parameters
-         * and resolve the result using the base URI of the application as in
-         * {@link UriInfo#resolve(java.net.URI)}. If the underlying URI is
+         * and resolve the result using a base URI. If the underlying URI is
          * already absolute, the resolution step is omitted and this method is equivalent
          * to calling {@link Link.Builder#build(java.lang.Object[])}.</p>
          *
-         * @param uriInfo supplied instance of UriInfo for resolution.
+         * @param uri base URI used for resolution.
          * @param values parameters used to build underlying URI.
          * @return newly built link.
          * @throws IllegalArgumentException if there are any URI template parameters without
@@ -416,8 +416,9 @@ public abstract class Link {
          * @throws UriBuilderException if a URI cannot be constructed based on the current
          *                             state of the underlying URI builder
          * @see UriInfo#resolve(java.net.URI)
+         * @see UriInfo#getBaseUri() 
          */
-        public Link buildResolved(UriInfo uriInfo, Object... values);
+        public Link buildResolved(URI uri, Object... values);
     }
 
     /**
@@ -448,7 +449,7 @@ public abstract class Link {
         }
 
         /**
-         * Construct an instance from URI and a some parameters.
+         * Construct an instance from a URI and some parameters.
          *
          * @param uri underlying URI.
          * @param params parameters of this link.

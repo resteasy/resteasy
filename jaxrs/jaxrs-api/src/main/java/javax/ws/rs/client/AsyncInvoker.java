@@ -83,7 +83,7 @@ public interface AsyncInvoker {
      * In case a processing of a properly received response fails, the wrapped processing exception
      * will be of {@link ResponseProcessingException} type and will contain the {@link Response}
      * instance whose processing has failed.
-     * §     * </p>
+     * </p>
      *
      * @param <T>          response entity type.
      * @param responseType Java type the response entity will be converted to.

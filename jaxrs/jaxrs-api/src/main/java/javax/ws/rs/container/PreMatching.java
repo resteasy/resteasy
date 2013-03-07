@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -53,6 +53,8 @@ import java.lang.annotation.Target;
  * The JAX-RS runtime will apply the filters marked with the {@code @PreMatching}
  * annotation globally to all resources, before the incoming request has been matched
  * to a particular resource method.
+ * Any {@link javax.ws.rs.NameBinding named binding annotations} will be ignored on
+ * a component annotated with the {@code @PreMatching} annotation.
  * </p>
  *
  * @author Marek Potociar

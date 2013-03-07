@@ -103,6 +103,11 @@ public interface ParamConverter<T> {
 
     /**
      * Convert the supplied value to a String.
+     * <p>
+     * This method is reserved for future use. Proprietary JAX-RS extensions may leverage the method.
+     * Users should be aware that any such support for the method comes at the expense of producing
+     * non-portable code.
+     * </p>
      *
      * @param value the value of type {@code T}.
      * @return a String representation of the value.

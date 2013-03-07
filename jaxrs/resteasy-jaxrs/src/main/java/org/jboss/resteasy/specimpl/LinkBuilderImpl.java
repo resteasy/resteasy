@@ -90,18 +90,15 @@ public class LinkBuilderImpl implements Link.Builder
    }
 
    @Override
-   public Link buildRelativized(UriInfo uriInfo, Object... values)
+   public Link buildRelativized(URI uri, Object... values)
    {
-      URI uri = uriBuilder.build(values);
-      link.uri = uriInfo.relativize(uri);
-      return link;
+      throw new NotImplementedYetException();
    }
 
    @Override
-   public Link buildResolved(UriInfo uriInfo, Object... values)
+   public Link buildResolved(URI uri, Object... values)
    {
-      URI uri = uriBuilder.build(values);
-      link.uri = uriInfo.resolve(uri);
-      return link;
+      throw new NotImplementedYetException();
    }
+
 }

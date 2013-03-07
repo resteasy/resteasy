@@ -76,6 +76,21 @@ public class ClientRequestContextImpl implements ClientRequestContext
    }
 
    @Override
+   public void setEntity(Object entity)
+   {
+      if (entity instanceof Entity)
+      {
+         invocation.setEntity((Entity)entity);
+      }
+      else
+      {
+
+         invocation.setEntityObject(entity);
+      }
+
+   }
+
+   @Override
    public void setEntity(Object entity, Annotation[] annotations, MediaType mediaType)
    {
       if (entity instanceof Entity)

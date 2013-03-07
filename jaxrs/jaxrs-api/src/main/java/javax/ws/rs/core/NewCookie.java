@@ -39,6 +39,8 @@
  */
 package javax.ws.rs.core;
 
+import java.util.Date;
+
 import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
@@ -62,6 +64,7 @@ public class NewCookie extends Cookie {
 
     private final String comment;
     private final int maxAge;
+    private final Date expiry;
     private final boolean secure;
     private final boolean httpOnly;
 
@@ -73,7 +76,7 @@ public class NewCookie extends Cookie {
      * @throws IllegalArgumentException if name is {@code null}.
      */
     public NewCookie(String name, String value) {
-        this(name, value, null, null, DEFAULT_VERSION, null, DEFAULT_MAX_AGE, false, false);
+        this(name, value, null, null, DEFAULT_VERSION, null, DEFAULT_MAX_AGE, null, false, false);
     }
 
     /**
@@ -95,7 +98,7 @@ public class NewCookie extends Cookie {
                      String comment,
                      int maxAge,
                      boolean secure) {
-        this(name, value, path, domain, DEFAULT_VERSION, comment, maxAge, secure, false);
+        this(name, value, path, domain, DEFAULT_VERSION, comment, maxAge, null, secure, false);
     }
 
     /**
@@ -120,7 +123,7 @@ public class NewCookie extends Cookie {
                      int maxAge,
                      boolean secure,
                      boolean httpOnly) {
-        this(name, value, path, domain, DEFAULT_VERSION, comment, maxAge, secure, httpOnly);
+        this(name, value, path, domain, DEFAULT_VERSION, comment, maxAge, null, secure, httpOnly);
     }
 
     /**
@@ -144,7 +147,7 @@ public class NewCookie extends Cookie {
                      String comment,
                      int maxAge,
                      boolean secure) {
-        this(name, value, path, domain, version, comment, maxAge, secure, false);
+        this(name, value, path, domain, version, comment, maxAge, null, secure, false);
     }
 
     /**
@@ -157,6 +160,7 @@ public class NewCookie extends Cookie {
      * @param version  the version of the specification to which the cookie complies
      * @param comment  the comment
      * @param maxAge   the maximum age of the cookie in seconds
+     * @param expiry   the cookie expiry date.
      * @param secure   specifies whether the cookie will only be sent over a secure connection
      * @param httpOnly if {@code true} make the cookie HTTP only, i.e. only visible as part of an HTTP request.
      * @throws IllegalArgumentException if name is {@code null}.
@@ -169,11 +173,13 @@ public class NewCookie extends Cookie {
                      int version,
                      String comment,
                      int maxAge,
+                     Date expiry,
                      boolean secure,
                      boolean httpOnly) {
         super(name, value, path, domain, version);
         this.comment = comment;
         this.maxAge = maxAge;
+        this.expiry = expiry;
         this.secure = secure;
         this.httpOnly = httpOnly;
     }
@@ -185,7 +191,7 @@ public class NewCookie extends Cookie {
      * @throws IllegalArgumentException if cookie is {@code null}.
      */
     public NewCookie(Cookie cookie) {
-        this(cookie, null, DEFAULT_MAX_AGE, false, false);
+        this(cookie, null, DEFAULT_MAX_AGE, null, false, false);
     }
 
     /**
@@ -198,7 +204,7 @@ public class NewCookie extends Cookie {
      * @throws IllegalArgumentException if cookie is {@code null}.
      */
     public NewCookie(Cookie cookie, String comment, int maxAge, boolean secure) {
-        this(cookie, comment, maxAge, secure, false);
+        this(cookie, comment, maxAge, null, secure, false);
     }
 
     /**
@@ -207,12 +213,13 @@ public class NewCookie extends Cookie {
      * @param cookie   the cookie to clone.
      * @param comment  the comment.
      * @param maxAge   the maximum age of the cookie in seconds.
+     * @param expiry   the cookie expiry date.
      * @param secure   specifies whether the cookie will only be sent over a secure connection.
      * @param httpOnly if {@code true} make the cookie HTTP only, i.e. only visible as part of an HTTP request.
      * @throws IllegalArgumentException if cookie is {@code null}.
      * @since 2.0
      */
-    public NewCookie(Cookie cookie, String comment, int maxAge, boolean secure, boolean httpOnly) {
+    public NewCookie(Cookie cookie, String comment, int maxAge, Date expiry, boolean secure, boolean httpOnly) {
         super(cookie == null ? null : cookie.getName(),
                 cookie == null ? null : cookie.getValue(),
                 cookie == null ? null : cookie.getPath(),
@@ -220,6 +227,7 @@ public class NewCookie extends Cookie {
                 cookie == null ? Cookie.DEFAULT_VERSION : cookie.getVersion());
         this.comment = comment;
         this.maxAge = maxAge;
+        this.expiry = expiry;
         this.secure = secure;
         this.httpOnly = httpOnly;
     }
@@ -251,11 +259,35 @@ public class NewCookie extends Cookie {
      * cookie with maximum age of 0 since it will overwrite any existing cookie
      * and then be immediately discarded. The default value of {@code -1} indicates
      * that the cookie will be discarded at the end of the browser/application session.
+     * <p>
+     * Note that it is recommended to use {@code Max-Age} to control cookie
+     * expiration, however some browsers do not understand {@code Max-Age}, in which case
+     * setting {@link #getExpiry()} Expires} parameter may be necessary.
+     * </p>
      *
      * @return the maximum age in seconds.
+     * @see #getExpiry()
      */
     public int getMaxAge() {
         return maxAge;
+    }
+
+    /**
+     * Get the cookie expiry date. Cookies whose expiry date has passed are discarded.
+     * A cookie can be unset by setting a new cookie with an expiry date in the past,
+     * typically the lowest possible date that can be set.
+     * <p>
+     * Note that it is recommended to use {@link #getMaxAge() Max-Age} to control cookie
+     * expiration, however some browsers do not understand {@code Max-Age}, in which case
+     * setting {@code Expires} parameter may be necessary.
+     * </p>
+     *
+     * @return cookie expiry date or {@code null} if no expiry date was set.
+     * @see #getMaxAge()
+     * @since 2.0
+     */
+    public Date getExpiry() {
+        return expiry;
     }
 
     /**
@@ -316,6 +348,7 @@ public class NewCookie extends Cookie {
         int hash = super.hashCode();
         hash = 59 * hash + (this.comment != null ? this.comment.hashCode() : 0);
         hash = 59 * hash + this.maxAge;
+        hash = 59 + hash + (this.expiry != null ? this.expiry.hashCode() : 0);
         hash = 59 * hash + (this.secure ? 1 : 0);
         hash = 59 * hash + (this.httpOnly ? 1 : 0);
         return hash;
@@ -361,6 +394,11 @@ public class NewCookie extends Cookie {
         if (this.maxAge != other.maxAge) {
             return false;
         }
+
+        if (this.expiry != other.expiry && (this.expiry == null || !this.expiry.equals(other.expiry))) {
+            return false;
+        }
+
         if (this.secure != other.secure) {
             return false;
         }
