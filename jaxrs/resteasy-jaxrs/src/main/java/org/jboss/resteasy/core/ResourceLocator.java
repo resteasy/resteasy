@@ -134,7 +134,7 @@ public class ResourceLocator implements ResourceInvoker
          }
          if (Proxy.isProxyClass(target.getClass()))
          {
-            registry.addResourceFactory(null, null, GetRestful.getSubResourceClass(target.getClass()));
+            registry.addResourceFactory(null, null, GetRestful.getSubResourceClasses(target.getClass()));
          }
          else
          {
