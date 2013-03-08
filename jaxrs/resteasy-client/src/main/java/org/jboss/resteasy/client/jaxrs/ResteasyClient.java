@@ -30,26 +30,6 @@ public class ResteasyClient implements Client
    protected ClientConfiguration configuration;
 
 
-   ResteasyClient()
-   {
-      this(ResteasyProviderFactory.getInstance());
-   }
-
-   ResteasyClient(ResteasyProviderFactory factory)
-   {
-      configuration = new ClientConfiguration(factory);
-      httpEngine = new ApacheHttpClient4Engine();
-      asyncInvocationExecutor = Executors.newFixedThreadPool(10);
-   }
-
-   ResteasyClient(ClientHttpEngine httpEngine)
-   {
-      this.httpEngine = httpEngine;
-      configuration = new ClientConfiguration(ResteasyProviderFactory.getInstance());
-      asyncInvocationExecutor = Executors.newFixedThreadPool(10);
-
-   }
-
    ResteasyClient(ClientHttpEngine httpEngine, ExecutorService asyncInvocationExecutor, ClientConfiguration configuration)
    {
       this.httpEngine = httpEngine;
@@ -89,13 +69,13 @@ public class ResteasyClient implements Client
    @Override
    public SSLContext getSslContext()
    {
-      throw new NotImplementedYetException();
+      return httpEngine().getSslContext();
    }
 
    @Override
    public HostnameVerifier getHostnameVerifier()
    {
-      throw new NotImplementedYetException();
+      return httpEngine().getHostnameVerifier();
    }
 
    @Override
