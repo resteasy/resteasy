@@ -54,7 +54,7 @@ public class GetRestful
     * @param clazz
     * @return list of class and interfaces that have jax-rs annotations
     */
-   public static Class<?>[] getSubResourceClass(Class<?> clazz)
+   public static Class<?>[] getSubResourceClasses(Class<?> clazz)
    {
        List<Class<?>> classes = new ArrayList<Class<?>>();
        // check class & superclasses for JAX-RS annotations
