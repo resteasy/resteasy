@@ -78,7 +78,7 @@ public class ServiceRegistry
 					ResourceLocator locator = (ResourceLocator) invoker;
 					Method method = locator.getMethod();
 					Class<?> locatorType = method.getReturnType();
-					Class<?>[] locatorResourceTypes = GetRestful.getSubResourceClass(locatorType);
+					Class<?>[] locatorResourceTypes = GetRestful.getSubResourceClasses(locatorType);
 					for (Class<?> locatorResourceType : locatorResourceTypes)
 					{
 					   if (locatorResourceType == null)
