@@ -543,7 +543,7 @@ public class UriBuilderTest
       maps.put("w", "path-rootless/test2");
 
       String expected_path =
-              "path-rootless/test2/x%25yz//path-absolute/test1/fred@example.com/x%25yz";
+              "path-rootless%2Ftest2/x%25yz/%2Fpath-absolute%2Ftest1/fred@example.com/x%25yz";
 
       try
       {
@@ -588,7 +588,7 @@ public class UriBuilderTest
       maps.put("u", "extra");
 
       String expected_path =
-              "path-rootless/test2/x%25yz//path-absolute/test1/fred@example.com/x%25yz";
+              "path-rootless%2Ftest2/x%25yz/%2Fpath-absolute%2Ftest1/fred@example.com/x%25yz";
 
       try
       {
@@ -702,13 +702,13 @@ public class UriBuilderTest
       maps2.put("v", "xyz");
 
       String expected_path =
-              "path-rootless/test2/x%25yz//path-absolute/test1/fred@example.com/x%25yz";
+              "path-rootless%2Ftest2/x%25yz/%2Fpath-absolute%2Ftest1/fred@example.com/x%25yz";
 
       String expected_path_1 =
-              "path-rootless/test2/x%2520yz//path-absolute/test1/fred@example.com/x%2520yz";
+              "path-rootless%2Ftest2/x%2520yz/%2Fpath-absolute%2Ftest1/fred@example.com/x%2520yz";
 
       String expected_path_2 =
-              "path-rootless/test2/x%25yz//path-absolute/test1/fred@example.com/x%25yz";
+              "path-rootless%2Ftest2/x%25yz/%2Fpath-absolute%2Ftest1/fred@example.com/x%25yz";
 
       try
       {
@@ -924,10 +924,29 @@ public class UriBuilderTest
    @Test
    public void testPathEncoding() throws Exception
    {
-      UriBuilder builder = UriBuilder.fromUri("http://localhost");
+      UriBuilder builder = UriBuilder.fromUri("http://{host}");
       builder.path("{d}");
-      System.out.println(builder.build("A/B"));
-      System.out.println(builder.buildFromEncoded("A/B"));
+
+      URI uri = builder.build("A/B", "C/D");
+      Assert.assertEquals("http://A%2FB/C%2FD", uri.toString());
+
+      uri = builder.buildFromEncoded("A/B", "C/D");
+      Assert.assertEquals("http://A/B/C/D", uri.toString());
+      Object[] params = {"A/B", "C/D"};
+      uri = builder.build(params, false);
+      Assert.assertEquals("http://A/B/C/D", uri.toString());
+
+      HashMap<String, Object> map = new HashMap<String, Object>();
+      map.put("host", "A/B");
+      map.put("d", "C/D");
+
+      uri = builder.buildFromMap(map);
+      Assert.assertEquals("http://A%2FB/C%2FD", uri.toString());
+      uri = builder.buildFromEncodedMap(map);
+      Assert.assertEquals("http://A/B/C/D", uri.toString());
+      uri = builder.buildFromMap(map, false);
+      Assert.assertEquals("http://A/B/C/D", uri.toString());
+
    }
 
 

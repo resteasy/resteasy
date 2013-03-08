@@ -28,6 +28,8 @@ import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.UriHeaderDelegate;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.specimpl.LinkBuilderImpl;
+import org.jboss.resteasy.specimpl.LinkImpl;
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.specimpl.VariantListBuilderImpl;
@@ -1407,10 +1409,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          featureClasses.add(provider);
 
       }
-      else
-      {
-         providerClasses.add(provider);
-      }
+      providerClasses.add(provider);
    }
 
    /**
@@ -1422,7 +1421,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       registerProviderInstance(provider, Integer.MIN_VALUE, null);
    }
-   
+
    public void registerProviderInstance(Object provider, int defaultPriority, Map<Class<?>, Integer> contracts)
    {
       if (isA(provider, ParamConverterProvider.class, contracts))
@@ -1711,10 +1710,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          featureInstances.add(provider);
 
       }
-      else
-      {
-         providerInstances.add(provider);
-      }
+      providerInstances.add(provider);
    }
 
    public <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type)
@@ -1969,7 +1965,19 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    @Override
    public ResteasyProviderFactory replaceWith(Configuration config)
    {
-      throw new NotImplementedYetException();
+      initialize();
+      setProperties(config.getProperties());
+      for (Class clazz : config.getClasses())
+      {
+         Map<Class<?>, Integer> contracts = config.getContracts(clazz);
+         register(clazz, contracts);
+      }
+      for (Object obj : config.getInstances())
+      {
+         Map<Class<?>, Integer> contracts = config.getContracts(obj.getClass());
+         register(obj, contracts);
+      }
+      return this;
    }
 
    @Override
@@ -2029,6 +2037,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    @Override
    public Link.Builder createLinkBuilder()
    {
-      throw new NotImplementedYetException();
+      return new LinkBuilderImpl();
    }
 }
