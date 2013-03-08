@@ -343,6 +343,33 @@ public class Encode
    }
 
    /**
+    * Encode via <a href="http://ietf.org/rfc/rfc3986.txt">RFC 3986</a>.  PCHAR is allowed allong with '/'
+    * <p/>
+    * unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
+    * sub-delims  = "!" / "$" / "&" / "'" / "(" / ")"
+    * / "*" / "+" / "," / ";" / "="
+    * pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
+    */
+   public static String encodePathSegmentAsIs(String segment)
+   {
+      return encodeFromArray(segment, pathSegmentEncoding, true);
+   }
+
+   /**
+    * Keep any valid encodings from string i.e. keep "%2D" but don't keep "%p"
+    *
+    * @param segment
+    * @return
+    */
+   public static String encodePathSegmentSaveEncodings(String segment)
+   {
+      String result = encodeFromArray(segment, pathSegmentEncoding, false);
+      result = encodeNonCodes(result);
+      return result;
+   }
+
+
+   /**
     * Encodes everything of a query parameter name or value.
     *
     * @param nameOrValue

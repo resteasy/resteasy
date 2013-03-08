@@ -362,7 +362,7 @@ public class UriBuilderImpl extends UriBuilder
       if (path != null)
       {
          StringBuffer buffer = new StringBuffer();
-         replacePathParameter(name, value.toString(), isEncoded, path, buffer);
+         replacePathParameter(name, value.toString(), isEncoded, path, buffer, false);
          path = buffer.toString();
       }
       return this;
@@ -371,18 +371,24 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public URI buildFromMap(Map<String, ? extends Object> values) throws IllegalArgumentException, UriBuilderException
    {
-      return buildFromMap(values, false);
+      return buildUriFromMap(values, false, true);
    }
 
    @Override
    public URI buildFromEncodedMap(Map<String, ? extends Object> values) throws IllegalArgumentException, UriBuilderException
    {
-      return buildFromMap(values, true);
+      return buildUriFromMap(values, true, false);
    }
 
-   public URI buildFromMap(Map<String, ? extends Object> paramMap, boolean fromEncodedMap) throws IllegalArgumentException, UriBuilderException
+   @Override
+   public URI buildFromMap(Map<String, ?> values, boolean encodeSlashInPath) throws IllegalArgumentException, UriBuilderException
    {
-      String buf = buildString(paramMap, fromEncodedMap, false);
+      return buildUriFromMap(values, false, encodeSlashInPath);
+   }
+
+   protected URI buildUriFromMap(Map<String, ? extends Object> paramMap, boolean fromEncodedMap, boolean encodeSlash) throws IllegalArgumentException, UriBuilderException
+   {
+      String buf = buildString(paramMap, fromEncodedMap, false, encodeSlash);
       try
       {
          return URI.create(buf);
@@ -393,11 +399,11 @@ public class UriBuilderImpl extends UriBuilder
       }
    }
 
-   private String buildString(Map<String, ? extends Object> paramMap, boolean fromEncodedMap, boolean isTemplate)
+   private String buildString(Map<String, ? extends Object> paramMap, boolean fromEncodedMap, boolean isTemplate, boolean encodeSlash)
    {
       StringBuffer buffer = new StringBuffer();
 
-      if (scheme != null) replaceParameter(paramMap, fromEncodedMap, isTemplate, scheme, buffer).append(":");
+      if (scheme != null) replaceParameter(paramMap, fromEncodedMap, isTemplate, scheme, buffer, encodeSlash).append(":");
       if (ssp != null)
       {
          buffer.append(ssp);
@@ -405,14 +411,14 @@ public class UriBuilderImpl extends UriBuilder
       else if (userInfo != null || host != null || port != -1)
       {
          buffer.append("//");
-         if (userInfo != null) replaceParameter(paramMap, fromEncodedMap, isTemplate, userInfo, buffer).append("@");
-         if (host != null) replaceParameter(paramMap, fromEncodedMap, isTemplate, host, buffer);
+         if (userInfo != null) replaceParameter(paramMap, fromEncodedMap, isTemplate, userInfo, buffer, encodeSlash).append("@");
+         if (host != null) replaceParameter(paramMap, fromEncodedMap, isTemplate, host, buffer, encodeSlash);
          if (port != -1) buffer.append(":").append(Integer.toString(port));
       }
       if (path != null)
       {
          StringBuffer tmp = new StringBuffer();
-         replaceParameter(paramMap, fromEncodedMap, isTemplate, path, tmp);
+         replaceParameter(paramMap, fromEncodedMap, isTemplate, path, tmp, encodeSlash);
          String tmpPath = tmp.toString();
          if (userInfo != null || host != null)
          {
@@ -428,12 +434,12 @@ public class UriBuilderImpl extends UriBuilder
       if (fragment != null)
       {
          buffer.append("#");
-         replaceParameter(paramMap, fromEncodedMap, isTemplate, fragment, buffer);
+         replaceParameter(paramMap, fromEncodedMap, isTemplate, fragment, buffer, encodeSlash);
       }
       return buffer.toString();
    }
 
-   protected StringBuffer replacePathParameter(String name, String value, boolean isEncoded, String string, StringBuffer buffer)
+   protected StringBuffer replacePathParameter(String name, String value, boolean isEncoded, String string, StringBuffer buffer, boolean encodeSlash)
    {
       Matcher matcher = createUriParamMatcher(string);
       while (matcher.find())
@@ -442,7 +448,9 @@ public class UriBuilderImpl extends UriBuilder
          if (!param.equals(name)) continue;
          if (!isEncoded)
          {
-            value = Encode.encodePath(value);
+            if (encodeSlash) value = Encode.encodePath(value);
+            else value = Encode.encodePathSegment(value);
+
          }
          else
          {
@@ -462,7 +470,7 @@ public class UriBuilderImpl extends UriBuilder
       return matcher;
    }
 
-   protected StringBuffer replaceParameter(Map<String, ? extends Object> paramMap, boolean fromEncodedMap, boolean isTemplate, String string, StringBuffer buffer)
+   protected StringBuffer replaceParameter(Map<String, ? extends Object> paramMap, boolean fromEncodedMap, boolean isTemplate, String string, StringBuffer buffer, boolean encodeSlash)
    {
       Matcher matcher = createUriParamMatcher(string);
       while (matcher.find())
@@ -483,11 +491,13 @@ public class UriBuilderImpl extends UriBuilder
          {
             if (!fromEncodedMap)
             {
-               value = Encode.encodePathAsIs(value);
+               if (encodeSlash) value = Encode.encodePathSegmentAsIs(value);
+               else value = Encode.encodePathAsIs(value);
             }
             else
             {
-               value = Encode.encodePathSaveEncodings(value);
+               if (encodeSlash) value = Encode.encodePathSegmentSaveEncodings(value);
+               else value = Encode.encodePathSaveEncodings(value);
             }
             matcher.appendReplacement(buffer, Matcher.quoteReplacement(value));
          }
@@ -575,10 +585,10 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public URI build(Object... values) throws IllegalArgumentException, UriBuilderException
    {
-      return buildFromValues(false, values);
+      return buildFromValues(true, false, values);
    }
 
-   protected URI buildFromValues(boolean encoded, Object... values)
+   protected URI buildFromValues(boolean encodeSlash, boolean encoded, Object... values)
    {
       List<String> params = getPathParamNamesInDeclarationOrder();
       if (values.length < params.size())
@@ -594,7 +604,15 @@ public class UriBuilderImpl extends UriBuilder
          if (val == null) throw new IllegalArgumentException("A value was null");
          pathParams.put(pathParam, val.toString());
       }
-      return buildFromMap(pathParams, encoded);
+      String buf = buildString(pathParams, encoded, false, encodeSlash);
+      try
+      {
+         return URI.create(buf);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException("Failed to create URI: " + buf, e);
+      }
    }
 
    @Override
@@ -832,7 +850,7 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public URI buildFromEncoded(Object... values) throws IllegalArgumentException, UriBuilderException
    {
-      return buildFromValues(true, values);
+      return buildFromValues(false, true, values);
    }
 
    @Override
@@ -850,13 +868,13 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public URI build(Object[] values, boolean encodeSlashInPath) throws IllegalArgumentException, UriBuilderException
    {
-      throw new NotImplementedYetException();
+      return buildFromValues(encodeSlashInPath, true, values);
    }
 
    @Override
    public String toTemplate()
    {
-      return buildString(new HashMap<String, Object>(), true, true);
+      return buildString(new HashMap<String, Object>(), true, true, true);
    }
 
    @Override
@@ -870,14 +888,17 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder resolveTemplates(Map<String, Object> templateValues) throws IllegalArgumentException
    {
-      String str = buildString(templateValues, false, true);
+      String str = buildString(templateValues, false, true, true);
       return fromTemplate(str);
    }
 
    @Override
    public UriBuilder resolveTemplate(String name, Object value, boolean encodeSlashInPath) throws IllegalArgumentException
    {
-      throw new NotImplementedYetException();
+      HashMap<String, Object> vals = new HashMap<String, Object>();
+      vals.put(name, value);
+      String str = buildString(vals, true, true, encodeSlashInPath);
+      return fromTemplate(str);
    }
 
    @Override
@@ -885,20 +906,21 @@ public class UriBuilderImpl extends UriBuilder
    {
       HashMap<String, Object> vals = new HashMap<String, Object>();
       vals.put(name, value);
-      String str = buildString(vals, true, true);
+      String str = buildString(vals, true, true, true);
       return fromTemplate(str);
    }
 
    @Override
    public UriBuilder resolveTemplates(Map<String, Object> templateValues, boolean encodeSlashInPath) throws IllegalArgumentException
    {
-      throw new NotImplementedYetException();
+      String str = buildString(templateValues, false, true, encodeSlashInPath);
+      return fromTemplate(str);
    }
 
    @Override
    public UriBuilder resolveTemplatesFromEncoded(Map<String, Object> templateValues) throws IllegalArgumentException
    {
-      String str = buildString(templateValues, false, true);
+      String str = buildString(templateValues, false, true, true);
       return fromTemplate(str);
    }
 }
