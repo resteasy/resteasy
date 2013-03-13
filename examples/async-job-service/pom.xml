@@ -30,6 +30,12 @@
             <version>4.1</version>
             <scope>test</scope>
         </dependency>
+<dependency>
+    <groupId>commons-logging</groupId>
+    <artifactId>commons-logging</artifactId>
+    <scope>test</scope>
+    <version>1.1.1</version>
+</dependency>
     </dependencies>
 
     <!-- this distributionManagement is only here for RESTEasy automated testing of examples build.  You can remove if you are copying this

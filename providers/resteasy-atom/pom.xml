@@ -43,6 +43,11 @@
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
         </dependency>
+<dependency>
+    <groupId>commons-logging</groupId>
+    <artifactId>commons-logging</artifactId>
+    <scope>test</scope>
+</dependency>
         <!--
         <dependency>
            <groupId>tjws</groupId>
