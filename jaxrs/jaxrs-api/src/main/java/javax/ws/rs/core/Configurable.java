@@ -408,13 +408,4 @@ public interface Configurable<C extends Configurable> {
      * @return the updated configurable context.
      */
     public C register(Object component, Map<Class<?>, Integer> contracts);
-
-    /**
-     * Replace the existing configuration state with an externally provided configuration state.
-     *
-     * @param config external configuration state to replace the configuration of this configurable
-     *               instance.
-     * @return the updated configurable context.
-     */
-    public C replaceWith(Configuration config);
 }

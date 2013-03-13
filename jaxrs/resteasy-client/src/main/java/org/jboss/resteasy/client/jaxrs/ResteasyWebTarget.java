@@ -94,8 +94,4 @@ public interface ResteasyWebTarget extends WebTarget
    @Override
    ResteasyWebTarget register(Object component, Map<Class<?>, Integer> contracts);
 
-   @Override
-   ResteasyWebTarget replaceWith(Configuration config);
-
-
 }

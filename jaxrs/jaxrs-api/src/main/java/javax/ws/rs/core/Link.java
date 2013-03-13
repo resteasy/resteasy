@@ -239,31 +239,41 @@ public abstract class Link {
 
     /**
      * Convenience method to build a link from a resource. Equivalent to
-     * {@code fromUriBuilder(UriBuilder.fromResource(resource))}. Note that path
-     * created from resource is relative to the application's root resource.
+     * <tt>Link.fromUriBuilder({@link UriBuilder#fromResource UriBuilder.fromResource(resource)})</tt>.
+     * Note that the link URI passed to the {@code Link.Builder} instance returned by this
+     * method is relative. Should the link be built as absolute, a {@link Link.Builder#baseUri(URI)
+     * base URI} has to be specified in the builder prior to building the new link instance.
+     * For example, on a server side a {@link UriInfo#getBaseUri()} may be typically used to define
+     * the base URI of a link created using this method.
      *
      * @param resource a root resource whose {@link javax.ws.rs.Path} value will be used
      *                 to initialize the builder.
-     * @return a new Link.Builder.
+     * @return a new {@link Link.Builder link builder} instance.
      * @throws IllegalArgumentException if resource is not annotated with {@link javax.ws.rs.Path}
      *                                  or resource is {@code null}.
+     * @see UriInfo#getBaseUri()
      */
     public static Builder fromResource(Class<?> resource) {
         return fromUriBuilder(UriBuilder.fromResource(resource));
     }
 
     /**
-     * Convenience method to build a link from a resource method. Equivalent to
-     * {@code fromUriBuilder(UriBuilder.fromMethod(resource, method))}. Note that path
-     * created from resource method is relative to the application's root resource.
+     * Convenience method to build a link from a resource. Equivalent to
+     * <tt>Link.fromUriBuilder({@link UriBuilder#fromMethod(Class, String) UriBuilder.fromMethod(resource, method)})</tt>.
+     * Note that the link URI passed to the {@code Link.Builder} instance returned by this
+     * method is relative. Should the link be built as absolute, a {@link Link.Builder#baseUri(URI)
+     * base URI} has to be specified in the builder prior to building the new link instance.
+     * For example, on a server side a {@link UriInfo#getBaseUri()} may be typically used to define
+     * the base URI of a link created using this method.
      *
      * @param resource the resource containing the method.
-     * @param method the name of the method whose {@link javax.ws.rs.Path} value will be used
-     *               to obtain the path to append.
+     * @param method   the name of the method whose {@link javax.ws.rs.Path} value will be used
+     *                 to obtain the path to append.
      * @return the updated Link.Builder.
      * @throws IllegalArgumentException if resource or method is {@code null}, or there is more
      *                                  than or less than one variant of the method annotated with
      *                                  {@link javax.ws.rs.Path}.
+     * @see UriInfo#getBaseUri()
      */
     public static Builder fromMethod(Class<?> resource, String method) {
         return fromUriBuilder(UriBuilder.fromMethod(resource, method));
@@ -318,6 +328,31 @@ public abstract class Link {
          * @throws IllegalArgumentException if string representation of URI is invalid.
          */
         public Builder uri(String uri);
+
+        /**
+         * Set the base URI for resolution of relative URIs. If the underlying URI is already
+         * absolute, the base URI is ignored.
+         *
+         * @param uri base URI for relative links.
+         * @return the updated builder.
+         * @see Link#fromPath(java.lang.String)
+         * @see Link#fromResource(java.lang.Class)
+         * @see Link#fromMethod(java.lang.Class, java.lang.String)
+         */
+        public Builder baseUri(URI uri);
+
+        /**
+         * Set the base URI as a string for resolution of relative URIs. If the underlying URI
+         * is already absolute, the base URI is ignored.
+         *
+         * @param uri base URI for relative links.
+         * @return the updated builder.
+         * @throws IllegalArgumentException if string representation of URI is invalid.
+         * @see Link#fromPath(java.lang.String)
+         * @see Link#fromResource(java.lang.Class)
+         * @see Link#fromMethod(java.lang.Class, java.lang.String)
+         */
+        public Builder baseUri(String uri);
 
         /**
          * Set underlying URI builder representing the URI template for the link being constructed.
@@ -376,49 +411,30 @@ public abstract class Link {
          * @return newly built link.
          * @throws IllegalArgumentException if there are any URI template parameters
          *                                  without a supplied value, or if a value is {@code null}.
-         * @throws UriBuilderException if a URI cannot be constructed based on the
-         *                             current state of the underlying URI builder.
+         * @throws UriBuilderException      if a URI cannot be constructed based on the
+         *                                  current state of the underlying URI builder.
          */
         public Link build(Object... values);
 
         /**
          * <p>Finish building this link using the supplied values as URI parameters
-         * and relativize the result with respect to a supplied URI.
-         * Link relativization is described in {@link UriInfo#relativize(java.net.URI)}.
-         * If the two links do not share a prefix, the relativization step is skipped
-         * and this method is equivalent to calling
-         * {@link Link.Builder#build(java.lang.Object[])}.</p>
+         * and relativize the result with respect to the supplied URI. If the underlying
+         * link is already relative or if it is absolute but does not share a prefix with
+         * the supplied URI, this method is equivalent to calling
+         * {@link Link.Builder#build(java.lang.Object[])}. Note that a base URI can
+         * be set on a relative link using {@link Link.Builder#baseUri(java.net.URI)}.</p>
          *
-         * @param uri URI used for relativization.
+         * @param uri    URI used for relativization.
          * @param values parameters used to build underlying URI.
          * @return newly built link.
          * @throws IllegalArgumentException if there are any URI template parameters
          *                                  without a supplied value, or if a value is {@code null}.
-         * @throws UriBuilderException if a URI cannot be constructed based on the current
-         *                             state of the underlying URI builder.
-         * @throws IllegalStateException if the request URI is not available in context.
-         * @see UriInfo#relativize(java.net.URI)
-         * @see UriInfo#getRequestUri() 
+         * @throws UriBuilderException      if a URI cannot be constructed based on the current
+         *                                  state of the underlying URI builder.
+         * @see #baseUri(java.lang.String)
+         * @see #baseUri(java.net.URI)
          */
         public Link buildRelativized(URI uri, Object... values);
-
-        /**
-         * <p>Finish building this link using the supplied values as URI parameters
-         * and resolve the result using a base URI. If the underlying URI is
-         * already absolute, the resolution step is omitted and this method is equivalent
-         * to calling {@link Link.Builder#build(java.lang.Object[])}.</p>
-         *
-         * @param uri base URI used for resolution.
-         * @param values parameters used to build underlying URI.
-         * @return newly built link.
-         * @throws IllegalArgumentException if there are any URI template parameters without
-         *                                  a supplied value, or if a value is {@code null}.
-         * @throws UriBuilderException if a URI cannot be constructed based on the current
-         *                             state of the underlying URI builder
-         * @see UriInfo#resolve(java.net.URI)
-         * @see UriInfo#getBaseUri() 
-         */
-        public Link buildResolved(URI uri, Object... values);
     }
 
     /**
@@ -451,7 +467,7 @@ public abstract class Link {
         /**
          * Construct an instance from a URI and some parameters.
          *
-         * @param uri underlying URI.
+         * @param uri    underlying URI.
          * @param params parameters of this link.
          */
         public JaxbLink(URI uri, Map<QName, Object> params) {

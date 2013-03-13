@@ -39,6 +39,9 @@
  */
 package javax.ws.rs.core;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+
 /**
  * Represents the the HTML form data request entity encoded using the
  * {@code "application/x-www-form-urlencoded"} content type.
@@ -51,26 +54,42 @@ public class Form {
 
     /**
      * Create a new form data instance.
+     * <p>
+     * The underlying form parameter store is configured to preserve the insertion order
+     * of the parameters. I.e. parameters can be iterated in the same order as they were
+     * inserted into the {@code Form}.
+     * </p>
      */
     public Form() {
-        this(new MultivaluedHashMap<String, String>());
+        this(new AbstractMultivaluedMap<String, String>(new LinkedHashMap<String, List<String>>()) {
+            // by default, the items in a Form are iterable based on their insertion order.
+        });
     }
 
     /**
      * Create a new form data instance with a single parameter entry.
+     * <p>
+     * The underlying form parameter store is configured to preserve the insertion order
+     * of the parameters. I.e. parameters can be iterated in the same order as they were
+     * inserted into the {@code Form}.
+     * </p>
      *
      * @param parameterName  form parameter name.
      * @param parameterValue form parameter value.
      */
     public Form(final String parameterName, final String parameterValue) {
-        this(new MultivaluedHashMap<String, String>());
+        this();
 
         parameters.add(parameterName, parameterValue);
     }
 
     /**
-     * Create a new form data instance and register the underlying parameter
-     * store.
+     * Create a new form data instance and register a custom underlying parameter store.
+     * <p>
+     * This method is useful in situations when a custom parameter store is needed
+     * in order to change the default parameter iteration order, improve performance
+     * or facilitate other custom requirements placed on the parameter store.
+     * </p>
      *
      * @param store form data store used by the created form instance.
      */
