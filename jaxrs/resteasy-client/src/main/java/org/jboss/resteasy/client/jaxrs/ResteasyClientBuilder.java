@@ -412,9 +412,20 @@ public class ResteasyClientBuilder extends ClientBuilder
    }
 
    @Override
-   public ResteasyClientBuilder replaceWith(Configuration config)
+   public ResteasyClientBuilder withConfig(Configuration config)
    {
-      getProviderFactory().replaceWith(config);
+      providerFactory = new ResteasyProviderFactory();
+      providerFactory.setProperties(config.getProperties());
+      for (Class clazz : config.getClasses())
+      {
+         Map<Class<?>, Integer> contracts = config.getContracts(clazz);
+         register(clazz, contracts);
+      }
+      for (Object obj : config.getInstances())
+      {
+         Map<Class<?>, Integer> contracts = config.getContracts(obj.getClass());
+         register(obj, contracts);
+      }
       return this;
    }
 }

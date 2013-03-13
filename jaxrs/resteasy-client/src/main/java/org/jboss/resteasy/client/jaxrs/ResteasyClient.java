@@ -142,13 +142,6 @@ public class ResteasyClient implements Client
    }
 
    @Override
-   public ResteasyClient replaceWith(Configuration config)
-   {
-      configuration.replaceWith(config);
-      return this;
-   }
-
-   @Override
    public ResteasyWebTarget target(String uri) throws IllegalArgumentException, NullPointerException
    {
       return new ClientWebTarget(this, uri, configuration);
