@@ -86,11 +86,4 @@ public class FeatureContextDelegate implements FeatureContext
       configurable.register(component, contracts);
       return this;
    }
-
-   @Override
-   public FeatureContext replaceWith(Configuration config)
-   {
-      configurable.replaceWith(config);
-      return this;
-   }
 }

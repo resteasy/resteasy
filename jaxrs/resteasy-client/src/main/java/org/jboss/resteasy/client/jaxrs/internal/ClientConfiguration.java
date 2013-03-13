@@ -161,22 +161,6 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
    }
 
    @Override
-   public ClientConfiguration replaceWith(Configuration configuration)
-   {
-      providerFactory = new ResteasyProviderFactory();
-      setProperties(configuration.getProperties());
-      for (Class c : configuration.getClasses())
-      {
-         register(c);
-      }
-      for (Object obj : configuration.getInstances())
-      {
-         register(obj);
-      }
-      return this;
-   }
-
-   @Override
    public ClientConfiguration register(Class<?> providerClass)
    {
       providerFactory.register(providerClass);

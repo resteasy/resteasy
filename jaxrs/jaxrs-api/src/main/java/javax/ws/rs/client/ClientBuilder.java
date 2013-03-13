@@ -123,8 +123,17 @@ public abstract class ClientBuilder implements Configurable<ClientBuilder> {
      * @return new configured client instance.
      */
     public static Client newClient(final Configuration configuration) {
-        return newBuilder().replaceWith(configuration).build();
+        return newBuilder().withConfig(configuration).build();
     }
+
+    /**
+     * Set the internal configuration state to an externally provided configuration state.
+     *
+     * @param config external configuration state to replace the configuration of this configurable
+     *               instance.
+     * @return the updated client builder instance.
+     */
+    public abstract ClientBuilder withConfig(Configuration config);
 
     /**
      * Set the SSL context that will be used when creating secured transport connections

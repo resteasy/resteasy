@@ -332,11 +332,4 @@ public class ClientWebTarget implements ResteasyWebTarget
       configuration.register(component, contracts);
       return this;
    }
-
-   @Override
-   public ResteasyWebTarget replaceWith(Configuration config)
-   {
-      configuration.replaceWith(config);
-      return this;
-   }
 }

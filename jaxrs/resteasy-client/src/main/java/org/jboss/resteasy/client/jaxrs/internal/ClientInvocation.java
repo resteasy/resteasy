@@ -245,7 +245,6 @@ public class ClientInvocation implements Invocation
    // Invocation methods
 
 
-   @Override
    public Configuration getConfiguration()
    {
       return configuration;
@@ -533,66 +532,4 @@ public class ClientInvocation implements Invocation
       return this;
    }
 
-   @Override
-   public Invocation register(Class<?> componentClass)
-   {
-      configuration.register(componentClass);
-      return this;
-   }
-
-   @Override
-   public Invocation register(Class<?> componentClass, int priority)
-   {
-      configuration.register(componentClass, priority);
-      return this;
-   }
-
-   @Override
-   public Invocation register(Class<?> componentClass, Class<?>... contracts)
-   {
-      configuration.register(componentClass, contracts);
-      return this;
-   }
-
-   @Override
-   public Invocation register(Class<?> componentClass, Map<Class<?>, Integer> contracts)
-   {
-      configuration.register(componentClass, contracts);
-      return this;
-   }
-
-   @Override
-   public Invocation register(Object component)
-   {
-      configuration.register(component);
-      return this;
-   }
-
-   @Override
-   public Invocation register(Object component, int priority)
-   {
-      configuration.register(component, priority);
-      return this;
-   }
-
-   @Override
-   public Invocation register(Object component, Class<?>... contracts)
-   {
-      configuration.register(component, contracts);
-      return this;
-   }
-
-   @Override
-   public Invocation register(Object component, Map<Class<?>, Integer> contracts)
-   {
-      configuration.register(component, contracts);
-      return this;
-   }
-
-   @Override
-   public Invocation replaceWith(Configuration config)
-   {
-      configuration.replaceWith(config);
-      return this;
-   }
 }

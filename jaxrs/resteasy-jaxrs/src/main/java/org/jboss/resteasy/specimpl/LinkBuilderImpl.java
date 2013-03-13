@@ -96,9 +96,14 @@ public class LinkBuilderImpl implements Link.Builder
    }
 
    @Override
-   public Link buildResolved(URI uri, Object... values)
+   public Link.Builder baseUri(URI uri)
    {
       throw new NotImplementedYetException();
    }
 
+   @Override
+   public Link.Builder baseUri(String uri)
+   {
+      throw new NotImplementedYetException();
+   }
 }

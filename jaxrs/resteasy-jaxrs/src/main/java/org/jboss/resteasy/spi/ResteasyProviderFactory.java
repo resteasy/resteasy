@@ -1963,24 +1963,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
    @Override
-   public ResteasyProviderFactory replaceWith(Configuration config)
-   {
-      initialize();
-      setProperties(config.getProperties());
-      for (Class clazz : config.getClasses())
-      {
-         Map<Class<?>, Integer> contracts = config.getContracts(clazz);
-         register(clazz, contracts);
-      }
-      for (Object obj : config.getInstances())
-      {
-         Map<Class<?>, Integer> contracts = config.getContracts(obj.getClass());
-         register(obj, contracts);
-      }
-      return this;
-   }
-
-   @Override
    public RuntimeType getRuntimeType()
    {
       return RuntimeType.SERVER;

@@ -185,12 +185,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public ResteasyProviderFactory replaceWith(Configuration config)
-   {
-      return getDelegate().replaceWith(config);
-   }
-
-   @Override
    public <T> StringParameterUnmarshaller<T> createStringParameterUnmarshaller(Class<T> clazz)
    {
       return getDelegate().createStringParameterUnmarshaller(clazz);

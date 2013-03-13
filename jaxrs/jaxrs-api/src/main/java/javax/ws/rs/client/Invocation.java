@@ -45,7 +45,6 @@ import java.util.concurrent.Future;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
@@ -64,7 +63,7 @@ import javax.ws.rs.core.Response;
  * @author Marek Potociar
  * @see Invocation.Builder Invocation.Builder
  */
-public interface Invocation extends Configurable<Invocation> {
+public interface Invocation {
 
     /**
      * A client request invocation builder.
@@ -109,7 +108,7 @@ public interface Invocation extends Configurable<Invocation> {
      *           .header("Foo", "bar").async().get(String.class);
      * </pre>
      */
-    public static interface Builder extends SyncInvoker, Configurable<Builder> {
+    public static interface Builder extends SyncInvoker {
 
         // Invocation builder methods
 
@@ -266,7 +265,45 @@ public interface Invocation extends Configurable<Invocation> {
          * @return the updated builder.
          */
         public Builder headers(MultivaluedMap<String, Object> headers);
+
+        /**
+         * Set a new property in the context of a request represented by this invocation builder.
+         * <p>
+         * The property is available for a later retrieval via {@link ClientRequestContext#getProperty(String)}
+         * or {@link javax.ws.rs.ext.InterceptorContext#getProperty(String)}.
+         * If a property with a given name is already set in the request context,
+         * the existing value of the property will be updated.
+         * Setting a {@code null} value into a property effectively removes the property
+         * from the request property bag.
+         * </p>
+         *
+         * @param name  property name.
+         * @param value (new) property value. {@code null} value removes the property
+         *              with the given name.
+         * @return the updated builder.
+         * @see Invocation#property(String, Object)
+         */
+        public Builder property(String name, Object value);
     }
+
+    /**
+     * Set a new property in the context of a request represented by this invocation.
+     * <p>
+     * The property is available for a later retrieval via {@link ClientRequestContext#getProperty(String)}
+     * or {@link javax.ws.rs.ext.InterceptorContext#getProperty(String)}.
+     * If a property with a given name is already set in the request context,
+     * the existing value of the property will be updated.
+     * Setting a {@code null} value into a property effectively removes the property
+     * from the request property bag.
+     * </p>
+     *
+     * @param name  property name.
+     * @param value (new) property value. {@code null} value removes the property
+     *              with the given name.
+     * @return the updated invocation.
+     * @see Invocation.Builder#property(String, Object)
+     */
+    public Invocation property(String name, Object value);
 
     /**
      * Synchronously invoke the request and receive a response back.

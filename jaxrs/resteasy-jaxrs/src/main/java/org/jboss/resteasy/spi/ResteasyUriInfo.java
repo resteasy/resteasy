@@ -336,13 +336,13 @@ public class ResteasyUriInfo implements UriInfo
    @Override
    public URI resolve(URI uri)
    {
-      return baseURI.resolve(uri);
+      throw new NotImplementedYetException();
    }
 
    @Override
    public URI relativize(URI uri)
    {
-      return baseURI.relativize(uri);
+      throw new NotImplementedYetException();
    }
 
 }
