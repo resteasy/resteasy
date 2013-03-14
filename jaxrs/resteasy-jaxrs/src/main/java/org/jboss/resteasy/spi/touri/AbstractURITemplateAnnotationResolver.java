@@ -1,6 +1,6 @@
 package org.jboss.resteasy.spi.touri;
 
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.util.AnnotationResolver;
 
 import java.beans.BeanInfo;
@@ -30,7 +30,7 @@ public abstract class AbstractURITemplateAnnotationResolver implements
    {
       Class<? extends Object> clazz = AnnotationResolver
               .getClassWithAnnotation(object.getClass(), getAnnotationType());
-      UriBuilderImpl uriBuilderImpl = getUriBuilder(clazz);
+      ResteasyUriBuilder uriBuilderImpl = getUriBuilder(clazz);
       Map<String, PropertyDescriptor> descriptors = getPropertyDescriptors(clazz);
       List<Object> values = getValues(object, descriptors, uriBuilderImpl
               .getPathParamNamesInDeclarationOrder());
@@ -39,7 +39,7 @@ public abstract class AbstractURITemplateAnnotationResolver implements
 
    protected abstract Class<? extends Annotation> getAnnotationType();
 
-   protected abstract UriBuilderImpl getUriBuilder(Class<? extends Object> clazz);
+   protected abstract ResteasyUriBuilder getUriBuilder(Class<? extends Object> clazz);
 
    private List<Object> getValues(Object object,
                                   Map<String, PropertyDescriptor> descriptors, List<String> params)

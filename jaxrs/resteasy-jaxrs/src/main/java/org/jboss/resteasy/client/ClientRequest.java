@@ -5,7 +5,7 @@ import org.jboss.resteasy.client.core.ClientInterceptorRepositoryImpl;
 import org.jboss.resteasy.core.interception.ClientExecutionContextImpl;
 import org.jboss.resteasy.core.interception.ClientWriterInterceptorContext;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.LinkHeader;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
@@ -50,7 +50,7 @@ import static org.jboss.resteasy.util.HttpHeaderNames.ACCEPT;
 public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cloneable
 {
    protected ResteasyProviderFactory providerFactory;
-   protected UriBuilderImpl uri;
+   protected ResteasyUriBuilder uri;
    protected ClientExecutor executor;
    protected MultivaluedMap<String, Object> headers;
    protected MultivaluedMap<String, String> queryParameters;
@@ -112,7 +112,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    public ClientRequest(UriBuilder uri, ClientExecutor executor,
                         ResteasyProviderFactory providerFactory)
    {
-      this.uri = (UriBuilderImpl) uri;
+      this.uri = (ResteasyUriBuilder) uri;
       this.executor = executor;
       if (providerFactory instanceof ProviderFactoryDelegate)
       {
@@ -150,7 +150,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
 
    private static UriBuilder getBuilder(String uriTemplate)
    {
-      return new UriBuilderImpl().uriTemplate(uriTemplate);
+      return new ResteasyUriBuilder().uriTemplate(uriTemplate);
    }
 
    public boolean followRedirects()
@@ -733,7 +733,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
       if (finalUri != null)
          return finalUri;
 
-      UriBuilderImpl builder = (UriBuilderImpl) uri.clone();
+      ResteasyUriBuilder builder = (ResteasyUriBuilder) uri.clone();
       if (matrixParameters != null)
       {
          for (Map.Entry<String, List<String>> entry : matrixParameters
@@ -781,7 +781,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
       {
          ClientRequest clone = (ClientRequest) this.clone();
          clone.clear();
-         clone.uri = new UriBuilderImpl();
+         clone.uri = new ResteasyUriBuilder();
          clone.uri.uri(uri);
          return clone;
       }

@@ -5,7 +5,7 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;
@@ -132,7 +132,7 @@ public class CookieTest
    @Test
    public void testIt()
    {
-      UriBuilder uriBuilder = new UriBuilderImpl().uriTemplate("/");
+      UriBuilder uriBuilder = new ResteasyUriBuilder().uriTemplate("/");
       ClientExecutor executor = ClientRequest.getDefaultExecutor();
       ClientRequest request = new ClientRequest(uriBuilder, executor);
       _test(request, uriBuilder, "/set");

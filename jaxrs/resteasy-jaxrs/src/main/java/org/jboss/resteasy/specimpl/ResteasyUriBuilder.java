@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class UriBuilderImpl extends UriBuilder
+public class ResteasyUriBuilder extends UriBuilder
 {
 
    private String host;
@@ -37,7 +37,7 @@ public class UriBuilderImpl extends UriBuilder
 
    public UriBuilder clone()
    {
-      UriBuilderImpl impl = new UriBuilderImpl();
+      ResteasyUriBuilder impl = new ResteasyUriBuilder();
       impl.host = host;
       impl.scheme = scheme;
       impl.port = port;
@@ -54,6 +54,43 @@ public class UriBuilderImpl extends UriBuilder
    private static final Pattern sspPattern = Pattern.compile("([^:/]+):(.+)");
    private static final Pattern pathPattern = Pattern.compile("([^?]*)?(\\?([^#]+))?(#(.*))?");
 
+   public static boolean compare(String s1, String s2)
+   {
+      if (s1 == s2) return true;
+      if (s1 == null || s2 == null) return false;
+      return s1.equals(s2);
+   }
+
+   public static URI relativize(URI from, URI to)
+   {
+      if (!compare(from.getScheme(), to.getScheme())) return to;
+      if (!compare(from.getHost(), to.getHost())) return to;
+      if (from.getPort() != to.getPort()) return to;
+      if (from.getPath() == null && to.getPath() == null) return URI.create("");
+      else if (from.getPath() == null) return URI.create(to.getPath());
+      else if (to.getPath() == null) return to;
+
+
+      String fromPath = from.getPath();
+      if (fromPath.startsWith("/")) fromPath = fromPath.substring(1);
+      String[] fsplit = fromPath.split("/");
+      String toPath = to.getPath();
+      if (toPath.startsWith("/")) toPath = toPath.substring(1);
+      String[] tsplit = toPath.split("/");
+
+      int f = 0;
+
+      for (;f < fsplit.length && f < tsplit.length; f++)
+      {
+         if (!fsplit[f].equals(tsplit[f])) break;
+      }
+
+      UriBuilder builder = UriBuilder.fromPath("");
+      for (int i = f; i < fsplit.length; i++) builder.path("..");
+      for (int i = f; i < tsplit.length; i++) builder.path(tsplit[i]);
+      return builder.build();
+   }
+
    /**
     * You may put path parameters anywhere within the uriTemplate except port
     *
@@ -62,7 +99,7 @@ public class UriBuilderImpl extends UriBuilder
     */
    public static UriBuilder fromTemplate(String uriTemplate)
    {
-      UriBuilderImpl impl = new UriBuilderImpl();
+      ResteasyUriBuilder impl = new ResteasyUriBuilder();
       impl.uriTemplate(uriTemplate);
       return impl;
    }
@@ -345,6 +382,11 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder fragment(String fragment) throws IllegalArgumentException
    {
+      if (fragment == null)
+      {
+         this.fragment = null;
+         return this;
+      }
       this.fragment = Encode.encodeFragment(fragment);
       return this;
    }

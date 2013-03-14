@@ -2,7 +2,7 @@ package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.specimpl.HttpHeadersImpl;
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;
@@ -43,7 +43,7 @@ public class ServletUtil
       {
          URL absolute = new URL(request.getRequestURL().toString());
 
-         UriBuilderImpl builder = new UriBuilderImpl();
+         ResteasyUriBuilder builder = new ResteasyUriBuilder();
          builder.scheme(absolute.getProtocol());
          builder.host(absolute.getHost());
          builder.port(absolute.getPort());
