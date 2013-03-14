@@ -7,7 +7,7 @@ import org.jboss.resteasy.client.core.ClientInvokerInterceptorFactory;
 import org.jboss.resteasy.client.core.ClientInvokerModifier;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.client.core.marshallers.ResteasyClientProxy;
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import java.net.URI;
@@ -138,7 +138,7 @@ public class ClientRequestFactory
 
    public ClientRequest createRequest(String uriTemplate)
    {
-      ClientRequest clientRequest = new ClientRequest(new UriBuilderImpl()
+      ClientRequest clientRequest = new ClientRequest(new ResteasyUriBuilder()
               .uriTemplate(uriTemplate), executor, providerFactory);
       if (applyDefaultInterceptors)
       {

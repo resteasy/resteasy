@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.finegrain;
 
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -60,7 +60,7 @@ public class UriBuilderTest
    {
       // test for RESTEASY-443
 
-      UriBuilderImpl.fromUri("?param=").replaceQueryParam("otherParam", "otherValue");
+      ResteasyUriBuilder.fromUri("?param=").replaceQueryParam("otherParam", "otherValue");
 
    }
 
@@ -384,21 +384,21 @@ public class UriBuilderTest
 
       {
          map.clear();
-         UriBuilderImpl impl = (UriBuilderImpl) UriBuilder.fromPath("/foo/{id}");
+         ResteasyUriBuilder impl = (ResteasyUriBuilder) UriBuilder.fromPath("/foo/{id}");
          map.put("id", "something %%20something");
 
          URI uri = impl.buildFromMap(map);
          Assert.assertEquals("/foo/something%20%25%2520something", uri.toString());
       }
       {
-         UriBuilderImpl impl = (UriBuilderImpl) UriBuilder.fromPath("/foo/{id}");
+         ResteasyUriBuilder impl = (ResteasyUriBuilder) UriBuilder.fromPath("/foo/{id}");
          map.clear();
          map.put("id", "something something");
          URI uri = impl.buildFromMap(map);
          Assert.assertEquals("/foo/something%20something", uri.toString());
       }
       {
-         UriBuilderImpl impl = (UriBuilderImpl) UriBuilder.fromPath("/foo/{id}");
+         ResteasyUriBuilder impl = (ResteasyUriBuilder) UriBuilder.fromPath("/foo/{id}");
          map.clear();
          map.put("id", "something%20something");
          URI uri = impl.buildFromEncodedMap(map);
@@ -407,21 +407,21 @@ public class UriBuilderTest
 
 
       {
-         UriBuilderImpl impl = (UriBuilderImpl) UriBuilder.fromPath("/foo/{id}");
+         ResteasyUriBuilder impl = (ResteasyUriBuilder) UriBuilder.fromPath("/foo/{id}");
 
          impl.substitutePathParam("id", "something %%20something", false);
          URI uri = impl.build();
          Assert.assertEquals("/foo/something%20%25%20something", uri.toString());
       }
       {
-         UriBuilderImpl impl = (UriBuilderImpl) UriBuilder.fromPath("/foo/{id}");
+         ResteasyUriBuilder impl = (ResteasyUriBuilder) UriBuilder.fromPath("/foo/{id}");
 
          impl.substitutePathParam("id", "something something", false);
          URI uri = impl.build();
          Assert.assertEquals("/foo/something%20something", uri.toString());
       }
       {
-         UriBuilderImpl impl = (UriBuilderImpl) UriBuilder.fromPath("/foo/{id}");
+         ResteasyUriBuilder impl = (ResteasyUriBuilder) UriBuilder.fromPath("/foo/{id}");
 
          impl.substitutePathParam("id", "something%20something", true);
          URI uri = impl.build();
@@ -947,6 +947,30 @@ public class UriBuilderTest
       uri = builder.buildFromMap(map, false);
       Assert.assertEquals("http://A/B/C/D", uri.toString());
 
+   }
+
+   @Test
+   public void testRelativize() throws Exception
+   {
+      URI from = URI.create("a/b/c");
+      URI to = URI.create("a/b/c/d/e");
+      URI relativized = ResteasyUriBuilder.relativize(from, to);
+      Assert.assertEquals(relativized.toString(), "d/e");
+
+      from = URI.create("a/b/c");
+      to = URI.create("d/e");
+      relativized = ResteasyUriBuilder.relativize(from, to);
+      Assert.assertEquals(relativized.toString(), "../../../d/e");
+
+      from = URI.create("a/b/c");
+      to = URI.create("a/b/c");
+      relativized = ResteasyUriBuilder.relativize(from, to);
+      Assert.assertEquals(relativized.toString(), "");
+
+      from = URI.create("a");
+      to = URI.create("d/e");
+      relativized = ResteasyUriBuilder.relativize(from, to);
+      Assert.assertEquals(relativized.toString(), "../d/e");
    }
 
 

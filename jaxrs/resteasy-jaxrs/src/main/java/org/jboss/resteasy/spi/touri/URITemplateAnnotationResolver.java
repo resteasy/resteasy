@@ -1,6 +1,6 @@
 package org.jboss.resteasy.spi.touri;
 
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 
 import java.lang.annotation.Annotation;
 
@@ -13,10 +13,10 @@ public class URITemplateAnnotationResolver extends
       return URITemplate.class;
    }
 
-   protected UriBuilderImpl getUriBuilder(Class<? extends Object> clazz)
+   protected ResteasyUriBuilder getUriBuilder(Class<? extends Object> clazz)
    {
       String uriTemplate = clazz.getAnnotation(URITemplate.class).value();
-      UriBuilderImpl uriBuilderImpl = new UriBuilderImpl();
+      ResteasyUriBuilder uriBuilderImpl = new ResteasyUriBuilder();
       uriBuilderImpl.replacePath(uriTemplate);
       return uriBuilderImpl;
    }

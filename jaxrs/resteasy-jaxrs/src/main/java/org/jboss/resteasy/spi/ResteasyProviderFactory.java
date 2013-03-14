@@ -29,9 +29,8 @@ import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.UriHeaderDelegate;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.specimpl.LinkBuilderImpl;
-import org.jboss.resteasy.specimpl.LinkImpl;
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.specimpl.VariantListBuilderImpl;
 import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
@@ -644,7 +643,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public UriBuilder createUriBuilder()
    {
-      return new UriBuilderImpl();
+      return new ResteasyUriBuilder();
    }
 
    public Response.ResponseBuilder createResponseBuilder()

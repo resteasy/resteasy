@@ -2,6 +2,7 @@ package org.jboss.resteasy.spi;
 
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.PathSegmentImpl;
+import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.util.Encode;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -342,7 +343,13 @@ public class ResteasyUriInfo implements UriInfo
    @Override
    public URI relativize(URI uri)
    {
-      throw new NotImplementedYetException();
+      URI from = getRequestUri();
+      URI to = uri;
+      if (uri.getScheme() == null && uri.getHost() == null)
+      {
+         to = getBaseUriBuilder().replaceQuery(null).path(uri.getPath()).replaceQuery(uri.getQuery()).fragment(uri.getFragment()).build();
+      }
+      return ResteasyUriBuilder.relativize(from, to);
    }
 
 }
