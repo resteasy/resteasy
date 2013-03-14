@@ -92,7 +92,9 @@ public class LinkBuilderImpl implements Link.Builder
    @Override
    public Link buildRelativized(URI uri, Object... values)
    {
-      throw new NotImplementedYetException();
+      URI built = uriBuilder.build(values);
+      link.uri = ResteasyUriBuilder.relativize(uri, built);
+      return link;
    }
 
    @Override

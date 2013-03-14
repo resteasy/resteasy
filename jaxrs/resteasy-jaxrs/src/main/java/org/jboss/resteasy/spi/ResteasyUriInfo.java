@@ -337,7 +337,7 @@ public class ResteasyUriInfo implements UriInfo
    @Override
    public URI resolve(URI uri)
    {
-      throw new NotImplementedYetException();
+      return getBaseUri().resolve(uri);
    }
 
    @Override
