@@ -257,6 +257,12 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
+   public Map<Class<?>, Map<Class<?>, Integer>> getClassContracts()
+   {
+      return getDelegate().getClassContracts();
+   }
+
+   @Override
    public ContainerRequestFilterRegistry getContainerRequestFilterRegistry()
    {
       return getDelegate().getContainerRequestFilterRegistry();
