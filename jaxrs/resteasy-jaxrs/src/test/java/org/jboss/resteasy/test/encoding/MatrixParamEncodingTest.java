@@ -9,13 +9,11 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -97,7 +95,7 @@ public class MatrixParamEncodingTest
    @Test
    public void testMatrixParamUriBuilderDecoded() throws Exception
    {
-      UriBuilder uriBuilder = UriBuilderImpl.fromUri("http://localhost:8081/decoded");
+      UriBuilder uriBuilder = ResteasyUriBuilder.fromUri("http://localhost:8081/decoded");
       uriBuilder.matrixParam("param", "ac/dc");
       ClientRequest request = new ClientRequest(uriBuilder.build().toString());
       System.out.println("Sending request to " + uriBuilder.build().toString());
@@ -111,7 +109,7 @@ public class MatrixParamEncodingTest
    @Test
    public void testMatrixParamUriBuilderEncoded() throws Exception
    {
-      UriBuilder uriBuilder = UriBuilderImpl.fromUri("http://localhost:8081/encoded");
+      UriBuilder uriBuilder = ResteasyUriBuilder.fromUri("http://localhost:8081/encoded");
       uriBuilder.matrixParam("param", "ac/dc");
       ClientRequest request = new ClientRequest(uriBuilder.build().toString());
       System.out.println("Sending request to " + uriBuilder.build().toString());

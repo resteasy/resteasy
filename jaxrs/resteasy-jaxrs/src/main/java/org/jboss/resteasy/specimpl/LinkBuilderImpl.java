@@ -37,7 +37,7 @@ public class LinkBuilderImpl implements Link.Builder
    @Override
    public Link.Builder uriBuilder(UriBuilder uriBuilder)
    {
-      this.uriBuilder = uriBuilder;
+      this.uriBuilder = uriBuilder.clone();
       return this;
    }
 
@@ -92,18 +92,22 @@ public class LinkBuilderImpl implements Link.Builder
    @Override
    public Link buildRelativized(URI uri, Object... values)
    {
-      throw new NotImplementedYetException();
+      URI built = uriBuilder.build(values);
+      link.uri = ResteasyUriBuilder.relativize(uri, built);
+      return link;
    }
 
    @Override
    public Link.Builder baseUri(URI uri)
    {
-      throw new NotImplementedYetException();
+      uriBuilder = UriBuilder.fromUri(uri);
+      return this;
    }
 
    @Override
    public Link.Builder baseUri(String uri)
    {
-      throw new NotImplementedYetException();
+      uriBuilder = UriBuilder.fromUri(uri);
+      return this;
    }
 }

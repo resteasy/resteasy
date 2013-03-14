@@ -5,7 +5,7 @@ import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiResourceFactory;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.Registry;
@@ -254,7 +254,7 @@ public class ResourceMethodRegistry implements Registry
 			Path path = method.getAnnotation(Path.class);
 			Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
 
-			UriBuilderImpl builder = new UriBuilderImpl();
+			ResteasyUriBuilder builder = new ResteasyUriBuilder();
 			if (base != null)
 				builder.path(base);
 			if (clazz.isAnnotationPresent(Path.class))
@@ -308,7 +308,7 @@ public class ResourceMethodRegistry implements Registry
          Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
          if (path == null && httpMethods == null) continue;
 
-         UriBuilderImpl builder = new UriBuilderImpl();
+         ResteasyUriBuilder builder = new ResteasyUriBuilder();
          if (base != null) builder.path(base);
          if (clazz.isAnnotationPresent(Path.class)) builder.path(clazz);
          if (path != null) builder.path(method);
