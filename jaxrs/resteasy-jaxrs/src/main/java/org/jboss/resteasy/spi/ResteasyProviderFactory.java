@@ -42,6 +42,7 @@ import org.jboss.resteasy.util.PickConstructor;
 import org.jboss.resteasy.util.ThreadLocalStack;
 import org.jboss.resteasy.util.Types;
 
+import javax.annotation.Priority;
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Priorities;
@@ -160,6 +161,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected Map<Class<?>, StringConverter> stringConverters;
    protected List<ParamConverterProvider> paramConverterProviders;
    protected Map<Class<?>, Class<? extends StringParameterUnmarshaller>> stringParameterUnmarshallers;
+   protected Map<Class<?>, Map<Class<?>, Integer>> classContracts;
 
    protected Map<Class<?>, HeaderDelegate> headerDelegates;
 
@@ -228,6 +230,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       featureInstances = new CopyOnWriteArraySet<Object>();
       providerClasses = new CopyOnWriteArraySet<Class<?>>();
       providerInstances = new CopyOnWriteArraySet<Object>();
+      classContracts = new ConcurrentHashMap<Class<?>, Map<Class<?>, Integer>>();
       messageBodyReaders = new MediaTypeMap<SortedKey<MessageBodyReader>>();
       messageBodyWriters = new MediaTypeMap<SortedKey<MessageBodyWriter>>();
       exceptionMappers = new ConcurrentHashMap<Class<?>, ExceptionMapper>();
@@ -357,6 +360,23 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (parent != null) set.addAll(parent.getProviderInstances());
       set.addAll(providerInstances);
       return set;
+   }
+
+   public Map<Class<?>, Map<Class<?>, Integer>> getClassContracts()
+   {
+      if (classContracts != null) return classContracts;
+      Map<Class<?>, Map<Class<?>, Integer>> map = new ConcurrentHashMap<Class<?>, Map<Class<?>, Integer>>();
+      if (parent != null)
+      {
+         for (Map.Entry<Class<?>, Map<Class<?>, Integer>> entry : parent.getClassContracts().entrySet())
+         {
+            Map<Class<?>, Integer> mapEntry = new HashMap<Class<?>, Integer>();
+            mapEntry.putAll(entry.getValue());
+            map.put(entry.getKey(), mapEntry);
+         }
+      }
+      classContracts = map;
+      return classContracts;
    }
 
    protected LegacyPrecedence getPrecedence()
@@ -1108,9 +1128,18 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return contracts.get(type);
    }
 
+   protected int getPriority(Class<?> clazz)
+   {
+      Priority priority = clazz.getAnnotation(Priority.class);
+      if (priority == null) return Priorities.USER;
+      return priority.value();
+   }
+
 
    public void registerProvider(Class provider, boolean isBuiltin, int defaultPriority, Map<Class<?>, Integer> contracts)
    {
+      Map<Class<?>, Integer> newContracts = new HashMap<Class<?>, Integer>();
+
       if (isA(provider, ParamConverterProvider.class, contracts))
       {
          ParamConverterProvider paramConverterProvider = (ParamConverterProvider)injectedInstance(provider);
@@ -1120,12 +1149,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>(parent.getParamConverterProviders());
          }
          paramConverterProviders.add(paramConverterProvider);
+         newContracts.put(ParamConverterProvider.class, 0);
       }
       if (isA(provider, MessageBodyReader.class, contracts))
       {
          try
          {
             addMessageBodyReader(provider, isBuiltin);
+            newContracts.put(MessageBodyReader.class, 0);
          }
          catch (Exception e)
          {
@@ -1137,6 +1168,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addMessageBodyWriter(provider, isBuiltin);
+            newContracts.put(MessageBodyWriter.class, 0);
          }
          catch (Exception e)
          {
@@ -1148,6 +1180,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addExceptionMapper(provider);
+            newContracts.put(ExceptionMapper.class, 0);
          }
          catch (Exception e)
          {
@@ -1159,6 +1192,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addClientExceptionMapper(provider);
+            newContracts.put(ClientExceptionMapper.class, 0);
          }
          catch (Exception e)
          {
@@ -1172,6 +1206,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             clientRequestFilters = parent.getClientRequestFilters().clone(this);
          }
          clientRequestFilters.registerClass(provider, getPriority(contracts, defaultPriority, ClientResponseFilter.class));
+         newContracts.put(ClientRequestFilter.class, getPriority(provider));
       }
       if (isA(provider, ClientResponseFilter.class, contracts))
       {
@@ -1180,6 +1215,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             clientResponseFilters = parent.getClientResponseFilters().clone(this);
          }
          clientResponseFilters.registerClass(provider, getPriority(contracts, defaultPriority, ClientResponseFilter.class));
+         newContracts.put(ClientResponseFilter.class, getPriority(provider));
       }
       if (isA(provider, ClientExecutionInterceptor.class, contracts))
       {
@@ -1188,6 +1224,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             clientExecutionInterceptorRegistry = parent.getClientExecutionInterceptorRegistry().cloneTo(this);
          }
          clientExecutionInterceptorRegistry.register(provider);
+         newContracts.put(ClientExecutionInterceptor.class, 0);
       }
       if (isA(provider, PreProcessInterceptor.class, contracts))
       {
@@ -1196,6 +1233,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(this);
          }
          containerRequestFilterRegistry.registerLegacy(provider);
+         newContracts.put(PreProcessInterceptor.class, 0);
       }
       if (isA(provider, PostProcessInterceptor.class, contracts))
       {
@@ -1204,6 +1242,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
          }
          containerResponseFilterRegistry.registerLegacy(provider);
+         newContracts.put(PostProcessInterceptor.class, 0);
       }
       if (isA(provider, ContainerRequestFilter.class, contracts))
       {
@@ -1212,6 +1251,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(this);
          }
          containerRequestFilterRegistry.registerClass(provider);
+         newContracts.put(ContainerRequestFilter.class, getPriority(provider));
       }
       if (isA(provider, ContainerResponseFilter.class, contracts))
       {
@@ -1220,6 +1260,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
          }
          containerResponseFilterRegistry.registerClass(provider);
+         newContracts.put(ContainerResponseFilter.class, getPriority(provider));
       }
       if (isA(provider, ReaderInterceptor.class, contracts))
       {
@@ -1253,6 +1294,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             }
             clientReaderInterceptorRegistry.registerClass(provider, getPriority(contracts, defaultPriority, ReaderInterceptor.class));
          }
+         newContracts.put(ReaderInterceptor.class, getPriority(provider));
       }
       if (isA(provider, WriterInterceptor.class, contracts))
       {
@@ -1286,6 +1328,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             }
             clientWriterInterceptorRegistry.registerClass(provider, getPriority(contracts, defaultPriority, WriterInterceptor.class));
          }
+         newContracts.put(WriterInterceptor.class, getPriority(provider));
       }
       if (isA(provider, MessageBodyWriterInterceptor.class, contracts))
       {
@@ -1309,6 +1352,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             throw new RuntimeException("Interceptor class must be annotated with @ServerInterceptor and/or @ClientInterceptor");
          }
+         newContracts.put(MessageBodyWriterInterceptor.class, 0);
 
       }
       if (isA(provider, MessageBodyReaderInterceptor.class, contracts))
@@ -1333,6 +1377,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             throw new RuntimeException("Interceptor class must be annotated with @ServerInterceptor and/or @ClientInterceptor");
          }
+         newContracts.put(MessageBodyReaderInterceptor.class, 0);
 
       }
       if (isA(provider, ContextResolver.class, contracts))
@@ -1340,6 +1385,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addContextResolver(provider, true);
+            newContracts.put(ContextResolver.class, 0);
          }
          catch (Exception e)
          {
@@ -1349,16 +1395,19 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (isA(provider, StringConverter.class, contracts))
       {
          addStringConverter(provider);
+         newContracts.put(StringConverter.class, 0);
       }
       if (isA(provider, StringParameterUnmarshaller.class, contracts))
       {
          addStringParameterUnmarshaller(provider);
+         newContracts.put(StringParameterUnmarshaller.class, 0);
       }
       if (isA(provider, InjectorFactory.class, contracts))
       {
          try
          {
             this.injectorFactory = (InjectorFactory) provider.newInstance();
+            newContracts.put(InjectorFactory.class, 0);
          }
          catch (Exception e)
          {
@@ -1397,6 +1446,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             }
             clientDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
          }
+         newContracts.put(DynamicFeature.class, 0);
       }
       if (isA(provider, Feature.class, contracts))
       {
@@ -1406,9 +1456,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             enabledFeatures.add(feature);
          }
          featureClasses.add(provider);
+         newContracts.put(Feature.class, 0);
 
       }
       providerClasses.add(provider);
+      getClassContracts().put(provider, newContracts);
    }
 
    /**
@@ -1423,6 +1475,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void registerProviderInstance(Object provider, int defaultPriority, Map<Class<?>, Integer> contracts)
    {
+      Map<Class<?>, Integer> newContracts = new HashMap<Class<?>, Integer>();
       if (isA(provider, ParamConverterProvider.class, contracts))
       {
          injectProperties(provider);
@@ -1431,12 +1484,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>(parent.getParamConverterProviders());
          }
          paramConverterProviders.add((ParamConverterProvider)provider);
+         newContracts.put(ParamConverterProvider.class, 0);
       }
       if (isA(provider, MessageBodyReader.class, contracts))
       {
          try
          {
             addMessageBodyReader((MessageBodyReader) provider);
+            newContracts.put(MessageBodyReader.class, 0);
          }
          catch (Exception e)
          {
@@ -1448,6 +1503,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addMessageBodyWriter((MessageBodyWriter) provider);
+            newContracts.put(MessageBodyWriter.class, 0);
          }
          catch (Exception e)
          {
@@ -1459,6 +1515,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addExceptionMapper((ExceptionMapper) provider);
+            newContracts.put(ExceptionMapper.class, 0);
          }
          catch (Exception e)
          {
@@ -1470,6 +1527,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addClientExceptionMapper((ClientExceptionMapper) provider);
+            newContracts.put(ClientExceptionMapper.class, 0);
          }
          catch (Exception e)
          {
@@ -1481,6 +1539,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addContextResolver((ContextResolver) provider);
+            newContracts.put(ContextResolver.class, 0);
          }
          catch (Exception e)
          {
@@ -1494,6 +1553,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             clientRequestFilters = parent.getClientRequestFilters().clone(this);
          }
          clientRequestFilters.registerSingleton((ClientRequestFilter)provider, getPriority(contracts, defaultPriority, ClientRequestFilter.class));
+         newContracts.put(ClientRequestFilter.class, getPriority(provider.getClass()));
       }
       if (isA(provider, ClientResponseFilter.class, contracts))
       {
@@ -1502,6 +1562,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             clientResponseFilters = parent.getClientResponseFilters().clone(this);
          }
          clientResponseFilters.registerSingleton((ClientResponseFilter)provider, getPriority(contracts, defaultPriority, ClientResponseFilter.class));
+         newContracts.put(ClientResponseFilter.class, getPriority(provider.getClass()));
       }
       if (isA(provider, ClientExecutionInterceptor.class, contracts))
       {
@@ -1510,6 +1571,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             clientExecutionInterceptorRegistry = parent.getClientExecutionInterceptorRegistry().cloneTo(this);
          }
          clientExecutionInterceptorRegistry.register((ClientExecutionInterceptor) provider);
+         newContracts.put(ClientExecutionInterceptor.class, 0);
       }
       if (isA(provider, PreProcessInterceptor.class, contracts))
       {
@@ -1518,6 +1580,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(this);
          }
          containerRequestFilterRegistry.registerLegacy((PreProcessInterceptor) provider);
+         newContracts.put(PreProcessInterceptor.class, 0);
       }
       if (isA(provider, ContainerRequestFilter.class, contracts))
       {
@@ -1526,6 +1589,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(this);
          }
          containerRequestFilterRegistry.registerSingleton((ContainerRequestFilter) provider);
+         newContracts.put(ContainerRequestFilter.class, getPriority(provider.getClass()));
       }
       if (isA(provider, PostProcessInterceptor.class, contracts))
       {
@@ -1534,6 +1598,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
          }
          containerResponseFilterRegistry.registerLegacy((PostProcessInterceptor) provider);
+         newContracts.put(PostProcessInterceptor.class, 0);
       }
       if (isA(provider, ContainerResponseFilter.class, contracts))
       {
@@ -1542,6 +1607,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
          }
          containerResponseFilterRegistry.registerSingleton((ContainerResponseFilter) provider);
+         newContracts.put(ContainerResponseFilter.class, getPriority(provider.getClass()));
       }
       if (isA(provider, ReaderInterceptor.class, contracts))
       {
@@ -1575,6 +1641,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             }
             clientReaderInterceptorRegistry.registerSingleton((ReaderInterceptor) provider, getPriority(contracts, defaultPriority, ReaderInterceptor.class));
          }
+         newContracts.put(ReaderInterceptor.class, getPriority(provider.getClass()));
       }
       if (isA(provider, WriterInterceptor.class, contracts))
       {
@@ -1608,6 +1675,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             }
             clientWriterInterceptorRegistry.registerSingleton((WriterInterceptor) provider, getPriority(contracts, defaultPriority, WriterInterceptor.class));
          }
+         newContracts.put(WriterInterceptor.class, getPriority(provider.getClass()));
       }
       if (isA(provider, MessageBodyWriterInterceptor.class, contracts))
       {
@@ -1631,7 +1699,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             throw new RuntimeException("Interceptor class " + provider.getClass() + " must be annotated with @ServerInterceptor and/or @ClientInterceptor");
          }
-
+         newContracts.put(MessageBodyWriterInterceptor.class, 0);
       }
       if (isA(provider, MessageBodyReaderInterceptor.class, contracts))
       {
@@ -1655,15 +1723,18 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             throw new RuntimeException("Interceptor class " + provider.getClass() + " must be annotated with @ServerInterceptor and/or @ClientInterceptor");
          }
+         newContracts.put(MessageBodyReaderInterceptor.class, 0);
 
       }
       if (isA(provider, StringConverter.class, contracts))
       {
          addStringConverter((StringConverter) provider);
+         newContracts.put(StringConverter.class, 0);
       }
       if (isA(provider, InjectorFactory.class, contracts))
       {
          this.injectorFactory = (InjectorFactory) provider;
+         newContracts.put(InjectorFactory.class, 0);
       }
       if (isA(provider, DynamicFeature.class, contracts))
       {
@@ -1697,6 +1768,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             }
             serverDynamicFeatures.add((DynamicFeature) provider);
          }
+         newContracts.put(DynamicFeature.class, 0);
       }
       if (isA(provider, Feature.class, contracts))
       {
@@ -1707,9 +1779,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             enabledFeatures.add(feature);
          }
          featureInstances.add(provider);
+         newContracts.put(Feature.class, 0);
 
       }
       providerInstances.add(provider);
+      getClassContracts().put(provider.getClass(), newContracts);
    }
 
    public <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type)
@@ -2000,7 +2074,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    @Override
    public Map<Class<?>, Integer> getContracts(Class<?> componentClass)
    {
-      throw new NotImplementedYetException();
+      if (classContracts == null && parent == null) return null;
+      else if (classContracts == null) return parent.getContracts(componentClass);
+      else return classContracts.get(componentClass);
    }
 
    @Override
