@@ -9,9 +9,9 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>RESTEASY-802-AS71</artifactId>
+  <artifactId>RESTEASY-802-AS72</artifactId>
   <packaging>jar</packaging>
-  <name>RESTEASY-802-AS71</name>
+  <name>RESTEASY-802-AS72</name>
   <url>http://maven.apache.org</url>
 
   <properties>
