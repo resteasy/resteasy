@@ -36,8 +36,12 @@
             <version>2.2.0.GA</version>
             <scope>test</scope>
         </dependency>
-
-    </dependencies>
+<dependency>
+    <groupId>commons-logging</groupId>
+    <artifactId>commons-logging</artifactId>
+    <scope>test</scope>
+</dependency>
+</dependencies>
 
     <build>
         <finalName>content-signature-example</finalName>

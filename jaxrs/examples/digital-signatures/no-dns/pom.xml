@@ -35,7 +35,11 @@
             <artifactId>resteasy-crypto</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+<dependency>
+    <groupId>commons-logging</groupId>
+    <artifactId>commons-logging</artifactId>
+    <scope>test</scope>
+</dependency>
     </dependencies>
 
     <build>
