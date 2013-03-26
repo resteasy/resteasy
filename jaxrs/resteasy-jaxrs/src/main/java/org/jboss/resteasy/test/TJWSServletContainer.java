@@ -40,6 +40,7 @@ public class TJWSServletContainer
       System.out.println("[Embedded Container Start]");
       tjws = new TJWSEmbeddedJaxrsServer();
       tjws.setDeployment(deployment);
+      tjws.setBindAddress(TestPortProvider.getHost());
       tjws.setPort(TestPortProvider.getPort());
       tjws.setRootResourcePath("");
       tjws.setSecurityDomain(null);
@@ -62,6 +63,7 @@ public class TJWSServletContainer
    {
       tjws = new TJWSEmbeddedJaxrsServer();
       tjws.setDeployment(deployment);
+      tjws.setBindAddress(TestPortProvider.getHost());
       tjws.setPort(TestPortProvider.getPort());
       tjws.setRootResourcePath(bindPath);
       tjws.setSecurityDomain(domain);
