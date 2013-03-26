@@ -36,8 +36,6 @@ public class GetRestfulTest
    @Test
    public void testGetRestful() throws Exception
    {
-	   GetRestful.getSubResourceClass(this.getClass());
-	   GetRestful.getSubResourceClasses(new Class<?>[]{this.getClass()});
       ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-802/rest/test");
       ClientResponse<String> response = request.get(String.class);
       System.out.println("status: " + response.getStatus());
