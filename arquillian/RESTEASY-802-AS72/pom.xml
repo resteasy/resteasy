@@ -46,9 +46,9 @@
                     <configuration>
                         <artifactItems>
                             <artifactItem>
-                                <groupId>org.jboss.as</groupId>
-                                <artifactId>jboss-as-build</artifactId>
-                                <version>${as-version}</version>
+                                <groupId>org.jboss.resteasy.test</groupId>
+                                <artifactId>eap-61-RESTEASY-802</artifactId>
+                                <version>1.0</version>
                                 <type>jar</type>
                                 <overWrite>false</overWrite>
                                 <outputDirectory>target</outputDirectory>
