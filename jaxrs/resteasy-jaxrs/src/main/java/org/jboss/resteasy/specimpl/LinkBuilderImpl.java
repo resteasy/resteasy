@@ -17,6 +17,7 @@ public class LinkBuilderImpl implements Link.Builder
 {
    protected LinkImpl link = new LinkImpl();
    protected UriBuilder uriBuilder;
+   protected URI baseUri = null;
 
    @Override
    public Link.Builder link(Link link)
@@ -93,21 +94,23 @@ public class LinkBuilderImpl implements Link.Builder
    public Link buildRelativized(URI uri, Object... values)
    {
       URI built = uriBuilder.build(values);
-      link.uri = ResteasyUriBuilder.relativize(uri, built);
+      URI with = built;
+      if (baseUri != null) with = baseUri.resolve(built);
+      link.uri = uri.relativize(with);
       return link;
    }
 
    @Override
    public Link.Builder baseUri(URI uri)
    {
-      uriBuilder = UriBuilder.fromUri(uri);
+      this.baseUri = uri;
       return this;
    }
 
    @Override
    public Link.Builder baseUri(String uri)
    {
-      uriBuilder = UriBuilder.fromUri(uri);
+      this.baseUri = URI.create(uri);
       return this;
    }
 }
