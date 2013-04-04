@@ -295,4 +295,13 @@ public class UriInfoTest
       }
    }
 
+   @Test
+   public void testResolve() throws Exception
+   {
+      URI uri = new URI("http://localhost/base1/base2");
+      System.out.println(uri.resolve("foo"));
+      System.out.println(uri.resolve("/foo"));
+      System.out.println(uri.resolve("../foo"));
+   }
+
 }

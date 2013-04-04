@@ -21,6 +21,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate
       String path = null;
       boolean secure = false;
       int version = NewCookie.DEFAULT_VERSION;
+      boolean httpOnly = false;
 
 
       String parts[] = newCookie.split("[;,]");
@@ -45,6 +46,8 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate
             secure = true;
          else if (name.equalsIgnoreCase("Version"))
             version = Integer.parseInt(value);
+         else if (name.equalsIgnoreCase("HttpOnly"))
+            httpOnly = true;
          else
          {
             cookieName = name;
@@ -52,7 +55,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate
          }
       }
 
-      return new NewCookie(cookieName, cookieValue, path, domain, version, comment, maxAge, secure);
+     return new NewCookie(cookieName, cookieValue, path, domain, version, comment, maxAge, null, secure, httpOnly);
 
    }
 
@@ -102,6 +105,8 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate
       }
       if (cookie.isSecure())
          b.append(";Secure");
+      if (cookie.isHttpOnly())
+         b.append(";HttpOnly");
       return b.toString();
    }
 }
