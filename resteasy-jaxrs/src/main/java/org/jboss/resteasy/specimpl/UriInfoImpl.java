@@ -207,7 +207,7 @@ public class UriInfoImpl implements UriInfo
       {
          if (param.indexOf('=') >= 0)
          {
-            String[] nv = param.split("=");
+            String[] nv = param.split("=", 2);
             try
             {
                String name = URLDecoder.decode(nv[0], "UTF-8");
