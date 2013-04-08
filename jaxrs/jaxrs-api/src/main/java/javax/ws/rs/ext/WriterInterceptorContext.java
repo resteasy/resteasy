@@ -96,8 +96,9 @@ public interface WriterInterceptorContext extends InterceptorContext {
     OutputStream getOutputStream();
 
     /**
-     * Update the output stream for the object to be written. The JAX-RS
-     * runtime is responsible for closing the output stream.
+     * Set a new output stream for the object to be written. For example, by wrapping
+     * it with another output stream. The JAX-RS runtime is responsible for closing
+     * the output stream that is set.
      *
      * @param os new output stream for the object to be written.
      */

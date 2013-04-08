@@ -83,9 +83,9 @@ public interface ReaderInterceptorContext extends InterceptorContext {
     public InputStream getInputStream();
 
     /**
-     * Update the input stream of the object to be read. For example, by wrapping
+     * Set the input stream of the object to be read. For example, by wrapping
      * it with another input stream. The JAX-RS runtime is responsible for closing
-     * the input stream.
+     * the input stream that is set.
      *
      * @param is new input stream.
      */

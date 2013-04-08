@@ -83,9 +83,9 @@ public interface ContainerRequestFilter {
      * Filter method called before a request has been dispatched to a resource.
      *
      * <p>
-     * Filters in the filter chain are ordered according to their priority
-     * (see {@link javax.annotation.Priority}). If a request filter
-     * produces a response by calling {@link ContainerRequestContext#abortWith}
+     * Filters in the filter chain are ordered according to their {@code javax.annotation.Priority}
+     * class-level annotation value.
+     * If a request filter produces a response by calling {@link ContainerRequestContext#abortWith}
      * method, the execution of the (either pre-match or post-match) request filter
      * chain is stopped and the response is passed to the corresponding response
      * filter chain (either pre-match or post-match). For example, a pre-match

@@ -60,8 +60,8 @@ public interface ClientResponseFilter {
      * (either by a {@link ClientRequestFilter request filter} or when the
      * HTTP invocation returns.
      *
-     * Filters in the filter chain are ordered according to their  priority
-     * (see {@link javax.annotation.Priority}).
+     * Filters in the filter chain are ordered according to their {@code javax.annotation.Priority}
+     * class-level annotation value.
      *
      * @param requestContext  request context.
      * @param responseContext response context.
