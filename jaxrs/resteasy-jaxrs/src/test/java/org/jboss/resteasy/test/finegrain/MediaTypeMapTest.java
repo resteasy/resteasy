@@ -187,12 +187,12 @@ public class MediaTypeMapTest
       ResteasyProviderFactory factory = new ResteasyProviderFactory();
       RegisterBuiltin.register(factory);
 
-      factory.addMessageBodyWriter(new PlainTextWriter());
+      factory.registerProviderInstance(new PlainTextWriter());
 
       // Test that application providers take precedence over builtin
       verifyPlainWriter(factory);
 
-      factory.addMessageBodyWriter(new IntegerPlainTextWriter());
+      factory.registerProviderInstance(new IntegerPlainTextWriter());
       verifyIntegerWriter(factory);
 
    }
@@ -203,12 +203,12 @@ public class MediaTypeMapTest
       // register PlainTextWriter first
       ResteasyProviderFactory factory = new ResteasyProviderFactory();
 
-      factory.addMessageBodyWriter(new PlainTextWriter());
+      factory.registerProviderInstance(new PlainTextWriter());
       RegisterBuiltin.register(factory);
 
       verifyPlainWriter(factory);
 
-      factory.addMessageBodyWriter(new IntegerPlainTextWriter());
+      factory.registerProviderInstance(new IntegerPlainTextWriter());
       verifyIntegerWriter(factory);
 
    }
@@ -219,8 +219,8 @@ public class MediaTypeMapTest
       // register PlainTextWriter first
       ResteasyProviderFactory factory = new ResteasyProviderFactory();
 
-      factory.addMessageBodyWriter(new IntegerPlainTextWriter());
-      factory.addMessageBodyWriter(new PlainTextWriter());
+      factory.registerProviderInstance(new IntegerPlainTextWriter());
+      factory.registerProviderInstance(new PlainTextWriter());
       RegisterBuiltin.register(factory);
 
       verifyIntegerWriter(factory);

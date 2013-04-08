@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.finegrain.resource;
 
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -29,7 +29,6 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  */
 public class ExtensionTest
 {
-   private static Dispatcher dispatcher;
 
    @Path("/extension")
    public static class ExtensionResource
@@ -79,16 +78,17 @@ public class ExtensionTest
    @BeforeClass
    public static void before() throws Exception
    {
-      dispatcher = EmbeddedContainer.start().getDispatcher();
-      Map<String, MediaType> mimeMap = new HashMap<String, MediaType>();
-      mimeMap.put("xml", MediaType.valueOf("application/xml"));
-      mimeMap.put("html", MediaType.valueOf("text/html"));
-      mimeMap.put("txt", MediaType.valueOf("text/plain"));
+      ResteasyDeployment deployment = new ResteasyDeployment();
+      Map<String, String> mimeMap = new HashMap<String, String>();
+      mimeMap.put("xml", "application/xml");
+      mimeMap.put("html", "text/html");
+      mimeMap.put("txt", "text/plain");
       Map<String, String> languageMap = new HashMap<String, String>();
       languageMap.put("en", "en-us");
-      dispatcher.setMediaTypeMappings(mimeMap);
-      dispatcher.setLanguageMappings(languageMap);
-      dispatcher.getRegistry().addPerRequestResource(ExtensionResource.class);
+      deployment.setMediaTypeMappings(mimeMap);
+      deployment.setLanguageExtensions(languageMap);
+      deployment.getActualResourceClasses().add(ExtensionResource.class);
+      EmbeddedContainer.start(deployment);
    }
 
    @AfterClass

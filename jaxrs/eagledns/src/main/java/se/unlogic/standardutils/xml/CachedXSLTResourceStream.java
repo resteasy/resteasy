@@ -7,14 +7,13 @@
  ******************************************************************************/
 package se.unlogic.standardutils.xml;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class CachedXSLTResourceStream extends CachedXSLTBase{
 

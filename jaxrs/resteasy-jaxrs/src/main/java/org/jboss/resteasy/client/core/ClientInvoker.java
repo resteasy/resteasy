@@ -1,15 +1,5 @@
 package org.jboss.resteasy.client.core;
 
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Providers;
-
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
@@ -20,9 +10,19 @@ import org.jboss.resteasy.client.core.extractors.EntityExtractor;
 import org.jboss.resteasy.client.core.extractors.EntityExtractorFactory;
 import org.jboss.resteasy.client.core.marshallers.ClientMarshallerFactory;
 import org.jboss.resteasy.client.core.marshallers.Marshaller;
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
+import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.MediaTypeHelper;
+
+import javax.ws.rs.Path;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.Providers;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -33,7 +33,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl implements Me
 {
    protected ResteasyProviderFactory providerFactory;
    protected String httpMethod;
-   protected UriBuilderImpl uri;
+   protected ResteasyUriBuilder uri;
    protected Method method;
    protected Class declaring;
    protected MediaType accepts;
@@ -59,7 +59,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl implements Me
       this.providerFactory = config.getProviderFactory();
       this.executor = config.getExecutor();
       accepts = MediaTypeHelper.getProduces(declaring, method, config.getServerProduces());
-      this.uri = new UriBuilderImpl();
+      this.uri = new ResteasyUriBuilder();
       this.baseUri = baseUri;
       uri.uri(baseUri);
       if (declaring.isAnnotationPresent(Path.class)) uri.path(declaring);
@@ -111,6 +111,11 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl implements Me
          }
          catch (Exception e)
          {
+            ClientExceptionMapper<Exception> mapper = providerFactory.getClientExceptionMapper(Exception.class);
+            if (mapper != null)
+            {
+               throw mapper.toException(e);
+            }
             throw new RuntimeException(e);
          }
          ClientErrorHandler errorHandler = new ClientErrorHandler(providerFactory.getClientErrorInterceptors());

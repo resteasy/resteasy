@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0-alpha-1-SNAPSHOT</version>
+        <version>3.0-beta-4</version>
     </parent>
 
     <artifactId>resteasy-jaxrs-dist</artifactId>
@@ -19,7 +19,22 @@
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
+            <artifactId>jose-jwt</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>skeleton-key-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-client</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -30,17 +45,7 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>async-http-jbossweb</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
             <artifactId>async-http-servlet-3.0</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>async-http-tomcat6</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -132,13 +137,11 @@
             <artifactId>resteasy-jdk-http</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--
         <dependency>
-            <groupId>tjws</groupId>
-            <artifactId>webserver</artifactId>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-netty</artifactId>
+            <version>${project.version}</version>
         </dependency>
-        -->
-
     </dependencies>
 
     <build>

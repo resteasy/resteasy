@@ -39,35 +39,40 @@
  */
 package javax.ws.rs.ext;
 
-import java.io.IOException;
-import javax.ws.rs.WebApplicationException;
-
 /**
  * Interface for message body writer interceptors that wrap around calls
- * to {@link javax.ws.rs.ext.MessageBodyWriter#writeTo}. Message body
- * interceptors implementing this interface MUST be annotated with
- * {@link javax.ws.rs.ext.Provider}.
+ * to {@link javax.ws.rs.ext.MessageBodyWriter#writeTo}.
  *
- * @param <T> Java type supported by corresponding message body writer
+ * <p>
+ * Providers implementing {@code WriterInterceptor} contract must be either programmatically
+ * registered in a JAX-RS runtime or must be annotated with
+ * {@link javax.ws.rs.ext.Provider &#64;Provider} annotation to be automatically discovered
+ * by the JAX-RS runtime during a provider scanning phase.
+ * Message body interceptor instances may also be discovered and
+ * bound {@link javax.ws.rs.container.DynamicFeature dynamically} to particular resource methods.
+ * </p>
  *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
- * @since 2.0
+ * @author Marek Potociar
  * @see MessageBodyWriter
+ * @since 2.0
  */
-public interface WriterInterceptor<T> {
+public interface WriterInterceptor {
 
     /**
-     * Interceptor method wrapping calls to
-     * {@link javax.ws.rs.ext.MessageBodyWriter#writeTo}. The parameters
-     * of the wrapped method called are available from <code>context</code>.
+     * Interceptor method wrapping calls to {@link MessageBodyWriter#writeTo} method.
+     * The parameters of the wrapped method called are available from {@code context}.
      * Implementations of this method SHOULD explicitly call
-     * {@link javax.ws.rs.ext.WriterInterceptorContext#proceed} to invoke
-     * the next interceptor in the chain, and ultimately the wrapped method.
+     * {@link WriterInterceptorContext#proceed} to invoke the next interceptor in the chain,
+     * and ultimately the wrapped {@code MessageBodyWriter.writeTo} method.
      *
-     * @param context invocation context
-     * @throws IOException if an IO error arises
-     * @throws WebApplicationException thrown by wrapped method
+     * @param context invocation context.
+     * @throws java.io.IOException if an IO error arises or is thrown by the wrapped
+     *                             {@code MessageBodyWriter.writeTo} method.
+     * @throws javax.ws.rs.WebApplicationException
+     *                             thrown by the wrapped {@code MessageBodyWriter.writeTo} method.
      */
-    void aroundWriteTo(WriterInterceptorContext<T> context) throws IOException, WebApplicationException;
+    void aroundWriteTo(WriterInterceptorContext context)
+            throws java.io.IOException, javax.ws.rs.WebApplicationException;
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,71 +39,467 @@
  */
 package javax.ws.rs.client;
 
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.TypeLiteral;
 
 /**
- * TODO javadoc.
+ * Uniform interface for synchronous invocation of HTTP methods.
  *
  * @author Marek Potociar
  * @since 2.0
  */
 public interface SyncInvoker {
+
     // GET
-    Response get() throws InvocationException;
 
-     <T> T get(Class<T> responseType) throws InvocationException;
+    /**
+     * Invoke HTTP GET method for the current request synchronously.
+     *
+     * @return invocation response.
+     * @throws javax.ws.rs.ProcessingException
+     *          in case the invocation processing has failed.
+     */
+    Response get();
 
-     <T> T get(TypeLiteral<T> responseType) throws InvocationException;
+    /**
+     * Invoke HTTP GET method for the current request synchronously.
+     *
+     * @param <T>          response entity type.
+     * @param responseType Java type the response entity will be converted to.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     * @throws WebApplicationException     in case the response status code of the response
+     *                                     returned by the server is not
+     *                                     {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                     successful} and the specified response type is not
+     *                                     {@link javax.ws.rs.core.Response}.
+     */
+    <T> T get(Class<T> responseType);
+
+    /**
+     * Invoke HTTP GET method for the current request synchronously.
+     *
+     * @param <T>          generic response entity type.
+     * @param responseType representation of a generic Java type the response
+     *                     entity will be converted to.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     * @throws WebApplicationException     in case the response status code of the response
+     *                                     returned by the server is not
+     *                                     {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                     successful} and the specified generic response type does not represent
+     *                                     {@link javax.ws.rs.core.Response}
+     */
+    <T> T get(GenericType<T> responseType);
 
     // PUT
-    Response put(Entity<?> entity) throws InvocationException;
 
-     <T> T put(Entity<?> entity, Class<T> responseType) throws InvocationException;
+    /**
+     * Invoke HTTP PUT method for the current request synchronously.
+     *
+     * @param entity request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *               Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *               {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *               the entity variant information.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     */
+    Response put(Entity<?> entity);
 
-     <T> T put(Entity<?> entity, TypeLiteral<T> responseType) throws InvocationException;
+    /**
+     * Invoke HTTP PUT method for the current request synchronously.
+     *
+     * @param <T>          response entity type.
+     * @param entity       request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *                     Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *                     {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *                     the entity variant information.
+     * @param responseType Java type the response entity will be converted to.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     * @throws WebApplicationException     in case the response status code of the response
+     *                                     returned by the server is not
+     *                                     {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                     successful} and the specified response type is not
+     *                                     {@link javax.ws.rs.core.Response}.
+     */
+    <T> T put(Entity<?> entity, Class<T> responseType);
+
+    /**
+     * Invoke HTTP PUT method for the current request synchronously.
+     *
+     * @param <T>          generic response entity type.
+     * @param entity       request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *                     Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *                     {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *                     the entity variant information.
+     * @param responseType representation of a generic Java type the response
+     *                     entity will be converted to.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     * @throws WebApplicationException     in case the response status code of the response
+     *                                     returned by the server is not
+     *                                     {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                     successful} and the specified generic response type does not represent
+     *                                     {@link javax.ws.rs.core.Response}.
+     */
+    <T> T put(Entity<?> entity, GenericType<T> responseType);
 
     // POST
-    Response post(Entity<?> entity) throws InvocationException;
 
-     <T> T post(Entity<?> entity, Class<T> responseType) throws InvocationException;
+    /**
+     * Invoke HTTP POST method for the current request synchronously.
+     *
+     * @param entity request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *               Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *               {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *               the entity variant information.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     */
+    Response post(Entity<?> entity);
 
-     <T> T post(Entity<?> entity, TypeLiteral<T> responseType) throws InvocationException;
+    /**
+     * Invoke HTTP POST method for the current request synchronously.
+     *
+     * @param <T>          response entity type.
+     * @param entity       request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *                     Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *                     {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *                     the entity variant information.
+     * @param responseType Java type the response entity will be converted to.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     * @throws WebApplicationException     in case the response status code of the response
+     *                                     returned by the server is not
+     *                                     {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                     successful} and the specified response type is not
+     *                                     {@link javax.ws.rs.core.Response}.
+     */
+    <T> T post(Entity<?> entity, Class<T> responseType);
+
+    /**
+     * Invoke HTTP POST method for the current request synchronously.
+     *
+     * @param <T>          generic response entity type.
+     * @param entity       request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *                     Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *                     {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *                     the entity variant information.
+     * @param responseType representation of a generic Java type the response
+     *                     entity will be converted to.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     * @throws WebApplicationException     in case the response status code of the response
+     *                                     returned by the server is not
+     *                                     {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                     successful} and the specified generic response type does not represent
+     *                                     {@link javax.ws.rs.core.Response}.
+     */
+    <T> T post(Entity<?> entity, GenericType<T> responseType);
 
     // DELETE
-    Response delete() throws InvocationException;
 
-     <T> T delete(Class<T> responseType) throws InvocationException;
+    /**
+     * Invoke HTTP DELETE method for the current request synchronously.
+     *
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     */
+    Response delete();
 
-     <T> T delete(TypeLiteral<T> responseType) throws InvocationException;
+    /**
+     * Invoke HTTP DELETE method for the current request synchronously.
+     *
+     * @param <T>          response entity type.
+     * @param responseType Java type the response entity will be converted to.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     * @throws WebApplicationException     in case the response status code of the response
+     *                                     returned by the server is not
+     *                                     {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                     successful} and the specified response type is not
+     *                                     {@link javax.ws.rs.core.Response}.
+     */
+    <T> T delete(Class<T> responseType);
+
+    /**
+     * Invoke HTTP DELETE method for the current request synchronously.
+     *
+     * @param <T>          generic response entity type.
+     * @param responseType representation of a generic Java type the response
+     *                     entity will be converted to.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     * @throws WebApplicationException     in case the response status code of the response
+     *                                     returned by the server is not
+     *                                     {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                     successful} and the specified generic response type does not represent
+     *                                     {@link javax.ws.rs.core.Response}.
+     */
+    <T> T delete(GenericType<T> responseType);
 
     // HEAD
-    Response head() throws InvocationException;
+
+    /**
+     * Invoke HTTP HEAD method for the current request synchronously.
+     *
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     */
+    Response head();
 
     // OPTIONS
-    Response options() throws InvocationException;
 
-     <T> T options(Class<T> responseType) throws InvocationException;
+    /**
+     * Invoke HTTP OPTIONS method for the current request synchronously.
+     *
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     */
+    Response options();
 
-     <T> T options(TypeLiteral<T> responseType) throws InvocationException;
+    /**
+     * Invoke HTTP OPTIONS method for the current request synchronously.
+     *
+     * @param <T>          response entity type.
+     * @param responseType Java type the response entity will be converted to.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     * @throws WebApplicationException     in case the response status code of the response
+     *                                     returned by the server is not
+     *                                     {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                     successful} and the specified response type is not
+     *                                     {@link javax.ws.rs.core.Response}.
+     */
+    <T> T options(Class<T> responseType);
+
+    /**
+     * Invoke HTTP OPTIONS method for the current request synchronously.
+     *
+     * @param <T>          generic response entity type.
+     * @param responseType representation of a generic Java type the response
+     *                     entity will be converted to.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     * @throws WebApplicationException     in case the response status code of the response
+     *                                     returned by the server is not
+     *                                     {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                     successful} and the specified generic response type does not represent
+     *                                     {@link javax.ws.rs.core.Response}.
+     */
+    <T> T options(GenericType<T> responseType);
 
     // TRACE
-    Response trace(Entity<?> entity) throws InvocationException;
 
-     <T> T trace(Entity<?> entity, Class<T> responseType) throws InvocationException;
+    /**
+     * Invoke HTTP TRACE method for the current request synchronously.
+     *
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     */
+    Response trace();
 
-     <T> T trace(Entity<?> entity, TypeLiteral<T> responseType) throws InvocationException;
+    /**
+     * Invoke HTTP TRACE method for the current request synchronously.
+     *
+     * @param <T>          response entity type.
+     * @param responseType Java type the response entity will be converted to.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     * @throws WebApplicationException     in case the response status code of the response
+     *                                     returned by the server is not
+     *                                     {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                     successful} and the specified response type is not
+     *                                     {@link javax.ws.rs.core.Response}.
+     */
+    <T> T trace(Class<T> responseType);
+
+    /**
+     * Invoke HTTP TRACE method for the current request synchronously.
+     *
+     * @param <T>          generic response entity type.
+     * @param responseType representation of a generic Java type the response
+     *                     entity will be converted to.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     * @throws WebApplicationException     in case the response status code of the response
+     *                                     returned by the server is not
+     *                                     {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                     successful} and the specified generic response type does not represent
+     *                                     {@link javax.ws.rs.core.Response}.
+     */
+    <T> T trace(GenericType<T> responseType);
 
     // ARBITRARY METHOD
-    Response method(String name) throws InvocationException;
 
-     <T> T method(String name, Class<T> responseType) throws InvocationException;
+    /**
+     * Invoke an arbitrary method for the current request synchronously.
+     *
+     * @param name method name.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     */
+    Response method(String name);
 
-     <T> T method(String name, TypeLiteral<T> responseType) throws InvocationException;
+    /**
+     * Invoke an arbitrary method for the current request synchronously.
+     *
+     * @param <T>          response entity type.
+     * @param name         method name.
+     * @param responseType Java type the response entity will be converted to.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     * @throws WebApplicationException     in case the response status code of the response
+     *                                     returned by the server is not
+     *                                     {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                     successful} and the specified response type is not
+     *                                     {@link javax.ws.rs.core.Response}.
+     */
+    <T> T method(String name, Class<T> responseType);
 
-    Response method(String name, Entity<?> entity) throws InvocationException;
+    /**
+     * Invoke an arbitrary method for the current request synchronously.
+     *
+     * @param <T>          generic response entity type.
+     * @param name         method name.
+     * @param responseType representation of a generic Java type the response
+     *                     entity will be converted to.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     * @throws WebApplicationException     in case the response status code of the response
+     *                                     returned by the server is not
+     *                                     {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                     successful} and the specified generic response type does not represent
+     *                                     {@link javax.ws.rs.core.Response}.
+     */
+    <T> T method(String name, GenericType<T> responseType);
 
-     <T> T method(String name, Entity<?> entity, Class<T> responseType) throws InvocationException;
+    /**
+     * Invoke an arbitrary method for the current request synchronously.
+     *
+     * @param name   method name.
+     * @param entity request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *               Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *               {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *               the entity variant information.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     */
+    Response method(String name, Entity<?> entity);
 
-     <T> T method(String name, Entity<?> entity, TypeLiteral<T> responseType) throws InvocationException;
+    /**
+     * Invoke an arbitrary method for the current request synchronously.
+     *
+     * @param <T>          response entity type.
+     * @param name         method name.
+     * @param entity       request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *                     Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *                     {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *                     the entity variant information.
+     * @param responseType Java type the response entity will be converted to.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     * @throws WebApplicationException     in case the response status code of the response
+     *                                     returned by the server is not
+     *                                     {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                     successful} and the specified response type is not
+     *                                     {@link javax.ws.rs.core.Response}.
+     */
+    <T> T method(String name, Entity<?> entity, Class<T> responseType);
+
+    /**
+     * Invoke an arbitrary method for the current request synchronously.
+     *
+     * @param <T>          generic response entity type.
+     * @param name         method name.
+     * @param entity       request entity, including it's full {@link javax.ws.rs.core.Variant} information.
+     *                     Any variant-related HTTP headers previously set (namely {@code Content-Type},
+     *                     {@code Content-Language} and {@code Content-Encoding}) will be overwritten using
+     *                     the entity variant information.
+     * @param responseType representation of a generic Java type the response
+     *                     entity will be converted to.
+     * @return invocation response.
+     * @throws ResponseProcessingException in case processing of a received HTTP response fails (e.g. in a filter
+     *                                     or during conversion of the response entity data to an instance
+     *                                     of a particular Java type).
+     * @throws ProcessingException         in case the request processing or subsequent I/O operation fails.
+     * @throws WebApplicationException     in case the response status code of the response
+     *                                     returned by the server is not
+     *                                     {@link javax.ws.rs.core.Response.Status.Family#SUCCESSFUL
+     *                                     successful} and the specified generic response type does not represent
+     *                                     {@link javax.ws.rs.core.Response}.
+     */
+    <T> T method(String name, Entity<?> entity, GenericType<T> responseType);
 }

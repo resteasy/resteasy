@@ -1,16 +1,5 @@
 package org.jboss.resteasy.core;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.ContextResolver;
-
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.BadRequestException;
@@ -22,6 +11,14 @@ import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.util.Types;
+
+import javax.ws.rs.WebApplicationException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -90,7 +87,7 @@ public class MethodInjectorImpl implements MethodInjector
          }
 
          Annotation[] annotations = method.getParameterAnnotations()[i];
-         params[i] = factory.getInjectorFactory().createParameterExtractor(root, method, type, genericType, annotations);
+         params[i] = factory.getInjectorFactory().createParameterExtractor(root, method, type, genericType, annotations, factory);
       }
    }
    
@@ -150,7 +147,7 @@ public class MethodInjectorImpl implements MethodInjector
       }
    }
 
-   public Object invoke(HttpRequest request, HttpResponse httpResponse, Object resource) throws Failure, ApplicationException, WebApplicationException
+   public Object invoke(HttpRequest request, HttpResponse httpResponse, Object resource) throws Failure, ApplicationException
    {
       Object[] args = injectArguments(request, httpResponse);
       
@@ -181,11 +178,6 @@ public class MethodInjectorImpl implements MethodInjector
       catch (InvocationTargetException e)
       {
          Throwable cause = e.getCause();
-         if (cause instanceof WebApplicationException)
-         {
-            WebApplicationException wae = (WebApplicationException) cause;
-            throw wae;
-         }
          throw new ApplicationException(cause);
       }
       catch (IllegalArgumentException e)

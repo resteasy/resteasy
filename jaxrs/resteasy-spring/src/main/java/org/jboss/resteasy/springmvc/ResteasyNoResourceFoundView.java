@@ -3,6 +3,7 @@ package org.jboss.resteasy.springmvc;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.springframework.web.servlet.View;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,16 +13,16 @@ import java.util.Map;
 @SuppressWarnings("rawtypes")
 public class ResteasyNoResourceFoundView implements View
 {
-   private SynchronousDispatcher dispatcher;
+   private ResteasyDeployment deployment;
 
-   public SynchronousDispatcher getDispatcher()
+   public ResteasyDeployment getDeployment()
    {
-      return dispatcher;
+      return deployment;
    }
 
-   public void setDispatcher(SynchronousDispatcher dispatcher)
+   public void setDeployment(ResteasyDeployment deployment)
    {
-      this.dispatcher = dispatcher;
+      this.deployment = deployment;
    }
 
    public String getContentType()
@@ -33,12 +34,13 @@ public class ResteasyNoResourceFoundView implements View
                       HttpServletResponse response) throws Exception
    {
       final Failure failure = getFailure(model);
-      new ResteasyWebHandlerTemplate<Void>(dispatcher.getProviderFactory())
+      new ResteasyWebHandlerTemplate<Void>(deployment.getProviderFactory())
       {
          protected Void handle(ResteasyRequestWrapper requestWrapper,
                                HttpResponse response) throws Exception
          {
-            dispatcher.handleException(requestWrapper.getHttpRequest(), response, failure);
+            SynchronousDispatcher dispatcher = (SynchronousDispatcher)deployment.getDispatcher();
+            dispatcher.writeException(requestWrapper.getHttpRequest(), response, failure);
             return null;
          }
 

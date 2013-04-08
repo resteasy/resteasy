@@ -21,7 +21,8 @@ import javax.ws.rs.QueryParam;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 import static org.jboss.resteasy.util.HttpClient4xUtils.updateQuery;
 
 /**

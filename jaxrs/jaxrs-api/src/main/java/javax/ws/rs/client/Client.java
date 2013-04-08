@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,8 +41,12 @@ package javax.ws.rs.client;
 
 import java.net.URI;
 
+import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.UriBuilder;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 
 /**
  * Client is the main entry point to the fluent API used to build and execute client
@@ -56,33 +60,10 @@ import javax.ws.rs.core.UriBuilder;
  * resources.
  *
  * @author Marek Potociar
- * @see Configuration
+ * @see javax.ws.rs.core.Configurable
  * @since 2.0
  */
-public interface Client {
-
-    /**
-     * Client instance builder. Provided by {@link javax.ws.rs.ext.ClientBuilderFactory}.
-     *
-     * @param <C> client type.
-     */
-    interface Builder<C extends Client> {
-
-        /**
-         * Build a client instance of a specific type.
-         *
-         * @return new client instance.
-         */
-        C build();
-
-        /**
-         * Build a client instance using an initial configuration.
-         *
-         * @param configuration configures the built client instance.
-         * @return new configured client instance.
-         */
-        C build(Configuration configuration);
-    }
+public interface Client extends Configurable<Client> {
 
     /**
      * Close client instance and all it's associated resources. Subsequent calls
@@ -90,88 +71,72 @@ public interface Client {
      * other method on the client instance would result in an {@link IllegalStateException}
      * being thrown.
      * <p/>
-     * Calling this method effectively invalidates all {@link Target resource targets}
+     * Calling this method effectively invalidates all {@link WebTarget resource targets}
      * produced by the client instance. Invoking any method on such targets once the client
      * is closed would result in an {@link IllegalStateException} being thrown.
      */
-    void close();
-
-    /**
-     * Get access to the underlying {@link Configuration configuration} of the
-     * client instance.
-     *
-     * @return a mutable client configuration.
-     */
-    public Configuration configuration();
+    public void close();
 
     /**
      * Build a new web resource target.
      *
-     * @param uri web resource URI.
+     * @param uri web resource URI. May contain template parameters. Must not be {@code null}.
      * @return web resource target bound to the provided URI.
-     * @throws IllegalArgumentException in case the supplied string is not a valid URI.
-     * @throws NullPointerException in case the supplied argument is null.
+     * @throws IllegalArgumentException in case the supplied string is not a valid URI template.
+     * @throws NullPointerException     in case the supplied argument is {@code null}.
      */
-    Target target(String uri) throws IllegalArgumentException, NullPointerException;
+    public WebTarget target(String uri);
 
     /**
      * Build a new web resource target.
      *
-     * @param uri web resource URI.
+     * @param uri web resource URI. Must not be {@code null}.
      * @return web resource target bound to the provided URI.
-     * @throws NullPointerException in case the supplied argument is null.
+     * @throws NullPointerException in case the supplied argument is {@code null}.
      */
-    Target target(URI uri) throws NullPointerException;
+    public WebTarget target(URI uri);
 
     /**
      * Build a new web resource target.
      *
-     * @param uriBuilder web resource URI represented as URI builder.
+     * @param uriBuilder web resource URI represented as URI builder. Must not be {@code null}.
      * @return web resource target bound to the provided URI.
-     * @throws NullPointerException in case the supplied argument is null.
+     * @throws NullPointerException in case the supplied argument is {@code null}.
      */
-    Target target(UriBuilder uriBuilder) throws NullPointerException;
+    public WebTarget target(UriBuilder uriBuilder);
 
     /**
      * Build a new web resource target.
      *
-     * @param link link to a web resource.
+     * @param link link to a web resource. Must not be {@code null}.
      * @return web resource target bound to the linked web resource.
-     * @throws NullPointerException in case the supplied argument is null.
+     * @throws NullPointerException in case the supplied argument is {@code null}.
      */
-    Target target(Link link) throws NullPointerException;
+    public WebTarget target(Link link);
 
     /**
-     * <p>Build an invocation from a link. The method and URI are obtained from the
-     * link. The HTTP Accept header is initialized to the value of the "produces"
-     * parameter in the link. If the operation requires an entity, use the overloaded
-     * form of this method.</p>
+     * <p>Build an invocation builder from a link. It uses the URI and the type
+     * of the link to initialize the invocation builder. The type is used as the
+     * initial value for the HTTP Accept header, if present.</p>
      *
-     * <p>This method will throw an {@link java.lang.IllegalArgumentException} if there
-     * is not enough information to build an invocation (e.g. no HTTP method or entity
-     * when required).</p>
-     *
-     * @param link link to build invocation from.
-     * @return newly created invocation.
-     * @throws NullPointerException in case argument is null.
-     * @throws IllegalArgumentException in case link is incomplete to build invocation.
+     * @param link link to build invocation from. Must not be {@code null}.
+     * @return newly created invocation builder.
+     * @throws NullPointerException     in case link is {@code null}.
      */
-    Invocation invocation(Link link) throws NullPointerException, IllegalArgumentException;
+    public Invocation.Builder invocation(Link link);
 
     /**
-     * <p>Build an invocation from a link. The method and URI are obtained from the
-     * link. The HTTP Accept header is initialized to the value of the "produces"
-     * parameter in the link.If the operation does not require an entity, use the
-     * overloaded form of this method.</p>
+     * Get the SSL context configured to be used with the current client run-time.
      *
-     * <p>This method will throw an {@link java.lang.IllegalArgumentException} if there
-     * is not enough information to build and invocation (e.g. no HTTP method).</p>
-     *
-     * @param link link to build invocation from.
-     * @param entity request entity to be send when the invocation is invoked.
-     * @return newly created invocation.
-     * @throws NullPointerException in case argument is null.
-     * @throws IllegalArgumentException in case link is incomplete to build invocation.
+     * @return SSL context configured to be used with the current client run-time.
      */
-    Invocation invocation(Link link, Entity<?> entity) throws NullPointerException, IllegalArgumentException;
+    public SSLContext getSslContext();
+
+    /**
+     * Get the hostname verifier configured in the client or {@code null} in case
+     * no hostname verifier has been configured.
+     *
+     * @return client hostname verifier or {@code null} if not set.
+     */
+    public HostnameVerifier getHostnameVerifier();
 }

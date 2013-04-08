@@ -2,10 +2,10 @@ package org.jboss.resteasy.client;
 
 import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.client.core.ClientInterceptorRepositoryImpl;
-import org.jboss.resteasy.client.core.ClientMessageBodyWriterContext;
 import org.jboss.resteasy.core.interception.ClientExecutionContextImpl;
+import org.jboss.resteasy.core.interception.ClientWriterInterceptorContext;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.LinkHeader;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
@@ -20,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.jboss.resteasy.util.HttpHeaderNames.*;
+import static org.jboss.resteasy.util.HttpHeaderNames.ACCEPT;
 
 /**
  * Create a hand coded request to send to the server.  You call methods like accept(), body(), pathParameter()
@@ -39,16 +40,17 @@ import static org.jboss.resteasy.util.HttpHeaderNames.*;
  * After an execution of a request, the internal state remains the same.  You can invoke the request again.
  * You can clear the request with the clear() method.
  *
+ * @deprecated
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-
+@Deprecated
 @SuppressWarnings("unchecked")
 public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cloneable
 {
    protected ResteasyProviderFactory providerFactory;
-   protected UriBuilderImpl uri;
+   protected ResteasyUriBuilder uri;
    protected ClientExecutor executor;
    protected MultivaluedMap<String, Object> headers;
    protected MultivaluedMap<String, String> queryParameters;
@@ -110,7 +112,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    public ClientRequest(UriBuilder uri, ClientExecutor executor,
                         ResteasyProviderFactory providerFactory)
    {
-      this.uri = (UriBuilderImpl) uri;
+      this.uri = (ResteasyUriBuilder) uri;
       this.executor = executor;
       if (providerFactory instanceof ProviderFactoryDelegate)
       {
@@ -148,7 +150,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
 
    private static UriBuilder getBuilder(String uriTemplate)
    {
-      return new UriBuilderImpl().uriTemplate(uriTemplate);
+      return new ResteasyUriBuilder().uriTemplate(uriTemplate);
    }
 
    public boolean followRedirects()
@@ -418,33 +420,45 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
 
    public ClientResponse execute() throws Exception
    {
-      if (linkHeader != null) header("Link", linkHeader);
-
-      if (getReaderInterceptorList().isEmpty())
-         setReaderInterceptors(providerFactory
-                 .getClientMessageBodyReaderInterceptorRegistry().bindForList(
-                         null, null));
-
-      if (getExecutionInterceptorList().isEmpty())
+      Providers current = ResteasyProviderFactory.getContextData(Providers.class);
+      ResteasyProviderFactory.pushContext(Providers.class, providerFactory);
+      try
       {
-         setExecutionInterceptors(providerFactory
-                 .getClientExecutionInterceptorRegistry().bindForList(null, null));
-      }
 
-      BaseClientResponse response = null;
-      if (getExecutionInterceptorList().isEmpty())
-      {
-         response = (BaseClientResponse) executor.execute(this);
+         if (linkHeader != null) header("Link", linkHeader);
+
+         if (getReaderInterceptorList().isEmpty())
+         {
+            setReaderInterceptors(providerFactory.getClientReaderInterceptorRegistry().postMatch(null, null));
+         }
+
+         if (getExecutionInterceptorList().isEmpty())
+         {
+            setExecutionInterceptors(providerFactory
+                    .getClientExecutionInterceptorRegistry().bindForList(null, null));
+         }
+
+         BaseClientResponse response = null;
+         if (getExecutionInterceptorList().isEmpty())
+         {
+            response = (BaseClientResponse) executor.execute(this);
+         }
+         else
+         {
+            ClientExecutionContextImpl ctx = new ClientExecutionContextImpl(
+                    getExecutionInterceptorList(), executor, this);
+            response = (BaseClientResponse) ctx.proceed();
+         }
+         response.setAttributes(attributes);
+         response.setReaderInterceptors(getReaderInterceptors());
+         return response;
       }
-      else
+      finally
       {
-         ClientExecutionContextImpl ctx = new ClientExecutionContextImpl(
-                 getExecutionInterceptorList(), executor, this);
-         response = (BaseClientResponse) ctx.proceed();
+         ResteasyProviderFactory.popContextData(Providers.class);
+         if (current != null) ResteasyProviderFactory.pushContext(Providers.class, current);
+
       }
-      response.setAttributes(attributes);
-      response.setMessageBodyReaderInterceptors(getReaderInterceptors());
-      return response;
    }
 
    public void writeRequestBody(MultivaluedMap<String, Object> headers,
@@ -457,9 +471,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
 
       if (getWriterInterceptorList().isEmpty())
       {
-         setWriterInterceptors(providerFactory
-                 .getClientMessageBodyWriterInterceptorRegistry().bindForList(
-                         null, null));
+         setWriterInterceptors(providerFactory.getClientWriterInterceptorRegistry().postMatch(null, null));
       }
       MessageBodyWriter writer = providerFactory
               .getMessageBodyWriter(bodyType, bodyGenericType,
@@ -469,7 +481,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
          throw new RuntimeException("could not find writer for content-type "
                  + bodyContentType + " type: " + bodyType.getName());
       }
-      new ClientMessageBodyWriterContext(getWriterInterceptors(), writer, body,
+      new ClientWriterInterceptorContext(getWriterInterceptors(), writer, body,
               bodyType, bodyGenericType, bodyAnnotations, bodyContentType,
               headers, outputStream, attributes).proceed();
    }
@@ -609,7 +621,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
    {
       BaseClientResponse response = (BaseClientResponse) post();
       if (response.getStatus() != 201) throw new ClientResponseFailure(response);
-      return response.getLocation();
+      return response.getLocationLink();
    }
 
 
@@ -721,7 +733,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
       if (finalUri != null)
          return finalUri;
 
-      UriBuilderImpl builder = (UriBuilderImpl) uri.clone();
+      ResteasyUriBuilder builder = (ResteasyUriBuilder) uri.clone();
       if (matrixParameters != null)
       {
          for (Map.Entry<String, List<String>> entry : matrixParameters
@@ -769,7 +781,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
       {
          ClientRequest clone = (ClientRequest) this.clone();
          clone.clear();
-         clone.uri = new UriBuilderImpl();
+         clone.uri = new ResteasyUriBuilder();
          clone.uri.uri(uri);
          return clone;
       }

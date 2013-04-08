@@ -7,7 +7,6 @@ import org.jboss.resteasy.annotations.providers.jaxb.XmlHeader;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.spi.interception.DecoratorProcessor;
 import org.jboss.resteasy.test.BaseResourceTest;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +18,8 @@ import javax.ws.rs.core.MediaType;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.lang.annotation.Annotation;
+
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * This tests decorators in general as well as the @XmlHeader and @Stylesheet annotations

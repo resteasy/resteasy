@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+      version="3.0">
+    <context-param>
+        <param-name>skeleton.key.keyStorePassword</param-name>
+        <param-value>password</param-value>
+    </context-param>
+    <context-param>
+        <param-name>skeleton.key.keyStoreFile</param-name>
+        <param-value>C:/Users/William/skeleton.jks</param-value>
+    </context-param>
+    <context-param>
+        <param-name>skeleton.key.alias</param-name>
+        <param-value>skeleton</param-value>
+    </context-param>
+</web-app>

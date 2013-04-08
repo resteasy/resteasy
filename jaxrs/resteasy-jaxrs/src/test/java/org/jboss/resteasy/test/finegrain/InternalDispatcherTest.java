@@ -28,10 +28,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-
 import java.util.Stack;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 /**
  * Test for InternalDispatcher
@@ -226,7 +225,7 @@ public class InternalDispatcherTest
             dispatcher.getRegistry().addSingletonResource(forwardingResource);
    }
 
-@Before
+   @Before
    public void setup() {
        forwardingResource.uriStack.clear();
    }

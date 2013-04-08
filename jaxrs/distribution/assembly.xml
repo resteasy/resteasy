@@ -15,12 +15,37 @@
             <outputDirectory></outputDirectory>
         </fileSet>
         <fileSet>
+            <directory>../jboss-modules/target</directory>
+            <includes>
+                <include>*.zip</include>
+            </includes>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
             <directory>../target/site/apidocs</directory>
             <outputDirectory>docs/javadocs</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>../examples/spring-hibernate-contacts</directory>
             <outputDirectory>examples/spring-hibernate</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>../examples/oauth1-examples</directory>
+            <outputDirectory>examples/oauth1-examples</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>../examples/oauth2-as7-example</directory>
+            <outputDirectory>examples/oauth2-as7-example</outputDirectory>
             <excludes>
                 <exclude>**/.svn/**</exclude>
                 <exclude>**/target/**</exclude>
@@ -82,6 +107,15 @@
             </excludes>
         </fileSet>
         <fileSet>
+            <directory>../examples/simple</directory>
+            <outputDirectory>examples/jaxrs-2.0</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
             <directory>../examples/async-job-service</directory>
             <outputDirectory>examples/async-job-service</outputDirectory>
             <excludes>
@@ -127,6 +161,15 @@
             </excludes>
         </fileSet>
         <fileSet>
+            <directory>../examples/oreilly-workbook-as7</directory>
+            <outputDirectory>examples/oreilly-workbook-as7</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
             <directory>../docbook/target/docbook/publish/en-US</directory>
             <outputDirectory>docs/userguide</outputDirectory>
         </fileSet>
@@ -137,6 +180,7 @@
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <includes>
                 <include>org.jboss.resteasy:resteasy-jaxrs</include>
+                <include>org.jboss.resteasy:resteasy-client</include>
                 <include>org.jboss.resteasy:resteasy-jaxb-provider</include>
                 <include>org.jboss.resteasy:resteasy-jettison-provider</include>
                 <include>org.jboss.resteasy:resteasy-fastinfoset-provider</include>
@@ -146,19 +190,20 @@
                 <include>org.jboss.resteasy:resteasy-yaml-provider</include>
                 <include>org.jboss.resteasy:resteasy-spring</include>
                 <include>org.jboss.resteasy:resteasy-guice</include>
-                <include>org.jboss.resteasy:async-http-jbossweb</include>
                 <include>org.jboss.resteasy:async-http-servlet-3.0</include>
-                <include>org.jboss.resteasy:async-http-tomcat6</include>
                 <include>org.jboss.resteasy:resteasy-cache-core</include>
                 <include>org.jboss.resteasy:resteasy-oauth</include>
                 <include>org.jboss.resteasy:resteasy-cdi</include>
                 <include>org.jboss.resteasy:resteasy-jsapi</include>
                 <include>org.jboss.resteasy:resteasy-links</include>
                 <include>org.jboss.resteasy:resteasy-crypto</include>
+                <include>org.jboss.resteasy:jose-jwt</include>
+                <include>org.jboss.resteasy:skeleton-key-core</include>
             </includes>
             <excludes>
                 <exclude>org.jboss.resteasy:tjws</exclude>
                 <exclude>org.jboss.resteasy:resteasy-jdk-http</exclude>
+                <exclude>org.jboss.resteasy:resteasy-netty</exclude>
                 <!-- <include>tjws:webserver</include> -->
                 <exclude>javax.servlet:servlet-api</exclude>
             </excludes>
@@ -168,9 +213,9 @@
             <unpack>false</unpack>
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <includes>
+                <include>org.jboss.resteasy:resteasy-netty</include>
                 <include>org.jboss.resteasy:tjws</include>
                 <include>org.jboss.resteasy:resteasy-jdk-http</include>
-                <!-- include>tjws:webserver</include>  -->
                 <include>javax.servlet:servlet-api</include>
             </includes>
             <outputDirectory>embedded-lib</outputDirectory>

@@ -1,15 +1,14 @@
 package org.jboss.resteasy.plugins.interceptors.encoding;
 
-import org.jboss.resteasy.annotations.interception.ClientInterceptor;
-import org.jboss.resteasy.annotations.interception.EncoderPrecedence;
-import org.jboss.resteasy.annotations.interception.ServerInterceptor;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterContext;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
 
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.WriterInterceptor;
+import javax.ws.rs.ext.WriterInterceptorContext;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.zip.GZIPOutputStream;
@@ -19,10 +18,8 @@ import java.util.zip.GZIPOutputStream;
  * @version $Revision: 1 $
  */
 @Provider
-@ServerInterceptor
-@ClientInterceptor
-@EncoderPrecedence
-public class GZIPEncodingInterceptor implements MessageBodyWriterInterceptor
+@Priority(Priorities.ENTITY_CODER)
+public class GZIPEncodingInterceptor implements WriterInterceptor
 {
    public static class EndableGZIPOutputStream extends GZIPOutputStream
    {
@@ -72,7 +69,8 @@ public class GZIPEncodingInterceptor implements MessageBodyWriterInterceptor
       }
    }
 
-   public void write(MessageBodyWriterContext context) throws IOException, WebApplicationException
+   @Override
+   public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException
    {
       Object encoding = context.getHeaders().getFirst(HttpHeaders.CONTENT_ENCODING);
 

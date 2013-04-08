@@ -1,15 +1,15 @@
 package se.unlogic.eagledns;
 
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.xbill.DNS.DClass;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Zone;
 import org.xbill.DNS.ZoneTransferException;
 import org.xbill.DNS.ZoneTransferIn;
+
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.List;
 
 
 public class CachedSecondaryZone {

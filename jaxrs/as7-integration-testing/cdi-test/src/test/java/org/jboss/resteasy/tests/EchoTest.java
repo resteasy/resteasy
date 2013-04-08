@@ -1,9 +1,6 @@
 package org.jboss.resteasy.tests;
 
 import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.tests.XFormat;
-import org.jboss.resteasy.tests.XFormatProvider;
 import org.junit.Assert;
 import org.junit.Test;
 

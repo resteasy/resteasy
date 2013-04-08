@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.client;
 
-import org.jboss.resteasy.client.impl.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -16,14 +17,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.InvocationCallback;
-import javax.ws.rs.client.InvocationException;
 import javax.ws.rs.core.Response;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.Future;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -93,7 +93,7 @@ public class AsyncInvokeTest extends BaseResourceTest
    @Test
    public void testAsync() throws Exception
    {
-      ResteasyClient client = new ResteasyClient();
+      ResteasyClient client = new ResteasyClientBuilder().build();
 
       {
          Future<Response> future = client.target(generateURL("/test")).request().async().get();
@@ -177,7 +177,7 @@ public class AsyncInvokeTest extends BaseResourceTest
    @Test
    public void testAsyncCallback() throws Exception
    {
-      ResteasyClient client = new ResteasyClient();
+      ResteasyClient client = new ResteasyClientBuilder().build();
 
       {
          ok = false;
@@ -192,7 +192,7 @@ public class AsyncInvokeTest extends BaseResourceTest
             }
 
             @Override
-            public void failed(InvocationException error)
+            public void failed(Throwable error)
             {
             }
          });
@@ -216,7 +216,7 @@ public class AsyncInvokeTest extends BaseResourceTest
             }
 
             @Override
-            public void failed(InvocationException error)
+            public void failed(Throwable error)
             {
             }
          });
@@ -238,7 +238,7 @@ public class AsyncInvokeTest extends BaseResourceTest
             }
 
             @Override
-            public void failed(InvocationException error)
+            public void failed(Throwable error)
             {
             }
          });
@@ -261,7 +261,7 @@ public class AsyncInvokeTest extends BaseResourceTest
             }
 
             @Override
-            public void failed(InvocationException error)
+            public void failed(Throwable error)
             {
             }
          });
@@ -282,7 +282,7 @@ public class AsyncInvokeTest extends BaseResourceTest
              }
 
              @Override
-             public void failed(InvocationException error)
+             public void failed(Throwable error)
              {
              }
           });
@@ -305,7 +305,7 @@ public class AsyncInvokeTest extends BaseResourceTest
             }
 
             @Override
-            public void failed(InvocationException error)
+            public void failed(Throwable error)
             {
             }
          });
@@ -328,7 +328,7 @@ public class AsyncInvokeTest extends BaseResourceTest
              }
 
              @Override
-             public void failed(InvocationException error)
+             public void failed(Throwable error)
              {
              }
           });
@@ -351,7 +351,7 @@ public class AsyncInvokeTest extends BaseResourceTest
             }
 
             @Override
-            public void failed(InvocationException error)
+            public void failed(Throwable error)
             {
             }
          });
@@ -374,7 +374,7 @@ public class AsyncInvokeTest extends BaseResourceTest
              }
 
              @Override
-             public void failed(InvocationException error)
+             public void failed(Throwable error)
              {
              }
           });
@@ -397,7 +397,7 @@ public class AsyncInvokeTest extends BaseResourceTest
             }
 
             @Override
-            public void failed(InvocationException error)
+            public void failed(Throwable error)
             {
             }
          });
@@ -412,7 +412,7 @@ public class AsyncInvokeTest extends BaseResourceTest
    @Test
    public void testSubmit() throws Exception
    {
-      ResteasyClient client = new ResteasyClient();
+      ResteasyClient client = new ResteasyClientBuilder().build();
 
       {
          Future<Response> future = client.target(generateURL("/test")).request().buildGet().submit();

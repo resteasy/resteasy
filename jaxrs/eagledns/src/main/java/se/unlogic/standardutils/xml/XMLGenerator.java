@@ -7,16 +7,8 @@
  ******************************************************************************/
 package se.unlogic.standardutils.xml;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
 import se.unlogic.standardutils.annotations.NoAnnotatedFieldsFoundException;
 import se.unlogic.standardutils.arrays.ArrayUtils;
 import se.unlogic.standardutils.date.DateUtils;
@@ -24,6 +16,13 @@ import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.string.DummyStringyfier;
 import se.unlogic.standardutils.string.StringUtils;
 import se.unlogic.standardutils.string.Stringyfier;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class XMLGenerator {
 

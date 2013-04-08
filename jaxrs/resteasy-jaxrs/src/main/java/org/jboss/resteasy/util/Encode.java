@@ -78,6 +78,7 @@ public class Encode
       System.arraycopy(pathEncoding, 0, matrixParameterEncoding, 0, pathEncoding.length);
       matrixParameterEncoding[';'] = "%3B";
       matrixParameterEncoding['='] = "%3D";
+      matrixParameterEncoding['/'] = "%2F"; // RESTEASY-729
       System.arraycopy(pathEncoding, 0, pathSegmentEncoding, 0, pathEncoding.length);
       pathSegmentEncoding['/'] = "%2F";
       /*
@@ -270,7 +271,7 @@ public class Encode
       return buf.toString();
    }
 
-   private static boolean savePathParams(String segment, StringBuffer newSegment, List<String> params)
+   public static boolean savePathParams(String segment, StringBuffer newSegment, List<String> params)
    {
       boolean foundParam = false;
       // Regular expressions can have '{' and '}' characters.  Replace them to do match
@@ -340,6 +341,33 @@ public class Encode
       result = encodeNonCodes(result);
       return result;
    }
+
+   /**
+    * Encode via <a href="http://ietf.org/rfc/rfc3986.txt">RFC 3986</a>.  PCHAR is allowed allong with '/'
+    * <p/>
+    * unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
+    * sub-delims  = "!" / "$" / "&" / "'" / "(" / ")"
+    * / "*" / "+" / "," / ";" / "="
+    * pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
+    */
+   public static String encodePathSegmentAsIs(String segment)
+   {
+      return encodeFromArray(segment, pathSegmentEncoding, true);
+   }
+
+   /**
+    * Keep any valid encodings from string i.e. keep "%2D" but don't keep "%p"
+    *
+    * @param segment
+    * @return
+    */
+   public static String encodePathSegmentSaveEncodings(String segment)
+   {
+      String result = encodeFromArray(segment, pathSegmentEncoding, false);
+      result = encodeNonCodes(result);
+      return result;
+   }
+
 
    /**
     * Encodes everything of a query parameter name or value.
@@ -420,7 +448,7 @@ public class Encode
       return encoded;
    }
 
-   private static String pathParamReplacement(String segment, List<String> params)
+   public static String pathParamReplacement(String segment, List<String> params)
    {
       StringBuffer newSegment = new StringBuffer();
       Matcher matcher = PARAM_REPLACEMENT.matcher(segment);
@@ -430,6 +458,7 @@ public class Encode
          String replacement = params.get(i++);
          // double encode slashes, so that slashes stay where they are 
          replacement = replacement.replace("\\", "\\\\");
+         replacement = replacement.replace("$", "\\$");
          matcher.appendReplacement(newSegment, replacement);
       }
       matcher.appendTail(newSegment);

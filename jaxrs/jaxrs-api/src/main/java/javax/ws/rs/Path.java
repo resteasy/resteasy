@@ -50,30 +50,30 @@ import java.lang.annotation.Target;
  * requests for.
  *
  * <p>Paths are relative. For an annotated class the base URI is the
- * application path, see {@link javax.ws.rs.ApplicationPath}. For an annotated
+ * application path, see {@link ApplicationPath}. For an annotated
  * method the base URI is the
  * effective URI of the containing class. For the purposes of absolutizing a
  * path against the base URI , a leading '/' in a path is
  * ignored and base URIs are treated as if they ended in '/'. E.g.:</p>
  *
  * <pre>&#64;Path("widgets")
- *public class WidgetsResource {
+ * public class WidgetsResource {
  *  &#64;GET
  *  String getList() {...}
  *
  *  &#64;GET &#64;Path("{id}")
  *  String getWidget(&#64;PathParam("id") String id) {...}
- *}</pre>
+ * }</pre>
  *
  * <p>In the above, if the application path is
- * <code>catalogue</code> and the application is deployed at
- * <code>http://example.com/</code>, then <code>GET</code> requests for
- * <code>http://example.com/catalogue/widgets</code> will be handled by the
- * <code>getList</code> method while requests for
+ * {@code catalogue} and the application is deployed at
+ * {@code http://example.com/}, then {@code GET} requests for
+ * {@code http://example.com/catalogue/widgets} will be handled by the
+ * {@code getList} method while requests for
  * <code>http://example.com/catalogue/widgets/<i>nnn</i></code> (where
  * <code><i>nnn</i></code> is some value) will be handled by the
- * <code>getWidget</code> method. The same would apply if the value of either
- * <code>&#64;Path</code> annotation started with '/'.
+ * {@code getWidget} method. The same would apply if the value of either
+ * {@code @Path} annotation started with '/'.</p>
  *
  * <p>Classes and methods may also be annotated with {@link Consumes} and
  * {@link Produces} to filter the requests they will receive.</p>
@@ -116,7 +116,7 @@ public @interface Path {
      * lead to a template parameter matching unexpected URI paths. See
      * {@link <a href="http://download.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html">Pattern</a>}
      * for further information on the syntax of regular expressions.
-     * Values of template parameters may be extracted using {@link PathParam}.
+     * Values of template parameters may be extracted using {@link PathParam}.</p>
      *
      * <p>The literal part of the supplied value (those characters
      * that are not part of a template parameter) is automatically percent

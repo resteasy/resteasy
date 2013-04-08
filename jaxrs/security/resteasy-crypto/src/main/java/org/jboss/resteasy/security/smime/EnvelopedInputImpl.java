@@ -1,12 +1,12 @@
 package org.jboss.resteasy.security.smime;
 
-import org.bouncycastle.cms.RecipientId;
 import org.bouncycastle.cms.RecipientInformation;
 import org.bouncycastle.cms.RecipientInformationStore;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientId;
 import org.bouncycastle.mail.smime.SMIMEEnveloped;
 import org.bouncycastle.mail.smime.SMIMEUtil;
 import org.jboss.resteasy.core.Headers;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GenericType;
 
 import javax.mail.Header;
@@ -194,6 +194,8 @@ public class EnvelopedInputImpl implements EnvelopedInput
       {
          throw new RuntimeException("Could not find a message body reader for type: " + t.getClass().getName());
       }
+      Providers old = ResteasyProviderFactory.getContextData(Providers.class);
+      ResteasyProviderFactory.pushContext(Providers.class, providers);
       try
       {
          InputStream inputStream = decrypted.getInputStream();
@@ -202,6 +204,11 @@ public class EnvelopedInputImpl implements EnvelopedInput
       catch (Exception e1)
       {
          throw new RuntimeException(e1);
+      }
+      finally
+      {
+         ResteasyProviderFactory.popContextData(Providers.class);
+         if (old != null) ResteasyProviderFactory.pushContext(Providers.class, old);
       }
    }
 

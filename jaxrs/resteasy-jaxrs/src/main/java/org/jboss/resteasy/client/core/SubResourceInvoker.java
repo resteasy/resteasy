@@ -1,18 +1,14 @@
 package org.jboss.resteasy.client.core;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.net.URI;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-
-import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ProxyBuilder;
 import org.jboss.resteasy.client.ProxyConfig;
 import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.core.extractors.EntityExtractorFactory;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.net.URI;
 
 public class SubResourceInvoker implements MethodInvoker
 {

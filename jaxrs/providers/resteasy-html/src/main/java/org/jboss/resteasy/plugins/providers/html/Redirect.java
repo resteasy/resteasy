@@ -1,16 +1,15 @@
 package org.jboss.resteasy.plugins.providers.html;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import org.jboss.resteasy.util.HttpHeaderNames;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
-
-import org.jboss.resteasy.util.HttpHeaderNames;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class Redirect implements Renderable
 {

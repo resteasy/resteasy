@@ -7,12 +7,11 @@
  ******************************************************************************/
 package se.unlogic.standardutils.dao.querys;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import se.unlogic.standardutils.dao.BeanResultSetPopulator;
 
 import javax.sql.DataSource;
-
-import se.unlogic.standardutils.dao.BeanResultSetPopulator;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public abstract class PopulatedQuery<ReturnType> extends PreparedStatementQuery {
 

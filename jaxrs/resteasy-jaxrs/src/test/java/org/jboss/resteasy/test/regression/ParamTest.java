@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.regression;
 
 import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.core.ClientProxy;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.BeforeClass;

@@ -1,0 +1,105 @@
+<chapter id="Maven_and_RESTEasy">
+   <title>Maven and RESTEasy</title>
+   <para>
+JBoss's Maven Repository is at:
+      http://repository.jboss.org/nexus/content/groups/public/
+   </para>
+   <para>
+
+      Here's the pom.xml fragment to use. Resteasy is modularized into various components.  Mix and max as you see fit.  Please replace 3.0-beta-4 with the current Resteasy version you want to use.
+   </para>
+<programlisting>
+<![CDATA[
+<repositories>
+   <repository>
+      <id>jboss</id>
+      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+   </repository>
+</repositories>
+<dependencies>
+   <!-- core library -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxrs</artifactId>
+      <version>3.0-beta-4</version>
+   </dependency>
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-client</artifactId>
+      <version>3.0-beta-4</version>
+   </dependency>
+
+   <!-- optional modules -->
+
+   <!-- JAXB support -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxb-provider</artifactId>
+      <version>3.0-beta-4</version>
+   </dependency>
+   <!-- multipart/form-data and multipart/mixed support -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-multipart-provider</artifactId>
+      <version>3.0-beta-4</version>
+   </dependency>
+   <!-- Resteasy Server Cache -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-cache-core</artifactId>
+      <version>3.0-beta-4</version>
+   </dependency>
+   <!-- Ruby YAML support -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-yaml-provider</artifactId>
+      <version>3.0-beta-4</version>
+   </dependency>
+   <!-- JAXB + Atom support -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-atom-provider</artifactId>
+      <version>3.0-beta-4</version>
+   </dependency>
+   <!-- Spring integration -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-spring</artifactId>
+      <version>3.0-beta-4</version>
+   </dependency>
+   <!-- Guice integration -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-guice</artifactId>
+      <version>3.0-beta-4</version>
+   </dependency>
+
+   <!-- Asynchronous HTTP support with Servlet 3.0  -->
+   <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>async-http-servlet-3.0</artifactId>
+      <version>3.0-beta-4</version>
+   </dependency>
+
+</dependencies>
+]]>
+</programlisting>
+    <para>
+        There is also a pom that can be imported so the versions of the individual modules do not have to be specified. Note that maven 2.0.9 is required for this.
+    </para>
+    <programlisting>
+<![CDATA[
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-bom</artifactId>
+                <version>3.0-beta-4</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+]]>
+    </programlisting>
+</chapter>

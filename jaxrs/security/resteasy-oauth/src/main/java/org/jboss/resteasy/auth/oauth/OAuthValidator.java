@@ -1,8 +1,5 @@
 package org.jboss.resteasy.auth.oauth;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 import net.oauth.OAuth;
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthException;
@@ -10,6 +7,9 @@ import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
 import net.oauth.SimpleOAuthValidator;
 import org.jboss.resteasy.logging.Logger;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * OAuth Validator implementation to check OAuth Messages

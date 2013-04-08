@@ -1,0 +1,20 @@
+<project>
+    <parent>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs-all</artifactId>
+        <version>3.0-beta-4</version>
+	    <relativePath>../../../pom.xml</relativePath>
+    </parent>
+    <name>Example: OAuth Push Messaging OpenId Modules</name>
+    <description/>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>examples-oauth-push-messaging-openid-all</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>push-messaging</module>
+        <module>openid</module>
+    </modules>
+</project>

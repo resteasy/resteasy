@@ -1,16 +1,15 @@
 package org.jboss.resteasy.security.doseta;
 
-import org.jboss.resteasy.annotations.interception.ClientInterceptor;
-import org.jboss.resteasy.annotations.interception.DecoderPrecedence;
-import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.interception.MessageBodyReaderContext;
-import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.util.InputStreamToByteArray;
 
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.ReaderInterceptor;
+import javax.ws.rs.ext.ReaderInterceptorContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -21,15 +20,13 @@ import java.util.List;
  * @version $Revision: 1 $
  */
 @Provider
-@ClientInterceptor
-@ServerInterceptor
-@DecoderPrecedence
-public class DigitalVerificationInterceptor implements MessageBodyReaderInterceptor
+@Priority(Priorities.ENTITY_CODER)
+public class DigitalVerificationInterceptor implements ReaderInterceptor
 {
    @Override
-   public Object read(MessageBodyReaderContext context) throws IOException, WebApplicationException
+   public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException
    {
-      Verifier verifier = (Verifier) context.getAttribute(Verifier.class.getName());
+      Verifier verifier = (Verifier) context.getProperty(Verifier.class.getName());
       if (verifier == null)
       {
          return context.proceed();
@@ -66,7 +63,7 @@ public class DigitalVerificationInterceptor implements MessageBodyReaderIntercep
 
          if (verifier.getRepository() == null)
          {
-            KeyRepository repository = (KeyRepository) context.getAttribute(KeyRepository.class.getName());
+            KeyRepository repository = (KeyRepository) context.getProperty(KeyRepository.class.getName());
             if (repository == null)
             {
                repository = ResteasyProviderFactory.getContextData(KeyRepository.class);

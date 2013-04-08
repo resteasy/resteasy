@@ -1,7 +1,7 @@
 package org.jboss.resteasy.examples.guice.hello;
 
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
 
 public class HelloResourceTest
 {

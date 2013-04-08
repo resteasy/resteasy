@@ -1,7 +1,19 @@
 // namespace
 var REST = {
 	apiURL : null,
-	loglevel : 0
+    debug: false,
+	loglevel : 0,
+    antiBrowserCache : false,
+    cacheHeaders : []
+};
+
+// helper function
+REST.getKeys = function (o) {
+    if (o !== Object(o))
+        throw new TypeError('REST.getKeys called on non-object');
+    var ret = [], p;
+    for (p in o) if (Object.prototype.hasOwnProperty.call(o, p)) ret.push(p);
+    return ret;
 };
 
 // constructor
@@ -17,6 +29,7 @@ REST.Request = function (){
 	this.queryParameters = [];
 	this.matrixParameters = [];
 	this.formParameters = [];
+    this.forms = [];
 	this.cookies = [];
 	this.headers = [];
 	this.entity = null;
@@ -26,7 +39,12 @@ REST.Request.prototype = {
 		execute : function(callback){
 			var request = new XMLHttpRequest();
 			var url = this.uri;
-			var restRequest = this;
+
+            if (REST.antiBrowserCache == true) {
+                request.url = url;
+            }
+
+            var restRequest = this;
 			for(var i=0;i<this.matrixParameters.length;i++){
 				url += ";" + REST.Encoding.encodePathParamName(this.matrixParameters[i][0]);
 				url += "=" + REST.Encoding.encodePathParamValue(this.matrixParameters[i][1]);
@@ -58,10 +76,10 @@ REST.Request.prototype = {
 				request.setRequestHeader('Accept', this.acceptHeader);
 			REST.log("Got form params: "+this.formParameters.length);
 			// see if we're sending an entity or a form
-			if(this.entity && this.formParameters.length > 0)
+			if(this.entity && (this.formParameters.length > 0 || this.forms.length > 0))
 				throw "Cannot have both an entity and form parameters";
 			// form
-			if(this.formParameters.length > 0){
+			if(this.formParameters.length > 0 || this.forms.length > 0){
 				if(contentTypeSet && contentTypeSet != "application/x-www-form-urlencoded")
 					throw "The ContentType that was set by header value ("+contentTypeSet+") is incompatible with form parameters";
 				if(this.contentTypeHeader && this.contentTypeHeader != "application/x-www-form-urlencoded")
@@ -102,7 +120,17 @@ REST.Request.prototype = {
 					data += REST.Encoding.encodeFormNameOrValue(this.formParameters[i][0]);
 					data += "=" + REST.Encoding.encodeFormNameOrValue(this.formParameters[i][1]);
 				}
-			}
+            } else if (this.forms.length > 0) {
+                data = '';
+                for (var i = 0; i < this.forms.length; i++) {
+                    if (i > 0)
+                        data += "&";
+                    var obj = this.forms[i][1];
+                    var key = REST.getKeys(obj)[0];
+                    data += REST.Encoding.encodeFormNameOrValue(key);
+                    data += "=" + REST.Encoding.encodeFormNameOrValue(obj[key]);
+                }
+            }
 			REST.log("Content-Type set to "+contentTypeSet);
 			REST.log("Entity set to "+data);
 			request.send(data);
@@ -112,7 +140,21 @@ REST.Request.prototype = {
 				REST.log("Working around browser readystatechange bug");
 				REST._complete(request, callback);
 			}
-		},
+
+            if (REST.debug == true) { REST.lastRequest = request; }
+
+            if (REST.antiBrowserCache == true && request.status != 304) {
+                var _cachedHeaders = {
+                    "Etag":request.getResponseHeader('Etag'),
+                    "Last-Modified":request.getResponseHeader('Last-Modified'),
+                    "entity":request.responseText
+                };
+
+                var signature = REST._generate_cache_signature(url);
+                REST._remove_deprecated_cache_signature(signature);
+                REST._addToArray(REST.cacheHeaders, signature, _cachedHeaders);
+            }
+        },
 		setAccepts : function(acceptHeader){
 			REST.log("setAccepts("+acceptHeader+")");
 			this.acceptHeader = acceptHeader;
@@ -143,30 +185,68 @@ REST.Request.prototype = {
 		},
 		addCookie : function(name, value){
 			REST.log("addCookie("+name+"="+value+")");
-			this.cookies.push([name, value]);
+            REST._addToArray(this.cookies, name, value);
 		},
 		addQueryParameter : function(name, value){
 			REST.log("addQueryParameter("+name+"="+value+")");
-			this.queryParameters.push([name, value]);
+            REST._addToArray(this.queryParameters, name, value);
 		},
 		addMatrixParameter : function(name, value){
 			REST.log("addMatrixParameter("+name+"="+value+")");
-			this.matrixParameters.push([name, value]);
+            REST._addToArray(this.matrixParameters, name, value);
 		},
 		addFormParameter : function(name, value){
 			REST.log("addFormParameter("+name+"="+value+")");
-			this.formParameters.push([name, value]);
+            REST._addToArray(this.formParameters, name, value);
 		},
+        addForm : function(name, value){
+    		REST.log("addForm("+name+"="+value+")");
+            REST._addToArray(this.forms, name, value);
+    	},
 		addHeader : function(name, value){
 			REST.log("addHeader("+name+"="+value+")");
-			this.headers.push([name, value]);
+            REST._addToArray(this.headers, name, value);
 		}
-}
+};
 
-REST.log = function(string){
-	if(REST.loglevel > 0)
-		print(string);
-}
+REST.log = function (string) {
+    if (REST.loglevel > 0)
+        print(string);
+};
+
+REST._addToArray = function (array, name, value) {
+    if (value instanceof Array) {
+        for (var i = 0; i < value.length; i++) {
+            array.push([name, value[i]]);
+        }
+    } else {
+        array.push([name, value]);
+    }
+};
+
+REST._generate_cache_signature = function (url) {
+    return url.replace(/\?resteasy_jsapi_anti_cache=\d+/, '');
+};
+
+REST._remove_deprecated_cache_signature = function (signature) {
+    for (idx in REST.cacheHeaders) {
+        var _signature = REST.cacheHeaders[idx][0];
+        if (signature == _signature) {
+            REST.cacheHeaders.splice(idx, 1);
+        }
+    }
+
+};
+
+REST._get_cache_signature = function (signature) {
+    for (idx in REST.cacheHeaders) {
+        var _signature = REST.cacheHeaders[idx][0];
+        if (signature == _signature) {
+            return REST.cacheHeaders[idx];
+        }
+    }
+    return null;
+};
 
 REST._complete = function(request, callback){
 	REST.log("Request ready state: "+request.readyState);
@@ -186,7 +266,11 @@ REST._complete = function(request, callback){
 			}else
 				entity = request.responseText;
 		}
-		REST.log("Calling callback with: "+entity);
+
+        if (request.status == 304) {
+            entity = REST._get_cache_signature(REST._generate_cache_signature(request.url))[1]['entity'];
+        }
+        REST.log("Calling callback with: "+entity);
 		callback(request.status, request, entity);
 	}
 }
@@ -317,7 +401,8 @@ REST.Encoding.HTTPToken = REST.Encoding.hash(REST.Encoding.HTTPChar);
 //and http://www.apps.ietf.org/rfc/rfc1738.html#page-4
 REST.Encoding.encodeFormNameOrValue = function (val){
 	return REST.Encoding.encodeValue(val, REST.Encoding.AlphaNumHash, true);
-}
+};
+
 
 //see http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
 REST.Encoding.encodeHeaderName = function (val){

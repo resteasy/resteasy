@@ -1,11 +1,11 @@
 package se.unlogic.eagledns;
 
+import org.apache.log4j.Logger;
+import org.xbill.DNS.Message;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-
-import org.apache.log4j.Logger;
-import org.xbill.DNS.Message;
 
 
 public class UDPConnection implements Runnable {

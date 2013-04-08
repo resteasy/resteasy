@@ -1,12 +1,12 @@
 package org.jboss.resteasy.springmvc.test.client;
 
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.springmvc.test.jaxb.BasicJaxbObject;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.springmvc.test.jaxb.BasicJaxbObject;
 
 @Path("/basic")
 public interface BasicResource

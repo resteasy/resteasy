@@ -1,10 +1,10 @@
 package org.jboss.resteasy.core.registry;
 
 import org.jboss.resteasy.core.ResourceInvoker;
-import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.NotFoundException;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.Encode;
 
 /**
@@ -27,7 +27,7 @@ public class SimpleSegment extends RootSegment
 
    public ResourceInvoker matchSimple(HttpRequest request, String path, int start)
    {
-      UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
+      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
       if (start + segment.length() == path.length()) // we've reached end of string
       {
          ResourceInvoker invoker = match(request.getHttpMethod(), request);

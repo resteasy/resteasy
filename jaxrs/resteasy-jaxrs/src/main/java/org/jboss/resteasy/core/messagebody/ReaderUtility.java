@@ -1,14 +1,15 @@
 package org.jboss.resteasy.core.messagebody;
 
-import org.jboss.resteasy.core.interception.MessageBodyReaderContextImpl;
+import org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext;
+import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.ReaderInterceptor;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +29,7 @@ import java.util.Map;
 public abstract class ReaderUtility
 {
    private ResteasyProviderFactory factory;
-   private MessageBodyReaderInterceptor[] interceptors;
+   private ReaderInterceptor[] interceptors;
 
    public static <T> T read(Class<T> type, String contentType, String buffer)
            throws IOException
@@ -70,7 +71,7 @@ public abstract class ReaderUtility
    }
 
    public ReaderUtility(ResteasyProviderFactory factory,
-                        MessageBodyReaderInterceptor[] interceptors)
+                        ReaderInterceptor[] interceptors)
    {
       this.factory = factory;
       this.interceptors = interceptors;
@@ -111,27 +112,8 @@ public abstract class ReaderUtility
       try
       {
          final Map<String, Object> attributes = new HashMap<String, Object>();
-         MessageBodyReaderContextImpl messageBodyReaderContext = new MessageBodyReaderContextImpl(interceptors, reader, type,
-                 genericType, annotations, mediaType, requestHeaders, inputStream)
-         {
-            @Override
-            public Object getAttribute(String attribute)
-            {
-               return attributes.get(attribute);
-            }
-
-            @Override
-            public void setAttribute(String name, Object value)
-            {
-               attributes.put(name, value);
-            }
-
-            @Override
-            public void removeAttribute(String name)
-            {
-               attributes.remove(name);
-            }
-         };
+         AbstractReaderInterceptorContext messageBodyReaderContext = new ClientReaderInterceptorContext(interceptors, reader, type,
+                 genericType, annotations, mediaType, requestHeaders, inputStream, attributes);
          return (T) messageBodyReaderContext
                  .proceed();
       }

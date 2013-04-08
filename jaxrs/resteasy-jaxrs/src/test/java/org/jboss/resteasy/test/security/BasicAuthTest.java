@@ -28,16 +28,16 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.annotation.security.DenyAll;
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
-
 import java.util.List;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -84,7 +84,7 @@ public class BasicAuthTest
          if (!ctx.isUserInRole("admin"))
          {
             System.out.println("NOT IN ROLE!!!!");
-            throw new WebApplicationException(401);
+            throw new WebApplicationException(403);
          }
          return "hello";
       }
@@ -115,7 +115,7 @@ public class BasicAuthTest
          if (!ctx.isUserInRole("admin"))
          {
             System.out.println("NOT IN ROLE!!!!");
-            throw new WebApplicationException(401);
+            throw new WebApplicationException(403);
          }
          return "hello";
       }
@@ -128,6 +128,26 @@ public class BasicAuthTest
          return "authorized";
       }
 
+   }
+
+   @Path("/secured3")
+   @RolesAllowed("admin")
+   public static class BaseResource3
+   {
+      @GET
+      @Path("/authorized")
+      public String getAuthorized()
+      {
+         return "authorized";
+      }
+
+      @GET
+      @Path("/anybody")
+      @PermitAll
+      public String getAnybody()
+      {
+         return "anybody";
+      }
    }
 
    @BeforeClass
@@ -143,6 +163,7 @@ public class BasicAuthTest
       dispatcher = EmbeddedContainer.start("", domain).getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(BaseResource.class);
       dispatcher.getRegistry().addPerRequestResource(BaseResource2.class);
+      dispatcher.getRegistry().addPerRequestResource(BaseResource3.class);
    }
 
    @AfterClass
@@ -175,7 +196,7 @@ public class BasicAuthTest
       }
       catch (ClientResponseFailure e)
       {
-         Assert.assertEquals(e.getResponse().getStatus(), 401);
+         Assert.assertEquals(e.getResponse().getStatus(), 403);
       }
    }
 
@@ -192,6 +213,7 @@ public class BasicAuthTest
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
          Assert.assertEquals("hello", response.getEntity());
+         response.releaseConnection();
       }
       
       {
@@ -199,12 +221,33 @@ public class BasicAuthTest
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
          Assert.assertEquals("authorized", response.getEntity());  
+         response.releaseConnection();
       }
       
       {
          ClientRequest request = new ClientRequest(generateURL("/secured/deny"), executor);
          ClientResponse<String> response = request.get(String.class);
-         Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());        
+         Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
+         response.releaseConnection();
+      }
+      {
+         ClientRequest request = new ClientRequest(generateURL("/secured3/authorized"), executor);
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         Assert.assertEquals("authorized", response.getEntity());
+         response.releaseConnection();
+      }
+      {
+         ClientRequest request = new ClientRequest(generateURL("/secured3/authorized"));
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(403, response.getStatus());
+         response.releaseConnection();
+      }
+      {
+         ClientRequest request = new ClientRequest(generateURL("/secured3/anybody"));
+         ClientResponse<String> response = request.get(String.class);
+         Assert.assertEquals(200, response.getStatus());
+         response.releaseConnection();
       }
    }
 
@@ -236,7 +279,7 @@ public class BasicAuthTest
       {
          HttpGet method = new HttpGet(generateURL("/secured"));
          HttpResponse response = client.execute(method);
-         Assert.assertEquals(401, response.getStatusLine().getStatusCode());
+         Assert.assertEquals(403, response.getStatusLine().getStatusCode());
          EntityUtils.consume(response.getEntity());
       }
 
@@ -256,7 +299,7 @@ public class BasicAuthTest
          client.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY), credentials);
          ClientRequest request = new ClientRequest(generateURL("/secured/authorized"), executor);
          ClientResponse<?> response = request.get();
-         Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
+         Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
          response.releaseConnection();
       }
    }

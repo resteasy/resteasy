@@ -1,20 +1,19 @@
 package org.jboss.resteasy.test.war;
 
-import java.util.Collections;
-import java.util.Map;
-
 import net.oauth.OAuth;
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
-
-import org.junit.Assert;
-import org.junit.Test;
 import org.jboss.resteasy.auth.oauth.OAuthUtils;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.smoke.MyProvider;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.Collections;
+import java.util.Map;
 
 
 /**
@@ -138,7 +137,7 @@ public class OAuthTest
 	@Test
 	public void testProtectedResourceUserRole() throws Exception
 	{
-		testProtectedURL("/userRole", HttpResponseCodes.SC_UNAUTHORIZED);
+		testProtectedURL("/userRole", HttpResponseCodes.SC_FORBIDDEN);
 	}
 
 	@Test

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,6 +39,7 @@
  */
 package javax.ws.rs;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -55,15 +56,17 @@ import java.lang.annotation.Target;
  * or {@link javax.ws.rs.HeaderParam}.
  * The default value is used if the corresponding meta-data is not present in the
  * request.
- * <p/ >
+ * <p>
  * If the type of the annotated parameter is {@link java.util.List},
  * {@link java.util.Set} or {@link java.util.SortedSet} then the resulting collection
  * will have a single entry mapped from the supplied default value.
- * <p />
+ * </p>
+ * <p>
  * If this annotation is not used and the corresponding meta-data is not
  * present in the request, the value will be an empty collection for
  * {@code List}, {@code Set} or {@code SortedSet}, {@code null} for
  * other object types, and the Java-defined default for primitive types.
+ * </p>
  *
  * @author Paul Sandoz
  * @author Marc Hadley
@@ -73,11 +76,11 @@ import java.lang.annotation.Target;
  * @see HeaderParam
  * @see MatrixParam
  * @see CookieParam
- *
  * @since 1.0
  */
 @Target({ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface DefaultValue {
 
     /**

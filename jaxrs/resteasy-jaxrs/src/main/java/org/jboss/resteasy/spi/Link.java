@@ -2,10 +2,12 @@ package org.jboss.resteasy.spi;
 
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.specimpl.LinkBuilderImpl;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of <a href="http://tools.ietf.org/html/draft-nottingham-http-link-header-06">Link Headers v6</a>
@@ -13,6 +15,7 @@ import java.util.List;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Deprecated
 public class Link
 {
    protected String title;
@@ -33,6 +36,23 @@ public class Link
       this.type = type;
       this.title = title;
       if (extensions != null) this.extensions = extensions;
+   }
+
+   public javax.ws.rs.core.Link toJaxrsLink()
+   {
+      javax.ws.rs.core.Link.Builder builder = new LinkBuilderImpl();
+      builder.rel(getRelationship());
+      builder.title(getTitle());
+      builder.type(getType());
+      builder.uri(getHref());
+      for (Map.Entry<String, List<String>> entry : getExtensions().entrySet())
+      {
+         for (String val : entry.getValue())
+         {
+            builder.param(entry.getKey(), val);
+         }
+      }
+      return builder.build();
    }
 
    public String getRelationship()

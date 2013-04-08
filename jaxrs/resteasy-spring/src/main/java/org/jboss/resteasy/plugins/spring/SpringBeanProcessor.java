@@ -1,22 +1,11 @@
 package org.jboss.resteasy.plugins.spring;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
-
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
 import org.springframework.aop.support.AopUtils;
@@ -34,6 +23,17 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.util.ClassUtils;
+
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>
@@ -131,7 +131,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
 
       public PropertyInjector getInjector(Class<?> clazz)
       {
-         return providerFactory.getInjectorFactory().createPropertyInjector(clazz);
+         return providerFactory.getInjectorFactory().createPropertyInjector(clazz, providerFactory);
       }
 
       public void inject(String beanName, Object bean, PropertyInjector propertyInjector)
@@ -166,6 +166,11 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
          }
          return isSingleton;
       }
+   }
+
+   public SpringBeanProcessor(ResteasyDeployment deployment)
+   {
+      this(deployment.getDispatcher(), deployment.getRegistry(), deployment.getProviderFactory());
    }
 
    public SpringBeanProcessor(Dispatcher dispatcher)
@@ -249,7 +254,8 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
             continue;
 
          BeanDefinition beanDef = beanFactory.getBeanDefinition(name);
-         if (beanDef.getBeanClassName() == null || beanDef.isAbstract())
+         if ((beanDef.getBeanClassName() == null && beanDef.getFactoryBeanName() == null)
+                 || beanDef.isAbstract())
             continue;
 
          processBean(beanFactory, dependsOnProviders, name, beanDef);
@@ -396,7 +402,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
             }
          }
 
-         for (Method method : getBeanClass(factoryClassName).getDeclaredMethods())
+         for (Method method : getBeanClass(factoryClassName).getMethods())
          {
             if (method.getName().equals(factoryMethodName))
             {

@@ -28,6 +28,38 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
       this.factory = factory;
    }
 
+   @Override
+   public void addAll(String key, Object... newValues)
+   {
+      for (Object value : newValues)
+      {
+         add(key, value);
+      }
+   }
+
+   @Override
+   public void addAll(String key, List<Object> valueList)
+   {
+      for (Object value : valueList)
+      {
+         add(key, value);
+      }
+   }
+
+   @Override
+   public void addFirst(String key, Object value)
+   {
+      List<Object> list = get(key);
+      if (list == null)
+      {
+         add(key, value);
+         return;
+      }
+      else
+      {
+         list.add(0, value);
+      }
+   }
    public void putSingle(String key, Object value)
    {
       cachedHeaders.putSingle(key, value);
@@ -149,5 +181,11 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
    public int hashCode()
    {
       return cachedHeaders.hashCode();
+   }
+
+   @Override
+   public boolean equalsIgnoreValueOrder(MultivaluedMap<String, Object> otherMap)
+   {
+      return cachedHeaders.equalsIgnoreValueOrder(otherMap);
    }
 }

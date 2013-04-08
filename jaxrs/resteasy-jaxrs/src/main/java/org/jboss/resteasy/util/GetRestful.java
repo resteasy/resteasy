@@ -4,6 +4,8 @@ import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -45,7 +47,7 @@ public class GetRestful
 
       return false;
    }
-
+   
    /**
     * Given a class, search itself and implemented interfaces for jax-rs annotations.
     *
@@ -54,6 +56,7 @@ public class GetRestful
     */
    public static Class getSubResourceClass(Class clazz)
    {
+	  new Exception("entering getSubResourceClass()").printStackTrace();
       // check class & superclasses for JAX-RS annotations
       for (Class<?> actualClass = clazz; isTopObject(actualClass); actualClass = actualClass.getSuperclass())
       {
@@ -68,6 +71,29 @@ public class GetRestful
             return intf;
       }
       return null;
+   }
+
+   /**
+    * Given a class, search itself and implemented interfaces for jax-rs annotations.
+    *
+    * @param clazz
+    * @return list of class and interfaces that have jax-rs annotations
+    */
+   public static Class<?>[] getSubResourceClasses(Class<?> clazz)
+   {
+       List<Class<?>> classes = new ArrayList<Class<?>>();
+       // check class & superclasses for JAX-RS annotations
+       for (Class<?> actualClass = clazz; isTopObject(actualClass); actualClass = actualClass.getSuperclass()) {
+           if (hasJAXRSAnnotations(actualClass))
+              return new Class<?>[]{actualClass};
+       }
+
+       // ok, no @Path or @HttpMethods so look in interfaces.
+       for (Class<?> intf : clazz.getInterfaces()) {
+           if (hasJAXRSAnnotations(intf))
+               classes.add(intf);
+       }
+       return classes.toArray(new Class<?>[classes.size()]);
    }
 
    private static boolean isTopObject(Class<?> actualClass)

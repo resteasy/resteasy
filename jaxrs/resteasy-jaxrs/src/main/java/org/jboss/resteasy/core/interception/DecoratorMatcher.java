@@ -35,25 +35,12 @@ public class DecoratorMatcher
       HashMap<Class<?>, Annotation> meta = new HashMap<Class<?>, Annotation>();
       if (type != null)
       {
-         for (Annotation annotation : type.getAnnotations())
-         {
-            if (annotation.annotationType().isAnnotationPresent(Decorator.class))
-            {
-               meta.put(annotation.annotationType(), annotation);
-            }
-         }
+	      registerDecorators(targetClass, meta, type.getAnnotations());
       }
       // override any class level ones
       if (annotations != null)
       {
-         for (Annotation annotation : annotations)
-         {
-            Decorator decorator = annotation.annotationType().getAnnotation(Decorator.class);
-            if (decorator != null && targetClass.isAssignableFrom(decorator.target()))
-            {
-               meta.put(annotation.annotationType(), annotation);
-            }
-         }
+         registerDecorators(targetClass, meta, annotations);
       }
       if (meta.size() == 0) return target;
 
@@ -96,4 +83,15 @@ public class DecoratorMatcher
 
       return target;
    }
+
+	private <T> void registerDecorators(Class<T> targetClass, HashMap<Class<?>, Annotation> meta, Annotation[] annotations) {
+	   for (Annotation annotation : annotations)
+	   {
+		   Decorator decorator = annotation.annotationType().getAnnotation(Decorator.class);
+		   if (decorator != null && targetClass.isAssignableFrom(decorator.target()))
+		   {
+			   meta.put(annotation.annotationType(), annotation);
+		   }
+	   }
+	}
 }

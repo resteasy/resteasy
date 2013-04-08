@@ -9,7 +9,6 @@ package se.unlogic.standardutils.hddtemp;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
 import se.unlogic.standardutils.xml.Elementable;
 import se.unlogic.standardutils.xml.XMLElement;
 import se.unlogic.standardutils.xml.XMLGenerator;

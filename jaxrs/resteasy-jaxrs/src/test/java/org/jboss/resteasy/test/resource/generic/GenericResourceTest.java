@@ -5,8 +5,8 @@ import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Before;
 import org.junit.Test;
 
-import static junit.framework.Assert.*;
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static junit.framework.Assert.assertTrue;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 public class GenericResourceTest extends BaseResourceTest
 {

@@ -20,6 +20,7 @@ public interface HttpResponse
    MultivaluedMap<String, Object> getOutputHeaders();
 
    OutputStream getOutputStream() throws IOException;
+   void setOutputStream(OutputStream os);
 
    void addNewCookie(NewCookie cookie);
 
@@ -28,7 +29,6 @@ public interface HttpResponse
    void sendError(int status, String message) throws IOException;
 
    boolean isCommitted();
-
 
    /**
     * reset status and headers.  Will fail if response is committed

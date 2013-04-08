@@ -1,27 +1,25 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
-import org.jboss.resteasy.core.AbstractAsynchronousResponse;
-import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.core.SynchronousExecutionContext;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.Encode;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Abstraction for an inbound http request on the server, or a response from a server to a client
@@ -35,21 +33,17 @@ public class HttpServletInputMessage implements HttpRequest
 {
    protected HttpHeaders httpHeaders;
    protected HttpServletRequest request;
-   protected CountDownLatch latch;
-   protected long suspendTimeout;
    protected SynchronousDispatcher dispatcher;
    protected HttpResponse httpResponse;
-   protected boolean suspended;
-   protected UriInfo uri;
+   protected ResteasyUriInfo uri;
    protected String httpMethod;
-   protected String preProcessedPath;
    protected MultivaluedMap<String, String> formParameters;
    protected MultivaluedMap<String, String> decodedFormParameters;
-   protected AbstractAsynchronousResponse asynchronousResponse;
    protected InputStream overridenStream;
+   protected SynchronousExecutionContext executionContext;
 
 
-   public HttpServletInputMessage(HttpServletRequest request, HttpResponse httpResponse, HttpHeaders httpHeaders, UriInfo uri, String httpMethod, SynchronousDispatcher dispatcher)
+   public HttpServletInputMessage(HttpServletRequest request, HttpResponse httpResponse, HttpHeaders httpHeaders, ResteasyUriInfo uri, String httpMethod, SynchronousDispatcher dispatcher)
    {
       this.request = request;
       this.dispatcher = dispatcher;
@@ -57,8 +51,19 @@ public class HttpServletInputMessage implements HttpRequest
       this.httpHeaders = httpHeaders;
       this.httpMethod = httpMethod;
       this.uri = uri;
-      this.preProcessedPath = uri.getPath(false);
+      executionContext = new SynchronousExecutionContext(dispatcher, this, httpResponse);
+   }
 
+   @Override
+   public void setRequestUri(URI requestUri) throws IllegalStateException
+   {
+      uri = uri.relative(requestUri);
+   }
+
+   @Override
+   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
+   {
+      uri = new ResteasyUriInfo(baseUri, requestUri);
    }
 
    public MultivaluedMap<String, String> getPutFormParameters()
@@ -90,21 +95,31 @@ public class HttpServletInputMessage implements HttpRequest
    }
 
 
+   @Override
    public Object getAttribute(String attribute)
    {
       return request.getAttribute(attribute);
    }
 
+   @Override
    public void setAttribute(String name, Object value)
    {
       request.setAttribute(name, value);
    }
 
+   @Override
    public void removeAttribute(String name)
    {
       request.removeAttribute(name);
    }
 
+   @Override
+   public Enumeration<String> getAttributeNames()
+   {
+      return request.getAttributeNames();
+   }
+
+   @Override
    public MultivaluedMap<String, String> getFormParameters()
    {
       if (formParameters != null) return formParameters;
@@ -118,6 +133,7 @@ public class HttpServletInputMessage implements HttpRequest
       return formParameters;
    }
 
+   @Override
    public MultivaluedMap<String, String> getDecodedFormParameters()
    {
       if (decodedFormParameters != null) return decodedFormParameters;
@@ -154,11 +170,13 @@ public class HttpServletInputMessage implements HttpRequest
 
    }
 
+   @Override
    public HttpHeaders getHttpHeaders()
    {
       return httpHeaders;
    }
 
+   @Override
    public InputStream getInputStream()
    {
       if (overridenStream != null) return overridenStream;
@@ -172,86 +190,39 @@ public class HttpServletInputMessage implements HttpRequest
       }
    }
 
+   @Override
    public void setInputStream(InputStream stream)
    {
       this.overridenStream = stream;
    }
 
-   public UriInfo getUri()
+   @Override
+   public ResteasyUriInfo getUri()
    {
       return uri;
    }
 
+   @Override
    public String getHttpMethod()
    {
       return httpMethod;
    }
 
-   public String getPreprocessedPath()
+   @Override
+   public void setHttpMethod(String method)
    {
-      return preProcessedPath;
+      this.httpMethod = method;
    }
 
-   public void setPreprocessedPath(String path)
+   @Override
+   public ResteasyAsynchronousContext getAsyncContext()
    {
-      preProcessedPath = path;
+      return executionContext;
    }
 
-
-   public AsynchronousResponse createAsynchronousResponse(long suspendTimeout)
-   {
-      suspended = true;
-      latch = new CountDownLatch(1);
-      this.suspendTimeout = suspendTimeout;
-      asynchronousResponse = new AbstractAsynchronousResponse()
-      {
-         public void setResponse(Response response)
-         {
-            try
-            {
-               setupResponse(ServerResponse.convertToServerResponse(response));
-               dispatcher.asynchronousDelivery(HttpServletInputMessage.this, httpResponse, response);
-            }
-            finally
-            {
-               latch.countDown();
-            }
-         }
-      };
-      return asynchronousResponse;
-   }
-
-   public AsynchronousResponse getAsynchronousResponse()
-   {
-      return asynchronousResponse;
-   }
-
+   @Override
    public boolean isInitial()
    {
       return true;
-   }
-
-   public boolean isTimeout()
-   {
-      return false;
-   }
-
-   public boolean isSuspended()
-   {
-      return suspended;
-   }
-
-
-   public void initialRequestThreadFinished()
-   {
-      if (latch == null) return; // only block if createAsynchronousResponse was called.
-      try
-      {
-         latch.await(suspendTimeout + 100, TimeUnit.MILLISECONDS);
-      }
-      catch (InterruptedException e)
-      {
-         throw new RuntimeException(e);
-      }
    }
 }

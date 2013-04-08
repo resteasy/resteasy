@@ -22,6 +22,7 @@ public class XmlJAXBContextFinder extends AbstractJAXBContextFinder implements C
 {
    private ConcurrentHashMap<Class<?>, JAXBContext> cache = new ConcurrentHashMap<Class<?>, JAXBContext>();
    private ConcurrentHashMap<CacheKey, JAXBContext> collectionCache = new ConcurrentHashMap<CacheKey, JAXBContext>();
+   private ConcurrentHashMap<CacheKey, JAXBContext> xmlTypeCollectionCache = new ConcurrentHashMap<CacheKey, JAXBContext>();
 
 
    public JAXBContext findCachedContext(Class type, MediaType mediaType, Annotation[] parameterAnnotations) throws JAXBException
@@ -51,6 +52,13 @@ public class XmlJAXBContextFinder extends AbstractJAXBContextFinder implements C
       return new JAXBContextWrapper(config, classes);
    }
 
+   @Override
+   protected JAXBContext createContextObject(Annotation[] parameterAnnotations, String contextPath) throws JAXBException
+   {
+      JAXBConfig config = FindAnnotation.findAnnotation(parameterAnnotations, JAXBConfig.class);
+      return new JAXBContextWrapper(contextPath, config);
+   }
+
    public JAXBContext findCacheContext(MediaType mediaType, Annotation[] paraAnnotations, Class... classes) throws JAXBException
    {
       CacheKey key = new CacheKey(classes);
@@ -59,6 +67,19 @@ public class XmlJAXBContextFinder extends AbstractJAXBContextFinder implements C
 
       ctx = createContext(paraAnnotations, classes);
       collectionCache.put(key, ctx);
+
+      return ctx;
+   }
+
+   @Override
+   public JAXBContext findCacheXmlTypeContext(MediaType mediaType, Annotation[] paraAnnotations, Class... classes) throws JAXBException
+   {
+      CacheKey key = new CacheKey(classes);
+      JAXBContext ctx = xmlTypeCollectionCache.get(key);
+      if (ctx != null) return ctx;
+
+      ctx = createXmlTypeContext(paraAnnotations, classes);
+      xmlTypeCollectionCache.put(key, ctx);
 
       return ctx;
    }

@@ -1,18 +1,6 @@
 package org.jboss.resteasy.test;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-
 import junit.framework.Assert;
-
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.plugins.stats.DeleteResourceMethod;
 import org.jboss.resteasy.plugins.stats.GetResourceMethod;
@@ -24,6 +12,17 @@ import org.jboss.resteasy.plugins.stats.RegistryEntry;
 import org.jboss.resteasy.plugins.stats.RegistryStatsResource;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

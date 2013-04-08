@@ -8,13 +8,13 @@
     </description>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>3.0-alpha-1-SNAPSHOT</version>
+    <version>3.0-beta-4</version>
     <packaging>pom</packaging>
 
     <properties>
         <jboss.home>/Users/billburke/jboss/jboss-4.2.3.GA</jboss.home>
-        <dep.jaxb-impl.version>2.2.4</dep.jaxb-impl.version>
-        <dep.jettison.version>1.3.1</dep.jettison.version>
+        <dep.jaxb-impl.version>2.2.5-2</dep.jaxb-impl.version>
+        <dep.jettison.version>1.3.2</dep.jettison.version>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -80,8 +80,6 @@
     </contributors>
 
     <modules>
-
-        <!-- Should probably be removed and be treated as external dependency   -->
         <module>tjws</module>
         <module>jaxrs-api</module>
         <module>resteasy-test-data</module>
@@ -95,16 +93,18 @@
         <module>eagledns</module>
         <module>security</module>
         <module>resteasy-links</module>
-        <module>async-http-jbossweb</module>
-        <module>async-http-tomcat</module>
         <module>resteasy-spring</module>
         <module>resteasy-jsapi</module>
+        <!-- <module>resteasy-jsapi-testing</module> -->
         <module>resteasy-cdi</module>
         <module>server-adapters</module>
         <module>war-tests</module>
         <module>examples</module>
         <module>async-http-servlet-3.0</module>
+        <module>jboss-modules</module>
         <module>profiling-tests</module>
+        <!-- <module>arquillian</module> -->
+        <!-- <module>as7-integration-testing/modules-test</module> -->
     </modules>
 
     <dependencyManagement>
@@ -182,27 +182,9 @@
             </dependency>
 
             <dependency>
-                <groupId>commons-httpclient</groupId>
-                <artifactId>commons-httpclient</artifactId>
-                <version>3.1</version>
-                <!-- <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                </exclusions> -->
-            </dependency>
-
-            <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
                 <version>4.1.2</version>
-                <!-- <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                </exclusions> -->
             </dependency>
             <dependency>
                 <groupId>net.jcip</groupId>
@@ -260,13 +242,7 @@
                 <groupId>org.apache.james</groupId>
                 <artifactId>apache-mime4j</artifactId>
                 <version>0.6</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>commons-logging</artifactId>
-                        <groupId>commons-logging</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
+             </dependency>
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -275,27 +251,37 @@
             <dependency>
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-core-asl</artifactId>
-                <version>1.8.5</version>
+                <version>1.9.10</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-mapper-asl</artifactId>
-                <version>1.8.5</version>
+                <version>1.9.10</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-xc</artifactId>
-                <version>1.8.5</version>
+                <version>1.9.10</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-jaxrs</artifactId>
-                <version>1.8.5</version>
+                <version>1.9.10</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.cache</groupId>
                 <artifactId>jbosscache-core</artifactId>
                 <version>3.2.5.GA</version>
+            </dependency>
+            <dependency>
+                <groupId>org.infinispan</groupId>
+                <artifactId>infinispan-core</artifactId>
+                <version>5.1.6.FINAL</version>
+            </dependency>
+            <dependency>
+                <groupId>org.infinispan</groupId>
+                <artifactId>infinispan-tree</artifactId>
+                <version>5.1.6.FINAL</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
@@ -442,6 +428,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.5</version>
+            </plugin>
+            <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-clover2-plugin</artifactId>
+                <version>3.1.6</version>
             </plugin>
         </plugins>
 

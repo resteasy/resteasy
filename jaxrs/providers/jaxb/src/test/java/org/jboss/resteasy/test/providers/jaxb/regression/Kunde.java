@@ -10,11 +10,12 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 import java.text.DateFormat;
 import java.text.ParseException;
-import static java.util.Calendar.*;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+
+import static java.util.Calendar.YEAR;
 
 @XmlRootElement
 @XmlSeeAlso({

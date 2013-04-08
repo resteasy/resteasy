@@ -7,11 +7,11 @@
  ******************************************************************************/
 package se.unlogic.standardutils.validation;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class ValidationException extends Exception {
 	/**

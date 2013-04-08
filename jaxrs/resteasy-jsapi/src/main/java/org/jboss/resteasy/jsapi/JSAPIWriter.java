@@ -1,16 +1,17 @@
 package org.jboss.resteasy.jsapi;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Reader;
+import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.util.PathHelper;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
-
-import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.util.PathHelper;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * @author Stéphane Épardaud <stef@epardaud.fr>
@@ -28,24 +29,99 @@ public class JSAPIWriter
 		this.restPath = restPath;
 	}
 
-	public void writeJavaScript(String uri, PrintWriter writer,
-			ServiceRegistry serviceRegistry) throws IOException
-			{
-		if(restPath != null)
-			uri = uri + restPath;
-		logger.info("rest path: " + uri);
+    public void writeJavaScript(String uri, HttpServletRequest req, HttpServletResponse resp,
+                                ServiceRegistry serviceRegistry) throws IOException {
+        if (restPath != null)
+            uri = uri + restPath;
+        logger.info("rest path: " + uri);
 
-		writer.println("// start RESTEasy client API");
-		copyResource("/resteasy-client.js", writer);
-		writer.println("// start JAX-RS API");
-		writer.println("REST.apiURL = '" + uri + "';");
-		Set<String> declaredPrefixes = new HashSet<String>();
-		printService(writer, serviceRegistry, declaredPrefixes);
-	}
+        logger.info("// start RESTEasy client API");
+
+        // RESTEASY-776
+        // before writing generated javascript, we generate Etag and compare it with client request.
+        // If nothing changed, we send back 304 Not Modified for client browser to use cached js.
+        String ifNoneMatch = req.getHeader("If-None-Match");
+        String etag = generateEtag(serviceRegistry);
+        resp.setHeader("Etag", etag);
+
+        if (ifNoneMatch != null && ifNoneMatch.equals(etag)) {
+            resp.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+            return;
+        }
+
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter writer = new PrintWriter(new BufferedWriter(stringWriter));
+        writeJavaScript(uri, writer, serviceRegistry);
+        writer.flush();
+        writer.close();
+
+        if (clientIsGzipSupported(req)) {
+            ByteArrayOutputStream compressedContent = new ByteArrayOutputStream();
+            GZIPOutputStream gzipstream = new GZIPOutputStream(compressedContent);
+            gzipstream.write(stringWriter.toString().getBytes());
+            gzipstream.finish();
+
+            // get the compressed content
+            byte[] compressedBytes = compressedContent.toByteArray();
+
+            // set appropriate HTTP headers
+            resp.setContentLength(compressedBytes.length);
+            resp.addHeader("Content-Encoding", "gzip");
+
+            ServletOutputStream output = resp.getOutputStream();
+            output.write(compressedBytes);
+            output.flush();
+            output.close();
+
+        } else {
+            ServletOutputStream output = resp.getOutputStream();
+            byte[] bytes = stringWriter.toString().getBytes();
+            resp.setContentLength(bytes.length);
+            output.write(bytes);
+            output.flush();
+            output.close();
+        }
+
+    }
+
+    private boolean clientIsGzipSupported(HttpServletRequest req) {
+        String encoding = req.getHeader("Accept-Encoding");
+        return encoding != null && encoding.contains("gzip");
+    }
+
+    public void writeJavaScript(String uri, PrintWriter writer,
+                                ServiceRegistry serviceRegistry) throws IOException {
+        copyResource("/resteasy-client.js", writer);
+        logger.info("// start JAX-RS API");
+        logger.info("REST.apiURL = '" + uri + "';");
+        writer.println("REST.apiURL = '" + uri + "';");
+        Set<String> declaredPrefixes = new HashSet<String>();
+        printService(writer, serviceRegistry, declaredPrefixes);
+
+    }
 
 
-	private void printService(PrintWriter writer,
+    private String generateEtag(ServiceRegistry serviceRegistry) {
+        StringBuilder etagBuilder = new StringBuilder();
+        generateEtag(serviceRegistry, etagBuilder);
+        return String.valueOf(Math.abs(etagBuilder.toString().hashCode()));
+    }
+
+    private void generateEtag(ServiceRegistry serviceRegistry, StringBuilder etagBuilder) {
+        for (MethodMetaData methodMetaData : serviceRegistry.getMethodMetaData()) {
+                etagBuilder.append(methodMetaData.hashCode());
+
+            for(ServiceRegistry subService : serviceRegistry.getLocators()) {
+                generateEtag(subService, etagBuilder);
+            }
+
+        }
+    }
+
+    private void printService(PrintWriter writer,
 			ServiceRegistry serviceRegistry, Set<String> declaredPrefixes) {
+
+
 		for (MethodMetaData methodMetaData : serviceRegistry.getMethodMetaData())
 		{
 			logger.info("Path: " + methodMetaData.getUri());
@@ -122,7 +198,17 @@ public class JSAPIWriter
 			writer.println("  request.setAccepts('" + methodMetaData.getWants()
 					+ "');");
 		}
-		writer.println(" if(params.$contentType)");
+
+        writer.println("if (REST.antiBrowserCache == true) {");
+        writer.println("  request.addQueryParameter('resteasy_jsapi_anti_cache', (new Date().getTime()));");
+        writer.println("    var cached_obj = REST._get_cache_signature(REST._generate_cache_signature(uri));");
+
+        writer.println("    if (cached_obj != null) { request.addHeader('If-Modified-Since', cached_obj[1]['Last-Modified']); request.addHeader('If-None-Match', cached_obj[1]['Etag']);}");
+
+        writer.println("}");
+
+
+        writer.println(" if(params.$contentType)");
 		writer.println("  request.setContentType(params.$contentType);");
 		writer.println(" else");
 		writer.println("  request.setContentType('"
@@ -171,6 +257,9 @@ public class JSAPIWriter
 		case FORM_PARAMETER:
 			print(metaData, writer, "FormParameter");
 			break;
+        case FORM:
+            print(metaData, writer, "Form");
+            break;
 		case ENTITY_PARAMETER:
 			// the entity
 			writer.println(" if(params.$entity)");
@@ -183,7 +272,7 @@ public class JSAPIWriter
 			String type)
 	{
 		String paramName = metaData.getParamName();
-		writer.println(String.format(" if(params.%s)\n  request.add%s('%s', params.%s);", paramName, type, paramName, paramName));
+		writer.println(String.format(" if(Object.prototype.hasOwnProperty.call(params, '%s'))\n  request.add%s('%s', params.%s);", paramName, type, paramName, paramName));
 	}
 
 

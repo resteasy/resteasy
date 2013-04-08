@@ -3,8 +3,8 @@ package org.jboss.resteasy.test.regression;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ResourceFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -16,7 +16,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * RESTEASY-573
@@ -53,7 +53,6 @@ public class LazyInitUriInfoInjectionTest extends BaseResourceTest
    public static class LazySingletonResource implements ResourceFactory
    {
       private Class clazz;
-      private InjectorFactory factory;
       private Object obj;
 
       public LazySingletonResource(Class clazz)
@@ -61,12 +60,13 @@ public class LazyInitUriInfoInjectionTest extends BaseResourceTest
          this.clazz = clazz;
       }
 
-      public void registered(InjectorFactory factory)
+      @Override
+      public void registered(ResteasyProviderFactory factory)
       {
-         this.factory = factory;
+
       }
 
-      public Object createResource(HttpRequest request, HttpResponse response, InjectorFactory factory)
+      public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
       {
          if (obj == null)
          {
@@ -82,7 +82,7 @@ public class LazyInitUriInfoInjectionTest extends BaseResourceTest
             {
                throw new RuntimeException(e);
             }
-            this.factory.createPropertyInjector(clazz).inject(obj);
+            factory.getInjectorFactory().createPropertyInjector(clazz, factory).inject(obj);
          }
          return obj;
       }

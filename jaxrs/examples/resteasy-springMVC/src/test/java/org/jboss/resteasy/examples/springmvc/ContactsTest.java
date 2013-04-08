@@ -1,10 +1,8 @@
 package org.jboss.resteasy.examples.springmvc;
 
-import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientURI;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.springmvc.tjws.TJWSEmbeddedSpringMVCServer;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.junit.AfterClass;
@@ -43,6 +41,7 @@ public class ContactsTest
    private static TJWSEmbeddedSpringMVCServer server;
    private static ContactProxy proxy;
    public static final String host = "http://localhost:8080/";
+   private static ResteasyClient client;
 
    @BeforeClass
    public static void setup()
@@ -50,33 +49,33 @@ public class ContactsTest
       server = new TJWSEmbeddedSpringMVCServer(
               "classpath:springmvc-servlet.xml", 8080);
       server.start();
-
-      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
-      proxy = ProxyFactory.create(ContactProxy.class, host);
+      client = new ResteasyClientBuilder().build();
+      proxy = client.target(host).proxy(ContactProxy.class);
    }
 
    @AfterClass
    public static void end()
    {
       server.stop();
+      client.close();
    }
 
    @Test
    public void testData()
    {
-      ClientResponse<?> response = (ClientResponse<?>) proxy.createContact(new Contact("Solomon", "Duskis"));
+      Response response = proxy.createContact(new Contact("Solomon", "Duskis"));
       Assert.assertEquals(response.getStatus(), 201);
       String duskisUri = (String) response.getMetadata().getFirst(
               HttpHeaderNames.LOCATION);
       System.out.println(duskisUri);
       Assert.assertTrue(duskisUri.endsWith(ContactsResource.CONTACTS_URL
               + "/data/Duskis"));
-      response.releaseConnection();
+      response.close();
       Assert
               .assertEquals("Solomon", proxy.getContact(duskisUri).getFirstName());
-      response = (ClientResponse<?>) proxy.createContact(new Contact("Bill", "Burkie"));
-      response.releaseConnection();
-      System.out.println(proxy.getString(ContactsResource.CONTACTS_URL
+      response = proxy.createContact(new Contact("Bill", "Burkie"));
+      response.close();
+      System.out.println(proxy.getString(host + ContactsResource.CONTACTS_URL
               + "/data"));
    }
 

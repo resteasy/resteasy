@@ -5,13 +5,13 @@
     <parent>
         <groupId>org.jboss.resteasy.examples</groupId>
         <artifactId>examples-spring-hibernate-contacts</artifactId>
-        <version>3.0-alpha-1-SNAPSHOT</version>
+        <version>3.0-beta-4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>examples-spring-hibernate-contacts-core</artifactId>
     <name>Example: Spring + Hibernate Contacts - Core</name>
-    <version>3.0-alpha-1-SNAPSHOT</version>
+    <version>3.0-beta-4</version>
     <description/>
 
     <dependencies>
@@ -22,7 +22,7 @@
         <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>jta</artifactId>
-            <version>1.0.1B</version>
+            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>commons-dbcp</groupId>

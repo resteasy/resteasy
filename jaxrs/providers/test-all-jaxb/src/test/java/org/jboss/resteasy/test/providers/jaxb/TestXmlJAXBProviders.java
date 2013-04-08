@@ -1,17 +1,12 @@
-/*
- * JBoss, the OpenSource J2EE webOS Distributable under LGPL license. See terms of license at gnu.org.
- */
 package org.jboss.resteasy.test.providers.jaxb;
 
 import junit.framework.Assert;
-
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.providers.ProviderHelper;
 import org.jboss.resteasy.test.BaseResourceTest;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.jboss.resteasy.test.providers.jaxb.data.Order;
 import org.jboss.resteasy.test.providers.jaxb.generated.order.Ordertype;
 import org.junit.Before;
@@ -20,6 +15,8 @@ import org.junit.Test;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
+
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * A TestXmlJAXBProviders.

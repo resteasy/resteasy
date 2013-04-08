@@ -4,13 +4,13 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.GetRestful;
 
 import javax.servlet.ServletContext;
@@ -180,7 +180,7 @@ public class ServletContainerDispatcher
             ThreadLocalResteasyProviderFactory.push(providerFactory);
          }
          HttpHeaders headers = null;
-         UriInfoImpl uriInfo = null;
+         ResteasyUriInfo uriInfo = null;
          try
          {
             headers = ServletUtil.extractHttpHeaders(request);

@@ -21,7 +21,7 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * RESTEASY-207 MediaType case sensistivity when matching MessageBodyReader
@@ -76,7 +76,7 @@ public class MediaTypeCaseSensitivityTest extends BaseResourceTest
    public void setUp() throws Exception
    {
       addPerRequestResource(StuffResource.class);
-      getProviderFactory().addMessageBodyReader(new StuffProvider());
+      getProviderFactory().registerProviderInstance(new StuffProvider());
    }
 
 

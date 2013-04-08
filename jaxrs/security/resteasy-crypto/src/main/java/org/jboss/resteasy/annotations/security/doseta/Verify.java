@@ -37,6 +37,13 @@ public @interface Verify
    boolean ignoreExpiration() default false;
 
    /**
+    * If message body exists, are we required to check the hash of it?
+    *
+    * @return
+    */
+   boolean bodyHashRequired() default true;
+
+   /**
     * Do a stale check if a timestamp attribute is preset.
     *
     * @return

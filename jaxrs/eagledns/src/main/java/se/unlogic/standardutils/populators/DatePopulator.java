@@ -7,12 +7,12 @@
  ******************************************************************************/
 package se.unlogic.standardutils.populators;
 
+import se.unlogic.standardutils.date.DateUtils;
+import se.unlogic.standardutils.validation.StringFormatValidator;
+
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
-import se.unlogic.standardutils.date.DateUtils;
-import se.unlogic.standardutils.validation.StringFormatValidator;
 
 public class DatePopulator extends BaseStringPopulator<Date> {
 

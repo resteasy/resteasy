@@ -2,7 +2,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0-alpha-1-SNAPSHOT</version>
+        <version>3.0-beta-4</version>
     </parent>
     <name>Resteasy Examples</name>
     <description/>
@@ -28,14 +28,18 @@
     </build>
 
     <modules>
+        <module>jaxrs2-async-pubsub-example</module>
         <module>jaxb-json</module>
         <module>guice-hello</module>
         <module>async-job-service</module>
         <module>resteasy-springMVC</module>
         <module>oreilly-workbook</module>
-        <module>oauth-examples</module>
+        <module>oauth1-examples</module>
+        <module>oauth2-as7-example</module>
         <module>examples-jsapi</module>
         <module>smime</module>
         <module>digital-signatures</module>
+        <module>jaxrs-2.0/simple-client</module>
+        <module>jaxrs-2.0/server-async-http</module>
     </modules>
 </project>

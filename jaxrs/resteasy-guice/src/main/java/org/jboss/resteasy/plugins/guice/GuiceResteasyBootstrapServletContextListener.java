@@ -7,15 +7,22 @@ import org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootstrap implements ServletContextListener
 {
    private final static Logger logger = Logger.getLogger(GuiceResteasyBootstrapServletContextListener.class);
+
+   private List<Module> modules;
 
    public void contextInitialized(final ServletContextEvent event)
    {
@@ -34,6 +41,8 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
       {
          processor.process(stage, modules);
       }
+      this.modules = modules;
+      triggerAnnotatedMethods(this.modules, PostConstruct.class);
    }
 
    private Stage getStage(ServletContext context)
@@ -54,7 +63,7 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
       }
    }
 
-   private List<Module> getModules(final ServletContext context)
+   protected List<Module> getModules(final ServletContext context)
    {
       final List<Module> result = new ArrayList<Module>();
       final String modulesString = context.getInitParameter("resteasy.guice.modules");
@@ -90,5 +99,33 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
 
    public void contextDestroyed(final ServletContextEvent event)
    {
+      triggerAnnotatedMethods(this.modules, PreDestroy.class);
+   }
+
+   private void triggerAnnotatedMethods(final List<Module> modules, final Class<? extends Annotation> annotationClass)
+   {
+      for (Module module : this.modules)
+      {
+         final Method[] methods = module.getClass().getMethods();
+         for (Method method : methods)
+         {
+            if (method.isAnnotationPresent(annotationClass))
+            {
+               if(method.getParameterTypes().length > 0)
+               {
+                  logger.warn("Cannot execute expected module {}'s @{} method {} because it has unexpected parameters: skipping.", module.getClass().getSimpleName(), annotationClass.getSimpleName(), method.getName());
+                  continue;
+               }
+               try
+               {
+                  method.invoke(module);
+               } catch (InvocationTargetException ex) {
+                  logger.warn("Problem running annotation method @" + annotationClass.getSimpleName(), ex);
+               } catch (IllegalAccessException ex) {
+                  logger.warn("Problem running annotation method @" + annotationClass.getSimpleName(), ex);
+               }
+            }
+         }
+      }
    }
 }

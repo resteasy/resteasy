@@ -1,11 +1,10 @@
 package org.jboss.resteasy.plugins.providers.html;
 
-import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
+import java.io.IOException;
 
 /**
  * If you return one of these from a resource method, RESTEasy-HTML will render it.  This

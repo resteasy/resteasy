@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test;
 
 import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

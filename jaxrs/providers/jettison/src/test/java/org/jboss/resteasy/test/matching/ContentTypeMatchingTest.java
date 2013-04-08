@@ -16,7 +16,7 @@ import javax.ws.rs.ext.Provider;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * This tests automatically picking content type based on Accept header and/or @Produces
@@ -95,7 +95,7 @@ public class ContentTypeMatchingTest extends BaseResourceTest
    public static void setup()
    {
       addPerRequestResource(MapperResource.class);
-      deployment.getProviderFactory().addExceptionMapper(MyErrorExceptinMapper.class);
+      deployment.getProviderFactory().registerProvider(MyErrorExceptinMapper.class);
 
    }
 

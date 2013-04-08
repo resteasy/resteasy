@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -75,9 +75,10 @@ public interface SecurityContext {
      * has not been authenticated, the method returns null.
      *
      * @return a <code>java.security.Principal</code> containing the name
-     * of the user making this request; null if the user has not been
-     * authenticated
-     * @throws java.lang.IllegalStateException if called outside the scope of a request
+     *         of the user making this request; null if the user has not been
+     *         authenticated
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a request
      */
     public Principal getUserPrincipal();
 
@@ -88,9 +89,10 @@ public interface SecurityContext {
      *
      * @param role a <code>String</code> specifying the name of the role
      * @return a <code>boolean</code> indicating whether the user making
-     * the request belongs to a given role; <code>false</code> if the user
-     * has not been authenticated
-     * @throws java.lang.IllegalStateException if called outside the scope of a request
+     *         the request belongs to a given role; <code>false</code> if the user
+     *         has not been authenticated
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a request
      */
     public boolean isUserInRole(String role);
 
@@ -99,8 +101,9 @@ public interface SecurityContext {
      * using a secure channel, such as HTTPS.
      *
      * @return <code>true</code> if the request was made using a secure
-     * channel, <code>false</code> otherwise
-     * @throws java.lang.IllegalStateException if called outside the scope of a request
+     *         channel, <code>false</code> otherwise
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a request
      */
     public boolean isSecure();
 
@@ -111,10 +114,11 @@ public interface SecurityContext {
      * Values are the same as the CGI variable AUTH_TYPE
      *
      * @return one of the static members BASIC_AUTH, FORM_AUTH,
-     * CLIENT_CERT_AUTH, DIGEST_AUTH (suitable for == comparison) or the
-     * container-specific string indicating the authentication scheme,
-     * or null if the request was not authenticated.
-     * @throws java.lang.IllegalStateException if called outside the scope of a request
+     *         CLIENT_CERT_AUTH, DIGEST_AUTH (suitable for == comparison) or the
+     *         container-specific string indicating the authentication scheme,
+     *         or null if the request was not authenticated.
+     * @throws java.lang.IllegalStateException
+     *          if called outside the scope of a request
      */
     public String getAuthenticationScheme();
 }

@@ -16,7 +16,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.ext.Provider;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -87,7 +87,7 @@ public class StringConverterTest extends BaseResourceTest
    @Before
    public void setUp() throws Exception
    {
-      deployment.getProviderFactory().addStringConverter(POJOConverter.class);
+      deployment.getProviderFactory().registerProvider(POJOConverter.class);
       deployment.getRegistry().addPerRequestResource(MyResource.class);
       deployment.getRegistry().addPerRequestResource(MyDefaultResource.class);
    }

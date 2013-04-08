@@ -2,9 +2,9 @@ package org.jboss.resteasy.specimpl;
 
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.DateUtil;
+import org.jboss.resteasy.util.HeaderHelper;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
 import javax.ws.rs.core.CacheControl;
@@ -12,9 +12,9 @@ import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.ResponseHeaders;
 import javax.ws.rs.core.Variant;
 import java.lang.annotation.Annotation;
 import java.net.URI;
@@ -310,17 +310,18 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    // spec
 
 
-   @Override
    public Response.ResponseBuilder allow(String... methods)
    {
-      throw new NotImplementedYetException();
+      HeaderHelper.setAllow(this.metadata, methods);
+      return this;
    }
 
-   @Override
    public Response.ResponseBuilder allow(Set<String> methods)
    {
-      throw new NotImplementedYetException();
+      HeaderHelper.setAllow(this.metadata, methods);
+      return this;
    }
+
 
    @Override
    public Response.ResponseBuilder encoding(String encoding)
@@ -335,12 +336,6 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    }
 
    @Override
-   public Response.ResponseBuilder replaceAll(ResponseHeaders headers)
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
    public Response.ResponseBuilder variants(Variant... variants)
    {
       return this.variants(Arrays.asList(variants));
@@ -349,19 +344,35 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    @Override
    public Response.ResponseBuilder links(Link... links)
    {
-      throw new NotImplementedYetException();
+      metadata.remove(HttpHeaders.LINK);
+      for (Link link : links)
+      {
+         metadata.add(HttpHeaders.LINK, link);
+      }
+      return this;
    }
 
    @Override
    public Response.ResponseBuilder link(URI uri, String rel)
    {
-      throw new NotImplementedYetException();
+      Link link = Link.fromUri(uri).rel(rel).build();
+      metadata.add(HttpHeaders.LINK, link);
+      return this;
    }
 
    @Override
    public Response.ResponseBuilder link(String uri, String rel)
    {
-      throw new NotImplementedYetException();
+      Link link = Link.fromUri(uri).rel(rel).build();
+      metadata.add(HttpHeaders.LINK, link);
+      return this;
    }
 
+   @Override
+   public Response.ResponseBuilder replaceAll(MultivaluedMap<String, Object> headers)
+   {
+      metadata.clear();
+      metadata.putAll(headers);
+      return this;
+   }
 }

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.finegrain;
 
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -27,6 +27,29 @@ public class UriBuilderTest
    }
 
    @Test
+   public void testTemplate() throws Exception
+   {
+      UriBuilder builder = UriBuilder.fromUri("http://{host}/x/y/{path}?{q}={qval}");
+      String template = builder.toTemplate();
+      Assert.assertEquals(template, "http://{host}/x/y/{path}?{q}={qval}");
+      builder = builder.resolveTemplate("host", "localhost");
+      template = builder.toTemplate();
+      Assert.assertEquals(template, "http://localhost/x/y/{path}?{q}={qval}");
+
+      builder = builder.resolveTemplate("q", "name");
+      template = builder.toTemplate();
+      Assert.assertEquals(template, "http://localhost/x/y/{path}?name={qval}");
+      Map<String, Object> values = new HashMap<String, Object>();
+      values.put("path", "z");
+      values.put("qval", new Integer(42));
+      builder = builder.resolveTemplates(values);
+      template = builder.toTemplate();
+      Assert.assertEquals(template, "http://localhost/x/y/z?name=42");
+
+
+   }
+
+   @Test
    public void test587() throws Exception
    {
       System.out.println(UriBuilder.fromPath("/{p}").build("$a"));
@@ -37,7 +60,7 @@ public class UriBuilderTest
    {
       // test for RESTEASY-443
 
-      UriBuilderImpl.fromUri("?param=").replaceQueryParam("otherParam", "otherValue");
+      ResteasyUriBuilder.fromUri("?param=").replaceQueryParam("otherParam", "otherValue");
 
    }
 
@@ -361,21 +384,21 @@ public class UriBuilderTest
 
       {
          map.clear();
-         UriBuilderImpl impl = (UriBuilderImpl) UriBuilder.fromPath("/foo/{id}");
+         ResteasyUriBuilder impl = (ResteasyUriBuilder) UriBuilder.fromPath("/foo/{id}");
          map.put("id", "something %%20something");
 
          URI uri = impl.buildFromMap(map);
          Assert.assertEquals("/foo/something%20%25%2520something", uri.toString());
       }
       {
-         UriBuilderImpl impl = (UriBuilderImpl) UriBuilder.fromPath("/foo/{id}");
+         ResteasyUriBuilder impl = (ResteasyUriBuilder) UriBuilder.fromPath("/foo/{id}");
          map.clear();
          map.put("id", "something something");
          URI uri = impl.buildFromMap(map);
          Assert.assertEquals("/foo/something%20something", uri.toString());
       }
       {
-         UriBuilderImpl impl = (UriBuilderImpl) UriBuilder.fromPath("/foo/{id}");
+         ResteasyUriBuilder impl = (ResteasyUriBuilder) UriBuilder.fromPath("/foo/{id}");
          map.clear();
          map.put("id", "something%20something");
          URI uri = impl.buildFromEncodedMap(map);
@@ -384,21 +407,21 @@ public class UriBuilderTest
 
 
       {
-         UriBuilderImpl impl = (UriBuilderImpl) UriBuilder.fromPath("/foo/{id}");
+         ResteasyUriBuilder impl = (ResteasyUriBuilder) UriBuilder.fromPath("/foo/{id}");
 
          impl.substitutePathParam("id", "something %%20something", false);
          URI uri = impl.build();
          Assert.assertEquals("/foo/something%20%25%20something", uri.toString());
       }
       {
-         UriBuilderImpl impl = (UriBuilderImpl) UriBuilder.fromPath("/foo/{id}");
+         ResteasyUriBuilder impl = (ResteasyUriBuilder) UriBuilder.fromPath("/foo/{id}");
 
          impl.substitutePathParam("id", "something something", false);
          URI uri = impl.build();
          Assert.assertEquals("/foo/something%20something", uri.toString());
       }
       {
-         UriBuilderImpl impl = (UriBuilderImpl) UriBuilder.fromPath("/foo/{id}");
+         ResteasyUriBuilder impl = (ResteasyUriBuilder) UriBuilder.fromPath("/foo/{id}");
 
          impl.substitutePathParam("id", "something%20something", true);
          URI uri = impl.build();
@@ -520,7 +543,7 @@ public class UriBuilderTest
       maps.put("w", "path-rootless/test2");
 
       String expected_path =
-              "path-rootless/test2/x%25yz//path-absolute/test1/fred@example.com/x%25yz";
+              "path-rootless%2Ftest2/x%25yz/%2Fpath-absolute%2Ftest1/fred@example.com/x%25yz";
 
       try
       {
@@ -565,7 +588,7 @@ public class UriBuilderTest
       maps.put("u", "extra");
 
       String expected_path =
-              "path-rootless/test2/x%25yz//path-absolute/test1/fred@example.com/x%25yz";
+              "path-rootless%2Ftest2/x%25yz/%2Fpath-absolute%2Ftest1/fred@example.com/x%25yz";
 
       try
       {
@@ -679,13 +702,13 @@ public class UriBuilderTest
       maps2.put("v", "xyz");
 
       String expected_path =
-              "path-rootless/test2/x%25yz//path-absolute/test1/fred@example.com/x%25yz";
+              "path-rootless%2Ftest2/x%25yz/%2Fpath-absolute%2Ftest1/fred@example.com/x%25yz";
 
       String expected_path_1 =
-              "path-rootless/test2/x%2520yz//path-absolute/test1/fred@example.com/x%2520yz";
+              "path-rootless%2Ftest2/x%2520yz/%2Fpath-absolute%2Ftest1/fred@example.com/x%2520yz";
 
       String expected_path_2 =
-              "path-rootless/test2/x%25yz//path-absolute/test1/fred@example.com/x%25yz";
+              "path-rootless%2Ftest2/x%25yz/%2Fpath-absolute%2Ftest1/fred@example.com/x%25yz";
 
       try
       {
@@ -896,6 +919,58 @@ public class UriBuilderTest
       {
          throw new Exception("At least one assertion failed: " + sb.toString());
       }
+   }
+
+   @Test
+   public void testPathEncoding() throws Exception
+   {
+      UriBuilder builder = UriBuilder.fromUri("http://{host}");
+      builder.path("{d}");
+
+      URI uri = builder.build("A/B", "C/D");
+      Assert.assertEquals("http://A%2FB/C%2FD", uri.toString());
+
+      uri = builder.buildFromEncoded("A/B", "C/D");
+      Assert.assertEquals("http://A/B/C/D", uri.toString());
+      Object[] params = {"A/B", "C/D"};
+      uri = builder.build(params, false);
+      Assert.assertEquals("http://A/B/C/D", uri.toString());
+
+      HashMap<String, Object> map = new HashMap<String, Object>();
+      map.put("host", "A/B");
+      map.put("d", "C/D");
+
+      uri = builder.buildFromMap(map);
+      Assert.assertEquals("http://A%2FB/C%2FD", uri.toString());
+      uri = builder.buildFromEncodedMap(map);
+      Assert.assertEquals("http://A/B/C/D", uri.toString());
+      uri = builder.buildFromMap(map, false);
+      Assert.assertEquals("http://A/B/C/D", uri.toString());
+
+   }
+
+   @Test
+   public void testRelativize() throws Exception
+   {
+      URI from = URI.create("a/b/c");
+      URI to = URI.create("a/b/c/d/e");
+      URI relativized = ResteasyUriBuilder.relativize(from, to);
+      Assert.assertEquals(relativized.toString(), "d/e");
+
+      from = URI.create("a/b/c");
+      to = URI.create("d/e");
+      relativized = ResteasyUriBuilder.relativize(from, to);
+      Assert.assertEquals(relativized.toString(), "../../../d/e");
+
+      from = URI.create("a/b/c");
+      to = URI.create("a/b/c");
+      relativized = ResteasyUriBuilder.relativize(from, to);
+      Assert.assertEquals(relativized.toString(), "");
+
+      from = URI.create("a");
+      to = URI.create("d/e");
+      relativized = ResteasyUriBuilder.relativize(from, to);
+      Assert.assertEquals(relativized.toString(), "../d/e");
    }
 
 

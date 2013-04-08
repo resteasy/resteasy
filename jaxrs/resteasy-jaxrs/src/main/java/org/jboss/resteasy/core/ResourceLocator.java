@@ -1,7 +1,7 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.specimpl.UriInfoImpl;
+import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -12,6 +12,7 @@ import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.GetRestful;
 
@@ -19,6 +20,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -44,19 +46,19 @@ public class ResourceLocator implements ResourceInvoker
       this.injector = injector;
       this.providerFactory = providerFactory;
       this.method = method;
-      this.methodInjector = injector.createMethodInjector(root, method);
+      this.methodInjector = injector.createMethodInjector(root, method, providerFactory);
    }
 
    protected Object createResource(HttpRequest request, HttpResponse response)
    {
-      Object resource = this.resource.createResource(request, response, injector);
+      Object resource = this.resource.createResource(request, response, providerFactory);
       return createResource(request, response, resource);
 
    }
 
    protected Object createResource(HttpRequest request, HttpResponse response, Object locator)
    {
-      UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
+      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
       Object[] args = methodInjector.injectArguments(request, response);
       try
       {
@@ -82,9 +84,9 @@ public class ResourceLocator implements ResourceInvoker
       return method;
    }
 
-   public ServerResponse invoke(HttpRequest request, HttpResponse response)
+   public BuiltResponse invoke(HttpRequest request, HttpResponse response)
    {
-      UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
+      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
       try
       {
          Object target = createResource(request, response);
@@ -97,9 +99,9 @@ public class ResourceLocator implements ResourceInvoker
       }
    }
 
-   public ServerResponse invoke(HttpRequest request, HttpResponse response, Object locator)
+   public BuiltResponse invoke(HttpRequest request, HttpResponse response, Object locator)
    {
-      UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
+      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
       try
       {
          Object target = createResource(request, response, locator);
@@ -112,7 +114,7 @@ public class ResourceLocator implements ResourceInvoker
       }
    }
 
-   protected ServerResponse invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target)
+   protected BuiltResponse invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target)
    {
       if (target == null)
       {
@@ -130,8 +132,14 @@ public class ResourceLocator implements ResourceInvoker
             String msg = "Subresource for target class has no jax-rs annotations.: " + target.getClass().getName();
             throw new InternalServerErrorException(msg);
          }
-         
-         registry.addResourceFactory(null, null, target.getClass());//subResourceClass);
+         if (Proxy.isProxyClass(target.getClass()))
+         {
+            registry.addResourceFactory(null, null, GetRestful.getSubResourceClasses(target.getClass()));
+         }
+         else
+         {
+            registry.addResourceFactory(null, null, target.getClass());//subResourceClass);
+         }
          cachedSubresources.putIfAbsent(target.getClass(), registry);
       }
       ResourceInvoker invoker = registry.getResourceInvoker(request);

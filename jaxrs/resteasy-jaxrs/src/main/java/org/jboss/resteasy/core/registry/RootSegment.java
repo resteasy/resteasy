@@ -369,7 +369,7 @@ public class RootSegment extends Segment
 
    public ResourceInvoker matchRoot(HttpRequest request, int start)
    {
-      String path = request.getPreprocessedPath();
+      String path = request.getUri().getMatchingPath();
       if (start < path.length() && path.charAt(start) == '/') start++;
       return matchChildren(request, path, start);
    }
@@ -404,6 +404,7 @@ public class RootSegment extends Segment
          String val = pathParamExpr.get(name).remove(0);
          // double encode slashes, so that slashes stay where they are 
          val = val.replace("\\", "\\\\");
+         val = val.replace("$", "\\$");
          matcher.appendReplacement(newPath, "{$1:" + val + "}");
       }
       matcher.appendTail(newPath);

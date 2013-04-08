@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,12 +42,15 @@ package javax.ws.rs.ext;
 import javax.ws.rs.core.Response;
 
 /**
- * Contract for a provider that maps Java exceptions to
- * {@link javax.ws.rs.core.Response}. An implementation of this interface must
- * be annotated with {@link Provider}.
+ * Contract for a provider that maps Java exceptions to {@link javax.ws.rs.core.Response}.
+ * <p>
+ * Providers implementing {@code ExceptionMapper} contract must be either programmatically
+ * registered in a JAX-RS runtime or must be annotated with
+ * {@link javax.ws.rs.ext.Provider &#64;Provider} annotation to be automatically discovered
+ * by the JAX-RS runtime during a provider scanning phase.
+ * </p>
  *
  * @param <E> exception type supported by the provider.
- *
  * @author Paul Sandoz
  * @author Marc Hadley
  * @see Provider
@@ -60,9 +63,10 @@ public interface ExceptionMapper<E extends Throwable> {
      * Map an exception to a {@link javax.ws.rs.core.Response}. Returning
      * {@code null} results in a {@link javax.ws.rs.core.Response.Status#NO_CONTENT}
      * response. Throwing a runtime exception results in a
-     * {@link javax.ws.rs.core.Response.Status#INTERNAL_SERVER_ERROR} response
-     * @param exception the exception to map to a response
-     * @return a response mapped from the supplied exception
+     * {@link javax.ws.rs.core.Response.Status#INTERNAL_SERVER_ERROR} response.
+     *
+     * @param exception the exception to map to a response.
+     * @return a response mapped from the supplied exception.
      */
     Response toResponse(E exception);
 }

@@ -2,8 +2,8 @@ package org.jboss.resteasy.plugins.server.resourcefactory;
 
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ResourceFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -38,11 +38,11 @@ public class JndiComponentResourceFactory implements ResourceFactory
       }
    }
 
-   public void registered(InjectorFactory factory)
+   public void registered(ResteasyProviderFactory factory)
    {
    }
 
-   public Object createResource(HttpRequest request, HttpResponse response, InjectorFactory factory)
+   public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
    {
       if (reference != null) return reference;
       Object ref = reference;

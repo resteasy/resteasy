@@ -2,9 +2,9 @@ package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -45,6 +45,7 @@ public class HttpServletDispatcher extends HttpServlet implements HttpRequestFac
       servletContainerDispatcher.destroy();
    }
 
+   @Override
    protected void service(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException
    {
       service(httpServletRequest.getMethod(), httpServletRequest, httpServletResponse);
@@ -55,7 +56,7 @@ public class HttpServletDispatcher extends HttpServlet implements HttpRequestFac
       servletContainerDispatcher.service(httpMethod, request, response, true);
    }
 
-   public HttpRequest createResteasyHttpRequest(String httpMethod, HttpServletRequest request, HttpHeaders headers, UriInfoImpl uriInfo, HttpResponse theResponse, HttpServletResponse response)
+   public HttpRequest createResteasyHttpRequest(String httpMethod, HttpServletRequest request, HttpHeaders headers, ResteasyUriInfo uriInfo, HttpResponse theResponse, HttpServletResponse response)
    {
       return createHttpRequest(httpMethod, request, headers, uriInfo, theResponse, response);
    }
@@ -66,7 +67,7 @@ public class HttpServletDispatcher extends HttpServlet implements HttpRequestFac
       return createServletResponse(response);
    }
 
-   protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest request, HttpHeaders headers, UriInfoImpl uriInfo, HttpResponse theResponse, HttpServletResponse response)
+   protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest request, HttpHeaders headers, ResteasyUriInfo uriInfo, HttpResponse theResponse, HttpServletResponse response)
    {
       return new HttpServletInputMessage(request, theResponse, headers, uriInfo, httpMethod.toUpperCase(), (SynchronousDispatcher) getDispatcher());
    }

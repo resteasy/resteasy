@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,20 +41,18 @@ package javax.ws.rs;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
-
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Injects a {@link javax.ws.rs.client.Target resource target} pointing at
+ * Injects a {@link javax.ws.rs.client.WebTarget resource target} pointing at
  * a resource identified by the resolved URI into a method parameter,
  * class field or a bean property.
  * <p/>
- * Injected variable must be of type {@link javax.ws.rs.client.Target}.
+ * Injected variable must be of type {@link javax.ws.rs.client.WebTarget}.
  *
  * @author Marek Potociar
- * @see javax.ws.rs.client.Target
- *
+ * @see javax.ws.rs.client.WebTarget
  * @since 2.0
  */
 @java.lang.annotation.Target({PARAMETER, FIELD, METHOD})
@@ -63,38 +61,41 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface Uri {
 
     /**
-     * Specifies the URI of the injected {@link javax.ws.rs.client.Target resource target}.
+     * Specifies the URI of the injected {@link javax.ws.rs.client.WebTarget
+     * resource target}.
+     *
      * The value must be in the form of absolute URI if not used from inside of
      * a JAX-RS component class. For example:
      * <pre>
-     *
-     *public class AuditingFilter implements RequestFilter {
+     * public class AuditingFilter implements RequestFilter {
      *    &#64;Uri("users/{name}/orders")
-     *    Target userOrders;
+     *    WebTarget userOrders;
      *
      *    // An external resource target
      *    &#64;Uri("http://mail.acme.com/accounts/{name}")
-     *    Target userEmailAccount;
+     *    WebTarget userEmailAccount;
      *
+     *    // An external, template-based resource target
+     *    &#64;Uri("http://{audit-host}:{audit-port}/auditlogs/")
+     *    WebTarget auditLogs;
      *    ...
-     *}
+     * }
      * </pre>
      *
      * If used from within a JAX-RS component class (e.g. resource, filter, provider &hellip;),
      * the value can take a form of absolute or relative URI or absolute or relative URI.
-     * A relative URI is resolved using the {@link ApplicationPath application path}
-     * as the base URI. For example:
+     * A relative URI is resolved using the context path of the application as the base URI.
+     * For example:
      * <pre>
-     *
-     *public class AuditingFilter implements RequestFilter {
+     * public class AuditingFilter implements RequestFilter {
      *    &#64;Uri("audit/logs")
-     *    Target applicationLogs;
+     *    WebTarget applicationLogs;
      *
      *    &#64;Uri("http://sales.acme.com/audit/logs")
-     *    Target domainLogs;
+     *    WebTarget domainLogs;
      *
      *    ...
-     *}
+     * }
      * </pre>
      *
      * In case the annotation is used from a JAX-RS resource class, an absolute
@@ -103,20 +104,19 @@ public @interface Uri {
      * {@link Path path template} as well as the context of the processed request.
      * For example:
      * <pre>
-     *
-     *&#64;Path("users/{name}")
-     *public class MyResource {
+     * &#64;Path("users/{name}")
+     * public class MyResource {
      *    &#64;Uri("users/{name}/orders")
-     *    Target userOrders;
+     *    WebTarget userOrders;
      *
      *    &#64;Uri("http://mail.acme.com/accounts/{name}")
-     *    Target userEmailAccount;
+     *    WebTarget userEmailAccount;
      *
      *    ...
-     *}
+     * }
      * </pre>
      *
-     * @see javax.ws.rs.client.Target
+     * @see javax.ws.rs.client.WebTarget
      * @see javax.ws.rs.Path
      */
     String value();

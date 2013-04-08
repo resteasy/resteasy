@@ -7,6 +7,7 @@ import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.client.core.BaseClientResponse.BaseClientResponseStreamFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.core.SynchronousExecutionContext;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
@@ -72,9 +73,10 @@ public class InMemoryClientExecutor implements ClientExecutor
    {
       MockHttpRequest mockHttpRequest = MockHttpRequest.create(request.getHttpMethod(), new URI(request.getUri()),
               baseUri);
+      final MockHttpResponse mockResponse = new MockHttpResponse();
+      mockHttpRequest.setAsynchronousContext(new SynchronousExecutionContext((SynchronousDispatcher)dispatcher, mockHttpRequest, mockResponse));
       loadHttpMethod(request, mockHttpRequest);
 
-      final MockHttpResponse mockResponse = new MockHttpResponse();
       dispatcher.invoke(mockHttpRequest, mockResponse);
       return createResponse(request, mockResponse);
    }
@@ -86,6 +88,7 @@ public class InMemoryClientExecutor implements ClientExecutor
       response.setStatus(mockResponse.getStatus());
       setHeaders(mockResponse, response);
       response.setProviderFactory(request.getProviderFactory());
+      response.setAttributes(request.getAttributes());
       return response;
    }
 

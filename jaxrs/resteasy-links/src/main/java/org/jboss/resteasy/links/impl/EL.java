@@ -1,5 +1,9 @@
 package org.jboss.resteasy.links.impl;
 
+import org.jboss.el.ExpressionFactoryImpl;
+import org.jboss.el.lang.FunctionMapperImpl;
+import org.jboss.el.lang.VariableMapperImpl;
+
 import javax.el.ArrayELResolver;
 import javax.el.BeanELResolver;
 import javax.el.CompositeELResolver;
@@ -11,10 +15,6 @@ import javax.el.ListELResolver;
 import javax.el.MapELResolver;
 import javax.el.ResourceBundleELResolver;
 import javax.el.VariableMapper;
-
-import org.jboss.el.ExpressionFactoryImpl;
-import org.jboss.el.lang.FunctionMapperImpl;
-import org.jboss.el.lang.VariableMapperImpl;
 
 public class EL {
 	public static final ExpressionFactory EXPRESSION_FACTORY = new ExpressionFactoryImpl();

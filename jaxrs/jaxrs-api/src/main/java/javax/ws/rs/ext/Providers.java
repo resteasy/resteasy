@@ -72,23 +72,23 @@ public interface Providers {
      * method is called on each reader in order using the supplied criteria and
      * the first reader that returns {@code true} is selected and returned.
      *
-     * @param <T> type of the the object that is to be read.
-     * @param type the class of the object that is to be read.
+     * @param <T>         type of the the object that is to be read.
+     * @param type        the class of the object that is to be read.
      * @param genericType the type of object to be produced. E.g. if the
-     *     message body is to be converted into a method parameter, this will be
-     *     the formal type of the method parameter as returned by
-     *     {@code Class.getGenericParameterTypes}.
+     *                    message body is to be converted into a method parameter, this will be
+     *                    the formal type of the method parameter as returned by
+     *                    {@code Class.getGenericParameterTypes}.
      * @param annotations an array of the annotations on the declaration of the
-     *     artifact that will be initialized with the produced instance. E.g. if
-     *     the message body is to be converted into a method parameter, this will
-     *     be the annotations on that parameter returned by
-     *     {@code Class.getParameterAnnotations}.
-     * @param mediaType the media type of the data that will be read.
+     *                    artifact that will be initialized with the produced instance. E.g. if
+     *                    the message body is to be converted into a method parameter, this will
+     *                    be the annotations on that parameter returned by
+     *                    {@code Class.getParameterAnnotations}.
+     * @param mediaType   the media type of the data that will be read.
      * @return a MessageBodyReader that matches the supplied criteria or {@code null}
-     *     if none is found.
+     *         if none is found.
      */
     <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type,
-            Type genericType, Annotation[] annotations, MediaType mediaType);
+                                                  Type genericType, Annotation[] annotations, MediaType mediaType);
 
     /**
      * Get a message body writer that matches a set of criteria. The set of
@@ -104,32 +104,32 @@ public interface Providers {
      * method is called on each writer in order using the supplied criteria and
      * the first writer that returns {@code true} is selected and returned.
      *
-     * @param <T> type of the object that is to be written.
-     * @param type the class of the object that is to be written.
+     * @param <T>         type of the object that is to be written.
+     * @param type        the class of the object that is to be written.
      * @param genericType the type of object to be written. E.g. if the
-     *     message body is to be produced from a field, this will be
-     *     the declared type of the field as returned by {@code Field.getGenericType}.
+     *                    message body is to be produced from a field, this will be
+     *                    the declared type of the field as returned by {@code Field.getGenericType}.
      * @param annotations an array of the annotations on the declaration of the
-     *     artifact that will be written. E.g. if the
-     *     message body is to be produced from a field, this will be
-     *     the annotations on that field returned by
-     *     {@code Field.getDeclaredAnnotations}.
-     * @param mediaType the media type of the data that will be written.
+     *                    artifact that will be written. E.g. if the
+     *                    message body is to be produced from a field, this will be
+     *                    the annotations on that field returned by
+     *                    {@code Field.getDeclaredAnnotations}.
+     * @param mediaType   the media type of the data that will be written.
      * @return a MessageBodyReader that matches the supplied criteria or {@code null}
-     *     if none is found.
+     *         if none is found.
      */
     <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type,
-            Type genericType, Annotation[] annotations, MediaType mediaType);
+                                                  Type genericType, Annotation[] annotations, MediaType mediaType);
 
     /**
      * Get an exception mapping provider for a particular class of exception.
      * Returns the provider whose generic type is the nearest superclass of
      * {@code type}.
      *
-     * @param <T> type of the exception handled by the exception mapping provider.
+     * @param <T>  type of the exception handled by the exception mapping provider.
      * @param type the class of exception.
      * @return an {@link ExceptionMapper} for the supplied type or {@code null}
-     *     if none is found.
+     *         if none is found.
      */
     <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type);
 
@@ -148,12 +148,12 @@ public interface Providers {
      * resolver in order and returns the first non-null value it obtains or null
      * if all matching context resolvers return null.
      *
-     * @param <T> type of the context.
+     * @param <T>         type of the context.
      * @param contextType the class of context desired.
-     * @param mediaType the media type of data for which a context is required.
+     * @param mediaType   the media type of data for which a context is required.
      * @return a matching context resolver instance or {@code null} if no matching
-     *     context providers are found.
+     *         context providers are found.
      */
     <T> ContextResolver<T> getContextResolver(Class<T> contextType,
-            MediaType mediaType);
+                                              MediaType mediaType);
 }

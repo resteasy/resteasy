@@ -20,7 +20,6 @@ import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.embedded.SimpleSecurityDomain;
-import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.test.HttpServerContainer;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;
@@ -37,7 +36,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
 import java.util.List;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -84,7 +83,7 @@ public class BasicAuthTest
          if (!ctx.isUserInRole("admin"))
          {
             System.out.println("NOT IN ROLE!!!!");
-            throw new WebApplicationException(401);
+            throw new WebApplicationException(403);
          }
          return "hello";
       }
@@ -115,7 +114,7 @@ public class BasicAuthTest
          if (!ctx.isUserInRole("admin"))
          {
             System.out.println("NOT IN ROLE!!!!");
-            throw new WebApplicationException(401);
+            throw new WebApplicationException(403);
          }
          return "hello";
       }
@@ -204,7 +203,7 @@ public class BasicAuthTest
       {
          ClientRequest request = new ClientRequest(generateURL("/secured/deny"), executor);
          ClientResponse<String> response = request.get(String.class);
-         Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());        
+         Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
       }
    }
 
@@ -256,7 +255,7 @@ public class BasicAuthTest
          client.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY), credentials);
          ClientRequest request = new ClientRequest(generateURL("/secured/authorized"), executor);
          ClientResponse<?> response = request.get();
-         Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
+         Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
          response.releaseConnection();
       }
    }

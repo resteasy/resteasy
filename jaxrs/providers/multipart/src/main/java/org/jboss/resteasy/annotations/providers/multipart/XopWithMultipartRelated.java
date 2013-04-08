@@ -1,12 +1,11 @@
 package org.jboss.resteasy.annotations.providers.multipart;
 
+import javax.ws.rs.core.MediaType;
+import javax.xml.bind.annotation.XmlMimeType;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.annotation.XmlMimeType;
 
 /**
  * This annotation can be used to process/produce incoming/outgoing XOP messages

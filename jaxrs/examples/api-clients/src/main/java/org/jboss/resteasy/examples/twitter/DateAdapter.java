@@ -1,10 +1,9 @@
 package org.jboss.resteasy.examples.twitter;
 
-import java.util.Date;
+import org.jboss.resteasy.util.DateUtil;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-
-import org.jboss.resteasy.util.DateUtil;
+import java.util.Date;
 
 public class DateAdapter extends XmlAdapter<String, Date> {
 

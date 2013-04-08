@@ -32,7 +32,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector
          Class type = constructor.getParameterTypes()[i];
          Type genericType = constructor.getGenericParameterTypes()[i];
          Annotation[] annotations = constructor.getParameterAnnotations()[i];
-         params[i] = factory.getInjectorFactory().createParameterExtractor(constructor.getDeclaringClass(), constructor, type, genericType, annotations);
+         params[i] = factory.getInjectorFactory().createParameterExtractor(constructor.getDeclaringClass(), constructor, type, genericType, annotations, factory);
       }
    }
 

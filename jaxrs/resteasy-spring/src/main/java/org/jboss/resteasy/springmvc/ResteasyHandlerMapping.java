@@ -6,6 +6,7 @@ import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.NotFoundException;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.Ordered;
 import org.springframework.web.servlet.HandlerExecutionChain;
@@ -13,6 +14,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
 
 /**
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
@@ -30,10 +32,10 @@ public class ResteasyHandlerMapping implements HandlerMapping, Ordered, Initiali
    private HandlerInterceptor[] interceptors;
    private boolean throwNotFound = false;
 
-   public ResteasyHandlerMapping(SynchronousDispatcher dispatcher)
+   public ResteasyHandlerMapping(ResteasyDeployment deployment)
    {
       super();
-      this.dispatcher = dispatcher;
+      this.dispatcher = (SynchronousDispatcher)deployment.getDispatcher();
    }
 
    public SynchronousDispatcher getDispatcher()
@@ -73,7 +75,15 @@ public class ResteasyHandlerMapping implements HandlerMapping, Ordered, Initiali
          }
          else
          {
-            requestWrapper.setInvoker(getInvoker(httpRequest));
+            Response response = dispatcher.preprocess(httpRequest);
+            if (response != null)
+            {
+               requestWrapper.setAbortedResponse(response);
+            }
+            else
+            {
+               requestWrapper.setInvoker(getInvoker(httpRequest));
+            }
          }
          return new HandlerExecutionChain(requestWrapper, interceptors);
       }

@@ -1,33 +1,39 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.core.interception.InterceptorRegistry;
-import org.jboss.resteasy.core.interception.InterceptorRegistryListener;
+import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistryListener;
+import org.jboss.resteasy.core.interception.PostMatchContainerRequestContext;
 import org.jboss.resteasy.core.registry.Segment;
 import org.jboss.resteasy.plugins.providers.validation.ResteasyViolationExceptionExtension;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
-import org.jboss.resteasy.specimpl.UriInfoImpl;
+import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
-import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
-import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
+import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.Types;
 import org.jboss.resteasy.util.WeightedMediaType;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.container.DynamicFeature;
+import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ContextResolver;
-
+import javax.ws.rs.ext.WriterInterceptor;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -42,7 +48,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListener
+public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistryListener
 {
 
    protected MediaType[] produces;
@@ -55,27 +61,51 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
    protected MethodInjector methodInjector;
    protected InjectorFactory injector;
    protected ResourceFactory resource;
-   protected ResteasyProviderFactory providerFactory;
+   protected ResteasyProviderFactory parentProviderFactory;
+   protected ResteasyProviderFactory resourceMethodProviderFactory;
    protected Method method;
    protected Class<?> resourceClass;
-   protected PreProcessInterceptor[] preProcessInterceptors;
-   protected PostProcessInterceptor[] postProcessInterceptors;
-   protected MessageBodyWriterInterceptor[] writerInterceptors;
+   protected ContainerRequestFilter[] requestFilters;
+   protected ContainerResponseFilter[] responseFilters;
+   protected WriterInterceptor[] writerInterceptors;
    protected ConcurrentHashMap<String, AtomicLong> stats = new ConcurrentHashMap<String, AtomicLong>();
    protected Type genericReturnType;
    protected GeneralValidator validator;
    protected ViolationsContainer<?> violationsContainer;
+   protected ResourceInfo resourceInfo;
 
 
    public ResourceMethod(Class<?> clazz, Method method, InjectorFactory injector, ResourceFactory resource, ResteasyProviderFactory providerFactory, Set<String> httpMethods)
    {
       this.injector = injector;
       this.resource = resource;
-      this.providerFactory = providerFactory;
+      this.parentProviderFactory = providerFactory;
       this.httpMethods = httpMethods;
       this.resourceClass = clazz;
       this.method = method;
-      this.methodInjector = injector.createMethodInjector(clazz, method);
+
+      resourceInfo = new ResourceInfo()
+      {
+         @Override
+         public Method getResourceMethod()
+         {
+            return ResourceMethod.this.method;
+         }
+
+         @Override
+         public Class<?> getResourceClass()
+         {
+            return ResourceMethod.this.resourceClass;
+         }
+      };
+
+      this.resourceMethodProviderFactory = new ResteasyProviderFactory(providerFactory);
+      for (DynamicFeature feature : providerFactory.getServerDynamicFeatures())
+      {
+         feature.configure(resourceInfo, new FeatureContextDelegate(resourceMethodProviderFactory));
+      }
+
+      this.methodInjector = injector.createMethodInjector(clazz, method, resourceMethodProviderFactory);
 
       Produces p = method.getAnnotation(Produces.class);
       if (p == null) p = clazz.getAnnotation(Produces.class);
@@ -107,13 +137,15 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       Collections.sort(preferredProduces);
       Collections.sort(preferredConsumes);
 
-      preProcessInterceptors = providerFactory.getServerPreProcessInterceptorRegistry().bind(resourceClass, method);
-      postProcessInterceptors = providerFactory.getServerPostProcessInterceptorRegistry().bind(resourceClass, method);
-      writerInterceptors = providerFactory.getServerMessageBodyWriterInterceptorRegistry().bind(resourceClass, method);
+      requestFilters = resourceMethodProviderFactory.getContainerRequestFilterRegistry().postMatch(resourceClass, method);
+      responseFilters = resourceMethodProviderFactory.getContainerResponseFilterRegistry().postMatch(resourceClass, method);
+      writerInterceptors = resourceMethodProviderFactory.getServerWriterInterceptorRegistry().postMatch(resourceClass, method);
 
-      providerFactory.getServerPreProcessInterceptorRegistry().getListeners().add(this);
-      providerFactory.getServerPostProcessInterceptorRegistry().getListeners().add(this);
-      providerFactory.getServerMessageBodyWriterInterceptorRegistry().getListeners().add(this);
+
+      // we register with parent to lisen for redeploy evens
+      providerFactory.getContainerRequestFilterRegistry().getListeners().add(this);
+      providerFactory.getContainerResponseFilterRegistry().getListeners().add(this);
+      providerFactory.getServerWriterInterceptorRegistry().getListeners().add(this);
       /*
           We get the genericReturnType for the case of:
           
@@ -136,31 +168,36 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
 
    public void cleanup()
    {
-      providerFactory.getServerPreProcessInterceptorRegistry().getListeners().remove(this);
-      providerFactory.getServerPostProcessInterceptorRegistry().getListeners().remove(this);
-      providerFactory.getServerMessageBodyWriterInterceptorRegistry().getListeners().remove(this);
+      parentProviderFactory.getContainerRequestFilterRegistry().getListeners().remove(this);
+      parentProviderFactory.getContainerResponseFilterRegistry().getListeners().remove(this);
+      parentProviderFactory.getServerWriterInterceptorRegistry().getListeners().remove(this);
       for (ValueInjector param : methodInjector.getParams())
       {
          if (param instanceof MessageBodyParameterInjector)
          {
-            providerFactory.getServerMessageBodyReaderInterceptorRegistry().getListeners().remove(param);
+            parentProviderFactory.getServerReaderInterceptorRegistry().getListeners().remove(param);
          }
       }
    }
 
-   public void registryUpdated(InterceptorRegistry registry)
+   public void registryUpdated(JaxrsInterceptorRegistry registry)
    {
-      if (registry.getIntf().equals(MessageBodyWriterInterceptor.class))
+      this.resourceMethodProviderFactory = new ResteasyProviderFactory(parentProviderFactory);
+      for (DynamicFeature feature : parentProviderFactory.getServerDynamicFeatures())
       {
-         writerInterceptors = providerFactory.getServerMessageBodyWriterInterceptorRegistry().bind(resourceClass, method);
+         feature.configure(resourceInfo, new FeatureContextDelegate(resourceMethodProviderFactory));
       }
-      else if (registry.getIntf().equals(PreProcessInterceptor.class))
+      if (registry.getIntf().equals(WriterInterceptor.class))
       {
-         preProcessInterceptors = providerFactory.getServerPreProcessInterceptorRegistry().bind(resourceClass, method);
+         writerInterceptors = resourceMethodProviderFactory.getServerWriterInterceptorRegistry().postMatch(resourceClass, method);
       }
-      else if (registry.getIntf().equals(PostProcessInterceptor.class))
+      else if (registry.getIntf().equals(ContainerRequestFilter.class))
       {
-         postProcessInterceptors = providerFactory.getServerPostProcessInterceptorRegistry().bind(resourceClass, method);
+         requestFilters = resourceMethodProviderFactory.getContainerRequestFilterRegistry().postMatch(resourceClass, method);
+      }
+      else if (registry.getIntf().equals(ContainerResponseFilter.class))
+      {
+         responseFilters = resourceMethodProviderFactory.getContainerResponseFilterRegistry().postMatch(resourceClass, method);
       }
    }
 
@@ -187,9 +224,34 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       return stats;
    }
 
+   public ContainerRequestFilter[] getRequestFilters()
+   {
+      return requestFilters;
+   }
+
+   public ContainerResponseFilter[] getResponseFilters()
+   {
+      return responseFilters;
+   }
+
+   public WriterInterceptor[] getWriterInterceptors()
+   {
+      return writerInterceptors;
+   }
+
+   public Type getGenericReturnType()
+   {
+      return genericReturnType;
+   }
+
    public Class<?> getResourceClass()
    {
       return resourceClass;
+   }
+
+   public Annotation[] getMethodAnnotations()
+   {
+      return method.getAnnotations();
    }
 
    /**
@@ -217,21 +279,21 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       return method;
    }
 
-   public ServerResponse invoke(HttpRequest request, HttpResponse response)
+   public BuiltResponse invoke(HttpRequest request, HttpResponse response)
    {
-      Object target = resource.createResource(request, response, injector);
+      Object target = resource.createResource(request, response, resourceMethodProviderFactory);
       return invoke(request, response, target);
    }
 
-   public ServerResponse invoke(HttpRequest request, HttpResponse response, Object target)
+   public BuiltResponse invoke(HttpRequest request, HttpResponse response, Object target)
    {
       request.setAttribute(ResourceMethod.class.getName(), this);
       incrementMethodCount(request.getHttpMethod());
-      UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
+      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
       uriInfo.pushCurrentResource(target);
       try
       {
-         ServerResponse jaxrsResponse = invokeOnTarget(request, response, target);
+         BuiltResponse jaxrsResponse = invokeOnTarget(request, response, target);
 
          if (jaxrsResponse != null && jaxrsResponse.getEntity() != null)
          {
@@ -252,7 +314,7 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       }
    }
 
-   protected ServerResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
+   protected BuiltResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
    {
       if (validator != null)
       {
@@ -260,65 +322,59 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
          request.setAttribute(ViolationsContainer.class.getName(), violationsContainer);
          request.setAttribute(GeneralValidator.class.getName(), validator);
       }
-      
-      for (PreProcessInterceptor preInterceptor : preProcessInterceptors)
+
+      PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this);
+      for (ContainerRequestFilter filter : requestFilters)
       {
-         ServerResponse serverResponse = preInterceptor.preProcess(request, this);
+         try
+         {
+            filter.filter(requestContext);
+         }
+         catch (IOException e)
+         {
+            throw new ApplicationException(e);
+         }
+         BuiltResponse serverResponse = (BuiltResponse)requestContext.getResponseAbortedWith();
          if (serverResponse != null)
          {
-            return prepareResponse(serverResponse);
+            return serverResponse;
          }
       }
 
-      Object rtn = null;
-      try
-      {
-         rtn = methodInjector.invoke(request, response, target);
-      }
-      catch (WebApplicationException wae)
-      {
-         prepareResponse(ServerResponse.convertToServerResponse(wae.getResponse()));
-         throw wae;
-      }
-      
+      Object rtn = methodInjector.invoke(request, response, target);
+
       if (violationsContainer != null && violationsContainer.size() > 0)
       {
          throw new ResteasyViolationExceptionExtension(violationsContainer);
       }
 
-      if (request.isSuspended())
+      if (request.getAsyncContext().isSuspended())
       {
-         AbstractAsynchronousResponse asyncResponse = (AbstractAsynchronousResponse) request.getAsynchronousResponse();
-         if (asyncResponse == null) return null;
-         asyncResponse.setAnnotations(method.getAnnotations());
-         asyncResponse.setMessageBodyWriterInterceptors(writerInterceptors);
-         asyncResponse.setPostProcessInterceptors(postProcessInterceptors);
+         request.getAsyncContext().getAsyncResponse().setAnnotations(method.getAnnotations());
+         request.getAsyncContext().getAsyncResponse().setWriterInterceptors(writerInterceptors);
+         request.getAsyncContext().getAsyncResponse().setResponseFilters(responseFilters);
+         request.getAsyncContext().getAsyncResponse().setMethod(this);
          return null;
       }
       if (rtn == null || method.getReturnType().equals(void.class))
       {
-         return prepareResponse((ServerResponse) Response.noContent().build());
+         BuiltResponse build = (BuiltResponse) Response.noContent().build();
+         build.setAnnotations(method.getAnnotations());
+         return build;
       }
       if (Response.class.isAssignableFrom(method.getReturnType()) || rtn instanceof Response)
       {
-         return prepareResponse(ServerResponse.convertToServerResponse((Response) rtn));
+         BuiltResponse rtn1 = (BuiltResponse) rtn;
+         rtn1.setAnnotations(method.getAnnotations());
+         return rtn1;
       }
 
       Response.ResponseBuilder builder = Response.ok(rtn);
       builder.type(resolveContentType(request, rtn));
-      ServerResponse jaxrsResponse = (ServerResponse) builder.build();
+      BuiltResponse jaxrsResponse = (BuiltResponse)builder.build();
       jaxrsResponse.setGenericType(genericReturnType);
-      return prepareResponse(jaxrsResponse);
-   }
-
-   protected ServerResponse prepareResponse(ServerResponse serverResponse)
-   {
-      serverResponse.setAnnotations(method.getAnnotations());
-      serverResponse.setMessageBodyWriterInterceptors(writerInterceptors);
-      serverResponse.setPostProcessInterceptors(postProcessInterceptors);
-      serverResponse.setResourceMethod(method);
-      serverResponse.setResourceClass(resourceClass);
-      return serverResponse;
+      jaxrsResponse.setAnnotations(method.getAnnotations());
+      return jaxrsResponse;
    }
 
    public boolean doesProduce(List<? extends MediaType> accepts)
@@ -433,7 +489,7 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       }
       for (MediaType accept : accepts)
       {
-         if (providerFactory.getMessageBodyWriter(clazz, type, method.getAnnotations(), accept) != null)
+         if (resourceMethodProviderFactory.getMessageBodyWriter(clazz, type, method.getAnnotations(), accept) != null)
          {
             return accept;
          }

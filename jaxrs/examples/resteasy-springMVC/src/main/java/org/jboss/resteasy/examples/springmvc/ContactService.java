@@ -1,9 +1,9 @@
 package org.jboss.resteasy.examples.springmvc;
 
+import org.springframework.stereotype.Service;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.springframework.stereotype.Service;
 
 /**
  * Simple Service object. Really, this class isn't needed in this case. However

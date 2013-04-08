@@ -3,9 +3,9 @@ package org.jboss.resteasy.plugins.server.resourcefactory;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.PickConstructor;
 
 import java.lang.reflect.Constructor;
@@ -27,18 +27,18 @@ public class POJOResourceFactory implements ResourceFactory
       this.scannableClass = scannableClass;
    }
 
-   public void registered(InjectorFactory factory)
+   public void registered(ResteasyProviderFactory factory)
    {
       Constructor constructor = PickConstructor.pickPerRequestConstructor(scannableClass);
       if (constructor == null)
       {
          throw new RuntimeException("Unable to find a public constructor for class " + scannableClass.getName());
       }
-      this.constructorInjector = factory.createConstructor(constructor);
-      this.propertyInjector = factory.createPropertyInjector(scannableClass);
+      this.constructorInjector = factory.getInjectorFactory().createConstructor(constructor, factory);
+      this.propertyInjector = factory.getInjectorFactory().createPropertyInjector(scannableClass, factory);
    }
 
-   public Object createResource(HttpRequest request, HttpResponse response, InjectorFactory factory)
+   public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
    {
       Object obj = constructorInjector.construct(request, response);
       propertyInjector.inject(request, response, obj);

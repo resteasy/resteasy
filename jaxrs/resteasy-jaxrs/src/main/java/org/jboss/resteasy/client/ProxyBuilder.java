@@ -1,17 +1,5 @@
 package org.jboss.resteasy.client;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.net.URI;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
-
 import org.jboss.resteasy.client.core.ClientProxy;
 import org.jboss.resteasy.client.core.MethodInvoker;
 import org.jboss.resteasy.client.core.SubResourceInvoker;
@@ -22,6 +10,23 @@ import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.IsHttpMethod;
 
+import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ *
+ * @param <T>
+ * @deprecated
+ */
+@Deprecated
 public class ProxyBuilder<T>
 {
 	public static <T> ProxyBuilder<T> build(Class<T> iface, URI base)

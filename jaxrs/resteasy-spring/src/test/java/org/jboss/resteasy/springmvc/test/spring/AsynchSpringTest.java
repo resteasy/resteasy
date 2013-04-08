@@ -1,18 +1,9 @@
 package org.jboss.resteasy.springmvc.test.spring;
 
-import java.net.URI;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.HttpHeaders;
-
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.springmvc.tjws.TJWSEmbeddedSpringMVCServerBean;
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,6 +11,15 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.HttpHeaders;
+import java.net.URI;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -61,9 +61,10 @@ public class AsynchSpringTest
    @Autowired
    public void setServer(TJWSEmbeddedSpringMVCServerBean server)
    {
-      dispatcher = (AsynchronousDispatcher) server.getServer()
+      ResteasyDeployment deployment = (ResteasyDeployment)server.getServer()
             .getApplicationContext().getBeansOfType(
-                  AsynchronousDispatcher.class).values().iterator().next();
+                  ResteasyDeployment.class).values().iterator().next();
+      dispatcher = (AsynchronousDispatcher)deployment.getDispatcher();
    }
 
    @Test

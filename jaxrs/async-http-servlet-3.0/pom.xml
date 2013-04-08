@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0-alpha-1-SNAPSHOT</version>
+        <version>3.0-beta-4</version>
     </parent>
     <name>Async Http JBossWeb</name>
     <description/>
@@ -15,5 +15,6 @@
 
     <modules>
         <module>async-http-servlet-3.0</module>
+        <module>async-http-servlet-3.0-test</module>
     </modules>
 </project>

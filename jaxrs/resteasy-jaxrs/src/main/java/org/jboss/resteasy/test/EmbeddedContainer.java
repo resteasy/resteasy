@@ -5,7 +5,6 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 
 import java.lang.reflect.Method;
 import java.util.Hashtable;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

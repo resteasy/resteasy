@@ -7,12 +7,11 @@
  ******************************************************************************/
 package se.unlogic.standardutils.xml;
 
-import java.net.URL;
-
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
+import java.net.URL;
 
 
 public class ClassPathURIResolver implements URIResolver {

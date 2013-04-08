@@ -1,10 +1,10 @@
 package se.unlogic.standardutils.string;
 
+import se.unlogic.standardutils.reflection.ReflectionUtils;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
-
-import se.unlogic.standardutils.reflection.ReflectionUtils;
 
 
 public class AnnotatedBeanTagSourceFactory<T> extends BeanTagSourceFactory<T> {

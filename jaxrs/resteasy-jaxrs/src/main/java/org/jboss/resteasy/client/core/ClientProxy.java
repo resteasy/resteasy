@@ -1,12 +1,12 @@
 package org.jboss.resteasy.client.core;
 
+import org.jboss.resteasy.client.ProxyBuilder;
+import org.jboss.resteasy.client.ProxyConfig;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Map;
-
-import org.jboss.resteasy.client.ProxyBuilder;
-import org.jboss.resteasy.client.ProxyConfig;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

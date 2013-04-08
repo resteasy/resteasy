@@ -9,7 +9,6 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.plugins.providers.atom.AbderaEntryProvider;
 import org.jboss.resteasy.plugins.providers.atom.AbderaFeedProvider;
 import org.jboss.resteasy.test.BaseResourceTest;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +25,8 @@ import javax.xml.bind.JAXBContext;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Date;
+
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

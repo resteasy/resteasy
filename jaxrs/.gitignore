@@ -1,0 +1,8 @@
+# eclipse files
+.project
+.settings
+.classpath
+
+# maven files
+target
+bin

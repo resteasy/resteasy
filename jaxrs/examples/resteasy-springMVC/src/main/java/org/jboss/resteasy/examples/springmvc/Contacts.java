@@ -1,10 +1,9 @@
 package org.jboss.resteasy.examples.springmvc;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.Collection;
 
 
 

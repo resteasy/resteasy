@@ -1,9 +1,11 @@
 package org.jboss.resteasy.springmvc;
 
-import org.jboss.resteasy.core.ServerResponse;
+import org.jboss.resteasy.core.ServerResponseWriter;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.springframework.validation.BindingResult;
@@ -28,26 +30,26 @@ public class ResteasyView implements View
 
    private MediaType contentType = null;
    private List<MediaType> potentialContentTypes = null;
-   private SynchronousDispatcher dispatcher;
+   private ResteasyDeployment deployment;
 
-   public ResteasyView(String contentType, SynchronousDispatcher dispatcher)
+   public ResteasyView(String contentType, ResteasyDeployment deployment)
    {
       setContentType(contentType);
-      setDispatcher(dispatcher);
+      this.deployment = deployment;
    }
 
    public ResteasyView()
    {
    }
 
-   public SynchronousDispatcher getDispatcher()
+   public ResteasyDeployment getDeployment()
    {
-      return dispatcher;
+      return deployment;
    }
 
-   public void setDispatcher(SynchronousDispatcher dispatcher)
+   public void setDeployment(ResteasyDeployment deployment)
    {
-      this.dispatcher = dispatcher;
+      this.deployment = deployment;
    }
 
    public String getContentType()
@@ -77,6 +79,7 @@ public class ResteasyView implements View
    public void render(final Map model, final HttpServletRequest servletRequest,
                       final HttpServletResponse servletResponse) throws Exception
    {
+      final SynchronousDispatcher dispatcher = (SynchronousDispatcher)deployment.getDispatcher();
       ResteasyWebHandlerTemplate template = new ResteasyWebHandlerTemplate<Void>(dispatcher.getProviderFactory())
       {
          protected Void handle(ResteasyRequestWrapper requestWrapper,
@@ -90,15 +93,15 @@ public class ResteasyView implements View
                {
                   MediaType resolvedContentType = resolveContentType(httpRequest,
                           httpRequest.getHttpHeaders().getMediaType());
-                  ServerResponse responseInvoker = getResponse(model, resolvedContentType);
+                  BuiltResponse responseInvoker = getResponse(model, resolvedContentType);
                   if (responseInvoker != null)
                   {
-                     responseInvoker.writeTo(httpRequest, response, dispatcher.getProviderFactory());
+                     ServerResponseWriter.writeNomapResponse(responseInvoker, httpRequest, response, dispatcher.getProviderFactory());
                   }
                }
                catch (Exception e)
                {
-                  dispatcher.handleWriteResponseException(httpRequest, response, e);
+                  dispatcher.writeException(httpRequest, response, e);
                }
                return null;
             }
@@ -144,14 +147,14 @@ public class ResteasyView implements View
       return isAcceptable;
    }
 
-   protected ServerResponse getResponse(Map model, MediaType mt)
+   protected BuiltResponse getResponse(Map model, MediaType mt)
    {
       Collection modelValues = model.values();
       for (Object value : modelValues)
       {
-         if (value instanceof ServerResponse)
+         if (value instanceof BuiltResponse)
          {
-            return (ServerResponse) value;
+            return (BuiltResponse) value;
          }
       }
 
@@ -172,9 +175,9 @@ public class ResteasyView implements View
       return null;
    }
 
-   private ServerResponse createResponse(Object value, MediaType contentType)
+   private BuiltResponse createResponse(Object value, MediaType contentType)
    {
-      ServerResponse responseImpl = new ServerResponse();
+      BuiltResponse responseImpl = new BuiltResponse();
       responseImpl.setEntity(value);
       if (contentType != null)
          responseImpl.getMetadata().putSingle(HttpHeaderNames.CONTENT_TYPE, contentType);

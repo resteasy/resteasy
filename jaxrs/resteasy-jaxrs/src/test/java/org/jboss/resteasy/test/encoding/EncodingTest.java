@@ -92,6 +92,7 @@ public class EncodingTest
       Assert.assertNotNull(returned);
       Assert.assertEquals(returned.getStatus(), HttpURLConnection.HTTP_OK);
       Assert.assertEquals(returned.getEntity(), paramWithChar);
+      returned.releaseConnection();
    }
 
    @Test
@@ -213,6 +214,7 @@ public class EncodingTest
        Assert.assertNotNull(returned);
        Assert.assertEquals(HttpURLConnection.HTTP_OK, returned.getStatus());
        Assert.assertEquals(paramWithDoublePercent, returned.getEntity());
+      returned.releaseConnection();
    }
 
    @Test
@@ -223,6 +225,7 @@ public class EncodingTest
        Assert.assertNotNull(returned);
        Assert.assertEquals(HttpURLConnection.HTTP_OK, returned.getStatus());
        Assert.assertEquals(paramWithBraces, returned.getEntity());
+      returned.releaseConnection();
    }
 
    @Test
@@ -233,6 +236,7 @@ public class EncodingTest
        Assert.assertNotNull(returned);
        Assert.assertEquals(HttpURLConnection.HTTP_OK, returned.getStatus());
        Assert.assertEquals(paramWithLifePercentDeath, returned.getEntity());
+      returned.releaseConnection();
    }
 
    @Test
@@ -243,6 +247,7 @@ public class EncodingTest
        Assert.assertNotNull(returned);
        Assert.assertEquals(HttpURLConnection.HTTP_OK, returned.getStatus());
        Assert.assertEquals(paramWithDoublePercent, returned.getEntity());
+      returned.releaseConnection();
    }
 
    @Test
@@ -253,6 +258,7 @@ public class EncodingTest
        Assert.assertNotNull(returned);
        Assert.assertEquals(HttpURLConnection.HTTP_OK, returned.getStatus());
        Assert.assertEquals(paramWithBraces, returned.getEntity());
+      returned.releaseConnection();
    }
 
    @Test
@@ -263,6 +269,7 @@ public class EncodingTest
        Assert.assertNotNull(returned);
        Assert.assertEquals(HttpURLConnection.HTTP_OK, returned.getStatus());
        Assert.assertEquals(paramWithLifePercentDeath, returned.getEntity());
+      returned.releaseConnection();
    }
 
    @Test

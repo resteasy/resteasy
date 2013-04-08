@@ -1,12 +1,13 @@
 package org.jboss.resteasy.client;
 
+import org.jboss.resteasy.client.core.ClientInterceptorRepository;
 import org.jboss.resteasy.client.core.ClientInterceptorRepositoryImpl;
 import org.jboss.resteasy.client.core.ClientInvoker;
 import org.jboss.resteasy.client.core.ClientInvokerInterceptorFactory;
 import org.jboss.resteasy.client.core.ClientInvokerModifier;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.client.core.marshallers.ResteasyClientProxy;
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import java.net.URI;
@@ -15,9 +16,11 @@ import java.net.URI;
  * Helper class that allows you to pre-initialize an Executor, preset some ClientRequest attributes (like follow redirects)
  * and define some client-side interceptors you want applied
  *
+ * @deprecated
  * @author Solomon Duskis
  * @version $Revision: 1 $
  */
+@Deprecated
 public class ClientRequestFactory
 {
    private ResteasyProviderFactory providerFactory;
@@ -97,12 +100,12 @@ public class ClientRequestFactory
       applyDefaultInterceptors = true;
    }
 
-   public ClientInterceptorRepositoryImpl getPrefixInterceptors()
+   public ClientInterceptorRepository getPrefixInterceptors()
    {
       return prefixInterceptors;
    }
 
-   public ClientInterceptorRepositoryImpl getSuffixInterceptors()
+   public ClientInterceptorRepository getSuffixInterceptors()
    {
       return suffixInterceptors;
    }
@@ -135,7 +138,7 @@ public class ClientRequestFactory
 
    public ClientRequest createRequest(String uriTemplate)
    {
-      ClientRequest clientRequest = new ClientRequest(new UriBuilderImpl()
+      ClientRequest clientRequest = new ClientRequest(new ResteasyUriBuilder()
               .uriTemplate(uriTemplate), executor, providerFactory);
       if (applyDefaultInterceptors)
       {

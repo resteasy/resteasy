@@ -1,31 +1,30 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.core.interception.PreMatchContainerRequestContext;
 import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.specimpl.RequestImpl;
-import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpRequestPreprocessor;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.InternalDispatcher;
 import org.jboss.resteasy.spi.InternalServerErrorException;
-import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.spi.NotFoundException;
-import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
-import org.jboss.resteasy.spi.WriterException;
 import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.util.HttpResponseCodes;
 
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Providers;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -45,7 +44,6 @@ public class SynchronousDispatcher implements Dispatcher
    protected ResteasyProviderFactory providerFactory;
    protected Registry registry;
    protected List<HttpRequestPreprocessor> requestPreprocessors = new ArrayList<HttpRequestPreprocessor>();
-   protected ExtensionHttpPreprocessor extentionHttpPreprocessor;
    protected Map<Class, Object> defaultContextObjects = new HashMap<Class, Object>();
    protected Set<String> unwrappedExceptions = new HashSet<String>();
 
@@ -55,7 +53,10 @@ public class SynchronousDispatcher implements Dispatcher
    {
       this.providerFactory = providerFactory;
       this.registry = new ResourceMethodRegistry(providerFactory);
-      requestPreprocessors.add(extentionHttpPreprocessor = new ExtensionHttpPreprocessor());
+      defaultContextObjects.put(Providers.class, providerFactory);
+      defaultContextObjects.put(Registry.class, registry);
+      defaultContextObjects.put(Dispatcher.class, this);
+      defaultContextObjects.put(InternalDispatcher.class, InternalDispatcher.getInstance());
    }
 
    public ResteasyProviderFactory getProviderFactory()
@@ -68,29 +69,9 @@ public class SynchronousDispatcher implements Dispatcher
       return registry;
    }
 
-   public void setMediaTypeMappings(Map<String, MediaType> mediaTypeMappings)
-   {
-      extentionHttpPreprocessor.mediaTypeMappings = mediaTypeMappings;
-   }
-
-   public void setLanguageMappings(Map<String, String> languageMappings)
-   {
-      extentionHttpPreprocessor.languageMappings = languageMappings;
-   }
-
-   public Map<String, MediaType> getMediaTypeMappings()
-   {
-      return extentionHttpPreprocessor.mediaTypeMappings;
-   }
-
    public Map<Class, Object> getDefaultContextObjects()
    {
       return defaultContextObjects;
-   }
-
-   public Map<String, String> getLanguageMappings()
-   {
-      return extentionHttpPreprocessor.languageMappings;
    }
 
    public Set<String> getUnwrappedExceptions()
@@ -98,30 +79,106 @@ public class SynchronousDispatcher implements Dispatcher
       return unwrappedExceptions;
    }
 
-   protected void preprocess(HttpRequest in)
+   public Response preprocess(HttpRequest request)
    {
-      preprocessExtensions(in);
+      Response aborted = null;
+      try
+      {
+         for (HttpRequestPreprocessor preprocessor : this.requestPreprocessors)
+         {
+            preprocessor.preProcess(request);
+         }
+         ContainerRequestFilter[] requestFilters = providerFactory.getContainerRequestFilterRegistry().preMatch();
+         PreMatchContainerRequestContext requestContext = new PreMatchContainerRequestContext(request);
+         for (ContainerRequestFilter filter : requestFilters)
+         {
+            filter.filter(requestContext);
+            aborted = requestContext.getResponseAbortedWith();
+            if (aborted != null) break;
+         }
+      }
+      catch (Exception e)
+      {
+         aborted = new ExceptionHandler(providerFactory, unwrappedExceptions).handleException(request, e);
+     }
+      return aborted;
    }
 
-   protected void preprocessExtensions(HttpRequest in)
+   /**
+    * Call pre-process ContainerRequestFilters
+    *
+    * @return true if request should continue
+    */
+   protected boolean preprocess(HttpRequest request, HttpResponse response)
    {
-      for (HttpRequestPreprocessor preprocessor : this.requestPreprocessors)
+      Response aborted = null;
+      try
       {
-         preprocessor.preProcess(in);
+         for (HttpRequestPreprocessor preprocessor : this.requestPreprocessors)
+         {
+            preprocessor.preProcess(request);
+         }
+         ContainerRequestFilter[] requestFilters = providerFactory.getContainerRequestFilterRegistry().preMatch();
+         PreMatchContainerRequestContext requestContext = new PreMatchContainerRequestContext(request);
+         for (ContainerRequestFilter filter : requestFilters)
+         {
+            filter.filter(requestContext);
+            aborted = requestContext.getResponseAbortedWith();
+            if (aborted != null) break;
+         }
+      }
+      catch (Exception e)
+      {
+         writeException(request, response, e);
+         return false;
+      }
+      if (aborted != null)
+      {
+         writeResponse(request, response, aborted);
+         return false;
+      }
+      return true;
+   }
+
+   public void writeException(HttpRequest request, HttpResponse response, Throwable e)
+   {
+      if (response.isCommitted()) throw new UnhandledException("Response is committed, can't handle exception", e);
+      Response handledResponse = new ExceptionHandler(providerFactory, unwrappedExceptions).handleException(request, e);
+      if (handledResponse == null) throw new UnhandledException(e);
+      try
+      {
+         // if the content type is null and there is an entity, we'll set it to some default
+         setDefaultContentType(request, handledResponse);
+         ServerResponseWriter.writeNomapResponse(((BuiltResponse) handledResponse), request, response, providerFactory);
+      }
+      catch (Exception e1)
+      {
+         throw new UnhandledException(e1);
       }
    }
+
 
    public void invoke(HttpRequest request, HttpResponse response)
    {
       try
       {
-         ResourceInvoker invoker = getInvoker(request);
+         pushContextObjects(request, response);
+         if (!preprocess(request, response)) return;
+         ResourceInvoker invoker = null;
+         try
+         {
+            invoker = getInvoker(request);
+         }
+         catch (Exception exception)
+         {
+            writeException(request, response, exception);
+            return;
+         }
          invoke(request, response, invoker);
       }
-      catch (Failure e)
+      finally
       {
-         handleException(request, response, e);
-         return;
+         clearContextData();
       }
    }
 
@@ -133,32 +190,34 @@ public class SynchronousDispatcher implements Dispatcher
     */
    public void invokePropagateNotFound(HttpRequest request, HttpResponse response) throws NotFoundException
    {
-      ResourceInvoker invoker = null;
       try
       {
-         invoker = getInvoker(request);
-      }
-      catch (Exception failure)
-      {
-         if (failure instanceof NotFoundException)
+         pushContextObjects(request, response);
+         if (!preprocess(request, response)) return;
+         ResourceInvoker invoker = null;
+         try
          {
-            throw ((NotFoundException) failure);
+            invoker = getInvoker(request);
          }
-         else
+         catch (Exception failure)
          {
-            handleException(request, response, failure);
-            return;
+            if (failure instanceof NotFoundException)
+            {
+               throw ((NotFoundException) failure);
+            }
+            else
+            {
+               writeException(request, response, failure);
+               return;
+            }
          }
-      }
-      try
-      {
          invoke(request, response, invoker);
       }
-      catch (Failure e)
+      finally
       {
-         handleException(request, response, e);
-         return;
+         clearContextData();
       }
+
    }
 
    public ResourceInvoker getInvoker(HttpRequest request)
@@ -169,279 +228,12 @@ public class SynchronousDispatcher implements Dispatcher
       {
          throw new InternalServerErrorException(request.getUri().getPath() + " is not initial request.  Its suspended and retried.  Aborting.");
       }
-      preprocess(request);
       ResourceInvoker invoker = registry.getResourceInvoker(request);
       if (invoker == null)
       {
          throw new NotFoundException("Unable to find JAX-RS resource associated with path: " + request.getUri().getPath());
       }
       return invoker;
-   }
-
-   /**
-    * Called if method invoke was unsuccessful
-    *
-    * @param request
-    * @param response
-    * @param e
-    */
-   public void handleInvokerException(HttpRequest request, HttpResponse response, Exception e)
-   {
-      handleException(request, response, e);
-   }
-
-
-   /**
-    * Called if method invoke was successful, but writing the Response after was not.
-    *
-    * @param request
-    * @param response
-    * @param e
-    */
-   public void handleWriteResponseException(HttpRequest request, HttpResponse response, Exception e)
-   {
-      handleException(request, response, e);
-   }
-
-   public void handleException(HttpRequest request, HttpResponse response, Exception e)
-   {
-      // See if there is an ExceptionMapper for the exact class of the exception instance being thrown
-      if (executeExactExceptionMapper(request, response, e)) return;
-
-      // These are wrapper exceptions so they need to be processed first as they map e.getCause()
-      if (e instanceof ApplicationException)
-      {
-         handleApplicationException(request, response, (ApplicationException) e);
-         return;
-      }
-      else if (e instanceof WriterException)
-      {
-         handleWriterException(request, response, (WriterException) e);
-         return;
-      }
-      else if (e instanceof ReaderException)
-      {
-         handleReaderException(request, response, (ReaderException) e);
-         return;
-      }
-
-      // First try and handle it with a mapper
-      if (executeExceptionMapper(request, response, e))
-      {
-         return;
-      }
-      // Otherwise do specific things
-      else if (e instanceof WebApplicationException)
-      {
-         handleWebApplicationException(request, response, (WebApplicationException) e);
-      }
-      else if (e instanceof Failure)
-      {
-         handleFailure(request, response, (Failure) e);
-      }
-      else
-      {
-         logger.error("Unknown exception while executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
-         throw new UnhandledException(e);
-      }
-   }
-
-   protected void handleFailure(HttpRequest request, HttpResponse response, Failure failure)
-   {
-      if (failure.isLoggable())
-         logger.error("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), failure);
-      else logger.debug("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), failure);
-
-      if (failure.getResponse() != null)
-      {
-         writeFailure(request, response, failure.getResponse());
-      }
-      else
-      {
-         try
-         {
-            if (failure.getMessage() != null)
-            {
-               response.sendError(failure.getErrorCode(), failure.getMessage());
-            }
-            else
-            {
-               response.sendError(failure.getErrorCode());
-            }
-         }
-         catch (IOException e1)
-         {
-            throw new UnhandledException(e1);
-         }
-      }
-   }
-
-   /**
-    * If there exists an Exception mapper for exception, execute it, otherwise, do NOT recurse up class hierarchy
-    * of exception.
-    *
-    * @param request
-    * @param response
-    * @param exception
-    * @return
-    */
-   public boolean executeExactExceptionMapper(HttpRequest request, HttpResponse response, Throwable exception)
-   {
-      ExceptionMapper mapper = providerFactory.getExceptionMapper(exception.getClass());
-      if (mapper == null) return false;
-      writeFailure(request, response, mapper.toResponse(exception));
-      return true;
-   }
-
-
-   public boolean executeExceptionMapperForClass(HttpRequest request, HttpResponse response, Throwable exception, Class clazz)
-   {
-      ExceptionMapper mapper = providerFactory.getExceptionMapper(clazz);
-      if (mapper == null) return false;
-      writeFailure(request, response, mapper.toResponse(exception));
-      return true;
-   }
-   /**
-    * Execute an ExceptionMapper if one exists for the given exception.  Recurse to base class if not found
-    *
-    * @param response
-    * @param exception
-    * @return true if an ExceptionMapper was found and executed
-    */
-   public boolean executeExceptionMapper(HttpRequest request, HttpResponse response, Throwable exception)
-   {
-      ExceptionMapper mapper = null;
-
-      Class causeClass = exception.getClass();
-      while (mapper == null)
-      {
-         if (causeClass == null) break;
-         mapper = providerFactory.getExceptionMapper(causeClass);
-         if (mapper == null) causeClass = causeClass.getSuperclass();
-      }
-      if (mapper != null)
-      {
-         writeFailure(request, response, mapper.toResponse(exception));
-         return true;
-      }
-      return false;
-   }
-
-   protected void handleApplicationException(HttpRequest request, HttpResponse response, ApplicationException e)
-   {
-      // See if there is a mapper for ApplicationException
-      if (executeExceptionMapperForClass(request, response, e, ApplicationException.class))
-      {
-         return;
-      }
-      Throwable unhandled = unwrapException(request, response, e);
-      if (unhandled != null)
-      {
-         throw new UnhandledException(unhandled);
-      }
-   }
-
-   protected Throwable unwrapException(HttpRequest request, HttpResponse response, Throwable e)
-   {
-      Throwable unwrappedException = e.getCause();
-
-      if (executeExceptionMapper(request, response, unwrappedException))
-      {
-         return null;
-      }
-      if (unwrappedException instanceof WebApplicationException)
-      {
-         handleWebApplicationException(request, response, (WebApplicationException) unwrappedException);
-         return null;
-      }
-      else if (unwrappedException instanceof Failure)
-      {
-         handleFailure(request, response, (Failure) unwrappedException);
-         return null;
-      }
-      else
-      {
-         if (unwrappedExceptions.contains(unwrappedException.getClass().getName()) && unwrappedException.getCause() != null)
-         {
-            return unwrapException(request, response, unwrappedException);
-         }
-         else
-         {
-            return unwrappedException;
-         }
-      }
-   }
-
-
-   protected void handleWriterException(HttpRequest request, HttpResponse response, WriterException e)
-   {
-      // See if there is a general mapper for WriterException
-      if (executeExceptionMapperForClass(request, response, e, WriterException.class))
-      {
-         return;
-      }
-      if (e.getResponse() != null || e.getErrorCode() > -1)
-      {
-         handleFailure(request, response, e);
-         return;
-      }
-      else if (e.getCause() != null)
-      {
-         if (unwrapException(request, response, e) == null) return;
-      }
-      e.setErrorCode(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
-      handleFailure(request, response, e);
-   }
-
-   protected void handleReaderException(HttpRequest request, HttpResponse response, ReaderException e)
-   {
-      // See if there is a general mapper for ReaderException
-      if (executeExceptionMapperForClass(request, response, e, ReaderException.class))
-      {
-         return;
-      }
-      // If a response or error code set, use that, otherwise look at cause.
-      if (e.getResponse() != null || e.getErrorCode() > -1)
-      {
-         handleFailure(request, response, e);
-         return;
-      }
-      else if (e.getCause() != null)
-      {
-         if (unwrapException(request, response, e) == null) return;
-      }
-      e.setErrorCode(HttpResponseCodes.SC_BAD_REQUEST);
-      handleFailure(request, response, e);
-   }
-
-   protected void writeFailure(HttpRequest request, HttpResponse response, Response jaxrsResponse)
-   {
-      response.reset();
-      try
-      {
-         writeJaxrsResponse(request, response, jaxrsResponse);
-      }
-      catch (WebApplicationException ex)
-      {
-         if (response.isCommitted())
-            throw new UnhandledException("Request was committed couldn't handle exception", ex);
-         // don't think I want to call writeJaxrsResponse infinately! so we'll just write the status
-         response.reset();
-         response.setStatus(ex.getResponse().getStatus());
-
-      }
-      catch (Exception e1)
-      {
-         throw new UnhandledException(e1);  // we're screwed, can't handle the exception
-      }
-   }
-
-   protected void handleWebApplicationException(HttpRequest request, HttpResponse response, WebApplicationException wae)
-   {
-      if (!(wae instanceof NoLogWebApplicationException)) logger.error("failed to execute", wae);
-      if (response.isCommitted()) throw new UnhandledException("Request was committed couldn't handle exception", wae);
-
-      writeFailure(request, response, wae.getResponse());
    }
 
    public void pushContextObjects(HttpRequest request, HttpResponse response)
@@ -452,6 +244,7 @@ public class SynchronousDispatcher implements Dispatcher
       contextDataMap.put(HttpHeaders.class, request.getHttpHeaders());
       contextDataMap.put(UriInfo.class, request.getUri());
       contextDataMap.put(Request.class, new RequestImpl(request));
+      contextDataMap.put(ResteasyAsynchronousContext.class, request.getAsyncContext());
 
       contextDataMap.putAll(defaultContextObjects);
    }
@@ -470,7 +263,7 @@ public class SynchronousDispatcher implements Dispatcher
          if (invoker != null)
          {
             pushContextObjects(request, response);
-            return getResponse(request, response, invoker);
+            return execute(request, response, invoker);
          }
 
          // this should never happen, since getInvoker should throw an exception
@@ -494,36 +287,21 @@ public class SynchronousDispatcher implements Dispatcher
       MessageBodyParameterInjector.clearBodies();
    }
 
-   public void invoke(HttpRequest request, HttpResponse response, ResourceInvoker invoker)
-   {
-      try
-      {
-         pushContextObjects(request, response);
-         Response jaxrsResponse = getResponse(request, response, invoker);
-
-         try
-         {
-            if (jaxrsResponse != null) writeJaxrsResponse(request, response, jaxrsResponse);
-         }
-         catch (Exception e)
-         {
-            handleWriteResponseException(request, response, e);
-         }
-      }
-      finally
-      {
-         clearContextData();
-      }
-   }
-
-   protected Response getResponse(HttpRequest request, HttpResponse response,
-                                  ResourceInvoker invoker)
+   /**
+    * Return a response wither from an invoke or exception handling
+    *
+    * @param request
+    * @param response
+    * @param invoker
+    * @return
+    */
+   public Response execute(HttpRequest request, HttpResponse response, ResourceInvoker invoker)
    {
       Response jaxrsResponse = null;
       try
       {
          jaxrsResponse = invoker.invoke(request, response);
-         if (request.isSuspended())
+         if (request.getAsyncContext().isSuspended())
          {
             /**
              * Callback by the initial calling thread.  This callback will probably do nothing in an asynchronous environment
@@ -531,30 +309,61 @@ public class SynchronousDispatcher implements Dispatcher
              * asychronous HTTP.
              *
              */
-            request.initialRequestThreadFinished();
+            request.getAsyncContext().getAsyncResponse().initialRequestThreadFinished();
             jaxrsResponse = null; // we're handing response asynchronously
          }
       }
       catch (Exception e)
       {
-         handleInvokerException(request, response, e);
+         jaxrsResponse = new ExceptionHandler(providerFactory, unwrappedExceptions).handleException(request, e);
+         if (jaxrsResponse == null) throw new UnhandledException(e);
       }
       return jaxrsResponse;
    }
 
-   public void asynchronousDelivery(HttpRequest request, HttpResponse response, Response jaxrsResponse)
+   /**
+    * Invoke and write response
+    *
+    * @param request
+    * @param response
+    * @param invoker
+    */
+   public void invoke(HttpRequest request, HttpResponse response, ResourceInvoker invoker)
    {
+      Response jaxrsResponse = null;
+      try
+      {
+         jaxrsResponse = invoker.invoke(request, response);
+         if (request.getAsyncContext().isSuspended())
+         {
+            /**
+             * Callback by the initial calling thread.  This callback will probably do nothing in an asynchronous environment
+             * but will be used to simulate AsynchronousResponse in vanilla Servlet containers that do not support
+             * asychronous HTTP.
+             *
+             */
+            request.getAsyncContext().getAsyncResponse().initialRequestThreadFinished();
+            jaxrsResponse = null; // we're handing response asynchronously
+         }
+      }
+      catch (Exception e)
+      {
+         writeException(request, response, e);
+         return;
+      }
+
+      if (jaxrsResponse != null) writeResponse(request, response, jaxrsResponse);
+   }
+
+   public void asynchronousDelivery(HttpRequest request, HttpResponse response, Response jaxrsResponse) throws IOException
+   {
+      if (jaxrsResponse == null) return;
       try
       {
          pushContextObjects(request, response);
-         try
-         {
-            if (jaxrsResponse != null) writeJaxrsResponse(request, response, jaxrsResponse);
-         }
-         catch (Exception e)
-         {
-            handleWriteResponseException(request, response, e);
-         }
+
+         setDefaultContentType(request, jaxrsResponse);
+         ServerResponseWriter.writeNomapResponse((BuiltResponse) jaxrsResponse, request, response, providerFactory);
       }
       finally
       {
@@ -562,10 +371,36 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
-   protected void writeJaxrsResponse(HttpRequest request, HttpResponse response, Response jaxrsResponse)
-           throws WriterException
+   public void asynchronousExceptionDelivery(HttpRequest request, HttpResponse response, Throwable exception)
    {
-      ServerResponse serverResponse = (ServerResponse) jaxrsResponse;
+      try
+      {
+         pushContextObjects(request, response);
+         writeException(request, response, exception);
+      }
+      finally
+      {
+         clearContextData();
+      }
+   }
+
+
+   protected void writeResponse(HttpRequest request, HttpResponse response, Response jaxrsResponse)
+   {
+      setDefaultContentType(request, jaxrsResponse);
+
+      try
+      {
+         ServerResponseWriter.writeNomapResponse((BuiltResponse) jaxrsResponse, request, response, providerFactory);
+      }
+      catch (Exception e)
+      {
+         writeException(request, response, e);
+      }
+   }
+
+   protected void setDefaultContentType(HttpRequest request, Response jaxrsResponse)
+   {
       Object type = jaxrsResponse.getMetadata().getFirst(
               HttpHeaderNames.CONTENT_TYPE);
       if (type == null && jaxrsResponse.getEntity() != null)
@@ -581,8 +416,6 @@ public class SynchronousDispatcher implements Dispatcher
             jaxrsResponse.getMetadata().putSingle(HttpHeaderNames.CONTENT_TYPE, contentType);
          }
       }
-
-      serverResponse.writeTo(request, response, providerFactory);
    }
 
    protected MediaType resolveContentTypeByAccept(List<MediaType> accepts, Object entity)

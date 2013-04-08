@@ -1,20 +1,5 @@
 package org.jboss.resteasy.examples.flickr;
 
-import static org.jboss.resteasy.examples.flickr.FlickrConstants.photoPath;
-import static org.jboss.resteasy.examples.flickr.FlickrConstants.photoSearchUrl;
-import static org.jboss.resteasy.examples.flickr.FlickrConstants.photoServer;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.swing.ImageIcon;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.jboss.resteasy.client.ClientRequestFactory;
@@ -24,6 +9,18 @@ import org.jboss.resteasy.client.core.ClientInterceptorRepositoryImpl;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClientExecutor;
 import org.jboss.resteasy.examples.resteasy.ForceCachingExecutionInterceptor;
 import org.jboss.resteasy.examples.resteasy.LoggingExecutionInterceptor;
+
+import javax.swing.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static org.jboss.resteasy.examples.flickr.FlickrConstants.*;
 
 public class FlickrSearchService
 {

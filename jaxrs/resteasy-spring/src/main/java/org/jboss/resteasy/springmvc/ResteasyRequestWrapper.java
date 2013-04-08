@@ -4,11 +4,12 @@ import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletInputMessage;
 import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 
 /**
@@ -23,6 +24,7 @@ public class ResteasyRequestWrapper
    private ResourceInvoker invoker;
    private Integer errorCode = null;
    private String errorMessage;
+   private Response abortedResponse;
 
    public ResteasyRequestWrapper(HttpServletRequest request) throws ServletException, IOException
    {
@@ -34,7 +36,7 @@ public class ResteasyRequestWrapper
    {
       this.httpServletRequest = request;
       HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
-      UriInfo uriInfo = ServletUtil.extractUriInfo(request, prefix);
+      ResteasyUriInfo uriInfo = ServletUtil.extractUriInfo(request, prefix);
       // TODO: how are we supposed to get the response to create the
       // wrapper!!!!? The null response will only make it so that the
       // Asynchronous invocations won't work
@@ -95,5 +97,13 @@ public class ResteasyRequestWrapper
       setErrorMessage(errorMessage);
    }
 
+   public Response getAbortedResponse()
+   {
+      return abortedResponse;
+   }
 
+   public void setAbortedResponse(Response abortedResponse)
+   {
+      this.abortedResponse = abortedResponse;
+   }
 }

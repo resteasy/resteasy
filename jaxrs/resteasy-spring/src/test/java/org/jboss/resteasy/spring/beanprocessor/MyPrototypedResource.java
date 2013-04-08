@@ -1,11 +1,11 @@
 package org.jboss.resteasy.spring.beanprocessor;
 
+import junit.framework.Assert;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-
-import junit.framework.Assert;
 
 @Path("/prototyped")
 public class MyPrototypedResource

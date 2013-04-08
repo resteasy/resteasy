@@ -1,0 +1,118 @@
+<chapter id="json">
+    <title>JSON Support via Jackson</title>
+    <para>Besides the Jettision JAXB adapter for JSON, Resteasy also support integration with the Jackson project.
+        Many users find the output from Jackson much much nicer than the Badger format or Mapped format provided by
+        Jettison.
+        Jackson lives at http://jackson.codehaus.org. It allows you to easily marshal Java objects to and from JSON.
+        It has a Java Bean based model as well as JAXB like APIs. Resteasy integrates with the JavaBean model as
+        described
+        at this url: http://jackson.codehaus.org/Tutorial.
+    </para>
+    <para>While Jackson does come with its own JAX-RS integration. Resteasy expanded it a little. To include
+        it within your project, just add this maven dependency to your build.
+    </para>
+    <programlisting><![CDATA[
+    <repository>
+       <id>jboss</id>
+       <url>>http://repository.jboss.org/nexus/content/groups/public/</url>
+    </repository>
+
+       ...
+    <dependency>
+       <groupId>org.jboss.resteasy</groupId>
+       <artifactId>resteasy-jackson-provider</artifactId>
+       <version>3.0-beta-4</version>
+    </dependency>
+ ]]></programlisting>
+    <para>The first extra piece that Resteasy added to the integration was
+        to support "application/*+json". Jackson would only accept "application/json" and "text/json" as valid
+        media types. This allows you to create json-based media types and still
+        let Jackson marshal things for you. For example:
+    </para>
+    <programlisting>
+        <![CDATA[
+@Path("/customers")
+public class MyService {
+
+   @GET
+   @Produces("application/vnd.customer+json")
+   public Customer[] getCustomers() {}
+}
+]]>
+    </programlisting>
+    <para>Another problem that occurs is when you are using the Resteasy JAXB providers alongside Jackson.
+        You may want to use Jettision and JAXB to output your JSON instead of Jackson. In this case, you must
+        either not install the Jackson provider, or use the annotation
+        @org.jboss.resteasy.annotations.providers.NoJackson
+        on your JAXB annotated classes. For example:
+    </para>
+    <programlisting>
+        <![CDATA[
+
+    @XmlRootElement
+    @NoJackson
+    public class Customer {...}
+
+    @Path("/customers")
+    public class MyService {
+
+       @GET
+       @Produces("application/vnd.customer+json")
+       public Customer[] getCustomers() {}
+    }
+    ]]>
+    </programlisting>
+    <para>
+        If you can't annotate the JAXB class with @NoJackson, then you can
+        use the annotation on a method parameter. For example:
+    </para>
+    <programlisting>
+        <![CDATA[
+
+        @XmlRootElement
+        public class Customer {...}
+
+        @Path("/customers")
+        public class MyService {
+
+           @GET
+           @Produces("application/vnd.customer+json")
+           @NoJackson
+           public Customer[] getCustomers() {}
+
+           @POST
+           @Consumes("application/vnd.customer+json")
+           public void createCustomer(@NoJackson Customer[] customers) {...}
+        }
+        ]]>
+    </programlisting>
+    <sect1 id="Possible_Jackson_Problems">
+        <title>Possible Conflict With JAXB Provider</title>
+        <para>
+            If your Jackson classes are annotated with JAXB annotations and you have the resteasy-jaxb-provider in your
+            classpath, you may trigger the Jettision JAXB marshalling code. To turn off the JAXB json marshaller
+            use the @org.jboss.resteasy.annotations.providers.jaxb.IgnoreMediaTypes("application/*+json") on your
+            classes.
+        </para>
+    </sect1>
+    <sect1 id="JSONP_Support">
+        <title>JSONP Support</title>
+        <para>
+            If you're use Jackson <ulink url="http://en.wikipedia.org/wiki/JSONP">JSONP</ulink> is supported right away.
+            If the media type of the response is json and a callback query parameter is given, the response will be a javascript snippet with
+            a method call of the method defined by the callback parameter.
+            For example:
+<programlisting>
+GET /resources/stuff?callback=processStuffResponse
+</programlisting>
+            will produce this response:
+<programlisting>
+processStuffResponse(&lt;nomal JSON body&gt;)
+</programlisting>
+            This supports the default behavior of <ulink url="http://api.jquery.com/jQuery.ajax/">jQuery</ulink>.
+        </para>
+        <para>
+            You can change the name of the callback parameter by setting the callbackQueryParameter property.
+        </para>
+    </sect1>
+</chapter>

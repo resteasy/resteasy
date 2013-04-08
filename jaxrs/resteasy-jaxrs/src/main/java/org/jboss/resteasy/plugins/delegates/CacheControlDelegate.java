@@ -1,10 +1,9 @@
 package org.jboss.resteasy.plugins.delegates;
 
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.ext.RuntimeDelegate;
-
 import org.jboss.resteasy.core.ExtendedCacheControl;
 
+import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.List;
 
 /**

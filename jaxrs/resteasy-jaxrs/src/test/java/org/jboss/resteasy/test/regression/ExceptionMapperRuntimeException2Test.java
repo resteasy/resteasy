@@ -14,7 +14,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 /**
  * RESTEASY-421
@@ -58,8 +58,8 @@ public class ExceptionMapperRuntimeException2Test extends BaseResourceTest
    @Before
    public void init() throws Exception
    {
-      getProviderFactory().addExceptionMapper(new MyExceptionMapper());
-      getProviderFactory().addExceptionMapper(new RuntimeExceptionMapper());
+      getProviderFactory().registerProviderInstance(new MyExceptionMapper());
+      getProviderFactory().registerProviderInstance(new RuntimeExceptionMapper());
       addPerRequestResource(MyService.class);
    }
 

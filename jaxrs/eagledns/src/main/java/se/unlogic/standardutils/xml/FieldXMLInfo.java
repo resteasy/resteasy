@@ -7,9 +7,9 @@
  ******************************************************************************/
 package se.unlogic.standardutils.xml;
 
-import java.lang.reflect.Field;
-
 import se.unlogic.standardutils.string.Stringyfier;
+
+import java.lang.reflect.Field;
 
 public class FieldXMLInfo {
 

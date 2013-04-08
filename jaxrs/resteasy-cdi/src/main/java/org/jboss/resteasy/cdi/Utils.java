@@ -1,13 +1,12 @@
 package org.jboss.resteasy.cdi;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-
 import javax.enterprise.inject.spi.BeanManager;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 /**
  * Utility methods for detecting CDI scopes and JAX-RS components

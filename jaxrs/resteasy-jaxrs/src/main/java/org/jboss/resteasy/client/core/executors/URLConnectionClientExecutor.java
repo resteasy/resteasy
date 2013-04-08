@@ -19,7 +19,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map.Entry;
 
-import static org.jboss.resteasy.util.HttpHeaderNames.*;
+import static org.jboss.resteasy.util.HttpHeaderNames.CONTENT_TYPE;
 
 @SuppressWarnings("unchecked")
 public class URLConnectionClientExecutor implements ClientExecutor
@@ -27,17 +27,13 @@ public class URLConnectionClientExecutor implements ClientExecutor
 
    public ClientResponse execute(ClientRequest request) throws Exception
    {
-      String uri = request.getUri();
-      String httpMethod = request.getHttpMethod();
+      HttpURLConnection connection = createConnection(request);
 
-      HttpURLConnection connection = (HttpURLConnection) new URL(uri)
-              .openConnection();
-      connection.setRequestMethod(httpMethod);
       setupRequest(request, connection);
       return execute(request, connection);
    }
 
-   private void setupRequest(ClientRequest request, HttpURLConnection connection)
+   protected void setupRequest(ClientRequest request, HttpURLConnection connection)
            throws ProtocolException
    {
       boolean isGet = "GET".equals(request.getHttpMethod());
@@ -88,6 +84,15 @@ public class URLConnectionClientExecutor implements ClientExecutor
       return new ClientRequest(uriBuilder, this);
    }
 
+   protected HttpURLConnection createConnection(ClientRequest request) throws Exception
+   {
+	  String uri = request.getUri();
+	  String httpMethod = request.getHttpMethod();
+
+	  HttpURLConnection connection = (HttpURLConnection) new URL(uri).openConnection();
+	  connection.setRequestMethod(httpMethod);
+	  return connection;
+   }
 
    private ClientResponse execute(ClientRequest request, final HttpURLConnection connection) throws IOException
    {
@@ -115,6 +120,7 @@ public class URLConnectionClientExecutor implements ClientExecutor
       response.setProviderFactory(request.getProviderFactory());
       response.setStatus(status);
       response.setHeaders(getHeaders(connection));
+      response.setAttributes(request.getAttributes());
       return response;
    }
    

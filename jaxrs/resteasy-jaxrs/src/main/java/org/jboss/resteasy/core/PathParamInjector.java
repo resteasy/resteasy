@@ -1,10 +1,10 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.PathParam;
@@ -67,7 +67,7 @@ public class PathParamInjector implements ValueInjector
    {
       if (extractor == null) // we are a PathSegment
       {
-         UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
+         ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
          List<PathSegment[]> list = null;
          if (encode)
          {

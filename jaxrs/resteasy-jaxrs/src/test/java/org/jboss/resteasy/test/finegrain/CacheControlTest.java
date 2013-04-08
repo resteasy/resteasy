@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.finegrain;
 
-import static org.junit.Assert.assertTrue;
-
 import org.jboss.resteasy.core.ExtendedCacheControl;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -10,6 +8,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.core.CacheControl;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

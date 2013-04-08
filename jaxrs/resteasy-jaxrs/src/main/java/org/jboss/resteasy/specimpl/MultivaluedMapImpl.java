@@ -21,6 +21,38 @@ public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements Mul
       put(key, list);
    }
 
+   @Override
+   public void addAll(K key, V... newValues)
+   {
+      for (V value : newValues)
+      {
+         add(key, value);
+      }
+   }
+
+   @Override
+   public void addAll(K key, List<V> valueList)
+   {
+      for (V value : valueList)
+      {
+         add(key, value);
+      }
+   }
+
+   @Override
+   public void addFirst(K key, V value)
+   {
+      List<V> list = get(key);
+      if (list == null)
+      {
+         add(key, value);
+         return;
+      }
+      else
+      {
+         list.add(0, value);
+      }
+   }
    public final void add(K key, V value)
    {
       getList(key).add(value);
@@ -52,5 +84,27 @@ public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements Mul
       {
          getList(entry.getKey()).addAll(entry.getValue());
       }
+   }
+
+   @Override
+   public boolean equalsIgnoreValueOrder(MultivaluedMap<K, V> omap) {
+      if (this == omap) {
+         return true;
+      }
+      if (!keySet().equals(omap.keySet())) {
+         return false;
+      }
+      for (Map.Entry<K, List<V>> e : entrySet()) {
+         List<V> olist = omap.get(e.getKey());
+         if (e.getValue().size() != olist.size()) {
+            return false;
+         }
+         for (V v : e.getValue()) {
+            if (!olist.contains(v)) {
+               return false;
+            }
+         }
+      }
+      return true;
    }
 }

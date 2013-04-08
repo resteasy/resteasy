@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script type="text/javascript">
+        <!--
+
+        function createXHR()
+        {
+            var request = false;
+            try
+            {
+                request = new ActiveXObject('Msxml2.XMLHTTP');
+            }
+            catch (err2)
+            {
+                try
+                {
+                    request = new ActiveXObject('Microsoft.XMLHTTP');
+                }
+                catch (err3)
+                {
+                    try
+                    {
+                        request = new XMLHttpRequest();
+                    }
+                    catch (err1)
+                    {
+                        request = false;
+                    }
+                }
+            }
+            return request;
+        }
+
+        var speaker;
+        var count = 0;
+        var reconnect = true;
+
+        function postMessage(user, message)
+        {
+            var xhr = createXHR();
+            xhr.open("POST", "http://localhost:8080/chat/speaker", false);
+            xhr.setRequestHeader("Content-Type", "text/plain");
+            xhr.send(user + ": " + message);
+        }
+
+        function receiveMessage()
+        {
+            var xhr = createXHR();
+            xhr.open("GET", "http://localhost:8080/chat/listener", true);
+            xhr.onreadystatechange = function()
+            {
+               if (xhr.readyState == 4)
+               {
+                 var status = xhr.status;
+                 if (status == 200)
+                 {
+                     document.getElementById("next").innerHTML = xhr.responseText + "\n" + document.getElementById("next").innerHTML;
+                 }
+                 setTimeout("receiveMessage()", 800);
+               }
+            }
+            xhr.send(null);
+        }
+
+        setTimeout("receiveMessage()", 800);
+
+
+        // -->
+    </script>
+    <title>Ajax Chat Demo</title></head>
+
+
+<body bgcolor="#FFFFFF">
+
+<p><font size="+3">Ajax Chat Demo</font></p>
+<hr>
+<FORM name="ajax" method="POST" action="">
+
+    <p>
+        Username: <input type="text" name="user" value="Billy" size="10"><br/>
+        <input type="text" name="message">
+        <INPUT type="BUTTON" value=" Click to send message "
+               ONCLICK="postMessage(this.form.user.value, this.form.message.value)">
+    </p>
+
+</FORM>
+<div id="connection"></div>
+<br>
+
+<div id="errors"></div>
+
+<p>
+
+<h2>Messages:</h2></p>
+<pre>
+<div id="next"></div>
+</pre>
+
+</body>
+</html>

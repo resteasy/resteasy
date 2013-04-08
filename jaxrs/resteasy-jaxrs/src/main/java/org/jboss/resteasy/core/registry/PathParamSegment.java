@@ -1,10 +1,10 @@
 package org.jboss.resteasy.core.registry;
 
 import org.jboss.resteasy.core.ResourceInvoker;
-import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.NotFoundException;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.PathHelper;
 
@@ -77,6 +77,14 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
    private static int groupCount(String regex)
    {
       regex = " " + regex; // add a space because GROUP regex trans to match a non-preceding slash.
+      // if the grouping characters in the range block ignore them.
+      int idxOpen = regex.indexOf('[');
+      if (idxOpen != -1) {
+    	  int idxClose = regex.indexOf(']', idxOpen);
+    	  if (idxClose != -1) {
+    		  regex = regex.substring(0, idxOpen) + regex.substring(idxClose+1);
+    	  }
+      }      
       Matcher matcher = GROUP.matcher(regex);
       int groupCount = 0;
       while (matcher.find()) groupCount++;
@@ -134,7 +142,7 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
 
    protected void populatePathParams(HttpRequest request, Matcher matcher, String path)
    {
-      UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
+      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
       for (Group group : groups)
       {
          String value = matcher.group(group.group);
@@ -170,8 +178,8 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
          PathSegment[] decodedSegments = new PathSegment[numSegments];
          for (int i = 0; i < numSegments; i++)
          {
-            encodedSegments[i] = request.getUri().getPathSegments().get(segmentIndex + i);
-            decodedSegments[i] = request.getUri().getPathSegments(false).get(segmentIndex + i);
+            decodedSegments[i] = request.getUri().getPathSegments().get(segmentIndex + i);
+            encodedSegments[i] = request.getUri().getPathSegments(false).get(segmentIndex + i);
          }
          uriInfo.getEncodedPathParameterPathSegments().add(group.name, encodedSegments);
          uriInfo.getPathParameterPathSegments().add(group.name, decodedSegments);
@@ -182,7 +190,7 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
                                                request, String
            path, int start)
    {
-      UriInfoImpl uriInfo = (UriInfoImpl) request.getUri();
+      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
       Matcher matcher = pattern.matcher(path);
       matcher.region(start, path.length());
 

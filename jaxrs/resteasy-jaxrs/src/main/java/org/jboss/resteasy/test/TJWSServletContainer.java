@@ -1,11 +1,12 @@
 package org.jboss.resteasy.test;
 
-import java.util.Hashtable;
-import java.util.Map;
-
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -56,6 +57,31 @@ public class TJWSServletContainer
    {
       ResteasyDeployment deployment = new ResteasyDeployment();
       deployment.setSecurityEnabled(true);
+      String applicationClass = null;
+      if (contextParams != null)
+      {
+         applicationClass = contextParams.get("javax.ws.rs.Application");
+         String mediaTypeMappingsString = contextParams.get("resteasy.media.type.mappings");
+         if (mediaTypeMappingsString != null)
+         {
+            Map<String, String> mediaTypeMappings = new HashMap<String, String>();
+            String[] mappings = mediaTypeMappingsString.split(",");
+            for (int i = 0; i < mappings.length; i++)
+            {
+               String[] mapping = mappings[i].split(":");
+               mediaTypeMappings.put(mapping[0], mapping[1]);
+            }
+            deployment.setMediaTypeMappings(mediaTypeMappings);
+         }
+      }
+      if (applicationClass == null && initParams != null)
+      {
+         applicationClass = initParams.get("javax.ws.rs.Application"); 
+      }
+      if (applicationClass != null)
+      {
+         deployment.setApplicationClass(applicationClass);
+      }
       return start(bindPath, domain, deployment, initParams, contextParams);
    }
 

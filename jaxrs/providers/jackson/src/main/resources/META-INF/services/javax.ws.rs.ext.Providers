@@ -1,1 +1,2 @@
 org.jboss.resteasy.plugins.providers.jackson.ResteasyJacksonProvider
+org.jboss.resteasy.plugins.providers.jackson.JacksonJsonpInterceptor

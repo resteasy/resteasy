@@ -3,6 +3,7 @@ package org.jboss.resteasy.client.core;
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
+import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
 import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.LinkHeader;
@@ -10,7 +11,6 @@ import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.GenericType;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -19,23 +19,27 @@ import org.jboss.resteasy.util.InputStreamToByteArray;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.util.Types;
 
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MessageProcessingException;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.ResponseHeaders;
-import javax.ws.rs.core.TypeLiteral;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.Providers;
+import javax.ws.rs.ext.ReaderInterceptor;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URI;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
-import static java.lang.String.*;
+import static java.lang.String.format;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -61,7 +65,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    protected int status;
    protected boolean wasReleased = false;
    protected Object unmarshaledEntity;
-   protected MessageBodyReaderInterceptor[] messageBodyReaderInterceptors;
+   protected ReaderInterceptor[] readerInterceptors;
    protected Exception exception;// These can only be set by an interceptor
    protected BaseClientResponseStreamFactory streamFactory;
    protected LinkHeader linkHeader;
@@ -126,7 +130,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
          tmp.providerFactory = base.providerFactory;
          tmp.headers = new CaseInsensitiveMap<String>();
          tmp.headers.putAll(base.headers);
-         tmp.messageBodyReaderInterceptors = base.messageBodyReaderInterceptors;
+         tmp.readerInterceptors = base.readerInterceptors;
          return tmp;
       }
       else
@@ -181,9 +185,9 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       this.attributes = attributes;
    }
 
-   public void setMessageBodyReaderInterceptors(MessageBodyReaderInterceptor[] messageBodyReaderInterceptors)
+   public void setReaderInterceptors(ReaderInterceptor[] readerInterceptors)
    {
-      this.messageBodyReaderInterceptors = messageBodyReaderInterceptors;
+      this.readerInterceptors = readerInterceptors;
    }
 
    public void setStatus(int status)
@@ -277,8 +281,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       return linkHeader;
    }
 
-   @Override
-   public Link getLocation()
+   public Link getLocationLink()
    {
       if (location != null) return location;
       if (!headers.containsKey("Location")) return null;
@@ -387,7 +390,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       return (T2) unmarshaledEntity;
    }
 
-   protected MediaType getMediaType()
+   public MediaType getMediaType()
    {
       String mediaType = getResponseHeader(HttpHeaderNames.CONTENT_TYPE);
       if (mediaType == null)
@@ -422,6 +425,8 @@ public class BaseClientResponse<T> extends ClientResponse<T>
                  media, genericType));
       }
 
+      Providers current = ResteasyProviderFactory.getContextData(Providers.class);
+      ResteasyProviderFactory.pushContext(Providers.class, providerFactory);
       try
       {
          InputStream is = streamFactory.getInputStream();
@@ -435,7 +440,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
          }
 
-         final Object obj = new ClientMessageBodyReaderContext(messageBodyReaderInterceptors, reader1, useType,
+         final Object obj = new ClientReaderInterceptorContext(readerInterceptors, reader1, useType,
                  useGeneric, this.annotations, media, getResponseHeaders(), is, attributes)
                  .proceed();
          if (isMarshalledEntity)
@@ -474,6 +479,11 @@ public class BaseClientResponse<T> extends ClientResponse<T>
             throw new ReaderException(e);
          }
       }
+      finally
+      {
+         ResteasyProviderFactory.popContextData(Providers.class);
+         if (current != null) ResteasyProviderFactory.pushContext(Providers.class, current);
+      }
    }
 
    @Override
@@ -504,6 +514,36 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    public int getStatus()
    {
       return status;
+   }
+
+   @Override
+   public StatusType getStatusInfo()
+   {
+      StatusType statusType = Status.fromStatusCode(status);
+      if (statusType == null)
+      {
+         statusType = new StatusType()
+         {
+            @Override
+            public int getStatusCode()
+            {
+               return status;
+            }
+
+            @Override
+            public Status.Family getFamily()
+            {
+               return Status.Family.OTHER;
+            }
+
+            @Override
+            public String getReasonPhrase()
+            {
+               return "Unknown Code";
+            }
+         };
+      }
+      return statusType;
    }
 
    public void checkFailureStatus()
@@ -554,35 +594,26 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       releaseConnection();
    }
 
-   // spec
-
-
    @Override
-   public Map<String, Object> getProperties()
+   public <T> T readEntity(Class<T> entityType)
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public Status getStatusEnum()
+   public <T> T readEntity(javax.ws.rs.core.GenericType<T> entityType)
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public ResponseHeaders getHeaders()
+   public <T> T readEntity(Class<T> entityType, Annotation[] annotations)
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public <T> T readEntity(Class<T> type) throws MessageProcessingException
-   {
-      throw new NotImplementedYetException();
-   }
-
-   @Override
-   public <T> T readEntity(TypeLiteral<T> entityType) throws MessageProcessingException
+   public <T> T readEntity(javax.ws.rs.core.GenericType<T> entityType, Annotation[] annotations)
    {
       throw new NotImplementedYetException();
    }
@@ -594,31 +625,97 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    }
 
    @Override
-   public void bufferEntity() throws MessageProcessingException
+   public boolean bufferEntity()
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public void close() throws MessageProcessingException
+   public void close()
+   {
+      releaseConnection();
+   }
+
+   @Override
+   public String getHeaderString(String name)
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException
+   public Locale getLanguage()
    {
-      return null;
+      throw new NotImplementedYetException();
    }
 
    @Override
-   public <T> T readEntity(TypeLiteral<T> entityType, Annotation[] annotations) throws MessageProcessingException
+   public int getLength()
    {
-      return null;
+      throw new NotImplementedYetException();
    }
 
    @Override
-   public boolean isEntityRetrievable()
+   public Map<String, NewCookie> getCookies()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public EntityTag getEntityTag()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Date getDate()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Date getLastModified()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Set<javax.ws.rs.core.Link> getLinks()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public boolean hasLink(String relation)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public javax.ws.rs.core.Link getLink(String relation)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public javax.ws.rs.core.Link.Builder getLinkBuilder(String relation)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public URI getLocation()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public Set<String> getAllowedMethods()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public MultivaluedMap<String, String> getStringHeaders()
    {
       throw new NotImplementedYetException();
    }

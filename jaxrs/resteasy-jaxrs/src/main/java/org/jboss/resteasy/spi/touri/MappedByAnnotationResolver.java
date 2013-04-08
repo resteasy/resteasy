@@ -1,6 +1,6 @@
 package org.jboss.resteasy.spi.touri;
 
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
+import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 
 import java.lang.annotation.Annotation;
 
@@ -12,10 +12,10 @@ public class MappedByAnnotationResolver extends
       return MappedBy.class;
    }
 
-   protected UriBuilderImpl getUriBuilder(Class<? extends Object> clazz)
+   protected ResteasyUriBuilder getUriBuilder(Class<? extends Object> clazz)
    {
       MappedBy mappedBy = clazz.getAnnotation(MappedBy.class);
-      UriBuilderImpl uriBuilderImpl = new UriBuilderImpl();
+      ResteasyUriBuilder uriBuilderImpl = new ResteasyUriBuilder();
       Class<?> resourceType = mappedBy.resource();
       uriBuilderImpl.path(resourceType);
       String method = mappedBy.method();

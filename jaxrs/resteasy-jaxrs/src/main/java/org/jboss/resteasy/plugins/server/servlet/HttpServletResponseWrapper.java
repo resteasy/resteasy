@@ -20,7 +20,7 @@ public class HttpServletResponseWrapper implements HttpResponse
    private int status = 200;
    private MultivaluedMap<String, Object> outputHeaders;
    private ResteasyProviderFactory factory;
-   private DeferredOutputStream outputStream = new DeferredOutputStream();
+   private OutputStream outputStream = new DeferredOutputStream();
 
    /**
     * RESTEASY-684 wants to defer access to outputstream until a write/flush/close happens
@@ -85,6 +85,12 @@ public class HttpServletResponseWrapper implements HttpResponse
    public OutputStream getOutputStream() throws IOException
    {
       return outputStream;
+   }
+
+   @Override
+   public void setOutputStream(OutputStream os)
+   {
+      this.outputStream = os;
    }
 
    public void addNewCookie(NewCookie cookie)

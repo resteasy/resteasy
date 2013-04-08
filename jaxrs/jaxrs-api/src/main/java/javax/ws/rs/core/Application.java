@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,63 +40,99 @@
 package javax.ws.rs.core;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Defines the components of a JAX-RS application and supplies additional
- * metadata. A JAX-RS application or implementation supplies a concrete
+ * meta-data. A JAX-RS application or implementation supplies a concrete
  * subclass of this abstract class.
- *
- * <p>The implementation-created instance of an Application subclass may be
+ * <p>
+ * The implementation-created instance of an Application subclass may be
  * injected into resource classes and providers using
- * {@link javax.ws.rs.core.Context}.<p>
+ * {@link javax.ws.rs.core.Context}.
+ * </p>
+ * <p>
+ * In case any of the {@code Application} subclass methods or it's constructor
+ * throws a {@link RuntimeException}, the deployment of the application SHOULD
+ * be aborted with a failure.
+ * </p>
  *
  * @author Paul Sandoz
  * @author Marc Hadley
+ * @author Marek Potociar
  * @since 1.0
  */
 public class Application {
 
-    private static final Set<Object> EMPTY_OBJECT_SET = Collections.emptySet();
-    private static final Set<Class<?>> EMPTY_CLASS_SET = Collections.emptySet();
-
     /**
-     * Get a set of root resource and provider classes. The default lifecycle
-     * for resource class instances is per-request. The default lifecycle for
-     * providers is singleton.
+     * Get a set of root resource, provider and {@link Feature feature} classes.
      *
-     * <p>Implementations should warn about and ignore classes that do not
-     * conform to the requirements of root resource or provider classes.
+     * The default life-cycle for resource class instances is per-request. The default
+     * life-cycle for providers (registered directly or via a feature) is singleton.
+     * <p>
+     * Implementations should warn about and ignore classes that do not
+     * conform to the requirements of root resource or provider/feature classes.
      * Implementations should warn about and ignore classes for which
      * {@link #getSingletons()} returns an instance. Implementations MUST
-     * NOT modify the returned set.</p>
-     *
-     * <p>The default implementation returns an empty set.</p>
+     * NOT modify the returned set.
+     * </p>
+     * <p>
+     * The default implementation returns an empty set.
+     * </p>
      *
      * @return a set of root resource and provider classes. Returning {@code null}
-     * is equivalent to returning an empty set.
+     *         is equivalent to returning an empty set.
      */
     public Set<Class<?>> getClasses() {
-        return EMPTY_CLASS_SET;
+        return Collections.emptySet();
     }
 
     /**
-     * Get a set of root resource and provider instances. Fields and properties
-     * of returned instances are injected with their declared dependencies
-     * (see {@link Context}) by the runtime prior to use.
+     * Get a set of root resource, provider and {@link Feature feature} instances.
      *
-     * <p>Implementations should warn about and ignore classes that do not
+     * Fields and properties of returned instances are injected with their declared
+     * dependencies (see {@link Context}) by the runtime prior to use.
+     * <p>
+     * Implementations should warn about and ignore classes that do not
      * conform to the requirements of root resource or provider classes.
      * Implementations should flag an error if the returned set includes
      * more than one instance of the same class. Implementations MUST
-     * NOT modify the returned set.</p>
-     *
-     * <p>The default implementation returns an empty set.</p>
+     * NOT modify the returned set.
+     * </p>
+     * <p>
+     * The default implementation returns an empty set.
+     * </p>
      *
      * @return a set of root resource and provider instances. Returning {@code null}
-     * is equivalent to returning an empty set.
+     *         is equivalent to returning an empty set.
      */
     public Set<Object> getSingletons() {
-        return EMPTY_OBJECT_SET;
+        return Collections.emptySet();
+    }
+
+    /**
+     * Get a map of custom application-wide properties.
+     * <p>
+     * The returned properties are reflected in the application {@link Configuration configuration}
+     * passed to the server-side features or injected into server-side JAX-RS components.
+     * </p>
+     * <p>
+     * The set of returned properties may be further extended or customized at deployment time
+     * using container-specific features and deployment descriptors. For example, in a Servlet-based
+     * deployment scenario, web application's {@code <context-param>} and Servlet {@code <init-param>}
+     * values may be used to extend or override values of the properties programmatically returned
+     * by this method.
+     * </p>
+     * <p>
+     * The default implementation returns an empty set.
+     * </p>
+     *
+     * @return a map of custom application-wide properties. Returning {@code null}
+     *         is equivalent to returning an empty set.
+     * @since 2.0
+     */
+    public Map<String, Object> getProperties() {
+        return Collections.emptyMap();
     }
 }

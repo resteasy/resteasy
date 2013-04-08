@@ -2,13 +2,18 @@ package org.jboss.resteasy.plugins.server.sun.http;
 
 import com.sun.net.httpserver.HttpExchange;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.core.SynchronousExecutionContext;
 import org.jboss.resteasy.plugins.server.BaseHttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
+import java.net.URI;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -19,10 +24,10 @@ public class HttpServerRequest extends BaseHttpRequest
 {
    protected HttpExchange exchange;
    protected HttpHeaders httpHeaders;
-   protected UriInfo uriInfo;
+   protected ResteasyUriInfo uriInfo;
    protected String preProcessedPath;
-   protected InputStream inputStream;
    protected Map<String, Object> attributes = new HashMap<String, Object>();
+   protected String httpMethod;
 
 
    public HttpServerRequest(SynchronousDispatcher dispatcher, HttpResponse httpResponse, HttpExchange exchange)
@@ -33,7 +38,21 @@ public class HttpServerRequest extends BaseHttpRequest
       this.uriInfo = HttpExchangeUtil.extractUriInfo(exchange);
       this.httpHeaders = HttpExchangeUtil.extractHttpHeaders(exchange);
       this.preProcessedPath = uriInfo.getPath(false);
+      this.httpMethod = exchange.getRequestMethod().toUpperCase();
    }
+
+   @Override
+   public void setRequestUri(URI requestUri) throws IllegalStateException
+   {
+      uriInfo = uriInfo.relative(requestUri);
+   }
+
+   @Override
+   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
+   {
+      uriInfo = new ResteasyUriInfo(baseUri, requestUri);
+   }
+
 
    @Override
    public HttpHeaders getHttpHeaders()
@@ -54,7 +73,7 @@ public class HttpServerRequest extends BaseHttpRequest
    }
 
    @Override
-   public UriInfo getUri()
+   public ResteasyUriInfo getUri()
    {
       return uriInfo;
    }
@@ -62,38 +81,61 @@ public class HttpServerRequest extends BaseHttpRequest
    @Override
    public String getHttpMethod()
    {
-      return exchange.getRequestMethod().toUpperCase();
+      return httpMethod;
    }
 
    @Override
-   public String getPreprocessedPath()
+   public void setHttpMethod(String method)
    {
-      return preProcessedPath;
-   }
-
-   @Override
-   public void setPreprocessedPath(String path)
-   {
-      this.preProcessedPath = path;
+      this.httpMethod = method;
    }
 
    @Override
    public Object getAttribute(String attribute)
    {
+      Object val = attributes.get(attribute);
+      if (val != null) return val;
       return exchange.getAttribute(attribute);
    }
 
    @Override
    public void setAttribute(String name, Object value)
    {
+      attributes.put(name, value);
       exchange.setAttribute(name, value);
    }
 
    @Override
    public void removeAttribute(String name)
    {
+      attributes.remove(name);
       exchange.setAttribute(name, null);
    }
 
+   @Override
+   public Enumeration<String> getAttributeNames()
+   {
+      Enumeration<String> en = new Enumeration<String>()
+      {
+         private Iterator<String> it = attributes.keySet().iterator();
+         @Override
+         public boolean hasMoreElements()
+         {
+            return it.hasNext();
+         }
 
+         @Override
+         public String nextElement()
+         {
+            return it.next();
+         }
+      };
+      return en;
+   }
+
+   @Override
+   public ResteasyAsynchronousContext getAsyncContext()
+   {
+      return new SynchronousExecutionContext(dispatcher, this, httpResponse);
+   }
 }

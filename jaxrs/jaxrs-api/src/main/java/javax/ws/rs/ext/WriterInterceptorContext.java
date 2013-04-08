@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,66 +41,72 @@ package javax.ws.rs.ext;
 
 import java.io.IOException;
 import java.io.OutputStream;
+
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * Context class used by {@link javax.ws.rs.ext.WriterInterceptor}
- * to intercept calls to (@link javax.ws.rs.ext.MessageBodyWriter#writeTo}.
+ * to intercept calls to {@link javax.ws.rs.ext.MessageBodyWriter#writeTo}.
  * The getters and setters in this context class correspond to the
  * parameters of the intercepted method.
  *
- * @param <T> Java type supported by corresponding message body writer
- *
  * @author Santiago Pericas-Geertsen
  * @author Bill Burke
- * @since 2.0
  * @see WriterInterceptor
  * @see MessageBodyWriter
+ * @since 2.0
  */
-public interface WriterInterceptorContext<T> extends InterceptorContext<T> {
+public interface WriterInterceptorContext extends InterceptorContext {
 
     /**
-     * Proceed to the next interceptor in the chain. Interceptors MUST explicitly
-     * call this method to continue the execution chain; the call to this
-     * method in the last interceptor of the chain will invoke
-     * {@link javax.ws.rs.ext.MessageBodyWriter#writeTo} method.
+     * Proceed to the next interceptor in the chain.
      *
-     * @throws IOException if an IO exception arises
+     * Interceptors MUST explicitly call this method to continue the execution chain;
+     * the call to this method in the last interceptor of the chain will invoke
+     * the wrapped {@link javax.ws.rs.ext.MessageBodyWriter#writeTo} method.
+     *
+     * @throws java.io.IOException if an IO error arises or is thrown by the wrapped
+     *                             {@code MessageBodyWriter.writeTo} method.
+     * @throws javax.ws.rs.WebApplicationException
+     *                             thrown by the wrapped {@code MessageBodyWriter.writeTo} method.
      */
-    void proceed() throws IOException;
+    void proceed() throws IOException, WebApplicationException;
 
     /**
-     * Get object to be written as HTTP entity
+     * Get object to be written as HTTP entity.
      *
-     * @return object to be written as HTTP entity
+     * @return object to be written as HTTP entity.
      */
-    T getEntity();
+    Object getEntity();
 
     /**
-     * Update object to be written as HTTP entity
+     * Update object to be written as HTTP entity.
      *
-     * @param entity new object to be written
+     * @param entity new object to be written.
      */
-    void setEntity(T entity);
+    void setEntity(Object entity);
 
     /**
-     * Get the output stream for the object to be written
+     * Get the output stream for the object to be written. The JAX-RS runtime
+     * is responsible for closing the output stream.
      *
-     * @return output stream for the object to be written
+     * @return output stream for the object to be written.
      */
     OutputStream getOutputStream();
 
     /**
-     * Update the output stream for the object to be written
+     * Update the output stream for the object to be written. The JAX-RS
+     * runtime is responsible for closing the output stream.
      *
-     * @param os new output stream for the object to be written
+     * @param os new output stream for the object to be written.
      */
     public void setOutputStream(OutputStream os);
 
     /**
      * Get mutable map of HTTP headers.
      *
-     * @return map of HTTP headers
+     * @return map of HTTP headers.
      */
     MultivaluedMap<String, Object> getHeaders();
 }

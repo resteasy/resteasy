@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs-all</artifactId>
+        <version>3.0-beta-4</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <name>Resteasy Skeleton Key Examples POM</name>
+    <description/>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.jboss.resteasy.example.oauth</groupId>
+    <artifactId>examples</artifactId>
+    <packaging>pom</packaging>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jboss.as.plugins</groupId>
+                <artifactId>jboss-as-maven-plugin</artifactId>
+                <version>7.1.1.Final</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <modules>
+        <module>wars/auth-server</module>
+        <module>wars/database-service</module>
+        <module>wars/customer-app</module>
+        <module>wars/product-app</module>
+        <module>wars/third-party</module>
+        <module>wars/client-grant</module>
+    </modules>
+</project>

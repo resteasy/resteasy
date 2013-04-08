@@ -1,14 +1,26 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
+import org.apache.james.mime4j.MimeException;
+import org.apache.james.mime4j.MimeIOException;
+import org.apache.james.mime4j.codec.Base64InputStream;
+import org.apache.james.mime4j.codec.QuotedPrintableInputStream;
+import org.apache.james.mime4j.descriptor.BodyDescriptor;
 import org.apache.james.mime4j.field.ContentTypeField;
 import org.apache.james.mime4j.message.BinaryBody;
 import org.apache.james.mime4j.message.Body;
+import org.apache.james.mime4j.message.BodyFactory;
 import org.apache.james.mime4j.message.BodyPart;
+import org.apache.james.mime4j.message.Entity;
 import org.apache.james.mime4j.message.Message;
+import org.apache.james.mime4j.message.MessageBuilder;
 import org.apache.james.mime4j.message.Multipart;
 import org.apache.james.mime4j.message.TextBody;
 import org.apache.james.mime4j.parser.Field;
+import org.apache.james.mime4j.parser.MimeStreamParser;
+import org.apache.james.mime4j.storage.DefaultStorageProvider;
+import org.apache.james.mime4j.storage.StorageProvider;
 import org.apache.james.mime4j.util.CharsetUtil;
+import org.apache.james.mime4j.util.MimeUtil;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
@@ -28,11 +40,15 @@ import java.io.SequenceInputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -46,6 +62,101 @@ public class MultipartInputImpl implements MultipartInput
    protected List<InputPart> parts = new ArrayList<InputPart>();
    protected static final Annotation[] empty = {};
    protected MediaType defaultPartContentType = MultipartConstants.TEXT_PLAIN_WITH_CHARSET_US_ASCII_TYPE;
+   protected String defaultPartCharset = null;
+
+   // We hack MIME4j so that it always returns a BinaryBody so we don't have to deal with Readers and their charset conversions
+   private static class BinaryOnlyMessageBuilder extends MessageBuilder
+   {
+      private Method expectMethod;
+      private java.lang.reflect.Field bodyFactoryField;
+      private java.lang.reflect.Field stackField;
+
+      private void init()
+      {
+         try
+         {
+            expectMethod = MessageBuilder.class.getDeclaredMethod("expect", Class.class);
+            expectMethod.setAccessible(true);
+            bodyFactoryField = MessageBuilder.class.getDeclaredField("bodyFactory");
+            bodyFactoryField.setAccessible(true);
+            stackField = MessageBuilder.class.getDeclaredField("stack");
+            stackField.setAccessible(true);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+
+      private BinaryOnlyMessageBuilder(Entity entity)
+      {
+         super(entity);
+         init();
+      }
+
+      private BinaryOnlyMessageBuilder(Entity entity, StorageProvider storageProvider)
+      {
+         super(entity, storageProvider);
+         init();
+      }
+
+      @Override
+      public void body(BodyDescriptor bd, InputStream is) throws MimeException, IOException
+      {
+         // the only thing different from the superclass is that we just return a BinaryBody no matter what
+         try
+         {
+            expectMethod.invoke(this, Entity.class);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+
+         final String enc = bd.getTransferEncoding();
+
+         final Body body;
+
+         final InputStream decodedStream;
+         if (MimeUtil.ENC_BASE64.equals(enc)) {
+            decodedStream = new Base64InputStream(is);
+         } else if (MimeUtil.ENC_QUOTED_PRINTABLE.equals(enc)) {
+            decodedStream = new QuotedPrintableInputStream(is);
+         } else {
+            decodedStream = is;
+         }
+
+         try
+         {
+            BodyFactory factory = (BodyFactory)bodyFactoryField.get(this);
+            body = factory.binaryBody(decodedStream);
+
+            Stack<Object> st = (Stack<Object>)stackField.get(this);
+            Entity entity = ((Entity) st.peek());
+            entity.setBody(body);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+
+      }
+   }
+
+   private static class BinaryMessage extends Message
+   {
+      private BinaryMessage(InputStream is) throws IOException, MimeIOException
+      {
+         try {
+            MimeStreamParser parser = new MimeStreamParser(null);
+            parser.setContentHandler(new BinaryOnlyMessageBuilder(this, DefaultStorageProvider.getInstance()));
+            parser.parse(is);
+         } catch (MimeException e) {
+            throw new MimeIOException(e);
+         }
+
+      }
+   }
 
    public MultipartInputImpl(MediaType contentType, Providers workers)
    {
@@ -60,20 +171,30 @@ public class MultipartInputImpl implements MultipartInput
          if (defaultContentType != null)
             this.defaultPartContentType = MediaType
                     .valueOf(defaultContentType);
+         this.defaultPartCharset = (String) httpRequest.getAttribute(InputPart.DEFAULT_CHARSET_PROPERTY);
+         if (defaultPartCharset != null)
+         {
+            this.defaultPartContentType = getMediaTypeWithDefaultCharset(this.defaultPartContentType);
+         }
       }
    }
 
    public MultipartInputImpl(MediaType contentType, Providers workers,
-                             MediaType defaultPartContentType)
+                             MediaType defaultPartContentType, String defaultPartCharset)
    {
       this.contentType = contentType;
       this.workers = workers;
-      this.defaultPartContentType = defaultPartContentType;
+      if (defaultPartContentType != null) this.defaultPartContentType = defaultPartContentType;
+      this.defaultPartCharset = defaultPartCharset;
+      if (defaultPartCharset != null)
+      {
+         this.defaultPartContentType = getMediaTypeWithDefaultCharset(this.defaultPartContentType);
+      }
    }
 
    public void parse(InputStream is) throws IOException
    {
-      mimeMessage = new Message(addHeaderToHeadlessStream(is));
+      mimeMessage = new BinaryMessage(addHeaderToHeadlessStream(is));
       extractParts();
    }
 
@@ -135,6 +256,25 @@ public class MultipartInputImpl implements MultipartInput
          }
          if (contentType == null)
             contentType = defaultPartContentType;
+         if (getCharset(contentType) == null)
+         {
+            if (defaultPartCharset != null)
+            {
+               contentType = getMediaTypeWithDefaultCharset(contentType);
+            }
+            else if (contentType.getType().equalsIgnoreCase("text"))
+            {
+               contentType = getMediaTypeWithCharset(contentType, "us-ascii");
+            }
+         }
+      }
+
+      @Override
+      public void setMediaType(MediaType mediaType)
+      {
+         contentType = mediaType;
+         contentTypeFromMessage = false;
+         headers.putSingle("Content-Type", mediaType.toString());
       }
 
       public <T> T getBody(Class<T> type, Type genericType)
@@ -146,8 +286,9 @@ public class MultipartInputImpl implements MultipartInput
          {
             throw new RuntimeException("Unable to find a MessageBodyReader for media type: " + contentType + " and class type " + type.getName());
          }
-         return reader.readFrom(type, genericType, empty, contentType,
-                 headers, getBody());
+
+         return reader.readFrom(type, genericType, empty, contentType, headers, getBody());
+
       }
 
       public <T> T getBody(GenericType<T> type) throws IOException
@@ -161,63 +302,32 @@ public class MultipartInputImpl implements MultipartInput
          InputStream result = null;
          if (body instanceof TextBody)
          {
-            Reader reader = ((TextBody) body).getReader();
-            result = new ReaderBackedInputStream(reader);
+            throw new UnsupportedOperationException();
+            /*
+            InputStreamReader reader = (InputStreamReader)((TextBody) body).getReader();
+            StringBuilder inputBuilder = new StringBuilder();
+            char[] buffer = new char[1024];
+            while (true) {
+               int readCount = reader.read(buffer);
+               if (readCount < 0) {
+                  break;
+               }
+               inputBuilder.append(buffer, 0, readCount);
+            }
+            String str = inputBuilder.toString();
+            return new ByteArrayInputStream(str.getBytes(reader.getEncoding()));
+            */
          }
          else if (body instanceof BinaryBody)
-            result = ((BinaryBody) body).getInputStream();
+         {
+            return ((BinaryBody)body).getInputStream();
+         }
          return result;
       }
 
       public String getBodyAsString() throws IOException
       {
-         Body body = bodyPart.getBody();
-         String result = null;
-         if (body instanceof TextBody)
-         {
-            Reader reader = ((TextBody) body).getReader();
-            try
-            {
-               StringWriter writer = new StringWriter();
-               char[] buffer = new char[4048];
-               int n = 0;
-               while ((n = reader.read(buffer)) != -1)
-                  writer.write(buffer, 0, n);
-               result = writer.toString();
-            }
-            finally
-            {
-               reader.close();
-            }
-         }
-         else if (body instanceof BinaryBody)
-         {
-            InputStream inputStream = ((BinaryBody) body).getInputStream();
-            InputStreamReader inputStreamReader = null;
-            try
-            {
-               String charset = contentType.getParameters().get("charset");
-               if (charset != null)
-                  charset = CharsetUtil.toJavaCharset(charset);
-               inputStreamReader = charset == null ? new InputStreamReader(
-                       inputStream)
-                       : new InputStreamReader(inputStream, charset);
-               StringWriter writer = new StringWriter();
-               char[] buffer = new char[4048];
-               int n = 0;
-               while ((n = inputStreamReader.read(buffer)) != -1)
-                  writer.write(buffer, 0, n);
-               result = writer.toString();
-            }
-            finally
-            {
-               if (inputStreamReader != null)
-                  inputStreamReader.close();
-               inputStream.close();
-            }
-         }
-
-         return result;
+         return getBody(String.class, null);
       }
 
       public MultivaluedMap<String, String> getHeaders()
@@ -233,30 +343,6 @@ public class MultipartInputImpl implements MultipartInput
       public boolean isContentTypeFromMessage()
       {
          return contentTypeFromMessage;
-      }
-   }
-
-   private static class ReaderBackedInputStream extends InputStream
-   {
-      private final Reader reader;
-
-      private ReaderBackedInputStream(Reader reader)
-      {
-         this.reader = reader;
-      }
-
-      @Override
-      public int read() throws IOException
-      {
-         int c = reader.read();
-         return c;
-      }
-
-      @Override
-      public void close() throws IOException
-      {
-         reader.close();
-         super.close();
       }
    }
 
@@ -320,4 +406,40 @@ public class MultipartInputImpl implements MultipartInput
    {
       close();
    }
+
+   protected String getCharset(MediaType mediaType)
+   {
+      for (Iterator<String> it = mediaType.getParameters().keySet().iterator(); it.hasNext(); )
+      {
+         String key = it.next();
+         if ("charset".equalsIgnoreCase(key))
+         {
+            return mediaType.getParameters().get(key);
+         }
+      }
+      return null;
+   }
+   
+   private MediaType getMediaTypeWithDefaultCharset(MediaType mediaType)
+   {
+      String charset = defaultPartCharset;
+      return getMediaTypeWithCharset(mediaType, charset);
+   }
+
+   private MediaType getMediaTypeWithCharset(MediaType mediaType, String charset)
+   {
+      Map<String, String> params = mediaType.getParameters();
+      Map<String, String> newParams = new HashMap<String, String>();
+      newParams.put("charset", charset);
+      for (Iterator<String> it = params.keySet().iterator(); it.hasNext(); )
+      {
+         String key = it.next();
+         if (!"charset".equalsIgnoreCase(key))
+         {
+            newParams.put(key, params.get(key));
+         }
+      }
+      return new MediaType(mediaType.getType(), mediaType.getSubtype(), newParams);
+   }
+
 }

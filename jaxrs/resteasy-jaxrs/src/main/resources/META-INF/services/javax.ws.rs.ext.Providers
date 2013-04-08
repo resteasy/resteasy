@@ -5,15 +5,17 @@ org.jboss.resteasy.plugins.providers.StringTextStar
 org.jboss.resteasy.plugins.providers.InputStreamProvider
 org.jboss.resteasy.plugins.providers.ByteArrayProvider
 org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider
+org.jboss.resteasy.plugins.providers.JaxrsFormProvider
 org.jboss.resteasy.plugins.providers.FileProvider
 org.jboss.resteasy.plugins.providers.StreamingOutputProvider
 org.jboss.resteasy.plugins.providers.IIOImageProvider
 org.jboss.resteasy.plugins.providers.SerializableProvider
-org.jboss.resteasy.plugins.interceptors.CacheControlInterceptor
+org.jboss.resteasy.plugins.interceptors.CacheControlFeature
 org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPInterceptor
-org.jboss.resteasy.plugins.interceptors.encoding.ClientContentEncodingHeaderInterceptor
+org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPFilter
+org.jboss.resteasy.plugins.interceptors.encoding.ClientContentEncodingAnnotationFeature
 org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor
 org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor
-org.jboss.resteasy.plugins.interceptors.encoding.ServerContentEncodingHeaderInterceptor
+org.jboss.resteasy.plugins.interceptors.encoding.ServerContentEncodingAnnotationFeature
 
 

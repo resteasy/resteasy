@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0-alpha-1-SNAPSHOT</version>
+        <version>3.0-beta-4</version>
     </parent>
     <artifactId>resteasy-jaxrs</artifactId>
     <name>RESTEasy JAX-RS Implementation</name>
@@ -75,17 +75,16 @@
             <artifactId>activation</artifactId>
         </dependency>
 
-        <!-- Used for org.jboss.resteasy.plugins.client.httpclient.* -->
-        <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-        </dependency>
-
-
         <!-- 4.0 refactor of apache httpclient -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>commons-io</groupId>
+	        <artifactId>commons-io</artifactId>
+            <version>1.4</version>
         </dependency>
 
         <dependency>
@@ -109,4 +108,15 @@
         -->
 
     </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-clover2-plugin</artifactId>
+                <version>3.1.6</version>
+            </plugin>
+        </plugins>
+    </build>
+    
 </project>

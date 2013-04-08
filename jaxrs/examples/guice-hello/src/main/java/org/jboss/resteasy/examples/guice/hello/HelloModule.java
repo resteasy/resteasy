@@ -1,7 +1,7 @@
 package org.jboss.resteasy.examples.guice.hello;
 
-import com.google.inject.Module;
 import com.google.inject.Binder;
+import com.google.inject.Module;
 
 public class HelloModule implements Module
 {

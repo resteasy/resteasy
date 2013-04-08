@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.finegrain.resource;
 import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.mock.MockHttpRequest;
-import org.jboss.resteasy.specimpl.PathSegmentImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -17,7 +16,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -79,14 +77,6 @@ public class AcceptTest
          throw new RuntimeException(e);
       }
 
-      // finally strip out matrix parameters
-
-      StringBuilder preprocessedPath = new StringBuilder();
-      for (PathSegment pathSegment : request.getUri().getPathSegments())
-      {
-         preprocessedPath.append("/").append(pathSegment.getPath());
-      }
-      request.setPreprocessedPath(preprocessedPath.toString());
       return request;
    }
 

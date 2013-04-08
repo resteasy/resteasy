@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,20 +46,25 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import java.util.Set;
+
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
  * Defines the contract between a returned instance and the runtime when
- * an application needs to provide meta-data to the runtime. An application
- * class can extend this class directly or can use one of the static
- * methods to create an instance using a ResponseBuilder.
- * <p />
+ * an application needs to provide meta-data to the runtime.
+ * <p>
+ * An application class should not extend this class directly. {@code Response} class is
+ * reserved for an extension by a JAX-RS implementation providers. An application should use one
+ * of the static methods to create a {@code Response} instance using a ResponseBuilder.
+ * </p>
+ * <p>
  * Several methods have parameters of type URI, {@link UriBuilder} provides
  * convenient methods to create such values as does {@link URI#create(java.lang.String)}.
+ * </p>
  *
  * @author Paul Sandoz
  * @author Marc Hadley
@@ -77,425 +82,483 @@ public abstract class Response {
     }
 
     /**
-     * Get a mutable map of request-scoped properties that can be used for communication
-     * between different request/response processing components. May be empty, but
-     * MUST never be {@code null}. In the scope of a single request/response processing,
-     * a same property map instance is shared by the following methods:
-     * <ul>
-     *     <li>{@link javax.ws.rs.core.Request#getProperties() }</li>
-     *     <li>{@link javax.ws.rs.core.Response#getProperties() }</li>
-     *     <li>{@link javax.ws.rs.ext.FilterContext#getProperties() }</li>
-     *     <li>{@link javax.ws.rs.ext.InterceptorContext#getProperties() }</li>
-     * </ul>
-     * A request-scoped property is an application-defined property that may be
-     * added, removed or modified by any of the components (user, filter, interceptor etc.)
-     * that participate in a given request/response processing flow.
-     * <p />
-     * On the client side, this property map is initialized by calling
-     * {@link javax.ws.rs.client.Configuration#setProperties(java.util.Map) } or
-     * {@link javax.ws.rs.client.Configuration#setProperty(java.lang.String, java.lang.Object) }
-     * on the configuration object associated with the corresponding
-     * {@link javax.ws.rs.client.Invocation request invocation}.
-     * <p />
-     * On the server side, specifying the initial values is implementation-specific.
-     * <p />
-     * If there are no initial properties set, the request-scoped property map is
-     * initialized to an empty map.
-     *
-     * @return a mutable request-scoped property map.
-     * @see javax.ws.rs.client.Configuration
-     *
-     * @since 2.0
-     */
-    public abstract Map<String, Object> getProperties();
-
-    /**
      * Get the status code associated with the response.
      *
-     * @return the response status code or -1 if the status was not set.
+     * @return the response status code.
      */
     public abstract int getStatus();
 
     /**
-     * Get the response status represented as a response {@link Status} enumeration
-     * value.
+     * Get the complete status information associated with the response.
      *
-     * @return the status type instance, or {@code null} if there is no
-     * mapping between the integer status code and the
-     * {@link javax.ws.rs.core.Response.Status response status enumeration} value.
+     * @return the response status information. The returned value is never
+     *         {@code null}.
      * @since 2.0
      */
-    public abstract Status getStatusEnum();
-
-    /**
-     * Get the response message headers. This method never returns {@code null}.
-     *
-     * @return response message headers. Returned headers may be empty but never
-     *     {@code null}.
-     * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate
-     *
-     * @since 2.0
-     */
-    public abstract ResponseHeaders getHeaders();
+    public abstract StatusType getStatusInfo();
 
     /**
      * Get the message entity Java instance. Returns {@code null} if the message
      * does not contain an entity body.
+     * <p>
+     * If the entity is represented by an un-consumed {@link InputStream input stream}
+     * the method will return the input stream.
+     * </p>
      *
      * @return the message entity or {@code null} if message does not contain an
-     *     entity body.
-     * @throws IllegalStateException in case the existing message entity is not
-     *     {@link #isEntityRetrievable() retrievable} as a Java type. This is
-     *     typically the case (on the client side) when the entity input stream
-     *     has not been read as a Java type using one of the {@code readEntity(...)}
-     *     methods yet.
-     * @throws MessageProcessingException if the entity was previously fully consumed
-     *     as an {@link InputStream input stream}.
-     *
-     * @see #hasEntity()
-     * @see #isEntityRetrievable()
-     * @see #readEntity(java.lang.Class)
-     * @see #readEntity(javax.ws.rs.core.TypeLiteral)
-     * @see #bufferEntity()
-     * @see javax.ws.rs.ext.MessageBodyWriter
+     *         entity body.
+     * @throws IllegalStateException if the entity was previously fully consumed
+     *                               as an {@link InputStream input stream}, or
+     *                               if the response has been {@link #close() closed}.
      */
-    public abstract Object getEntity() throws IllegalStateException, MessageProcessingException;
+    public abstract Object getEntity();
 
     /**
-     * Read the message entity as an instance of specified Java type using
-     * a {@link javax.ws.rs.ext.MessageBodyReader} that supports mapping the
-     * message entity stream onto the requested type. Returns {@code null} if
-     * the message does not contain an entity body. Unless the supplied entity
-     * type is an {@link java.io.InputStream input stream}, this method automatically
-     * {@link #close() closes} the consumed response entity stream (if open) and
-     * makes the entity {@link #isEntityRetrievable() available for retrieval}.
-     * <p />
+     * Read the message entity input stream as an instance of specified Java type
+     * using a {@link javax.ws.rs.ext.MessageBodyReader} that supports mapping the
+     * message entity stream onto the requested type.
+     * <p>
+     * Method throws an {@link ProcessingException} if the content of the
+     * message cannot be mapped to an entity of the requested type and
+     * {@link IllegalStateException} in case the entity is not backed by an input
+     * stream or if the original entity input stream has already been consumed
+     * without {@link #bufferEntity() buffering} the entity data prior consuming.
+     * </p>
+     * <p>
+     * If the message does not contain an entity body {@code null} is returned.
      * A non-null message instance returned from this method will be cached for
-     * subsequent retrievals via {@link #getEntity()}.
-     * If the message has previously been read as an instance of a different Java type,
-     * invoking this method will cause the cached entity instance to be serialized
-     * into a temporary input stream using a compatible {@link javax.ws.rs.ext.MessageBodyWriter}
-     * and then read again from the stream. This operation is thus potentially
-     * expensive and should be used with care.
-     * <p />
-     * Note that a message entity can also be read as a raw entity
-     * {@link java.io.InputStream input stream}, in which case it will be fully
-     * consumed once the reading from the entity input stream is finished.
-     * Once the entity is read as an input stream, any subsequent calls to
-     * one of the {@code readEntity(...)} methods or {@link #getEntity()} method
-     * on the same message instance will result in a {@link MessageProcessingException}
-     * being thrown. It is up to the consumer of the entity input stream to ensure
-     * that consuming the stream is properly mitigated (e.g. by substituting the
-     * consumed response instance with a new one etc.).
+     * subsequent retrievals via {@link #getEntity()}. Unless the supplied entity
+     * type is an {@link java.io.InputStream input stream}, this method automatically
+     * {@link #close() closes} the an unconsumed original response entity data stream
+     * if open. In case the entity data has been buffered, the buffer will be reset
+     * prior consuming the buffered data to enable subsequent invocations of
+     * {@code readEntity(...)} methods on this response.
+     * </p>
      *
-     * @param <T> entity instance Java type.
-     * @param type the type of entity.
-     * @return the message entity or {@code null} if message does not contain an
-     *     entity body.
-     * @throws MessageProcessingException if the content of the message cannot be
-     *     mapped to an entity of the requested type or if the entity input stream
-     *     was previously directly consumed by invoking {@code readEntity(InputStream.class)}.
-     * @see #hasEntity()
-     * @see #isEntityRetrievable()
-     * @see #getEntity()
-     * @see #readEntity(java.lang.Class, java.lang.annotation.Annotation[])
-     * @see #readEntity(javax.ws.rs.core.TypeLiteral)
-     * @see #readEntity(javax.ws.rs.core.TypeLiteral, java.lang.annotation.Annotation[])
-     * @see #bufferEntity()
-     * @see #close()
-     * @see javax.ws.rs.ext.MessageBodyWriter
+     * @param <T>        entity instance Java type.
+     * @param entityType the type of entity.
+     * @return the message entity; for a zero-length response entities returns {@code null}
+     *         or a corresponding Java object that represents zero-length data.
+     * @throws ProcessingException if the content of the message cannot be
+     *                                    mapped to an entity of the requested type.
+     * @throws IllegalStateException      if the entity is not backed by an input stream,
+     *                                    the response has been {@link #close() closed} already,
+     *                                    or if the entity input stream has been fully consumed already and has
+     *                                    not been buffered prior consuming.
      * @see javax.ws.rs.ext.MessageBodyReader
      * @since 2.0
      */
-    public abstract <T> T readEntity(Class<T> type) throws MessageProcessingException;
+    public abstract <T> T readEntity(Class<T> entityType);
 
     /**
-     * Read the message entity as an instance of specified (generic) Java type using
-     * a {@link javax.ws.rs.ext.MessageBodyReader} that supports mapping the
-     * message entity stream onto the requested type. Returns {@code null} if
-     * the message does not contain an entity body. Unless the supplied entity
-     * type is an {@link java.io.InputStream input stream}, this method automatically
-     * {@link #close() closes} the consumed response entity stream (if open) and
-     * makes the entity {@link #isEntityRetrievable() available for retrieval}.
-     * <p />
+     * Read the message entity input stream as an instance of specified Java type
+     * using a {@link javax.ws.rs.ext.MessageBodyReader} that supports mapping the
+     * message entity stream onto the requested type.
+     * <p>
+     * Method throws an {@link ProcessingException} if the content of the
+     * message cannot be mapped to an entity of the requested type and
+     * {@link IllegalStateException} in case the entity is not backed by an input
+     * stream or if the original entity input stream has already been consumed
+     * without {@link #bufferEntity() buffering} the entity data prior consuming.
+     * </p>
+     * <p>
+     * If the message does not contain an entity body {@code null} is returned.
      * A non-null message instance returned from this method will be cached for
-     * subsequent retrievals via {@link #getEntity()}.
-     * If the message has previously been read as an instance of a different Java type,
-     * invoking this method will cause the cached entity instance to be serialized
-     * into a temporary input stream using a compatible {@link javax.ws.rs.ext.MessageBodyWriter}
-     * and then read again from the stream. This operation is thus potentially
-     * expensive and should be used with care.
-     * <p />
-     * Note that a message entity can also be read as a raw entity
-     * {@link java.io.InputStream input stream}, in which case it will be fully
-     * consumed once the reading from the entity input stream is finished.
-     * Once the entity is read as an input stream, any subsequent calls to
-     * one of the {@code readEntity(...)} methods or {@link #getEntity()} method
-     * on the same message instance will result in a {@link MessageProcessingException}
-     * being thrown. It is up to the consumer of the entity input stream to ensure
-     * that consuming the stream is properly mitigated (e.g. by substituting the
-     * consumed response instance with a new one etc.).
+     * subsequent retrievals via {@link #getEntity()}. Unless the supplied entity
+     * type is an {@link java.io.InputStream input stream}, this method automatically
+     * {@link #close() closes} the an unconsumed original response entity data stream
+     * if open. In case the entity data has been buffered, the buffer will be reset
+     * prior consuming the buffered data to enable subsequent invocations of
+     * {@code readEntity(...)} methods on this response.
+     * </p>
      *
-     * @param <T> entity instance Java type.
+     * @param <T>        entity instance Java type.
      * @param entityType the type of entity; may be generic.
-     * @return the message entity or {@code null} if message does not contain an
-     *     entity body.
-     * @throws MessageProcessingException if the content of the message cannot be
-     *     mapped to an entity of the requested type or if the entity input stream
-     *     was previously directly consumed by invoking {@code readEntity(InputStream.class)}.
-     * @see #hasEntity()
-     * @see #isEntityRetrievable()
-     * @see #getEntity()
-     * @see #readEntity(javax.ws.rs.core.TypeLiteral, java.lang.annotation.Annotation[])
-     * @see #readEntity(java.lang.Class)
-     * @see #readEntity(java.lang.Class, java.lang.annotation.Annotation[])
-     * @see #bufferEntity()
-     * @see #close()
-     * @see javax.ws.rs.ext.MessageBodyWriter
+     * @return the message entity; for a zero-length response entities returns {@code null}
+     *         or a corresponding Java object that represents zero-length data.
+     * @throws ProcessingException if the content of the message cannot be
+     *                                    mapped to an entity of the requested type.
+     * @throws IllegalStateException      if the entity is not backed by an input stream,
+     *                                    the response has been {@link #close() closed} already,
+     *                                    or if the entity input stream has been fully consumed already and has
+     *                                    not been buffered prior consuming.
      * @see javax.ws.rs.ext.MessageBodyReader
      * @since 2.0
      */
-    public abstract <T> T readEntity(TypeLiteral<T> entityType) throws MessageProcessingException;
+    public abstract <T> T readEntity(GenericType<T> entityType);
 
     /**
-     * Read the message entity as an instance of specified Java type using
-     * a {@link javax.ws.rs.ext.MessageBodyReader} that supports mapping the
-     * message entity stream onto the requested type. Returns {@code null} if
-     * the message does not contain an entity body. Unless the supplied entity
-     * type is an {@link java.io.InputStream input stream}, this method automatically
-     * {@link #close() closes} the consumed response entity stream (if open) and
-     * makes the entity {@link #isEntityRetrievable() available for retrieval}.
-     * <p />
+     * Read the message entity input stream as an instance of specified Java type
+     * using a {@link javax.ws.rs.ext.MessageBodyReader} that supports mapping the
+     * message entity stream onto the requested type.
+     * <p>
+     * Method throws an {@link ProcessingException} if the content of the
+     * message cannot be mapped to an entity of the requested type and
+     * {@link IllegalStateException} in case the entity is not backed by an input
+     * stream or if the original entity input stream has already been consumed
+     * without {@link #bufferEntity() buffering} the entity data prior consuming.
+     * </p>
+     * <p>
+     * If the message does not contain an entity body {@code null} is returned.
      * A non-null message instance returned from this method will be cached for
-     * subsequent retrievals via {@link #getEntity()}.
-     * If the message has previously been read as an instance of a different Java type,
-     * invoking this method will cause the cached entity instance to be serialized
-     * into a temporary input stream using a compatible {@link javax.ws.rs.ext.MessageBodyWriter}
-     * and then read again from the stream. This operation is thus potentially
-     * expensive and should be used with care.
-     * <p />
-     * Note that a message entity can also be read as a raw entity
-     * {@link java.io.InputStream input stream}, in which case it will be fully
-     * consumed once the reading from the entity input stream is finished.
-     * Once the entity is read as an input stream, any subsequent calls to
-     * one of the {@code readEntity(...)} methods or {@link #getEntity()} method
-     * on the same message instance will result in a {@link MessageProcessingException}
-     * being thrown. It is up to the consumer of the entity input stream to ensure
-     * that consuming the stream is properly mitigated (e.g. by substituting the
-     * consumed response instance with a new one etc.).
+     * subsequent retrievals via {@link #getEntity()}. Unless the supplied entity
+     * type is an {@link java.io.InputStream input stream}, this method automatically
+     * {@link #close() closes} the an unconsumed original response entity data stream
+     * if open. In case the entity data has been buffered, the buffer will be reset
+     * prior consuming the buffered data to enable subsequent invocations of
+     * {@code readEntity(...)} methods on this response.
+     * </p>
      *
-     * @param <T> entity instance Java type.
-     * @param type the type of entity.
+     * @param <T>         entity instance Java type.
+     * @param entityType  the type of entity.
      * @param annotations annotations that will be passed to the {@link MessageBodyReader}.
-     * @return the message entity or {@code null} if message does not contain an
-     *     entity body.
-     * @throws MessageProcessingException if the content of the message cannot be
-     *     mapped to an entity of the requested type or if the entity input stream
-     *     was previously directly consumed by invoking {@code readEntity(InputStream.class)}.
-     * @see #hasEntity()
-     * @see #isEntityRetrievable()
-     * @see #getEntity()
-     * @see #readEntity(java.lang.Class)
-     * @see #readEntity(javax.ws.rs.core.TypeLiteral)
-     * @see #readEntity(javax.ws.rs.core.TypeLiteral, java.lang.annotation.Annotation[])
-     * @see #bufferEntity()
-     * @see #close()
-     * @see javax.ws.rs.ext.MessageBodyWriter
+     * @return the message entity; for a zero-length response entities returns {@code null}
+     *         or a corresponding Java object that represents zero-length data.
+     * @throws ProcessingException if the content of the message cannot be
+     *                                    mapped to an entity of the requested type.
+     * @throws IllegalStateException      if the entity is not backed by an input stream,
+     *                                    the response has been {@link #close() closed} already,
+     *                                    or if the entity input stream has been fully consumed already and has
+     *                                    not been buffered prior consuming.
      * @see javax.ws.rs.ext.MessageBodyReader
      * @since 2.0
      */
-    public abstract <T> T readEntity(Class<T> type, Annotation[] annotations) throws MessageProcessingException;
+    public abstract <T> T readEntity(Class<T> entityType, Annotation[] annotations);
 
     /**
-     * Read the message entity as an instance of specified (generic) Java type using
-     * a {@link javax.ws.rs.ext.MessageBodyReader} that supports mapping the
-     * message entity stream onto the requested type. Returns {@code null} if
-     * the message does not contain an entity body. Unless the supplied entity
-     * type is an {@link java.io.InputStream input stream}, this method automatically
-     * {@link #close() closes} the consumed response entity stream (if open) and
-     * makes the entity {@link #isEntityRetrievable() available for retrieval}.
-     * <p />
+     * Read the message entity input stream as an instance of specified Java type
+     * using a {@link javax.ws.rs.ext.MessageBodyReader} that supports mapping the
+     * message entity stream onto the requested type.
+     * <p>
+     * Method throws an {@link ProcessingException} if the content of the
+     * message cannot be mapped to an entity of the requested type and
+     * {@link IllegalStateException} in case the entity is not backed by an input
+     * stream or if the original entity input stream has already been consumed
+     * without {@link #bufferEntity() buffering} the entity data prior consuming.
+     * </p>
+     * <p>
+     * If the message does not contain an entity body {@code null} is returned.
      * A non-null message instance returned from this method will be cached for
-     * subsequent retrievals via {@link #getEntity()}.
-     * If the message has previously been read as an instance of a different Java type,
-     * invoking this method will cause the cached entity instance to be serialized
-     * into a temporary input stream using a compatible {@link javax.ws.rs.ext.MessageBodyWriter}
-     * and then read again from the stream. This operation is thus potentially
-     * expensive and should be used with care.
-     * <p />
-     * Note that a message entity can also be read as a raw entity
-     * {@link java.io.InputStream input stream}, in which case it will be fully
-     * consumed once the reading from the entity input stream is finished.
-     * Once the entity is read as an input stream, any subsequent calls to
-     * one of the {@code readEntity(...)} methods or {@link #getEntity()} method
-     * on the same message instance will result in a {@link MessageProcessingException}
-     * being thrown. It is up to the consumer of the entity input stream to ensure
-     * that consuming the stream is properly mitigated (e.g. by substituting the
-     * consumed response instance with a new one etc.).
+     * subsequent retrievals via {@link #getEntity()}. Unless the supplied entity
+     * type is an {@link java.io.InputStream input stream}, this method automatically
+     * {@link #close() closes} the an unconsumed original response entity data stream
+     * if open. In case the entity data has been buffered, the buffer will be reset
+     * prior consuming the buffered data to enable subsequent invocations of
+     * {@code readEntity(...)} methods on this response.
+     * </p>
      *
-     * @param <T> entity instance Java type.
-     * @param entityType the type of entity; may be generic.
+     * @param <T>         entity instance Java type.
+     * @param entityType  the type of entity; may be generic.
      * @param annotations annotations that will be passed to the {@link MessageBodyReader}.
-     * @return the message entity or {@code null} if message does not contain an
-     *     entity body.
-     * @throws MessageProcessingException if the content of the message cannot be
-     *     mapped to an entity of the requested type or if the entity input stream
-     *     was previously directly consumed by invoking {@code readEntity(InputStream.class)}.
-     * @see #hasEntity()
-     * @see #isEntityRetrievable()
-     * @see #getEntity()
-     * @see #readEntity(javax.ws.rs.core.TypeLiteral)
-     * @see #readEntity(java.lang.Class)
-     * @see #readEntity(java.lang.Class, java.lang.annotation.Annotation[])
-     * @see #bufferEntity()
-     * @see #close()
-     * @see javax.ws.rs.ext.MessageBodyWriter
+     * @return the message entity; for a zero-length response entities returns {@code null}
+     *         or a corresponding Java object that represents zero-length data.
+     * @throws ProcessingException if the content of the message cannot be
+     *                                    mapped to an entity of the requested type.
+     * @throws IllegalStateException      if the entity is not backed by an input stream,
+     *                                    the response has been {@link #close() closed} already,
+     *                                    or if the entity input stream has been fully consumed already and has
+     *                                    not been buffered prior consuming.
      * @see javax.ws.rs.ext.MessageBodyReader
      * @since 2.0
      */
-    public abstract <T> T readEntity(TypeLiteral<T> entityType, Annotation[] annotations) throws MessageProcessingException;
+    public abstract <T> T readEntity(GenericType<T> entityType, Annotation[] annotations);
 
     /**
      * Check if there is an entity available in the response. The method returns
      * {@code true} if the entity is present, returns {@code false} otherwise.
-     * <p/>
-     * In case the message contained an entity, but it was already consumed as
-     * an input stream via {@code readEntity(InputStream.class)}, the method
-     * returns {@code false}.
      *
      * @return {@code true} if there is an entity present in the message,
-     *     {@code false} otherwise.
-     * @see #isEntityRetrievable()
-     * @see #getEntity()
-     * @see #readEntity(java.lang.Class)
-     * @see #readEntity(java.lang.Class, java.lang.annotation.Annotation[])
-     * @see #readEntity(javax.ws.rs.core.TypeLiteral)
-     * @see #readEntity(javax.ws.rs.core.TypeLiteral, java.lang.annotation.Annotation[]) 
+     *         {@code false} otherwise.
+     * @throws IllegalStateException in case the response has been {@link #close() closed}.
      * @since 2.0
      */
     public abstract boolean hasEntity();
 
     /**
-     * Check if the entity instance is {@link #hasEntity() present} and available
-     * for a retrieval via {@link #getEntity()}.
-     *
-     * The method returns {@code true} if the entity is retrievable, returns {@code false}
-     * in case there is no entity associated with the message or if the existing
-     * message entity is not available as a Java type. This is typically the case
-     * (on the client side) when the entity input stream has not been consumed
-     * using one of the {@code readEntity(...)} methods yet.
-     * <p />
-     * Note that even though {@link #bufferEntity() entity buffering} closes
-     * the original entity input stream, the buffered entity may still not be
-     * retrievable, unless the buffered data was previously read using one of the
-     * {@code readEntity(...)} methods.
-     *
-     * @return {@code true} if there is a retrievable message entity instance
-     *     present, {@code false} otherwise.
-     * @see #hasEntity()
-     * @see #getEntity()
-     * @see #readEntity(java.lang.Class)
-     * @see #readEntity(javax.ws.rs.core.TypeLiteral)
-     * @see #bufferEntity()
-     * @since 2.0
-     */
-    public abstract boolean isEntityRetrievable();
-
-    /**
-     * Buffer the message entity.
-     *
-     * In case the message entity input stream is open, all the bytes of the
-     * original entity input stream are read and stored in memory. The original
-     * entity input stream is automatically {@link #close() closed} as part of
-     * the operation.
-     * <p />
+     * Buffer the message entity data.
+     * <p>
+     * In case the message entity is backed by an unconsumed entity input stream,
+     * all the bytes of the original entity input stream are read and stored in a
+     * local buffer. The original entity input stream is consumed and automatically
+     * closed as part of the operation and the method returns {@code true}.
+     * </p>
+     * <p>
+     * In case the response entity instance is not backed by an unconsumed input stream
+     * an invocation of {@code bufferEntity} method is ignored and the method returns
+     * {@code false}.
+     * </p>
+     * <p>
      * This operation is idempotent, i.e. it can be invoked multiple times with
      * the same effect which also means that calling the {@code bufferEntity()}
      * method on an already buffered (and thus closed) message instance is legal
-     * and has no further effect.
-     * <p />
-     * Note that even though entity buffering closes the original entity input
-     * stream, the buffered entity may still not be {@link #isEntityRetrievable()
-     * retrievable}, unless the buffered data was previously read using one of
-     * the {@code readEntity(...)} methods.
+     * and has no further effect. Also, the result returned by the {@code bufferEntity()}
+     * method is consistent across all invocations of the method on the same
+     * {@code Response} instance.
+     * </p>
+     * <p>
+     * Buffering the message entity data allows for multiple invocations of
+     * {@code readEntity(...)} methods on the response instance. Note however, that
+     * once the response instance itself is {@link #close() closed}, the implementations
+     * are expected to release the buffered message entity data too. Therefore any subsequent
+     * attempts to read a message entity stream on such closed response will result in an
+     * {@link IllegalStateException} being thrown.
+     * </p>
      *
-     * @throws MessageProcessingException if there is an error buffering the
-     *     message entity.
-     * @see #hasEntity()
-     * @see #isEntityRetrievable()
-     * @see #getEntity()
-     * @see #readEntity(java.lang.Class)
-     * @see #readEntity(javax.ws.rs.core.TypeLiteral)
-     * @see #close()
+     * @return {@code true} if the message entity input stream was available and
+     *         was buffered successfully, returns {@code false} if the entity stream
+     *         was not available.
+     * @throws ProcessingException if there was an error while buffering the entity
+     *                                    input stream.
+     * @throws IllegalStateException      in case the response has been {@link #close() closed}.
      * @since 2.0
      */
-    public abstract void bufferEntity() throws MessageProcessingException;
+    public abstract boolean bufferEntity();
 
     /**
-     * Close the message entity input stream (if available and open).
-     *
+     * Close the underlying message entity input stream (if available and open)
+     * as well as releases any other resources associated with the response
+     * (e.g. {@link #bufferEntity() buffered message entity data}).
+     * <p>
      * This operation is idempotent, i.e. it can be invoked multiple times with the
      * same effect which also means that calling the {@code close()} method on an
      * already closed message instance is legal and has no further effect.
-     * <p/>
+     * </p>
+     * <p>
      * The {@code close()} method should be invoked on all instances that
      * contain an un-consumed entity input stream to ensure the resources associated
      * with the instance are properly cleaned-up and prevent potential memory leaks.
      * This is typical for client-side scenarios where application layer code
      * processes only the response headers and ignores the response entity.
-     * <p/>
-     * If the {@code close()} method is invoked before the message entity has been
-     * fully read from the input stream, any subsequent attempt to read the entity
-     * will result in an {@link MessageProcessingException} being thrown.
-     * <p/>
-     * Closing an instance that has already been consumed has no effect. Similarly,
-     * closing an instance with no entity has not effect.
+     * </p>
+     * <p>
+     * Any attempts to manipulate (read, get, buffer) a message entity on a closed response
+     * will result in an {@link IllegalStateException} being thrown.
+     * </p>
      *
-     * @throws MessageProcessingException if there is an error closing the response.
-     * @see #readEntity(java.lang.Class)
-     * @see #readEntity(javax.ws.rs.core.TypeLiteral)
+     * @throws ProcessingException if there is an error closing the response.
      * @since 2.0
      */
-    public abstract void close() throws MessageProcessingException;
+    public abstract void close();
 
     /**
-     * Get metadata (headers) associated with the response as a map. The returned map
-     * may be subsequently modified by the JAX-RS runtime. Values will be
-     * serialized using a {@link javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate}
-     * if one is available via
-     * {@link javax.ws.rs.ext.RuntimeDelegate#createHeaderDelegate(java.lang.Class)}
-     * for the class of the value or using the values {@code toString} method if a
-     * header delegate is not available.
-     * <p/>
-     * This method is effectively a shortcut for
-     * {@link #getHeaders()}.{@link ResponseHeaders#asMap() asMap()} and may be
-     * deprecated in the future versions of JAX-RS API.
+     * Get the media type of the message entity.
      *
-     * @return response metadata (headers) as a map.
+     * @return the media type or {@code null} if there is no response entity.
+     * @since 2.0
+     */
+    public abstract MediaType getMediaType();
+
+    /**
+     * Get the language of the message entity.
+     *
+     * @return the language of the entity or null if not specified.
+     * @since 2.0
+     */
+    public abstract Locale getLanguage();
+
+    /**
+     * Get Content-Length value.
+     *
+     * @return Content-Length as integer if present and valid number. In other
+     *         cases returns {@code -1}.
+     * @since 2.0
+     */
+    public abstract int getLength();
+
+    /**
+     * Get the allowed HTTP methods from the Allow HTTP header.
+     *
+     * @return the allowed HTTP methods, all methods will returned as upper case
+     *         strings.
+     * @since 2.0
+     */
+    public abstract Set<String> getAllowedMethods();
+
+    /**
+     * Get any new cookies set on the response message.
+     *
+     * @return a read-only map of cookie name (String) to Cookie.
+     * @since 2.0
+     */
+    public abstract Map<String, NewCookie> getCookies();
+
+    /**
+     * Get the entity tag.
+     *
+     * @return the entity tag, otherwise {@code null} if not present.
+     * @since 2.0
+     */
+    public abstract EntityTag getEntityTag();
+
+    /**
+     * Get message date.
+     *
+     * @return the message date, otherwise {@code null} if not present.
+     * @since 2.0
+     */
+    public abstract Date getDate();
+
+    /**
+     * Get the last modified date.
+     *
+     * @return the last modified date, otherwise {@code null} if not present.
+     * @since 2.0
+     */
+    public abstract Date getLastModified();
+
+    /**
+     * Get the location.
+     *
+     * @return the location URI, otherwise {@code null} if not present.
+     * @since 2.0
+     */
+    public abstract URI getLocation();
+
+    /**
+     * Get the links attached to the message as headers. Any links in the message
+     * that are relative must be resolved with respect to the actual request URI
+     * that produced this response. Note that request URIs may be updated by
+     * filters, so the actual request URI may differ from that in the original
+     * invocation.
+     *
+     * @return links, may return empty {@link Set} if no links are present. Does
+     *         not return {@code null}.
+     * @since 2.0
+     */
+    public abstract Set<Link> getLinks();
+
+    /**
+     * Check if link for relation exists.
+     *
+     * @param relation link relation.
+     * @return {@code true} if the link for the relation is present in the
+     *         {@link #getHeaders() message headers}, {@code false} otherwise.
+     * @since 2.0
+     */
+    public abstract boolean hasLink(String relation);
+
+    /**
+     * Get the link for the relation. A relative link is resolved with respect
+     * to the actual request URI that produced this response. Note that request
+     * URIs may be updated by filters, so the actual request URI may differ from
+     * that in the original invocation.
+     *
+     * @param relation link relation.
+     * @return the link for the relation, otherwise {@code null} if not present.
+     * @since 2.0
+     */
+    public abstract Link getLink(String relation);
+
+    /**
+     * Convenience method that returns a {@link Link.Builder} for the relation.
+     * See {@link #getLink} for more information.
+     *
+     * @param relation link relation.
+     * @return the link builder for the relation, otherwise {@code null} if not
+     *         present.
+     * @since 2.0
+     */
+    public abstract Link.Builder getLinkBuilder(String relation);
+
+    /**
+     * See {@link #getHeaders()}.
+     *
+     * This method is considered deprecated. Users are encouraged to switch their
+     * code to use the {@code getHeaders()} method instead. The method may be annotated
+     * as {@link Deprecated &#64;Deprecated} in a future release of JAX-RS API.
+     *
+     * @return response headers as a multivalued map.
      */
     public abstract MultivaluedMap<String, Object> getMetadata();
 
     /**
+     * Get view of the response headers and their object values.
+     *
+     * The underlying header data may be subsequently modified by the JAX-RS runtime on the
+     * server side. Changes in the underlying header data are reflected in this view.
+     * <p>
+     * On the server-side, when the message is sent, the non-string values will be serialized
+     * using a {@link javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate} if one is available via
+     * {@link javax.ws.rs.ext.RuntimeDelegate#createHeaderDelegate(java.lang.Class)} for the
+     * class of the value or using the values {@code toString} method if a header delegate is
+     * not available.
+     * </p>
+     * <p>
+     * On the client side, the returned map is identical to the one returned by
+     * {@link #getStringHeaders()}.
+     * </p>
+     *
+     * @return response headers as an object view of header values.
+     * @see #getStringHeaders()
+     * @see #getHeaderString
+     * @since 2.0
+     */
+    public MultivaluedMap<String, Object> getHeaders() {
+        return getMetadata();
+    }
+
+    /**
+     * Get view of the response headers and their string values.
+     *
+     * The underlying header data may be subsequently modified by the JAX-RS runtime on
+     * the server side. Changes in the underlying header data are reflected in this view.
+     *
+     * @return response headers as a string view of header values.
+     * @see #getHeaders()
+     * @see #getHeaderString
+     * @since 2.0
+     */
+    public abstract MultivaluedMap<String, String> getStringHeaders();
+
+    /**
+     * Get a message header as a single string value.
+     *
+     * Each single header value is converted to String using a
+     * {@link javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate} if one is available
+     * via {@link javax.ws.rs.ext.RuntimeDelegate#createHeaderDelegate(java.lang.Class)}
+     * for the header value class or using its {@code toString} method  if a header
+     * delegate is not available.
+     *
+     * @param name the message header.
+     * @return the message header value. If the message header is not present then
+     *         {@code null} is returned. If the message header is present but has no
+     *         value then the empty string is returned. If the message header is present
+     *         more than once then the values of joined together and separated by a ','
+     *         character.
+     * @see #getHeaders()
+     * @see #getStringHeaders()
+     * @since 2.0
+     */
+    public abstract String getHeaderString(String name);
+
+    /**
      * Create a new ResponseBuilder by performing a shallow copy of an
      * existing Response.
-     *
-     * The returned builder has its own {@link ResponseHeaders response headers}
+     * <p>
+     * The returned builder has its own {@link #getHeaders() response headers}
      * but the header values are shared with the original {@code Response} instance.
-     * If {@link #isEntityRetrievable() retrievable}, the original response entity
-     * instance is set in the new response builder.
+     * The original response entity instance reference is set in the new response
+     * builder.
+     * </p>
+     * <p>
+     * Note that if the entity is backed by an un-consumed input stream, the
+     * reference to the stream is copied. In such case make sure to
+     * {@link #bufferEntity() buffer} the entity stream of the original response
+     * instance before passing it to this method.
+     * </p>
      *
-     * @param response a Response from which the status code, entity
-     *     (if {@link #isEntityRetrievable() retrievable}) and response headers
-     *     will be copied.
-     * @return a new ReponseBuilder.
+     * @param response a Response from which the status code, entity and
+     *                 {@link #getHeaders() response headers} will be copied.
+     * @return a new response builder.
+     * @since 2.0
      */
     public static ResponseBuilder fromResponse(Response response) {
         ResponseBuilder b = status(response.getStatus());
-        if (response.isEntityRetrievable()) {
+        if (response.hasEntity()) {
             b.entity(response.getEntity());
         }
-        for (String headerName : response.getMetadata().keySet()) {
-            List<Object> headerValues = response.getMetadata().get(headerName);
+        for (String headerName : response.getHeaders().keySet()) {
+            List<Object> headerValues = response.getHeaders().get(headerName);
             for (Object headerValue : headerValues) {
                 b.header(headerName, headerValue);
             }
@@ -506,22 +569,20 @@ public abstract class Response {
     /**
      * Create a new ResponseBuilder with the supplied status.
      *
-     * @param status the response status
-     * @return a new ResponseBuilder
-     * @throws IllegalArgumentException if status is null
+     * @param status the response status.
+     * @return a new response builder.
+     * @throws IllegalArgumentException if status is {@code null}.
      */
     public static ResponseBuilder status(StatusType status) {
-        ResponseBuilder b = ResponseBuilder.newInstance();
-        b.status(status);
-        return b;
+        return ResponseBuilder.newInstance().status(status);
     }
 
     /**
      * Create a new ResponseBuilder with the supplied status.
      *
-     * @param status the response status
-     * @return a new ResponseBuilder
-     * @throws IllegalArgumentException if status is null
+     * @param status the response status.
+     * @return a new response builder.
+     * @throws IllegalArgumentException if status is {@code null}.
      */
     public static ResponseBuilder status(Status status) {
         return status((StatusType) status);
@@ -530,25 +591,22 @@ public abstract class Response {
     /**
      * Create a new ResponseBuilder with the supplied status.
      *
-     * @param status the response status
-     * @return a new ResponseBuilder
-     * @throws IllegalArgumentException if status is less than 100 or greater
-     * than 599.
+     * @param status the response status.
+     * @return a new response builder.
+     * @throws IllegalArgumentException if status is less than {@code 100} or greater
+     *                                  than {@code 599}.
      */
     public static ResponseBuilder status(int status) {
-        ResponseBuilder b = ResponseBuilder.newInstance();
-        b.status(status);
-        return b;
+        return ResponseBuilder.newInstance().status(status);
     }
 
     /**
      * Create a new ResponseBuilder with an OK status.
      *
-     * @return a new ResponseBuilder
+     * @return a new response builder.
      */
     public static ResponseBuilder ok() {
-        ResponseBuilder b = status(Status.OK);
-        return b;
+        return status(Status.OK);
     }
 
     /**
@@ -556,8 +614,8 @@ public abstract class Response {
      * callers responsibility to wrap the actual entity with
      * {@link GenericEntity} if preservation of its generic type is required.
      *
-     * @param entity the representation entity data
-     * @return a new ResponseBuilder
+     * @param entity the representation entity data.
+     * @return a new response builder.
      */
     public static ResponseBuilder ok(Object entity) {
         ResponseBuilder b = ok();
@@ -570,15 +628,12 @@ public abstract class Response {
      * callers responsibility to wrap the actual entity with
      * {@link GenericEntity} if preservation of its generic type is required.
      *
-     * @param entity the representation entity data
-     * @param type the media type of the entity
-     * @return a new ResponseBuilder
+     * @param entity the representation entity data.
+     * @param type   the media type of the entity.
+     * @return a new response builder.
      */
     public static ResponseBuilder ok(Object entity, MediaType type) {
-        ResponseBuilder b = ok();
-        b.entity(entity);
-        b.type(type);
-        return b;
+        return ok().entity(entity).type(type);
     }
 
     /**
@@ -586,15 +641,12 @@ public abstract class Response {
      * callers responsibility to wrap the actual entity with
      * {@link GenericEntity} if preservation of its generic type is required.
      *
-     * @param entity the representation entity data
-     * @param type the media type of the entity
-     * @return a new ResponseBuilder
+     * @param entity the representation entity data.
+     * @param type   the media type of the entity.
+     * @return a new response builder.
      */
     public static ResponseBuilder ok(Object entity, String type) {
-        ResponseBuilder b = ok();
-        b.entity(entity);
-        b.type(type);
-        return b;
+        return ok().entity(entity).type(type);
     }
 
     /**
@@ -602,25 +654,21 @@ public abstract class Response {
      * callers responsibility to wrap the actual entity with
      * {@link GenericEntity} if preservation of its generic type is required.
      *
-     * @param entity the representation entity data
-     * @param variant representation metadata
-     * @return a new ResponseBuilder
+     * @param entity  the representation entity data.
+     * @param variant representation metadata.
+     * @return a new response builder.
      */
     public static ResponseBuilder ok(Object entity, Variant variant) {
-        ResponseBuilder b = ok();
-        b.entity(entity);
-        b.variant(variant);
-        return b;
+        return ok().entity(entity).variant(variant);
     }
 
     /**
      * Create a new ResponseBuilder with an server error status.
      *
-     * @return a new ResponseBuilder
+     * @return a new response builder.
      */
     public static ResponseBuilder serverError() {
-        ResponseBuilder b = status(Status.INTERNAL_SERVER_ERROR);
-        return b;
+        return status(Status.INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -628,47 +676,67 @@ public abstract class Response {
      * header using the supplied value.
      *
      * @param location the URI of the new resource. If a relative URI is
-     * supplied it will be converted into an absolute URI by resolving it
-     * relative to the request URI (see {@link UriInfo#getRequestUri}).
-     * @return a new ResponseBuilder
-     * @throws java.lang.IllegalArgumentException if location is null
+     *                 supplied it will be converted into an absolute URI by resolving it
+     *                 relative to the request URI (see {@link UriInfo#getRequestUri}).
+     * @return a new response builder.
+     * @throws java.lang.IllegalArgumentException
+     *          if location is {@code null}.
      */
     public static ResponseBuilder created(URI location) {
-        ResponseBuilder b = status(Status.CREATED).location(location);
-        return b;
+        return status(Status.CREATED).location(location);
+    }
+
+    /**
+     * Create a new ResponseBuilder with an ACCEPTED status.
+     *
+     * @return a new response builder.
+     * @since 2.0
+     */
+    public static ResponseBuilder accepted() {
+        return status(Status.ACCEPTED);
+    }
+
+    /**
+     * Create a new ResponseBuilder with an ACCEPTED status that contains
+     * a representation. It is the callers responsibility to wrap the actual entity with
+     * {@link GenericEntity} if preservation of its generic type is required.
+     *
+     * @param entity the representation entity data.
+     * @return a new response builder.
+     * @since 2.0
+     */
+    public static ResponseBuilder accepted(Object entity) {
+        return accepted().entity(entity);
     }
 
     /**
      * Create a new ResponseBuilder for an empty response.
      *
-     * @return a new ResponseBuilder
+     * @return a new response builder.
      */
     public static ResponseBuilder noContent() {
-        ResponseBuilder b = status(Status.NO_CONTENT);
-        return b;
+        return status(Status.NO_CONTENT);
     }
 
     /**
      * Create a new ResponseBuilder with a not-modified status.
      *
-     * @return a new ResponseBuilder
+     * @return a new response builder.
      */
     public static ResponseBuilder notModified() {
-        ResponseBuilder b = status(Status.NOT_MODIFIED);
-        return b;
+        return status(Status.NOT_MODIFIED);
     }
 
     /**
      * Create a new ResponseBuilder with a not-modified status.
      *
-     * @param tag a tag for the unmodified entity
-     * @return a new ResponseBuilder
-     * @throws java.lang.IllegalArgumentException if tag is null
+     * @param tag a tag for the unmodified entity.
+     * @return a new response builder.
+     * @throws java.lang.IllegalArgumentException
+     *          if tag is {@code null}.
      */
     public static ResponseBuilder notModified(EntityTag tag) {
-        ResponseBuilder b = notModified();
-        b.tag(tag);
-        return b;
+        return notModified().tag(tag);
     }
 
     /**
@@ -677,14 +745,14 @@ public abstract class Response {
      * for <code>notModified(new EntityTag(<i>value</i>))</code>.
      *
      * @param tag the string content of a strong entity tag. The JAX-RS
-     * runtime will quote the supplied value when creating the header.
-     * @return a new ResponseBuilder
-     * @throws java.lang.IllegalArgumentException if tag is null
+     *            runtime will quote the supplied value when creating the
+     *            header.
+     * @return a new response builder.
+     * @throws IllegalArgumentException if tag is {@code null}.
      */
+    @SuppressWarnings("HtmlTagCanBeJavadocTag")
     public static ResponseBuilder notModified(String tag) {
-        ResponseBuilder b = notModified();
-        b.tag(tag);
-        return b;
+        return notModified().tag(tag);
     }
 
     /**
@@ -692,42 +760,41 @@ public abstract class Response {
      * redirect-after-POST (aka POST/redirect/GET) pattern.
      *
      * @param location the redirection URI. If a relative URI is
-     * supplied it will be converted into an absolute URI by resolving it
-     * relative to the base URI of the application (see
-     * {@link UriInfo#getBaseUri}).
-     * @return a new ResponseBuilder
-     * @throws java.lang.IllegalArgumentException if location is null
+     *                 supplied it will be converted into an absolute URI by resolving it
+     *                 relative to the base URI of the application (see
+     *                 {@link UriInfo#getBaseUri}).
+     * @return a new response builder.
+     * @throws java.lang.IllegalArgumentException
+     *          if location is {@code null}.
      */
     public static ResponseBuilder seeOther(URI location) {
-        ResponseBuilder b = status(Status.SEE_OTHER).location(location);
-        return b;
+        return status(Status.SEE_OTHER).location(location);
     }
 
     /**
      * Create a new ResponseBuilder for a temporary redirection.
      *
      * @param location the redirection URI. If a relative URI is
-     * supplied it will be converted into an absolute URI by resolving it
-     * relative to the base URI of the application (see
-     * {@link UriInfo#getBaseUri}).
-     * @return a new ResponseBuilder
-     * @throws java.lang.IllegalArgumentException if location is null
+     *                 supplied it will be converted into an absolute URI by resolving it
+     *                 relative to the base URI of the application (see
+     *                 {@link UriInfo#getBaseUri}).
+     * @return a new response builder.
+     * @throws java.lang.IllegalArgumentException
+     *          if location is {@code null}.
      */
     public static ResponseBuilder temporaryRedirect(URI location) {
-        ResponseBuilder b = status(Status.TEMPORARY_REDIRECT).location(location);
-        return b;
+        return status(Status.TEMPORARY_REDIRECT).location(location);
     }
 
     /**
      * Create a new ResponseBuilder for a not acceptable response.
      *
      * @param variants list of variants that were available, a null value is
-     * equivalent to an empty list.
-     * @return a new ResponseBuilder
+     *                 equivalent to an empty list.
+     * @return a new response builder.
      */
     public static ResponseBuilder notAcceptable(List<Variant> variants) {
-        ResponseBuilder b = status(Status.NOT_ACCEPTABLE).variants(variants);
-        return b;
+        return status(Status.NOT_ACCEPTABLE).variants(variants);
     }
 
     /**
@@ -744,18 +811,17 @@ public abstract class Response {
      * }</pre>
      *
      * <p>Several methods have parameters of type URI, {@link UriBuilder} provides
-     * convenient methods to create such values as does <code>URI.create()</code>.</p>
+     * convenient methods to create such values as does {@code URI.create()}.</p>
      *
      * <p>Where multiple variants of the same method are provided, the type of
      * the supplied parameter is retained in the metadata of the built
      * {@code Response}.</p>
-     *
      */
     public static abstract class ResponseBuilder {
 
         /**
          * Protected constructor, use one of the static methods of
-         * <code>Response</code> to obtain an instance.
+         * {@code Response} to obtain an instance.
          */
         protected ResponseBuilder() {
         }
@@ -763,45 +829,49 @@ public abstract class Response {
         /**
          * Create a new builder instance.
          *
-         * @return a new ResponseBuilder
+         * @return a new response builder.
          */
         protected static ResponseBuilder newInstance() {
-            ResponseBuilder b = RuntimeDelegate.getInstance().createResponseBuilder();
-            return b;
+            return RuntimeDelegate.getInstance().createResponseBuilder();
         }
 
         /**
          * Create a Response instance from the current ResponseBuilder. The builder
          * is reset to a blank state equivalent to calling the ok method.
          *
-         * @return a Response instance
+         * @return a Response instance.
          */
         public abstract Response build();
 
         /**
+         * {@inheritDoc}
+         * <p>
          * Create a copy of the ResponseBuilder preserving its state.
+         * </p>
          *
-         * @return a copy of the ResponseBuilder
+         * @return a copy of the ResponseBuilder.
          */
         @Override
+        @SuppressWarnings("CloneDoesntDeclareCloneNotSupportedException")
         public abstract ResponseBuilder clone();
 
         /**
          * Set the status on the ResponseBuilder.
          *
-         * @param status the response status
-         * @return the updated ResponseBuilder
-         * @throws IllegalArgumentException if status is less than 100 or greater
-         * than 599.
+         * @param status the response status.
+         * @return the updated response builder.
+         * @throws IllegalArgumentException if status is less than {@code 100} or greater
+         *                                  than {@code 599}.
          */
         public abstract ResponseBuilder status(int status);
 
         /**
          * Set the status on the ResponseBuilder.
          *
-         * @param status the response status
-         * @return the updated ResponseBuilder
-         * @throws IllegalArgumentException if status is null
+         * @param status the response status.
+         * @return the updated response builder.
+         * @throws IllegalArgumentException if status is {@code null}.
+         * @since 1.1
          */
         public ResponseBuilder status(StatusType status) {
             if (status == null) {
@@ -813,9 +883,9 @@ public abstract class Response {
         /**
          * Set the status on the ResponseBuilder.
          *
-         * @param status the response status
-         * @return the updated ResponseBuilder
-         * @throws IllegalArgumentException if status is null
+         * @param status the response status.
+         * @return the updated response builder.
+         * @throws IllegalArgumentException if status is {@code null}.
          */
         public ResponseBuilder status(Status status) {
             return status((StatusType) status);
@@ -835,7 +905,6 @@ public abstract class Response {
          *
          * @param entity the request entity.
          * @return updated response builder instance.
-         *
          * @see #entity(java.lang.Object, java.lang.annotation.Annotation[])
          * @see #type(javax.ws.rs.core.MediaType)
          * @see #type(java.lang.String)
@@ -854,24 +923,22 @@ public abstract class Response {
          * A specific entity media type can be set using one of the {@code type(...)}
          * methods.
          *
-         * @param entity the request entity.
+         * @param entity      the request entity.
          * @param annotations annotations that will be passed to the {@link MessageBodyWriter}.
          * @return updated response builder instance.
-         *
          * @see #entity(java.lang.Object)
          * @see #type(javax.ws.rs.core.MediaType)
          * @see #type(java.lang.String)
+         * @since 2.0
          */
         public abstract ResponseBuilder entity(Object entity, Annotation[] annotations);
 
-        // Headers
-        // General headers
         /**
          * Set the list of allowed methods for the resource. Any duplicate method
          * names will be truncated to a single entry.
          *
          * @param methods the methods to be listed as allowed for the resource,
-         *     if {@code null} any existing allowed method list will be removed.
+         *                if {@code null} any existing allowed method list will be removed.
          * @return the updated response builder.
          * @since 2.0
          */
@@ -881,7 +948,7 @@ public abstract class Response {
          * Set the list of allowed methods for the resource.
          *
          * @param methods the methods to be listed as allowed for the resource,
-         *     if {@code null} any existing allowed method list will be removed.
+         *                if {@code null} any existing allowed method list will be removed.
          * @return the updated response builder.
          * @since 2.0
          */
@@ -891,9 +958,8 @@ public abstract class Response {
          * Set the cache control data of the message.
          *
          * @param cacheControl the cache control directives, if {@code null}
-         *     any existing cache control directives will be removed.
+         *                     any existing cache control directives will be removed.
          * @return the updated response builder.
-         * @since 2.0
          */
         public abstract ResponseBuilder cacheControl(CacheControl cacheControl);
 
@@ -901,8 +967,8 @@ public abstract class Response {
          * Set the message entity content encoding.
          *
          * @param encoding the content encoding of the message entity,
-         *     if {@code null} any existing value for content encoding will be
-         *     removed.
+         *                 if {@code null} any existing value for content encoding will be
+         *                 removed.
          * @return the updated response builder.
          * @since 2.0
          */
@@ -911,15 +977,14 @@ public abstract class Response {
         /**
          * Add an arbitrary header.
          *
-         * @param name the name of the header
+         * @param name  the name of the header
          * @param value the value of the header, the header will be serialized
-         *     using a {@link javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate} if
-         *     one is available via {@link javax.ws.rs.ext.RuntimeDelegate#createHeaderDelegate(java.lang.Class)}
-         *     for the class of {@code value} or using its {@code toString} method
-         *     if a header delegate is not available. If {@code value} is {@code null}
-         *     then all current headers of the same name will be removed.
+         *              using a {@link javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate} if
+         *              one is available via {@link javax.ws.rs.ext.RuntimeDelegate#createHeaderDelegate(java.lang.Class)}
+         *              for the class of {@code value} or using its {@code toString} method
+         *              if a header delegate is not available. If {@code value} is {@code null}
+         *              then all current headers of the same name will be removed.
          * @return the updated response builder.
-         * @since 2.0
          */
         public abstract ResponseBuilder header(String name, Object value);
 
@@ -927,19 +992,18 @@ public abstract class Response {
          * Replaces all existing headers with the newly supplied headers.
          *
          * @param headers new headers to be set, if {@code null} all existing
-         *     headers will be removed.
+         *                headers will be removed.
          * @return the updated response builder.
          * @since 2.0
          */
-        public abstract ResponseBuilder replaceAll(ResponseHeaders headers);
+        public abstract ResponseBuilder replaceAll(MultivaluedMap<String, Object> headers);
 
         /**
          * Set the message entity language.
          *
          * @param language the language of the message entity, if {@code null} any
-         *     existing value for language will be removed.
+         *                 existing value for language will be removed.
          * @return the updated response builder.
-         * @since 2.0
          */
         public abstract ResponseBuilder language(String language);
 
@@ -947,9 +1011,8 @@ public abstract class Response {
          * Set the message entity language.
          *
          * @param language the language of the message entity, if {@code null} any
-         *     existing value for type will be removed.
+         *                 existing value for type will be removed.
          * @return the updated response builder.
-         * @since 2.0
          */
         public abstract ResponseBuilder language(Locale language);
 
@@ -957,9 +1020,8 @@ public abstract class Response {
          * Set the message entity media type.
          *
          * @param type the media type of the message entity. If {@code null}, any
-         *     existing value for type will be removed
+         *             existing value for type will be removed.
          * @return the updated response builder.
-         * @since 2.0
          */
         public abstract ResponseBuilder type(MediaType type);
 
@@ -967,9 +1029,8 @@ public abstract class Response {
          * Set the message entity media type.
          *
          * @param type the media type of the message entity. If {@code null}, any
-         *     existing value for type will be removed
+         *             existing value for type will be removed.
          * @return the updated response builder.
-         * @since 2.0
          */
         public abstract ResponseBuilder type(String type);
 
@@ -980,25 +1041,22 @@ public abstract class Response {
          * and content encoding separately using the values of the variant properties.
          *
          * @param variant metadata of the message entity, a {@code null} value is
-         *     equivalent to a variant with all {@code null} properties.
+         *                equivalent to a variant with all {@code null} properties.
          * @return the updated response builder.
-         * @since 2.0
-         *
          * @see #encoding(java.lang.String)
          * @see #language(java.util.Locale)
          * @see #type(javax.ws.rs.core.MediaType)
+         * @since 2.0
          */
         public abstract ResponseBuilder variant(Variant variant);
 
-        // Response-specific headers
         /**
          * Set the content location.
          *
          * @param location the content location. Relative or absolute URIs
-         *     may be used for the value of content location. If {@code null} any
-         *     existing value for content location will be removed.
+         *                 may be used for the value of content location. If {@code null} any
+         *                 existing value for content location will be removed.
          * @return the updated response builder.
-         * @since 2.0
          */
         public abstract ResponseBuilder contentLocation(URI location);
 
@@ -1006,10 +1064,9 @@ public abstract class Response {
          * Add cookies to the response message.
          *
          * @param cookies new cookies that will accompany the response. A {@code null}
-         *     value will remove all cookies, including those added via the
-         *     {@link #header(java.lang.String, java.lang.Object)} method.
+         *                value will remove all cookies, including those added via the
+         *                {@link #header(java.lang.String, java.lang.Object)} method.
          * @return the updated response builder.
-         * @since 2.0
          */
         public abstract ResponseBuilder cookie(NewCookie... cookies);
 
@@ -1017,9 +1074,8 @@ public abstract class Response {
          * Set the response expiration date.
          *
          * @param expires the expiration date, if {@code null} removes any existing
-         *     expires value.
+         *                expires value.
          * @return the updated response builder.
-         * @since 2.0
          */
         public abstract ResponseBuilder expires(Date expires);
 
@@ -1027,9 +1083,8 @@ public abstract class Response {
          * Set the response entity last modification date.
          *
          * @param lastModified the last modified date, if {@code null} any existing
-         *     last modified value will be removed.
+         *                     last modified value will be removed.
          * @return the updated response builder.
-         * @since 2.0
          */
         public abstract ResponseBuilder lastModified(Date lastModified);
 
@@ -1037,11 +1092,10 @@ public abstract class Response {
          * Set the location.
          *
          * @param location the location. If a relative URI is supplied it will be
-         *     converted into an absolute URI by resolving it relative to the
-         *     base URI of the application (see {@link UriInfo#getBaseUri}).
-         *     If {@code null} any existing value for location will be removed.
+         *                 converted into an absolute URI by resolving it relative to the
+         *                 base URI of the application (see {@link UriInfo#getBaseUri}).
+         *                 If {@code null} any existing value for location will be removed.
          * @return the updated response builder.
-         * @since 2.0
          */
         public abstract ResponseBuilder location(URI location);
 
@@ -1049,9 +1103,8 @@ public abstract class Response {
          * Set a response entity tag.
          *
          * @param tag the entity tag, if {@code null} any existing entity tag
-         *     value will be removed.
+         *            value will be removed.
          * @return the updated response builder.
-         * @since 2.0
          */
         public abstract ResponseBuilder tag(EntityTag tag);
 
@@ -1061,18 +1114,18 @@ public abstract class Response {
          * This is a shortcut for <code>tag(new EntityTag(<i>value</i>))</code>.
          *
          * @param tag the string content of a strong entity tag. The JAX-RS
-         *     runtime will quote the supplied value when creating the header.
-         *     If {@code null} any existing entity tag value will be removed.
+         *            runtime will quote the supplied value when creating the header.
+         *            If {@code null} any existing entity tag value will be removed.
          * @return the updated response builder.
-         * @since 2.0
          */
+        @SuppressWarnings("HtmlTagCanBeJavadocTag")
         public abstract ResponseBuilder tag(String tag);
 
         /**
          * Add a Vary header that lists the available variants.
          *
          * @param variants a list of available representation variants, a {@code null}
-         *     value will remove an existing value for Vary header.
+         *                 value will remove an existing value for Vary header.
          * @return the updated response builder.
          * @since 2.0
          */
@@ -1082,9 +1135,8 @@ public abstract class Response {
          * Add a Vary header that lists the available variants.
          *
          * @param variants a list of available representation variants, a {@code null}
-         *     value will remove an existing value for Vary header.
+         *                 value will remove an existing value for Vary header.
          * @return the updated response builder.
-         * @since 2.0
          */
         public abstract ResponseBuilder variants(List<Variant> variants);
 
@@ -1092,7 +1144,7 @@ public abstract class Response {
          * Add one or more link headers.
          *
          * @param links links to be added to the message as headers, a {@code null}
-         *     value will remove any existing Link headers.
+         *              value will remove any existing Link headers.
          * @return the updated response builder.
          * @since 2.0
          */
@@ -1127,20 +1179,23 @@ public abstract class Response {
     public interface StatusType {
 
         /**
-         * Get the associated status code
-         * @return the status code
+         * Get the associated status code.
+         *
+         * @return the status code.
          */
         public int getStatusCode();
 
         /**
-         * Get the class of status code
-         * @return the class of status code
+         * Get the class of status code.
+         *
+         * @return the class of status code.
          */
         public Status.Family getFamily();
 
         /**
-         * Get the reason phrase
-         * @return the reason phrase
+         * Get the reason phrase.
+         *
+         * @return the reason phrase.
          */
         public String getReasonPhrase();
     }
@@ -1292,7 +1347,7 @@ public abstract class Response {
          *
          * @since 2.0
          */
-        REQUESTED_RANGE_NOT_SATIFIABLE(416, "Requested Range Not Satisfiable"),
+        REQUESTED_RANGE_NOT_SATISFIABLE(416, "Requested Range Not Satisfiable"),
         /**
          * 417 Expectation Failed, see {@link <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.18">HTTP/1.1 documentation</a>}.
          *
@@ -1333,7 +1388,7 @@ public abstract class Response {
         HTTP_VERSION_NOT_SUPPORTED(505, "HTTP Version Not Supported");
         private final int code;
         private final String reason;
-        private Family family;
+        private final Family family;
 
         /**
          * An enumeration representing the class of status code. Family is used
@@ -1341,7 +1396,30 @@ public abstract class Response {
          */
         public enum Family {
 
-            INFORMATIONAL, SUCCESSFUL, REDIRECTION, CLIENT_ERROR, SERVER_ERROR, OTHER;
+            /**
+             * {@code 1xx} HTTP status codes.
+             */
+            INFORMATIONAL,
+            /**
+             * {@code 2xx} HTTP status codes.
+             */
+            SUCCESSFUL,
+            /**
+             * {@code 3xx} HTTP status codes.
+             */
+            REDIRECTION,
+            /**
+             * {@code 4xx} HTTP status codes.
+             */
+            CLIENT_ERROR,
+            /**
+             * {@code 5xx} HTTP status codes.
+             */
+            SERVER_ERROR,
+            /**
+             * Other, unrecognized HTTP status codes.
+             */
+            OTHER;
 
             /**
              * Get the response status family for the status code.
@@ -1374,8 +1452,9 @@ public abstract class Response {
         }
 
         /**
-         * Get the class of status code
-         * @return the class of status code
+         * Get the class of status code.
+         *
+         * @return the class of status code.
          */
         @Override
         public Family getFamily() {
@@ -1383,8 +1462,9 @@ public abstract class Response {
         }
 
         /**
-         * Get the associated status code
-         * @return the status code
+         * Get the associated status code.
+         *
+         * @return the status code.
          */
         @Override
         public int getStatusCode() {
@@ -1392,8 +1472,9 @@ public abstract class Response {
         }
 
         /**
-         * Get the reason phrase
-         * @return the reason phrase
+         * Get the reason phrase.
+         *
+         * @return the reason phrase.
          */
         @Override
         public String getReasonPhrase() {
@@ -1401,8 +1482,9 @@ public abstract class Response {
         }
 
         /**
-         * Get the reason phrase
-         * @return the reason phrase
+         * Get the reason phrase.
+         *
+         * @return the reason phrase.
          */
         @Override
         public String toString() {
@@ -1410,9 +1492,10 @@ public abstract class Response {
         }
 
         /**
-         * Convert a numerical status code into the corresponding Status
-         * @param statusCode the numerical status code
-         * @return the matching Status or null is no matching Status is defined
+         * Convert a numerical status code into the corresponding Status.
+         *
+         * @param statusCode the numerical status code.
+         * @return the matching Status or null is no matching Status is defined.
          */
         public static Status fromStatusCode(final int statusCode) {
             for (Status s : Status.values()) {

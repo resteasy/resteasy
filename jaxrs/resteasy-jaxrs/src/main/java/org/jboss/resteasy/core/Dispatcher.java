@@ -6,7 +6,6 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Map;
 
@@ -19,14 +18,6 @@ public interface Dispatcher
    ResteasyProviderFactory getProviderFactory();
 
    Registry getRegistry();
-
-   void setMediaTypeMappings(Map<String, MediaType> mediaTypeMappings);
-
-   void setLanguageMappings(Map<String, String> languageMappings);
-
-   Map<String, MediaType> getMediaTypeMappings();
-
-   Map<String, String> getLanguageMappings();
 
    void invoke(HttpRequest in, HttpResponse response);
 

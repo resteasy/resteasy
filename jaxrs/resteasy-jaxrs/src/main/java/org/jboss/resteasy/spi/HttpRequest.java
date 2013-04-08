@@ -2,8 +2,9 @@ package org.jboss.resteasy.spi;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
+import java.net.URI;
+import java.util.Enumeration;
 
 /**
  * Bridge interface between the base Resteasy JAX-RS implementation and the actual HTTP transport (i.e. a servlet container)
@@ -25,19 +26,13 @@ public interface HttpRequest
     */
    void setInputStream(InputStream stream);
 
-   UriInfo getUri();
+   ResteasyUriInfo getUri();
 
    String getHttpMethod();
+   void setHttpMethod(String method);
 
-   /**
-    * Encoded preprocessed path with extension mappings and matrix parameters removed
-    *
-    * @return
-    */
-   String getPreprocessedPath();
-
-   public void setPreprocessedPath(String path);
-
+   void setRequestUri(URI requestUri) throws IllegalStateException;
+   void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException;
    /**
     * application/x-www-form-urlencoded parameters
     * <p/>
@@ -60,36 +55,11 @@ public interface HttpRequest
 
    void removeAttribute(String name);
 
+   public Enumeration<String> getAttributeNames();
 
-   /**
-    * Asynchronous HTTP support.  Mirrors Servlet 3.0 API
-    */
+
+   public ResteasyAsynchronousContext getAsyncContext();
+
    public boolean isInitial();
 
-   /**
-    * Asynchronous HTTP support.  Mirrors Servlet 3.0 API
-    */
-   public boolean isSuspended();
-
-   /**
-    * This method will create an asynchronous response and prepare the
-    * request to be issued asynchronously
-    *
-    * @return
-    */
-   public AsynchronousResponse createAsynchronousResponse(long suspendTimeout);
-
-   /**
-    * Returns the AsynchronousResponse created by createAsynchronousResponse
-    *
-    * @return
-    */
-   public AsynchronousResponse getAsynchronousResponse();
-
-   /**
-    * Callback by the initial calling thread.  This callback will probably do nothing in an asynchronous environment
-    * but will be used to simulate AsynchronousResponse in vanilla Servlet containers that do not support
-    * asychronous HTTP.
-    */
-   public void initialRequestThreadFinished();
 }

@@ -1,15 +1,15 @@
 package org.jboss.resteasy.spring.test.contextrefresh;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Enumeration;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.util.Enumeration;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * RESTEASY-632.

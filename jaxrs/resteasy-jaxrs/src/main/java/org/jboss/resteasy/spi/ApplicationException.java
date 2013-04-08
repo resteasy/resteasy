@@ -1,7 +1,7 @@
 package org.jboss.resteasy.spi;
 
 /**
- * This exception is thrown internally by Resteasy runtime.  Any exception thrown by jaxrs resource method code will be caught
+ * This exception is thrown internally by Resteasy runtime.  Any server exception thrown by jaxrs resource method code will be caught
  * and wrapped by this exception.  If you want to catch all exceptions thrown by jaxrs resource methods, write an exception
  * mapper for ApplicationException.
  *

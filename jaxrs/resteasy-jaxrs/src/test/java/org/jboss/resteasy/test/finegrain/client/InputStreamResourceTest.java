@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.finegrain.client;
 
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.EntityTypeFactory;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -16,13 +15,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 /**
  * Simple smoke test
@@ -71,17 +69,6 @@ public class InputStreamResourceTest
       public void post(InputStream is) throws IOException
       {
          result = new String(ReadFromStream.readFromStream(1024, is));
-      }
-
-   }
-
-   public static class StringEntityTypeFactory implements EntityTypeFactory
-   {
-
-      public Class getEntityType(int status,
-                                 MultivaluedMap<String, Object> metadata)
-      {
-         return String.class;
       }
 
    }

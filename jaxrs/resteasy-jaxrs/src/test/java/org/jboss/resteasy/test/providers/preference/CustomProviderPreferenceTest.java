@@ -1,12 +1,12 @@
 package org.jboss.resteasy.test.providers.preference;
 
-import static junit.framework.Assert.assertEquals;
-
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.executors.InMemoryClientExecutor;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import static junit.framework.Assert.assertEquals;
 
 /**
  * 

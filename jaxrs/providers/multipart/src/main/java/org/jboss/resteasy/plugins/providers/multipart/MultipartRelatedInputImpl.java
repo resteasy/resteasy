@@ -1,16 +1,15 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
+import org.apache.james.mime4j.field.ContentTypeField;
+import org.apache.james.mime4j.field.FieldName;
+import org.apache.james.mime4j.message.BodyPart;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.Providers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Providers;
-
-import org.apache.james.mime4j.field.ContentTypeField;
-import org.apache.james.mime4j.field.FieldName;
-import org.apache.james.mime4j.message.BodyPart;
 
 /**
  * Implements {@link MultipartRelatedInput} by extending

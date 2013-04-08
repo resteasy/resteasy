@@ -1,6 +1,3 @@
-/*
- * JBoss, the OpenSource J2EE webOS Distributable under LGPL license. See terms of license at gnu.org.
- */
 package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
@@ -10,6 +7,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -58,7 +56,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
 {
 
    protected static final String OBJECT_FACTORY_NAME = ".ObjectFactory";
-
+   
    /**
     *
     */
@@ -80,8 +78,16 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
    {
       try
       {
-         JAXBContext jaxb = findJAXBContext(type, annotations, mediaType, true);
+         ContextResolver<JAXBContextFinder> resolver = providers.getContextResolver(JAXBContextFinder.class, mediaType);
+         JAXBContextFinder finder = resolver.getContext(type);
+         if (finder == null)
+         {
+            if (true) throw new JAXBUnmarshalException("Could not find JAXBContextFinder for media type: " + mediaType);
+            else throw new JAXBMarshalException("Could not find JAXBContextFinder for media type: " + mediaType);
+         }
+         JAXBContext jaxb = finder.findCacheXmlTypeContext(mediaType, annotations, type);
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
+         unmarshaller = decorateUnmarshaller(type, annotations, mediaType, unmarshaller);
          if (suppressExpandEntityExpansion())
          {
             unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);

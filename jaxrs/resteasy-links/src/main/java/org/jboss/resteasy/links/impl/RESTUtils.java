@@ -1,15 +1,19 @@
 package org.jboss.resteasy.links.impl;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import org.jboss.resteasy.annotations.Form;
+import org.jboss.resteasy.core.ResourceInvoker;
+import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.ResourceMethodRegistry;
+import org.jboss.resteasy.links.ELProvider;
+import org.jboss.resteasy.links.LinkELProvider;
+import org.jboss.resteasy.links.LinkResource;
+import org.jboss.resteasy.links.LinkResources;
+import org.jboss.resteasy.links.RESTServiceDiscovery;
+import org.jboss.resteasy.links.ResourceFacade;
+import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.FindAnnotation;
 
 import javax.annotation.security.RolesAllowed;
 import javax.el.ELContext;
@@ -23,21 +27,16 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-
-import org.jboss.resteasy.annotations.Form;
-import org.jboss.resteasy.core.ResourceInvoker;
-import org.jboss.resteasy.core.ResourceMethod;
-import org.jboss.resteasy.core.ResourceMethodRegistry;
-import org.jboss.resteasy.links.ELProvider;
-import org.jboss.resteasy.links.LinkELProvider;
-import org.jboss.resteasy.links.LinkResource;
-import org.jboss.resteasy.links.LinkResources;
-import org.jboss.resteasy.links.RESTServiceDiscovery;
-import org.jboss.resteasy.links.ResourceFacade;
-import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.specimpl.UriBuilderImpl;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.FindAnnotation;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class RESTUtils {
 
@@ -199,7 +198,7 @@ public class RESTUtils {
 		if(m.isAnnotationPresent(Path.class))
 			uriBuilder.path(m);
 		URI uri;
-		List<String> paramNames = ((UriBuilderImpl)uriBuilder).getPathParamNamesInDeclarationOrder();
+		List<String> paramNames = ((ResteasyUriBuilder)uriBuilder).getPathParamNamesInDeclarationOrder();
 		if(paramNames.isEmpty())
 			uri = uriBuilder.build();
 		else if(pathParameters.size() >= paramNames.size())
@@ -252,7 +251,7 @@ public class RESTUtils {
 			return uriBuilder.build(values);
 		} 
 		// do we need any path parameters?
-		List<String> paramNames = ((UriBuilderImpl)uriBuilder).getPathParamNamesInDeclarationOrder();
+		List<String> paramNames = ((ResteasyUriBuilder)uriBuilder).getPathParamNamesInDeclarationOrder();
 		if(paramNames.isEmpty())
 			return uriBuilder.build();
 		// try to find the IDs

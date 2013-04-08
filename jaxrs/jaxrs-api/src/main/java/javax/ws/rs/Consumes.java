@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,6 +39,7 @@
  */
 package javax.ws.rs;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -63,13 +64,18 @@ import java.lang.annotation.Target;
 @Inherited
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface Consumes {
 
     /**
      * A list of media types. Each entry may specify a single type or consist
-     * of a comma separated list of types. E.g. {"image/jpeg,image/gif",
-     * "image/png"}. Use of the comma-separated form allows definition of a
-     * common string constant for use on multiple targets.
+     * of a comma separated list of types, with any leading or trailing white-spaces
+     * in a single type entry being ignored. For example:
+     * <pre>
+     *  {"image/jpeg, image/gif ", " image/png"}
+     * </pre>
+     * Use of the comma-separated form allows definition of a common string constant
+     * for use on multiple targets.
      */
     String[] value() default "*/*";
 }

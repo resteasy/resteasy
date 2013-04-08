@@ -1,12 +1,5 @@
 package org.jboss.resteasy.links.test.el;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.jboss.resteasy.client.ProxyFactory;
@@ -26,6 +19,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 @RunWith(Parameterized.class)
 public class TestLinksNoPackage

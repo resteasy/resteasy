@@ -1,9 +1,13 @@
 package org.jboss.resteasy.client.core;
 
+import org.jboss.resteasy.core.interception.ReaderInterceptorRegistry;
+import org.jboss.resteasy.core.interception.WriterInterceptorRegistry;
 import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 
+import javax.ws.rs.ext.ReaderInterceptor;
+import javax.ws.rs.ext.WriterInterceptor;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,14 +17,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 @SuppressWarnings("unchecked")
-public class ClientInterceptorRepositoryImpl implements
-        ClientInterceptorRepository
+public class ClientInterceptorRepositoryImpl implements ClientInterceptorRepository
 {
 
-   public static enum InterceptorType
+   private static enum InterceptorType
    {
-      MessageBodyReader(MessageBodyReaderInterceptor.class), MessageBodyWriter(
-           MessageBodyWriterInterceptor.class), ClientExecution(
+      MessageBodyReader(ReaderInterceptor.class),
+      MessageBodyWriter(
+           WriterInterceptor.class),
+      ClientExecution(
            ClientExecutionInterceptor.class);
 
       Class<?> clazz;
@@ -45,17 +50,17 @@ public class ClientInterceptorRepositoryImpl implements
 
    private Map<InterceptorType, LinkedList<?>> interceptorLists = new HashMap<InterceptorType, LinkedList<?>>();
 
-   public MessageBodyReaderInterceptor[] getReaderInterceptors()
+   protected ReaderInterceptor[] getReaderInterceptors()
    {
-      return getArray(MessageBodyReaderInterceptor.class);
+      return getArray(ReaderInterceptor.class);
    }
 
-   public MessageBodyWriterInterceptor[] getWriterInterceptors()
+   protected WriterInterceptor[] getWriterInterceptors()
    {
-      return getArray(MessageBodyWriterInterceptor.class);
+      return getArray(WriterInterceptor.class);
    }
 
-   public ClientExecutionInterceptor[] getExecutionInterceptors()
+   protected ClientExecutionInterceptor[] getExecutionInterceptors()
    {
       return getArray(ClientExecutionInterceptor.class);
    }
@@ -67,48 +72,36 @@ public class ClientInterceptorRepositoryImpl implements
               interceptors.size()));
    }
 
-   public void setReaderInterceptors(
-           MessageBodyReaderInterceptor[] readerInterceptors)
+   protected void setReaderInterceptors(
+           ReaderInterceptor[] readerInterceptors)
    {
       setData(InterceptorType.MessageBodyReader, readerInterceptors);
    }
 
-   public void setWriterInterceptors(
-           MessageBodyWriterInterceptor[] writerInterceptors)
+   protected void setWriterInterceptors(
+           WriterInterceptor[] writerInterceptors)
    {
       setData(InterceptorType.MessageBodyWriter, writerInterceptors);
    }
 
-   public void setExecutionInterceptors(
+   protected void setExecutionInterceptors(
            ClientExecutionInterceptor[] executionInterceptors)
    {
       setData(InterceptorType.ClientExecution, executionInterceptors);
    }
 
-   public void setReaderInterceptors(
-           Collection<MessageBodyReaderInterceptor> readerInterceptorList)
-   {
-      setData(InterceptorType.MessageBodyReader, readerInterceptorList);
-   }
-
-   public void setWriterInterceptors(
-           Collection<MessageBodyWriterInterceptor> writerInterceptorList)
-   {
-      setData(InterceptorType.MessageBodyWriter, writerInterceptorList);
-   }
-
-   public void setExecutionInterceptors(
+   protected void setExecutionInterceptors(
            Collection<ClientExecutionInterceptor> executionInterceptorList)
    {
       setData(InterceptorType.ClientExecution, executionInterceptorList);
    }
 
-   public LinkedList<MessageBodyReaderInterceptor> getReaderInterceptorList()
+   public LinkedList<ReaderInterceptor> getReaderInterceptorList()
    {
       return getInterceptors(InterceptorType.MessageBodyReader);
    }
 
-   public LinkedList<MessageBodyWriterInterceptor> getWriterInterceptorList()
+   public LinkedList<WriterInterceptor> getWriterInterceptorList()
    {
       return getInterceptors(InterceptorType.MessageBodyWriter);
    }
@@ -118,7 +111,7 @@ public class ClientInterceptorRepositoryImpl implements
       return getInterceptors(InterceptorType.ClientExecution);
    }
 
-   public <T> LinkedList<T> getInterceptors(Class<T> clazz)
+   protected <T> LinkedList<T> getInterceptors(Class<T> clazz)
    {
       InterceptorType interceptorType = InterceptorType
               .getInterceptorTypeFor(clazz);
@@ -187,13 +180,13 @@ public class ClientInterceptorRepositoryImpl implements
       if (interceptor instanceof MessageBodyReaderInterceptor)
       {
          getReaderInterceptorList().add(
-                 (MessageBodyReaderInterceptor) interceptor);
+                 new ReaderInterceptorRegistry.ReaderInterceptorFacade((MessageBodyReaderInterceptor)interceptor));
          registered = true;
       }
       if (interceptor instanceof MessageBodyWriterInterceptor)
       {
          getWriterInterceptorList().add(
-                 (MessageBodyWriterInterceptor) interceptor);
+                 new WriterInterceptorRegistry.WriterInterceptorFacade((MessageBodyWriterInterceptor) interceptor));
          registered = true;
       }
 

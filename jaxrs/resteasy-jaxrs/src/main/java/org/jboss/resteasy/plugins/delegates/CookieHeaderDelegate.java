@@ -23,6 +23,7 @@ public class CookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate
          String cookieValue = null;
 
          String parts[] = value.split("[;,]");
+
          for (String part : parts)
          {
             String nv[] = part.split("=", 2);
@@ -35,15 +36,15 @@ public class CookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate
                cookieName = name;
                cookieValue = value1;
             }
-            else if (name.startsWith("$Version"))
+            else if (name.equalsIgnoreCase("$Version"))
             {
                version = Integer.parseInt(value1);
             }
-            else if (name.startsWith("$Path"))
+            else if (name.equalsIgnoreCase("$Path"))
             {
                path = value1;
             }
-            else if (name.startsWith("$Domain"))
+            else if (name.equalsIgnoreCase("$Domain"))
             {
                domain = value1;
             }

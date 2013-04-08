@@ -7,16 +7,6 @@
  ******************************************************************************/
 package se.unlogic.standardutils.populators.annotated;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
 import se.unlogic.standardutils.annotations.NoAnnotatedFieldsFoundException;
 import se.unlogic.standardutils.annotations.UnsupportedFieldTypeException;
 import se.unlogic.standardutils.dao.BeanResultSetPopulator;
@@ -27,11 +17,21 @@ import se.unlogic.standardutils.dao.annotations.ManyToMany;
 import se.unlogic.standardutils.dao.annotations.ManyToOne;
 import se.unlogic.standardutils.dao.annotations.OneToMany;
 import se.unlogic.standardutils.dao.annotations.OneToOne;
-import se.unlogic.standardutils.populators.EnumPopulator;
 import se.unlogic.standardutils.populators.BeanStringPopulator;
 import se.unlogic.standardutils.populators.BeanStringPopulatorRegistery;
+import se.unlogic.standardutils.populators.EnumPopulator;
 import se.unlogic.standardutils.reflection.ReflectionUtils;
 import se.unlogic.standardutils.string.StringUtils;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 
 public class AnnotatedResultSetPopulator<T> implements BeanResultSetPopulator<T>{

@@ -1,9 +1,3 @@
-/*
- * JBoss, the OpenSource J2EE webOS
- * 
- * Distributable under LGPL license.
- * See terms of license at gnu.org.
- */
 package org.jboss.resteasy.annotations;
 
 import java.lang.annotation.Documented;
@@ -32,5 +26,11 @@ import java.lang.annotation.Target;
 @Target({ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD})
 public @interface Form
 {
-
+   /**
+    * This is a form parameter prefix you want applied to any @FormParam variables in the object
+    * See documentation for more details.
+    *
+    * @return
+    */
+   String prefix() default "";
 }

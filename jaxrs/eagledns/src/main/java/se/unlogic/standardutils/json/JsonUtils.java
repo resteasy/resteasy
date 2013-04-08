@@ -7,9 +7,9 @@
  ******************************************************************************/
 package se.unlogic.standardutils.json;
 
-import java.util.Collection;
-
 import se.unlogic.standardutils.validation.ValidationError;
+
+import java.util.Collection;
 
 public class JsonUtils {
 	

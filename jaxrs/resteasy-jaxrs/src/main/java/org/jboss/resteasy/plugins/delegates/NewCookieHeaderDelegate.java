@@ -21,6 +21,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate
       String path = null;
       boolean secure = false;
       int version = NewCookie.DEFAULT_VERSION;
+      boolean httpOnly = false;
 
 
       String parts[] = newCookie.split("[;,]");
@@ -33,18 +34,20 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate
          if (value.startsWith("\"") && value.endsWith("\"") && value.length() > 1)
             value = value.substring(1, value.length() - 1);
 
-         if (name.startsWith("Comment"))
+         if (name.equalsIgnoreCase("Comment"))
             comment = value;
-         else if (name.startsWith("Domain"))
+         else if (name.equalsIgnoreCase("Domain"))
             domain = value;
-         else if (name.startsWith("Max-Age"))
+         else if (name.equalsIgnoreCase("Max-Age"))
             maxAge = Integer.parseInt(value);
-         else if (name.startsWith("Path"))
+         else if (name.equalsIgnoreCase("Path"))
             path = value;
-         else if (name.startsWith("Secure"))
+         else if (name.equalsIgnoreCase("Secure"))
             secure = true;
-         else if (name.startsWith("Version"))
+         else if (name.equalsIgnoreCase("Version"))
             version = Integer.parseInt(value);
+         else if (name.equalsIgnoreCase("HttpOnly"))
+            httpOnly = true;
          else
          {
             cookieName = name;
@@ -52,7 +55,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate
          }
       }
 
-      return new NewCookie(cookieName, cookieValue, path, domain, version, comment, maxAge, secure);
+     return new NewCookie(cookieName, cookieValue, path, domain, version, comment, maxAge, null, secure, httpOnly);
 
    }
 
@@ -102,6 +105,8 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate
       }
       if (cookie.isSecure())
          b.append(";Secure");
+      if (cookie.isHttpOnly())
+         b.append(";HttpOnly");
       return b.toString();
    }
 }

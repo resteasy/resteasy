@@ -1,15 +1,6 @@
 package org.jboss.resteasy.test.providers.multipart;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Provider;
-
 import junit.framework.Assert;
-
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
@@ -25,12 +16,20 @@ import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.Provider;
+
 /**
  * @author Attila Kiraly
  */
 public class InputPartDefaultContentTypeEncodingOverwriteTest extends
 		BaseResourceTest {
-	protected static final String TEXT_PLAIN_WITH_CHARSET_UTF_8 = "text/plain; charset=UTF-8";
+	protected static final String TEXT_PLAIN_WITH_CHARSET_UTF_8 = "text/plain; charset=utf-8";
 
 	@Path("/mime")
 	public static class MyService {
