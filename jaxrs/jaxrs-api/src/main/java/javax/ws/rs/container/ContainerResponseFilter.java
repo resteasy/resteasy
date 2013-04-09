@@ -78,8 +78,8 @@ public interface ContainerResponseFilter {
      * (either by a {@link ContainerRequestFilter request filter} or by a
      * matched resource method.
      * <p>
-     * Filters in the filter chain are ordered according to their priority
-     * (see {@link javax.annotation.Priority}).
+     * Filters in the filter chain are ordered according to their {@code javax.annotation.Priority}
+     * class-level annotation value.
      * </p>
      *
      * @param requestContext  request context.

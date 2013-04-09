@@ -11,6 +11,7 @@ import org.jboss.resteasy.client.core.ClientErrorInterceptor;
 import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.core.interception.ClientResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.ContainerRequestFilterRegistry;
 import org.jboss.resteasy.core.interception.ContainerResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
@@ -172,7 +173,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected ContainerResponseFilterRegistry containerResponseFilterRegistry;
 
    protected JaxrsInterceptorRegistry<ClientRequestFilter> clientRequestFilters;
-   protected JaxrsInterceptorRegistry<ClientResponseFilter> clientResponseFilters;
+   protected ClientResponseFilterRegistry clientResponseFilters;
    protected ReaderInterceptorRegistry clientReaderInterceptorRegistry;
    protected WriterInterceptorRegistry clientWriterInterceptorRegistry;
    protected InterceptorRegistry<ClientExecutionInterceptor> clientExecutionInterceptorRegistry;
@@ -249,7 +250,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       containerResponseFilterRegistry = new ContainerResponseFilterRegistry(this, precedence);
 
       clientRequestFilters = new JaxrsInterceptorRegistry<ClientRequestFilter>(this, ClientRequestFilter.class);
-      clientResponseFilters = new JaxrsInterceptorRegistry<ClientResponseFilter>(this, ClientResponseFilter.class);
+      clientResponseFilters = new ClientResponseFilterRegistry(this);
       clientReaderInterceptorRegistry = new ReaderInterceptorRegistry(this, precedence);
       clientWriterInterceptorRegistry = new WriterInterceptorRegistry(this, precedence);
       clientExecutionInterceptorRegistry = new InterceptorRegistry<ClientExecutionInterceptor>(ClientExecutionInterceptor.class, this);
@@ -645,7 +646,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return clientRequestFilters;
    }
 
-   public JaxrsInterceptorRegistry<ClientResponseFilter> getClientResponseFilters()
+   public ClientResponseFilterRegistry getClientResponseFilters()
    {
       if (clientResponseFilters == null && parent != null) return parent.getClientResponseFilters();
       return clientResponseFilters;

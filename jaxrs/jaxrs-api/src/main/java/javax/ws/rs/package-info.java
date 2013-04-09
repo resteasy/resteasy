@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,26 +39,26 @@
  */
 /**
  * High-level interfaces and annotations used to create RESTful service
- * resources. E.g.:
- <pre>
- &#064;Path("widgets/{widgetid}")
- &#064;Consumes("application/widgets+xml")
- &#064;Produces("application/widgets+xml")
- public class WidgetResource {
-
- &#064;GET
- public String getWidget(&#064;PathParam("widgetid") String id) {
- return getWidgetAsXml(id);
- }
-
- &#064;PUT
- public void updateWidget(&#064;PathParam("widgetid") String id,
- Source update) {
- updateWidgetFromXml(id, update);
- }
-
- ...
- }
- </pre>
+ * resources. For example:
+ * <pre>
+ * &#064;Path("widgets/{widgetid}")
+ * &#064;Consumes("application/widgets+xml")
+ * &#064;Produces("application/widgets+xml")
+ * public class WidgetResource {
+ *
+ *     &#064;GET
+ *     public String getWidget(&#064;PathParam("widgetid") String id) {
+ *         return getWidgetAsXml(id);
+ *     }
+ *
+ *     &#064;PUT
+ *     public void updateWidget(&#064;PathParam("widgetid") String id,
+ *                              Source update) {
+ *         updateWidgetFromXml(id, update);
+ *     }
+ *
+ *     ...
+ * }
+ * </pre>
  */
 package javax.ws.rs;

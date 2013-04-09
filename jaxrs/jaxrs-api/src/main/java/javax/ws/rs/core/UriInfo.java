@@ -383,21 +383,18 @@ public interface UriInfo {
      * </ol>
      * </p>
      *
-     * <p>Examples:
+     * <p>Examples (for base URI {@code http://host:port/app/root/}):
      * <br/>
      * <br/><b>Request URI:</b> <tt>http://host:port/app/root/a/b/c</tt>
-     * <br/><b>Supplied URI:</b> <tt>a/d/e</tt>
-     * <br/><b>Returned URI:</b> <tt>../../d/e</tt>
-     * <br/>
-     * <br/><b>Request URI:</b> <tt>http://host:port/app/root/a/b/c</tt>
-     * <br/><b>Supplied URI:</b> <tt>http://host:port/app/root/a/d/e</tt>
-     * <br/><b>Returned URI:</b> <tt>../../d/e</tt>
+     * <br/><b>Supplied URI:</b> <tt>a/b/c/d/e</tt>
+     * <br/><b>Returned URI:</b> <tt>d/e</tt>
      * <br/>
      * <br/><b>Request URI:</b> <tt>http://host1:port1/app/root/a/b/c</tt>
-     * <br/><b>Supplied URI:</b> <tt>http://host2:port2/app/root/a/d/e</tt>
-     * <br/><b>Returned URI:</b> <tt>http://host2:port2/app/root/a/d/e</tt> <br/><p>
+     * <br/><b>Supplied URI:</b> <tt>http://host2:port2/app2/root2/a/d/e</tt>
+     * <br/><b>Returned URI:</b> <tt>http://host2:port2/app2/root2/a/d/e</tt>
+     * </p>
      *
-     * <p>In the last example, the supplied URI is returned given that it is absolute
+     * <p>In the second example, the supplied URI is returned given that it is absolute
      * and there is no common prefix between it and the request URI.</p>
      *
      * @param uri URI to relativize against the request URI.

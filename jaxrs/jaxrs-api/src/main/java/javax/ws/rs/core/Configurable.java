@@ -222,8 +222,8 @@ public interface Configurable<C extends Configurable> {
      * <p>
      * This registration method provides the same functionality as {@link #register(Class)}
      * except that any priority specified on the registered JAX-RS component class via
-     * {@link javax.annotation.Priority &#64;Priority} annotation is overridden
-     * with the supplied {@code priority} value.
+     * {@code javax.annotation.Priority} annotation is overridden with the supplied
+     * {@code priority} value.
      * </p>
      * <p>
      * Note that in case the priority is not applicable to a particular
@@ -272,8 +272,8 @@ public interface Configurable<C extends Configurable> {
      * and used in the scope of this configurable context.
      * <p>
      * This registration method provides same functionality as {@link #register(Class, Class[])}
-     * except that any priority specified on the registered JAX-RS component class using
-     * {@link javax.annotation.Priority &#64;Priority} annotation is overridden
+     * except that any priority specified on the registered JAX-RS component class via
+     * {@code javax.annotation.Priority} annotation is overridden
      * for each extension provider contract type separately with an integer priority value
      * specified as a value in the supplied map of [contract type, priority] pairs.
      * </p>
@@ -334,8 +334,8 @@ public interface Configurable<C extends Configurable> {
      * <p>
      * This registration method provides the same functionality as {@link #register(Object)}
      * except that any priority specified on the registered JAX-RS component class via
-     * {@link javax.annotation.Priority &#64;Priority} annotation is overridden
-     * with the supplied {@code priority} value.
+     * {@code javax.annotation.Priority} annotation is overridden with the supplied
+     * {@code priority} value.
      * </p>
      * <p>
      * Note that in case the priority is not applicable to a particular
@@ -384,8 +384,8 @@ public interface Configurable<C extends Configurable> {
      * and used in the scope of this configurable context.
      * <p>
      * This registration method provides same functionality as {@link #register(Object, Class[])}
-     * except that any priority specified on the registered JAX-RS component class using
-     * {@link javax.annotation.Priority &#64;Priority} annotation is overridden
+     * except that any priority specified on the registered JAX-RS component class via
+     * {@code javax.annotation.Priority} annotation is overridden
      * for each extension provider contract type separately with an integer priority value
      * specified as a value in the supplied map of [contract type, priority] pairs.
      * </p>

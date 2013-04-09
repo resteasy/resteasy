@@ -10,6 +10,8 @@ import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import java.io.IOException;
 import java.lang.reflect.AccessibleObject;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -55,6 +57,13 @@ public class ContainerResponseFilterRegistry extends JaxrsInterceptorRegistry<Co
          }
 
       }
+   }
+
+   @Override
+   protected void sort(List<Match> matches)
+   {
+      Collections.sort(matches, new DescendingPrecedenceComparator());
+
    }
 
    public ContainerResponseFilterRegistry clone(ResteasyProviderFactory factory)

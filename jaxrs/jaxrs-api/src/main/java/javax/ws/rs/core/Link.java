@@ -407,6 +407,9 @@ public abstract class Link {
         /**
          * Finish building this link using the supplied values as URI parameters.
          *
+         * The state of the builder is unaffected; this method may be called
+         * multiple times on the same builder instance.
+         *
          * @param values parameters used to build underlying URI.
          * @return newly built link.
          * @throws IllegalArgumentException if there are any URI template parameters
@@ -417,12 +420,15 @@ public abstract class Link {
         public Link build(Object... values);
 
         /**
-         * <p>Finish building this link using the supplied values as URI parameters
-         * and relativize the result with respect to the supplied URI. If the underlying
-         * link is already relative or if it is absolute but does not share a prefix with
-         * the supplied URI, this method is equivalent to calling
+         * Finish building this link using the supplied values as URI parameters
+         * and relativize the result with respect to the supplied URI.
+         *
+         * If the underlying link is already relative or if it is absolute but does
+         * not share a prefix with the supplied URI, this method is equivalent to calling
          * {@link Link.Builder#build(java.lang.Object[])}. Note that a base URI can
-         * be set on a relative link using {@link Link.Builder#baseUri(java.net.URI)}.</p>
+         * be set on a relative link using {@link Link.Builder#baseUri(java.net.URI)}.
+         * The state of the builder is unaffected; this method may be called
+         * multiple times on the same builder instance.
          *
          * @param uri    URI used for relativization.
          * @param values parameters used to build underlying URI.
