@@ -2,6 +2,7 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.client.core.ClientErrorInterceptor;
 import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
+import org.jboss.resteasy.core.interception.ClientResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.ContainerRequestFilterRegistry;
 import org.jboss.resteasy.core.interception.ContainerResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
@@ -479,7 +480,7 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public JaxrsInterceptorRegistry<ClientResponseFilter> getClientResponseFilters()
+   public ClientResponseFilterRegistry getClientResponseFilters()
    {
       return getDelegate().getClientResponseFilters();
    }

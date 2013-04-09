@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -99,6 +99,15 @@ public interface MessageBodyReader<T> {
 
     /**
      * Read a type from the {@link InputStream}.
+     * <p>
+     * In case the entity input stream is empty, the reader is expected to either return a
+     * Java representation of a zero-length entity or throw a {@link javax.ws.rs.core.NoContentException}
+     * in case no zero-length entity representation is defined for the supported Java type.
+     * A {@code NoContentException}, if thrown by a message body reader while reading a server
+     * request entity, is automatically translated by JAX-RS server runtime into a {@link javax.ws.rs.BadRequestException}
+     * wrapping the original {@code NoContentException} and rethrown for a standard processing by
+     * the registered {@link javax.ws.rs.ext.ExceptionMapper exception mappers}.
+     * </p>
      *
      * @param type         the type that is to be read from the entity stream.
      * @param genericType  the type of instance to be produced. E.g. if the
@@ -116,16 +125,20 @@ public interface MessageBodyReader<T> {
      *                     caller is responsible for ensuring that the input stream ends when the
      *                     entity has been consumed. The implementation should not close the input
      *                     stream.
-     * @return the type that was read from the stream.
-     * @throws java.io.IOException if an IO error arises
+     * @return the type that was read from the stream. In case the entity input stream is empty, the reader
+     *         is expected to either return an instance representing a zero-length entity or throw
+     *         a {@link javax.ws.rs.core.NoContentException} in case no zero-length entity representation is
+     *         defined for the supported Java type.
+     * @throws java.io.IOException if an IO error arises. In case the entity input stream is empty
+     *                             and the reader is not able to produce a Java representation for
+     *                             a zero-length entity, {@code NoContentException} is expected to
+     *                             be thrown.
      * @throws javax.ws.rs.WebApplicationException
-     *                             if a specific
-     *                             HTTP error response needs to be produced. Only effective if thrown
-     *                             prior to the response being committed.
+     *                             if a specific HTTP error response needs to be produced.
+     *                             Only effective if thrown prior to the response being committed.
      */
     public T readFrom(Class<T> type, Type genericType,
                       Annotation[] annotations, MediaType mediaType,
                       MultivaluedMap<String, String> httpHeaders,
-                      InputStream entityStream)
-            throws java.io.IOException, javax.ws.rs.WebApplicationException;
+                      InputStream entityStream) throws java.io.IOException, javax.ws.rs.WebApplicationException;
 }

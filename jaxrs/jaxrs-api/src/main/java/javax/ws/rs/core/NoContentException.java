@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,33 +37,54 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package javax.ws.rs.client;
+package javax.ws.rs.core;
 
 import java.io.IOException;
 
 /**
- * An extension interface implemented by client request filters.
+ * An I/O exception thrown by {@link javax.ws.rs.ext.MessageBodyReader} implementations
+ * when reading a zero-length message content to indicate that the message body reader
+ * is not able to produce an instance representing an zero-length message content.
+ * <p>
+ * This exception, when thrown while reading a server request entity, is automatically
+ * translated by JAX-RS server runtime into a {@link javax.ws.rs.BadRequestException}
+ * wrapping the original {@code NoContentException} and rethrown for a standard processing by
+ * the registered {@link javax.ws.rs.ext.ExceptionMapper exception mappers}.
+ * </p>
  *
- * Filters implementing this interface MUST be annotated with
- * {@link javax.ws.rs.ext.Provider &#64;Provider}. This type of filters is supported
- * only as part of the Client API.
- *
- * @author Marek Potociar
- * @author Santiago Pericas-Geertsen
- * @see javax.ws.rs.client.ClientResponseFilter
+ * @author Marek Potociar (marek.potociar at oracle.com)
  * @since 2.0
  */
-public interface ClientRequestFilter {
+public class NoContentException extends IOException {
+    private static final long serialVersionUID = -3082577759787473245L;
 
     /**
-     * Filter method called before a request has been dispatched to a client
-     * transport layer.
+     * Construct a new {@code NoContentException} instance.
      *
-     * Filters in the filter chain are ordered according to their {@code javax.annotation.Priority}
-     * class-level annotation value.
-     *
-     * @param requestContext request context.
-     * @throws IOException if an I/O exception occurs.
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
      */
-    public void filter(ClientRequestContext requestContext) throws IOException;
+    public NoContentException(String message) {
+        super(message);
+    }
+
+    /**
+     * Construct a new {@code NoContentException} instance.
+     *
+     * @param message the detail message (which is saved for later retrieval
+     *                by the {@link #getMessage()} method).
+     * @param cause   the underlying cause of the exception.
+     */
+    public NoContentException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * Construct a new {@code NoContentException} instance.
+     *
+     * @param cause the underlying cause of the exception.
+     */
+    public NoContentException(Throwable cause) {
+        super(cause);
+    }
 }

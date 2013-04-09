@@ -342,13 +342,22 @@ public class JaxrsInterceptorRegistry<T>
       return intf;
    }
 
-   public class PrecedenceComparator implements Comparator<Match>
+   public static class AscendingPrecedenceComparator implements Comparator<Match>
    {
       public int compare(Match match, Match match2)
       {
          return match.order - match2.order;
       }
    }
+
+   public static class DescendingPrecedenceComparator implements Comparator<Match>
+   {
+      public int compare(Match match, Match match2)
+      {
+         return match2.order - match.order;
+      }
+   }
+
 
    public List<JaxrsInterceptorRegistryListener> getListeners()
    {
@@ -386,13 +395,18 @@ public class JaxrsInterceptorRegistry<T>
 
    private T[] createArray(List<Match> matches)
    {
-      Collections.sort(matches, new PrecedenceComparator());
+      sort(matches);
       T[] array = (T[]) Array.newInstance(intf, matches.size());
       for (int i = 0; i < array.length; i++)
       {
          array[i] = (T) matches.get(i).interceptor;
       }
       return array;
+   }
+
+   protected void sort(List<Match> matches)
+   {
+      Collections.sort(matches, new AscendingPrecedenceComparator());
    }
 
    public void register(InterceptorFactory factory)
