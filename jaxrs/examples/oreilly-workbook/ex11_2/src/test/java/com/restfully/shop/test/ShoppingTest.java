@@ -36,8 +36,7 @@ public class ShoppingTest
    }
 
 
-   @Test
-   public void testPopulateDB() throws Exception
+   public void populateDB() throws Exception
    {
       String url = "http://localhost:9095/shop";
       ClientRequest request = new ClientRequest("http://localhost:9095/shop");
@@ -76,6 +75,7 @@ public class ShoppingTest
    @Test
    public void testCreateOrder() throws Exception
    {
+      populateDB();
       String url = "http://localhost:9095/shop";
       ClientRequest request = new ClientRequest("http://localhost:9095/shop");
       ClientResponse response = request.head();
