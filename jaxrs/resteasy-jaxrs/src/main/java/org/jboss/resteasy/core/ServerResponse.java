@@ -14,7 +14,7 @@ public class ServerResponse extends BuiltResponse
 
    public ServerResponse(Object entity, int status, Headers<Object> metadata)
    {
-      this.entity = entity;
+      this.setEntity(entity);
       this.status = status;
       this.metadata = metadata;
    }
