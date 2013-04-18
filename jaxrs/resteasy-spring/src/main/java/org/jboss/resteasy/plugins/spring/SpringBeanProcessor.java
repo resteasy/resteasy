@@ -1,5 +1,17 @@
 package org.jboss.resteasy.plugins.spring;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
+
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -10,12 +22,15 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
@@ -23,17 +38,6 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.util.ClassUtils;
-
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * <p>
@@ -56,11 +60,8 @@ import java.util.Set;
  * <li>
  * </ol>
  * <p/>
- * <p>
- * This class takes advantaage of quite a few Spring
- * </p>
  *
- * @author <a href="mailto:sduskis@burkecentral.com">Bill Burke</a>
+ * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
@@ -70,8 +71,12 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
    protected ResteasyProviderFactory providerFactory;
    protected Dispatcher dispatcher;
 
+   protected Set<String> resourceFactoryNames;
    protected Map<String, SpringResourceFactory> resourceFactories = new HashMap<String, SpringResourceFactory>();
+
    protected Set<String> providerNames = new HashSet<String>();
+   private Set<String> registrations = new HashSet<String>();
+
    private int order;
 
    protected class ResteasyBeanPostProcessor implements BeanPostProcessor
@@ -117,13 +122,26 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
             PropertyInjector injector = getInjector(AopUtils.getTargetClass(bean));
             injector.inject(bean);
             providerFactory.registerProviderInstance(bean);
-            return bean;
          }
 
-         SpringResourceFactory resourceFactory = resourceFactories.get(beanName);
-         if (resourceFactory != null)
+         else if(registrations.contains(beanName) && bean instanceof ResteasyRegistration)
          {
-            inject(beanName, bean, getInjector((Class<?>) resourceFactory.getScannableClass()));
+            ResteasyRegistration registration = (ResteasyRegistration)bean;
+            String registeredBeanName = registration.getBeanName();
+            BeanDefinition beanDef = beanFactory.getBeanDefinition(registeredBeanName);
+            Class<?> beanClass = getBeanClass(registeredBeanName, beanDef, beanFactory);
+            SpringResourceFactory resourceFactory = new SpringResourceFactory(registeredBeanName, beanFactory, beanClass);
+            resourceFactory.setContext(registration.getContext());
+            resourceFactories.put(registeredBeanName, resourceFactory);
+         } 
+
+         else 
+         {
+            SpringResourceFactory resourceFactory = resourceFactories.get(beanName);
+            if (resourceFactory != null)
+            {
+               inject(beanName, bean, getInjector(resourceFactory.getScannableClass()));
+            }
          }
 
          return bean;
@@ -245,23 +263,17 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
       }
       beanFactory.addBeanPostProcessor(new ResteasyBeanPostProcessor(beanFactory));
 
-      findResteasyRegistrations(beanFactory);
-
-      List<String> dependsOnProviders = new ArrayList<String>();
+      List<String> dependsOnBeans = new ArrayList<String>();
       for (String name : beanFactory.getBeanDefinitionNames())
       {
-         if (resourceFactories.containsKey(name))
-            continue;
-
          BeanDefinition beanDef = beanFactory.getBeanDefinition(name);
-         if ((beanDef.getBeanClassName() == null && beanDef.getFactoryBeanName() == null)
-                 || beanDef.isAbstract())
-            continue;
-
-         processBean(beanFactory, dependsOnProviders, name, beanDef);
+         if ( (beanDef.getBeanClassName() != null || beanDef.getFactoryBeanName() != null)
+                 && !beanDef.isAbstract())
+             processBean(beanFactory, dependsOnBeans, name, beanDef);
       }
 
-      String[] dependsOnArray = dependsOnProviders.toArray(new String[0]);
+      dependsOnBeans.addAll(registrations);
+      String[] dependsOnArray = dependsOnBeans.toArray(new String[dependsOnBeans.size()]);
 
       if (dependsOnArray.length > 0)
       {
@@ -300,28 +312,39 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
       {
          resourceFactories.put(name, new SpringResourceFactory(name, beanFactory, beanClass));
       }
+      if(beanClass == ResteasyRegistration.class)
+      {
+         registrations.add(name);
+      }
       return beanClass;
    }
 
-   /**
-    * Find all beans of type ResteasyRegistration and ensure that RESTeasy
-    * registers them under a different prefix url.
-    */
-   private void findResteasyRegistrations(final ConfigurableListableBeanFactory beanFactory)
+   public String getPropertyValue(
+      MutablePropertyValues registrationPropertyValues, String propertyName) 
    {
-      Map<String, ResteasyRegistration> registries = beanFactory
-              .getBeansOfType(ResteasyRegistration.class);
-
-      for (ResteasyRegistration registration : registries.values())
+      if(registrationPropertyValues == null)
       {
-         String beanName = registration.getBeanName();
-         BeanDefinition beanDef = beanFactory.getBeanDefinition(beanName);
-         Class<?> beanClass = getBeanClass(beanName, beanDef, beanFactory);
-         SpringResourceFactory resourceFactory = new SpringResourceFactory(beanName, beanFactory,
-                 beanClass);
-         resourceFactory.setContext(registration.getContext());
-         resourceFactories.put(beanName, resourceFactory);
+         return null;
       }
+      PropertyValue propertyValue = registrationPropertyValues.getPropertyValue(propertyName);
+      if(propertyValue == null)
+      {
+         return null;
+      }
+      Object value = propertyValue.getValue();
+      if(value == null)
+      {
+         return null;
+      }
+      if(value.getClass() == String.class)
+      {
+          return (String) value;
+      }
+      if(value instanceof BeanReference)
+      {
+          return ((BeanReference)value).getBeanName();
+      }
+      throw new IllegalStateException("ResteasyRegistration references must be String values or a reference to a bean name");
    }
 
    /**
@@ -451,7 +474,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
          getRegistry().removeRegistrations(resourceFactory.getScannableClass());
       }
       
-//  The following code would reprocess the bean factory, in case the configuration changed.
+//  The following code would re-process the bean factory, in case the configuration changed.
 //  However, it needs work.
 //      if (event.getSource() instanceof XmlWebApplicationContext)
 //      {

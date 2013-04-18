@@ -1,6 +1,8 @@
 package org.jboss.resteasy.spring;
 
+import static org.jboss.resteasy.test.TestPortProvider.createClientRequest;
 import junit.framework.Assert;
+
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.plugins.spring.SpringBeanProcessor;
 import org.jboss.resteasy.spring.beanprocessor.MyInterceptor;
@@ -8,8 +10,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import static org.jboss.resteasy.test.TestPortProvider.createClientRequest;
 
 /**
  * This class tests a gamut of Spring related functionality including @Configuration
