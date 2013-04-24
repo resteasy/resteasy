@@ -1,0 +1,32 @@
+<assembly>
+    <id>all</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>${project.build.directory}/jboss-as-${jboss.dist.version}</directory>
+            <outputDirectory>jboss-as-${project.version}</outputDirectory>
+            <excludes>
+                <exclude>**/modules/system/layers/base/org/jboss/resteasy/resteasy-atom-provider/**</exclude>
+                <exclude>**/modules/system/layers/base/org/jboss/resteasy/resteasy-cdi/**</exclude>
+                <exclude>**/modules/system/layers/base/org/jboss/resteasy/resteasy-jackson-provider/**</exclude>
+                <exclude>**/modules/system/layers/base/org/jboss/resteasy/resteasy-jaxb-provider/**</exclude>
+                <exclude>**/modules/system/layers/base/org/jboss/resteasy/resteasy-jaxrs/**</exclude>
+                <exclude>**/modules/system/layers/base/org/jboss/resteasy/resteasy-jettison-provider/**</exclude>
+                <exclude>**/modules/system/layers/base/org/jboss/resteasy/resteasy-jsapi/**</exclude>
+                <exclude>**/modules/system/layers/base/org/jboss/resteasy/resteasy-multipart-provider/**</exclude>
+                <exclude>**/modules/system/layers/base/org/jboss/resteasy/resteasy-yaml-provider/**</exclude>
+                <exclude>**/modules/system/layers/base/javax/ws/rs/**</exclude>
+                <exclude>**/modules/system/layers/base/org/bouncycastle/**</exclude>
+                <exclude>**/modules/system/layers/base/org/codehaus/jackson/**</exclude>
+                <exclude>**/modules/system/layers/base/org/codehaus/jettison/**</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>../jboss-modules/target/mavenized/modules</directory>
+            <outputDirectory>jboss-as-${project.version}/modules/system/layers/base</outputDirectory>
+        </fileSet>
+    </fileSets>
+</assembly>
