@@ -121,7 +121,7 @@ public class OAuthUtils {
 		resp.getWriter().append(message);
 		resp.setStatus(httpCode);
 		String headerValue = "OAuth";
-		if (provider.getRealm() != null && provider.getRealm().length() > 0) {
+		if (provider != null && provider.getRealm() != null && provider.getRealm().length() > 0) {
 		    headerValue += (" realm=\"" + provider.getRealm() + "\"");
 		}
 		resp.setHeader(AUTHENTICATE_HEADER, headerValue);
