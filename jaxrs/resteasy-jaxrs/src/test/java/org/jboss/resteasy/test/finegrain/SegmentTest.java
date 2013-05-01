@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.finegrain;
 
 import junit.framework.Assert;
-import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.core.registry.RootSegment;
 import org.jboss.resteasy.mock.MockHttpRequest;
@@ -111,14 +111,14 @@ public class SegmentTest
    private void assertMatchRoot(final String url, final String methodName,
                                 final Class<?> clazz) throws URISyntaxException
    {
-      ResourceMethod matchRoot = getResourceMethod(url);
+      ResourceMethodInvoker matchRoot = getResourceMethod(url);
       Assert.assertEquals(clazz, matchRoot.getResourceClass());
       Assert.assertEquals(methodName, matchRoot.getMethod().getName());
    }
 
-   private ResourceMethod getResourceMethod(String url)
+   private ResourceMethodInvoker getResourceMethod(String url)
            throws URISyntaxException
    {
-      return (ResourceMethod) root.matchRoot(MockHttpRequest.get(url));
+      return (ResourceMethodInvoker) root.matchRoot(MockHttpRequest.get(url));
    }
 }

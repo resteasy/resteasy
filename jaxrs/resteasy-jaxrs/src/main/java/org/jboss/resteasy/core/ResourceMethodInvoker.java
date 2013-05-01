@@ -15,6 +15,7 @@ import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -38,6 +39,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,54 +50,46 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistryListener
+public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorRegistryListener
 {
-
-   protected MediaType[] produces;
-   protected MediaType[] consumes;
-   protected Consumes methodConsumes;
-
    protected List<WeightedMediaType> preferredProduces = new ArrayList<WeightedMediaType>();
    protected List<WeightedMediaType> preferredConsumes = new ArrayList<WeightedMediaType>();
-   protected Set<String> httpMethods;
    protected MethodInjector methodInjector;
    protected InjectorFactory injector;
    protected ResourceFactory resource;
    protected ResteasyProviderFactory parentProviderFactory;
    protected ResteasyProviderFactory resourceMethodProviderFactory;
-   protected Method method;
-   protected Class<?> resourceClass;
+   protected ResourceMethod method;
    protected ContainerRequestFilter[] requestFilters;
    protected ContainerResponseFilter[] responseFilters;
    protected WriterInterceptor[] writerInterceptors;
    protected ConcurrentHashMap<String, AtomicLong> stats = new ConcurrentHashMap<String, AtomicLong>();
-   protected Type genericReturnType;
    protected GeneralValidator validator;
    protected ViolationsContainer<?> violationsContainer;
    protected ResourceInfo resourceInfo;
 
+   protected boolean methodConsumes;
 
-   public ResourceMethod(Class<?> clazz, Method method, InjectorFactory injector, ResourceFactory resource, ResteasyProviderFactory providerFactory, Set<String> httpMethods)
+
+   public ResourceMethodInvoker(ResourceMethod method, InjectorFactory injector, ResourceFactory resource, ResteasyProviderFactory providerFactory)
    {
       this.injector = injector;
       this.resource = resource;
       this.parentProviderFactory = providerFactory;
-      this.httpMethods = httpMethods;
-      this.resourceClass = clazz;
       this.method = method;
 
-      resourceInfo = new ResourceInfo()
+       resourceInfo = new ResourceInfo()
       {
          @Override
          public Method getResourceMethod()
          {
-            return ResourceMethod.this.method;
+            return ResourceMethodInvoker.this.method.getAnnotatedMethod();
          }
 
          @Override
          public Class<?> getResourceClass()
          {
-            return ResourceMethod.this.resourceClass;
+            return ResourceMethodInvoker.this.method.getResourceClass().getClazz();
          }
       };
 
@@ -105,60 +99,36 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
          feature.configure(resourceInfo, new FeatureContextDelegate(resourceMethodProviderFactory));
       }
 
-      this.methodInjector = injector.createMethodInjector(clazz, method, resourceMethodProviderFactory);
+      this.methodInjector = injector.createMethodInjector(method, resourceMethodProviderFactory);
 
-      Produces p = method.getAnnotation(Produces.class);
-      if (p == null) p = clazz.getAnnotation(Produces.class);
-      if (p == null) p = method.getDeclaringClass().getAnnotation(Produces.class);
-      Consumes c = methodConsumes = method.getAnnotation(Consumes.class);
-      if (c == null) c = clazz.getAnnotation(Consumes.class);
-      if(c == null) c = method.getDeclaringClass().getAnnotation(Consumes.class);
+      for (MediaType mediaType : method.getProduces())
+      {
+         preferredProduces.add(WeightedMediaType.parse(mediaType));
 
-      if (p != null)
-      {
-         produces = new MediaType[p.value().length];
-         int i = 0;
-         for (String mediaType : p.value())
-         {
-            produces[i++] = MediaType.valueOf(mediaType);
-            preferredProduces.add(WeightedMediaType.valueOf(mediaType));
-         }
       }
-      if (c != null)
+
+      // hack for when message contentType == null
+      // todo this needs review on why it is here and what do we need it for
+      methodConsumes = method.getAnnotatedMethod().isAnnotationPresent(Consumes.class);
+
+      for (MediaType mediaType : method.getConsumes())
       {
-         consumes = new MediaType[c.value().length];
-         int i = 0;
-         for (String mediaType : c.value())
-         {
-            consumes[i++] = MediaType.valueOf(mediaType);
-            preferredConsumes.add(WeightedMediaType.valueOf(mediaType));
-         }
+         preferredConsumes.add(WeightedMediaType.parse(mediaType));
+
       }
+
       Collections.sort(preferredProduces);
       Collections.sort(preferredConsumes);
 
-      requestFilters = resourceMethodProviderFactory.getContainerRequestFilterRegistry().postMatch(resourceClass, method);
-      responseFilters = resourceMethodProviderFactory.getContainerResponseFilterRegistry().postMatch(resourceClass, method);
-      writerInterceptors = resourceMethodProviderFactory.getServerWriterInterceptorRegistry().postMatch(resourceClass, method);
+      requestFilters = resourceMethodProviderFactory.getContainerRequestFilterRegistry().postMatch(method.getResourceClass().getClazz(), method.getAnnotatedMethod());
+      responseFilters = resourceMethodProviderFactory.getContainerResponseFilterRegistry().postMatch(method.getResourceClass().getClazz(), method.getAnnotatedMethod());
+      writerInterceptors = resourceMethodProviderFactory.getServerWriterInterceptorRegistry().postMatch(method.getResourceClass().getClazz(), method.getAnnotatedMethod());
 
 
       // we register with parent to lisen for redeploy evens
       providerFactory.getContainerRequestFilterRegistry().getListeners().add(this);
       providerFactory.getContainerResponseFilterRegistry().getListeners().add(this);
       providerFactory.getServerWriterInterceptorRegistry().getListeners().add(this);
-      /*
-          We get the genericReturnType for the case of:
-          
-          interface Foo<T> {
-             @GET
-             List<T> get();
-          }
-
-          public class FooImpl implements Foo<Customer> {
-              public List<Customer> get() {...}
-          }
-       */
-      genericReturnType = Types.getGenericReturnTypeOfGenericInterfaceMethod(clazz, method);
       ContextResolver<GeneralValidator> resolver = providerFactory.getContextResolver(GeneralValidator.class, MediaType.WILDCARD_TYPE);
       if (resolver != null)
       {
@@ -189,15 +159,15 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
       }
       if (registry.getIntf().equals(WriterInterceptor.class))
       {
-         writerInterceptors = resourceMethodProviderFactory.getServerWriterInterceptorRegistry().postMatch(resourceClass, method);
+         writerInterceptors = resourceMethodProviderFactory.getServerWriterInterceptorRegistry().postMatch(method.getResourceClass().getClazz(), method.getAnnotatedMethod());
       }
       else if (registry.getIntf().equals(ContainerRequestFilter.class))
       {
-         requestFilters = resourceMethodProviderFactory.getContainerRequestFilterRegistry().postMatch(resourceClass, method);
+         requestFilters = resourceMethodProviderFactory.getContainerRequestFilterRegistry().postMatch(method.getResourceClass().getClazz(), method.getAnnotatedMethod());
       }
       else if (registry.getIntf().equals(ContainerResponseFilter.class))
       {
-         responseFilters = resourceMethodProviderFactory.getContainerResponseFilterRegistry().postMatch(resourceClass, method);
+         responseFilters = resourceMethodProviderFactory.getContainerResponseFilterRegistry().postMatch(method.getResourceClass().getClazz(), method.getAnnotatedMethod());
       }
    }
 
@@ -241,17 +211,17 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
 
    public Type getGenericReturnType()
    {
-      return genericReturnType;
+      return method.getGenericReturnType();
    }
 
    public Class<?> getResourceClass()
    {
-      return resourceClass;
+      return method.getResourceClass().getClazz();
    }
 
    public Annotation[] getMethodAnnotations()
    {
-      return method.getAnnotations();
+      return method.getAnnotatedMethod().getAnnotations();
    }
 
    /**
@@ -276,7 +246,7 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
 
    public Method getMethod()
    {
-      return method;
+      return method.getMethod();
    }
 
    public BuiltResponse invoke(HttpRequest request, HttpResponse response)
@@ -287,7 +257,7 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
 
    public BuiltResponse invoke(HttpRequest request, HttpResponse response, Object target)
    {
-      request.setAttribute(ResourceMethod.class.getName(), this);
+      request.setAttribute(ResourceMethodInvoker.class.getName(), this);
       incrementMethodCount(request.getHttpMethod());
       ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
       uriInfo.pushCurrentResource(target);
@@ -350,7 +320,7 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
 
       if (request.getAsyncContext().isSuspended())
       {
-         request.getAsyncContext().getAsyncResponse().setAnnotations(method.getAnnotations());
+         request.getAsyncContext().getAsyncResponse().setAnnotations(method.getAnnotatedMethod().getAnnotations());
          request.getAsyncContext().getAsyncResponse().setWriterInterceptors(writerInterceptors);
          request.getAsyncContext().getAsyncResponse().setResponseFilters(responseFilters);
          request.getAsyncContext().getAsyncResponse().setMethod(this);
@@ -359,21 +329,21 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
       if (rtn == null || method.getReturnType().equals(void.class))
       {
          BuiltResponse build = (BuiltResponse) Response.noContent().build();
-         build.setAnnotations(method.getAnnotations());
+         build.setAnnotations(method.getAnnotatedMethod().getAnnotations());
          return build;
       }
       if (Response.class.isAssignableFrom(method.getReturnType()) || rtn instanceof Response)
       {
          BuiltResponse rtn1 = (BuiltResponse) rtn;
-         rtn1.setAnnotations(method.getAnnotations());
+         rtn1.setAnnotations(method.getAnnotatedMethod().getAnnotations());
          return rtn1;
       }
 
       Response.ResponseBuilder builder = Response.ok(rtn);
       builder.type(resolveContentType(request, rtn));
       BuiltResponse jaxrsResponse = (BuiltResponse)builder.build();
-      jaxrsResponse.setGenericType(genericReturnType);
-      jaxrsResponse.setAnnotations(method.getAnnotations());
+      jaxrsResponse.setGenericType(method.getGenericReturnType());
+      jaxrsResponse.setAnnotations(method.getAnnotatedMethod().getAnnotations());
       return jaxrsResponse;
    }
 
@@ -384,7 +354,7 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
          //System.out.println("**** no accepts " +" method: " + method);
          return true;
       }
-      if (produces == null || produces.length == 0)
+      if (preferredProduces.size() == 0)
       {
          //System.out.println("**** no produces " +" method: " + method);
          return true;
@@ -409,7 +379,10 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
       if (contentType == null)
       {
          // If there is no @Consumes annotation directly on method (i.e. a @GET or @DELETE) return true
-         if (methodConsumes == null) return true;
+         // this is a hack to determine if this is a @GET or @DELETE.  Because we can create new HTTP methods ad hoc
+         // there is no way to determine if it is an HTTP method that doesn't require content (like PUT, POST)
+         // So, we just check to see if there is an annotation directly on the method.
+         if (!methodConsumes) return true;
 
          // Otherwise only accept if consumes is a wildcard type
          for (MediaType type : preferredConsumes)
@@ -423,10 +396,7 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
       }
       else
       {
-         if (consumes == null || consumes.length == 0)
-         {
-            matches = true;
-         }
+         if (preferredConsumes.size() == 0) return true;
          else
          {
             for (MediaType type : preferredConsumes)
@@ -454,18 +424,18 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
 
       if (accepts == null || accepts.size() == 0)
       {
-         if (produces == null) return MediaType.WILDCARD_TYPE;
-         else return produces[0];
+         if (preferredProduces.size() == 0) return MediaType.WILDCARD_TYPE;
+         else return preferredProduces.get(0);
       }
 
-      if (produces == null || produces.length == 0)
+      if (preferredProduces.size() == 0)
       {
          return resolveContentTypeByAccept(accepts, entity);
       }
 
       for (MediaType accept : accepts)
       {
-         for (MediaType type : produces)
+         for (MediaType type : preferredProduces)
          {
             if (type.isCompatible(accept)) return type;
          }
@@ -480,7 +450,7 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
          return MediaType.WILDCARD_TYPE;
       }
       Class clazz = entity.getClass();
-      Type type = this.genericReturnType;
+      Type type = this.method.getGenericReturnType();
       if (entity instanceof GenericEntity)
       {
          GenericEntity gen = (GenericEntity) entity;
@@ -489,7 +459,7 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
       }
       for (MediaType accept : accepts)
       {
-         if (resourceMethodProviderFactory.getMessageBodyWriter(clazz, type, method.getAnnotations(), accept) != null)
+         if (resourceMethodProviderFactory.getMessageBodyWriter(clazz, type, method.getAnnotatedMethod().getAnnotations(), accept) != null)
          {
             return accept;
          }
@@ -499,16 +469,16 @@ public class ResourceMethod implements ResourceInvoker, JaxrsInterceptorRegistry
 
    public Set<String> getHttpMethods()
    {
-      return httpMethods;
+      return method.getHttpMethods();
    }
 
    public MediaType[] getProduces()
    {
-      return produces;
+      return method.getProduces();
    }
 
    public MediaType[] getConsumes()
    {
-      return consumes;
+      return method.getConsumes();
    }
 }

@@ -1,6 +1,7 @@
 package org.jboss.resteasy.spi;
 
 import org.jboss.resteasy.core.ResourceInvoker;
+import org.jboss.resteasy.spi.metadata.ResourceClass;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -27,14 +28,14 @@ public interface Registry
    /**
     * Add a JAX-RS endpoint.
     *
-    * @param clazz
+    * @param singleton
     */
    void addSingletonResource(Object singleton);
 
    /**
     * Add a JAX-RS endpoint.
     *
-    * @param clazz
+    * @param singleton
     * @param basePath prefix path of resource
     */
    void addSingletonResource(Object singleton, String basePath);
@@ -42,14 +43,14 @@ public interface Registry
    /**
     * Add a JAX-RS endpoint that exists in JNDI
     *
-    * @param clazz
+    * @param jndiName
     */
    void addJndiResource(String jndiName);
 
    /**
     * Add a JAX-RS endpoint that exists in JNDI.
     *
-    * @param clazz
+    * @param jndiName
     * @param basePath prefix path of resource
     */
    void addJndiResource(String jndiName, String basePath);
@@ -73,10 +74,9 @@ public interface Registry
     * ResourceFactory.getScannableClass() is not used, only the clazz parameter and not any implemented interfaces
     * of the clazz parameter.
     *
-    * @param factory
+    * @param ref
     * @param base    base URI path for any resources provided by the factory, in addition to rootPath
     * @param clazz   specific class
-    * @param offset  path segment offset.  > 0 means we're within a locator.
     */
    void addResourceFactory(ResourceFactory ref, String base, Class<?> clazz);
 
@@ -89,4 +89,8 @@ public interface Registry
    int getSize();
 
    ResourceInvoker getResourceInvoker(HttpRequest request);
+
+   void addResourceFactory(ResourceFactory rf, String base, ResourceClass resourceClass);
+
+   void removeRegistrations(ResourceClass resourceClass);
 }

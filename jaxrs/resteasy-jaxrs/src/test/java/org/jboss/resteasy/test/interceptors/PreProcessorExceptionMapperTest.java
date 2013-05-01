@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.interceptors;
 
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -50,7 +50,7 @@ public class PreProcessorExceptionMapperTest extends BaseResourceTest
    @Provider
    public static class PreProcessSecurityInterceptor implements PreProcessInterceptor
    {
-      public ServerResponse preProcess(HttpRequest request, ResourceMethod method) throws Failure, WebApplicationException
+      public ServerResponse preProcess(HttpRequest request, ResourceMethodInvoker method) throws Failure, WebApplicationException
       {
          throw new CandlepinUnauthorizedException();
       }

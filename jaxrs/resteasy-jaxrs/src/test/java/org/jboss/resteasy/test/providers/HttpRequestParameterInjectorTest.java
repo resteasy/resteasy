@@ -5,6 +5,7 @@ import org.jboss.resteasy.core.ValueInjector;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.metadata.Parameter;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.junit.Assert;
@@ -83,6 +84,33 @@ public class HttpRequestParameterInjectorTest extends BaseResourceTest
          {
             return super.createParameterExtractor(injectTargetClass, injectTarget, type,
                     genericType, annotations, factory);
+         }
+         else
+         {
+            return new ValueInjector()
+            {
+               public Object inject(HttpRequest request, HttpResponse response)
+               {
+                  return ResteasyProviderFactory.getContextData(HttpServletRequest.class)
+                          .getParameter(param.value());
+               }
+
+               public Object inject()
+               {
+                  // do nothing.
+                  return null;
+               }
+            };
+         }
+      }
+
+      @Override
+      public ValueInjector createParameterExtractor(Parameter parameter, ResteasyProviderFactory providerFactory)
+      {
+         final ClassicParam param = FindAnnotation.findAnnotation(parameter.getAnnotations(), ClassicParam.class);
+         if (param == null)
+         {
+            return super.createParameterExtractor(parameter, providerFactory);
          }
          else
          {

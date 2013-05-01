@@ -15,9 +15,9 @@ import javax.ws.rs.core.Response;
  */
 public class SuspendInjector implements ValueInjector
 {
-   private Suspend suspend;
+   private long suspend;
 
-   public SuspendInjector(Suspend suspend, Class type)
+   public SuspendInjector(long suspend, Class type)
    {
       if (!type.equals(AsynchronousResponse.class))
          throw new IllegalArgumentException(type.getName() + " is not a valid injectable type for @Suspend");
@@ -32,7 +32,7 @@ public class SuspendInjector implements ValueInjector
    public Object inject(HttpRequest request, HttpResponse response)
    {
       final ResteasyAsynchronousContext asynchronousContext = request.getAsyncContext();
-      final AsyncResponse asynchronousResponse = asynchronousContext.suspend(suspend.value());
+      final AsyncResponse asynchronousResponse = asynchronousContext.suspend(suspend);
       return new AsynchronousResponse()
       {
          @Override

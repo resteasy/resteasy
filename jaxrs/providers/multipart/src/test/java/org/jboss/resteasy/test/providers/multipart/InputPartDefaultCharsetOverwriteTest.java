@@ -21,7 +21,7 @@ import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartInput;
@@ -120,7 +120,7 @@ public class InputPartDefaultCharsetOverwriteTest
    @ServerInterceptor
    public static class PreProcessorInterceptorContentTypeNoCharsetUTF8 implements PreProcessInterceptor
    {
-      public ServerResponse preProcess(HttpRequest request, ResourceMethod method) throws Failure, WebApplicationException
+      public ServerResponse preProcess(HttpRequest request, ResourceMethodInvoker method) throws Failure, WebApplicationException
       {
          request.setAttribute(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY, TEXT_HTTP_WITH_CHARSET_UTF_8);
          return null;
@@ -131,7 +131,7 @@ public class InputPartDefaultCharsetOverwriteTest
    @ServerInterceptor
    public static class PreProcessorInterceptorContentTypeNoCharsetUTF16 implements PreProcessInterceptor
    {
-      public ServerResponse preProcess(HttpRequest request, ResourceMethod method) throws Failure, WebApplicationException
+      public ServerResponse preProcess(HttpRequest request, ResourceMethodInvoker method) throws Failure, WebApplicationException
       {
          request.setAttribute(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY, TEXT_HTTP_WITH_CHARSET_UTF_16);
          return null;
@@ -142,7 +142,7 @@ public class InputPartDefaultCharsetOverwriteTest
    @ServerInterceptor
    public static class PreProcessorInterceptorNoContentTypeCharsetUTF8 implements PreProcessInterceptor
    {
-      public ServerResponse preProcess(HttpRequest request, ResourceMethod method) throws Failure, WebApplicationException
+      public ServerResponse preProcess(HttpRequest request, ResourceMethodInvoker method) throws Failure, WebApplicationException
       {
          request.setAttribute(InputPart.DEFAULT_CHARSET_PROPERTY, UTF_8);
          return null;
@@ -153,7 +153,7 @@ public class InputPartDefaultCharsetOverwriteTest
    @ServerInterceptor
    public static class PreProcessorInterceptorNoContentTypeCharsetUTF16 implements PreProcessInterceptor
    {
-      public ServerResponse preProcess(HttpRequest request, ResourceMethod method) throws Failure, WebApplicationException
+      public ServerResponse preProcess(HttpRequest request, ResourceMethodInvoker method) throws Failure, WebApplicationException
       {
          request.setAttribute(InputPart.DEFAULT_CHARSET_PROPERTY, UTF_16);
          return null;
@@ -164,7 +164,7 @@ public class InputPartDefaultCharsetOverwriteTest
    @ServerInterceptor
    public static class PreProcessorInterceptorContentTypeCharsetUTF8 implements PreProcessInterceptor
    {
-      public ServerResponse preProcess(HttpRequest request, ResourceMethod method) throws Failure, WebApplicationException
+      public ServerResponse preProcess(HttpRequest request, ResourceMethodInvoker method) throws Failure, WebApplicationException
       {
 
          request.setAttribute(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY, TEXT_HTTP_WITH_CHARSET_US_ASCII);
@@ -177,7 +177,7 @@ public class InputPartDefaultCharsetOverwriteTest
    @ServerInterceptor
    public static class PreProcessorInterceptorContentTypeCharsetUTF16 implements PreProcessInterceptor
    {
-      public ServerResponse preProcess(HttpRequest request, ResourceMethod method) throws Failure, WebApplicationException
+      public ServerResponse preProcess(HttpRequest request, ResourceMethodInvoker method) throws Failure, WebApplicationException
       {
 
          request.setAttribute(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY, TEXT_HTTP_WITH_CHARSET_US_ASCII);

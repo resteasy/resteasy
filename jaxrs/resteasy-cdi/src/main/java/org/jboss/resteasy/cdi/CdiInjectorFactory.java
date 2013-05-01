@@ -8,6 +8,10 @@ import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.metadata.Parameter;
+import org.jboss.resteasy.spi.metadata.ResourceClass;
+import org.jboss.resteasy.spi.metadata.ResourceConstructor;
+import org.jboss.resteasy.spi.metadata.ResourceLocator;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
@@ -44,10 +48,51 @@ public class CdiInjectorFactory implements InjectorFactory
    }
 
    @Override
+   public ValueInjector createParameterExtractor(Parameter parameter, ResteasyProviderFactory providerFactory)
+   {
+      return delegate.createParameterExtractor(parameter, providerFactory);
+   }
+
+   @Override
+   public MethodInjector createMethodInjector(ResourceLocator method, ResteasyProviderFactory factory)
+   {
+      return delegate.createMethodInjector(method, factory);
+   }
+
+   @Override
+   public PropertyInjector createPropertyInjector(ResourceClass resourceClass, ResteasyProviderFactory providerFactory)
+   {
+      return new CdiPropertyInjector(delegate.createPropertyInjector(resourceClass, providerFactory), resourceClass.getClazz(), sessionBeanInterface, manager);
+   }
+
+   @Override
+   public ConstructorInjector createConstructor(ResourceConstructor constructor, ResteasyProviderFactory providerFactory)
+   {
+      Class<?> clazz = constructor.getConstructor().getDeclaringClass();
+
+      ConstructorInjector injector = cdiConstructor(clazz);
+      if (injector != null) return injector;
+
+      log.debug("No CDI beans found for {0}. Using default ConstructorInjector.", clazz);
+      return delegate.createConstructor(constructor, providerFactory);
+   }
+
+   @Override
    public ConstructorInjector createConstructor(Constructor constructor, ResteasyProviderFactory factory)
    {
       Class<?> clazz = constructor.getDeclaringClass();
 
+      ConstructorInjector injector = cdiConstructor(clazz);
+      if (injector != null) return injector;
+
+      log.debug("No CDI beans found for {0}. Using default ConstructorInjector.", clazz);
+      return delegate.createConstructor(constructor, factory);
+   }
+
+
+
+   protected ConstructorInjector cdiConstructor(Class<?> clazz)
+   {
       if (!manager.getBeans(clazz).isEmpty())
       {
          log.debug("Using CdiConstructorInjector for class {0}.", clazz);
@@ -61,13 +106,7 @@ public class CdiInjectorFactory implements InjectorFactory
          return new CdiConstructorInjector(intfc, manager);
       }
 
-      log.debug("No CDI beans found for {0}. Using default ConstructorInjector.", clazz);
-      return delegate.createConstructor(constructor, factory);
-   }
-
-   public MethodInjector createMethodInjector(Class root, Method method, ResteasyProviderFactory factory)
-   {
-      return delegate.createMethodInjector(root, method, factory);
+      return null;
    }
 
    public PropertyInjector createPropertyInjector(Class resourceClass, ResteasyProviderFactory factory)

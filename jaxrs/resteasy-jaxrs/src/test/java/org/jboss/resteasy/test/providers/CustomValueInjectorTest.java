@@ -9,6 +9,7 @@ import org.jboss.resteasy.plugins.providers.StringTextStar;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.metadata.Parameter;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.junit.Assert;
 import org.junit.Test;
@@ -77,6 +78,31 @@ public class CustomValueInjectorTest
          if (hello == null)
          {
             return super.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, factory);
+         }
+         else
+         {
+            return new ValueInjector()
+            {
+               public Object inject(HttpRequest request, HttpResponse response)
+               {
+                  return hello.value();
+               }
+
+               public Object inject()
+               {
+                  return hello.value();
+               }
+            };
+         }
+      }
+
+      @Override
+      public ValueInjector createParameterExtractor(Parameter parameter, ResteasyProviderFactory providerFactory)
+      {
+         final Hello hello = FindAnnotation.findAnnotation(parameter.getAnnotations(), Hello.class);
+         if (hello == null)
+         {
+            return super.createParameterExtractor(parameter, providerFactory);
          }
          else
          {

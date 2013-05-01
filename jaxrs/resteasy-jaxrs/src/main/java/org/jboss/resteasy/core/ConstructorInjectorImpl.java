@@ -7,6 +7,9 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.metadata.ConstructorParameter;
+import org.jboss.resteasy.spi.metadata.MethodParameter;
+import org.jboss.resteasy.spi.metadata.ResourceConstructor;
 
 import javax.ws.rs.WebApplicationException;
 import java.lang.annotation.Annotation;
@@ -22,6 +25,19 @@ public class ConstructorInjectorImpl implements ConstructorInjector
 {
    protected Constructor constructor;
    protected ValueInjector[] params;
+
+   public ConstructorInjectorImpl(ResourceConstructor constructor, ResteasyProviderFactory factory)
+   {
+      this.constructor = constructor.getConstructor();
+      params = new ValueInjector[constructor.getParams().length];
+      int i = 0;
+      for (ConstructorParameter parameter : constructor.getParams())
+      {
+         params[i++] = factory.getInjectorFactory().createParameterExtractor(parameter, factory);
+      }
+
+   }
+
 
    public ConstructorInjectorImpl(Constructor constructor, ResteasyProviderFactory factory)
    {

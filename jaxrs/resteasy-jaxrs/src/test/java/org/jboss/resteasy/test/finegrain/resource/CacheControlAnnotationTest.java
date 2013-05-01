@@ -7,6 +7,7 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletResponse;
