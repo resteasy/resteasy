@@ -9,9 +9,6 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.spi.metadata.ResourceConstructor;
-import org.jboss.resteasy.util.PickConstructor;
-
-import java.lang.reflect.Constructor;
 
 /**
  * Allocates an instance of a class at each invocation
@@ -29,12 +26,12 @@ public class POJOResourceFactory implements ResourceFactory
    public POJOResourceFactory(Class<?> scannableClass)
    {
       this.scannableClass = scannableClass;
-      this.resourceClass = ResourceBuilder.fromClass(scannableClass);
+      this.resourceClass = ResourceBuilder.fromAnnotations(scannableClass);
    }
 
-   public POJOResourceFactory(Class<?> scannableClass, ResourceClass resourceClass)
+   public POJOResourceFactory(ResourceClass resourceClass)
    {
-      this.scannableClass = scannableClass;
+      this.scannableClass = resourceClass.getClazz();
       this.resourceClass = resourceClass;
    }
 

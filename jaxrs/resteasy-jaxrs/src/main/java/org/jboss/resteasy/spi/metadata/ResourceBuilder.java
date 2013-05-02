@@ -3,25 +3,7 @@ package org.jboss.resteasy.spi.metadata;
 import org.jboss.resteasy.annotations.Body;
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.annotations.Suspend;
-import org.jboss.resteasy.core.AsynchronousResponseInjector;
-import org.jboss.resteasy.core.CookieParamInjector;
-import org.jboss.resteasy.core.FormInjector;
-import org.jboss.resteasy.core.FormParamInjector;
-import org.jboss.resteasy.core.HeaderParamInjector;
-import org.jboss.resteasy.core.ListFormInjector;
-import org.jboss.resteasy.core.MapFormInjector;
-import org.jboss.resteasy.core.MatrixParamInjector;
-import org.jboss.resteasy.core.MessageBodyParameterInjector;
-import org.jboss.resteasy.core.PathParamInjector;
-import org.jboss.resteasy.core.PrefixedFormInjector;
-import org.jboss.resteasy.core.QueryParamInjector;
-import org.jboss.resteasy.core.ResourceLocatorInvoker;
-import org.jboss.resteasy.core.ResourceMethodInvoker;
-import org.jboss.resteasy.core.SuspendInjector;
-import org.jboss.resteasy.core.ValueInjector;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
-import org.jboss.resteasy.spi.InjectorFactory;
-import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.util.IsHttpMethod;
 import org.jboss.resteasy.util.MethodHashing;
 import org.jboss.resteasy.util.PickConstructor;
@@ -114,7 +96,7 @@ public class ResourceBuilder
          return new ResourceConstructorBuilder(this, constructor);
       }
 
-      public ResourceClass build()
+      public ResourceClass buildClass()
       {
          resourceClass.fields = fields.toArray(new FieldParameter[fields.size()]);
          resourceClass.setters = setters.toArray(new SetterParameter[setters.size()]);
@@ -666,7 +648,7 @@ public class ResourceBuilder
       {
          for (int i = 0; i < constructor.getParameterTypes().length; i++) builder.param(i).fromAnnotations();
       }
-      return builder.buildConstructor().build().getConstructor();
+      return builder.buildConstructor().buildClass().getConstructor();
    }
 
    /**
@@ -674,7 +656,7 @@ public class ResourceBuilder
     *
     * @return
     */
-   public static ResourceClass fromClass(Class<?> clazz)
+   public static ResourceClass fromAnnotations(Class<?> clazz)
    {
       ResourceClassBuilder builder = resourceClass(clazz);
       for (Method method : clazz.getMethods())
@@ -688,7 +670,7 @@ public class ResourceBuilder
          processFields(builder, clazz);
       }
       processSetters(builder, clazz);
-      return builder.build();
+      return builder.buildClass();
    }
 
    private static Method findAnnotatedInterfaceMethod(Class<?> root, Class<?> iface, Method implementation)

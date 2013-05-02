@@ -93,4 +93,16 @@ public interface Registry
    void addResourceFactory(ResourceFactory rf, String base, ResourceClass resourceClass);
 
    void removeRegistrations(ResourceClass resourceClass);
+
+   void addPerRequestResource(ResourceClass clazz);
+
+   void addPerRequestResource(ResourceClass clazz, String basePath);
+
+   void addSingletonResource(Object singleton, ResourceClass resourceClass);
+
+   void addSingletonResource(Object singleton, ResourceClass resourceClass, String basePath);
+
+   void addJndiResource(String jndiName, ResourceClass resourceClass);
+
+   void addJndiResource(String jndiName, ResourceClass resourceClass, String basePath);
 }

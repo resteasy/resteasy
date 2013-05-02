@@ -51,6 +51,32 @@ public class ResourceMethodRegistry implements Registry
 
    }
 
+   /**
+    * Register a vanilla JAX-RS resource class
+    *
+    * @param clazz
+    */
+   public void addPerRequestResource(Class clazz)
+   {
+      addResourceFactory(new POJOResourceFactory(clazz));
+   }
+
+   @Override
+   public void addPerRequestResource(ResourceClass clazz)
+   {
+      POJOResourceFactory resourceFactory = new POJOResourceFactory(clazz);
+      addResourceFactory(resourceFactory, null, clazz);
+      if (resourceFactory != null) resourceFactory.registered(providerFactory);
+   }
+
+   @Override
+   public void addPerRequestResource(ResourceClass clazz, String basePath)
+   {
+      POJOResourceFactory resourceFactory = new POJOResourceFactory(clazz);
+      addResourceFactory(resourceFactory, basePath, clazz);
+      if (resourceFactory != null) resourceFactory.registered(providerFactory);
+   }
+
    public void addSingletonResource(Object singleton)
    {
       addResourceFactory(new SingletonResource(singleton));
@@ -60,6 +86,23 @@ public class ResourceMethodRegistry implements Registry
    {
       addResourceFactory(new SingletonResource(singleton), basePath);
    }
+
+   @Override
+   public void addSingletonResource(Object singleton, ResourceClass resourceClass)
+   {
+      SingletonResource resourceFactory = new SingletonResource(singleton, resourceClass);
+      addResourceFactory(resourceFactory, null, resourceClass);
+      if (resourceFactory != null) resourceFactory.registered(providerFactory);
+   }
+
+   @Override
+   public void addSingletonResource(Object singleton, ResourceClass resourceClass, String basePath)
+   {
+      SingletonResource resourceFactory = new SingletonResource(singleton);
+      addResourceFactory(resourceFactory, basePath, resourceClass);
+      if (resourceFactory != null) resourceFactory.registered(providerFactory);
+   }
+
 
    public void addJndiResource(String jndiName)
    {
@@ -71,15 +114,24 @@ public class ResourceMethodRegistry implements Registry
       addResourceFactory(new JndiResourceFactory(jndiName), basePath);
    }
 
-   /**
-    * Register a vanilla JAX-RS resource class
-    *
-    * @param clazz
-    */
-   public void addPerRequestResource(Class clazz)
+   @Override
+   public void addJndiResource(String jndiName, ResourceClass resourceClass)
    {
-      addResourceFactory(new POJOResourceFactory(clazz));
+      JndiResourceFactory resourceFactory = new JndiResourceFactory(jndiName);
+      addResourceFactory(resourceFactory, null, resourceClass);
+      if (resourceFactory != null) resourceFactory.registered(providerFactory);
    }
+
+   @Override
+   public void addJndiResource(String jndiName, ResourceClass resourceClass, String basePath)
+   {
+      JndiResourceFactory resourceFactory = new JndiResourceFactory(jndiName);
+      addResourceFactory(resourceFactory, basePath, resourceClass);
+      if (resourceFactory != null) resourceFactory.registered(providerFactory);
+   }
+
+
+
 
    /**
     * Bind an endpoint ResourceFactory.  ResourceFactory.getScannableClass() defines what class should be scanned
@@ -126,7 +178,7 @@ public class ResourceMethodRegistry implements Registry
    public void addResourceFactory(ResourceFactory ref, String base, Class<?> clazz)
    {
       if (ref != null) ref.registered(providerFactory);
-      ResourceClass resourceClass = ResourceBuilder.fromClass(clazz);
+      ResourceClass resourceClass = ResourceBuilder.fromAnnotations(clazz);
       addResourceFactory(ref, base, resourceClass);
 
       // https://issues.jboss.org/browse/JBPAPP-7871
@@ -151,7 +203,7 @@ public class ResourceMethodRegistry implements Registry
       if (ref != null) ref.registered(providerFactory);
       for (Class<?> clazz: classes)
       {
-         ResourceClass resourceClass = ResourceBuilder.fromClass(clazz);
+         ResourceClass resourceClass = ResourceBuilder.fromAnnotations(clazz);
          addResourceFactory(ref, base, resourceClass);
       }
       
