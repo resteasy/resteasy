@@ -4,6 +4,8 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.metadata.ResourceBuilder;
+import org.jboss.resteasy.spi.metadata.ResourceClass;
 
 /**
  * VERY simple implementation that just returns the instance the SingleResource was created with
@@ -13,16 +15,24 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
  */
 public class SingletonResource implements ResourceFactory
 {
-   private Object obj;
+   private final Object obj;
+   private final ResourceClass resourceClass;
 
    public SingletonResource(Object obj)
    {
       this.obj = obj;
+      this.resourceClass = ResourceBuilder.fromClass(obj.getClass());
+   }
+
+   public SingletonResource(Object obj, ResourceClass resourceClass)
+   {
+      this.obj = obj;
+      this.resourceClass = resourceClass;
    }
 
    public void registered(ResteasyProviderFactory factory)
    {
-      factory.getInjectorFactory().createPropertyInjector(obj.getClass(), factory).inject(obj);
+      factory.getInjectorFactory().createPropertyInjector(resourceClass, factory).inject(obj);
    }
 
    public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)

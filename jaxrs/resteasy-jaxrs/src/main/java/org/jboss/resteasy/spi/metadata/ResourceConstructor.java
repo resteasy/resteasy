@@ -21,10 +21,13 @@ public class ResourceConstructor
    {
       this.resourceClass = resourceClass;
       this.constructor = constructor;
-      this.params = new ConstructorParameter[constructor.getParameterTypes().length];
-      for (int i = 0; i < constructor.getParameterTypes().length; i++)
+      if (constructor.getParameterTypes() != null)
       {
-         this.params[i] = new ConstructorParameter(this, constructor.getParameterTypes()[i], constructor.getGenericParameterTypes()[i], constructor.getParameterAnnotations()[i]);
+         this.params = new ConstructorParameter[constructor.getParameterTypes().length];
+         for (int i = 0; i < constructor.getParameterTypes().length; i++)
+         {
+            this.params[i] = new ConstructorParameter(this, constructor.getParameterTypes()[i], constructor.getGenericParameterTypes()[i], constructor.getParameterAnnotations()[i]);
+         }
       }
    }
 

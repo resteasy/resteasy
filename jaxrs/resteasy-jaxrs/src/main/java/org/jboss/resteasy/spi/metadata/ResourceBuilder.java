@@ -661,7 +661,12 @@ public class ResourceBuilder
    public static ResourceConstructor constructor(Class<?> annotatedResourceClass)
    {
       Constructor constructor = PickConstructor.pickPerRequestConstructor(annotatedResourceClass);
-      return resourceClass(annotatedResourceClass).constructor(constructor).buildConstructor().build().getConstructor();
+      ResourceConstructorBuilder builder = resourceClass(annotatedResourceClass).constructor(constructor);
+      if (constructor.getParameterTypes() != null)
+      {
+         for (int i = 0; i < constructor.getParameterTypes().length; i++) builder.param(i).fromAnnotations();
+      }
+      return builder.buildConstructor().build().getConstructor();
    }
 
    /**
