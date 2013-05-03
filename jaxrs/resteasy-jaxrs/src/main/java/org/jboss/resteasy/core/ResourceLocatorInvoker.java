@@ -132,14 +132,7 @@ public class ResourceLocatorInvoker implements ResourceInvoker
             String msg = "Subresource for target class has no jax-rs annotations.: " + target.getClass().getName();
             throw new InternalServerErrorException(msg);
          }
-         if (Proxy.isProxyClass(target.getClass()))
-         {
-            registry.addResourceFactory(null, null, GetRestful.getSubResourceClasses(target.getClass()));
-         }
-         else
-         {
-            registry.addResourceFactory(null, null, target.getClass());//subResourceClass);
-         }
+         registry.addResourceFactory(null, null, target.getClass());//subResourceClass);
          cachedSubresources.putIfAbsent(target.getClass(), registry);
       }
       ResourceInvoker invoker = registry.getResourceInvoker(request);

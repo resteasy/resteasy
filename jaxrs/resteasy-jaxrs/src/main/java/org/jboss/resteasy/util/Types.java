@@ -304,6 +304,59 @@ public class Types
       return null;
    }
 
+   public static Type resolveTypeVariables(Class<?> root, Type type)
+   {
+      if (type instanceof TypeVariable)
+      {
+         return resolveTypeVariable(root, (TypeVariable)type);
+      }
+      else if (type instanceof ParameterizedType)
+      {
+         final ParameterizedType param = (ParameterizedType)type;
+         final Type[] actuals = new Type[param.getActualTypeArguments().length];
+         for (int i = 0; i < actuals.length; i++)
+         {
+            actuals[i] = resolveTypeVariables(root, param.getActualTypeArguments()[i]);
+         }
+         return new ParameterizedType() {
+            @Override
+            public Type[] getActualTypeArguments()
+            {
+               return actuals;
+            }
+
+            @Override
+            public Type getRawType()
+            {
+               return param.getRawType();
+            }
+
+            @Override
+            public Type getOwnerType()
+            {
+               return param.getOwnerType();
+            }
+         };
+      }
+      else if (type instanceof GenericArrayType)
+      {
+         GenericArrayType arrayType = (GenericArrayType)type;
+         final Type componentType = resolveTypeVariables(root, arrayType.getGenericComponentType());
+         return new GenericArrayType()
+         {
+            @Override
+            public Type getGenericComponentType()
+            {
+               return componentType;
+            }
+         };
+      }
+      else
+      {
+         return type;
+      }
+   }
+
 
    /**
     * Finds an actual value of a type variable. The method looks in a class hierarchy for a class defining the variable
@@ -313,7 +366,7 @@ public class Types
     * @param typeVariable
     * @return actual type of the type variable
     */
-   public static Type getActualValueOfTypeVariable(Class<?> root, TypeVariable<?> typeVariable)
+   public static Type resolveTypeVariable(Class<?> root, TypeVariable<?> typeVariable)
    {
       if (typeVariable.getGenericDeclaration() instanceof Class<?>)
       {
