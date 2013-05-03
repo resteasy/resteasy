@@ -43,13 +43,8 @@ abstract public class Parameter
    protected Parameter(ResourceClass resourceClass, Class<?> type, Type genericType)
    {
       this.resourceClass = resourceClass;
-      this.type = type;
-      this.genericType = genericType;
-      if (genericType instanceof TypeVariable<?>)
-      {
-         this.genericType = Types.getActualValueOfTypeVariable(resourceClass.getClazz(), (TypeVariable<?>) genericType);
-         this.type = Types.getRawType(this.genericType);
-      }
+      this.genericType = Types.resolveTypeVariables(resourceClass.getClazz(), genericType);
+      this.type = Types.getRawType(this.genericType);
    }
 
    public ResourceClass getResourceClass()

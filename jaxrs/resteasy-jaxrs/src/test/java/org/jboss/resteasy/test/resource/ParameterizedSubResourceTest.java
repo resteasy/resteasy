@@ -16,8 +16,13 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.util.List;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -30,6 +35,7 @@ public class ParameterizedSubResourceTest
    {
       dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(RootImpl.class);
+      dispatcher.getRegistry().addPerRequestResource(GenericSub.class);
    }
 
    @AfterClass
@@ -63,7 +69,9 @@ public class ParameterizedSubResourceTest
       @Override
       public SubImpl<Integer> getSub(String path)
       {
-         return new SubImpl<Integer>(path){};
+         return new SubImpl<Integer>(path)
+         {
+         };
       }
 
    }
@@ -99,6 +107,37 @@ public class ParameterizedSubResourceTest
 
    }
 
+
+   public interface GenericInterface<T>
+   {
+      @GET
+      public String get(@QueryParam("foo") List<T> params);
+   }
+
+   public interface DoubleInterface extends GenericInterface<Double>
+   {
+   }
+
+   @Path("generic")
+   public static class GenericSub
+   {
+      @Path("sub")
+      public DoubleInterface doit()
+      {
+         InvocationHandler handler = new InvocationHandler()
+         {
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
+            {
+               List<Double> list = (List<Double>)args[0];
+               return list.get(0).toString();
+            }
+         };
+         Class[] intfs = {DoubleInterface.class};
+         return (DoubleInterface)Proxy.newProxyInstance(GenericSub.class.getClassLoader(), intfs, handler);
+      }
+   }
+
    @Test
    public void testParametized() throws Exception
    {
@@ -124,4 +163,24 @@ public class ParameterizedSubResourceTest
       }
 
    }
+
+   @Test
+   public void test2()
+   {
+      ClientRequest request = new ClientRequest(generateURL("/generic/sub"));
+      ClientResponse<String> response = null;
+      try
+      {
+         response = request.queryParameter("foo", "42.0").get(String.class);
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         Assert.assertEquals("42.0", response.getEntity());
+      }
+
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+
+   }
+
 }
