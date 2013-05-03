@@ -1,8 +1,8 @@
 package org.jboss.resteasy.core.registry;
 
 import org.jboss.resteasy.core.ResourceInvoker;
-import org.jboss.resteasy.core.ResourceLocator;
-import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.ResourceLocatorInvoker;
+import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.MethodNotAllowedException;
@@ -28,8 +28,8 @@ import java.util.List;
 public class Segment
 {
    public static final String RESTEASY_CHOSEN_ACCEPT = "RESTEASY_CHOSEN_ACCEPT";
-   protected List<ResourceMethod> methods = new ArrayList<ResourceMethod>();
-   protected ResourceLocator locator;
+   protected List<ResourceMethodInvoker> methods = new ArrayList<ResourceMethodInvoker>();
+   protected ResourceLocatorInvoker locator;
 
    protected boolean isEmpty()
    {
@@ -49,13 +49,13 @@ public class Segment
       List<WeightedMediaType> accepts = new ArrayList<WeightedMediaType>();
       for (MediaType accept : oldaccepts) accepts.add(WeightedMediaType.parse(accept));
 
-      List<ResourceMethod> list = new ArrayList<ResourceMethod>();
+      List<ResourceMethodInvoker> list = new ArrayList<ResourceMethodInvoker>();
 
       boolean methodMatch = false;
       boolean consumeMatch = false;
 
       // make a list of all compatible ResourceMethods
-      for (ResourceMethod invoker : methods)
+      for (ResourceMethodInvoker invoker : methods)
       {
 
          if (invoker.getHttpMethods().contains(httpMethod))
@@ -83,7 +83,7 @@ public class Segment
          if (!methodMatch)
          {
             HashSet<String> allowed = new HashSet<String>();
-            for (ResourceMethod invoker : methods) allowed.addAll(invoker.getHttpMethods());
+            for (ResourceMethodInvoker invoker : methods) allowed.addAll(invoker.getHttpMethods());
 
             if (httpMethod.equalsIgnoreCase("HEAD") && allowed.contains("GET"))
             {
@@ -122,10 +122,10 @@ public class Segment
 
       // Populate the consumes identity map with media types from each ResourceMethod
       // so that we can easily pick invokers after media types are sorted
-      IdentityHashMap<WeightedMediaType, ResourceMethod> consumesMap = new IdentityHashMap<WeightedMediaType, ResourceMethod>();
-      for (ResourceMethod invoker : list)
+      IdentityHashMap<WeightedMediaType, ResourceMethodInvoker> consumesMap = new IdentityHashMap<WeightedMediaType, ResourceMethodInvoker>();
+      for (ResourceMethodInvoker invoker : list)
       {
-         if (invoker.getConsumes() == null)
+         if (invoker.getConsumes() == null || invoker.getConsumes().length == 0)
          {
             WeightedMediaType defaultConsumes = WeightedMediaType.valueOf("*/*;q=0.0");
             consumesMap.put(defaultConsumes, invoker);
@@ -140,7 +140,7 @@ public class Segment
 
       }
 
-      list = new ArrayList<ResourceMethod>();
+      list = new ArrayList<ResourceMethodInvoker>();
       ArrayList<WeightedMediaType> consumes = new ArrayList<WeightedMediaType>();
       consumes.addAll(consumesMap.keySet());
       Collections.sort(consumes);
@@ -170,10 +170,10 @@ public class Segment
       if (list.size() == 1) return list.get(0);
 
       // make an identiy map of produced media types
-      IdentityHashMap<WeightedMediaType, ResourceMethod> producesMap = new IdentityHashMap<WeightedMediaType, ResourceMethod>();
-      for (ResourceMethod invoker : list)
+      IdentityHashMap<WeightedMediaType, ResourceMethodInvoker> producesMap = new IdentityHashMap<WeightedMediaType, ResourceMethodInvoker>();
+      for (ResourceMethodInvoker invoker : list)
       {
-         if (invoker.getProduces() == null)
+         if (invoker.getProduces() == null || invoker.getProduces().length == 0)
          {
             WeightedMediaType defaultProduces = WeightedMediaType.valueOf("*/*;q=0.0");
             producesMap.put(defaultProduces, invoker);

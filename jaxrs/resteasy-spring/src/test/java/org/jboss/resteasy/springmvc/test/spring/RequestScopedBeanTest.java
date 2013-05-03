@@ -5,7 +5,10 @@ import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.ValueInjector;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.metadata.Parameter;
+import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.springmvc.tjws.TJWSEmbeddedSpringMVCServer;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -45,6 +48,32 @@ public class RequestScopedBeanTest
          {
             return super.createParameterExtractor(injectTargetClass, injectTarget, type,
                   genericType, annotations, factory);
+         }
+         else
+         {
+            return new ValueInjector()
+            {
+               public Object inject(HttpRequest request, HttpResponse response)
+               {
+                  return beanFactory.getBean(qualifier.value());
+               }
+
+               public Object inject()
+               {
+                  // do nothing.
+                  return null;
+               }
+            };
+         }
+      }
+
+      @Override
+      public ValueInjector createParameterExtractor(Parameter parameter, ResteasyProviderFactory providerFactory)
+      {
+         final Qualifier qualifier = FindAnnotation.findAnnotation(parameter.getAnnotations(), Qualifier.class);
+         if (qualifier == null)
+         {
+            return super.createParameterExtractor(parameter, providerFactory);
          }
          else
          {

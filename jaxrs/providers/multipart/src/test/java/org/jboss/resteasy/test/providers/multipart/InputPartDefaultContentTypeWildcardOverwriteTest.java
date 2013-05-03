@@ -6,7 +6,7 @@ import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.spi.Failure;
@@ -90,7 +90,7 @@ public class InputPartDefaultContentTypeWildcardOverwriteTest extends
 			PreProcessInterceptor {
 
 		public ServerResponse preProcess(HttpRequest request,
-				ResourceMethod method) throws Failure, WebApplicationException {
+				ResourceMethodInvoker method) throws Failure, WebApplicationException {
 			request.setAttribute(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY,
 					WILDCARD_WITH_CHARSET_UTF_8);
 			return null;

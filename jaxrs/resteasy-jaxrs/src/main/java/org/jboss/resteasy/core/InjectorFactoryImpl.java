@@ -7,6 +7,10 @@ import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.metadata.Parameter;
+import org.jboss.resteasy.spi.metadata.ResourceClass;
+import org.jboss.resteasy.spi.metadata.ResourceConstructor;
+import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.BeanParam;
@@ -23,7 +27,6 @@ import javax.ws.rs.core.Context;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
@@ -43,27 +46,98 @@ public class InjectorFactoryImpl implements InjectorFactory
    private ConcurrentHashMap<Class<?>, Class<?>> contextProxyCache = new ConcurrentHashMap<Class<?>, Class<?>>();
 
 
+   @Override
    public ConstructorInjector createConstructor(Constructor constructor, ResteasyProviderFactory providerFactory)
    {
       return new ConstructorInjectorImpl(constructor, providerFactory);
    }
 
+   @Override
+   public ConstructorInjector createConstructor(ResourceConstructor constructor, ResteasyProviderFactory providerFactory)
+   {
+      return new ConstructorInjectorImpl(constructor, providerFactory);
+   }
+
+   @Override
    public PropertyInjector createPropertyInjector(Class resourceClass, ResteasyProviderFactory providerFactory)
    {
       return new PropertyInjectorImpl(resourceClass, providerFactory);
    }
 
-   public MethodInjector createMethodInjector(Class root, Method method, ResteasyProviderFactory providerFactory)
+   @Override
+   public PropertyInjector createPropertyInjector(ResourceClass resourceClass, ResteasyProviderFactory providerFactory)
    {
-      return new MethodInjectorImpl(root, method, providerFactory);
+      return new ResourcePropertyInjector(resourceClass, providerFactory);
    }
 
+   @Override
+   public MethodInjector createMethodInjector(ResourceLocator method, ResteasyProviderFactory factory)
+   {
+      return new MethodInjectorImpl(method, factory);
+   }
+
+   @Override
+   public ValueInjector createParameterExtractor(Parameter parameter, ResteasyProviderFactory providerFactory)
+   {
+      switch (parameter.getParamType())
+      {
+         case QUERY_PARAM:
+            return new QueryParamInjector(parameter.getType(), parameter.getGenericType(), parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.isEncoded(), parameter.getAnnotations(), providerFactory);
+         case HEADER_PARAM:
+            return new HeaderParamInjector(parameter.getType(), parameter.getGenericType(), parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.getAnnotations(), providerFactory);
+         case FORM_PARAM:
+            return new FormParamInjector(parameter.getType(), parameter.getGenericType(), parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.isEncoded(), parameter.getAnnotations(), providerFactory);
+         case COOKIE_PARAM:
+            return new CookieParamInjector(parameter.getType(), parameter.getGenericType(), parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.getAnnotations(), providerFactory);
+         case PATH_PARAM:
+            return new PathParamInjector(parameter.getType(), parameter.getGenericType(), parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.isEncoded(), parameter.getAnnotations(), providerFactory);
+         case FORM:
+         {
+            String prefix = parameter.getParamName();
+            if (prefix.length() > 0)
+            {
+               if (parameter.getGenericType() instanceof ParameterizedType)
+               {
+                  ParameterizedType pType = (ParameterizedType) parameter.getGenericType();
+                  if (Types.isA(List.class, pType))
+                  {
+                     return new ListFormInjector(parameter.getType(), Types.getArgumentType(pType, 0), prefix, providerFactory);
+                  }
+                  if (Types.isA(Map.class, pType))
+                  {
+                     return new MapFormInjector(parameter.getType(), Types.getArgumentType(pType, 0), Types.getArgumentType(pType, 1), prefix, providerFactory);
+                  }
+               }
+               return new PrefixedFormInjector(parameter.getType(), prefix, providerFactory);
+            }
+            return new FormInjector(parameter.getType(), providerFactory);
+         }
+         case BEAN_PARAM:
+            return new FormInjector(parameter.getType(), providerFactory);
+         case MATRIX_PARAM:
+            return new MatrixParamInjector(parameter.getType(), parameter.getGenericType(), parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.isEncoded(), parameter.getAnnotations(), providerFactory);
+         case SUSPEND:
+            return new SuspendInjector(parameter.getSuspendTimeout(), parameter.getType());
+         case CONTEXT:
+            return createContextProxy(parameter.getType(), providerFactory);
+         case SUSPENDED:
+            return new AsynchronousResponseInjector();
+         case MESSAGE_BODY:
+            return new MessageBodyParameterInjector(parameter.getResourceClass().getClazz(), parameter.getAccessibleObject(), parameter.getType(), parameter.getGenericType(), parameter.getAnnotations(), providerFactory);
+         default:
+            return null;
+      }
+   }
+
+
+   @Override
    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type,
                                                  Type genericType, Annotation[] annotations, ResteasyProviderFactory providerFactory)
    {
       return createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, true, providerFactory);
    }
 
+   @Override
    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, boolean useDefault, ResteasyProviderFactory providerFactory)
    {
       DefaultValue defaultValue = findAnnotation(annotations, DefaultValue.class);
@@ -133,29 +207,19 @@ public class InjectorFactoryImpl implements InjectorFactory
       }
       else if ((suspend = findAnnotation(annotations, Suspend.class)) != null)
       {
-         return new SuspendInjector(suspend, type);
+         return new SuspendInjector(suspend.value(), type);
       }
       else if (findAnnotation(annotations, Context.class) != null)
       {
-         Class proxy = null;
-         if (type.isInterface())
-         {
-            proxy = contextProxyCache.get(type);
-            if (proxy == null)
-            {
-               proxy = Proxy.getProxyClass(type.getClassLoader(), type);
-               contextProxyCache.putIfAbsent(type, proxy);
-            }
-         }
-         return new ContextParameterInjector(proxy, type, providerFactory);
+         return createContextProxy(type, providerFactory);
       }
       else if ((suspended = findAnnotation(annotations, Suspended.class)) != null)
       {
-         return new AsynchronousResponseInjector(suspended);
+         return new AsynchronousResponseInjector();
       }
       else if (javax.ws.rs.container.AsyncResponse.class.isAssignableFrom(type))
       {
-         return new AsynchronousResponseInjector(suspended);
+         return new AsynchronousResponseInjector();
       }
       else if (useDefault)
       {
@@ -165,6 +229,21 @@ public class InjectorFactoryImpl implements InjectorFactory
       {
          return null;
       }
+   }
+
+   private ValueInjector createContextProxy(Class type, ResteasyProviderFactory providerFactory)
+   {
+      Class proxy = null;
+      if (type.isInterface())
+      {
+         proxy = contextProxyCache.get(type);
+         if (proxy == null)
+         {
+            proxy = Proxy.getProxyClass(type.getClassLoader(), type);
+            contextProxyCache.putIfAbsent(type, proxy);
+         }
+      }
+      return new ContextParameterInjector(proxy, type, providerFactory);
    }
 
 }

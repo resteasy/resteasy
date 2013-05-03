@@ -179,7 +179,7 @@
                         <configuration>
                             <target>
                                 <ant antfile="build.xml" inheritRefs="true">
-                                    <target name="modules"/>
+                                    <target name="all"/>
                                 </ant>
                             </target>
                         </configuration>
@@ -190,6 +190,17 @@
                         <groupId>org.jboss</groupId>
                         <artifactId>jandex</artifactId>
                         <version>1.0.3.Final</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>ant-contrib</groupId>
+                        <artifactId>ant-contrib</artifactId>
+                        <version>1.0b3</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>ant</groupId>
+                                <artifactId>ant</artifactId>
+                            </exclusion>
+                        </exclusions>
                     </dependency>
                 </dependencies>
 

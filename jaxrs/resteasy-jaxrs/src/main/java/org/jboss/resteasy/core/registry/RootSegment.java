@@ -1,8 +1,8 @@
 package org.jboss.resteasy.core.registry;
 
 import org.jboss.resteasy.core.ResourceInvoker;
-import org.jboss.resteasy.core.ResourceLocator;
-import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.ResourceLocatorInvoker;
+import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -60,13 +60,13 @@ public class RootSegment extends Segment
       {
          String expression = recombineSegments(segments, index);
 
-         if (invoker instanceof ResourceLocator)
+         if (invoker instanceof ResourceLocatorInvoker)
          {
             PathParamSegment segmentNode = locatorExpressions.get(expression);
             if (segmentNode != null)
                throw new LoggableFailure("You cannot have 2 locators for same path: " + expression);
             segmentNode = new PathParamSegment(expression);
-            segmentNode.locator = (ResourceLocator) invoker;
+            segmentNode.locator = (ResourceLocatorInvoker) invoker;
             locatorExpressions.put(segmentNode.getPathExpression(), segmentNode);
             sortedLocatorExpressions.add(segmentNode);
             Collections.sort(sortedLocatorExpressions);
@@ -81,7 +81,7 @@ public class RootSegment extends Segment
                sortedResourceExpressions.add(segmentNode);
                Collections.sort(sortedResourceExpressions);
             }
-            segmentNode.methods.add((ResourceMethod) invoker);
+            segmentNode.methods.add((ResourceMethodInvoker) invoker);
          }
       }
       else
@@ -98,13 +98,13 @@ public class RootSegment extends Segment
          }
          else
          {
-            if (invoker instanceof ResourceLocator)
+            if (invoker instanceof ResourceLocatorInvoker)
             {
-               segmentNode.locator = (ResourceLocator) invoker;
+               segmentNode.locator = (ResourceLocatorInvoker) invoker;
             }
             else
             {
-               segmentNode.methods.add((ResourceMethod) invoker);
+               segmentNode.methods.add((ResourceMethodInvoker) invoker);
             }
          }
       }
@@ -130,12 +130,6 @@ public class RootSegment extends Segment
       return expression;
    }
 
-   protected boolean isLocator(Method method)
-   {
-      return IsHttpMethod.getHttpMethods(method) == null;
-   }
-
-
    protected ResourceInvoker removePath(String[] segments, int index, Method method)
    {
       String segment = segments[index];
@@ -143,7 +137,8 @@ public class RootSegment extends Segment
       if (withPathParam.find())
       {
          String expression = recombineSegments(segments, index);
-         if (isLocator(method))
+         PathParamSegment locatorSegment = locatorExpressions.get(expression);
+         if (locatorSegment != null && locatorSegment.locator != null && locatorSegment.locator.getMethod().equals(method))
          {
             PathParamSegment rtn = locatorExpressions.remove(expression);
             if (rtn != null)
@@ -157,12 +152,12 @@ public class RootSegment extends Segment
          {
             PathParamSegment node = resourceExpressions.get(expression);
             if (node == null) return null;
-            Iterator<ResourceMethod> it = node.methods.iterator();
+            Iterator<ResourceMethodInvoker> it = node.methods.iterator();
             try
             {
                while (it.hasNext())
                {
-                  ResourceMethod invoker = it.next();
+                  ResourceMethodInvoker invoker = it.next();
                   if (invoker.getMethod().equals(method))
                   {
                      it.remove();
@@ -203,18 +198,18 @@ public class RootSegment extends Segment
          {
             try
             {
-               if (isLocator(method))
+               if (segmentNode.locator != null && method.equals(segmentNode.locator.getMethod()))
                {
-                  ResourceLocator loc = segmentNode.locator;
+                  ResourceLocatorInvoker loc = segmentNode.locator;
                   segmentNode.locator = null;
                   return loc;
                }
                else
                {
-                  Iterator<ResourceMethod> it = segmentNode.methods.iterator();
+                  Iterator<ResourceMethodInvoker> it = segmentNode.methods.iterator();
                   while (it.hasNext())
                   {
-                     ResourceMethod invoker = it.next();
+                     ResourceMethodInvoker invoker = it.next();
                      if (invoker.getMethod().equals(method))
                      {
                         it.remove();
@@ -266,9 +261,9 @@ public class RootSegment extends Segment
          ResourceInvoker removed = null;
          for (ResourceInvoker invoker : list)
          {
-            if (invoker instanceof ResourceMethod)
+            if (invoker instanceof ResourceMethodInvoker)
             {
-               ResourceMethod rm = (ResourceMethod) invoker;
+               ResourceMethodInvoker rm = (ResourceMethodInvoker) invoker;
                if (rm.getMethod().equals(method))
                {
                   removed = rm;
@@ -277,7 +272,7 @@ public class RootSegment extends Segment
             }
             else
             {
-               ResourceLocator locator = (ResourceLocator) invoker;
+               ResourceLocatorInvoker locator = (ResourceLocatorInvoker) invoker;
                if (locator.getMethod().equals(method))
                {
                   removed = locator;

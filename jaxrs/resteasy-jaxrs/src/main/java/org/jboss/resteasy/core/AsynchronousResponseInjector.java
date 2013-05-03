@@ -16,7 +16,7 @@ public class AsynchronousResponseInjector implements ValueInjector
    long timeout = -1;
    TimeUnit unit = null;
 
-   public AsynchronousResponseInjector(Suspended suspend)
+   public AsynchronousResponseInjector()
    {
    }
 

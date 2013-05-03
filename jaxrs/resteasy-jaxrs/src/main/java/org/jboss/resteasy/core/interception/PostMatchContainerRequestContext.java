@@ -1,6 +1,6 @@
 package org.jboss.resteasy.core.interception;
 
-import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.spi.HttpRequest;
 
 /**
@@ -9,15 +9,15 @@ import org.jboss.resteasy.spi.HttpRequest;
  */
 public class PostMatchContainerRequestContext extends PreMatchContainerRequestContext
 {
-   protected final ResourceMethod resourceMethod;
+   protected final ResourceMethodInvoker resourceMethod;
 
-   public PostMatchContainerRequestContext(HttpRequest request,ResourceMethod resourceMethod)
+   public PostMatchContainerRequestContext(HttpRequest request,ResourceMethodInvoker resourceMethod)
    {
       super(request);
       this.resourceMethod = resourceMethod;
    }
 
-   public ResourceMethod getResourceMethod()
+   public ResourceMethodInvoker getResourceMethod()
    {
       return resourceMethod;
    }

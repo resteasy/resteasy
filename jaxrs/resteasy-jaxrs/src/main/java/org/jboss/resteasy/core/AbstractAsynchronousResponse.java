@@ -10,7 +10,6 @@ import javax.ws.rs.container.TimeoutHandler;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.WriterInterceptor;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,7 +24,7 @@ import java.util.Map;
 public abstract class AbstractAsynchronousResponse implements ResteasyAsynchronousResponse
 {
    protected SynchronousDispatcher dispatcher;
-   protected ResourceMethod method;
+   protected ResourceMethodInvoker method;
    protected HttpRequest request;
    protected HttpResponse response;
    protected ContainerResponseFilter[] responseFilters;
@@ -95,13 +94,13 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
    }
 
    @Override
-   public ResourceMethod getMethod()
+   public ResourceMethodInvoker getMethod()
    {
       return method;
    }
 
    @Override
-   public void setMethod(ResourceMethod method)
+   public void setMethod(ResourceMethodInvoker method)
    {
       this.method = method;
    }

@@ -405,7 +405,7 @@ public class SynchronousDispatcher implements Dispatcher
               HttpHeaderNames.CONTENT_TYPE);
       if (type == null && jaxrsResponse.getEntity() != null)
       {
-         ResourceMethod method = (ResourceMethod) request.getAttribute(ResourceMethod.class.getName());
+         ResourceMethodInvoker method = (ResourceMethodInvoker) request.getAttribute(ResourceMethodInvoker.class.getName());
          if (method != null)
          {
             jaxrsResponse.getMetadata().putSingle(HttpHeaderNames.CONTENT_TYPE, method.resolveContentType(request, jaxrsResponse.getEntity()));

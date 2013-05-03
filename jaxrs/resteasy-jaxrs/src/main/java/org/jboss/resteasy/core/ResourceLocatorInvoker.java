@@ -13,6 +13,7 @@ import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.GetRestful;
 
@@ -28,25 +29,25 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version $Revision: 1 $
  */
 @SuppressWarnings("unchecked")
-public class ResourceLocator implements ResourceInvoker
+public class ResourceLocatorInvoker implements ResourceInvoker
 {
 
-   final static Logger logger = Logger.getLogger(ResourceLocator.class);
+   final static Logger logger = Logger.getLogger(ResourceLocatorInvoker.class);
 
    protected InjectorFactory injector;
    protected MethodInjector methodInjector;
    protected ResourceFactory resource;
    protected ResteasyProviderFactory providerFactory;
-   protected Method method;
+   protected ResourceLocator method;
    protected ConcurrentHashMap<Class, Registry> cachedSubresources = new ConcurrentHashMap<Class, Registry>();
 
-   public ResourceLocator(ResourceFactory resource, InjectorFactory injector, ResteasyProviderFactory providerFactory, Class root, Method method)
+   public ResourceLocatorInvoker(ResourceFactory resource, InjectorFactory injector, ResteasyProviderFactory providerFactory, ResourceLocator locator)
    {
       this.resource = resource;
       this.injector = injector;
       this.providerFactory = providerFactory;
-      this.method = method;
-      this.methodInjector = injector.createMethodInjector(root, method, providerFactory);
+      this.method = locator;
+      this.methodInjector = injector.createMethodInjector(locator, providerFactory);
    }
 
    protected Object createResource(HttpRequest request, HttpResponse response)
@@ -63,7 +64,7 @@ public class ResourceLocator implements ResourceInvoker
       try
       {
          uriInfo.pushCurrentResource(locator);
-         Object subResource = method.invoke(locator, args);
+         Object subResource = method.getMethod().invoke(locator, args);
          warnIfJaxRSAnnotatedFields(subResource);
 
          return subResource;
@@ -81,7 +82,7 @@ public class ResourceLocator implements ResourceInvoker
 
    public Method getMethod()
    {
-      return method;
+      return method.getMethod();
    }
 
    public BuiltResponse invoke(HttpRequest request, HttpResponse response)
@@ -126,7 +127,6 @@ public class ResourceLocator implements ResourceInvoker
       if (registry == null)
       {
          registry = new ResourceMethodRegistry(providerFactory);
-         
          if (!GetRestful.isSubResourceClass(target.getClass()))
          {
             String msg = "Subresource for target class has no jax-rs annotations.: " + target.getClass().getName();
@@ -149,14 +149,14 @@ public class ResourceLocator implements ResourceInvoker
          notFound.setLoggable(true);
          throw notFound;
       }
-      else if (invoker instanceof ResourceLocator)
+      else if (invoker instanceof ResourceLocatorInvoker)
       {
-         ResourceLocator locator = (ResourceLocator) invoker;
+         ResourceLocatorInvoker locator = (ResourceLocatorInvoker) invoker;
          return locator.invoke(request, response, target);
       }
       else
       {
-         ResourceMethod method = (ResourceMethod) invoker;
+         ResourceMethodInvoker method = (ResourceMethodInvoker) invoker;
          return method.invoke(request, response, target);
       }
    }

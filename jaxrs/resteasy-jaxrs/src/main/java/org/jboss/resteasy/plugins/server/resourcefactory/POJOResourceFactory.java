@@ -6,9 +6,9 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.PickConstructor;
-
-import java.lang.reflect.Constructor;
+import org.jboss.resteasy.spi.metadata.ResourceBuilder;
+import org.jboss.resteasy.spi.metadata.ResourceClass;
+import org.jboss.resteasy.spi.metadata.ResourceConstructor;
 
 /**
  * Allocates an instance of a class at each invocation
@@ -18,24 +18,33 @@ import java.lang.reflect.Constructor;
  */
 public class POJOResourceFactory implements ResourceFactory
 {
-   private Class<?> scannableClass;
+   private final Class<?> scannableClass;
+   private final ResourceClass resourceClass;
    private ConstructorInjector constructorInjector;
    private PropertyInjector propertyInjector;
 
    public POJOResourceFactory(Class<?> scannableClass)
    {
       this.scannableClass = scannableClass;
+      this.resourceClass = ResourceBuilder.fromAnnotations(scannableClass);
+   }
+
+   public POJOResourceFactory(ResourceClass resourceClass)
+   {
+      this.scannableClass = resourceClass.getClazz();
+      this.resourceClass = resourceClass;
    }
 
    public void registered(ResteasyProviderFactory factory)
    {
-      Constructor constructor = PickConstructor.pickPerRequestConstructor(scannableClass);
+      ResourceConstructor constructor = resourceClass.getConstructor();
+      if (constructor == null) constructor = ResourceBuilder.constructor(resourceClass.getClazz());
       if (constructor == null)
       {
          throw new RuntimeException("Unable to find a public constructor for class " + scannableClass.getName());
       }
       this.constructorInjector = factory.getInjectorFactory().createConstructor(constructor, factory);
-      this.propertyInjector = factory.getInjectorFactory().createPropertyInjector(scannableClass, factory);
+      this.propertyInjector = factory.getInjectorFactory().createPropertyInjector(resourceClass, factory);
    }
 
    public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)

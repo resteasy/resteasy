@@ -9,23 +9,18 @@ import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.UnhandledException;
-import org.jboss.resteasy.spi.WriterException;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.WriterInterceptor;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,7 +34,7 @@ public class ServerResponseWriter
 
    public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, final ResteasyProviderFactory providerFactory) throws IOException
    {
-      ResourceMethod method = (ResourceMethod) request.getAttribute(ResourceMethod.class.getName());
+      ResourceMethodInvoker method = (ResourceMethodInvoker) request.getAttribute(ResourceMethodInvoker.class.getName());
 
       executeFilters(jaxrsResponse, request, response, providerFactory, method);
 
@@ -113,7 +108,7 @@ public class ServerResponseWriter
       callback.commit(); // just in case the output stream is never used
    }
 
-   private static void executeFilters(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory, ResourceMethod method) throws IOException
+   private static void executeFilters(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method) throws IOException
    {
       ContainerResponseFilter[] responseFilters = null;
 
