@@ -9,7 +9,19 @@
 <chapter id="Migration_from_older_versions">
 <title>Migration from older versions</title>
 <sect1>
-    <title>Migrating from 3.0-RC-1 and 3.0-RC-1</title>
+    <title>Migrating from 3.0-beta-4 and 3.0-beta-5</title>
+    <itemizedlist>
+        <listitem>
+            JSONP support is no longer on by default.  A few users have complained that it is a security hole for their applications.
+        </listitem>
+        <listitem>
+            A number of SPIs have changed.  Shouldn't be an issue for those of you who use Restasy as-is.  Specifically
+            InjectorFactory and Registry have changed.
+        </listitem>
+    </itemizedlist>
+</sect1>
+    <sect1>
+    <title>Migrating from 3.0-beta-2 and 3.0-beta-4</title>
     <itemizedlist>
         <listitem>
             The JAX-RS 2.0 class ClientFactory no longer exists.  It has been replaced with ClientBuilder.  You can
@@ -24,7 +36,7 @@
     </itemizedlist>
 </sect1>
 <sect1>
-    <title>Migrating from 3.0-beta-1 and 3.0-RC-1</title>
+    <title>Migrating from 3.0-beta-1 and 3.0-beta-2</title>
     <itemizedlist>
         <listitem>
             The constructors for ResteasyClient class are no longer public.  You need to use the new ResteasyClientBuilder

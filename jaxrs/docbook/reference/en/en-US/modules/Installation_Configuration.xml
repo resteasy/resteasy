@@ -14,7 +14,7 @@
         <title>Upgrading Resteasy Within JBoss AS 7</title>
         <para>
             Resteasy is bundled with JBoss AS 7.  You will likely have the need to upgrade Resteasy in AS7.  The Resteasy
-            distribution comes with a zip file called resteasy-jboss-modules-3.0-RC-1.zip.  Unzip this file while
+            distribution comes with a zip file called resteasy-jboss-modules-3.0-beta-5.zip.  Unzip this file while
             with the modules/ directory of the JBoss AS7 distribution.  This will overwrite some of the existing files there.
         </para>
     </sect1>

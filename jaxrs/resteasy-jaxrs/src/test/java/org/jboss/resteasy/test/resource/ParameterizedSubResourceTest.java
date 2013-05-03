@@ -63,7 +63,7 @@ public class ParameterizedSubResourceTest
       @Override
       public SubImpl<Integer> getSub(String path)
       {
-         return new ConcreteSubImpl(path);
+         return new SubImpl<Integer>(path){};
       }
 
    }
