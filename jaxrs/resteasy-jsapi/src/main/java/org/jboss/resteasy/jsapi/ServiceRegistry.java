@@ -1,8 +1,8 @@
 package org.jboss.resteasy.jsapi;
 
 import org.jboss.resteasy.core.ResourceInvoker;
-import org.jboss.resteasy.core.ResourceLocator;
-import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.ResourceLocatorInvoker;
+import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -34,14 +34,14 @@ public class ServiceRegistry
 
 	private ArrayList<ServiceRegistry> locators;
 
-	private ResourceLocator locator;
+	private ResourceLocatorInvoker locator;
 
 	private String uri;
 
 	private String functionPrefix;
 
 	public ServiceRegistry(ServiceRegistry parent, ResourceMethodRegistry registry, 
-			ResteasyProviderFactory providerFactory, ResourceLocator locator)
+			ResteasyProviderFactory providerFactory, ResourceLocatorInvoker locator)
 	{
 		this.parent = parent;
 		this.registry = registry;
@@ -70,12 +70,12 @@ public class ServiceRegistry
 			List<ResourceInvoker> invokers = entry.getValue();
 			for (ResourceInvoker invoker : invokers)
 			{
-				if (invoker instanceof ResourceMethod)
+				if (invoker instanceof ResourceMethodInvoker)
 				{
-					methods.add(new MethodMetaData(this, (ResourceMethod) invoker));
-				} else if(invoker instanceof ResourceLocator)
+					methods.add(new MethodMetaData(this, (ResourceMethodInvoker) invoker));
+				} else if(invoker instanceof ResourceLocatorInvoker)
 				{
-					ResourceLocator locator = (ResourceLocator) invoker;
+					ResourceLocatorInvoker locator = (ResourceLocatorInvoker) invoker;
 					Method method = locator.getMethod();
 					Class<?> locatorType = method.getReturnType();
 					Class<?>[] locatorResourceTypes = GetRestful.getSubResourceClasses(locatorType);

@@ -1,8 +1,8 @@
 package org.jboss.resteasy.plugins.stats;
 
 import org.jboss.resteasy.core.ResourceInvoker;
-import org.jboss.resteasy.core.ResourceLocator;
-import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.ResourceLocatorInvoker;
+import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -40,9 +40,9 @@ public class RegistryStatsResource
 
          for (ResourceInvoker invoker : invokers)
          {
-            if (invoker instanceof ResourceMethod)
+            if (invoker instanceof ResourceMethodInvoker)
             {
-               ResourceMethod rm = (ResourceMethod) invoker;
+               ResourceMethodInvoker rm = (ResourceMethodInvoker) invoker;
                for (String httpMethod : rm.getHttpMethods())
                {
                   ResourceMethodEntry method = null;
@@ -81,7 +81,7 @@ public class RegistryStatsResource
             }
             else
             {
-               ResourceLocator rl = (ResourceLocator) invoker;
+               ResourceLocatorInvoker rl = (ResourceLocatorInvoker) invoker;
                SubresourceLocator locator = new SubresourceLocator();
                locator.setClazz(rl.getMethod().getDeclaringClass().getName());
                locator.setMethod(rl.getMethod().getName());

@@ -99,6 +99,7 @@
         <module>resteasy-cdi</module>
         <module>server-adapters</module>
         <module>war-tests</module>
+        <!-- <module>as8-integration-testing</module> -->
         <module>examples</module>
         <module>async-http-servlet-3.0</module>
         <module>jboss-modules</module>

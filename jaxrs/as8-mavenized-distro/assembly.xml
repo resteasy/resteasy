@@ -1,0 +1,15 @@
+<assembly>
+    <id>all</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>true</includeBaseDirectory>
+
+    <fileSets>
+        <fileSet>
+            <directory>jboss-as-distro</directory>
+            <outputDirectory/>
+        </fileSet>
+    </fileSets>
+
+</assembly>

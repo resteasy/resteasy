@@ -20,15 +20,26 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<project name="module-repository" basedir="." default="modules">
+<project name="module-repository" basedir="." default="all">
 
     <import file="lib.xml"/>
 
     <property name="output.dir" value="target"/>
 
+    <target name="all">
+        <antcall target="modules">
+            <!-- TODO add OSGI later when we can have maven repo references to those jars -->
+            <param name="mavenized.modules" value="true"/>
+            <param name="output.dir" value="target/mavenized"/>
+        </antcall>
+        <antcall target="modules">
+            <param name="mavenized.modules" value="false"/>
+            <param name="output.dir" value="target"/>
+        </antcall>
+    </target>
+
 
     <target name="modules">
-        <echo message="******** ${project.version} ********"/>
         <!--
           ~ Complete list of modules to assemble.
           ~
@@ -120,6 +131,7 @@
         <zip destfile="${output.dir}/resteasy-jboss-modules-${project.version}.zip">
             <zipfileset dir="${output.dir}/modules"/>
         </zip>
+
     </target>
 
     <target name="clean-target">

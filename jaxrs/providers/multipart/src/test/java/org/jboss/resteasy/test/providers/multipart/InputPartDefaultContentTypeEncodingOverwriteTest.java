@@ -4,7 +4,7 @@ import junit.framework.Assert;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartInput;
@@ -48,7 +48,7 @@ public class InputPartDefaultContentTypeEncodingOverwriteTest extends
 			PreProcessInterceptor {
 
 		public ServerResponse preProcess(HttpRequest request,
-				ResourceMethod method) throws Failure, WebApplicationException {
+				ResourceMethodInvoker method) throws Failure, WebApplicationException {
 			request.setAttribute(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY,
 					TEXT_PLAIN_WITH_CHARSET_UTF_8);
 			return null;

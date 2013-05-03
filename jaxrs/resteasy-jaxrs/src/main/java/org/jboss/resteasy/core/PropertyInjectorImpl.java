@@ -9,9 +9,8 @@ import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.util.MethodHashing;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
@@ -19,8 +18,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.security.DigestOutputStream;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,83 +54,6 @@ public class PropertyInjectorImpl implements PropertyInjector
       populateMap(clazz, factory);
    }
 
-   public static long methodHash(Method method)
-           throws Exception
-   {
-      Class<?>[] parameterTypes = method.getParameterTypes();
-      StringBuilder methodDesc = new StringBuilder(method.getName()).append("(");
-      for (int j = 0; j < parameterTypes.length; j++)
-      {
-         methodDesc.append(getTypeString(parameterTypes[j]));
-      }
-      methodDesc.append(")").append(getTypeString(method.getReturnType()));
-      return createHash(methodDesc.toString());
-   }
-
-   public static long createHash(String methodDesc)
-           throws Exception
-   {
-      long hash = 0;
-      ByteArrayOutputStream bytearrayoutputstream = new ByteArrayOutputStream(512);
-      MessageDigest messagedigest = MessageDigest.getInstance("SHA");
-      DataOutputStream dataoutputstream = new DataOutputStream(new DigestOutputStream(bytearrayoutputstream, messagedigest));
-      dataoutputstream.writeUTF(methodDesc);
-      dataoutputstream.flush();
-      byte abyte0[] = messagedigest.digest();
-      for (int j = 0; j < Math.min(8, abyte0.length); j++)
-         hash += (long) (abyte0[j] & 0xff) << j * 8;
-      return hash;
-
-   }
-
-   static String getTypeString(Class<?> cl)
-   {
-      if (cl == Byte.TYPE)
-      {
-         return "B";
-      }
-      else if (cl == Character.TYPE)
-      {
-         return "C";
-      }
-      else if (cl == Double.TYPE)
-      {
-         return "D";
-      }
-      else if (cl == Float.TYPE)
-      {
-         return "F";
-      }
-      else if (cl == Integer.TYPE)
-      {
-         return "I";
-      }
-      else if (cl == Long.TYPE)
-      {
-         return "J";
-      }
-      else if (cl == Short.TYPE)
-      {
-         return "S";
-      }
-      else if (cl == Boolean.TYPE)
-      {
-         return "Z";
-      }
-      else if (cl == Void.TYPE)
-      {
-         return "V";
-      }
-      else if (cl.isArray())
-      {
-         return "[" + getTypeString(cl.getComponentType());
-      }
-      else
-      {
-         return "L" + cl.getName().replace('.', '/') + ";";
-      }
-   }
-
    protected void populateMap(Class<?> clazz, ResteasyProviderFactory factory)
    {
       for (Field field : clazz.getDeclaredFields())
@@ -167,7 +87,7 @@ public class PropertyInjectorImpl implements PropertyInjector
             long hash = 0;
             try
             {
-               hash = methodHash(method);
+               hash = MethodHashing.methodHash(method);
             }
             catch (Exception e)
             {

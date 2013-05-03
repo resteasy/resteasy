@@ -9,6 +9,8 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.metadata.MethodParameter;
+import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.util.Types;
 
@@ -26,71 +28,24 @@ import java.lang.reflect.TypeVariable;
  */
 public class MethodInjectorImpl implements MethodInjector
 {
-   protected Method method;
-   protected Method invokedMethod;
-   protected Class rootClass;
    protected ValueInjector[] params;
    protected ResteasyProviderFactory factory;
+   protected ResourceLocator method;
+   protected Method interfaceBasedMethod;
 
-   public MethodInjectorImpl(Class root, Method method, ResteasyProviderFactory factory)
+   public MethodInjectorImpl(ResourceLocator resourceMethod, ResteasyProviderFactory factory)
    {
-      this.method = method;
-      this.rootClass = root;
-
-      // invokedMethod is for when the target object might be a proxy and
-      // resteasy is getting the bean class to introspect.
-      // An example is a proxied Spring bean that is a resource
-      this.invokedMethod = findInterfaceBasedMethod(root, method);
       this.factory = factory;
-      params = new ValueInjector[method.getParameterTypes().length];
-      /*
-          We get the genericParameterTypes for the case of:
-
-          interface Foo<T> {
-             @PUT
-             void put(List<T> l);
-          }
-
-          public class FooImpl implements Foo<Customer> {
-              public void put(List<Customer> l) {...}
-          }
-       */
-      Method actualMethod = null;
-      // java.lang.reflect.Proxy removes generic type information
-      // so use the method passed into this class.
-      // see RESTEASY-685 for an example of this.
-      if (Proxy.isProxyClass(root))
+      this.method = resourceMethod;
+      this.interfaceBasedMethod = findInterfaceBasedMethod(resourceMethod.getResourceClass().getClazz(), resourceMethod.getMethod());
+      params = new ValueInjector[resourceMethod.getParams().length];
+      int i = 0;
+      for (MethodParameter parameter : resourceMethod.getParams())
       {
-         actualMethod = method;
-      }
-      else
-      {
-         actualMethod = Types.getImplementingMethod(root, method);
-      }
-      Type[] genericParameterTypes = actualMethod.getGenericParameterTypes();
-      for (int i = 0; i < actualMethod.getParameterTypes().length; i++)
-      {
-         Class<?> type;
-         Type genericType;
-
-         // the parameter type might be a type variable defined in a superclass
-         if (actualMethod.getGenericParameterTypes()[i] instanceof TypeVariable<?>)
-         {
-            // try to find out the value of the type variable
-            genericType = Types.getActualValueOfTypeVariable(root, (TypeVariable<?>) genericParameterTypes[i]);
-            type = Types.getRawType(genericType);
-         }
-         else
-         {
-            type = actualMethod.getParameterTypes()[i];
-            genericType = genericParameterTypes[i];
-         }
-
-         Annotation[] annotations = method.getParameterAnnotations()[i];
-         params[i] = factory.getInjectorFactory().createParameterExtractor(root, method, type, genericType, annotations, factory);
+         params[i++] = factory.getInjectorFactory().createParameterExtractor(parameter, factory);
       }
    }
-   
+
    public static Method findInterfaceBasedMethod(Class root, Method method)
    {
       if (method.getDeclaringClass().isInterface() || root.isInterface()) return method;
@@ -150,24 +105,39 @@ public class MethodInjectorImpl implements MethodInjector
    public Object invoke(HttpRequest request, HttpResponse httpResponse, Object resource) throws Failure, ApplicationException
    {
       Object[] args = injectArguments(request, httpResponse);
-      
+
       GeneralValidator validator = GeneralValidator.class.cast(request.getAttribute(GeneralValidator.class.getName()));
       ViolationsContainer<Object> violationsContainer = ViolationsContainer.class.cast(request.getAttribute(ViolationsContainer.class.getName()));
       if (validator != null && violationsContainer != null)
       {
-         violationsContainer.addViolations(validator.validateAllParameters(resource, invokedMethod, args));
+         violationsContainer.addViolations(validator.validateAllParameters(resource, method.getMethod(), args));
          if (violationsContainer.size() > 0)
          {
             return null;
          }
       }
-      
+
+      Method invokedMethod = method.getMethod();
+      if (!invokedMethod.getDeclaringClass().isAssignableFrom(resource.getClass()))
+      {
+         // invokedMethod is for when the target object might be a proxy and
+         // resteasy is getting the bean class to introspect.
+         // In other words ResourceMethod.getMethod() does not have the same declared class as the proxy:
+         // An example is a proxied Spring bean that is a resource
+         // interface ProxiedInterface { String get(); }
+         // @Path("resource") class MyResource implements ProxiedInterface {
+         //     @GET String get() {...}
+         // }
+         //
+         invokedMethod = interfaceBasedMethod;
+      }
+
       try
       {
          Object result = invokedMethod.invoke(resource, args);
          if (validator != null && violationsContainer != null)
          {
-            violationsContainer.addViolations(validator.validateReturnValue(resource, invokedMethod, result));
+            violationsContainer.addViolations(validator.validateReturnValue(resource, method.getMethod(), result));
          }
          return result;
       }

@@ -51,55 +51,73 @@ public class ServletContainerDispatcher
    {
       this.requestFactory = requestFactory;
       this.responseFactory = responseFactory;
-      providerFactory = (ResteasyProviderFactory) servletContext.getAttribute(ResteasyProviderFactory.class.getName());
-      dispatcher = (Dispatcher) servletContext.getAttribute(Dispatcher.class.getName());
+      ResteasyProviderFactory globalFactory = (ResteasyProviderFactory) servletContext.getAttribute(ResteasyProviderFactory.class.getName());
+      Dispatcher globalDispatcher = (Dispatcher) servletContext.getAttribute(Dispatcher.class.getName());
 
-      if ((providerFactory != null && dispatcher == null) || (providerFactory == null && dispatcher != null))
+      String application = bootstrap.getInitParameter("javax.ws.rs.Application");
+      String useGlobalStr = bootstrap.getInitParameter("resteasy.servlet.context.deployment");
+      boolean useGlobal = globalFactory != null;
+      if (useGlobalStr != null) useGlobal = Boolean.parseBoolean(useGlobalStr);
+
+      // use global is backward compatible with 2.3.x and earlier and will store and/or use the dispatcher and provider factory
+      // in the servlet context
+      if (useGlobal)
       {
-         throw new ServletException("Unknown state.  You have a Listener messing up what resteasy expects");
-      }
+         providerFactory = globalFactory;
+         dispatcher = globalDispatcher;
+         if ((providerFactory != null && dispatcher == null) || (providerFactory == null && dispatcher != null))
+         {
+            throw new ServletException("Unknown state.  You have a Listener messing up what resteasy expects");
+         }
+         // We haven't been initialized by an external entity so bootstrap ourselves
+         if (providerFactory == null)
+         {
+            deployment = bootstrap.createDeployment();
+            deployment.start();
 
+            servletContext.setAttribute(ResteasyProviderFactory.class.getName(), deployment.getProviderFactory());
+            servletContext.setAttribute(Dispatcher.class.getName(), deployment.getDispatcher());
+            servletContext.setAttribute(Registry.class.getName(), deployment.getRegistry());
 
-      // We haven't been initialized by an external entity so bootstrap ourselves
-      if (providerFactory == null)
-      {
-         deployment = bootstrap.createDeployment();
-         deployment.start();
+            dispatcher = deployment.getDispatcher();
+            providerFactory = deployment.getProviderFactory();
 
-         servletContext.setAttribute(ResteasyProviderFactory.class.getName(), deployment.getProviderFactory());
-         servletContext.setAttribute(Dispatcher.class.getName(), deployment.getDispatcher());
-         servletContext.setAttribute(Registry.class.getName(), deployment.getRegistry());
-
-         dispatcher = deployment.getDispatcher();
-         providerFactory = deployment.getProviderFactory();
-
+         }
+         else
+         {
+            // ResteasyBootstrap inited us.  Check to see if the servlet defines an Application class
+            if (application != null)
+            {
+               try
+               {
+                  Application app = ResteasyDeployment.createApplication(application.trim(), providerFactory);
+                  dispatcher.getDefaultContextObjects().put(Application.class, app);
+                  // push context data so we can inject it
+                  Map contextDataMap = ResteasyProviderFactory.getContextDataMap();
+                  contextDataMap.putAll(dispatcher.getDefaultContextObjects());
+                  processApplication(app);
+               }
+               finally
+               {
+                  ResteasyProviderFactory.removeContextDataLevel();
+               }
+            }
+         }
+         servletMappingPrefix = bootstrap.getParameter("resteasy.servlet.mapping.prefix");
+         if (servletMappingPrefix == null) servletMappingPrefix = "";
+         servletMappingPrefix = servletMappingPrefix.trim();
       }
       else
       {
-         // ResteasyBootstrap inited us.  Check to see if the servlet defines an Application class
-         String application = bootstrap.getInitParameter("javax.ws.rs.Application");
-         if (application != null)
-         {
-            try
-            {
-               Application app = ResteasyDeployment.createApplication(application.trim(), providerFactory);
-               dispatcher.getDefaultContextObjects().put(Application.class, app);
-               // push context data so we can inject it
-               Map contextDataMap = ResteasyProviderFactory.getContextDataMap();
-               contextDataMap.putAll(dispatcher.getDefaultContextObjects());
-               processApplication(app);
-            }
-            finally
-            {
-               ResteasyProviderFactory.removeContextDataLevel();
-            }
-         }
+         deployment = bootstrap.createDeployment();
+         deployment.start();
+         dispatcher = deployment.getDispatcher();
+         providerFactory = deployment.getProviderFactory();
+
+         servletMappingPrefix = bootstrap.getParameter("resteasy.servlet.mapping.prefix");
+         if (servletMappingPrefix == null) servletMappingPrefix = "";
+         servletMappingPrefix = servletMappingPrefix.trim();
       }
-      servletMappingPrefix = bootstrap.getParameter("resteasy.servlet.mapping.prefix");
-      if (servletMappingPrefix == null) servletMappingPrefix = "";
-      servletMappingPrefix = servletMappingPrefix.trim();
-
-
    }
 
    public void destroy()

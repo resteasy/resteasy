@@ -1,7 +1,7 @@
 package org.jboss.resteasy.jsapi;
 
 import org.jboss.resteasy.annotations.Form;
-import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.jsapi.MethodParamMetaData.MethodParamType;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -21,7 +21,7 @@ public class MethodMetaData
 	private final static Logger logger = Logger
     .getLogger(MethodMetaData.class);
 
-	private ResourceMethod resource;
+	private ResourceMethodInvoker resource;
 	private Method method;
 	private Class<?> klass;
 	private String wants;
@@ -34,7 +34,7 @@ public class MethodMetaData
 	private String functionPrefix;
 	private boolean wantsForm;
 
-	public MethodMetaData(ServiceRegistry serviceRegistry, ResourceMethod resource)
+	public MethodMetaData(ServiceRegistry serviceRegistry, ResourceMethodInvoker resource)
 	{
 		this.registry = serviceRegistry;
 		this.resource = resource;
@@ -209,7 +209,7 @@ public class MethodMetaData
 		return str.toString();
 	}
 
-	public ResourceMethod getResource()
+	public ResourceMethodInvoker getResource()
 	{
 		return resource;
 	}

@@ -2,7 +2,7 @@ package org.jboss.resteasy.links.impl;
 
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.core.ResourceInvoker;
-import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.links.ELProvider;
 import org.jboss.resteasy.links.LinkELProvider;
@@ -87,9 +87,9 @@ public class RESTUtils {
 			List<ResourceInvoker> invokers = entry.getValue();
 			for (ResourceInvoker invoker : invokers)
 			{
-				if (invoker instanceof ResourceMethod)
+				if (invoker instanceof ResourceMethodInvoker)
 				{
-					ResourceMethod resourceMethod = (ResourceMethod)invoker;
+					ResourceMethodInvoker resourceMethod = (ResourceMethodInvoker)invoker;
 					Method method = resourceMethod.getMethod();
 					results.add(method);
 				} else

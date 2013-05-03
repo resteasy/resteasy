@@ -1,6 +1,10 @@
 package org.jboss.resteasy.spi;
 
 import org.jboss.resteasy.core.ValueInjector;
+import org.jboss.resteasy.spi.metadata.Parameter;
+import org.jboss.resteasy.spi.metadata.ResourceClass;
+import org.jboss.resteasy.spi.metadata.ResourceConstructor;
+import org.jboss.resteasy.spi.metadata.ResourceLocator;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
@@ -16,7 +20,14 @@ public interface InjectorFactory
 {
    ConstructorInjector createConstructor(Constructor constructor, ResteasyProviderFactory factory);
    PropertyInjector createPropertyInjector(Class resourceClass, ResteasyProviderFactory factory);
-   MethodInjector createMethodInjector(Class root, Method method, ResteasyProviderFactory factory);
    ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, ResteasyProviderFactory factory);
    ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, boolean useDefault, ResteasyProviderFactory factory);
+
+   ValueInjector createParameterExtractor(Parameter parameter, ResteasyProviderFactory providerFactory);
+
+   MethodInjector createMethodInjector(ResourceLocator method, ResteasyProviderFactory factory);
+
+   PropertyInjector createPropertyInjector(ResourceClass resourceClass, ResteasyProviderFactory providerFactory);
+
+   ConstructorInjector createConstructor(ResourceConstructor constructor, ResteasyProviderFactory providerFactory);
 }

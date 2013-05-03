@@ -1,6 +1,6 @@
 package org.jboss.resteasy.spi;
 
-import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.ResourceMethodInvoker;
 
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.ContainerResponseFilter;
@@ -31,8 +31,8 @@ public interface ResteasyAsynchronousResponse extends AsyncResponse
 
     void setAnnotations(Annotation[] annotations);
 
-    ResourceMethod getMethod();
+    ResourceMethodInvoker getMethod();
 
-    void setMethod(ResourceMethod method);
+    void setMethod(ResourceMethodInvoker method);
 
 }
