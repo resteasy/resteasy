@@ -23,17 +23,12 @@ public class ResourceLocator
    public ResourceLocator(ResourceClass resourceClass, Method method, Method annotatedMethod)
    {
       this.resourceClass = resourceClass;
-      this.returnType = method.getReturnType();
       this.annotatedMethod = annotatedMethod;
       this.method = method;
-      this.genericReturnType = method.getGenericReturnType();
       // we initialize generic types based on the method of the resource class rather than the Method that is actually
       // annotated.  This is so we have the appropriate generic type information.
-      if (this.genericReturnType instanceof TypeVariable<?>)
-      {
-         this.genericReturnType = Types.getActualValueOfTypeVariable(resourceClass.getClazz(), (TypeVariable<?>) this.genericReturnType);
-         this.returnType = Types.getRawType(this.genericReturnType);
-      }
+      this.genericReturnType = Types.resolveTypeVariables(resourceClass.getClazz(), method.getGenericReturnType());
+      this.returnType = Types.getRawType(genericReturnType);
       this.params = new MethodParameter[method.getParameterTypes().length];
       for (int i = 0; i < method.getParameterTypes().length; i++)
       {

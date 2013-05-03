@@ -21,6 +21,7 @@ import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.Path;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Set;
 
@@ -65,7 +66,7 @@ public class ResourceMethodRegistry implements Registry
    public void addPerRequestResource(ResourceClass clazz)
    {
       POJOResourceFactory resourceFactory = new POJOResourceFactory(clazz);
-      addResourceFactory(resourceFactory, null, clazz);
+      register(resourceFactory, null, clazz);
       if (resourceFactory != null) resourceFactory.registered(providerFactory);
    }
 
@@ -73,7 +74,7 @@ public class ResourceMethodRegistry implements Registry
    public void addPerRequestResource(ResourceClass clazz, String basePath)
    {
       POJOResourceFactory resourceFactory = new POJOResourceFactory(clazz);
-      addResourceFactory(resourceFactory, basePath, clazz);
+      register(resourceFactory, basePath, clazz);
       if (resourceFactory != null) resourceFactory.registered(providerFactory);
    }
 
@@ -91,7 +92,7 @@ public class ResourceMethodRegistry implements Registry
    public void addSingletonResource(Object singleton, ResourceClass resourceClass)
    {
       SingletonResource resourceFactory = new SingletonResource(singleton, resourceClass);
-      addResourceFactory(resourceFactory, null, resourceClass);
+      register(resourceFactory, null, resourceClass);
       if (resourceFactory != null) resourceFactory.registered(providerFactory);
    }
 
@@ -99,7 +100,7 @@ public class ResourceMethodRegistry implements Registry
    public void addSingletonResource(Object singleton, ResourceClass resourceClass, String basePath)
    {
       SingletonResource resourceFactory = new SingletonResource(singleton);
-      addResourceFactory(resourceFactory, basePath, resourceClass);
+      register(resourceFactory, basePath, resourceClass);
       if (resourceFactory != null) resourceFactory.registered(providerFactory);
    }
 
@@ -118,7 +119,7 @@ public class ResourceMethodRegistry implements Registry
    public void addJndiResource(String jndiName, ResourceClass resourceClass)
    {
       JndiResourceFactory resourceFactory = new JndiResourceFactory(jndiName);
-      addResourceFactory(resourceFactory, null, resourceClass);
+      register(resourceFactory, null, resourceClass);
       if (resourceFactory != null) resourceFactory.registered(providerFactory);
    }
 
@@ -126,7 +127,7 @@ public class ResourceMethodRegistry implements Registry
    public void addJndiResource(String jndiName, ResourceClass resourceClass, String basePath)
    {
       JndiResourceFactory resourceFactory = new JndiResourceFactory(jndiName);
-      addResourceFactory(resourceFactory, basePath, resourceClass);
+      register(resourceFactory, basePath, resourceClass);
       if (resourceFactory != null) resourceFactory.registered(providerFactory);
    }
 
@@ -177,17 +178,9 @@ public class ResourceMethodRegistry implements Registry
     */
    public void addResourceFactory(ResourceFactory ref, String base, Class<?> clazz)
    {
+      Class<?>[] classes = {clazz};
+      addResourceFactory(ref, base, classes);
       if (ref != null) ref.registered(providerFactory);
-      ResourceClass resourceClass = ResourceBuilder.fromAnnotations(clazz);
-      addResourceFactory(ref, base, resourceClass);
-
-      // https://issues.jboss.org/browse/JBPAPP-7871
-      for (Method method : clazz.getDeclaredMethods()) {
-           Method _method = findAnnotatedMethod(clazz, method);
-          if (_method != null && !java.lang.reflect.Modifier.isPublic(_method.getModifiers())) {
-                  logger.warn("JAX-RS annotations found at non-public method: " + method.getDeclaringClass().getName() + "." + method.getName() + "(); Only public methods may be exposed as resource methods.");
-          }
-      }
    }
    
    /**
@@ -203,8 +196,19 @@ public class ResourceMethodRegistry implements Registry
       if (ref != null) ref.registered(providerFactory);
       for (Class<?> clazz: classes)
       {
-         ResourceClass resourceClass = ResourceBuilder.fromAnnotations(clazz);
-         addResourceFactory(ref, base, resourceClass);
+         if (Proxy.isProxyClass(clazz))
+         {
+            for (Class<?> intf : clazz.getInterfaces())
+            {
+               ResourceClass resourceClass = ResourceBuilder.fromAnnotations(intf);
+               register(ref, base, resourceClass);
+            }
+         }
+         else
+         {
+            ResourceClass resourceClass = ResourceBuilder.fromAnnotations(clazz);
+            register(ref, base, resourceClass);
+         }
       }
       
       // https://issues.jboss.org/browse/JBPAPP-7871
@@ -223,9 +227,14 @@ public class ResourceMethodRegistry implements Registry
    @Override
    public void addResourceFactory(ResourceFactory rf, String base, ResourceClass resourceClass)
    {
+      if (rf != null) rf.registered(providerFactory);
+      register(rf, base, resourceClass);
+   }
+
+   protected void register(ResourceFactory rf, String base, ResourceClass resourceClass)
+   {
       for (ResourceMethod method : resourceClass.getResourceMethods())
       {
-         System.out.println("registering: " + method.getMethod());
          processMethod(rf, base, method);
       }
       for (ResourceLocator method : resourceClass.getResourceLocators())

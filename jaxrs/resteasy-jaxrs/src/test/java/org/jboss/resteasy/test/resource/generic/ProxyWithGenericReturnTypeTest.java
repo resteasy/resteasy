@@ -3,10 +3,13 @@ package org.jboss.resteasy.test.resource.generic;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -89,7 +92,22 @@ public class ProxyWithGenericReturnTypeTest
             OutputStream entityStream) throws IOException,
             WebApplicationException
       {
-         entityStream.write(genericType.getClass().toString().getBytes());
+         String val = "null";
+         if (genericType == null) val = "null";
+         else if (genericType instanceof ParameterizedType)
+         {
+            ParameterizedType parameterizedType = (ParameterizedType)genericType;
+            val = ((Class)parameterizedType.getRawType()).getSimpleName() + "<";
+            Type paramType = parameterizedType.getActualTypeArguments()[0];
+            if (paramType instanceof Class) val += ((Class)paramType).getSimpleName();
+            else val += paramType.toString();
+            val += ">";
+         }
+         else if (genericType instanceof TypeVariable) val = "TypeVariable";
+         else if (genericType instanceof GenericArrayType) val = "GenericArrayType";
+         else val = "Type";
+
+         entityStream.write(val.getBytes());
       }
    }
    
@@ -148,6 +166,6 @@ public class ProxyWithGenericReturnTypeTest
       ClientResponse<String>response = request.get(String.class);
       System.out.println("Received response: " + response.getEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertTrue(response.getEntity(String.class).indexOf("ParameterizedTypeImpl") >= 0);
+      Assert.assertTrue(response.getEntity(String.class).indexOf("List<String>") >= 0);
    }   
 }
