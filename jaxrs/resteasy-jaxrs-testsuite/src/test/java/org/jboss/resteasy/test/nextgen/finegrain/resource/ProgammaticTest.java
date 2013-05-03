@@ -84,6 +84,7 @@ public class ProgammaticTest extends BaseResourceTest
               .buildClass();
       getRegistry().addPerRequestResource(resourceclass);
 
+
       Client client = ClientBuilder.newClient();
       String path = generateURL("/test");
       WebTarget target = client.target(path);
@@ -93,6 +94,8 @@ public class ProgammaticTest extends BaseResourceTest
 
       Response response = target.request().put(Entity.text("hello"));
       Assert.assertEquals(204, response.getStatus());
+
+      getRegistry().removeRegistrations(resourceclass);
 
    }
 
@@ -119,6 +122,7 @@ public class ProgammaticTest extends BaseResourceTest
       String value = target.queryParam("a", "hello").request().get(String.class);
       Assert.assertEquals(value, "hello");
       Assert.assertEquals(1, resource.counter);
+      getRegistry().removeRegistrations(resourceclass);
 
    }
 

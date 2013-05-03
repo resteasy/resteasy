@@ -93,37 +93,6 @@ public class Types
 
 
    /**
-    * Given an interface Method, look in the implementing class for the method that implements the interface's method
-    * to obtain generic type information.  This is useful for templatized interfaces like:
-    * <p/>
-    * <pre>
-    * interface Foo<T> {
-    *    @GET
-    *    List&lt;T&gt; get();
-    * }
-    * </pre>
-    *
-    * @param clazz
-    * @param method interface method
-    * @return
-    */
-   public static Type getGenericReturnTypeOfGenericInterfaceMethod(Class clazz, Method method)
-   {
-      if (!method.getDeclaringClass().isInterface()) return method.getGenericReturnType();
-
-      try
-      {
-         Method tmp = clazz.getMethod(method.getName(), method.getParameterTypes());
-         return tmp.getGenericReturnType();
-      }
-      catch (NoSuchMethodException e)
-      {
-
-      }
-      return method.getGenericReturnType();
-   }
-
-   /**
     * See if the two methods are compatible, that is they have the same relative signature
     *
     * @param method
@@ -186,7 +155,10 @@ public class Types
             {
                TypeVariable tv = (TypeVariable)paramGenericTypes[i];
                Type t = typeVarMap.get(tv.getName());
-               if (t == null) throw new RuntimeException("Unable to resolve type variable");
+               if (t == null)
+               {
+                  throw new RuntimeException("Unable to resolve type variable");
+               }
                paramTypes[i] = getRawType(t);
             }
             else
@@ -288,28 +260,6 @@ public class Types
    }
 
 
-   public static class TypeInfo
-   {
-      private Class<?> type;
-      private Type genericType;
-
-      public TypeInfo(Class<?> type, Type genericType)
-      {
-         this.type = type;
-         this.genericType = genericType;
-      }
-
-      public Class<?> getType()
-      {
-         return type;
-      }
-
-      public Type getGenericType()
-      {
-         return genericType;
-      }
-   }
-
    public static Class getCollectionBaseType(Class type, Type genericType)
    {
       if (genericType instanceof ParameterizedType)
@@ -354,78 +304,33 @@ public class Types
       return null;
    }
 
+
    /**
     * Finds an actual value of a type variable. The method looks in a class hierarchy for a class defining the variable
     * and returns the value if present.
     *
-    * @param clazz
+    * @param root
     * @param typeVariable
     * @return actual type of the type variable
     */
-   public static Type getActualValueOfTypeVariable(Class<?> clazz, TypeVariable<?> typeVariable)
+   public static Type getActualValueOfTypeVariable(Class<?> root, TypeVariable<?> typeVariable)
    {
       if (typeVariable.getGenericDeclaration() instanceof Class<?>)
       {
          Class<?> classDeclaringTypeVariable = (Class<?>) typeVariable.getGenericDeclaration();
-
-         // find the generic version of classDeclaringTypeVariable
-
-         Type fromInterface = getTypeVariableViaGenericInterface(clazz, classDeclaringTypeVariable, typeVariable);
-         if (fromInterface != null)
+         Type[] types = findParameterizedTypes(root, classDeclaringTypeVariable);
+         for (int i = 0; i < types.length; i++)
          {
-            return fromInterface;
-         }
-
-         while (clazz.getSuperclass() != null)
-         {
-            if (clazz.getSuperclass().equals(classDeclaringTypeVariable))
+            TypeVariable<?> tv = classDeclaringTypeVariable.getTypeParameters()[i];
+            if (tv.equals(typeVariable))
             {
-               // found it
-               ParameterizedType parameterizedSuperclass = (ParameterizedType) clazz.getGenericSuperclass();
-
-               for (int i = 0; i < classDeclaringTypeVariable.getTypeParameters().length; i++)
-               {
-                  TypeVariable<?> tv = classDeclaringTypeVariable.getTypeParameters()[i];
-                  if (tv.equals(typeVariable))
-                  {
-                     return parameterizedSuperclass.getActualTypeArguments()[i];
-                  }
-               }
+               return types[i];
             }
-
-            clazz = clazz.getSuperclass();
          }
       }
-
       throw new RuntimeException("Unable to determine value of type parameter " + typeVariable);
    }
 
-
-   private static Type getTypeVariableViaGenericInterface(Class<?> clazz, Class<?> classDeclaringTypeVariable, TypeVariable<?> typeVariable)
-   {
-      for (Type genericInterface : clazz.getGenericInterfaces())
-      {
-
-         if (genericInterface instanceof ParameterizedType)
-         {
-            ParameterizedType parameterizedType = (ParameterizedType) genericInterface;
-
-            for (int i = 0; i < classDeclaringTypeVariable.getTypeParameters().length; i++)
-            {
-               TypeVariable<?> tv = classDeclaringTypeVariable.getTypeParameters()[i];
-               if (tv.equals(typeVariable))
-               {
-                  return parameterizedType.getActualTypeArguments()[i];
-               }
-            }
-         }
-         else if (genericInterface instanceof Class)
-         {
-            return getTypeVariableViaGenericInterface((Class<?>) genericInterface, classDeclaringTypeVariable, typeVariable);
-         }
-      }
-      return null;
-   }
 
    /**
     * Given a class and an interfaces, go through the class hierarchy to find the interface and return its type arguments.
@@ -436,22 +341,9 @@ public class Types
     */
    public static Type[] getActualTypeArgumentsOfAnInterface(Class<?> classToSearch, Class<?> interfaceToFind)
    {
-      Class<?> clazz = classToSearch;
-      while (clazz != null)
-      {
-         for (Type genericInterface : clazz.getGenericInterfaces())
-         {
-            if (getRawType(genericInterface).equals(interfaceToFind))
-            {
-               if (genericInterface instanceof ParameterizedType)
-               {
-                  return ((ParameterizedType) genericInterface).getActualTypeArguments();
-               }
-            }
-         }
-         clazz = clazz.getSuperclass();
-      }
-      throw new RuntimeException("Unable to find type arguments of " + interfaceToFind);
+      Type[] types = findParameterizedTypes(classToSearch, interfaceToFind);
+      if (types == null) throw new RuntimeException("Unable to find type arguments of " + interfaceToFind);
+      return types;
    }
 
    private static final Type[] EMPTY_TYPE_ARRAY = {};

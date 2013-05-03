@@ -130,12 +130,6 @@ public class RootSegment extends Segment
       return expression;
    }
 
-   protected boolean isLocator(Method method)
-   {
-      return IsHttpMethod.getHttpMethods(method) == null;
-   }
-
-
    protected ResourceInvoker removePath(String[] segments, int index, Method method)
    {
       String segment = segments[index];
@@ -143,7 +137,8 @@ public class RootSegment extends Segment
       if (withPathParam.find())
       {
          String expression = recombineSegments(segments, index);
-         if (isLocator(method))
+         PathParamSegment locatorSegment = locatorExpressions.get(expression);
+         if (locatorSegment != null && locatorSegment.locator != null && locatorSegment.locator.getMethod().equals(method))
          {
             PathParamSegment rtn = locatorExpressions.remove(expression);
             if (rtn != null)
@@ -203,7 +198,7 @@ public class RootSegment extends Segment
          {
             try
             {
-               if (isLocator(method))
+               if (segmentNode.locator != null && method.equals(segmentNode.locator.getMethod()))
                {
                   ResourceLocatorInvoker loc = segmentNode.locator;
                   segmentNode.locator = null;
