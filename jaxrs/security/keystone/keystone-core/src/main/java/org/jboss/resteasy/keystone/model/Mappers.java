@@ -1,10 +1,11 @@
 package org.jboss.resteasy.keystone.model;
 
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.annotate.JsonRootName;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonRootName;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.ext.ContextResolver;
@@ -20,16 +21,16 @@ public class Mappers
 
    static
    {
-      DEFAULT_MAPPER.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
+      DEFAULT_MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
       //DEFAULT_MAPPER.enable(SerializationConfig.Feature.INDENT_OUTPUT);
-      DEFAULT_MAPPER.enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+      DEFAULT_MAPPER.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
 
-      WRAPPED_MAPPER.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
+      WRAPPED_MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
       //WRAPPED_MAPPER.enable(SerializationConfig.Feature.INDENT_OUTPUT);
-      WRAPPED_MAPPER.enable(SerializationConfig.Feature.WRAP_ROOT_VALUE);
-      WRAPPED_MAPPER.enable(DeserializationConfig.Feature.UNWRAP_ROOT_VALUE);
-      WRAPPED_MAPPER.enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+      WRAPPED_MAPPER.enable(SerializationFeature.WRAP_ROOT_VALUE);
+      WRAPPED_MAPPER.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);
+      WRAPPED_MAPPER.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
    }
 
