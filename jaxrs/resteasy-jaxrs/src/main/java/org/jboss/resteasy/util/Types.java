@@ -308,7 +308,8 @@ public class Types
    {
       if (type instanceof TypeVariable)
       {
-         return resolveTypeVariable(root, (TypeVariable)type);
+         Type newType = resolveTypeVariable(root, (TypeVariable)type);
+         return (newType == null) ? type : newType;
       }
       else if (type instanceof ParameterizedType)
       {
@@ -316,7 +317,8 @@ public class Types
          final Type[] actuals = new Type[param.getActualTypeArguments().length];
          for (int i = 0; i < actuals.length; i++)
          {
-            actuals[i] = resolveTypeVariables(root, param.getActualTypeArguments()[i]);
+            Type newType = resolveTypeVariables(root, param.getActualTypeArguments()[i]);
+            actuals[i] = newType == null ? param.getActualTypeArguments()[i] : newType;
          }
          return new ParameterizedType() {
             @Override
@@ -342,6 +344,7 @@ public class Types
       {
          GenericArrayType arrayType = (GenericArrayType)type;
          final Type componentType = resolveTypeVariables(root, arrayType.getGenericComponentType());
+         if (componentType == null) return type;
          return new GenericArrayType()
          {
             @Override
@@ -372,6 +375,7 @@ public class Types
       {
          Class<?> classDeclaringTypeVariable = (Class<?>) typeVariable.getGenericDeclaration();
          Type[] types = findParameterizedTypes(root, classDeclaringTypeVariable);
+         if (types == null) return  null;
          for (int i = 0; i < types.length; i++)
          {
             TypeVariable<?> tv = classDeclaringTypeVariable.getTypeParameters()[i];
@@ -381,7 +385,7 @@ public class Types
             }
          }
       }
-      throw new RuntimeException("Unable to determine value of type parameter " + typeVariable);
+      return null;
    }
 
 
@@ -420,6 +424,8 @@ public class Types
 
    public static Type[] findClassParameterizedTypes(Class<?> root, ParameterizedType rootType, Class<?> searchedForClass)
    {
+      if (Object.class.equals(root)) return null;
+
       Map<String, Type> typeVarMap = populateParameterizedMap(root, rootType);
 
       Class<?> superclass = root.getSuperclass();

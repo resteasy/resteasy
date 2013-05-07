@@ -187,6 +187,7 @@
                 <include>org.jboss.resteasy:resteasy-atom-provider</include>
                 <include>org.jboss.resteasy:resteasy-multipart-provider</include>
                 <include>org.jboss.resteasy:resteasy-jackson-provider</include>
+                <include>org.jboss.resteasy:resteasy-jackson2-provider</include>
                 <include>org.jboss.resteasy:resteasy-yaml-provider</include>
                 <include>org.jboss.resteasy:resteasy-spring</include>
                 <include>org.jboss.resteasy:resteasy-guice</include>

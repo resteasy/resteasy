@@ -73,6 +73,22 @@
             <maven-resource group="org.codehaus.jettison" artifact="jettison"/>
         </module-def>
 
+        <module-def name="com.fasterxml.jackson.core.jackson-core">
+            <maven-resource group="com.fasterxml.jackson.core" artifact="jackson-core"/>
+        </module-def>
+
+        <module-def name="com.fasterxml.jackson.core.jackson-databind">
+            <maven-resource group="com.fasterxml.jackson.core" artifact="jackson-databind"/>
+        </module-def>
+
+        <module-def name="com.fasterxml.jackson.core.jackson-annotations">
+            <maven-resource group="com.fasterxml.jackson.core" artifact="jackson-annotations"/>
+        </module-def>
+
+        <module-def name="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider">
+            <maven-resource group="com.fasterxml.jackson.jaxrs" artifact="jackson-jaxrs-json-provider"/>
+        </module-def>
+
         <module-def name="javax.ws.rs.api">
             <maven-resource group="org.jboss.resteasy" artifact="jaxrs-api"/>
         </module-def>
@@ -91,6 +107,10 @@
 
         <module-def name="org.jboss.resteasy.resteasy-jackson-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jackson-provider" jandex="true"/>
+        </module-def>
+
+        <module-def name="org.jboss.resteasy.resteasy-jackson2-provider">
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-jackson2-provider" jandex="true"/>
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-jaxb-provider">
