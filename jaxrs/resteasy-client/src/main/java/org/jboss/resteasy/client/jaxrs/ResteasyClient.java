@@ -170,6 +170,7 @@ public class ResteasyClient implements Client
    public ResteasyWebTarget target(String uri) throws IllegalArgumentException, NullPointerException
    {
       abortIfClosed();
+      if (uri == null) throw new NullPointerException("uri was null");
       return new ClientWebTarget(this, uri, configuration);
    }
 
@@ -177,6 +178,7 @@ public class ResteasyClient implements Client
    public ResteasyWebTarget target(URI uri) throws NullPointerException
    {
       abortIfClosed();
+      if (uri == null) throw new NullPointerException("uri was null");
       return new ClientWebTarget(this, uri, configuration);
    }
 
@@ -184,6 +186,7 @@ public class ResteasyClient implements Client
    public ResteasyWebTarget target(UriBuilder uriBuilder) throws NullPointerException
    {
       abortIfClosed();
+      if (uriBuilder == null) throw new NullPointerException("uriBuilder was null");
       return new ClientWebTarget(this, uriBuilder, configuration);
    }
 
@@ -191,6 +194,7 @@ public class ResteasyClient implements Client
    public ResteasyWebTarget target(Link link) throws NullPointerException
    {
       abortIfClosed();
+      if (link == null) throw new NullPointerException("link was null");
       URI uri = link.getUri();
       return new ClientWebTarget(this, uri, configuration);
    }
@@ -199,6 +203,7 @@ public class ResteasyClient implements Client
    public Invocation.Builder invocation(Link link) throws NullPointerException, IllegalArgumentException
    {
       abortIfClosed();
+      if (link == null) throw new NullPointerException("link was null");
       WebTarget target = target(link);
       return target.request(link.getType());
    }

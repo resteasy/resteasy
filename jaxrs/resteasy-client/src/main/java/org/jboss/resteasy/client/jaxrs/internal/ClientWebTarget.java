@@ -76,6 +76,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    public <T> ProxyBuilder<T> proxyBuilder(Class<T> proxyInterface)
    {
       client.abortIfClosed();
+      if (proxyInterface == null) throw new NullPointerException("proxyInterface was null");
       return ProxyBuilder.builder(proxyInterface, this);
    }
 
@@ -104,6 +105,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    public ResteasyWebTarget path(String path) throws NullPointerException
    {
       client.abortIfClosed();
+      if (path == null) throw new NullPointerException("path was null");
       UriBuilder copy = uriBuilder.clone().path(path);
       return  new ClientWebTarget(client, copy, configuration);
    }
@@ -112,6 +114,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    public ResteasyWebTarget path(Class<?> resource) throws IllegalArgumentException
    {
       client.abortIfClosed();
+      if (resource == null) throw new NullPointerException("resource was null");
       UriBuilder copy = uriBuilder.clone().path(resource);
       return  new ClientWebTarget(client, copy, configuration);
    }
@@ -120,6 +123,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    public ResteasyWebTarget path(Method method) throws IllegalArgumentException
    {
       client.abortIfClosed();
+      if (method == null) throw new NullPointerException("method was null");
       UriBuilder copy = uriBuilder.clone().path(method);
       return  new ClientWebTarget(client, copy, configuration);
    }
@@ -128,6 +132,8 @@ public class ClientWebTarget implements ResteasyWebTarget
    public ResteasyWebTarget resolveTemplate(String name, Object value) throws NullPointerException
    {
       client.abortIfClosed();
+      if (name == null) throw new NullPointerException("name was null");
+      if (value == null) throw new NullPointerException("value was null");
       String val = configuration.toString(value);
       UriBuilder copy = uriBuilder.resolveTemplate(name, val);
       ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
@@ -138,6 +144,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    public ResteasyWebTarget resolveTemplates(Map<String, Object> templateValues) throws NullPointerException
    {
       client.abortIfClosed();
+      if (templateValues == null) throw new NullPointerException("templateValues was null");
       Map vals = new HashMap<String, String>();
       for (Map.Entry<String, Object> entry : templateValues.entrySet())
       {
@@ -153,6 +160,8 @@ public class ClientWebTarget implements ResteasyWebTarget
    public ResteasyWebTarget resolveTemplate(String name, Object value, boolean encodeSlashInPath) throws NullPointerException
    {
       client.abortIfClosed();
+      if (name == null) throw new NullPointerException("name was null");
+      if (value == null) throw new NullPointerException("value was null");
       String val = configuration.toString(value);
       UriBuilder copy = uriBuilder.resolveTemplate(name, val, encodeSlashInPath);
       ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
@@ -163,6 +172,8 @@ public class ClientWebTarget implements ResteasyWebTarget
    public ResteasyWebTarget resolveTemplateFromEncoded(String name, Object value) throws NullPointerException
    {
       client.abortIfClosed();
+      if (name == null) throw new NullPointerException("name was null");
+      if (value == null) throw new NullPointerException("value was null");
       String val = configuration.toString(value);
       UriBuilder copy = uriBuilder.resolveTemplateFromEncoded(name, val);
       ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
@@ -173,6 +184,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    public ResteasyWebTarget resolveTemplatesFromEncoded(Map<String, Object> templateValues) throws NullPointerException
    {
       client.abortIfClosed();
+      if (templateValues == null) throw new NullPointerException("templateValues was null");
       Map vals = new HashMap<String, String>();
       for (Map.Entry<String, Object> entry : templateValues.entrySet())
       {
@@ -188,6 +200,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    public ResteasyWebTarget resolveTemplates(Map<String, Object> templateValues, boolean encodeSlashInPath) throws NullPointerException
    {
       client.abortIfClosed();
+      if (templateValues == null) throw new NullPointerException("templateValues was null");
       Map vals = new HashMap<String, String>();
       for (Map.Entry<String, Object> entry : templateValues.entrySet())
       {
@@ -203,6 +216,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    public ResteasyWebTarget matrixParam(String name, Object... values) throws NullPointerException
    {
       client.abortIfClosed();
+      if (name == null) throw new NullPointerException("name was null");
       String[] stringValues = toStringValues(values);
       UriBuilder copy = uriBuilder.clone().matrixParam(name, stringValues);
       return  new ClientWebTarget(client, copy, configuration);
@@ -222,6 +236,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    public ResteasyWebTarget queryParam(String name, Object... values) throws NullPointerException
    {
       client.abortIfClosed();
+      if (name == null) throw new NullPointerException("name was null");
       String[] stringValues = toStringValues(values);
       UriBuilder copy = uriBuilder.clone().queryParam(name, stringValues);
       return  new ClientWebTarget(client, copy, configuration);
@@ -231,6 +246,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    public ResteasyWebTarget queryParams(MultivaluedMap<String, Object> parameters) throws IllegalArgumentException, NullPointerException
    {
       client.abortIfClosed();
+      if (parameters == null) throw new NullPointerException("parameters was null");
       UriBuilder copy = uriBuilder.clone();
       for (Map.Entry<String, List<Object>> entry : parameters.entrySet())
       {
@@ -244,6 +260,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    public ResteasyWebTarget queryParamNoTemplate(String name, Object... values) throws NullPointerException
    {
       client.abortIfClosed();
+      if (name == null) throw new NullPointerException("name was null");
       String[] stringValues = toStringValues(values);
       ResteasyUriBuilder copy = (ResteasyUriBuilder)uriBuilder.clone();
       for (String obj : stringValues)
@@ -257,6 +274,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    public ResteasyWebTarget queryParamsNoTemplate(MultivaluedMap<String, Object> parameters) throws IllegalArgumentException, NullPointerException
    {
       client.abortIfClosed();
+      if (parameters == null) throw new NullPointerException("parameters was null");
       ResteasyUriBuilder copy = (ResteasyUriBuilder)uriBuilder.clone();
       for (Map.Entry<String, List<Object>> entry : parameters.entrySet())
       {
@@ -298,6 +316,8 @@ public class ClientWebTarget implements ResteasyWebTarget
    public ResteasyWebTarget property(String name, Object value)
    {
       client.abortIfClosed();
+      if (name == null) throw new NullPointerException("name was null");
+      if (value == null) throw new NullPointerException("value was null");
       configuration.property(name, value);
       return this;
    }
