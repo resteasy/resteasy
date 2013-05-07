@@ -53,6 +53,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget clone()
    {
+      client.abortIfClosed();
       UriBuilder copy = uriBuilder.clone();
       return new ClientWebTarget(client, copy, configuration);
    }
@@ -60,42 +61,49 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyClient getResteasyClient()
    {
+      client.abortIfClosed();
       return client;
    }
 
    @Override
    public <T> T proxy(Class<T> proxyInterface)
    {
+      client.abortIfClosed();
       return ProxyBuilder.builder(proxyInterface, this).build();
    }
 
    @Override
    public <T> ProxyBuilder<T> proxyBuilder(Class<T> proxyInterface)
    {
+      client.abortIfClosed();
       return ProxyBuilder.builder(proxyInterface, this);
    }
 
    @Override
    public URI getUri()
    {
+      client.abortIfClosed();
       return uriBuilder.clone().build();
    }
 
    @Override
    public UriBuilder getUriBuilder()
    {
+      client.abortIfClosed();
       return uriBuilder.clone();
    }
 
    @Override
    public Configuration getConfiguration()
    {
+      client.abortIfClosed();
       return configuration;
    }
 
    @Override
    public ResteasyWebTarget path(String path) throws NullPointerException
    {
+      client.abortIfClosed();
       UriBuilder copy = uriBuilder.clone().path(path);
       return  new ClientWebTarget(client, copy, configuration);
    }
@@ -103,6 +111,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget path(Class<?> resource) throws IllegalArgumentException
    {
+      client.abortIfClosed();
       UriBuilder copy = uriBuilder.clone().path(resource);
       return  new ClientWebTarget(client, copy, configuration);
    }
@@ -110,6 +119,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget path(Method method) throws IllegalArgumentException
    {
+      client.abortIfClosed();
       UriBuilder copy = uriBuilder.clone().path(method);
       return  new ClientWebTarget(client, copy, configuration);
    }
@@ -117,6 +127,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget resolveTemplate(String name, Object value) throws NullPointerException
    {
+      client.abortIfClosed();
       String val = configuration.toString(value);
       UriBuilder copy = uriBuilder.resolveTemplate(name, val);
       ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
@@ -126,6 +137,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget resolveTemplates(Map<String, Object> templateValues) throws NullPointerException
    {
+      client.abortIfClosed();
       Map vals = new HashMap<String, String>();
       for (Map.Entry<String, Object> entry : templateValues.entrySet())
       {
@@ -140,6 +152,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget resolveTemplate(String name, Object value, boolean encodeSlashInPath) throws NullPointerException
    {
+      client.abortIfClosed();
       String val = configuration.toString(value);
       UriBuilder copy = uriBuilder.resolveTemplate(name, val, encodeSlashInPath);
       ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
@@ -149,6 +162,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget resolveTemplateFromEncoded(String name, Object value) throws NullPointerException
    {
+      client.abortIfClosed();
       String val = configuration.toString(value);
       UriBuilder copy = uriBuilder.resolveTemplateFromEncoded(name, val);
       ClientWebTarget target = new ClientWebTarget(client, copy, configuration);
@@ -158,6 +172,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget resolveTemplatesFromEncoded(Map<String, Object> templateValues) throws NullPointerException
    {
+      client.abortIfClosed();
       Map vals = new HashMap<String, String>();
       for (Map.Entry<String, Object> entry : templateValues.entrySet())
       {
@@ -172,6 +187,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget resolveTemplates(Map<String, Object> templateValues, boolean encodeSlashInPath) throws NullPointerException
    {
+      client.abortIfClosed();
       Map vals = new HashMap<String, String>();
       for (Map.Entry<String, Object> entry : templateValues.entrySet())
       {
@@ -186,6 +202,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget matrixParam(String name, Object... values) throws NullPointerException
    {
+      client.abortIfClosed();
       String[] stringValues = toStringValues(values);
       UriBuilder copy = uriBuilder.clone().matrixParam(name, stringValues);
       return  new ClientWebTarget(client, copy, configuration);
@@ -204,6 +221,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget queryParam(String name, Object... values) throws NullPointerException
    {
+      client.abortIfClosed();
       String[] stringValues = toStringValues(values);
       UriBuilder copy = uriBuilder.clone().queryParam(name, stringValues);
       return  new ClientWebTarget(client, copy, configuration);
@@ -212,6 +230,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget queryParams(MultivaluedMap<String, Object> parameters) throws IllegalArgumentException, NullPointerException
    {
+      client.abortIfClosed();
       UriBuilder copy = uriBuilder.clone();
       for (Map.Entry<String, List<Object>> entry : parameters.entrySet())
       {
@@ -224,6 +243,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget queryParamNoTemplate(String name, Object... values) throws NullPointerException
    {
+      client.abortIfClosed();
       String[] stringValues = toStringValues(values);
       ResteasyUriBuilder copy = (ResteasyUriBuilder)uriBuilder.clone();
       for (String obj : stringValues)
@@ -236,6 +256,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget queryParamsNoTemplate(MultivaluedMap<String, Object> parameters) throws IllegalArgumentException, NullPointerException
    {
+      client.abortIfClosed();
       ResteasyUriBuilder copy = (ResteasyUriBuilder)uriBuilder.clone();
       for (Map.Entry<String, List<Object>> entry : parameters.entrySet())
       {
@@ -251,12 +272,14 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public Invocation.Builder request()
    {
+      client.abortIfClosed();
       return new ClientInvocationBuilder(client, uriBuilder.build(), configuration);
    }
 
    @Override
    public Invocation.Builder request(String... acceptedResponseTypes)
    {
+      client.abortIfClosed();
       ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.build(), configuration);
       builder.getHeaders().accept(acceptedResponseTypes);
       return builder;
@@ -265,6 +288,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public Invocation.Builder request(MediaType... acceptedResponseTypes)
    {
+      client.abortIfClosed();
       ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.build(), configuration);
       builder.getHeaders().accept(acceptedResponseTypes);
       return builder;
@@ -273,6 +297,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget property(String name, Object value)
    {
+      client.abortIfClosed();
       configuration.property(name, value);
       return this;
    }
@@ -280,6 +305,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget register(Class<?> componentClass)
    {
+      client.abortIfClosed();
       configuration.register(componentClass);
       return this;
    }
@@ -287,6 +313,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget register(Class<?> componentClass, int priority)
    {
+      client.abortIfClosed();
       configuration.register(componentClass, priority);
       return this;
    }
@@ -294,6 +321,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget register(Class<?> componentClass, Class<?>... contracts)
    {
+      client.abortIfClosed();
       configuration.register(componentClass, contracts);
       return this;
    }
@@ -301,6 +329,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget register(Class<?> componentClass, Map<Class<?>, Integer> contracts)
    {
+      client.abortIfClosed();
       configuration.register(componentClass, contracts);
       return this;
    }
@@ -308,6 +337,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget register(Object component)
    {
+      client.abortIfClosed();
       configuration.register(component);
       return this;
    }
@@ -315,6 +345,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget register(Object component, int priority)
    {
+      client.abortIfClosed();
       configuration.register(component, priority);
       return this;
    }
@@ -322,6 +353,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget register(Object component, Class<?>... contracts)
    {
+      client.abortIfClosed();
       configuration.register(component, contracts);
       return this;
    }
@@ -329,6 +361,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    @Override
    public ResteasyWebTarget register(Object component, Map<Class<?>, Integer> contracts)
    {
+      client.abortIfClosed();
       configuration.register(component, contracts);
       return this;
    }

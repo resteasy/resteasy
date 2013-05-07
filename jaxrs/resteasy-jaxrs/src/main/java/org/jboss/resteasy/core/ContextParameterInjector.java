@@ -6,6 +6,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
+import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Providers;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -71,7 +72,11 @@ public class ContextParameterInjector implements ValueInjector
    public Object inject()
    {
       //if (type.equals(Providers.class)) return factory;
-      if (!type.isInterface())
+      if (type.equals(Application.class))
+      {
+         return ResteasyProviderFactory.getContextData(Application.class);
+      }
+      else if (!type.isInterface())
       {
          Object delegate = ResteasyProviderFactory.getContextData(type);
          if (delegate != null) return delegate;
