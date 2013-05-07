@@ -9,21 +9,59 @@
         at this url: http://jackson.codehaus.org/Tutorial.
     </para>
     <para>While Jackson does come with its own JAX-RS integration. Resteasy expanded it a little. To include
-        it within your project, just add this maven dependency to your build.
+        it within your project, just add this maven dependency to your build.  Resteasy supports both Jackson 1.9.x
+        and Jackson 2.2.x.  Read further on how to use each.
     </para>
-    <programlisting><![CDATA[
-    <repository>
-       <id>jboss</id>
-       <url>>http://repository.jboss.org/nexus/content/groups/public/</url>
-    </repository>
-
-       ...
+    <sect1>
+        <title>Using Jackson 1.9.x Outside of JBoss AS7</title>
+        <para>If you're deploying Resteasy outside of JBoss AS7 add the resteasy jackson provder to your WAR
+        pom.xml build</para>
+        <programlisting><![CDATA[
     <dependency>
        <groupId>org.jboss.resteasy</groupId>
        <artifactId>resteasy-jackson-provider</artifactId>
        <version>3.0-beta-5</version>
     </dependency>
  ]]></programlisting>
+    </sect1>
+    <sect1>
+        <title>Using Jackson 1.9.x Inside of JBoss AS7</title>
+        <para>If you're deploying Resteasy with JBoss AS7, there's nothing you need to do except to make sure
+            you've updated your AS7 distribution with the latest and greatest Resteasy.  See the installation sectio
+            of this documentation for more details.</para>
+    </sect1>
+    <sect1>
+        <title>Using Jackson 2.2.x Outside of JBoss AS7</title>
+        <para>If you're deploying Resteasy outside of JBoss AS7 add the resteasy jackson provder to your WAR
+            pom.xml build</para>
+        <programlisting><![CDATA[
+    <dependency>
+       <groupId>org.jboss.resteasy</groupId>
+       <artifactId>resteasy-jackson2-provider</artifactId>
+       <version>3.0-beta-5</version>
+    </dependency>
+ ]]></programlisting>
+    </sect1>
+    <sect1>
+        <title>Using Jackson 2.2.x Inside of JBoss AS7</title>
+        <para>If you want to use Jackson 2.2.x inside of JBoss AS7 you'll have to create a jboss-deployment-structure.xml file
+        within your WEB-INF directory.  By default AS7 includes the Jackson 1.9.x JAX-RS integration, so you'll want
+        to exclude it from your dependencies, and add the jackson2 ones.</para>
+        <programlisting><![CDATA[
+<jboss-deployment-structure>
+    <deployment>
+        <exclusions>
+           <module name="org.jboss.resteasy.resteasy-jackson-provider"/>
+        </exclusions>
+        <dependencies>
+            <module name="org.jboss.resteasy.resteasy-jackson2-provider" services="import"/>
+        </dependencies>
+    </deployment>
+</jboss-deployment-structure> ]]></programlisting>
+    </sect1>
+    <sect1>
+        <title>Additional Resteasy Specifics</title>
+
     <para>The first extra piece that Resteasy added to the integration was
         to support "application/*+json". Jackson would only accept "application/json" and "text/json" as valid
         media types. This allows you to create json-based media types and still
@@ -86,6 +124,7 @@ public class MyService {
         }
         ]]>
     </programlisting>
+    </sect1>
     <sect1 id="Possible_Jackson_Problems">
         <title>Possible Conflict With JAXB Provider</title>
         <para>
@@ -99,7 +138,8 @@ public class MyService {
         <title>JSONP Support</title>
         <para>
             If you're using Jackson, Resteasy has <ulink url="http://en.wikipedia.org/wiki/JSONP">JSONP</ulink> that you can turn on by adding
-            the provider <literal>org.jboss.resteasy.plugins.providers.jackson.JacksonJsonpInterceptor</literal> to your deployments.
+            the provider <literal>org.jboss.resteasy.plugins.providers.jackson.JacksonJsonpInterceptor</literal> (Jackson2JsonpInterceptor if you're using the Jackson2 provider)
+            to your deployments.
             If the media type of the response is json and a callback query parameter is given, the response will be a javascript snippet with
             a method call of the method defined by the callback parameter.
             For example:
