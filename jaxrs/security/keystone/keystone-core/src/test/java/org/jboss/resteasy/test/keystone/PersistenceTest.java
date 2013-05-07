@@ -189,6 +189,7 @@ public class PersistenceTest
       User user = response.readEntity(User.class);
       response = admin.roles().create("user");
       Role role = response.readEntity(Role.class);
+      String json = target.path("projects").queryParam("name", "Skeleton Key").request().get(String.class);
       Projects projects = admin.projects().query("Skeleton Key");
       Project project = projects.getList().get(0);
       admin.projects().addUserRole(project.getId(), user.getId(), role.getId());

@@ -1,12 +1,12 @@
 package org.jboss.resteasy.keystone.server;
 
-import org.codehaus.jackson.JsonEncoding;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.infinispan.Cache;
 import org.jboss.resteasy.keystone.model.IdentityStore;
 import org.jboss.resteasy.keystone.model.Role;
@@ -31,9 +31,9 @@ public class Loader
 
    public Loader()
    {
-      DEFAULT_MAPPER.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
-      DEFAULT_MAPPER.enable(SerializationConfig.Feature.INDENT_OUTPUT);
-      DEFAULT_MAPPER.enable(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+      DEFAULT_MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+      DEFAULT_MAPPER.enable(SerializationFeature.INDENT_OUTPUT);
+      DEFAULT_MAPPER.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
    }
 
    public String export(Cache cache)
@@ -102,7 +102,7 @@ public class Loader
    {
       try
       {
-         JsonGenerator jg = DEFAULT_MAPPER.getJsonFactory().createJsonGenerator(os, JsonEncoding.UTF8);
+         JsonGenerator jg = DEFAULT_MAPPER.getFactory().createGenerator(os, JsonEncoding.UTF8);
          DEFAULT_MAPPER.writeValue(jg, store);
       }
       catch (IOException e)
