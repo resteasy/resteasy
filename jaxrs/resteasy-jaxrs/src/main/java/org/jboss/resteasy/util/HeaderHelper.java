@@ -61,21 +61,4 @@ public class HeaderHelper
       headers.putSingle("Allow", builder.toString());
    }
 
-   public static String toHeaderString(Object object, ResteasyProviderFactory providerFactory)
-   {
-      if (object instanceof String) return object.toString();
-
-      StringConverter converter = providerFactory.getStringConverter(object
-              .getClass());
-      if (converter != null)
-         return converter.toString(object);
-
-      RuntimeDelegate.HeaderDelegate delegate = providerFactory
-              .createHeaderDelegate(object.getClass());
-      if (delegate != null)
-         return delegate.toString(object);
-      else
-         return object.toString();
-
-   }
 }
