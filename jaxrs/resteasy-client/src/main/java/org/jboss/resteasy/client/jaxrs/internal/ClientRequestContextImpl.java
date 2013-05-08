@@ -13,6 +13,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -48,7 +49,7 @@ public class ClientRequestContextImpl implements ClientRequestContext
    @Override
    public Collection<String> getPropertyNames()
    {
-      return invocation.getMutableProperties().keySet();
+      return Collections.unmodifiableSet(invocation.getMutableProperties().keySet());
    }
 
    @Override
