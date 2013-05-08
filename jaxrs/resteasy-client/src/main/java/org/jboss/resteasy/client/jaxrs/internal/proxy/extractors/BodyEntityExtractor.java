@@ -3,10 +3,9 @@
  */
 package org.jboss.resteasy.client.jaxrs.internal.proxy.extractors;
 
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -55,7 +54,7 @@ public class BodyEntityExtractor implements EntityExtractor
          {
             gt = new GenericType(method.getReturnType());
          }
-         Object obj = ClientInvocationBuilder.extractResult(gt, response, method.getAnnotations());
+         Object obj = ClientInvocation.extractResult(gt, response, method.getAnnotations());
          if (obj instanceof InputStream)
             releaseConnectionAfter = false;
          return obj;

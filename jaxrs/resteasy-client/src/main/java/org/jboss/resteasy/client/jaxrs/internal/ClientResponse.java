@@ -149,6 +149,7 @@ public abstract class ClientResponse extends BuiltResponse
    {
       Type useGeneric = genericType == null ? type : genericType;
       Class<?> useType = type;
+      media = media == null ? MediaType.WILDCARD_TYPE : media;
       boolean isMarshalledEntity = false;
       if (type.equals(MarshalledEntity.class))
       {

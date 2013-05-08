@@ -1,10 +1,9 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.extractors;
 
 import org.jboss.resteasy.annotations.ResponseObject;
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.Method;
 
@@ -48,7 +47,7 @@ public class DefaultEntityExtractorFactory implements EntityExtractorFactory
             {
                response.bufferEntity();
                response.close();
-               ClientInvocationBuilder.handleErrorStatus(response);
+               ClientInvocation.handleErrorStatus(response);
             }
             response.close();
             return null;

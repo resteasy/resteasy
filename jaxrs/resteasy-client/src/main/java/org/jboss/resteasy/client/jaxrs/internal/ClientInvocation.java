@@ -7,7 +7,18 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.DelegatingOutputStream;
 import org.jboss.resteasy.util.Types;
 
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotAcceptableException;
+import javax.ws.rs.NotAllowedException;
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.RedirectionException;
+import javax.ws.rs.ServerErrorException;
+import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
@@ -64,6 +75,97 @@ public class ClientInvocation implements Invocation
       this.client = client;
       this.configuration = new ClientConfiguration(parent);
       this.headers = headers;
+   }
+
+   /**
+    * Extracts result from response throwing an appropriate exception if not a successful response.
+    *
+    * @param responseType
+    * @param response
+    * @param annotations
+    * @param <T>
+    * @return
+    */
+   public static <T> T extractResult(GenericType<T> responseType, Response response, Annotation[] annotations)
+   {
+      int status = response.getStatus();
+      if (status >= 200 && status < 300)
+      {
+         try
+         {
+            if (response.getMediaType() == null)
+            {
+               return null;
+            }
+            else
+            {
+               return response.readEntity(responseType, annotations);
+            }
+         }
+         catch (WebApplicationException wae)
+         {
+            throw wae;
+         }
+         catch (Throwable throwable)
+         {
+            throw new ResponseProcessingException(response, throwable);
+         }
+         finally
+         {
+            if (response.getMediaType() == null) response.close();
+         }
+      }
+      try
+      {
+         if (status >= 300 && status < 400) throw new RedirectionException(response);
+
+         return handleErrorStatus(response);
+      }
+      finally
+      {
+         // close if no content
+         if (response.getMediaType() == null) response.close();
+      }
+
+   }
+
+   /**
+    * Throw an exception.  Expecting a status of 400 or greater.
+    *
+    * @param response
+    * @param <T>
+    * @return
+    */
+   public static <T> T handleErrorStatus(Response response)
+   {
+      final int status = response.getStatus();
+      switch (status)
+      {
+         case 400:
+            throw new BadRequestException(response);
+         case 401:
+            throw new NotAuthorizedException(response);
+         case 404:
+            throw new NotFoundException(response);
+         case 405:
+            throw new NotAllowedException(response);
+         case 406:
+            throw new NotAcceptableException(response);
+         case 415:
+            throw new NotSupportedException(response);
+         case 500:
+            throw new InternalServerErrorException(response);
+         case 503:
+            throw new ServiceUnavailableException(response);
+         default:
+            break;
+      }
+
+      if (status >= 400 && status < 500) throw new ClientErrorException(response);
+      if (status >= 500) throw new ServerErrorException(response);
+
+
+      throw new WebApplicationException(response);
    }
 
    public ClientConfiguration getClientConfiguration()
@@ -327,14 +429,16 @@ public class ClientInvocation implements Invocation
    public <T> T invoke(Class<T> responseType)
    {
       Response response = invoke();
-      return response.readEntity(responseType);
+      if (Response.class.equals(responseType)) return (T)response;
+      return extractResult(new GenericType<T>(responseType), response, null);
    }
 
    @Override
    public <T> T invoke(GenericType<T> responseType)
    {
       Response response = invoke();
-      return response.readEntity(responseType);
+      if (responseType.getRawType().equals(Response.class)) return (T)response;
+      return ClientInvocation.extractResult(responseType, response, null);
    }
 
    @Override
@@ -352,181 +456,68 @@ public class ClientInvocation implements Invocation
 
 
    @Override
-   public <T> Future<T> submit(Class<T> responseType)
+   public <T> Future<T> submit(final Class<T> responseType)
    {
-      final Future<Response> future = submit();
-      final Class<T> type = responseType;
-      return new Future<T>()
+      return client.asyncInvocationExecutor().submit(new Callable<T>()
       {
          @Override
-         public boolean cancel(boolean b)
+         public T call() throws Exception
          {
-            return future.cancel(b);
+            return invoke(responseType);
          }
-
-         @Override
-         public boolean isCancelled()
-         {
-            return future.isCancelled();
-         }
-
-         @Override
-         public boolean isDone()
-         {
-            return future.isDone();
-         }
-
-         @Override
-         public T get() throws InterruptedException, ExecutionException
-         {
-            Response response = future.get();
-            return response.readEntity(type);
-         }
-
-         @Override
-         public T get(long l, TimeUnit timeUnit) throws InterruptedException, ExecutionException, TimeoutException
-         {
-            Response response = future.get(l, timeUnit);
-            return response.readEntity(type);
-         }
-      };
+      });
    }
 
-   private static class TypeLiteralFuture<T> implements Future<T>
+  @Override
+   public <T> Future<T> submit(final GenericType<T> responseType)
    {
-      protected GenericType<T> type;
-      protected Future<Response> future;
-
-      private TypeLiteralFuture(GenericType<T> type, Future<Response> future)
+      return client.asyncInvocationExecutor().submit(new Callable<T>()
       {
-         this.type = type;
-         this.future = future;
-      }
-
-      @Override
-      public boolean cancel(boolean b)
-      {
-         return future.cancel(b);
-      }
-
-      @Override
-      public boolean isCancelled()
-      {
-         return future.isCancelled();
-      }
-
-      @Override
-      public boolean isDone()
-      {
-         return future.isDone();
-      }
-
-      @Override
-      public T get() throws InterruptedException, ExecutionException
-      {
-         Response response = future.get();
-         return response.readEntity(type);
-      }
-
-      @Override
-      public T get(long l, TimeUnit timeUnit) throws InterruptedException, ExecutionException, TimeoutException
-      {
-         Response response = future.get(l, timeUnit);
-         return response.readEntity(type);
-      }
+         @Override
+         public T call() throws Exception
+         {
+            return invoke(responseType);
+         }
+      });
    }
 
    @Override
-   public <T> Future<T> submit(GenericType<T> responseType)
+   public <T> Future<T> submit(final InvocationCallback<T> callback)
    {
-      Future<Response> future = submit();
-      return new TypeLiteralFuture<T>(responseType, future);
-   }
-
-   @Override
-   public <T> Future<T> submit(InvocationCallback<T> callback)
-   {
-      Class type = Response.class;
-      Type genericType = null;
-
+      GenericType<T> genericType = (GenericType<T>)new GenericType<Object>() {};
       Type[] typeInfo = Types.getActualTypeArgumentsOfAnInterface(callback.getClass(), InvocationCallback.class);
       if (typeInfo != null)
       {
-         type = (Class<T>) Types.getRawType(typeInfo[0]);
-         genericType = typeInfo[0];
-         if (type == null) type = Response.class;
+         genericType = new GenericType(typeInfo[0]);
       }
 
-      final InvocationCallback<T> cb = callback;
-
-      if (type.equals(Response.class))
+      final GenericType<T> responseType = genericType;
+      return client.asyncInvocationExecutor().submit(new Callable<T>()
       {
-         Future<Response> future = client.asyncInvocationExecutor().submit(new Callable<Response>()
+         @Override
+         public T call() throws Exception
          {
-            @Override
-            public Response call() throws Exception
-            {
-               Response res = null;
-               try
+            T result = null;
+            try {
+               result = invoke(responseType);
+            }
+            catch (Exception e) {
+               callback.failed(e);
+               throw e;
+            }
+            try {
+               callback.completed(result);
+               return result;
+            }
+            finally {
+               if (result != null && result instanceof Response)
                {
-                  res = invoke();
-               }
-               catch (Exception t)
-               {
-                  cb.failed(t);
-                  throw t;
-               }
-               try
-               {
-                  cb.completed((T) res);
-                  return res;
-               }
-               finally
-               {
-                  res.close();
+                  ((Response)result).close();
                }
             }
-         });
-         return (Future<T>) future;
+         }
+      });
 
-      }
-      else
-      {
-         final Class<T> theType = type;
-         final Type theGenericType = genericType;
-         Future<T> future = client.asyncInvocationExecutor().submit(new Callable<T>()
-         {
-            @Override
-            public T call() throws Exception
-            {
-               Response res = invoke();
-               T obj = null;
-               try
-               {
-                  try
-                  {
-                     GenericType<T> gt = null;
-                     if (theGenericType != null) gt = new GenericType<T>(theGenericType);
-                     else gt = new GenericType<T>(theType);
-                     obj = res.readEntity(gt);
-                  }
-                  catch (Exception ex)
-                  {
-                     ResponseProcessingException rpe = new ResponseProcessingException(res, ex);
-                     cb.failed(rpe);
-                     throw ex;
-                  }
-                  cb.completed(obj);
-                  return obj;
-               }
-               finally
-               {
-                  res.close();
-               }
-            }
-         });
-         return future;
-      }
    }
 
    @Override

@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -156,7 +157,13 @@ public class ClientRequestContextImpl implements ClientRequestContext
    @Override
    public List<MediaType> getAcceptableMediaTypes()
    {
-      return invocation.getHeaders().getAcceptableMediaTypes();
+      List<MediaType> rtn = invocation.getHeaders().getAcceptableMediaTypes();
+      if (rtn.size() == 0)
+      {
+         rtn = new ArrayList<MediaType>();
+         rtn.add(MediaType.WILDCARD_TYPE);
+      }
+      return rtn;
    }
 
    @Override
