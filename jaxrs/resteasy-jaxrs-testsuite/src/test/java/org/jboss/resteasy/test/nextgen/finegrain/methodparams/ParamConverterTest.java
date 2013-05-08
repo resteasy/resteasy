@@ -113,8 +113,8 @@ public class ParamConverterTest extends BaseResourceTest
    {
       @Path("{pojo}")
       @PUT
-      void put(@QueryParam("pojo") POJO q, @PathParam("pojo") POJO pp, @MatrixParam("pojo") POJO mp,
-               @HeaderParam("pojo") POJO hp);
+      void put(@QueryParam("pojo") String q, @PathParam("pojo") String pp, @MatrixParam("pojo") String mp,
+               @HeaderParam("pojo") String hp);
    }
 
    @Test
@@ -122,9 +122,7 @@ public class ParamConverterTest extends BaseResourceTest
    {
       ResteasyClient client = new ResteasyClientBuilder().providerFactory(deployment.getProviderFactory()).build();
       MyClient proxy = client.target(generateBaseUrl()).proxy(MyClient.class);
-      POJO pojo = new POJO();
-      pojo.setName("pojo");
-      proxy.put(pojo, pojo, pojo, pojo);
+      proxy.put("pojo", "pojo", "pojo", "pojo");
       client.close();
    }
 

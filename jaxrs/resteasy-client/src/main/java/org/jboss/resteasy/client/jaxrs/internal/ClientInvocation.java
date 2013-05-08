@@ -169,6 +169,7 @@ public class ClientInvocation implements Invocation
       {
          Object ent = entity.getEntity();
          setEntityObject(ent);
+         this.entityAnnotations = entity.getAnnotations();
          Variant v = entity.getVariant();
          headers.setMediaType(v.getMediaType());
          headers.setLanguage(v.getLanguage());

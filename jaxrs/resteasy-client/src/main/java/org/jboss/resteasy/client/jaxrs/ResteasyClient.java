@@ -28,6 +28,7 @@ public class ResteasyClient implements Client
    protected volatile ClientHttpEngine httpEngine;
    protected volatile ExecutorService asyncInvocationExecutor;
    protected ClientConfiguration configuration;
+   protected boolean closed;
 
 
    ResteasyClient(ClientHttpEngine httpEngine, ExecutorService asyncInvocationExecutor, ClientConfiguration configuration)
@@ -39,7 +40,13 @@ public class ResteasyClient implements Client
 
    public ClientHttpEngine httpEngine()
    {
+      abortIfClosed();
       return httpEngine;
+   }
+
+   public void abortIfClosed()
+   {
+      if (isClosed()) throw new IllegalStateException("Client is closed.");
    }
 
    public ExecutorService asyncInvocationExecutor()
@@ -47,9 +54,15 @@ public class ResteasyClient implements Client
       return asyncInvocationExecutor;
    }
 
+   public boolean isClosed()
+   {
+      return closed;
+   }
+
    @Override
    public void close()
    {
+      closed = true;
       try
       {
          httpEngine.close();
@@ -63,24 +76,28 @@ public class ResteasyClient implements Client
    @Override
    public Configuration getConfiguration()
    {
+      abortIfClosed();
       return configuration;
    }
 
    @Override
    public SSLContext getSslContext()
    {
+      abortIfClosed();
       return httpEngine().getSslContext();
    }
 
    @Override
    public HostnameVerifier getHostnameVerifier()
    {
+      abortIfClosed();
       return httpEngine().getHostnameVerifier();
    }
 
    @Override
    public ResteasyClient property(String name, Object value)
    {
+      abortIfClosed();
       configuration.property(name, value);
       return this;
    }
@@ -88,6 +105,7 @@ public class ResteasyClient implements Client
    @Override
    public ResteasyClient register(Class<?> componentClass)
    {
+      abortIfClosed();
       configuration.register(componentClass);
       return this;
    }
@@ -95,6 +113,7 @@ public class ResteasyClient implements Client
    @Override
    public ResteasyClient register(Class<?> componentClass, int priority)
    {
+      abortIfClosed();
       configuration.register(componentClass, priority);
       return this;
    }
@@ -102,6 +121,7 @@ public class ResteasyClient implements Client
    @Override
    public ResteasyClient register(Class<?> componentClass, Class<?>... contracts)
    {
+      abortIfClosed();
       configuration.register(componentClass, contracts);
       return this;
    }
@@ -109,6 +129,7 @@ public class ResteasyClient implements Client
    @Override
    public ResteasyClient register(Class<?> componentClass, Map<Class<?>, Integer> contracts)
    {
+      abortIfClosed();
       configuration.register(componentClass, contracts);
       return this;
    }
@@ -116,6 +137,7 @@ public class ResteasyClient implements Client
    @Override
    public ResteasyClient register(Object component)
    {
+      abortIfClosed();
       configuration.register(component);
       return this;
    }
@@ -123,6 +145,7 @@ public class ResteasyClient implements Client
    @Override
    public ResteasyClient register(Object component, int priority)
    {
+      abortIfClosed();
       configuration.register(component, priority);
       return this;
    }
@@ -130,6 +153,7 @@ public class ResteasyClient implements Client
    @Override
    public ResteasyClient register(Object component, Class<?>... contracts)
    {
+      abortIfClosed();
       configuration.register(component, contracts);
       return this;
    }
@@ -137,6 +161,7 @@ public class ResteasyClient implements Client
    @Override
    public ResteasyClient register(Object component, Map<Class<?>, Integer> contracts)
    {
+      abortIfClosed();
       configuration.register(component, contracts);
       return this;
    }
@@ -144,24 +169,32 @@ public class ResteasyClient implements Client
    @Override
    public ResteasyWebTarget target(String uri) throws IllegalArgumentException, NullPointerException
    {
+      abortIfClosed();
+      if (uri == null) throw new NullPointerException("uri was null");
       return new ClientWebTarget(this, uri, configuration);
    }
 
    @Override
    public ResteasyWebTarget target(URI uri) throws NullPointerException
    {
+      abortIfClosed();
+      if (uri == null) throw new NullPointerException("uri was null");
       return new ClientWebTarget(this, uri, configuration);
    }
 
    @Override
    public ResteasyWebTarget target(UriBuilder uriBuilder) throws NullPointerException
    {
+      abortIfClosed();
+      if (uriBuilder == null) throw new NullPointerException("uriBuilder was null");
       return new ClientWebTarget(this, uriBuilder, configuration);
    }
 
    @Override
    public ResteasyWebTarget target(Link link) throws NullPointerException
    {
+      abortIfClosed();
+      if (link == null) throw new NullPointerException("link was null");
       URI uri = link.getUri();
       return new ClientWebTarget(this, uri, configuration);
    }
@@ -169,6 +202,8 @@ public class ResteasyClient implements Client
    @Override
    public Invocation.Builder invocation(Link link) throws NullPointerException, IllegalArgumentException
    {
+      abortIfClosed();
+      if (link == null) throw new NullPointerException("link was null");
       WebTarget target = target(link);
       return target.request(link.getType());
    }

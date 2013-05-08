@@ -1206,7 +1206,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             clientRequestFilters = parent.getClientRequestFilters().clone(this);
          }
-         clientRequestFilters.registerClass(provider, getPriority(contracts, defaultPriority, ClientResponseFilter.class));
+         clientRequestFilters.registerClass(provider, getPriority(contracts, defaultPriority, ClientRequestFilter.class));
          newContracts.put(ClientRequestFilter.class, getPriority(provider));
       }
       if (isA(provider, ClientResponseFilter.class, contracts))

@@ -13,6 +13,8 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -24,6 +26,54 @@ public class UriBuilderTest
    public static void before()
    {
       ResteasyProviderFactory.setInstance(new ResteasyProviderFactory());
+   }
+
+   @Test
+   public void testExceptions()
+   {
+      try
+      {
+         UriBuilder builder = UriBuilder.fromUri(":cts:8080//tck:90090//jaxrs ");
+         Assert.fail();
+      }
+      catch (IllegalArgumentException e) {
+
+      }
+   }
+
+   @Test
+   public void testUrn()
+   {
+      UriBuilder builder = UriBuilder.fromUri("urn:isbn:096139210x");
+   }
+
+
+   private static final Pattern uriPattern = Pattern.compile("([a-zA-Z0-9+.-]+)://([^/:]+)(:(\\d+))?(/[^?]*)?(\\?([^#]+))?(#(.*))?");
+   private static final Pattern uri2Pattern = Pattern.compile("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
+
+   @Test
+   public void testParse()
+   {
+      String[] uris = {
+              ":cts:8080//tck:90090//jaxrs "
+      };
+      for (String uri : uris)
+      {
+         printParse(uri);
+      }
+   }
+
+
+   public void printParse(String uri)
+   {
+      System.out.println("--- " + uri);
+      Matcher match = uri2Pattern.matcher(uri);
+      if (!match.matches()) throw new IllegalStateException("no match found");
+      for (int i = 1; i < match.groupCount() + 1; i++)
+      {
+         System.out.println("group[" + i + "] = '" + match.group(i) + "'");
+      }
+
    }
 
    @Test

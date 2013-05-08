@@ -49,7 +49,12 @@ public class ClientRequestHeaders
 
    public void setLanguage(Locale language)
    {
-      header(HttpHeaders.CONTENT_LANGUAGE, language);
+      if (language == null)
+      {
+         headers.remove(HttpHeaders.CONTENT_LANGUAGE);
+         return;
+      }
+      headers.putSingle(HttpHeaders.CONTENT_LANGUAGE, language);
    }
 
    public void setLanguage(String language)
@@ -59,35 +64,35 @@ public class ClientRequestHeaders
 
    public void setMediaType(MediaType mediaType)
    {
-      header(HttpHeaders.CONTENT_TYPE, mediaType);
+      if (mediaType == null)
+      {
+         headers.remove(HttpHeaders.CONTENT_TYPE);
+         return;
+      }
+      headers.putSingle(HttpHeaders.CONTENT_TYPE, mediaType);
    }
 
    public void acceptLanguage(Locale... locales)
    {
-      headers.remove(HttpHeaders.ACCEPT_LANGUAGE);
-      StringBuilder builder = new StringBuilder();
-      boolean isFirst = true;
-      for (Locale l : locales)
-      {
-         if (isFirst)
-         {
-            isFirst = false;
-         }
-         else
-         {
-            builder.append(", ");
-         }
-         builder.append(l.toString());
-      }
+      String accept = (String)headers.getFirst(HttpHeaders.ACCEPT_LANGUAGE);
+      StringBuilder builder = buildAcceptString(accept, locales);
       headers.putSingle(HttpHeaders.ACCEPT_LANGUAGE, builder.toString());
    }
 
    public void acceptLanguage(String... locales)
    {
-      headers.remove(HttpHeaders.ACCEPT_LANGUAGE);
+      String accept = (String)headers.getFirst(HttpHeaders.ACCEPT_LANGUAGE);
+      StringBuilder builder = buildAcceptString(accept, locales);
+      headers.putSingle(HttpHeaders.ACCEPT_LANGUAGE, builder.toString());
+   }
+
+   private StringBuilder buildAcceptString(String accept, Object[] items)
+   {
       StringBuilder builder = new StringBuilder();
+      if (accept != null) builder.append(accept).append(", ");
+
       boolean isFirst = true;
-      for (String l : locales)
+      for (Object l : items)
       {
          if (isFirst)
          {
@@ -97,69 +102,30 @@ public class ClientRequestHeaders
          {
             builder.append(", ");
          }
-         builder.append(l.toString());
+         builder.append(configuration.toHeaderString(l));
       }
-      headers.putSingle(HttpHeaders.ACCEPT_LANGUAGE, builder.toString());
+      return builder;
    }
 
    public void acceptEncoding(String... encodings)
    {
-      headers.remove(HttpHeaders.ACCEPT_ENCODING);
-      StringBuilder builder = new StringBuilder();
-      boolean isFirst = true;
-      for (String l : encodings)
-      {
-         if (isFirst)
-         {
-            isFirst = false;
-         }
-         else
-         {
-            builder.append(", ");
-         }
-         builder.append(l.toString());
-      }
+      String accept = (String)headers.getFirst(HttpHeaders.ACCEPT_ENCODING);
+      StringBuilder builder = buildAcceptString(accept, encodings);
       headers.putSingle(HttpHeaders.ACCEPT_ENCODING, builder.toString());
    }
 
 
    public void accept(String... types)
    {
-      headers.remove(HttpHeaders.ACCEPT);
-      StringBuilder builder = new StringBuilder();
-      boolean isFirst = true;
-      for (String l : types)
-      {
-         if (isFirst)
-         {
-            isFirst = false;
-         }
-         else
-         {
-            builder.append(", ");
-         }
-         builder.append(l.toString());
-      }
+      String accept = (String)headers.getFirst(HttpHeaders.ACCEPT);
+      StringBuilder builder = buildAcceptString(accept, types);
       headers.putSingle(HttpHeaders.ACCEPT, builder.toString());
    }
 
    public void accept(MediaType... types)
    {
-      headers.remove(HttpHeaders.ACCEPT);
-      StringBuilder builder = new StringBuilder();
-      boolean isFirst = true;
-      for (MediaType l : types)
-      {
-         if (isFirst)
-         {
-            isFirst = false;
-         }
-         else
-         {
-            builder.append(", ");
-         }
-         builder.append(l.toString());
-      }
+      String accept = (String)headers.getFirst(HttpHeaders.ACCEPT);
+      StringBuilder builder = buildAcceptString(accept, types);
       headers.putSingle(HttpHeaders.ACCEPT, builder.toString());
    }
 
@@ -190,7 +156,10 @@ public class ClientRequestHeaders
          headers.remove(name);
          return;
       }
-      headers.add(name, value);
+      if (name.equalsIgnoreCase(HttpHeaders.ACCEPT)) accept(configuration.toHeaderString(value));
+      else if (name.equalsIgnoreCase(HttpHeaders.ACCEPT_ENCODING)) acceptEncoding(configuration.toHeaderString(value));
+      else if (name.equalsIgnoreCase(HttpHeaders.ACCEPT_LANGUAGE)) acceptLanguage(configuration.toHeaderString(value));
+      else headers.add(name, value);
    }
 
    public Date getDate()

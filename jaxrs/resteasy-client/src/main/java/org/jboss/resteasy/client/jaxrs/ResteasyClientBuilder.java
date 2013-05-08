@@ -419,7 +419,12 @@ public class ResteasyClientBuilder extends ClientBuilder
       for (Class clazz : config.getClasses())
       {
          Map<Class<?>, Integer> contracts = config.getContracts(clazz);
-         register(clazz, contracts);
+         try {
+            register(clazz, contracts);
+         }
+         catch (RuntimeException e) {
+            throw new RuntimeException("failed on registering class: " + clazz.getName(), e);
+         }
       }
       for (Object obj : config.getInstances())
       {

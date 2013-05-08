@@ -9,7 +9,7 @@
 <chapter id="Migration_from_older_versions">
 <title>Migration from older versions</title>
 <sect1>
-    <title>Migrating from 3.0-beta-4 and 3.0-beta-5</title>
+    <title>Migrating from 3.0-beta-4 and 3.0-rc-1</title>
     <itemizedlist>
         <listitem>
             JSONP support is no longer on by default.  A few users have complained that it is a security hole for their applications.

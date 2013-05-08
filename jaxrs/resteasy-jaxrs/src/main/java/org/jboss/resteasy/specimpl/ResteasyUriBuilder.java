@@ -50,6 +50,8 @@ public class ResteasyUriBuilder extends UriBuilder
       return impl;
    }
 
+   private static final Pattern uri2Pattern = Pattern.compile("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
+   private static final Pattern hostPortPattern = Pattern.compile("([^/:]+):(\\d+)");
    private static final Pattern uriPattern = Pattern.compile("([a-zA-Z0-9+.-]+)://([^/:]+)(:(\\d+))?(/[^?]*)?(\\?([^#]+))?(#(.*))?");
    private static final Pattern sspPattern = Pattern.compile("([^:/]+):(.+)");
    private static final Pattern pathPattern = Pattern.compile("([^?]*)?(\\?([^#]+))?(#(.*))?");
@@ -112,13 +114,15 @@ public class ResteasyUriBuilder extends UriBuilder
     */
    public UriBuilder uriTemplate(String uriTemplate)
    {
-      Matcher match = uriPattern.matcher(uriTemplate);
+      Matcher match = uri2Pattern.matcher(uriTemplate);
       if (match.matches())
       {
-         scheme(match.group(1));
-         String host = match.group(2);
-         if (host != null)
+         boolean scheme = match.group(2) != null;
+         if (scheme) scheme(match.group(2));
+         boolean authority = match.group(4) != null;
+         if (authority)
          {
+            String host = match.group(4);
             int at = host.indexOf('@');
             if (at > -1)
             {
@@ -126,32 +130,35 @@ public class ResteasyUriBuilder extends UriBuilder
                host = host.substring(at + 1);
                userInfo(user);
             }
+            Matcher hostPortMatch = hostPortPattern.matcher(host);
+            if (hostPortMatch.matches())
+            {
+               host(hostPortMatch.group(1));
+               int val = 0;
+               try {
+                  val = Integer.parseInt(hostPortMatch.group(2));
+               }
+               catch (NumberFormatException e) {
+                  throw new IllegalArgumentException("Illegal uri template: " + uriTemplate, e);
+               }
+               port(val);
+            }
+            else
+            {
+               host(host);
+            }
          }
-         host(host);
-         if (match.group(4) != null) port(Integer.valueOf(match.group(4)));
-         if (match.group(5) != null) path(match.group(5));
+         if (match.group(5) != null)
+         {
+            String group = match.group(5);
+            if (!scheme && !"".equals(group) && !group.startsWith("/") && group.indexOf(':') > -1) throw new IllegalArgumentException("Illegal uri template: " + uriTemplate);
+            path(group);
+         }
          if (match.group(7) != null) replaceQuery(match.group(7));
          if (match.group(9) != null) fragment(match.group(9));
          return this;
       }
-      match = sspPattern.matcher(uriTemplate);
-      if (match.matches())
-      {
-         scheme(match.group(1));
-         schemeSpecificPart(match.group(2));
-         return this;
-      }
-
-      match = pathPattern.matcher(uriTemplate);
-      if (match.matches())
-      {
-         if (match.group(1) != null) path(match.group(1));
-         if (match.group(3) != null) replaceQuery(match.group(3));
-         if (match.group(5) != null) fragment(match.group(5));
-         return this;
-      }
-      throw new RuntimeException("Illegal uri template: " + uriTemplate);
-
+      throw new IllegalArgumentException("Illegal uri template: " + uriTemplate);
    }
 
    @Override
