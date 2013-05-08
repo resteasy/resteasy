@@ -135,6 +135,7 @@ public class ClientCacheTest extends BaseResourceTest
    @Before
    public void setUp() throws Exception
    {
+      count = 0;
       addPerRequestResource(MyService.class);
    }
 
@@ -142,6 +143,7 @@ public class ClientCacheTest extends BaseResourceTest
    @Test
    public void testProxy() throws Exception
    {
+      count = 0;
       ResteasyClient client = new ResteasyClientBuilder().build();
       ResteasyWebTarget target = client.target(generateBaseUrl());
       target.register(BrowserCacheFeature.class);
@@ -229,6 +231,7 @@ public class ClientCacheTest extends BaseResourceTest
       Assert.assertEquals(1, count);
 
       rtn = proxy.getCacheit("1");
+      System.out.println("rtn: " + rtn);
       Assert.assertEquals("cachecache" + 1, rtn);
       Assert.assertEquals(1, count);
 

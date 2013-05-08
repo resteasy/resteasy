@@ -49,6 +49,7 @@ public class RequestFilterTest
          MediaType mt = requestContext.getMediaType();
          Assert.assertNotNull(mt);
          Assert.assertEquals(mediaType, mt);
+         Assert.assertEquals(String.class, requestContext.getEntityType());
          requestContext.abortWith(Response.ok().build());
 
       }
@@ -80,6 +81,15 @@ public class RequestFilterTest
       }
    }
 
+   public static class AbortWith implements ClientRequestFilter
+   {
+      @Override
+      public void filter(ClientRequestContext requestContext) throws IOException
+      {
+         requestContext.abortWith(Response.ok(new Integer(42)).build());
+      }
+   }
+
    static Client client;
 
    @BeforeClass
@@ -93,6 +103,14 @@ public class RequestFilterTest
    public static void close()
    {
       client.close();
+   }
+
+   @Test
+   public void testAbortWith()
+   {
+      Response response = client.target("dummy").register(AbortWith.class).request().get();
+      String str = response.readEntity(String.class);
+      Assert.assertEquals("42", str);
    }
 
    @Test
