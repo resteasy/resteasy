@@ -145,9 +145,11 @@ public class ClientWebTarget implements ResteasyWebTarget
    {
       client.abortIfClosed();
       if (templateValues == null) throw new NullPointerException("templateValues was null");
+      if (templateValues.isEmpty()) return this;
       Map vals = new HashMap<String, String>();
       for (Map.Entry<String, Object> entry : templateValues.entrySet())
       {
+         if (entry.getKey() == null || entry.getValue() == null) throw new NullPointerException("templateValues entry was null");
          String val = configuration.toString(entry.getValue());
          vals.put(entry.getKey(), val);
       }
@@ -185,9 +187,11 @@ public class ClientWebTarget implements ResteasyWebTarget
    {
       client.abortIfClosed();
       if (templateValues == null) throw new NullPointerException("templateValues was null");
+      if (templateValues.isEmpty()) return this;
       Map vals = new HashMap<String, String>();
       for (Map.Entry<String, Object> entry : templateValues.entrySet())
       {
+         if (entry.getKey() == null || entry.getValue() == null) throw new NullPointerException("templateValues entry was null");
          String val = configuration.toString(entry.getValue());
          vals.put(entry.getKey(), val);
       }
@@ -201,9 +205,11 @@ public class ClientWebTarget implements ResteasyWebTarget
    {
       client.abortIfClosed();
       if (templateValues == null) throw new NullPointerException("templateValues was null");
+      if (templateValues.isEmpty()) return this;
       Map vals = new HashMap<String, String>();
       for (Map.Entry<String, Object> entry : templateValues.entrySet())
       {
+         if (entry.getKey() == null || entry.getValue() == null) throw new NullPointerException("templateValues entry was null");
          String val = configuration.toString(entry.getValue());
          vals.put(entry.getKey(), val);
       }
@@ -217,9 +223,17 @@ public class ClientWebTarget implements ResteasyWebTarget
    {
       client.abortIfClosed();
       if (name == null) throw new NullPointerException("name was null");
-      String[] stringValues = toStringValues(values);
-      UriBuilder copy = uriBuilder.clone().matrixParam(name, stringValues);
-      return  new ClientWebTarget(client, copy, configuration);
+      UriBuilder copy = uriBuilder.clone();
+      if (values.length == 1 && values[0] == null)
+      {
+         copy.replaceMatrixParam(name, null);
+      }
+      else
+      {
+         String[] stringValues = toStringValues(values);
+         copy = uriBuilder.clone().matrixParam(name, stringValues);
+      }
+      return new ClientWebTarget(client, copy, configuration);
    }
 
    private String[] toStringValues(Object[] values)
@@ -237,9 +251,17 @@ public class ClientWebTarget implements ResteasyWebTarget
    {
       client.abortIfClosed();
       if (name == null) throw new NullPointerException("name was null");
-      String[] stringValues = toStringValues(values);
-      UriBuilder copy = uriBuilder.clone().queryParam(name, stringValues);
-      return  new ClientWebTarget(client, copy, configuration);
+      UriBuilder copy = uriBuilder.clone();
+      if (values == null || (values.length == 1 && values[0] == null))
+      {
+         copy.replaceQueryParam(name, null);
+      }
+      else
+      {
+         String[] stringValues = toStringValues(values);
+         copy = uriBuilder.clone().queryParam(name, stringValues);
+      }
+      return new ClientWebTarget(client, copy, configuration);
    }
 
    @Override

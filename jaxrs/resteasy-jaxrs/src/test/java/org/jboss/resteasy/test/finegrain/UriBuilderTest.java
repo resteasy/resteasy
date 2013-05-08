@@ -11,6 +11,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.UriBuilder;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -196,6 +197,12 @@ public class UriBuilderTest
       builder.replaceMatrixParam("a", "1", "2");
       bu = builder.build("b");
       Assert.assertEquals(URI.create("http://localhost:8080/a/b/c;b=y;a=1;a=2"), bu);
+
+      // test removal
+
+      bu = UriBuilder.fromUri("http://localhost:8080/a/b/c;a=x;b=y").
+              replaceMatrixParam("a", null).build();
+      Assert.assertEquals(URI.create("http://localhost:8080/a/b/c;b=y"), bu);
    }
 
    @Test
@@ -1021,6 +1028,17 @@ public class UriBuilderTest
       to = URI.create("d/e");
       relativized = ResteasyUriBuilder.relativize(from, to);
       Assert.assertEquals(relativized.toString(), "../d/e");
+   }
+
+   protected static final String URL = "http://cts.tck:888/resource";
+   private static final String ENCODED = "%42%5A%61%7a%2F%%21";
+
+   @Test
+   public void testPercentage() throws Exception
+   {
+      UriBuilder path = UriBuilder.fromUri(URL).path("{path}");
+      String template = path.resolveTemplate("path", ENCODED, false).toTemplate();
+      System.out.println(template);
    }
 
 

@@ -682,7 +682,7 @@ public class ResteasyUriBuilder extends UriBuilder
    {
       if (path == null)
       {
-         if (values != null) return matrixParam(name, values);
+         if (values != null && values.length > 0) return matrixParam(name, values);
          return this;
       }
 
@@ -739,7 +739,7 @@ public class ResteasyUriBuilder extends UriBuilder
             }
          }
       }
-      matrixParam(name, values);
+      if (values != null && values.length > 0) matrixParam(name, values);
 
       // put back all path param expressions
       if (foundParam)
@@ -946,7 +946,7 @@ public class ResteasyUriBuilder extends UriBuilder
    {
       HashMap<String, Object> vals = new HashMap<String, Object>();
       vals.put(name, value);
-      String str = buildString(vals, true, true, encodeSlashInPath);
+      String str = buildString(vals, false, true, encodeSlashInPath);
       return fromTemplate(str);
    }
 
@@ -969,7 +969,7 @@ public class ResteasyUriBuilder extends UriBuilder
    @Override
    public UriBuilder resolveTemplatesFromEncoded(Map<String, Object> templateValues) throws IllegalArgumentException
    {
-      String str = buildString(templateValues, false, true, true);
+      String str = buildString(templateValues, true, true, true);
       return fromTemplate(str);
    }
 }
