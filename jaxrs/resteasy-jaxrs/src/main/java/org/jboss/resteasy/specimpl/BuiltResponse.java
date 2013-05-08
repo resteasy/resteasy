@@ -236,7 +236,7 @@ public class BuiltResponse extends Response
    @Override
    public int getLength()
    {
-      Object obj = metadata.getFirst(HttpHeaders.CONTENT_LANGUAGE);
+      Object obj = metadata.getFirst(HttpHeaders.CONTENT_LENGTH);
       if (obj == null) return -1;
       if (obj instanceof Integer) return (Integer) obj;
       return Integer.valueOf(getHeaderValueProcessor().toHeaderString(obj));
@@ -309,7 +309,7 @@ public class BuiltResponse extends Response
       if (allowed == null) return allowedMethods;
       for (Object header : allowed)
       {
-         allowedMethods.add(getHeaderValueProcessor().toHeaderString(header));
+         allowedMethods.add(getHeaderValueProcessor().toHeaderString(header).toUpperCase());
       }
 
       return allowedMethods;
@@ -340,7 +340,9 @@ public class BuiltResponse extends Response
       {
          if (first) first = false;
          else builder.append(",");
-         builder.append(getHeaderValueProcessor().toHeaderString(val));
+         val = getHeaderValueProcessor().toHeaderString(val);
+         if (val == null) val = "";
+         builder.append(val);
       }
       return builder.toString();
    }
@@ -389,12 +391,8 @@ public class BuiltResponse extends Response
    public Link.Builder getLinkBuilder(String relation)
    {
       Link link = getLinkHeaders().getLinkByRelationship(relation);
-      Link.Builder builder = new LinkBuilderImpl();
-      for (Map.Entry<String, String> entry : link.getParams().entrySet())
-      {
-         builder.param(entry.getKey(), entry.getValue());
-     }
-      return builder;
+      if (link == null) return null;
+      return Link.fromLink(link);
    }
 
 }

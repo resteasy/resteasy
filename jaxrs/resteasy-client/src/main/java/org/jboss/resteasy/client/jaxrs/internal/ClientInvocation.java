@@ -191,6 +191,7 @@ public class ClientInvocation implements Invocation
       {
          this.entity = ent;
          this.entityClass = ent.getClass();
+         this.entityGenericType = ent.getClass();
       }
    }
 
@@ -260,6 +261,7 @@ public class ClientInvocation implements Invocation
       {
          ClientRequestContextImpl requestContext = new ClientRequestContextImpl(this);
          ClientRequestFilter[] requestFilters = getRequestFilters();
+         ClientResponse aborted = null;
          if (requestFilters != null && requestFilters.length > 0)
          {
             for (ClientRequestFilter filter : requestFilters)
@@ -269,9 +271,8 @@ public class ClientInvocation implements Invocation
                   filter.filter(requestContext);
                   if (requestContext.getAbortedWithResponse() != null)
                   {
-                     if (requestContext.getAbortedWithResponse() instanceof ClientResponse)
-                        return requestContext.getAbortedWithResponse();
-                     else return new AbortedResponse(configuration, requestContext.getAbortedWithResponse());
+                     aborted = new AbortedResponse(configuration, requestContext.getAbortedWithResponse());
+                     break;
                   }
                }
                catch (ProcessingException e)
@@ -288,7 +289,9 @@ public class ClientInvocation implements Invocation
                }
             }
          }
-         ClientResponse response = client.httpEngine().invoke(this);
+         // spec requires that aborted response go through filter/interceptor chains.
+         ClientResponse response = aborted;
+         if (response == null) response = client.httpEngine().invoke(this);
          response.setProperties(configuration.getMutableProperties());
 
          ClientResponseFilter[] responseFilters = getResponseFilters();
