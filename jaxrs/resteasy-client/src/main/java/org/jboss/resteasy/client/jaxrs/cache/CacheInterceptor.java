@@ -53,7 +53,7 @@ public class CacheInterceptor implements ClientRequestFilter, ClientResponseFilt
             request.setProperty("expired.cache.entry", entry);
             return;
          }
-
+         request.setProperty("cached", "cached");
          request.abortWith(cachedResponse(entry));
       }
       catch (IOException io)
@@ -83,14 +83,17 @@ public class CacheInterceptor implements ClientRequestFilter, ClientResponseFilt
    @Override
    public void filter(ClientRequestContext request, ClientResponseContext response) throws IOException
    {
-      if (!request.getMethod().equalsIgnoreCase("GET")) return;
+      if (!request.getMethod().equalsIgnoreCase("GET") || request.getProperty("cached") != null) return;
       else if (response.getStatus() == 304)
       {
          BrowserCache.Entry entry = (BrowserCache.Entry)request.getProperty("expired.cache.entry");
          updateOnNotModified(request, entry, response);
          return;
       }
-      else if (response.getStatus() == 200) cache(request, response);
+      else if (response.getStatus() == 200)
+      {
+         cache(request, response);
+      }
    }
 
    private void useCacheEntry(ClientResponseContext response, BrowserCache.Entry entry)
