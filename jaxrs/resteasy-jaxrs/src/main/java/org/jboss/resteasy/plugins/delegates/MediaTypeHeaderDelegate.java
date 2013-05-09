@@ -64,16 +64,30 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
       }
    }
 
+   private static final char[] quotedChars = "()<>@,;:\\\"/[]?= \t\r\n".toCharArray();
+
+   boolean quoted(String str)
+   {
+      for (char c : str.toCharArray())
+      {
+         for (char q : quotedChars) if (c == q) return true;
+      }
+      return false;
+   }
    public String toString(Object o)
    {
       MediaType type = (MediaType) o;
-      String rtn = type.getType().toLowerCase() + "/" + type.getSubtype().toLowerCase();
-      if (type.getParameters() == null || type.getParameters().size() == 0) return rtn;
+      StringBuffer buf = new StringBuffer();
+
+      buf.append(type.getType().toLowerCase()).append("/").append(type.getSubtype().toLowerCase());
+      if (type.getParameters() == null || type.getParameters().size() == 0) return buf.toString();
       for (String name : type.getParameters().keySet())
       {
+         buf.append(';').append(name).append('=');
          String val = type.getParameters().get(name);
-         rtn += ";" + name + "=\"" + val + "\"";
+         if (quoted(val)) buf.append('"').append(val).append('"');
+         else buf.append(val);
       }
-      return rtn;
+      return buf.toString();
    }
 }
