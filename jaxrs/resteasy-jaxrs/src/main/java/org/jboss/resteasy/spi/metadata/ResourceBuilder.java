@@ -553,10 +553,22 @@ public class ResourceBuilder
 
       public ResourceMethodBuilder produces(String... produces)
       {
-         MediaType[] types = new MediaType[produces.length];
-         for (int i = 0; i < produces.length; i++) types[i] = MediaType.valueOf(produces[i]);
+         MediaType[] types = parseMediaTypes(produces);
          method.produces = types;
          return this;
+      }
+
+      protected MediaType[] parseMediaTypes(String[] produces)
+      {
+         List<MediaType> mediaTypes = new ArrayList<MediaType>();
+         for (String produce : produces)
+         {
+            String[] split = produce.split(",");
+            for (String s : split) mediaTypes.add(MediaType.valueOf(s));
+         }
+         MediaType[] types = new MediaType[mediaTypes.size()];
+         types = mediaTypes.toArray(types);
+         return types;
       }
 
       public ResourceMethodBuilder consumes(MediaType... consumes)
@@ -567,8 +579,7 @@ public class ResourceBuilder
 
       public ResourceMethodBuilder consumes(String... consumes)
       {
-         MediaType[] types = new MediaType[consumes.length];
-         for (int i = 0; i < consumes.length; i++) types[i] = MediaType.valueOf(consumes[i]);
+         MediaType[] types = parseMediaTypes(consumes);
          method.consumes = types;
          return this;
       }

@@ -11,7 +11,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.UriBuilder;
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -32,8 +31,7 @@ public class UriBuilderTest
    @Test
    public void testExceptions()
    {
-      try
-      {
+      try {
          UriBuilder builder = UriBuilder.fromUri(":cts:8080//tck:90090//jaxrs ");
          Assert.fail();
       }
@@ -58,8 +56,7 @@ public class UriBuilderTest
       String[] uris = {
               ":cts:8080//tck:90090//jaxrs "
       };
-      for (String uri : uris)
-      {
+      for (String uri : uris) {
          printParse(uri);
       }
    }
@@ -70,8 +67,7 @@ public class UriBuilderTest
       System.out.println("--- " + uri);
       Matcher match = uri2Pattern.matcher(uri);
       if (!match.matches()) throw new IllegalStateException("no match found");
-      for (int i = 1; i < match.groupCount() + 1; i++)
-      {
+      for (int i = 1; i < match.groupCount() + 1; i++) {
          System.out.println("group[" + i + "] = '" + match.group(i) + "'");
       }
 
@@ -233,7 +229,8 @@ public class UriBuilderTest
    {
       URI u = URI.create("http://bob@localhost:8080/a/b/c?a=x&b=y#frag");
 
-      URI bu = UriBuilder.fromUri(u).
+      UriBuilder uriBuilder = UriBuilder.fromUri(u);
+      URI bu = uriBuilder.
               uri(URI.create("https://bob@localhost:8080")).build();
       Assert.assertEquals(URI.create("https://bob@localhost:8080/a/b/c?a=x&b=y#frag"), bu);
 
@@ -420,11 +417,9 @@ public class UriBuilderTest
       };
 
       int j = 0;
-      while (j < 9)
-      {
+      while (j < 9) {
          uri = UriBuilder.fromUri(uris[j]).build();
-         if (uri.toString().trim().compareToIgnoreCase(uris[j]) != 0)
-         {
+         if (uri.toString().trim().compareToIgnoreCase(uris[j]) != 0) {
             pass = false;
             sb.append("Test failed for expected uri: " + uris[j] +
                     " Got " + uri.toString() + " instead");
@@ -513,19 +508,16 @@ public class UriBuilderTest
 
       uri = UriBuilder.fromPath("").path("{w}/{x}/{y}/{z}/{x}").
               buildFromEncodedMap(maps);
-      if (uri.getRawPath().compareToIgnoreCase(expected_path) != 0)
-      {
+      if (uri.getRawPath().compareToIgnoreCase(expected_path) != 0) {
          pass = false;
          sb.append("Test failed for expected path: " + expected_path +
                  " Got " + uri.getRawPath() + " instead\n");
       }
-      else
-      {
+      else {
          sb.append("Got expected path: " + uri.getRawPath() + "\n");
       }
 
-      if (!pass)
-      {
+      if (!pass) {
          System.out.println(sb.toString());
       }
       Assert.assertTrue(pass);
@@ -547,14 +539,12 @@ public class UriBuilderTest
       String expected_path =
               "path-rootless/test2/x%yz//path-absolute/test1/fred@example.com/x%yz";
 
-      try
-      {
+      try {
          URI uri = UriBuilder.fromPath("").path("{w}/{x}/{y}/{z}/{x}").
                  buildFromEncodedMap(maps);
          throw new Exception("Test Failed: expected IllegalArgumentException not thrown");
       }
-      catch (IllegalArgumentException ex)
-      {
+      catch (IllegalArgumentException ex) {
       }
    }
 
@@ -575,14 +565,12 @@ public class UriBuilderTest
       String expected_path =
               "path-rootless/test2/x%yz//path-absolute/test1/fred@example.com/x%yz";
 
-      try
-      {
+      try {
          uri = UriBuilder.fromPath("").path("{w}/{v}/{x}/{y}/{z}/{x}").
                  buildFromEncodedMap(maps);
          throw new Exception("Test Failed: expected IllegalArgumentException not thrown");
       }
-      catch (IllegalArgumentException ex)
-      {
+      catch (IllegalArgumentException ex) {
       }
    }
 
@@ -602,30 +590,25 @@ public class UriBuilderTest
       String expected_path =
               "path-rootless%2Ftest2/x%25yz/%2Fpath-absolute%2Ftest1/fred@example.com/x%25yz";
 
-      try
-      {
+      try {
          uri = UriBuilder.fromPath("").path("{w}/{x}/{y}/{z}/{x}").
                  buildFromMap(maps);
-         if (uri.getRawPath().compareToIgnoreCase(expected_path) != 0)
-         {
+         if (uri.getRawPath().compareToIgnoreCase(expected_path) != 0) {
             pass = false;
             sb.append("Test failed for expected path: " + expected_path +
                     " Got " + uri.getRawPath() + " instead\n");
          }
-         else
-         {
+         else {
             sb.append("Got expected path: " + uri.getRawPath() + "\n");
          }
       }
-      catch (Exception ex)
-      {
+      catch (Exception ex) {
          pass = false;
          sb.append("Unexpected exception thrown: " + ex.getMessage() +
                  "\n");
       }
 
-      if (!pass)
-      {
+      if (!pass) {
          throw new Exception("At least one assertion failed: " + sb.toString());
       }
    }
@@ -647,30 +630,25 @@ public class UriBuilderTest
       String expected_path =
               "path-rootless%2Ftest2/x%25yz/%2Fpath-absolute%2Ftest1/fred@example.com/x%25yz";
 
-      try
-      {
+      try {
          uri = UriBuilder.fromPath("").path("{w}/{x}/{y}/{z}/{x}").
                  buildFromMap(maps);
-         if (uri.getRawPath().compareToIgnoreCase(expected_path) != 0)
-         {
+         if (uri.getRawPath().compareToIgnoreCase(expected_path) != 0) {
             pass = false;
             sb.append("Test failed for expected path: " + expected_path +
                     " Got " + uri.getRawPath() + " instead" + "\n");
          }
-         else
-         {
+         else {
             sb.append("Got expected path: " + uri.getRawPath() + "\n");
          }
       }
-      catch (Exception ex)
-      {
+      catch (Exception ex) {
          pass = false;
          sb.append("Unexpected exception thrown: " + ex.getMessage() +
                  "\n");
       }
 
-      if (!pass)
-      {
+      if (!pass) {
          throw new Exception("At least one assertion failed: " + sb.toString());
       }
    }
@@ -692,14 +670,12 @@ public class UriBuilderTest
       String expected_path =
               "path-rootless/test2/x%yz//path-absolute/test1/fred@example.com/x%yz";
 
-      try
-      {
+      try {
          uri = UriBuilder.fromPath("").path("{w}/{x}/{y}/{z}/{x}").
                  buildFromMap(maps);
          throw new Exception("Test Failed: expected IllegalArgumentException not thrown");
       }
-      catch (IllegalArgumentException ex)
-      {
+      catch (IllegalArgumentException ex) {
       }
    }
 
@@ -720,14 +696,12 @@ public class UriBuilderTest
       String expected_path =
               "path-rootless/test2/x%yz//path-absolute/test1/fred@example.com/x%yz";
 
-      try
-      {
+      try {
          uri = UriBuilder.fromPath("").path("{w}/{v}/{x}/{y}/{z}/{x}").
                  buildFromMap(maps);
          throw new Exception("Test Failed: expected IllegalArgumentException not thrown");
       }
-      catch (IllegalArgumentException ex)
-      {
+      catch (IllegalArgumentException ex) {
       }
    }
 
@@ -767,58 +741,49 @@ public class UriBuilderTest
       String expected_path_2 =
               "path-rootless%2Ftest2/x%25yz/%2Fpath-absolute%2Ftest1/fred@example.com/x%25yz";
 
-      try
-      {
+      try {
          ub = UriBuilder.fromPath("").path("{w}/{x}/{y}/{z}/{x}");
 
          uri = ub.buildFromMap(maps);
 
-         if (uri.getRawPath().compareToIgnoreCase(expected_path) != 0)
-         {
+         if (uri.getRawPath().compareToIgnoreCase(expected_path) != 0) {
             pass = false;
             sb.append("Test failed for expected path: " + expected_path +
                     " Got " + uri.getRawPath() + " instead" + "\n");
          }
-         else
-         {
+         else {
             sb.append("Got expected path: " + uri.getRawPath() + "\n");
          }
 
          uri = ub.buildFromMap(maps1);
 
-         if (uri.getRawPath().compareToIgnoreCase(expected_path_1) != 0)
-         {
+         if (uri.getRawPath().compareToIgnoreCase(expected_path_1) != 0) {
             pass = false;
             sb.append("Test failed for expected path: " + expected_path_1 +
                     " Got " + uri.getRawPath() + " instead" + "\n");
          }
-         else
-         {
+         else {
             sb.append("Got expected path: " + uri.getRawPath() + "\n");
          }
 
          uri = ub.buildFromMap(maps2);
 
-         if (uri.getRawPath().compareToIgnoreCase(expected_path_2) != 0)
-         {
+         if (uri.getRawPath().compareToIgnoreCase(expected_path_2) != 0) {
             pass = false;
             sb.append("Test failed for expected path: " + expected_path_2 +
                     " Got " + uri.getRawPath() + " instead" + "\n");
          }
-         else
-         {
+         else {
             sb.append("Got expected path: " + uri.getRawPath() + "\n");
          }
       }
-      catch (Exception ex)
-      {
+      catch (Exception ex) {
          pass = false;
          sb.append("Unexpected exception thrown: " + ex.getMessage() +
                  "\n");
       }
 
-      if (!pass)
-      {
+      if (!pass) {
          throw new Exception("At least one assertion failed: " + sb.toString());
       }
    }
@@ -835,34 +800,29 @@ public class UriBuilderTest
       uri = UriBuilder.fromPath("http://localhost:8080").path("/{v}/{w}/{x}/{y}/{z}/{x}").
               buildFromEncoded("a", "%25", "=", "%G0", "%", "23");
 
-      if (uri.toString().compareToIgnoreCase(expected_value_1) != 0)
-      {
+      if (uri.toString().compareToIgnoreCase(expected_value_1) != 0) {
          pass = false;
          sb.append("Incorrec URI returned: " + uri.toString() +
                  ", expecting " + expected_value_1 + "\n");
       }
-      else
-      {
+      else {
          sb.append("Got expected return: " + expected_value_1 + "\n");
       }
 
       uri = UriBuilder.fromPath("http://localhost:8080").path("/{x}/{y}/{z}/{x}").
               buildFromEncoded("xy", " ", "%");
 
-      if (uri.toString().compareToIgnoreCase(expected_value_2) != 0)
-      {
+      if (uri.toString().compareToIgnoreCase(expected_value_2) != 0) {
          pass = false;
          sb.append("Incorrec URI returned: " + uri.toString() +
                  ", expecting " + expected_value_2 + "\n");
       }
-      else
-      {
+      else {
          sb.append("Got expected return: " + expected_value_2 + "\n");
       }
 
 
-      if (!pass)
-      {
+      if (!pass) {
          throw new Exception("At least one assertion failed: " + sb.toString());
       }
    }
@@ -872,14 +832,12 @@ public class UriBuilderTest
    {
       String name = null;
 
-      try
-      {
+      try {
          UriBuilder.fromPath("http://localhost:8080").queryParam(name, "x",
                  "y");
          throw new Exception("Expected IllegalArgumentException Not thrown");
       }
-      catch (IllegalArgumentException ilex)
-      {
+      catch (IllegalArgumentException ilex) {
       }
    }
 
@@ -893,29 +851,24 @@ public class UriBuilderTest
               "http://localhost:8080?name=x%3D&name=y?&name=x+y&name=%26";
       URI uri;
 
-      try
-      {
+      try {
          uri = UriBuilder.fromPath("http://localhost:8080").queryParam(name,
                  "x=", "y?", "x y", "&").build();
-         if (uri.toString().compareToIgnoreCase(expected_value) != 0)
-         {
+         if (uri.toString().compareToIgnoreCase(expected_value) != 0) {
             pass = false;
             sb.append("Incorrec URI returned: " + uri.toString() +
                     ", expecting " + expected_value + "\n");
          }
-         else
-         {
+         else {
             sb.append("Got expected return: " + expected_value + "\n");
          }
       }
-      catch (Exception ex)
-      {
+      catch (Exception ex) {
          pass = false;
          sb.append("Unexpected Exception thrown" + ex.getMessage());
       }
 
-      if (!pass)
-      {
+      if (!pass) {
          throw new Exception("At least one assertion failed: " + sb.toString());
       }
    }
@@ -933,18 +886,15 @@ public class UriBuilderTest
       uri = UriBuilder.fromPath("http://localhost:8080").queryParam(name,
               "x=", "y?", "x y", "&").replaceQuery("name1=x&name2=%20&name3=x+y&name4=23&name5=x y").
               build();
-      if (uri.toString().compareToIgnoreCase(expected_value) != 0)
-      {
+      if (uri.toString().compareToIgnoreCase(expected_value) != 0) {
          pass = false;
          sb.append("Incorrec URI returned: " + uri.toString() +
                  ", expecting " + expected_value + "\n");
       }
-      else
-      {
+      else {
          sb.append("Got expected return: " + expected_value + "\n");
       }
-      if (!pass)
-      {
+      if (!pass) {
          throw new Exception("At least one assertion failed: " + sb.toString());
       }
    }
@@ -961,19 +911,16 @@ public class UriBuilderTest
       uri =
               UriBuilder.fromPath("http://localhost:8080").queryParam(name,
                       "x=", "y?", "x y", "&").replaceQueryParam(name, null).build();
-      if (uri.toString().compareToIgnoreCase(expected_value) != 0)
-      {
+      if (uri.toString().compareToIgnoreCase(expected_value) != 0) {
          pass = false;
          sb.append("Incorrec URI returned: " + uri.toString() +
                  ", expecting " + expected_value + "\n");
       }
-      else
-      {
+      else {
          sb.append("Got expected return: " + expected_value + "\n");
       }
 
-      if (!pass)
-      {
+      if (!pass) {
          throw new Exception("At least one assertion failed: " + sb.toString());
       }
    }
@@ -1040,6 +987,204 @@ public class UriBuilderTest
       String template = path.resolveTemplate("path", ENCODED, false).toTemplate();
       System.out.println(template);
    }
+
+   private static final String ENCODED_EXPECTED_PATH = "path-rootless%2Ftest2/x%25yz/%2Fpath-absolute%2F%2525test1/fred@example.com/x%25yz";
+
+   @Test
+   public void testWithSlashTrue()
+   {
+      Object s[] = {"path-rootless/test2", new StringBuilder("x%yz"),
+              "/path-absolute/%25test1", "fred@example.com"};
+      URI uri = UriBuilder.fromPath("").path("{v}/{w}/{x}/{y}/{w}")
+              .build(new Object[]{s[0], s[1], s[2], s[3], s[1]}, true);
+      System.out.println(uri.getRawPath());
+      System.out.println(ENCODED_EXPECTED_PATH);
+      Assert.assertEquals(uri.getRawPath(), ENCODED_EXPECTED_PATH);
+   }
+
+   @Test
+   public void testNull()
+   {
+      String uri = null;
+
+      try {
+         UriBuilder.fromUri(uri);
+         Assert.fail("expected IllegalArgumentException");
+      }
+      catch (IllegalArgumentException ilex) {
+      }
+
+   }
+
+   @Test
+   public void testNullMatrixParam()
+   {
+      try {
+         UriBuilder.fromPath("http://localhost:8080").matrixParam(null, "x", "y");
+         Assert.fail();
+      }
+      catch (IllegalArgumentException e) {
+
+      }
+      try {
+         UriBuilder.fromPath("http://localhost:8080").matrixParam("name", (Object) null);
+         Assert.fail();
+      }
+      catch (IllegalArgumentException e) {
+
+      }
+
+   }
+
+   @Test
+   public void testReplaceMatrixParam2()
+   {
+      String name = "name1";
+      String expected = "http://localhost:8080;name=x=;name=y%3F;name=x%20y;name=&;name1=x;name1=y;name1=y%20x;name1=x%25y;name1=%20";
+
+      URI uri = UriBuilder
+              .fromPath(
+                      "http://localhost:8080;name=x=;name=y?;name=x y;name=&")
+              .replaceMatrixParam(name, "x", "y", "y x", "x%y", "%20")
+              .build();
+      System.out.println(uri.toString());
+      System.out.println(expected);
+      Assert.assertEquals(uri.toString(), expected);
+
+   }
+
+   @Test
+   public void testReplaceMatrixParam3()
+   {
+      String name = "name";
+      String expected = "http://localhost:8080;name=x;name=y;name=y%20x;name=x%25y;name=%20";
+
+      URI uri = UriBuilder
+              .fromPath(
+                      "http://localhost:8080;name=x=;name=y?;name=x y;name=&")
+              .replaceMatrixParam(name, "x", "y", "y x", "x%y", "%20")
+              .build();
+      System.out.println(uri.toString());
+      System.out.println(expected);
+      Assert.assertEquals(uri.toString(), expected);
+
+   }
+
+   @Test
+   public void testReplaceMatrixParam4()
+   {
+      String name = "name";
+      String expected1 = "http://localhost:8080;";
+
+         URI uri = UriBuilder.fromPath("http://localhost:8080")
+                 .matrixParam(name, "x=", "y?", "x y", "&")
+                 .replaceMatrix(null).build();
+      System.out.println(uri.toString());
+      System.out.println(expected1);
+      Assert.assertEquals(uri.toString(), expected1);
+
+   }
+
+   @Test
+   public void testReplaceMatrixParam5()
+   {
+      String expected = "http://localhost:8080;name=x;name=y;name=y%20x;name=x%25y;name=%20";
+      String value = "name=x;name=y;name=y x;name=x%y;name= ";
+
+         URI uri = UriBuilder
+                 .fromPath(
+                         "http://localhost:8080;name=x=;name=y?;name=x y;name=&")
+                 .replaceMatrix(value).build();
+      System.out.println(uri.toString());
+      System.out.println(expected);
+      Assert.assertEquals(uri.toString(), expected);
+
+   }
+
+   @Test
+   public void testReplaceMatrixParam6()
+   {
+      String expected = "http://localhost:8080;name1=x;name1=y;name1=y%20x;name1=x%25y;name1=%20";
+      String value = "name1=x;name1=y;name1=y x;name1=x%y;name1= ";
+
+         URI uri = UriBuilder
+                 .fromPath(
+                         "http://localhost:8080;name=x=;name=y?;name=x y;name=&")
+                 .replaceMatrix(value).build();
+         System.out.println(uri.toString());
+      System.out.println(expected);
+      Assert.assertEquals(uri.toString(), expected);
+
+   }
+
+   @Test
+   public void testUriReplace() throws Exception
+   {
+      String orig = "foo://example.com:8042/over/there?name=ferret#nose";
+      String expected = "http://example.com:8042/over/there?name=ferret#nose";
+      URI replacement = new URI("http",
+              "//example.com:8042/over/there?name=ferret", null);
+
+      URI uri = UriBuilder.fromUri(new URI(orig))
+              .uri(replacement.toASCIIString()).build();
+      System.out.println(uri.toString());
+      System.out.println(expected);
+      Assert.assertEquals(uri.toString(), expected);
+
+   }
+
+   @Test
+   public void testUriReplace2() throws Exception
+   {
+      String orig = "tel:+1-816-555-1212";
+      String expected = "tel:+1-816-555-1212";
+      URI replacement = new URI("tel", "+1-816-555-1212", null);
+
+      UriBuilder uriBuilder = UriBuilder.fromUri(new URI(orig));
+      URI uri = uriBuilder
+              .uri(replacement.toASCIIString()).build();
+      System.out.println(uri.toString());
+      System.out.println(expected);
+      Assert.assertEquals(uri.toString(), expected);
+
+   }
+
+   @Test
+   public void testUriReplace3() throws Exception
+   {
+      String orig = "news:comp.lang.java";
+      String expected = "http://comp.lang.java";
+      URI replacement = new URI("http", "//comp.lang.java", null);
+
+      UriBuilder uriBuilder = UriBuilder.fromUri(new URI(orig));
+      URI uri = uriBuilder
+              .uri(replacement.toASCIIString()).build();
+      System.out.println(uri.toString());
+      System.out.println(expected);
+      Assert.assertEquals(uri.toString(), expected);
+
+   }
+
+   @Test
+   public void testParse2() throws Exception
+   {
+      String opaque = "mailto:bill@jboss.org";
+      Matcher matcher = ResteasyUriBuilder.opaqueUri.matcher(opaque);
+      if (matcher.matches())
+      {
+         System.out.println(matcher.group(1));
+         System.out.println(matcher.group(2));
+      }
+
+      String hierarchical = "http://foo.com";
+      matcher = ResteasyUriBuilder.opaqueUri.matcher(hierarchical);
+      if (matcher.matches())
+      {
+         Assert.fail();
+      }
+   }
+
+
 
 
 }
