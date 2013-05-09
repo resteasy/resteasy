@@ -205,7 +205,8 @@ public class ResteasyClient implements Client
       abortIfClosed();
       if (link == null) throw new NullPointerException("link was null");
       WebTarget target = target(link);
-      return target.request(link.getType());
+      if (link.getType() != null) return target.request(link.getType());
+      else return target.request();
    }
 
 }

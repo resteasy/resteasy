@@ -217,26 +217,4 @@ public class TypesTest
 
    }
 
-   @Test
-   public void testPickConstructor()
-   {
-      Feature feature = new Feature() {
-         @Override
-         public boolean configure(FeatureContext context)
-         {
-            return false;
-         }
-      };
-
-      Constructor constructor = PickConstructor.pickSingletonConstructor(feature.getClass());
-      System.out.println(constructor);
-
-
-
-
-   }
-
-
-
-
 }

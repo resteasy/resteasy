@@ -141,7 +141,7 @@ public class ResteasyUriBuilder extends UriBuilder
    protected UriBuilder parseHierarchicalUri(String uriTemplate, Matcher match)
    {
       boolean scheme = match.group(2) != null;
-      if (scheme) scheme(match.group(2));
+      if (scheme) this.scheme = match.group(2);
       String authority = match.group(4);
       if (authority != null)
       {
@@ -152,24 +152,23 @@ public class ResteasyUriBuilder extends UriBuilder
          {
             String user = host.substring(0, at);
             host = host.substring(at + 1);
-            userInfo(user);
+            this. userInfo = user;
          }
          Matcher hostPortMatch = hostPortPattern.matcher(host);
          if (hostPortMatch.matches())
          {
-            host(hostPortMatch.group(1));
+            this.host = hostPortMatch.group(1);
             int val = 0;
             try {
-               val = Integer.parseInt(hostPortMatch.group(2));
+               this.port = Integer.parseInt(hostPortMatch.group(2));
             }
             catch (NumberFormatException e) {
                throw new IllegalArgumentException("Illegal uri template: " + uriTemplate, e);
             }
-            port(val);
          }
          else
          {
-            host(host);
+            this.host = host;
          }
       }
       if (match.group(5) != null)
@@ -393,13 +392,17 @@ public class ResteasyUriBuilder extends UriBuilder
             if (m.isAnnotationPresent(Path.class)) theMethod = m;
          }
       }
+      if (theMethod == null) throw new IllegalArgumentException("No @Path annotated method for " + resource.getName()+ "." +method);
       return path(theMethod);
    }
 
    @Override
    public UriBuilder path(Method method) throws IllegalArgumentException
    {
-      if (method == null) throw new IllegalArgumentException("method was null");
+      if (method == null)
+      {
+         throw new IllegalArgumentException("method was null");
+      }
       Path ann = method.getAnnotation(Path.class);
       if (ann != null)
       {
@@ -529,7 +532,11 @@ public class ResteasyUriBuilder extends UriBuilder
       {
          buffer.append("//");
          if (userInfo != null) replaceParameter(paramMap, fromEncodedMap, isTemplate, userInfo, buffer, encodeSlash).append("@");
-         if (host != null) replaceParameter(paramMap, fromEncodedMap, isTemplate, host, buffer, encodeSlash);
+         if (host != null)
+         {
+            if ("".equals(host)) throw new UriBuilderException("empty host name");
+            replaceParameter(paramMap, fromEncodedMap, isTemplate, host, buffer, encodeSlash);
+         }
          if (port != -1) buffer.append(":").append(Integer.toString(port));
       }
       else if (authority != null)
@@ -727,14 +734,16 @@ public class ResteasyUriBuilder extends UriBuilder
          if (val == null) throw new IllegalArgumentException("A value was null");
          pathParams.put(pathParam, val.toString());
       }
-      String buf = buildString(pathParams, encoded, false, encodeSlash);
+      String buf = null;
       try
       {
-         return URI.create(buf);
+         buf = buildString(pathParams, encoded, false, encodeSlash);
+         return new URI(buf);
+         //return URI.create(buf);
       }
       catch (Exception e)
       {
-         throw new RuntimeException("Failed to create URI: " + buf, e);
+         throw new UriBuilderException("Failed to create URI: " + buf, e);
       }
    }
 

@@ -26,6 +26,11 @@ public class LinkImpl extends Link
    protected static final RuntimeDelegate.HeaderDelegate<Link> delegate =
            RuntimeDelegate.getInstance().createHeaderDelegate(Link.class);
 
+   public static Link valueOf(String value)
+   {
+      return delegate.fromString(value);
+   }
+
    @Override
    public URI getUri() {
       return uri;
