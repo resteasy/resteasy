@@ -42,11 +42,16 @@ public class FieldInjectedResource
    public String echoHeaders()
    {
       sleep();
-      return (headers != null && headers.getRequestHeader(HttpHeaders.ACCEPT) != null ? (ui != null ? ui
-            .getRequestUriBuilder().build().toString()
-            : "null")
-            + ":" + headers.getRequestHeader(HttpHeaders.ACCEPT).get(0)
-            : "null");
+      System.out.println("uri: " + ui.getRequestUri().toString());
+      System.out.println("builder: " + ui
+              .getRequestUriBuilder().build().toString());
+      String s = headers != null && headers.getRequestHeader(HttpHeaders.ACCEPT) != null ? (ui != null ? ui
+              .getRequestUriBuilder().build().toString()
+              : "null")
+              + ":" + headers.getRequestHeader(HttpHeaders.ACCEPT).get(0)
+              : "null";
+      System.out.println("return: " + s);
+      return s;
    }
 
    private void sleep()

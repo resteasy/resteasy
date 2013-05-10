@@ -21,6 +21,7 @@ import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -240,7 +241,7 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
          metadata.remove(HttpHeaderNames.LAST_MODIFIED);
          return this;
       }
-      metadata.putSingle(HttpHeaderNames.LAST_MODIFIED, DateUtil.formatDate(lastModified));
+      metadata.putSingle(HttpHeaderNames.LAST_MODIFIED, lastModified);
       return this;
    }
 
@@ -312,8 +313,13 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
 
    public Response.ResponseBuilder allow(String... methods)
    {
-      HeaderHelper.setAllow(this.metadata, methods);
-      return this;
+      if (methods == null)
+      {
+         return allow((Set<String>)null);
+      }
+      HashSet<String> set = new HashSet<String>();
+      for (String m : methods) set.add(m);
+      return allow(set);
    }
 
    public Response.ResponseBuilder allow(Set<String> methods)
@@ -372,6 +378,7 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    public Response.ResponseBuilder replaceAll(MultivaluedMap<String, Object> headers)
    {
       metadata.clear();
+      if (headers == null) return this;
       metadata.putAll(headers);
       return this;
    }

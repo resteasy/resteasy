@@ -9,9 +9,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.TimeZone;
 
 public class ResponseBuilderTest
 {
@@ -110,4 +119,33 @@ public class ResponseBuilderTest
 
       Assert.assertEquals("http://localhost/res#frag", actualUri);
    }
+
+   @Test
+   public void testReplace()
+   {
+      String[] headers = { "header1", "header2", "header3" };
+      Response response = Response.ok().header(headers[0], headers[0])
+              .header(headers[1], headers[1]).header(headers[2], headers[2])
+              .replaceAll(null).build();
+      for (String header : headers)
+         Assert.assertTrue(response.getHeaderString(header) == null);
+
+   }
+
+   protected enum Request {
+      GET, PUT, POST, HEAD, OPTIONS, DELETE, TRACE
+   }
+   @Test
+   public void allowStringArrayTruncateDuplicatesTest()
+   {
+      String[] methods = { Request.OPTIONS.name(), Request.OPTIONS.name() };
+      Response.ResponseBuilder rb = RuntimeDelegate.getInstance()
+              .createResponseBuilder();
+      Response response = rb.allow(methods).build();
+      Set<String> set = response.getAllowedMethods();
+      Assert.assertEquals(1, set.size());
+      Assert.assertEquals(set.iterator().next(), Request.OPTIONS.name());
+   }
+
+
 }

@@ -82,6 +82,7 @@ public class PickConstructor
    public static Constructor pickPerRequestConstructor(Class clazz)
    {
       Constructor<?>[] constructors = clazz.getConstructors();
+      Constructor<?>[] declaredConstructors = clazz.getDeclaredConstructors();
       Constructor<?> constructor = null;
       // prefer a no-arg constructor
       int numParameters = 0;

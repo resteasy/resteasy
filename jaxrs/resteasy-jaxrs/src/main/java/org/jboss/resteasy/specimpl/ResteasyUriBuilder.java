@@ -1,6 +1,5 @@
 package org.jboss.resteasy.specimpl;
 
-import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.PathHelper;
 
@@ -33,6 +32,7 @@ public class ResteasyUriBuilder extends UriBuilder
    private String query;
    private String fragment;
    private String ssp;
+   private String authority;
 
 
    public UriBuilder clone()
@@ -46,15 +46,14 @@ public class ResteasyUriBuilder extends UriBuilder
       impl.query = query;
       impl.fragment = fragment;
       impl.ssp = ssp;
+      impl.authority = authority;
 
       return impl;
    }
 
-   private static final Pattern uri2Pattern = Pattern.compile("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
+   public static final Pattern opaqueUri = Pattern.compile("^([^:/?#]+):([^/].*)");
+   public static final Pattern hierarchicalUri = Pattern.compile("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
    private static final Pattern hostPortPattern = Pattern.compile("([^/:]+):(\\d+)");
-   private static final Pattern uriPattern = Pattern.compile("([a-zA-Z0-9+.-]+)://([^/:]+)(:(\\d+))?(/[^?]*)?(\\?([^#]+))?(#(.*))?");
-   private static final Pattern sspPattern = Pattern.compile("([^:/]+):(.+)");
-   private static final Pattern pathPattern = Pattern.compile("([^?]*)?(\\?([^#]+))?(#(.*))?");
 
    public static boolean compare(String s1, String s2)
    {
@@ -114,51 +113,73 @@ public class ResteasyUriBuilder extends UriBuilder
     */
    public UriBuilder uriTemplate(String uriTemplate)
    {
-      Matcher match = uri2Pattern.matcher(uriTemplate);
-      if (match.matches())
+      if (uriTemplate == null) throw new IllegalArgumentException("uriTemplate parameter is null");
+      Matcher opaque = opaqueUri.matcher(uriTemplate);
+      if (opaque.matches())
       {
-         boolean scheme = match.group(2) != null;
-         if (scheme) scheme(match.group(2));
-         boolean authority = match.group(4) != null;
-         if (authority)
-         {
-            String host = match.group(4);
-            int at = host.indexOf('@');
-            if (at > -1)
-            {
-               String user = host.substring(0, at);
-               host = host.substring(at + 1);
-               userInfo(user);
-            }
-            Matcher hostPortMatch = hostPortPattern.matcher(host);
-            if (hostPortMatch.matches())
-            {
-               host(hostPortMatch.group(1));
-               int val = 0;
-               try {
-                  val = Integer.parseInt(hostPortMatch.group(2));
-               }
-               catch (NumberFormatException e) {
-                  throw new IllegalArgumentException("Illegal uri template: " + uriTemplate, e);
-               }
-               port(val);
-            }
-            else
-            {
-               host(host);
-            }
-         }
-         if (match.group(5) != null)
-         {
-            String group = match.group(5);
-            if (!scheme && !"".equals(group) && !group.startsWith("/") && group.indexOf(':') > -1) throw new IllegalArgumentException("Illegal uri template: " + uriTemplate);
-            path(group);
-         }
-         if (match.group(7) != null) replaceQuery(match.group(7));
-         if (match.group(9) != null) fragment(match.group(9));
+         this.authority = null;
+         this.host = null;
+         this.port = -1;
+         this.userInfo = null;
+         this.query = null;
+         this.scheme = opaque.group(1);
+         this.ssp = opaque.group(2);
          return this;
       }
+      else
+      {
+         Matcher match = hierarchicalUri.matcher(uriTemplate);
+         if (match.matches())
+         {
+            ssp = null;
+            return parseHierarchicalUri(uriTemplate, match);
+         }
+      }
       throw new IllegalArgumentException("Illegal uri template: " + uriTemplate);
+   }
+
+   protected UriBuilder parseHierarchicalUri(String uriTemplate, Matcher match)
+   {
+      boolean scheme = match.group(2) != null;
+      if (scheme) this.scheme = match.group(2);
+      String authority = match.group(4);
+      if (authority != null)
+      {
+         this.authority = null;
+         String host = match.group(4);
+         int at = host.indexOf('@');
+         if (at > -1)
+         {
+            String user = host.substring(0, at);
+            host = host.substring(at + 1);
+            this. userInfo = user;
+         }
+         Matcher hostPortMatch = hostPortPattern.matcher(host);
+         if (hostPortMatch.matches())
+         {
+            this.host = hostPortMatch.group(1);
+            int val = 0;
+            try {
+               this.port = Integer.parseInt(hostPortMatch.group(2));
+            }
+            catch (NumberFormatException e) {
+               throw new IllegalArgumentException("Illegal uri template: " + uriTemplate, e);
+            }
+         }
+         else
+         {
+            this.host = host;
+         }
+      }
+      if (match.group(5) != null)
+      {
+         String group = match.group(5);
+         if (!scheme && !"".equals(group) && !group.startsWith("/") && group.indexOf(':') > -1) throw new IllegalArgumentException("Illegal uri template: " + uriTemplate);
+         if (!"".equals(group)) replacePath(group);
+      }
+      if (match.group(7) != null) replaceQuery(match.group(7));
+      if (match.group(9) != null) fragment(match.group(9));
+      return this;
    }
 
    @Override
@@ -172,22 +193,59 @@ public class ResteasyUriBuilder extends UriBuilder
    {
       if (uri == null) throw new IllegalArgumentException("URI was null");
 
-      if (uri.getScheme() != null) scheme = uri.getScheme();
+      if (uri.getRawFragment() != null) fragment = uri.getRawFragment();
 
-      if (uri.getRawSchemeSpecificPart() != null && uri.getRawPath() == null)
+      if (uri.isOpaque())
       {
+         scheme = uri.getScheme();
          ssp = uri.getRawSchemeSpecificPart();
+         return this;
+      }
+
+      if (uri.getScheme() == null)
+      {
+         if (ssp != null)
+         {
+            if (uri.getRawSchemeSpecificPart() != null)
+            {
+               ssp = uri.getRawSchemeSpecificPart();
+               return this;
+            }
+         }
       }
       else
       {
-         this.ssp = null;
-         if (uri.getHost() != null) host = uri.getHost();
-         if (uri.getPort() != -1) port = uri.getPort();
-         if (uri.getUserInfo() != null) userInfo = uri.getRawUserInfo();
-         if (uri.getPath() != null && !uri.getPath().equals("")) path = uri.getRawPath();
-         if (uri.getQuery() != null) query = uri.getRawQuery();
-         if (uri.getFragment() != null) fragment = uri.getRawFragment();
+         scheme = uri.getScheme();
       }
+
+      ssp = null;
+      if (uri.getRawAuthority() != null) {
+         if (uri.getRawUserInfo() == null && uri.getHost() == null && uri.getPort() == -1) {
+            authority = uri.getRawAuthority();
+            userInfo = null;
+            host = null;
+            port = -1;
+         } else {
+            authority = null;
+            if (uri.getRawUserInfo() != null) {
+               userInfo = uri.getRawUserInfo();
+            }
+            if (uri.getHost() != null) {
+               host = uri.getHost();
+            }
+            if (uri.getPort() != -1) {
+               port = uri.getPort();
+            }
+         }
+      }
+
+      if (uri.getRawPath() != null && uri.getRawPath().length() > 0) {
+         path = uri.getRawPath();
+      }
+      if (uri.getRawQuery() != null && uri.getRawQuery().length() > 0) {
+         query = uri.getRawQuery();
+      }
+
       return this;
    }
 
@@ -334,13 +392,17 @@ public class ResteasyUriBuilder extends UriBuilder
             if (m.isAnnotationPresent(Path.class)) theMethod = m;
          }
       }
+      if (theMethod == null) throw new IllegalArgumentException("No @Path annotated method for " + resource.getName()+ "." +method);
       return path(theMethod);
    }
 
    @Override
    public UriBuilder path(Method method) throws IllegalArgumentException
    {
-      if (method == null) throw new IllegalArgumentException("method was null");
+      if (method == null)
+      {
+         throw new IllegalArgumentException("method was null");
+      }
       Path ann = method.getAnnotation(Path.class);
       if (ann != null)
       {
@@ -356,8 +418,9 @@ public class ResteasyUriBuilder extends UriBuilder
    @Override
    public UriBuilder replaceMatrix(String matrix) throws IllegalArgumentException
    {
-
+      if (matrix == null) matrix = "";
       if (!matrix.startsWith(";")) matrix = ";" + matrix;
+      matrix = Encode.encodePath(matrix);
       if (path == null)
       {
          path = matrix;
@@ -377,7 +440,7 @@ public class ResteasyUriBuilder extends UriBuilder
    @Override
    public UriBuilder replaceQuery(String query) throws IllegalArgumentException
    {
-      if (query == null)
+      if (query == null || query.length() == 0)
       {
          this.query = null;
          return this;
@@ -420,18 +483,21 @@ public class ResteasyUriBuilder extends UriBuilder
    @Override
    public URI buildFromMap(Map<String, ? extends Object> values) throws IllegalArgumentException, UriBuilderException
    {
+      if (values == null) throw new IllegalArgumentException("values parameter is null");
       return buildUriFromMap(values, false, true);
    }
 
    @Override
    public URI buildFromEncodedMap(Map<String, ? extends Object> values) throws IllegalArgumentException, UriBuilderException
    {
+      if (values == null) throw new IllegalArgumentException("values parameter is null");
       return buildUriFromMap(values, true, false);
    }
 
    @Override
    public URI buildFromMap(Map<String, ?> values, boolean encodeSlashInPath) throws IllegalArgumentException, UriBuilderException
    {
+      if (values == null) throw new IllegalArgumentException("values parameter is null");
       return buildUriFromMap(values, false, encodeSlashInPath);
    }
 
@@ -450,6 +516,11 @@ public class ResteasyUriBuilder extends UriBuilder
 
    private String buildString(Map<String, ? extends Object> paramMap, boolean fromEncodedMap, boolean isTemplate, boolean encodeSlash)
    {
+      for (Map.Entry<String, ? extends Object> entry : paramMap.entrySet())
+      {
+         if (entry.getKey() == null) throw new IllegalArgumentException("map key is null");
+         if (entry.getValue() == null) throw new IllegalArgumentException("map value is null");
+      }
       StringBuffer buffer = new StringBuffer();
 
       if (scheme != null) replaceParameter(paramMap, fromEncodedMap, isTemplate, scheme, buffer, encodeSlash).append(":");
@@ -461,8 +532,17 @@ public class ResteasyUriBuilder extends UriBuilder
       {
          buffer.append("//");
          if (userInfo != null) replaceParameter(paramMap, fromEncodedMap, isTemplate, userInfo, buffer, encodeSlash).append("@");
-         if (host != null) replaceParameter(paramMap, fromEncodedMap, isTemplate, host, buffer, encodeSlash);
+         if (host != null)
+         {
+            if ("".equals(host)) throw new UriBuilderException("empty host name");
+            replaceParameter(paramMap, fromEncodedMap, isTemplate, host, buffer, encodeSlash);
+         }
          if (port != -1) buffer.append(":").append(Integer.toString(port));
+      }
+      else if (authority != null)
+      {
+         buffer.append("//");
+         replaceParameter(paramMap, fromEncodedMap, isTemplate, authority, buffer, encodeSlash);
       }
       if (path != null)
       {
@@ -634,6 +714,7 @@ public class ResteasyUriBuilder extends UriBuilder
    @Override
    public URI build(Object... values) throws IllegalArgumentException, UriBuilderException
    {
+      if (values == null) throw new IllegalArgumentException("values parameter is null");
       return buildFromValues(true, false, values);
    }
 
@@ -653,23 +734,28 @@ public class ResteasyUriBuilder extends UriBuilder
          if (val == null) throw new IllegalArgumentException("A value was null");
          pathParams.put(pathParam, val.toString());
       }
-      String buf = buildString(pathParams, encoded, false, encodeSlash);
+      String buf = null;
       try
       {
-         return URI.create(buf);
+         buf = buildString(pathParams, encoded, false, encodeSlash);
+         return new URI(buf);
+         //return URI.create(buf);
       }
       catch (Exception e)
       {
-         throw new RuntimeException("Failed to create URI: " + buf, e);
+         throw new UriBuilderException("Failed to create URI: " + buf, e);
       }
    }
 
    @Override
    public UriBuilder matrixParam(String name, Object... values) throws IllegalArgumentException
    {
+      if (name == null) throw new IllegalArgumentException("name parameter is null");
+      if (values == null) throw new IllegalArgumentException("values parameter is null");
       if (path == null) path = "";
       for (Object val : values)
       {
+         if (val == null) throw new IllegalArgumentException("null value");
          path += ";" + Encode.encodeMatrixParam(name) + "=" + Encode.encodeMatrixParam(val.toString());
       }
       return this;
@@ -680,6 +766,7 @@ public class ResteasyUriBuilder extends UriBuilder
    @Override
    public UriBuilder replaceMatrixParam(String name, Object... values) throws IllegalArgumentException
    {
+      if (name == null) throw new IllegalArgumentException("name parameter is null");
       if (path == null)
       {
          if (values != null && values.length > 0) return matrixParam(name, values);
@@ -717,15 +804,16 @@ public class ResteasyUriBuilder extends UriBuilder
          String[] params = matrixParams.split(";");
          for (String param : params)
          {
-            String[] namevalue = param.split("=");
-            if (namevalue != null && namevalue.length > 0)
+            int idx = param.indexOf('=');
+            if (idx < 0)
             {
-               String theName = namevalue[0];
+               map.add(param, null);
+            }
+            else
+            {
+               String theName = param.substring(0, idx);
                String value = "";
-               if (namevalue.length > 1)
-               {
-                  value = namevalue[1];
-               }
+               if (idx + 1 < param.length()) value = param.substring(idx + 1);
                map.add(theName, value);
             }
          }
@@ -735,7 +823,8 @@ public class ResteasyUriBuilder extends UriBuilder
             List<String> vals = map.get(theName);
             for (Object val : vals)
             {
-               path += ";" + theName + "=" + val.toString();
+               if (val == null) path += ";" + theName;
+               else path += ";" + theName + "=" + val.toString();
             }
          }
       }
@@ -814,6 +903,7 @@ public class ResteasyUriBuilder extends UriBuilder
    @Override
    public UriBuilder replaceQueryParam(String name, Object... values) throws IllegalArgumentException
    {
+      if (name == null) throw new IllegalArgumentException("name parameter is null");
       if (query == null || query.equals(""))
       {
          if (values != null) return queryParam(name, values);
@@ -899,6 +989,7 @@ public class ResteasyUriBuilder extends UriBuilder
    @Override
    public URI buildFromEncoded(Object... values) throws IllegalArgumentException, UriBuilderException
    {
+      if (values == null) throw new IllegalArgumentException("values param is null");
       return buildFromValues(false, true, values);
    }
 
@@ -917,7 +1008,8 @@ public class ResteasyUriBuilder extends UriBuilder
    @Override
    public URI build(Object[] values, boolean encodeSlashInPath) throws IllegalArgumentException, UriBuilderException
    {
-      return buildFromValues(encodeSlashInPath, true, values);
+      if (values == null) throw new IllegalArgumentException("values param is null");
+      return buildFromValues(encodeSlashInPath, false, values);
    }
 
    @Override
@@ -929,6 +1021,8 @@ public class ResteasyUriBuilder extends UriBuilder
    @Override
    public UriBuilder resolveTemplate(String name, Object value) throws IllegalArgumentException
    {
+      if (name == null) throw new IllegalArgumentException("name param is null");
+      if (value == null) throw new IllegalArgumentException("value param is null");
       HashMap<String, Object> vals = new HashMap<String, Object>();
       vals.put(name, value);
       return resolveTemplates(vals);
@@ -937,6 +1031,7 @@ public class ResteasyUriBuilder extends UriBuilder
    @Override
    public UriBuilder resolveTemplates(Map<String, Object> templateValues) throws IllegalArgumentException
    {
+      if (templateValues == null) throw new IllegalArgumentException("templateValues param null");
       String str = buildString(templateValues, false, true, true);
       return fromTemplate(str);
    }
@@ -944,6 +1039,8 @@ public class ResteasyUriBuilder extends UriBuilder
    @Override
    public UriBuilder resolveTemplate(String name, Object value, boolean encodeSlashInPath) throws IllegalArgumentException
    {
+      if (name == null) throw new IllegalArgumentException("name param is null");
+      if (value == null) throw new IllegalArgumentException("value param is null");
       HashMap<String, Object> vals = new HashMap<String, Object>();
       vals.put(name, value);
       String str = buildString(vals, false, true, encodeSlashInPath);
@@ -953,6 +1050,8 @@ public class ResteasyUriBuilder extends UriBuilder
    @Override
    public UriBuilder resolveTemplateFromEncoded(String name, Object value) throws IllegalArgumentException
    {
+      if (name == null) throw new IllegalArgumentException("name param is null");
+      if (value == null) throw new IllegalArgumentException("value param is null");
       HashMap<String, Object> vals = new HashMap<String, Object>();
       vals.put(name, value);
       String str = buildString(vals, true, true, true);
@@ -962,6 +1061,7 @@ public class ResteasyUriBuilder extends UriBuilder
    @Override
    public UriBuilder resolveTemplates(Map<String, Object> templateValues, boolean encodeSlashInPath) throws IllegalArgumentException
    {
+      if (templateValues == null) throw new IllegalArgumentException("templateValues param null");
       String str = buildString(templateValues, false, true, encodeSlashInPath);
       return fromTemplate(str);
    }
@@ -969,6 +1069,7 @@ public class ResteasyUriBuilder extends UriBuilder
    @Override
    public UriBuilder resolveTemplatesFromEncoded(Map<String, Object> templateValues) throws IllegalArgumentException
    {
+      if (templateValues == null) throw new IllegalArgumentException("templateValues param null");
       String str = buildString(templateValues, true, true, true);
       return fromTemplate(str);
    }

@@ -100,9 +100,10 @@ public class MatrixParamEncodingTest
       ResteasyWebTarget target = client.target(uriBuilder.build().toString());
       System.out.println("Sending request to " + uriBuilder.build().toString());
       Response response = target.request().get();
-      System.out.println("Received response: " + response.readEntity(String.class));
+      String entity = response.readEntity(String.class);
+      System.out.println("Received response: " + entity);
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("ac/dc", response.getEntity());
+      Assert.assertEquals("ac/dc", entity);
       response.close();
    }
    
@@ -114,9 +115,10 @@ public class MatrixParamEncodingTest
       ResteasyWebTarget target = client.target(uriBuilder.build().toString());
       System.out.println("Sending request to " + uriBuilder.build().toString());
       Response response = target.request().get();
-      System.out.println("Received response: " + response.readEntity(String.class));
+      String entity = response.readEntity(String.class);
+      System.out.println("Received response: " + entity);
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("ac%2Fdc", response.getEntity());
+      Assert.assertEquals("ac%2Fdc", entity);
       response.close();
    }
 }

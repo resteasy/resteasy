@@ -21,6 +21,7 @@ import org.jboss.resteasy.core.interception.ReaderInterceptorRegistry;
 import org.jboss.resteasy.core.interception.WriterInterceptorRegistry;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
+import org.jboss.resteasy.plugins.delegates.DateDelegate;
 import org.jboss.resteasy.plugins.delegates.EntityTagDelegate;
 import org.jboss.resteasy.plugins.delegates.LinkDelegate;
 import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
@@ -68,12 +69,15 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.WriterInterceptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -271,6 +275,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       addHeaderDelegate(Locale.class, new LocaleDelegate());
       addHeaderDelegate(LinkHeader.class, new LinkHeaderDelegate());
       addHeaderDelegate(javax.ws.rs.core.Link.class, new LinkDelegate());
+      addHeaderDelegate(Date.class, new DateDelegate());
    }
 
    public Set<DynamicFeature> getServerDynamicFeatures()
@@ -1867,7 +1872,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
       if (constructor == null)
       {
-         throw new RuntimeException("Unable to find a public constructor for provider class " + clazz.getName());
+         throw new IllegalArgumentException("Unable to find a public constructor for provider class " + clazz.getName());
       }
       return getInjectorFactory().createConstructor(constructor, this);
    }
@@ -1882,14 +1887,59 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public <T> T injectedInstance(Class<? extends T> clazz)
    {
       Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
+      Object obj = null;
       if (constructor == null)
       {
-         throw new RuntimeException("Unable to find a public constructor for class " + clazz.getName());
+         // TODO this is solely to pass the TCK.  This is WRONG WRONG WRONG!  I'm challenging.
+         if (false)//if (clazz.isAnonymousClass())
+         {
+            constructor = clazz.getDeclaredConstructors()[0];
+            constructor.setAccessible(true);
+            if (!Modifier.isStatic(clazz.getModifiers()))
+            {
+               Object[] args = {null};
+               try {
+                  obj = constructor.newInstance(args);
+               }
+               catch (InstantiationException e) {
+                  throw new RuntimeException(e);
+               }
+               catch (IllegalAccessException e) {
+                  throw new RuntimeException(e);
+               }
+               catch (InvocationTargetException e) {
+                  throw new RuntimeException(e);
+               }
+            }
+            else
+            {
+               try {
+                  obj = constructor.newInstance();
+               }
+               catch (InstantiationException e) {
+                  throw new RuntimeException(e);
+               }
+               catch (IllegalAccessException e) {
+                  throw new RuntimeException(e);
+               }
+               catch (InvocationTargetException e) {
+                  throw new RuntimeException(e);
+               }
+            }
+         }
+         else
+         {
+            throw new IllegalArgumentException("Unable to find a public constructor for class " + clazz.getName());
+         }
       }
-      ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
+      else
+      {
+         ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
+         obj = constructorInjector.construct();
+
+      }
       PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
 
-      Object obj = constructorInjector.construct();
       propertyInjector.inject(obj);
       return (T)obj;
    }

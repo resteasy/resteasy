@@ -25,7 +25,7 @@ public class SpringWebappContextTest
    private static final String CONFIG_PATH = "/WEB-INF/web.xml";
    private static final String EXPECTED_URI = BASE_URL + CONTEXT_PATH + PATH + "/uri";
    private static final String EXPECTED_HEADERS = BASE_URL + CONTEXT_PATH + PATH + "/headers"
-         + "?:text/plain";
+         + ":text/plain";
    protected ServletRunner runner;
 
    @Before

@@ -198,8 +198,6 @@ public class AsyncInvokeTest extends BaseResourceTest
          });
          Response res = future.get();
          Assert.assertEquals(200, res.getStatus());
-         String entity = res.readEntity(String.class);
-         Assert.assertEquals("get", entity);
          Assert.assertTrue(ok);
 
       }
@@ -244,8 +242,6 @@ public class AsyncInvokeTest extends BaseResourceTest
          });
          Response res = future.get();
          Assert.assertEquals(200, res.getStatus());
-         String entity = res.readEntity(String.class);
-         Assert.assertEquals("delete", entity);
          Assert.assertTrue(ok);
       }
 
@@ -288,8 +284,6 @@ public class AsyncInvokeTest extends BaseResourceTest
           });
           Response res = future.get();
           Assert.assertEquals(200, res.getStatus());
-          String entity = res.readEntity(String.class);
-          Assert.assertEquals("put hello", entity);
           Assert.assertTrue(ok);
 
        }
@@ -334,8 +328,6 @@ public class AsyncInvokeTest extends BaseResourceTest
           });
           Response res = future.get();
           Assert.assertEquals(200, res.getStatus());
-          String entity = res.readEntity(String.class);
-          Assert.assertEquals("post hello", entity);
          Assert.assertTrue(ok);
 
        }
@@ -380,8 +372,6 @@ public class AsyncInvokeTest extends BaseResourceTest
           });
           Response res = future.get();
           Assert.assertEquals(200, res.getStatus());
-          String entity = res.readEntity(String.class);
-          Assert.assertEquals("patch hello", entity);
          Assert.assertTrue(ok);
 
        }
