@@ -30,7 +30,7 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder
     private final String servletMappingPrefix;
     private final String proto;
     
-    enum Protocol 
+    public enum Protocol 
     {
         HTTPS,
         HTTP
