@@ -7,6 +7,7 @@ import org.jboss.resteasy.client.cache.LightweightBrowserCache;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.GET;
@@ -129,10 +130,16 @@ public class ClientCacheTest extends BaseResourceTest
    }
 
 
-   @Before
-   public void setUp() throws Exception
+   @BeforeClass
+   public static void setUp() throws Exception
    {
       addPerRequestResource(MyService.class);
+   }
+
+   @Before
+   public void reset()
+   {
+      count = 0;
    }
 
 

@@ -21,6 +21,7 @@ import org.jboss.resteasy.core.interception.ReaderInterceptorRegistry;
 import org.jboss.resteasy.core.interception.WriterInterceptorRegistry;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
+import org.jboss.resteasy.plugins.delegates.DateDelegate;
 import org.jboss.resteasy.plugins.delegates.EntityTagDelegate;
 import org.jboss.resteasy.plugins.delegates.LinkDelegate;
 import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
@@ -76,6 +77,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -273,6 +275,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       addHeaderDelegate(Locale.class, new LocaleDelegate());
       addHeaderDelegate(LinkHeader.class, new LinkHeaderDelegate());
       addHeaderDelegate(javax.ws.rs.core.Link.class, new LinkDelegate());
+      addHeaderDelegate(Date.class, new DateDelegate());
    }
 
    public Set<DynamicFeature> getServerDynamicFeatures()

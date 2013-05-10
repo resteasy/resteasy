@@ -44,14 +44,15 @@ public class ResteasyClient implements Client
       return httpEngine;
    }
 
-   public void abortIfClosed()
-   {
-      if (isClosed()) throw new IllegalStateException("Client is closed.");
-   }
 
    public ExecutorService asyncInvocationExecutor()
    {
       return asyncInvocationExecutor;
+   }
+
+   public void abortIfClosed()
+   {
+      if (isClosed()) throw new IllegalStateException("Client is closed.");
    }
 
    public boolean isClosed()
