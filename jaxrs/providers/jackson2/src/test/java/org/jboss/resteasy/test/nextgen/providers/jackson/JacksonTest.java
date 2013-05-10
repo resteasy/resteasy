@@ -217,16 +217,18 @@ public class JacksonTest extends BaseResourceTest
    {
       WebTarget target = client.target(generateURL("/products/333"));
       Response response = target.request().get();
-      System.out.println(response.readEntity(String.class));
+      String entity = response.readEntity(String.class);
+      System.out.println(entity);
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("{\"name\":\"Iphone\",\"id\":333}", response.getEntity());
+      Assert.assertEquals("{\"name\":\"Iphone\",\"id\":333}", entity);
       response.close();
 
       target = client.target(generateURL("/products"));
       Response response2 = target.request().get();
-      System.out.println(response2.readEntity(String.class));
+      String entity2 = response2.readEntity(String.class);
+      System.out.println(entity2);
       Assert.assertEquals(200, response2.getStatus());
-      Assert.assertEquals("[{\"name\":\"Iphone\",\"id\":333},{\"name\":\"macbook\",\"id\":44}]", response2.getEntity());
+      Assert.assertEquals("[{\"name\":\"Iphone\",\"id\":333},{\"name\":\"macbook\",\"id\":44}]", entity2);
       response2.close();
 
    }
@@ -236,17 +238,19 @@ public class JacksonTest extends BaseResourceTest
    {
       WebTarget target = client.target(generateURL("/xml/products/333"));
       Response response = target.request().get();
-      System.out.println(response.readEntity(String.class));
+      String entity = response.readEntity(String.class);
+      System.out.println(entity);
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertTrue(((String)response.getEntity()).startsWith("{\"product"));
+      Assert.assertTrue(entity.startsWith("{\"product"));
       response.close();
 
 
       target = client.target(generateURL("/xml/products"));
       Response response2 = target.request().get();
-      System.out.println(response2.readEntity(String.class));
+      String entity2 = response2.readEntity(String.class);
+      System.out.println(entity2);
       Assert.assertEquals(200, response2.getStatus());
-      Assert.assertTrue(((String)response2.getEntity()).startsWith("[{\"product"));
+      Assert.assertTrue(entity2.startsWith("[{\"product"));
       response2.close();
    }
 

@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -43,6 +44,7 @@ public class BuiltResponse extends Response
    protected Class entityClass;
    protected Type genericType;
    protected HeaderValueProcessor processor;
+   protected boolean isClosed;
 
    public BuiltResponse()
    {
@@ -75,6 +77,7 @@ public class BuiltResponse extends Response
    @Override
    public Object getEntity()
    {
+      abortIfClosed();
       return entity;
    }
 
@@ -208,20 +211,32 @@ public class BuiltResponse extends Response
    @Override
    public boolean hasEntity()
    {
+      abortIfClosed();
       return entity != null;
    }
 
    @Override
    public boolean bufferEntity()
    {
+      abortIfClosed();
       // no-op
       return false;
+   }
+
+   public boolean isClosed()
+   {
+      return isClosed;
+   }
+
+   public void abortIfClosed()
+   {
+      if (isClosed()) throw new IllegalStateException("Response is closed.");
    }
 
    @Override
    public void close()
    {
-      // no-op
+      isClosed = true;
    }
 
    @Override
@@ -239,7 +254,7 @@ public class BuiltResponse extends Response
       Object obj = metadata.getFirst(HttpHeaders.CONTENT_LENGTH);
       if (obj == null) return -1;
       if (obj instanceof Integer) return (Integer) obj;
-      return Integer.valueOf(getHeaderValueProcessor().toHeaderString(obj));
+      return Integer.valueOf(toHeaderString(obj));
    }
 
    @Override
@@ -248,7 +263,7 @@ public class BuiltResponse extends Response
       Object obj = metadata.getFirst(HttpHeaders.CONTENT_TYPE);
       if (obj instanceof MediaType) return (MediaType) obj;
       if (obj == null) return null;
-      return MediaType.valueOf(getHeaderValueProcessor().toHeaderString(obj));
+      return MediaType.valueOf(toHeaderString(obj));
    }
 
    @Override
@@ -266,7 +281,7 @@ public class BuiltResponse extends Response
          }
          else
          {
-            String str = getHeaderValueProcessor().toHeaderString(obj);
+            String str = toHeaderString(obj);
             NewCookie cookie = NewCookie.valueOf(str);
             cookies.put(cookie.getName(), cookie);
          }
@@ -280,7 +295,7 @@ public class BuiltResponse extends Response
       Object d = metadata.getFirst(HttpHeaders.ETAG);
       if (d == null) return null;
       if (d instanceof EntityTag) return (EntityTag) d;
-      return EntityTag.valueOf(getHeaderValueProcessor().toHeaderString(d));
+      return EntityTag.valueOf(toHeaderString(d));
    }
 
    @Override
@@ -309,10 +324,22 @@ public class BuiltResponse extends Response
       if (allowed == null) return allowedMethods;
       for (Object header : allowed)
       {
-         allowedMethods.add(getHeaderValueProcessor().toHeaderString(header).toUpperCase());
+         allowedMethods.add(toHeaderString(header).toUpperCase());
       }
 
       return allowedMethods;
+   }
+
+   protected String toHeaderString(Object header)
+   {
+      if (header instanceof String) return (String)header;
+      //if (getHeaderValueProcessor() != null) return getHeaderValueProcessor().toHeaderString(header);
+      // Javadoc and TCK requires that you only get from RuntimeDelegate.getInstance().createHeaderDelegate()
+      RuntimeDelegate.HeaderDelegate delegate = RuntimeDelegate.getInstance().createHeaderDelegate(header.getClass());
+      if (delegate != null)
+         return delegate.toString(header);
+      else
+         return header.toString();
    }
 
    @Override
@@ -323,7 +350,7 @@ public class BuiltResponse extends Response
       {
          for (Object obj : entry.getValue())
          {
-            map.add(entry.getKey(), getHeaderValueProcessor().toHeaderString(obj));
+            map.add(entry.getKey(), toHeaderString(obj));
          }
       }
       return map;
@@ -340,7 +367,7 @@ public class BuiltResponse extends Response
       {
          if (first) first = false;
          else builder.append(",");
-         val = getHeaderValueProcessor().toHeaderString(val);
+         val = toHeaderString(val);
          if (val == null) val = "";
          builder.append(val);
       }
@@ -355,7 +382,7 @@ public class BuiltResponse extends Response
       if (uri instanceof URI) return (URI)uri;
       String str = null;
       if (uri instanceof String) str = (String)uri;
-      else str = getHeaderValueProcessor().toHeaderString(uri);
+      else str = toHeaderString(uri);
       return URI.create(str);
    }
 

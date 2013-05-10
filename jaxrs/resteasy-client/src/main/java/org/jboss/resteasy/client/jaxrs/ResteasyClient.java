@@ -44,14 +44,15 @@ public class ResteasyClient implements Client
       return httpEngine;
    }
 
-   public void abortIfClosed()
-   {
-      if (isClosed()) throw new IllegalStateException("Client is closed.");
-   }
 
    public ExecutorService asyncInvocationExecutor()
    {
       return asyncInvocationExecutor;
+   }
+
+   public void abortIfClosed()
+   {
+      if (isClosed()) throw new IllegalStateException("Client is closed.");
    }
 
    public boolean isClosed()
@@ -205,7 +206,8 @@ public class ResteasyClient implements Client
       abortIfClosed();
       if (link == null) throw new NullPointerException("link was null");
       WebTarget target = target(link);
-      return target.request(link.getType());
+      if (link.getType() != null) return target.request(link.getType());
+      else return target.request();
    }
 
 }

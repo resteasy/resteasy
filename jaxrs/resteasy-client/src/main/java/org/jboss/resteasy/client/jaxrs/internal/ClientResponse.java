@@ -3,6 +3,7 @@ package org.jboss.resteasy.client.jaxrs.internal;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
 import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.spi.HeaderValueProcessor;
 import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -37,7 +38,6 @@ public abstract class ClientResponse extends BuiltResponse
    // One thing to note, I don't cache header objects because I was too lazy to proxy the headers multivalued map
    protected Map<String, Object> properties;
    protected ClientConfiguration configuration;
-   protected boolean isClosed;
    protected byte[] bufferedEntity;
 
    protected ClientResponse(ClientConfiguration configuration)
@@ -68,23 +68,37 @@ public abstract class ClientResponse extends BuiltResponse
    }
 
    @Override
+   public Object getEntity()
+   {
+      abortIfClosed();
+      return super.getEntity();
+   }
+
+   @Override
    public boolean hasEntity()
    {
+      abortIfClosed();
       return entity != null || getMediaType() != null;
    }
 
    @Override
    public void close()
    {
-      if (isClosed) return;
+      if (isClosed()) return;
       releaseConnection();
    }
 
    @Override
    protected void finalize() throws Throwable
    {
-      if (isClosed) return;
+      if (isClosed()) return;
       releaseConnection();
+   }
+
+   @Override
+   protected HeaderValueProcessor getHeaderValueProcessor()
+   {
+      return configuration;
    }
 
    protected abstract InputStream getInputStream();
@@ -92,7 +106,7 @@ public abstract class ClientResponse extends BuiltResponse
    protected InputStream getEntityStream()
    {
       if (bufferedEntity != null) return new ByteArrayInputStream(bufferedEntity);
-      if (isClosed) throw new ProcessingException("Stream is closed");
+      if (isClosed()) throw new ProcessingException("Stream is closed");
       return getInputStream();
    }
 
@@ -103,6 +117,7 @@ public abstract class ClientResponse extends BuiltResponse
 
    public <T> T readEntity(Class<T> type, Type genericType, Annotation[] anns)
    {
+      abortIfClosed();
       if (entity != null)
       {
          if (type.isInstance((this.entity)))
@@ -239,7 +254,7 @@ public abstract class ClientResponse extends BuiltResponse
    @Override
    public boolean bufferEntity()
    {
-      if (isClosed) throw new IllegalStateException("Response is closed");
+      abortIfClosed();
       if (bufferedEntity != null) return true;
       if (entity != null) return false;
       if (metadata.getFirst(HttpHeaderNames.CONTENT_TYPE) == null) return false;

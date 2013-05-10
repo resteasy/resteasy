@@ -1,9 +1,13 @@
 package org.jboss.resteasy.test.finegrain;
 
+import org.jboss.resteasy.util.PickConstructor;
 import org.jboss.resteasy.util.Types;
 import org.junit.Assert;
 import org.junit.Test;
 
+import javax.ws.rs.core.Feature;
+import javax.ws.rs.core.FeatureContext;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
@@ -212,8 +216,5 @@ public class TypesTest
       Assert.assertEquals(types[0], Float.class);
 
    }
-
-
-
 
 }
