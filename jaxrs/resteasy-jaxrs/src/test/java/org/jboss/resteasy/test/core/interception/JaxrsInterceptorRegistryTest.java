@@ -4,6 +4,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.junit.Assert.assertEquals;
 
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
+import org.junit.Assert;
 import org.junit.Test;
 
 import javax.ws.rs.GET;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class JaxrsInterceptorRegistryTest
@@ -74,4 +76,18 @@ public class JaxrsInterceptorRegistryTest
         
         assertEquals(JaxrsInterceptorRegistryTestNameBinding.class, bound.get(0));
     }
+
+   @Test
+   public void testOrder()
+   {
+      List<JaxrsInterceptorRegistry.Match> matches = new ArrayList<JaxrsInterceptorRegistry.Match>();
+      matches.add(new JaxrsInterceptorRegistry.Match(null, 200));
+      matches.add(new JaxrsInterceptorRegistry.Match(null, 100));
+      Collections.sort(matches, new JaxrsInterceptorRegistry.AscendingPrecedenceComparator());
+      Assert.assertEquals(matches.get(0).order, 100);
+      Assert.assertEquals(matches.get(1).order, 200);
+
+   }
+
+
 }
