@@ -51,7 +51,14 @@ public class ServerReaderInterceptorContext extends AbstractReaderInterceptorCon
    @Override
    public void setProperty(String name, Object object)
    {
-      request.setAttribute(name, object);
+      if (object == null)
+      {
+         request.removeAttribute(name);
+      }
+      else
+      {
+         request.setAttribute(name, object);
+      }
    }
 
    @Override

@@ -75,6 +75,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 
    public String toString(Object value)
    {
+      if (value == null) throw new IllegalArgumentException("param was null");
       NewCookie cookie = (NewCookie) value;
       StringBuilder b = new StringBuilder();
 

@@ -43,14 +43,8 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
    {
       if (interceptors == null || index >= interceptors.length)
          return reader.readFrom(type, genericType, annotations, mediaType, headers, inputStream);
-      try
-      {
-         return interceptors[index++].aroundReadFrom(this);
-      }
-      finally
-      {
-         index--;
-      }
+      return interceptors[index++].aroundReadFrom(this);
+      // index--;  we used to pop the index, but the TCK does not like this
    }
 
    @Override
@@ -80,6 +74,7 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
    @Override
    public void setAnnotations(Annotation[] annotations)
    {
+      if (annotations == null) throw new NullPointerException("annotations param was null");
       this.annotations = annotations;
    }
 

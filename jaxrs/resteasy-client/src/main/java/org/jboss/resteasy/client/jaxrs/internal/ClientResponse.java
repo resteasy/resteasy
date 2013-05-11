@@ -194,7 +194,7 @@ public abstract class ClientResponse extends BuiltResponse
          InputStream is = getEntityStream();
          if (is == null)
          {
-            throw new ProcessingException("Input stream was empty, there is no entity");
+            throw new IllegalStateException("Input stream was empty, there is no entity");
          }
          if (isMarshalledEntity)
          {
@@ -232,16 +232,9 @@ public abstract class ClientResponse extends BuiltResponse
          }
 
       }
-      catch (Exception e)
+      catch (IOException io)
       {
-         if (e instanceof ReaderException)
-         {
-            throw (ReaderException) e;
-         }
-         else
-         {
-            throw new ReaderException(e);
-         }
+         throw new ProcessingException(io);
       }
       finally
       {

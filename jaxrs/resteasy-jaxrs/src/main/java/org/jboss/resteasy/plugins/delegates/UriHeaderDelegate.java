@@ -17,6 +17,7 @@ public class UriHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 
    public String toString(Object value)
    {
+      if (value == null) throw new IllegalArgumentException("param was null");
       URI uri = (URI) value;
       return uri.toASCIIString();
    }
