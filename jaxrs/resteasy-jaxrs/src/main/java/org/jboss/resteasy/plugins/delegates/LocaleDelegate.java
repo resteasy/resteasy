@@ -19,6 +19,7 @@ public class LocaleDelegate implements RuntimeDelegate.HeaderDelegate<Locale>
 
    public String toString(Locale value)
    {
+      if (value == null) throw new IllegalArgumentException("param was null");
       return LocaleHelper.toLanguageString(value);
    }
 

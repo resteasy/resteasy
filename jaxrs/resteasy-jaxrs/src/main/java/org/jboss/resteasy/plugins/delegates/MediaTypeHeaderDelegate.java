@@ -76,6 +76,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
    }
    public String toString(Object o)
    {
+      if (o == null) throw new IllegalArgumentException("param was null");
       MediaType type = (MediaType) o;
       StringBuffer buf = new StringBuffer();
 

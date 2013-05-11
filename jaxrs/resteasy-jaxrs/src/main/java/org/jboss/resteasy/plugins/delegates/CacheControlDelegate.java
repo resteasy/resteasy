@@ -16,6 +16,7 @@ public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<Cach
    {
       if (value == null) throw new IllegalArgumentException("Cache-Control value is null");
       ExtendedCacheControl result = new ExtendedCacheControl();
+      result.setNoTransform(false);
 
       String[] directives = value.split(",");
       for (String directive : directives)
@@ -99,6 +100,7 @@ public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<Cach
 
    public String toString(CacheControl value)
    {
+      if (value == null) throw new IllegalArgumentException("param was null");
       StringBuffer buffer = new StringBuffer();
       if (value.isNoCache())
       {

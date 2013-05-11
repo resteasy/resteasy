@@ -76,6 +76,7 @@ public class AbortedResponse extends ClientResponse
             setInputStream(is);
          }
          setEntity(null); // clear all entity information
+         setAnnotations(null);
       }
 
 
