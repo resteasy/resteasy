@@ -684,6 +684,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public <T> HeaderDelegate<T> createHeaderDelegate(Class<T> tClass)
    {
+      if (tClass == null) throw new IllegalArgumentException("tClass parameter is null");
       if (headerDelegates == null && parent != null) return parent.createHeaderDelegate(tClass);
       return headerDelegates.get(tClass);
    }
@@ -1828,6 +1829,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public <T> T createEndpoint(Application applicationConfig, Class<T> endpointType) throws IllegalArgumentException, UnsupportedOperationException
    {
+      if (applicationConfig == null) throw new IllegalArgumentException("application param was null");
       throw new UnsupportedOperationException();
    }
 

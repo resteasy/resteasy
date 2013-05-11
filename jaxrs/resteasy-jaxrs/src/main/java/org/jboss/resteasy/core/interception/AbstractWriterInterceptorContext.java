@@ -78,6 +78,7 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
 
    public void setAnnotations(Annotation[] annotations)
    {
+      if (annotations == null) throw new NullPointerException("annotations param was null");
       this.annotations = annotations;
    }
 
@@ -114,14 +115,8 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
       }
       else
       {
-         try
-         {
-            interceptors[index++].aroundWriteTo(this);
-         }
-         finally
-         {
-            index--;
-         }
+         interceptors[index++].aroundWriteTo(this);
+         // we used to pop the index, but the TCK doesn't like this
       }
    }
 }

@@ -153,6 +153,7 @@ public class LinkDelegate implements RuntimeDelegate.HeaderDelegate<Link>
    @Override
    public Link fromString(String value) throws IllegalArgumentException
    {
+      if (value == null) throw new IllegalArgumentException("param was null");
       Parser parser = new Parser(value);
       parser.parse();
       return parser.getLink();
@@ -161,6 +162,7 @@ public class LinkDelegate implements RuntimeDelegate.HeaderDelegate<Link>
    @Override
    public String toString(Link value) throws IllegalArgumentException
    {
+      if (value == null) throw new IllegalArgumentException("param was null");
       StringBuffer buf = new StringBuffer("<");
       buf.append(value.getUri().toString()).append(">");
 

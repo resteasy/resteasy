@@ -11,6 +11,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -23,7 +25,14 @@ public class AbortedResponse extends ClientResponse
    public AbortedResponse(ClientConfiguration configuration, Response response)
    {
       super(configuration);
-      setMetadata(response.getMetadata());
+
+      for (Map.Entry<String, List<Object>> entry : response.getMetadata().entrySet())
+      {
+         for (Object obj : entry.getValue())
+         {
+             getMetadata().add(entry.getKey(), configuration.toHeaderString(obj));
+         }
+      }
       setStatus(response.getStatus());
       setEntity(response.getEntity());
       if (response instanceof BuiltResponse) {
@@ -39,7 +48,7 @@ public class AbortedResponse extends ClientResponse
          MediaType mediaType = getMediaType();
          if (mediaType == null) {
             mediaType = MediaType.WILDCARD_TYPE;
-            getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mediaType);
+            getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD);
          }
 
          if (!(response.getEntity() instanceof InputStream)) {
@@ -67,6 +76,7 @@ public class AbortedResponse extends ClientResponse
             setInputStream(is);
          }
          setEntity(null); // clear all entity information
+         setAnnotations(null);
       }
 
 

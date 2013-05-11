@@ -44,7 +44,14 @@ public class ClientWriterInterceptorContext extends AbstractWriterInterceptorCon
    @Override
    public void setProperty(String name, Object object)
    {
-      properties.put(name, object);
+      if (object == null)
+      {
+         properties.remove(name);
+      }
+      else
+      {
+         properties.put(name, object);
+      }
    }
 
    @Override

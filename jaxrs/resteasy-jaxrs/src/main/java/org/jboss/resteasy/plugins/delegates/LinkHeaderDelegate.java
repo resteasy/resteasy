@@ -167,6 +167,7 @@ public class LinkHeaderDelegate implements RuntimeDelegate.HeaderDelegate<LinkHe
 
    public static LinkHeader from(String value) throws IllegalArgumentException
    {
+      if (value == null) throw new IllegalArgumentException("param was null");
       Parser parser = new Parser(value);
       parser.parse();
       return parser.getHeader();
@@ -175,6 +176,7 @@ public class LinkHeaderDelegate implements RuntimeDelegate.HeaderDelegate<LinkHe
 
    public String toString(LinkHeader value)
    {
+      if (value == null) throw new IllegalArgumentException("param was null");
       return getString(value);
    }
 

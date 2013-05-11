@@ -8,8 +8,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.ext.RuntimeDelegate;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -22,6 +23,28 @@ public class CacheControlTest
    {
       ResteasyProviderFactory.setInstance(new ResteasyProviderFactory());
    }
+
+   @Test
+   public void cacheControlSerialization()
+   {
+      RuntimeDelegate.HeaderDelegate<CacheControl> hdcc = ResteasyProviderFactory.getInstance()
+              .createHeaderDelegate(CacheControl.class);
+      CacheControl control = new CacheControl();
+      control.setMaxAge(1000);
+      control.setSMaxAge(500);
+      control.setNoTransform(false);
+      control.setPrivate(true);
+
+      String toString = hdcc.toString(control);
+      System.out.println(toString);
+      CacheControl serialized = hdcc.fromString(toString);
+
+      Assert.assertTrue(serialized.getMaxAge() == 1000);
+      Assert.assertTrue(serialized.getSMaxAge() == 500);
+      Assert.assertTrue(!serialized.isNoTransform());
+      Assert.assertTrue(serialized.isPrivate());
+   }
+
 
    void assertEqual(CacheControl first, CacheControl second)
    {
@@ -41,8 +64,7 @@ public class CacheControlTest
       for (int i = 0; i < first.getPrivateFields().size(); i++)
          Assert.assertEquals(first.getPrivateFields().get(i), second.getPrivateFields().get(i));
       Assert.assertEquals(first.getCacheExtension().size(), second.getCacheExtension().size());
-      for (String key : first.getCacheExtension().keySet())
-      {
+      for (String key : first.getCacheExtension().keySet()) {
          Assert.assertEquals(first.getCacheExtension().get(key), second.getCacheExtension().get(key));
       }
    }
@@ -81,31 +103,31 @@ public class CacheControlTest
 
       }
    }
-   
+
    @Test
    public void testEveryDirectiveAppearsInStringifiedVersion() // TCK requires this
    {
-       CacheControl cc = new CacheControl();
-       cc.setNoCache(true);
-       cc.setPrivate(true);
-       cc.setNoStore(true);
-       String value = cc.toString();
-       assertTrue(value.contains("no-cache"));
-       assertTrue(value.contains("no-store"));
-       assertTrue(value.contains("private"));
+      CacheControl cc = new CacheControl();
+      cc.setNoCache(true);
+      cc.setPrivate(true);
+      cc.setNoStore(true);
+      String value = cc.toString();
+      assertTrue(value.contains("no-cache"));
+      assertTrue(value.contains("no-store"));
+      assertTrue(value.contains("private"));
    }
-   
+
    @Test
    public void testExtendedCacheControl()
    {
-       ExtendedCacheControl cc = new ExtendedCacheControl();
-       cc.setNoCache(true);
-       cc.setPublic(true);
-       cc.setNoStore(true);
-       String value = cc.toString();
-       assertTrue(value.contains("no-cache"));
-       assertTrue(value.contains("no-store"));
-       assertTrue(value.contains("public"));
+      ExtendedCacheControl cc = new ExtendedCacheControl();
+      cc.setNoCache(true);
+      cc.setPublic(true);
+      cc.setNoStore(true);
+      String value = cc.toString();
+      assertTrue(value.contains("no-cache"));
+      assertTrue(value.contains("no-store"));
+      assertTrue(value.contains("public"));
    }
 
 }
