@@ -200,17 +200,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
 
    protected String toHeaderString(Object object)
    {
-      StringConverter converter = providerFactory.getStringConverter(object
-              .getClass());
-      if (converter != null)
-         return converter.toString(object);
-
-      RuntimeDelegate.HeaderDelegate delegate = providerFactory
-              .createHeaderDelegate(object.getClass());
-      if (delegate != null)
-         return delegate.toString(object);
-      else
-         return object.toString();
+      return providerFactory.toHeaderString(object);
 
    }
 

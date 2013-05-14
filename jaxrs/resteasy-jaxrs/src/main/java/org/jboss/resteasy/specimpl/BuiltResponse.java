@@ -333,13 +333,7 @@ public class BuiltResponse extends Response
    protected String toHeaderString(Object header)
    {
       if (header instanceof String) return (String)header;
-      //if (getHeaderValueProcessor() != null) return getHeaderValueProcessor().toHeaderString(header);
-      // Javadoc and TCK requires that you only get from RuntimeDelegate.getInstance().createHeaderDelegate()
-      RuntimeDelegate.HeaderDelegate delegate = RuntimeDelegate.getInstance().createHeaderDelegate(header.getClass());
-      if (delegate != null)
-         return delegate.toString(header);
-      else
-         return header.toString();
+      return getHeaderValueProcessor().toHeaderString(header);
    }
 
    @Override

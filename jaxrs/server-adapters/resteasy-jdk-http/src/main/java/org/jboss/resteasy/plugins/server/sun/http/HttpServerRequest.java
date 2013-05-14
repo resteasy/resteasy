@@ -4,11 +4,13 @@ import com.sun.net.httpserver.HttpExchange;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.SynchronousExecutionContext;
 import org.jboss.resteasy.plugins.server.BaseHttpRequest;
+import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedMap;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Enumeration;
@@ -23,7 +25,7 @@ import java.util.Map;
 public class HttpServerRequest extends BaseHttpRequest
 {
    protected HttpExchange exchange;
-   protected HttpHeaders httpHeaders;
+   protected ResteasyHttpHeaders httpHeaders;
    protected ResteasyUriInfo uriInfo;
    protected String preProcessedPath;
    protected Map<String, Object> attributes = new HashMap<String, Object>();
@@ -39,6 +41,12 @@ public class HttpServerRequest extends BaseHttpRequest
       this.httpHeaders = HttpExchangeUtil.extractHttpHeaders(exchange);
       this.preProcessedPath = uriInfo.getPath(false);
       this.httpMethod = exchange.getRequestMethod().toUpperCase();
+   }
+
+   @Override
+   public MultivaluedMap<String, String> getMutableHeaders()
+   {
+      return httpHeaders.getMutableHeaders();
    }
 
    @Override

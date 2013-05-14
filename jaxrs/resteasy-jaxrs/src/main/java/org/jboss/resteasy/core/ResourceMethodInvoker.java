@@ -286,6 +286,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
    protected BuiltResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
    {
+      ResteasyProviderFactory.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
       if (validator != null)
       {
          violationsContainer = new ViolationsContainer<Object>(validator.validate(target));

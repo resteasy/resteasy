@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.server.servlet;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.SynchronousExecutionContext;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
+import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -31,7 +32,7 @@ import java.util.Map;
  */
 public class HttpServletInputMessage implements HttpRequest
 {
-   protected HttpHeaders httpHeaders;
+   protected ResteasyHttpHeaders httpHeaders;
    protected HttpServletRequest request;
    protected SynchronousDispatcher dispatcher;
    protected HttpResponse httpResponse;
@@ -43,7 +44,7 @@ public class HttpServletInputMessage implements HttpRequest
    protected SynchronousExecutionContext executionContext;
 
 
-   public HttpServletInputMessage(HttpServletRequest request, HttpResponse httpResponse, HttpHeaders httpHeaders, ResteasyUriInfo uri, String httpMethod, SynchronousDispatcher dispatcher)
+   public HttpServletInputMessage(HttpServletRequest request, HttpResponse httpResponse, ResteasyHttpHeaders httpHeaders, ResteasyUriInfo uri, String httpMethod, SynchronousDispatcher dispatcher)
    {
       this.request = request;
       this.dispatcher = dispatcher;
@@ -52,6 +53,12 @@ public class HttpServletInputMessage implements HttpRequest
       this.httpMethod = httpMethod;
       this.uri = uri;
       executionContext = new SynchronousExecutionContext(dispatcher, this, httpResponse);
+   }
+
+   @Override
+   public MultivaluedMap<String, String> getMutableHeaders()
+   {
+      return httpHeaders.getMutableHeaders();
    }
 
    @Override

@@ -1,17 +1,16 @@
 package org.jboss.resteasy.mock;
 
-import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
-import org.jboss.resteasy.specimpl.HttpHeadersImpl;
+import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.util.LocaleHelper;
 import org.jboss.resteasy.util.ReadFromStream;
 
 import javax.ws.rs.container.AsyncResponse;
@@ -25,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MockHttpRequest implements HttpRequest
 {
-   protected HttpHeadersImpl httpHeaders;
+   protected ResteasyHttpHeaders httpHeaders;
    protected InputStream inputStream;
    protected ResteasyUriInfo uri;
    protected String httpMethod;
@@ -67,11 +65,7 @@ public class MockHttpRequest implements HttpRequest
    {
       if (baseUri == null) baseUri = EMPTY_URI;
       MockHttpRequest request = new MockHttpRequest();
-      request.httpHeaders = new HttpHeadersImpl();
-      request.httpHeaders.setAcceptableLanguages(new ArrayList<String>());
-      request.httpHeaders.setAcceptableMediaTypes(new ArrayList<MediaType>());
-      request.httpHeaders.setCookies(new HashMap<String, Cookie>());
-      request.httpHeaders.setRequestHeaders(new Headers<String>());
+      request.httpHeaders = new ResteasyHttpHeaders(new CaseInsensitiveMap<String>());
       //request.uri = new UriInfoImpl(absoluteUri, absoluteUri, absoluteUri.getPath(), absoluteUri.getQuery(), PathSegmentImpl.parseSegments(absoluteUri.getPath()));
       
       // remove query part
@@ -137,7 +131,7 @@ public class MockHttpRequest implements HttpRequest
    {
       MockHttpRequest mock = new MockHttpRequest();
       mock.uri = request.getUri();
-      mock.httpHeaders = (HttpHeadersImpl) request.getHttpHeaders();
+      mock.httpHeaders = (ResteasyHttpHeaders) request.getHttpHeaders();
       mock.httpMethod = request.getHttpMethod();
       byte[] bytes = ReadFromStream.readFromStream(1024, request.getInputStream());
       mock.inputStream = new ByteArrayInputStream(bytes);
@@ -168,21 +162,28 @@ public class MockHttpRequest implements HttpRequest
 
    public MockHttpRequest accept(List<MediaType> accepts)
    {
-      httpHeaders.setAcceptableMediaTypes(accepts);
+      for (MediaType accept : accepts)
+      {
+         accept(accept);
+      }
+      return this;
+   }
+
+   public MockHttpRequest accept(MediaType accept)
+   {
+      httpHeaders.getMutableHeaders().add(HttpHeaders.ACCEPT, accept.toString());
       return this;
    }
 
    public MockHttpRequest accept(String type)
    {
-      httpHeaders.getRequestHeaders().add(HttpHeaderNames.ACCEPT, type);
-      httpHeaders.getAcceptableMediaTypes().add(MediaType.valueOf(type));
+      httpHeaders.getMutableHeaders().add(HttpHeaderNames.ACCEPT, type);
       return this;
    }
 
    public MockHttpRequest language(String language)
    {
-      httpHeaders.getRequestHeaders().add(HttpHeaderNames.ACCEPT_LANGUAGE, language);
-      httpHeaders.getAcceptableLanguages().add(LocaleHelper.extractLocale(language));
+      httpHeaders.getMutableHeaders().add(HttpHeaderNames.ACCEPT_LANGUAGE, language);
       return this;
    }
 
@@ -195,15 +196,13 @@ public class MockHttpRequest implements HttpRequest
 
    public MockHttpRequest contentType(String type)
    {
-      httpHeaders.getRequestHeaders().add(HttpHeaderNames.CONTENT_TYPE, type);
-      httpHeaders.setMediaType(MediaType.valueOf(type));
+      httpHeaders.getMutableHeaders().add(HttpHeaderNames.CONTENT_TYPE, type);
       return this;
    }
 
    public MockHttpRequest contentType(MediaType type)
    {
-      httpHeaders.getRequestHeaders().add(HttpHeaderNames.CONTENT_TYPE, type.toString());
-      httpHeaders.setMediaType(type);
+      httpHeaders.getMutableHeaders().add(HttpHeaderNames.CONTENT_TYPE, type.toString());
       return this;
    }
 
@@ -240,6 +239,12 @@ public class MockHttpRequest implements HttpRequest
    public HttpHeaders getHttpHeaders()
    {
       return httpHeaders;
+   }
+
+   @Override
+   public MultivaluedMap<String, String> getMutableHeaders()
+   {
+      return httpHeaders.getMutableHeaders();
    }
 
    public InputStream getInputStream()

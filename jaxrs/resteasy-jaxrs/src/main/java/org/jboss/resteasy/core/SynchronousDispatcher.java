@@ -18,6 +18,7 @@ import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -236,7 +237,7 @@ public class SynchronousDispatcher implements Dispatcher
       return invoker;
    }
 
-   public void pushContextObjects(HttpRequest request, HttpResponse response)
+   public void pushContextObjects(final HttpRequest request, final HttpResponse response)
    {
       Map contextDataMap = ResteasyProviderFactory.getContextDataMap();
       contextDataMap.put(HttpRequest.class, request);
@@ -245,6 +246,22 @@ public class SynchronousDispatcher implements Dispatcher
       contextDataMap.put(UriInfo.class, request.getUri());
       contextDataMap.put(Request.class, new RequestImpl(request));
       contextDataMap.put(ResteasyAsynchronousContext.class, request.getAsyncContext());
+      ResourceContext resourceContext = new ResourceContext()
+      {
+         @Override
+         public <T> T getResource(Class<T> resourceClass)
+         {
+            return providerFactory.injectedInstance(resourceClass, request, response);
+         }
+
+         @Override
+         public <T> T initResource(T resource)
+         {
+            providerFactory.injectProperties(resource, request, response);
+            return resource;
+         }
+      };
+      contextDataMap.put(ResourceContext.class, resourceContext);
 
       contextDataMap.putAll(defaultContextObjects);
    }

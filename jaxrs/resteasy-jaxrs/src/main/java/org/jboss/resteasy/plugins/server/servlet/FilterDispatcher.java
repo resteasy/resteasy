@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.NotFoundException;
@@ -15,7 +16,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 
 /**
@@ -41,7 +41,7 @@ public class FilterDispatcher implements Filter, HttpRequestFactory, HttpRespons
 
    }
 
-   public HttpRequest createResteasyHttpRequest(String httpMethod, HttpServletRequest request, HttpHeaders headers, ResteasyUriInfo uriInfo, HttpResponse theResponse, HttpServletResponse response)
+   public HttpRequest createResteasyHttpRequest(String httpMethod, HttpServletRequest request, ResteasyHttpHeaders headers, ResteasyUriInfo uriInfo, HttpResponse theResponse, HttpServletResponse response)
    {
       return new HttpServletInputMessage(request, theResponse, headers, uriInfo, httpMethod.toUpperCase(), (SynchronousDispatcher) getDispatcher());
    }
