@@ -1,6 +1,7 @@
 package org.jboss.resteasy.specimpl;
 
 import org.jboss.resteasy.core.Headers;
+import org.jboss.resteasy.plugins.delegates.LocaleDelegate;
 import org.jboss.resteasy.spi.HeaderValueProcessor;
 import org.jboss.resteasy.spi.LinkHeaders;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -245,7 +246,7 @@ public class BuiltResponse extends Response
       Object obj = metadata.getFirst(HttpHeaders.CONTENT_LANGUAGE);
       if (obj == null) return null;
       if (obj instanceof Locale) return (Locale) obj;
-      return new Locale(obj.toString());
+      return new LocaleDelegate().fromString(toHeaderString(obj));
    }
 
    @Override
