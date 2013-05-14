@@ -57,7 +57,7 @@ public class HttpServletInputMessage implements HttpRequest
    @Override
    public void setRequestUri(URI requestUri) throws IllegalStateException
    {
-      uri = uri.relative(requestUri);
+      uri = uri.setRequestUri(requestUri);
    }
 
    @Override

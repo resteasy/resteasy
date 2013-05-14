@@ -167,7 +167,7 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
    @Override
    public void setRequestUri(URI requestUri) throws IllegalStateException
    {
-      uriInfo = uriInfo.relative(requestUri);
+      uriInfo = uriInfo.setRequestUri(requestUri);
    }
 
    @Override

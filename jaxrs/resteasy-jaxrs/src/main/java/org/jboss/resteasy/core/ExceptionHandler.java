@@ -4,7 +4,6 @@ import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -16,7 +15,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -70,13 +68,11 @@ public class ExceptionHandler
    {
       Response jaxrsResponse = null;
       // See if there is a mapper for ApplicationException
-      if ((jaxrsResponse = executeExceptionMapperForClass(e, ApplicationException.class)) != null)
-      {
+      if ((jaxrsResponse = executeExceptionMapperForClass(e, ApplicationException.class)) != null) {
          return jaxrsResponse;
       }
       jaxrsResponse = unwrapException(request, e);
-      if (jaxrsResponse == null)
-      {
+      if (jaxrsResponse == null) {
          throw new UnhandledException(e.getCause());
       }
       return jaxrsResponse;
@@ -93,18 +89,15 @@ public class ExceptionHandler
       ExceptionMapper mapper = null;
 
       Class causeClass = exception.getClass();
-      while (mapper == null)
-      {
+      while (mapper == null) {
          if (causeClass == null) break;
          mapper = providerFactory.getExceptionMapper(causeClass);
          if (mapper == null) causeClass = causeClass.getSuperclass();
       }
-      if (mapper != null)
-      {
+      if (mapper != null) {
          mapperExecuted = true;
          Response jaxrsResponse = mapper.toResponse(exception);
-         if (jaxrsResponse == null)
-         {
+         if (jaxrsResponse == null) {
             jaxrsResponse = Response.status(204).build();
          }
          return jaxrsResponse;
@@ -118,26 +111,34 @@ public class ExceptionHandler
       Response jaxrsResponse = null;
       Throwable unwrappedException = e.getCause();
 
-      if ((jaxrsResponse = executeExceptionMapper(unwrappedException)) != null)
-      {
+      /*
+       * 					If the response property of the exception does not
+       * 					contain an entity and an exception mapping provider
+       * 					(see section 4.4) is available for
+       * 					WebApplicationException an implementation MUST use the
+       * 					provider to create a new Response instance, otherwise
+       * 					the response property is used directly.
+       */
+
+      if (unwrappedException instanceof WebApplicationException) {
+         WebApplicationException wae = (WebApplicationException) unwrappedException;
+         if (wae.getResponse() != null && wae.getResponse().getEntity() != null) return wae.getResponse();
+      }
+
+      if ((jaxrsResponse = executeExceptionMapper(unwrappedException)) != null) {
          return jaxrsResponse;
       }
-      if (unwrappedException instanceof WebApplicationException)
-      {
+      if (unwrappedException instanceof WebApplicationException) {
          return handleWebApplicationException((WebApplicationException) unwrappedException);
       }
-      else if (unwrappedException instanceof Failure)
-      {
+      else if (unwrappedException instanceof Failure) {
          return handleFailure(request, (Failure) unwrappedException);
       }
-      else
-      {
-         if (unwrappedExceptions.contains(unwrappedException.getClass().getName()) && unwrappedException.getCause() != null)
-         {
+      else {
+         if (unwrappedExceptions.contains(unwrappedException.getClass().getName()) && unwrappedException.getCause() != null) {
             return unwrapException(request, unwrappedException);
          }
-         else
-         {
+         else {
             return null;
          }
       }
@@ -149,12 +150,10 @@ public class ExceptionHandler
          logger.error("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), failure);
       else logger.debug("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), failure);
 
-      if (failure.getResponse() != null)
-      {
+      if (failure.getResponse() != null) {
          return failure.getResponse();
       }
-      else
-      {
+      else {
          Response.ResponseBuilder builder = Response.status(failure.getErrorCode());
          if (failure.getMessage() != null) builder.type(MediaType.TEXT_HTML).entity(failure.getMessage());
          return builder.build();
@@ -165,16 +164,13 @@ public class ExceptionHandler
    {
       Response jaxrsResponse = null;
       // See if there is a general mapper for WriterException
-      if ((jaxrsResponse = executeExceptionMapperForClass(e, WriterException.class)) != null)
-      {
+      if ((jaxrsResponse = executeExceptionMapperForClass(e, WriterException.class)) != null) {
          return jaxrsResponse;
       }
-      if (e.getResponse() != null || e.getErrorCode() > -1)
-      {
+      if (e.getResponse() != null || e.getErrorCode() > -1) {
          return handleFailure(request, e);
       }
-      else if (e.getCause() != null)
-      {
+      else if (e.getCause() != null) {
          if ((jaxrsResponse = unwrapException(request, e)) != null) return jaxrsResponse;
       }
       e.setErrorCode(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR);
@@ -185,16 +181,13 @@ public class ExceptionHandler
    {
       Response jaxrsResponse = null;
       // See if there is a general mapper for ReaderException
-      if ((jaxrsResponse = executeExceptionMapperForClass(e, WriterException.class)) != null)
-      {
+      if ((jaxrsResponse = executeExceptionMapperForClass(e, WriterException.class)) != null) {
          return jaxrsResponse;
       }
-      if (e.getResponse() != null || e.getErrorCode() > -1)
-      {
+      if (e.getResponse() != null || e.getErrorCode() > -1) {
          return handleFailure(request, e);
       }
-      else if (e.getCause() != null)
-      {
+      else if (e.getCause() != null) {
          if ((jaxrsResponse = unwrapException(request, e)) != null) return jaxrsResponse;
       }
       e.setErrorCode(HttpResponseCodes.SC_BAD_REQUEST);
@@ -215,35 +208,41 @@ public class ExceptionHandler
       if ((jaxrsResponse = executeExactExceptionMapper(e)) != null) return jaxrsResponse;
 
       // These are wrapper exceptions so they need to be processed first as they map e.getCause()
-      if (e instanceof ApplicationException)
-      {
+      if (e instanceof ApplicationException) {
          return handleApplicationException(request, (ApplicationException) e);
       }
-      else if (e instanceof WriterException)
-      {
+      else if (e instanceof WriterException) {
          return handleWriterException(request, (WriterException) e);
       }
-      else if (e instanceof ReaderException)
-      {
+      else if (e instanceof ReaderException) {
          return handleReaderException(request, (ReaderException) e);
       }
 
+      /*
+       * 					If the response property of the exception does not
+       * 					contain an entity and an exception mapping provider
+       * 					(see section 4.4) is available for
+       * 					WebApplicationException an implementation MUST use the
+       * 					provider to create a new Response instance, otherwise
+       * 					the response property is used directly.
+       */
+      if (e instanceof WebApplicationException) {
+         WebApplicationException wae = (WebApplicationException) e;
+         if (wae.getResponse() != null && wae.getResponse().getEntity() != null) return wae.getResponse();
+      }
+
       // First try and handle it with a mapper
-      if ((jaxrsResponse = executeExceptionMapper(e)) != null)
-      {
+      if ((jaxrsResponse = executeExceptionMapper(e)) != null) {
          return jaxrsResponse;
       }
       // Otherwise do specific things
-      else if (e instanceof WebApplicationException)
-      {
+      else if (e instanceof WebApplicationException) {
          return handleWebApplicationException((WebApplicationException) e);
       }
-      else if (e instanceof Failure)
-      {
+      else if (e instanceof Failure) {
          return handleFailure(request, (Failure) e);
       }
-      else
-      {
+      else {
          logger.error("Unknown exception while executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
          throw new UnhandledException(e);
       }

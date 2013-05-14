@@ -342,7 +342,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       Response.ResponseBuilder builder = Response.ok(rtn);
       builder.type(resolveContentType(request, rtn));
       BuiltResponse jaxrsResponse = (BuiltResponse)builder.build();
-      jaxrsResponse.setGenericType(method.getGenericReturnType());
+      if (jaxrsResponse.getGenericType() == null && !getMethod().getReturnType().equals(Response.class)) jaxrsResponse.setGenericType(method.getGenericReturnType());
       jaxrsResponse.setAnnotations(method.getAnnotatedMethod().getAnnotations());
       return jaxrsResponse;
    }

@@ -44,7 +44,7 @@ public class HttpServerRequest extends BaseHttpRequest
    @Override
    public void setRequestUri(URI requestUri) throws IllegalStateException
    {
-      uriInfo = uriInfo.relative(requestUri);
+      uriInfo = uriInfo.setRequestUri(requestUri);
    }
 
    @Override
