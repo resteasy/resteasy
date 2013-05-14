@@ -61,7 +61,8 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 
    protected void quote(StringBuilder b, String value)
    {
-      if (value.indexOf(' ') > -1)
+
+      if (MediaTypeHeaderDelegate.quoted(value))
       {
          b.append('"');
          b.append(value);

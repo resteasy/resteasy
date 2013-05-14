@@ -2212,13 +2212,19 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    @Override
    public boolean isEnabled(Feature feature)
    {
-      return getFeatureInstances().contains(feature);
+      return getEnabledFeatures().contains(feature);
    }
 
    @Override
    public boolean isEnabled(Class<? extends Feature> featureClass)
    {
-      return getFeatureClasses().contains(featureClass);
+      Collection<Feature> enabled = getEnabledFeatures();
+      if (enabled == null) return false;
+      for (Feature feature : enabled)
+      {
+         if (featureClass.isInstance(feature)) return true;
+      }
+      return false;
    }
 
    @Override

@@ -66,7 +66,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 
    private static final char[] quotedChars = "()<>@,;:\\\"/[]?= \t\r\n".toCharArray();
 
-   boolean quoted(String str)
+   public static boolean quoted(String str)
    {
       for (char c : str.toCharArray())
       {
@@ -74,6 +74,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
       }
       return false;
    }
+
    public String toString(Object o)
    {
       if (o == null) throw new IllegalArgumentException("param was null");

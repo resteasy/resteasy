@@ -100,6 +100,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       catch (Exception e)
       {
+         //logger.error("Failed in preprocess, mapping exception", e);
          aborted = new ExceptionHandler(providerFactory, unwrappedExceptions).handleException(request, e);
      }
       return aborted;
@@ -130,6 +131,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       catch (Exception e)
       {
+         //logger.error("Failed in preprocess, mapping exception", e);
          writeException(request, response, e);
          return false;
       }
@@ -172,6 +174,7 @@ public class SynchronousDispatcher implements Dispatcher
          }
          catch (Exception exception)
          {
+            //logger.error("getInvoker() failed mapping exception", exception);
             writeException(request, response, exception);
             return;
          }
@@ -208,6 +211,7 @@ public class SynchronousDispatcher implements Dispatcher
             }
             else
             {
+               //logger.error("getInvoker() failed mapping exception", failure);
                writeException(request, response, failure);
                return;
             }
@@ -332,6 +336,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       catch (Exception e)
       {
+         //logger.error("invoke() failed mapping exception", e);
          jaxrsResponse = new ExceptionHandler(providerFactory, unwrappedExceptions).handleException(request, e);
          if (jaxrsResponse == null) throw new UnhandledException(e);
       }
@@ -365,6 +370,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       catch (Exception e)
       {
+         //logger.error("invoke() failed mapping exception", e);
          writeException(request, response, e);
          return;
       }
@@ -412,6 +418,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       catch (Exception e)
       {
+         //logger.error("writeResponse() failed mapping exception", e);
          writeException(request, response, e);
       }
    }

@@ -189,6 +189,7 @@ public class ServletContainerDispatcher
    {
       try
       {
+         //logger.info(httpMethod + " " + request.getRequestURL().toString());
          //logger.info("***PATH: " + request.getRequestURL());
          // classloader/deployment aware RestasyProviderFactory.  Used to have request specific
          // ResteasyProviderFactory.getInstance()
