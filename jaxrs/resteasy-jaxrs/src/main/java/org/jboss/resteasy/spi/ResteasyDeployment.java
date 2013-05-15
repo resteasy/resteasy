@@ -12,6 +12,7 @@ import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
 import org.jboss.resteasy.util.GetRestful;
 
+import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.MediaType;
@@ -227,7 +228,7 @@ public class ResteasyDeployment
 
          if (paramMapping != null)
          {
-            dispatcher.addHttpPreprocessor(new AcceptParameterHttpPreprocessor(paramMapping));
+            providerFactory.getContainerRequestFilterRegistry().registerSingleton(new AcceptParameterHttpPreprocessor(paramMapping));
          }
 
          AcceptHeaderByFileSuffixFilter suffixNegotiationFilter = null;
@@ -245,7 +246,7 @@ public class ResteasyDeployment
                suffixNegotiationFilter = new AcceptHeaderByFileSuffixFilter();
                providerFactory.getContainerRequestFilterRegistry().registerSingleton(suffixNegotiationFilter);
             }
-            suffixNegotiationFilter.getMediaTypeMappings().putAll(extMap);
+            suffixNegotiationFilter.setMediaTypeMappings(extMap);
          }
 
 
@@ -256,7 +257,7 @@ public class ResteasyDeployment
                suffixNegotiationFilter = new AcceptHeaderByFileSuffixFilter();
                providerFactory.getContainerRequestFilterRegistry().registerSingleton(suffixNegotiationFilter);
             }
-            suffixNegotiationFilter.getLanguageMappings().putAll(languageExtensions);
+            suffixNegotiationFilter.setLanguageMappings(languageExtensions);
          }
       }
       finally

@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
@@ -11,7 +12,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 
 /**
@@ -56,7 +56,7 @@ public class HttpServletDispatcher extends HttpServlet implements HttpRequestFac
       servletContainerDispatcher.service(httpMethod, request, response, true);
    }
 
-   public HttpRequest createResteasyHttpRequest(String httpMethod, HttpServletRequest request, HttpHeaders headers, ResteasyUriInfo uriInfo, HttpResponse theResponse, HttpServletResponse response)
+   public HttpRequest createResteasyHttpRequest(String httpMethod, HttpServletRequest request, ResteasyHttpHeaders headers, ResteasyUriInfo uriInfo, HttpResponse theResponse, HttpServletResponse response)
    {
       return createHttpRequest(httpMethod, request, headers, uriInfo, theResponse, response);
    }
@@ -67,7 +67,7 @@ public class HttpServletDispatcher extends HttpServlet implements HttpRequestFac
       return createServletResponse(response);
    }
 
-   protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest request, HttpHeaders headers, ResteasyUriInfo uriInfo, HttpResponse theResponse, HttpServletResponse response)
+   protected HttpRequest createHttpRequest(String httpMethod, HttpServletRequest request, ResteasyHttpHeaders headers, ResteasyUriInfo uriInfo, HttpResponse theResponse, HttpServletResponse response)
    {
       return new HttpServletInputMessage(request, theResponse, headers, uriInfo, httpMethod.toUpperCase(), (SynchronousDispatcher) getDispatcher());
    }

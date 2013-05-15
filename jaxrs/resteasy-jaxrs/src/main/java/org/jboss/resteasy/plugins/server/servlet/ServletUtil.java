@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.core.Headers;
-import org.jboss.resteasy.specimpl.HttpHeadersImpl;
+import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -72,23 +72,21 @@ public class ServletUtil
       return uriInfo;
    }
 
-   public static HttpHeaders extractHttpHeaders(HttpServletRequest request)
+   public static ResteasyHttpHeaders extractHttpHeaders(HttpServletRequest request)
    {
-      HttpHeadersImpl headers = new HttpHeadersImpl();
 
       MultivaluedMap<String, String> requestHeaders = extractRequestHeaders(request);
-      headers.setRequestHeaders(requestHeaders);
-      List<MediaType> acceptableMediaTypes = extractAccepts(requestHeaders);
-      List<String> acceptableLanguages = extractLanguages(requestHeaders);
-      headers.setAcceptableMediaTypes(acceptableMediaTypes);
-      headers.setAcceptableLanguages(acceptableLanguages);
-      headers.setLanguage(requestHeaders.getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+      ResteasyHttpHeaders headers = new ResteasyHttpHeaders(requestHeaders);
 
       String contentType = request.getContentType();
-      if (contentType != null) headers.setMediaType(MediaType.valueOf(contentType));
+      if (contentType != null) headers.getMutableHeaders().putSingle(HttpHeaders.CONTENT_TYPE, contentType);
 
       Map<String, Cookie> cookies = extractCookies(request);
       headers.setCookies(cookies);
+
+      // test parsing should throw an exception on error
+      headers.testParsing();
+
       return headers;
 
    }

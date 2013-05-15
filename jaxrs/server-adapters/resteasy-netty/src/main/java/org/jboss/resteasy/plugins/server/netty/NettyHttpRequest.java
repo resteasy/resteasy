@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.server.netty;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.SynchronousExecutionContext;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
+import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.Encode;
@@ -29,7 +30,7 @@ import java.util.Map;
  */
 public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
 {
-   protected HttpHeaders httpHeaders;
+   protected ResteasyHttpHeaders httpHeaders;
    protected SynchronousDispatcher dispatcher;
    protected ResteasyUriInfo uriInfo;
    protected String httpMethod;
@@ -41,7 +42,7 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
    private final boolean is100ContinueExpected;
 
 
-   public NettyHttpRequest(HttpHeaders httpHeaders, ResteasyUriInfo uri, String httpMethod, SynchronousDispatcher dispatcher, NettyHttpResponse httpResponse, boolean is100ContinueExpected)
+   public NettyHttpRequest(ResteasyHttpHeaders httpHeaders, ResteasyUriInfo uri, String httpMethod, SynchronousDispatcher dispatcher, NettyHttpResponse httpResponse, boolean is100ContinueExpected)
    {
       this.is100ContinueExpected = is100ContinueExpected;
       this.httpResponse = httpResponse;
@@ -50,6 +51,12 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
       this.httpMethod = httpMethod;
       this.uriInfo = uri;
 
+   }
+
+   @Override
+   public MultivaluedMap<String, String> getMutableHeaders()
+   {
+      return httpHeaders.getMutableHeaders();
    }
 
    @Override
@@ -167,7 +174,7 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
    @Override
    public void setRequestUri(URI requestUri) throws IllegalStateException
    {
-      uriInfo = uriInfo.relative(requestUri);
+      uriInfo = uriInfo.setRequestUri(requestUri);
    }
 
    @Override

@@ -103,8 +103,14 @@ public class ResteasyUriInfo implements UriInfo
     * @param relative
     * @return
     */
-   public ResteasyUriInfo relative(URI relative)
+   public ResteasyUriInfo setRequestUri(URI relative)
    {
+      String rel = relative.toString();
+      if (rel.startsWith(baseURI.toString()))
+      {
+         relative = URI.create(rel.substring(baseURI.toString().length()));
+      }
+
       return new ResteasyUriInfo(baseURI, relative);
    }
 

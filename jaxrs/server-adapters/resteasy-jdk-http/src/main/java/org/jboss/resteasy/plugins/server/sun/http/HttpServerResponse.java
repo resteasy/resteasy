@@ -66,7 +66,7 @@ public class HttpServerResponse implements HttpResponse
 
    protected void addHeader(String name, Object value)
    {
-      RuntimeDelegate.HeaderDelegate delegate = factory.createHeaderDelegate(value.getClass());
+      RuntimeDelegate.HeaderDelegate delegate = factory.getHeaderDelegate(value.getClass());
       if (delegate != null)
       {
          //System.out.println("addResponseHeader: " + key + " " + delegate.toString(value));

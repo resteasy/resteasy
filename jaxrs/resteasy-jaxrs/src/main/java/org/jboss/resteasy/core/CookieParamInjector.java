@@ -9,6 +9,8 @@ import javax.ws.rs.core.Cookie;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -38,8 +40,10 @@ public class CookieParamInjector extends StringParameterInjector implements Valu
       Cookie cookie = request.getHttpHeaders().getCookies().get(paramName);
       if (type.equals(Cookie.class)) return cookie;
 
-      if (cookie == null) return extractValue(null);
-      return extractValue(cookie.getValue());
+      if (cookie == null) return extractValues(null);
+      List<String> values = new ArrayList<String>();
+      values.add(cookie.getValue());
+      return extractValues(values);
    }
 
    public Object inject()

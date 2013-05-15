@@ -286,6 +286,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
    protected BuiltResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
    {
+      ResteasyProviderFactory.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
       if (validator != null)
       {
          violationsContainer = new ViolationsContainer<Object>(validator.validate(target));
@@ -335,15 +336,36 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       if (Response.class.isAssignableFrom(method.getReturnType()) || rtn instanceof Response)
       {
          BuiltResponse rtn1 = (BuiltResponse) rtn;
-         rtn1.setAnnotations(method.getAnnotatedMethod().getAnnotations());
+         if (rtn1.getAnnotations() == null) rtn1.setAnnotations(method.getAnnotatedMethod().getAnnotations());
+         if (rtn1.getGenericType() == null)
+         {
+            if (getMethod().getReturnType().equals(Response.class))
+            {
+               rtn1.setGenericType(rtn1.getEntityClass());
+            }
+            else
+            {
+               rtn1.setGenericType(method.getGenericReturnType());
+            }
+         }
          return rtn1;
       }
 
       Response.ResponseBuilder builder = Response.ok(rtn);
       builder.type(resolveContentType(request, rtn));
       BuiltResponse jaxrsResponse = (BuiltResponse)builder.build();
-      jaxrsResponse.setGenericType(method.getGenericReturnType());
-      jaxrsResponse.setAnnotations(method.getAnnotatedMethod().getAnnotations());
+      if (jaxrsResponse.getGenericType() == null)
+      {
+         if (getMethod().getReturnType().equals(Response.class))
+         {
+            jaxrsResponse.setGenericType(jaxrsResponse.getEntityClass());
+         }
+         else
+         {
+            jaxrsResponse.setGenericType(method.getGenericReturnType());
+         }
+      }
+      if (jaxrsResponse.getAnnotations() == null) jaxrsResponse.setAnnotations(method.getAnnotatedMethod().getAnnotations());
       return jaxrsResponse;
    }
 

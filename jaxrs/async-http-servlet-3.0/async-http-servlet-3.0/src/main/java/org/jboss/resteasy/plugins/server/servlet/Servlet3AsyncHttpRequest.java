@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.server.servlet;
 import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.AbstractExecutionContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
@@ -30,7 +31,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
    protected HttpServletResponse response;
    protected ResteasyAsynchronousContext asynchronousContext;
 
-   public Servlet3AsyncHttpRequest(HttpServletRequest httpServletRequest, HttpServletResponse response, HttpResponse httpResponse, HttpHeaders httpHeaders, ResteasyUriInfo uriInfo, String s, SynchronousDispatcher synchronousDispatcher)
+   public Servlet3AsyncHttpRequest(HttpServletRequest httpServletRequest, HttpServletResponse response, HttpResponse httpResponse, ResteasyHttpHeaders httpHeaders, ResteasyUriInfo uriInfo, String s, SynchronousDispatcher synchronousDispatcher)
    {
       super(httpServletRequest, httpResponse, httpHeaders, uriInfo, s, synchronousDispatcher);
       this.response = response;

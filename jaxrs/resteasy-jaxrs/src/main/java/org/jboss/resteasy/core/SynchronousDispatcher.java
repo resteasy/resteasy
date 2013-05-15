@@ -18,6 +18,7 @@ import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -99,6 +100,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       catch (Exception e)
       {
+         //logger.error("Failed in preprocess, mapping exception", e);
          aborted = new ExceptionHandler(providerFactory, unwrappedExceptions).handleException(request, e);
      }
       return aborted;
@@ -129,6 +131,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       catch (Exception e)
       {
+         //logger.error("Failed in preprocess, mapping exception", e);
          writeException(request, response, e);
          return false;
       }
@@ -171,6 +174,7 @@ public class SynchronousDispatcher implements Dispatcher
          }
          catch (Exception exception)
          {
+            //logger.error("getInvoker() failed mapping exception", exception);
             writeException(request, response, exception);
             return;
          }
@@ -207,6 +211,7 @@ public class SynchronousDispatcher implements Dispatcher
             }
             else
             {
+               //logger.error("getInvoker() failed mapping exception", failure);
                writeException(request, response, failure);
                return;
             }
@@ -236,7 +241,7 @@ public class SynchronousDispatcher implements Dispatcher
       return invoker;
    }
 
-   public void pushContextObjects(HttpRequest request, HttpResponse response)
+   public void pushContextObjects(final HttpRequest request, final HttpResponse response)
    {
       Map contextDataMap = ResteasyProviderFactory.getContextDataMap();
       contextDataMap.put(HttpRequest.class, request);
@@ -245,6 +250,22 @@ public class SynchronousDispatcher implements Dispatcher
       contextDataMap.put(UriInfo.class, request.getUri());
       contextDataMap.put(Request.class, new RequestImpl(request));
       contextDataMap.put(ResteasyAsynchronousContext.class, request.getAsyncContext());
+      ResourceContext resourceContext = new ResourceContext()
+      {
+         @Override
+         public <T> T getResource(Class<T> resourceClass)
+         {
+            return providerFactory.injectedInstance(resourceClass, request, response);
+         }
+
+         @Override
+         public <T> T initResource(T resource)
+         {
+            providerFactory.injectProperties(resource, request, response);
+            return resource;
+         }
+      };
+      contextDataMap.put(ResourceContext.class, resourceContext);
 
       contextDataMap.putAll(defaultContextObjects);
    }
@@ -315,6 +336,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       catch (Exception e)
       {
+         //logger.error("invoke() failed mapping exception", e);
          jaxrsResponse = new ExceptionHandler(providerFactory, unwrappedExceptions).handleException(request, e);
          if (jaxrsResponse == null) throw new UnhandledException(e);
       }
@@ -348,6 +370,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       catch (Exception e)
       {
+         //logger.error("invoke() failed mapping exception", e);
          writeException(request, response, e);
          return;
       }
@@ -395,6 +418,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       catch (Exception e)
       {
+         //logger.error("writeResponse() failed mapping exception", e);
          writeException(request, response, e);
       }
    }

@@ -52,32 +52,33 @@ public class ContainerResponseContextImpl implements ContainerResponseContext
    @Override
    public int getStatus()
    {
-      return httpResponse.getStatus();
+      return jaxrsResponse.getStatus();
    }
 
    @Override
    public void setStatus(int code)
    {
       httpResponse.setStatus(code);
+      jaxrsResponse.setStatus(code);
    }
 
    @Override
    public Response.StatusType getStatusInfo()
    {
-      return Response.Status.fromStatusCode(httpResponse.getStatus());
+      return jaxrsResponse.getStatusInfo();
    }
 
    @Override
    public void setStatusInfo(Response.StatusType statusInfo)
    {
       httpResponse.setStatus(statusInfo.getStatusCode());
+      jaxrsResponse.setStatus(statusInfo.getStatusCode());
    }
 
    @Override
    public Class<?> getEntityClass()
    {
-      if (jaxrsResponse.getEntity() == null) return null;
-      return jaxrsResponse.getEntity().getClass();
+      return jaxrsResponse.getEntityClass();
    }
 
    @Override
@@ -90,6 +91,11 @@ public class ContainerResponseContextImpl implements ContainerResponseContext
    public void setEntity(Object entity)
    {
       jaxrsResponse.setEntity(entity);
+      // todo TCK does weird things in its testing of get length
+      // it resets the entity in a response filter which results
+      // in a bad content-length being sent back to the client
+      // so, we'll remove any content-length setting
+      getHeaders().remove(HttpHeaders.CONTENT_LENGTH);
    }
 
    @Override
@@ -98,6 +104,11 @@ public class ContainerResponseContextImpl implements ContainerResponseContext
       jaxrsResponse.setEntity(entity);
       jaxrsResponse.setAnnotations(annotations);
       jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mediaType);
+      // todo TCK does weird things in its testing of get length
+      // it resets the entity in a response filter which results
+      // in a bad content-length being sent back to the client
+      // so, we'll remove any content-length setting
+      getHeaders().remove(HttpHeaders.CONTENT_LENGTH);
    }
 
    @Override

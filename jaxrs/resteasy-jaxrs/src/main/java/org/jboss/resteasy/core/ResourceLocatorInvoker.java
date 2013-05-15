@@ -65,7 +65,9 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       {
          uriInfo.pushCurrentResource(locator);
          Object subResource = method.getMethod().invoke(locator, args);
-         warnIfJaxRSAnnotatedFields(subResource);
+         // Do not do this warning as you can now use ResourceContext to inject values into locators
+         // we'll keep it here just in case somebody thinks they need to add this in the future
+         // warnIfJaxRSAnnotatedFields(subResource);
 
          return subResource;
 

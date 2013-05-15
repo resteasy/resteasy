@@ -16,6 +16,8 @@ public interface HttpRequest
 {
    HttpHeaders getHttpHeaders();
 
+   MultivaluedMap<String, String> getMutableHeaders();
+
    InputStream getInputStream();
 
    /**

@@ -3,12 +3,12 @@ package org.jboss.resteasy.springmvc;
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletInputMessage;
 import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
+import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 
@@ -35,7 +35,7 @@ public class ResteasyRequestWrapper
            throws ServletException, IOException
    {
       this.httpServletRequest = request;
-      HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
+      ResteasyHttpHeaders headers = ServletUtil.extractHttpHeaders(request);
       ResteasyUriInfo uriInfo = ServletUtil.extractUriInfo(request, prefix);
       // TODO: how are we supposed to get the response to create the
       // wrapper!!!!? The null response will only make it so that the

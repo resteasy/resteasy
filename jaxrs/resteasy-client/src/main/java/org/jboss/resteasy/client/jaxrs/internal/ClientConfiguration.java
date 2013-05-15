@@ -74,12 +74,7 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
    public String toHeaderString(Object object)
    {
       if (object instanceof String) return (String)object;
-      // Javadoc and TCK requires that you only get from RuntimeDelegate.getInstance().createHeaderDelegate()
-      RuntimeDelegate.HeaderDelegate delegate = RuntimeDelegate.getInstance().createHeaderDelegate(object.getClass());
-      if (delegate != null)
-         return delegate.toString(object);
-      else
-         return object.toString();
+      return providerFactory.toHeaderString(object);
    }
 
    public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)

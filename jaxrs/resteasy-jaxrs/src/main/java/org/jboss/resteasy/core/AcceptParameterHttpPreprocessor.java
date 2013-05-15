@@ -4,8 +4,13 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpRequestPreprocessor;
 import org.jboss.resteasy.util.MediaTypeHelper;
 
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.PreMatching;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -30,7 +35,8 @@ import java.util.List;
  * @author <a href="leandro.ferro@gmail.com">Leandro Ferro Luzia</a>
  * @version $Revision: 1.2 $
  */
-public class AcceptParameterHttpPreprocessor implements HttpRequestPreprocessor
+@PreMatching
+public class AcceptParameterHttpPreprocessor implements ContainerRequestFilter
 {
 
    private final String paramMapping;
@@ -47,9 +53,10 @@ public class AcceptParameterHttpPreprocessor implements HttpRequestPreprocessor
       this.paramMapping = paramMapping;
    }
 
-   public void preProcess(HttpRequest request)
+   @Override
+   public void filter(ContainerRequestContext request) throws IOException
    {
-      MultivaluedMap<String, String> params = request.getUri().getQueryParameters(false);
+      MultivaluedMap<String, String> params = request.getUriInfo().getQueryParameters(false);
 
       if (params != null)
       {
@@ -64,6 +71,7 @@ public class AcceptParameterHttpPreprocessor implements HttpRequestPreprocessor
                try
                {
                   accept = URLDecoder.decode(accept, "UTF-8");
+                  request.getHeaders().add(HttpHeaders.ACCEPT, accept);
                }
                catch (UnsupportedEncodingException e)
                {
@@ -71,10 +79,6 @@ public class AcceptParameterHttpPreprocessor implements HttpRequestPreprocessor
                }
                mediaTypes.addAll(MediaTypeHelper.parseHeader(accept));
             }
-
-            MediaTypeHelper.sortByWeight(mediaTypes);
-
-            request.getHttpHeaders().getAcceptableMediaTypes().addAll(0, mediaTypes);
 
          }
       }
