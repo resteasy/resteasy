@@ -16,7 +16,7 @@
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>3.0</version>
+            <version>${dep.guice.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
