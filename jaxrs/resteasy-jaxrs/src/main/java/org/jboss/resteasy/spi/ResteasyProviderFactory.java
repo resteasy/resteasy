@@ -19,6 +19,7 @@ import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.LegacyPrecedence;
 import org.jboss.resteasy.core.interception.ReaderInterceptorRegistry;
 import org.jboss.resteasy.core.interception.WriterInterceptorRegistry;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.DateDelegate;
@@ -198,6 +199,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected Set<Object> providerInstances;
    protected Set<Class<?>> featureClasses;
    protected Set<Object> featureInstances;
+
+   private final static Logger logger = Logger.getLogger(ResteasyProviderFactory.class);
 
 
    public ResteasyProviderFactory()
@@ -2212,31 +2215,49 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    @Override
    public boolean isEnabled(Feature feature)
    {
-      return getEnabledFeatures().contains(feature);
+      Collection<Feature> enabled = getEnabledFeatures();
+      //logger.info("********* isEnabled(Feature): " + feature.getClass().getName() + " # enabled: " + enabled.size());
+      for (Feature f : enabled)
+      {
+         //logger.info("  looking at: " + f.getClass());
+         if (f == feature)
+         {
+            //logger.info("   found: " + f.getClass().getName());
+            return true;
+         }
+      }
+      return false;
    }
 
    @Override
    public boolean isEnabled(Class<? extends Feature> featureClass)
    {
       Collection<Feature> enabled = getEnabledFeatures();
+      //logger.info("isEnabled(Class): " + featureClass.getName() + " # enabled: " + enabled.size());
       if (enabled == null) return false;
       for (Feature feature : enabled)
       {
-         if (featureClass.isInstance(feature)) return true;
+         //logger.info("  looking at: " + feature.getClass());
+         if (featureClass.equals(feature.getClass()))
+         {
+            //logger.info("   found: " + featureClass.getName());
+            return true;
+         }
       }
+      //logger.info("not enabled class: " + featureClass.getName());
       return false;
    }
 
    @Override
    public boolean isRegistered(Object component)
    {
-      return getProviderClasses().contains(component);
+      return getProviderInstances().contains(component);
    }
 
    @Override
    public boolean isRegistered(Class<?> componentClass)
    {
-      return getProviderInstances().contains(componentClass);
+      return getProviderClasses().contains(componentClass);
    }
 
    @Override
