@@ -22,6 +22,7 @@ import javax.ws.rs.ext.ReaderInterceptor;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -85,14 +86,24 @@ public abstract class ClientResponse extends BuiltResponse
    public void close()
    {
       if (isClosed()) return;
-      releaseConnection();
+      try {
+         isClosed = true;
+         releaseConnection();
+      }
+      catch (Exception e) {
+         throw new ProcessingException(e);
+      }
    }
 
    @Override
    protected void finalize() throws Throwable
    {
       if (isClosed()) return;
-      releaseConnection();
+      try {
+         close();
+      }
+      catch (Exception ignored) {
+      }
    }
 
    @Override
@@ -112,7 +123,12 @@ public abstract class ClientResponse extends BuiltResponse
 
    protected abstract void setInputStream(InputStream is);
 
-   protected abstract void releaseConnection();
+   /**
+    * release underlying connection but do not close
+    *
+    * @throws IOException
+    */
+   protected abstract void releaseConnection() throws IOException;
 
 
    public <T> T readEntity(Class<T> type, Type genericType, Annotation[] anns)
@@ -148,7 +164,10 @@ public abstract class ClientResponse extends BuiltResponse
          try
          {
             entity = readFrom(type, genericType, getMediaType(), anns);
-            if (entity != null && !InputStream.class.isInstance(entity)) close();
+            if (entity == null || (entity != null
+                    && !InputStream.class.isInstance(entity)
+                    && !Reader.class.isInstance(entity)
+                    && bufferedEntity == null)) close();
          }
          catch (RuntimeException e)
          {
@@ -165,6 +184,7 @@ public abstract class ClientResponse extends BuiltResponse
       Type useGeneric = genericType == null ? type : genericType;
       Class<?> useType = type;
       media = media == null ? MediaType.WILDCARD_TYPE : media;
+      annotations = annotations == null ? this.annotations : annotations;
       boolean isMarshalledEntity = false;
       if (type.equals(MarshalledEntity.class))
       {
@@ -205,7 +225,7 @@ public abstract class ClientResponse extends BuiltResponse
          ReaderInterceptor[] readerInterceptors = configuration.getReaderInterceptors(null, null);
 
          final Object obj = new ClientReaderInterceptorContext(readerInterceptors, reader1, useType,
-                 useGeneric, this.annotations, media, getStringHeaders(), is, properties)
+                 useGeneric, annotations, media, getStringHeaders(), is, properties)
                  .proceed();
          if (isMarshalledEntity)
          {
@@ -258,6 +278,15 @@ public abstract class ClientResponse extends BuiltResponse
       catch (IOException e)
       {
          throw new ProcessingException(e);
+      }
+      finally
+      {
+         try {
+            releaseConnection();
+         }
+         catch (IOException e) {
+            throw new ProcessingException(e);
+         }
       }
       return true;
    }
