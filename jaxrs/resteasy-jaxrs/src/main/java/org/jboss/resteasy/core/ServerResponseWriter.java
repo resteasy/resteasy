@@ -15,6 +15,7 @@ import org.jboss.resteasy.util.HttpHeaderNames;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.WriterInterceptor;
 import java.io.IOException;
@@ -45,13 +46,14 @@ public class ServerResponseWriter
          return;
       }
 
-      Type generic = jaxrsResponse.getGenericType();
-      if (generic == null && method != null)
-      {
-         generic = method.getGenericReturnType();
-      }
       Class type = jaxrsResponse.getEntityClass();
       Object ent = jaxrsResponse.getEntity();
+      Type generic = jaxrsResponse.getGenericType();
+      if (generic == null)
+      {
+         if (method != null && !Response.class.isAssignableFrom(method.getMethod().getReturnType())) generic = method.getGenericReturnType();
+         else generic = type;
+      }
       Annotation[] annotations = jaxrsResponse.getAnnotations();
       if (annotations == null && method != null)
       {

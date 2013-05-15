@@ -10,6 +10,8 @@ import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.ReaderInterceptorRegistry;
 import org.jboss.resteasy.core.interception.WriterInterceptorRegistry;
 import org.jboss.resteasy.spi.ConstructorInjector;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -35,6 +37,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.ParamConverter;
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -71,6 +74,24 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    protected void initialize()
    {
 
+   }
+
+   @Override
+   public HeaderDelegate getHeaderDelegate(Class<?> aClass)
+   {
+      return getDelegate().getHeaderDelegate(aClass);
+   }
+
+   @Override
+   public <T> T injectedInstance(Class<? extends T> clazz, HttpRequest request, HttpResponse response)
+   {
+      return getDelegate().injectedInstance(clazz, request, response);
+   }
+
+   @Override
+   public void injectProperties(Object obj, HttpRequest request, HttpResponse response)
+   {
+      getDelegate().injectProperties(obj, request, response);
    }
 
    public static void push(ResteasyProviderFactory factory)

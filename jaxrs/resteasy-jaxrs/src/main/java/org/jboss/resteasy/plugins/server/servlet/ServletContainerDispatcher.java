@@ -4,6 +4,7 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.NotFoundException;
@@ -18,7 +19,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Application;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
@@ -189,6 +189,7 @@ public class ServletContainerDispatcher
    {
       try
       {
+         //logger.info(httpMethod + " " + request.getRequestURL().toString());
          //logger.info("***PATH: " + request.getRequestURL());
          // classloader/deployment aware RestasyProviderFactory.  Used to have request specific
          // ResteasyProviderFactory.getInstance()
@@ -197,7 +198,7 @@ public class ServletContainerDispatcher
          {
             ThreadLocalResteasyProviderFactory.push(providerFactory);
          }
-         HttpHeaders headers = null;
+         ResteasyHttpHeaders headers = null;
          ResteasyUriInfo uriInfo = null;
          try
          {

@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
 import org.jboss.resteasy.core.AcceptParameterHttpPreprocessor;
+import org.jboss.resteasy.core.interception.PreMatchContainerRequestContext;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.junit.Assert;
@@ -26,7 +27,8 @@ public class AcceptParameterHttpPreprocessorTest
 
       MediaType mediaType = MediaType.valueOf(type);
 
-      processor.preProcess(request);
+      PreMatchContainerRequestContext context = new PreMatchContainerRequestContext(request);
+      processor.filter(context);
 
       List<MediaType> list = request.getHttpHeaders().getAcceptableMediaTypes();
 
@@ -43,15 +45,21 @@ public class AcceptParameterHttpPreprocessorTest
 
       List<MediaType> expected = Arrays.asList(MediaType.TEXT_XML_TYPE, MediaType.TEXT_PLAIN_TYPE, MediaType.TEXT_HTML_TYPE, MediaType.APPLICATION_XHTML_XML_TYPE);
 
-      HttpRequest request = MockHttpRequest.get("foo?" + acceptParamName + "=" + expected.get(0) + "," + expected.get(1));
-      request.getHttpHeaders().getAcceptableMediaTypes().add(expected.get(2));
-      request.getHttpHeaders().getAcceptableMediaTypes().add(expected.get(3));
+      MockHttpRequest request = MockHttpRequest.get("foo?" + acceptParamName + "=" + expected.get(0) + "," + expected.get(1));
+      PreMatchContainerRequestContext context = new PreMatchContainerRequestContext(request);
 
-      processor.preProcess(request);
+      request.accept(expected.get(2));
+      request.accept(expected.get(3));
+
+      processor.filter(context);
 
       List<MediaType> actual = request.getHttpHeaders().getAcceptableMediaTypes();
 
-      Assert.assertEquals("Incorrect acceptable media type extracted", expected, actual);
+      for (MediaType expect : expected)
+      {
+         Assert.assertTrue(actual.contains(expect));
+      }
+
    }
 
    @Test
@@ -63,15 +71,19 @@ public class AcceptParameterHttpPreprocessorTest
 
       List<MediaType> expected = Arrays.asList(MediaType.TEXT_PLAIN_TYPE, MediaType.TEXT_HTML_TYPE);
 
-      HttpRequest request = MockHttpRequest.get("foo");
-      request.getHttpHeaders().getAcceptableMediaTypes().add(expected.get(0));
-      request.getHttpHeaders().getAcceptableMediaTypes().add(expected.get(1));
+      MockHttpRequest request = MockHttpRequest.get("foo");
+      PreMatchContainerRequestContext context = new PreMatchContainerRequestContext(request);
+      request.accept(expected.get(0));
+      request.accept(expected.get(1));
 
-      processor.preProcess(request);
+      processor.filter(context);
 
       List<MediaType> actual = request.getHttpHeaders().getAcceptableMediaTypes();
 
-      Assert.assertEquals("Incorrect acceptable media type extracted", expected, actual);
+      for (MediaType expect : expected)
+      {
+         Assert.assertTrue(actual.contains(expect));
+      }
    }
 
    @Test
@@ -94,7 +106,8 @@ public class AcceptParameterHttpPreprocessorTest
               "foo?" + acceptParamName + "=" + param1 + "&" +
                       acceptParamName + "=" + param2);
 
-      processor.preProcess(request);
+      PreMatchContainerRequestContext context = new PreMatchContainerRequestContext(request);
+      processor.filter(context);
 
       List<MediaType> actual = request.getHttpHeaders().getAcceptableMediaTypes();
 

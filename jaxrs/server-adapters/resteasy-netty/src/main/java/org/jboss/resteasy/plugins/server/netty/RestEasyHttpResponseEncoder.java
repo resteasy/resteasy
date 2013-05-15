@@ -53,7 +53,7 @@ public class RestEasyHttpResponseEncoder extends OneToOneEncoder
                String key = entry.getKey();
                for (Object value : entry.getValue())
                {
-                  RuntimeDelegate.HeaderDelegate delegate = dispatcher.providerFactory.createHeaderDelegate(value.getClass());
+                  RuntimeDelegate.HeaderDelegate delegate = dispatcher.providerFactory.getHeaderDelegate(value.getClass());
                   if (delegate != null)
                   {
                      response.addHeader(key, delegate.toString(value));

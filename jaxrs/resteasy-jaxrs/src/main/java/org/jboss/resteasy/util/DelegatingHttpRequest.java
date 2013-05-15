@@ -24,6 +24,12 @@ public class DelegatingHttpRequest implements HttpRequest
    }
 
    @Override
+   public MultivaluedMap<String, String> getMutableHeaders()
+   {
+      return delegate.getMutableHeaders();
+   }
+
+   @Override
    public void setHttpMethod(String method)
    {
       delegate.setHttpMethod(method);

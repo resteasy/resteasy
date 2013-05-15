@@ -6,6 +6,7 @@ import org.jboss.resteasy.util.LocaleHelper;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.ext.Provider;
@@ -22,27 +23,25 @@ import java.util.Map;
 @PreMatching
 public class AcceptHeaderByFileSuffixFilter implements ContainerRequestFilter
 {
-   public Map<String, MediaType> mediaTypeMappings = new HashMap<String, MediaType>();
+   public Map<String, String> mediaTypeMappings = new HashMap<String, String>();
    public Map<String, String> languageMappings = new HashMap<String, String>();
 
    public void setMediaTypeMappings(Map<String, MediaType> mediaTypeMappings)
    {
-      this.mediaTypeMappings = mediaTypeMappings;
+      this.mediaTypeMappings.clear();
+      for (Map.Entry<String, MediaType> entry : mediaTypeMappings.entrySet())
+      {
+         this.mediaTypeMappings.put(entry.getKey(), entry.getValue().toString());
+      }
    }
 
    public void setLanguageMappings(Map<String, String> languageMappings)
    {
-      this.languageMappings = languageMappings;
-   }
-
-   public Map<String, MediaType> getMediaTypeMappings()
-   {
-      return mediaTypeMappings;
-   }
-
-   public Map<String, String> getLanguageMappings()
-   {
-      return languageMappings;
+      this.languageMappings.clear();
+      for (Map.Entry<String, String> entry : languageMappings.entrySet())
+      {
+         this.languageMappings.put(entry.getKey(), entry.getValue());
+      }
    }
 
    @Override
@@ -92,10 +91,10 @@ public class AcceptHeaderByFileSuffixFilter implements ContainerRequestFilter
       {
          if (mediaTypeMappings != null)
          {
-            MediaType match = mediaTypeMappings.get(ext);
+            String match = mediaTypeMappings.get(ext);
             if (match != null)
             {
-               in.getAcceptableMediaTypes().add(0, match);
+               in.getHeaders().addFirst(HttpHeaders.ACCEPT, match);
                preprocessed = true;
                continue;
             }
@@ -105,8 +104,7 @@ public class AcceptHeaderByFileSuffixFilter implements ContainerRequestFilter
             String match = languageMappings.get(ext);
             if (match != null)
             {
-               in.getAcceptableLanguages().add(
-                       LocaleHelper.extractLocale(match));
+               in.getHeaders().add(HttpHeaders.ACCEPT_LANGUAGE, match);
                preprocessed = true;
                continue;
             }

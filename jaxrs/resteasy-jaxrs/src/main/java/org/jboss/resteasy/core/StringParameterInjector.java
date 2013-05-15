@@ -145,7 +145,7 @@ public class StringParameterInjector
 
          if (paramType.equals(HeaderParam.class))
          {
-            delegate = factory.createHeaderDelegate(baseType);
+            delegate = factory.getHeaderDelegate(baseType);
             if (delegate != null) return;
          }
 

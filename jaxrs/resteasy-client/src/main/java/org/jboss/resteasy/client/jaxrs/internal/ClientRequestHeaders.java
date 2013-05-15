@@ -44,6 +44,7 @@ public class ClientRequestHeaders
    public void setHeaders(MultivaluedMap<String, Object> newHeaders)
    {
       headers.clear();
+      if (newHeaders == null) return;
       headers.putAll(newHeaders);
    }
 
