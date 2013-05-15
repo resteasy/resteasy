@@ -84,9 +84,6 @@ public class ServerResponseWriter
       };
       OutputStream os = new CommitHeaderOutputStream(response.getOutputStream(), callback);
 
-      long size = writer.getSize(ent, type, generic, annotations, contentType);
-      if (size > -1) jaxrsResponse.getMetadata().putSingle(HttpHeaderNames.CONTENT_LENGTH, String.valueOf(size));
-
       WriterInterceptor[] writerInterceptors = null;
       if (method != null)
       {
