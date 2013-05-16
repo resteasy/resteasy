@@ -21,7 +21,7 @@ public class SingletonResource implements ResourceFactory
    public SingletonResource(Object obj)
    {
       this.obj = obj;
-      this.resourceClass = ResourceBuilder.fromAnnotations(obj.getClass());
+      this.resourceClass = ResourceBuilder.rootResourceFromAnnotations(obj.getClass());
    }
 
    public SingletonResource(Object obj, ResourceClass resourceClass)

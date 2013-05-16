@@ -667,13 +667,24 @@ public class ResourceBuilder
     *
     * @return
     */
-   public static ResourceClass fromAnnotations(Class<?> clazz)
+   public static ResourceClass rootResourceFromAnnotations(Class<?> clazz)
+   {
+      return fromAnnotations(false, clazz);
+   }
+
+   public static ResourceClass locatorFromAnnotations(Class<?> clazz)
+   {
+      return fromAnnotations(true, clazz);
+   }
+
+
+   private static ResourceClass fromAnnotations(boolean isLocator, Class<?> clazz)
    {
       ResourceClassBuilder builder = resourceClass(clazz);
       for (Method method : clazz.getMethods())
       {
          if(!method.isSynthetic() && !method.getDeclaringClass().equals(Object.class))
-            processMethod(builder, clazz, method);
+            processMethod(isLocator, builder, clazz, method);
 
       }
       if (!clazz.isInterface())
@@ -821,7 +832,7 @@ public class ResourceBuilder
       }
    }
 
-   protected static void processMethod(ResourceClassBuilder resourceClassBuilder, Class<?> root, Method implementation)
+   protected static void processMethod(boolean isLocator, ResourceClassBuilder resourceClassBuilder, Class<?> root, Method implementation)
    {
       Method method = findAnnotatedMethod(root, implementation);
       if (method != null)
@@ -830,7 +841,7 @@ public class ResourceBuilder
          Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
 
          ResteasyUriBuilder builder = new ResteasyUriBuilder();
-         if (root.isAnnotationPresent(Path.class))
+         if (!isLocator && root.isAnnotationPresent(Path.class))
          {
             builder.path(root);
          }

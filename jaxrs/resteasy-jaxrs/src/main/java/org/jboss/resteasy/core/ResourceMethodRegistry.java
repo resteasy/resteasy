@@ -200,13 +200,13 @@ public class ResourceMethodRegistry implements Registry
          {
             for (Class<?> intf : clazz.getInterfaces())
             {
-               ResourceClass resourceClass = ResourceBuilder.fromAnnotations(intf);
+               ResourceClass resourceClass = ResourceBuilder.rootResourceFromAnnotations(intf);
                register(ref, base, resourceClass);
             }
          }
          else
          {
-            ResourceClass resourceClass = ResourceBuilder.fromAnnotations(clazz);
+            ResourceClass resourceClass = ResourceBuilder.rootResourceFromAnnotations(clazz);
             register(ref, base, resourceClass);
          }
       }
