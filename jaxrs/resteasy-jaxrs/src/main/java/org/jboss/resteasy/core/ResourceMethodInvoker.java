@@ -15,15 +15,17 @@ import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
+import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.util.Types;
+import org.jboss.resteasy.util.PathHelper;
 import org.jboss.resteasy.util.WeightedMediaType;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
+import javax.ws.rs.Path;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.DynamicFeature;
@@ -39,12 +41,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -68,7 +71,10 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    protected ViolationsContainer<?> violationsContainer;
    protected ResourceInfo resourceInfo;
 
+   protected Pattern classRegex = null;
+
    protected boolean methodConsumes;
+
 
 
    public ResourceMethodInvoker(ResourceMethod method, InjectorFactory injector, ResourceFactory resource, ResteasyProviderFactory providerFactory)
@@ -92,6 +98,8 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
             return ResourceMethodInvoker.this.method.getResourceClass().getClazz();
          }
       };
+
+      classRegex = setupClassRegex(method);
 
       this.resourceMethodProviderFactory = new ResteasyProviderFactory(providerFactory);
       for (DynamicFeature feature : providerFactory.getServerDynamicFeatures())
@@ -260,7 +268,10 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       request.setAttribute(ResourceMethodInvoker.class.getName(), this);
       incrementMethodCount(request.getHttpMethod());
       ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
+
+      pushMatchedUri(method, classRegex, uriInfo);
       uriInfo.pushCurrentResource(target);
+
       try
       {
          BuiltResponse jaxrsResponse = invokeOnTarget(request, response, target);
@@ -281,6 +292,97 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       finally
       {
          uriInfo.popCurrentResource();
+      }
+   }
+
+   public static Pattern setupClassRegex(ResourceLocator method)
+   {
+      String segment = "";
+      if (method.getResourceClass().getClazz().isAnnotationPresent(Path.class))
+      {
+         segment = method.getResourceClass().getClazz().getAnnotation(Path.class).value();
+         if (segment.startsWith("/")) segment = segment.substring(1);
+         if ("".equals(segment)) return null;
+      }
+      else
+      {
+         return null;
+      }
+      return getClassRegexPattern(segment);
+   }
+
+   public static Pattern getClassRegexPattern(String segment)
+   {
+      String replacedCurlySegment = PathHelper.replaceEnclosedCurlyBraces(segment);
+
+      String[] split = PathHelper.URI_PARAM_PATTERN.split(replacedCurlySegment);
+      Matcher withPathParam = PathHelper.URI_PARAM_PATTERN.matcher(replacedCurlySegment);
+      int i = 0;
+      StringBuffer buffer = new StringBuffer();
+      if (i < split.length) buffer.append(Pattern.quote(split[i++]));
+
+      while (withPathParam.find())
+      {
+         buffer.append("(");
+         if (withPathParam.group(3) == null)
+         {
+            buffer.append("[^/]+");
+         }
+         else
+         {
+            String expr = withPathParam.group(3);
+            expr = PathHelper.recoverEnclosedCurlyBraces(expr);
+            buffer.append(expr);
+         }
+         buffer.append(")");
+         if (i < split.length) buffer.append(Pattern.quote(split[i++]));
+      }
+      return Pattern.compile(buffer.toString());
+   }
+
+   public static void pushMatchedUri(ResourceLocator method, Pattern classRegex, ResteasyUriInfo uriInfo)
+   {
+      // we're at the top so setup matched uri for class
+      if (uriInfo.getMatchedResources().size() == 0)
+      {
+         String encoded = uriInfo.getEncodedMatchedPaths().get(0);
+         if (encoded.startsWith("/")) encoded = encoded.substring(1);
+         String decoded = Encode.decode(encoded);
+         if (method.getPath() != null && !method.getPath().equals(""))
+         {
+            if (classRegex == null)
+            {
+               uriInfo.pushMatchedURI("", "");
+               uriInfo.pushMatchedURI(encoded, decoded);
+            }
+            else
+            {
+               Matcher match = classRegex.matcher(encoded);
+               if (match.find())
+               {
+                  int end = match.end();
+                  String classMatch = encoded.substring(0, end);
+                  uriInfo.pushMatchedURI(classMatch, Encode.decode(classMatch));
+                  uriInfo.pushMatchedURI(encoded, decoded);
+
+               }
+               else
+               {
+                  // fuckit
+               }
+            }
+         }
+         else
+         {
+            uriInfo.pushMatchedURI(encoded, decoded);
+         }
+      }
+      else if (method.getPath() != null && !method.getPath().equals(""))
+      {
+         String encoded = uriInfo.getEncodedMatchedPaths().get(0);
+         if (encoded.startsWith("/")) encoded = encoded.substring(1);
+         String decoded = Encode.decode(encoded);
+         uriInfo.pushMatchedURI(encoded, decoded);
       }
    }
 
