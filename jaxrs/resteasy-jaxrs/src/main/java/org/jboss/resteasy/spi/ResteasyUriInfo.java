@@ -312,14 +312,6 @@ public class ResteasyUriInfo implements UriInfo
       ancestors.add(0, resource);
    }
 
-   public void popCurrentResource()
-   {
-      if (ancestors != null && ancestors.size() > 0)
-      {
-         ancestors.remove(0);
-      }
-   }
-
    public void pushMatchedPath(String encoded)
    {
       encodedMatchedPaths.add(0, encoded);
@@ -337,18 +329,6 @@ public class ResteasyUriInfo implements UriInfo
 
       if (matchedUris == null) matchedUris = new ArrayList<String>();
       matchedUris.add(0, decoded);
-   }
-
-   public void popMatchedPath()
-   {
-      if (encodedMatchedUris != null && encodedMatchedUris.size() > 0)
-      {
-         encodedMatchedUris.remove(0);
-      }
-      if (matchedUris != null && matchedUris.size() > 0)
-      {
-         matchedUris.remove(0);
-      }
    }
 
    @Override

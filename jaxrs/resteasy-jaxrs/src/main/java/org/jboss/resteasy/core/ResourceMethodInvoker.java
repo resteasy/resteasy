@@ -291,7 +291,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       finally
       {
-         uriInfo.popCurrentResource();
+         //uriInfo.popCurrentResource();
       }
    }
 
