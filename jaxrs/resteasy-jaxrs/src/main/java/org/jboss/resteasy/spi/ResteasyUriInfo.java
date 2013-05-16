@@ -40,6 +40,7 @@ public class ResteasyUriInfo implements UriInfo
    private URI baseURI;
    private List<String> matchedUris;
    private List<String> encodedMatchedUris;
+   private List<String> encodedMatchedPaths = new ArrayList<String>();
    private List<Object> ancestors;
 
 
@@ -319,6 +320,16 @@ public class ResteasyUriInfo implements UriInfo
       }
    }
 
+   public void pushMatchedPath(String encoded)
+   {
+      encodedMatchedPaths.add(0, encoded);
+   }
+
+   public List<String> getEncodedMatchedPaths()
+   {
+      return encodedMatchedPaths;
+   }
+
    public void pushMatchedURI(String encoded, String decoded)
    {
       if (encodedMatchedUris == null) encodedMatchedUris = new ArrayList<String>();
@@ -328,7 +339,7 @@ public class ResteasyUriInfo implements UriInfo
       matchedUris.add(0, decoded);
    }
 
-   public void popMatchedURI()
+   public void popMatchedPath()
    {
       if (encodedMatchedUris != null && encodedMatchedUris.size() > 0)
       {

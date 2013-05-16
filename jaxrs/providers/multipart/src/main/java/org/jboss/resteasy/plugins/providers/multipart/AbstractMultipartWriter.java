@@ -57,8 +57,6 @@ public class AbstractMultipartWriter
       Class<?> entityType = part.getType();
       Type entityGenericType = part.getGenericType();
       MessageBodyWriter writer = workers.getMessageBodyWriter(entityType, entityGenericType, null, part.getMediaType());
-      long size = writer.getSize(entity, entityType, entityGenericType, null, part.getMediaType());
-      if (size > -1) headers.putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString((int) size));
       writer.writeTo(entity, entityType, entityGenericType, null, part.getMediaType(), headers, new HeaderFlushedOutputStream(headers, entityStream));
       entityStream.write("\r\n".getBytes());
    }

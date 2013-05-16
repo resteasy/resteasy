@@ -73,9 +73,11 @@ public class GzipTest extends BaseResourceTest
       @Produces("text/plain")
       public Response getText(@Context HttpHeaders headers)
       {
+         /* Can't test this anymore because TCK expects that no accept encoding is set by default
          String acceptEncoding = headers.getRequestHeaders().getFirst(HttpHeaders.ACCEPT_ENCODING);
          System.out.println(acceptEncoding);
          Assert.assertEquals("gzip, deflate", acceptEncoding);
+         */
          return Response.ok("HELLO WORLD").header("Content-Encoding", "gzip").build();
       }
 
@@ -215,7 +217,7 @@ public class GzipTest extends BaseResourceTest
       }
       {
          WebTarget target = client.target(TestPortProvider.generateURL("/bytes"));
-         Response response = target.request().get();
+         Response response = target.request().acceptEncoding("gzip").get();
          String cl = response.getHeaderString("Content-Length");
          if (cl != null)
          {

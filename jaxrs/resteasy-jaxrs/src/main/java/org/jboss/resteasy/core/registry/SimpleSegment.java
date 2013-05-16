@@ -34,7 +34,7 @@ public class SimpleSegment extends RootSegment
          if (invoker == null)
             throw new NotFoundException("Could not find resource for relative : " + path + " of full path: " + request.getUri().getRequestUri());
 
-         uriInfo.pushMatchedURI(path, Encode.decode(path));
+         uriInfo.pushMatchedPath(path);
          return invoker;
       }
       else
@@ -48,7 +48,7 @@ public class SimpleSegment extends RootSegment
             if (locator != null)
             {
                String matched = path.substring(0, start + segment.length());
-               uriInfo.pushMatchedURI(matched, Encode.decode(matched));
+               uriInfo.pushMatchedPath(matched);
                return locator;
             }
             else throw e;

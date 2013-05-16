@@ -21,8 +21,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -40,6 +40,7 @@ public class ResourceLocatorInvoker implements ResourceInvoker
    protected ResteasyProviderFactory providerFactory;
    protected ResourceLocator method;
    protected ConcurrentHashMap<Class, Registry> cachedSubresources = new ConcurrentHashMap<Class, Registry>();
+   protected Pattern classRegex = null;
 
    public ResourceLocatorInvoker(ResourceFactory resource, InjectorFactory injector, ResteasyProviderFactory providerFactory, ResourceLocator locator)
    {
@@ -48,6 +49,7 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       this.providerFactory = providerFactory;
       this.method = locator;
       this.methodInjector = injector.createMethodInjector(locator, providerFactory);
+      classRegex = ResourceMethodInvoker.setupClassRegex(method);
    }
 
    protected Object createResource(HttpRequest request, HttpResponse response)
@@ -63,6 +65,7 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       Object[] args = methodInjector.injectArguments(request, response);
       try
       {
+         ResourceMethodInvoker.pushMatchedUri(method, classRegex, uriInfo);
          uriInfo.pushCurrentResource(locator);
          Object subResource = method.getMethod().invoke(locator, args);
          // Do not do this warning as you can now use ResourceContext to inject values into locators
@@ -97,8 +100,8 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       }
       finally
       {
-         uriInfo.popCurrentResource();
-         uriInfo.popMatchedURI();
+         //uriInfo.popCurrentResource();
+         //uriInfo.popMatchedPath();
       }
    }
 
@@ -112,8 +115,8 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       }
       finally
       {
-         uriInfo.popCurrentResource();
-         uriInfo.popMatchedURI();
+         //uriInfo.popCurrentResource();
+         //uriInfo.popMatchedPath();
       }
    }
 

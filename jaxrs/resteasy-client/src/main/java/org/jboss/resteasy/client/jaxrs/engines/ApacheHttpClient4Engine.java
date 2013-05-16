@@ -163,14 +163,14 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
             return stream;
          }
 
-         public void releaseConnection()
+         public void releaseConnection() throws IOException
          {
-            isClosed = true;
             // Apache Client 4 is stupid,  You have to get the InputStream and close it if there is an entity
             // otherwise the connection is never released.  There is, of course, no close() method on response
             // to make this easier.
-            try
-            {
+            try {
+               // Another stupid thing...TCK is testing a specific exception from stream.close()
+               // so, we let it propagate up.
                if (stream != null)
                {
                   stream.close();
@@ -183,17 +183,34 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
                      is.close();
                   }
                }
+            }
+            finally {
+               // just in case the input stream was entirely replaced and not wrapped, we need
+               // to close the apache client input stream.
                if (hc4Stream != null)
                {
-                  // just in case the input stream was entirely replaced and not wrapped, we need
-                  // to close the apache client input stream.
-                  hc4Stream.close();
+                  try {
+                     hc4Stream.close();
+                  }
+                  catch (IOException ignored) {
+
+                  }
                }
+               else
+               {
+                  try
+                  {
+                     HttpEntity entity = res.getEntity();
+                     if (entity != null) entity.getContent().close();
+                  }
+                  catch (IOException ignored)
+                  {
+                  }
+
+               }
+
             }
-            catch (Exception ignore)
-            {
-            }
-         }
+          }
       };
       response.setProperties(request.getMutableProperties());
       response.setStatus(res.getStatusLine().getStatusCode());
