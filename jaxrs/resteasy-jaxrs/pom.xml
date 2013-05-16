@@ -96,12 +96,6 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>${dep.hibernate-validator.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.el</groupId>
-                    <artifactId>javax.el-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- Used by org.jboss.resteasy.plugins.server.tjws.* -->
@@ -113,6 +107,17 @@
         </dependency>
         -->
 
+        <!-- Required by Hibernate Validator 5.x for testing -->
+        <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>javax.el</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     
     <build>

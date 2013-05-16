@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.validation.ConstraintTarget;
 import javax.validation.ConstraintViolation;
+import javax.validation.ElementKind;
 import javax.validation.Path.Node;
 
 /**
@@ -159,14 +159,17 @@ public class ViolationsContainer<T> implements Serializable
 
    private ConstraintType getConstraintType(ConstraintViolation<T> v)
    {
-       if (v.getConstraintDescriptor().getValidationAppliesTo() == ConstraintTarget.PARAMETERS)
-       {
-           return ConstraintType.PARAMETER;
-       }
-       else if (v.getConstraintDescriptor().getValidationAppliesTo() == ConstraintTarget.RETURN_VALUE)
-       {
-           return ConstraintType.RETURN_VALUE;
-       }
+      Node leafNode = getLeafNode(v);
+
+      if (leafNode.getKind() == ElementKind.PARAMETER ||
+         leafNode.getKind() == ElementKind.CROSS_PARAMETER)
+      {
+         return ConstraintType.PARAMETER;
+      }
+      else if (leafNode.getKind() == ElementKind.RETURN_VALUE)
+      {
+         return ConstraintType.RETURN_VALUE;
+      }
 
       Object o = v.getRootBean();
       Class<?> containingClass = getRepresentedClass(v.getRootBeanClass(), o);
@@ -219,6 +222,17 @@ public class ViolationsContainer<T> implements Serializable
       }
    }
    
+   private Node getLeafNode(ConstraintViolation<T> violation) {
+      Iterator<Node> nodes = violation.getPropertyPath().iterator();
+      Node leafNode = null;
+
+      while(nodes.hasNext()) {
+         leafNode = nodes.next();
+      }
+
+      return leafNode;
+   }
+
    private Object unwrapCompoundObject(Object o, Node node)
    {
       Class<?> clazz = o.getClass();

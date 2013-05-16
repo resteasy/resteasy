@@ -25,19 +25,13 @@
             <scope>provided</scope>
         </dependency>
         
-		<dependency>
-     		<groupId>org.hibernate</groupId>
-     		<artifactId>hibernate-validator</artifactId>
-     		<version>${dep.hibernate-validator.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.el</groupId>
-                    <artifactId>javax.el-api</artifactId>
-                </exclusion>
-            </exclusions>
- 		</dependency>
- 		
- 		<dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${dep.hibernate-validator.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>provided</scope>
