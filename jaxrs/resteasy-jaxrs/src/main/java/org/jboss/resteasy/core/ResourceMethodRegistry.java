@@ -424,10 +424,10 @@ public class ResourceMethodRegistry implements Registry
    {
       try
       {
-         List<String> matchedUris = request.getUri().getMatchedURIs(false);
+         List<String> matchedUris = request.getUri().getEncodedMatchedPaths();
          if (matchedUris == null || matchedUris.size() == 0) return rootSegment.matchRoot(request);
          // resource location
-         String currentUri = request.getUri().getMatchedURIs(false).get(0);
+         String currentUri = request.getUri().getEncodedMatchedPaths().get(0);
          return rootSegment.matchRoot(request, currentUri.length());
       }
       catch (RuntimeException e)

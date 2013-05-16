@@ -2,6 +2,7 @@ package org.jboss.resteasy.specimpl;
 
 import org.jboss.resteasy.core.request.ServerDrivenNegotiation;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -26,12 +27,14 @@ public class RequestImpl implements Request
    private String varyHeader;
    private String httpMethod;
    private HttpRequest request;
+   private HttpResponse response;
 
-   public RequestImpl(HttpRequest request)
+   public RequestImpl(HttpRequest request, HttpResponse response)
    {
       this.headers = request.getHttpHeaders();
       this.httpMethod = request.getHttpMethod().toUpperCase();
       this.request = request;
+      this.response = response;
    }
 
    public String getMethod()
@@ -58,6 +61,7 @@ public class RequestImpl implements Request
       negotiation.setAcceptLanguageHeaders(requestHeaders.get(HttpHeaderNames.ACCEPT_LANGUAGE));
 
       varyHeader = ResponseBuilderImpl.createVaryHeader(variants);
+      response.getOutputHeaders().add(HttpHeaderNames.VARY, varyHeader);
       return negotiation.getBestMatch(variants);
    }
 
@@ -117,6 +121,7 @@ public class RequestImpl implements Request
 
    public Response.ResponseBuilder evaluatePreconditions(EntityTag eTag)
    {
+      if (eTag == null) throw new IllegalArgumentException("eTag param null");
       Response.ResponseBuilder builder = null;
       List<String> ifMatch = headers.getRequestHeaders().get(HttpHeaderNames.IF_MATCH);
       if (ifMatch != null && ifMatch.size() > 0)
@@ -165,6 +170,7 @@ public class RequestImpl implements Request
 
    public Response.ResponseBuilder evaluatePreconditions(Date lastModified)
    {
+      if (lastModified == null) throw new IllegalArgumentException("lastModified param null");
       Response.ResponseBuilder builder = null;
       String ifModifiedSince = headers.getRequestHeaders().getFirst(HttpHeaderNames.IF_MODIFIED_SINCE);
       if (ifModifiedSince != null)
@@ -187,6 +193,8 @@ public class RequestImpl implements Request
 
    public Response.ResponseBuilder evaluatePreconditions(Date lastModified, EntityTag eTag)
    {
+      if (lastModified == null) throw new IllegalArgumentException("lastModified param null");
+      if (eTag == null) throw new IllegalArgumentException("eTag param null");
       Response.ResponseBuilder rtn = null;
       Response.ResponseBuilder lastModifiedBuilder = evaluatePreconditions(lastModified);
       Response.ResponseBuilder etagBuilder = evaluatePreconditions(eTag);

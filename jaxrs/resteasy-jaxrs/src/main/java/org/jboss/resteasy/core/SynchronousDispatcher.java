@@ -248,7 +248,7 @@ public class SynchronousDispatcher implements Dispatcher
       contextDataMap.put(HttpResponse.class, response);
       contextDataMap.put(HttpHeaders.class, request.getHttpHeaders());
       contextDataMap.put(UriInfo.class, request.getUri());
-      contextDataMap.put(Request.class, new RequestImpl(request));
+      contextDataMap.put(Request.class, new RequestImpl(request, response));
       contextDataMap.put(ResteasyAsynchronousContext.class, request.getAsyncContext());
       ResourceContext resourceContext = new ResourceContext()
       {

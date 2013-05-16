@@ -11,7 +11,9 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
@@ -22,29 +24,31 @@ import java.lang.reflect.Type;
 @Provider
 @Produces("*/*")
 @Consumes("*/*")
-public class InputStreamProvider implements MessageBodyReader<InputStream>, MessageBodyWriter<InputStream>
+public class ReaderProvider implements MessageBodyReader<Reader>, MessageBodyWriter<Reader>
 {
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return type.equals(InputStream.class);
+      return type.equals(Reader.class);
    }
 
-   public InputStream readFrom(Class<InputStream> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   public Reader readFrom(Class<Reader> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
-      return entityStream;
+      String charset = mediaType.getParameters().get("charset");
+      if (charset == null) return new InputStreamReader(entityStream);
+      else return new InputStreamReader(entityStream, charset);
    }
 
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return InputStream.class.isAssignableFrom(type);
+      return Reader.class.isAssignableFrom(type);
    }
 
-   public long getSize(InputStream inputStream, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   public long getSize(Reader inputStream, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
-   public void writeTo(InputStream inputStream, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   public void writeTo(Reader inputStream, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
 	   try
 	   {
@@ -64,7 +68,14 @@ public class InputStreamProvider implements MessageBodyReader<InputStream>, Mess
 	   }
 	   finally
 	   {
-         inputStream.close();
+		   try
+		   {
+			   inputStream.close();
+		   }
+		   catch (IOException e)
+		   {
+			   // Drop the exception so we don't mask real IO errors
+		   }
 	   }
    }
 }

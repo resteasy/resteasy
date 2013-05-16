@@ -64,7 +64,7 @@ public class ContextParameterInjector implements ValueInjector
          }
          catch (InvocationTargetException e)
          {
-            throw new ApplicationException(e.getCause());
+            throw e.getCause();
          }
       }
    }

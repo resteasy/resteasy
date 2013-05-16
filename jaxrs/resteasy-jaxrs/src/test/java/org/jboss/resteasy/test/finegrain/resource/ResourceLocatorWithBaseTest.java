@@ -29,13 +29,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.List;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ResourceLocatorTest
+public class ResourceLocatorWithBaseTest
 {
 
    private static Dispatcher dispatcher;
@@ -63,10 +63,10 @@ public class ResourceLocatorTest
       {
          System.out.println("Uri Ancesstors for Subresource2.doGet():");
          Assert.assertEquals(4, uri.getMatchedURIs().size());
-         Assert.assertEquals("base/1/resources/subresource2/stuff/2/bar", uri.getMatchedURIs().get(0));
-         Assert.assertEquals("base/1/resources/subresource2", uri.getMatchedURIs().get(1));
-         Assert.assertEquals("base/1/resources", uri.getMatchedURIs().get(2));
-         Assert.assertEquals("", uri.getMatchedURIs().get(3));
+         Assert.assertEquals("top/base/1/resources/subresource2/stuff/2/bar", uri.getMatchedURIs().get(0));
+         Assert.assertEquals("top/base/1/resources/subresource2", uri.getMatchedURIs().get(1));
+         Assert.assertEquals("top/base/1/resources", uri.getMatchedURIs().get(2));
+         Assert.assertEquals("top", uri.getMatchedURIs().get(3));
          for (String ancestor : uri.getMatchedURIs()) System.out.println("   " + ancestor);
 
 
@@ -91,8 +91,8 @@ public class ResourceLocatorTest
          System.out.println("Uri Ancesstors for Subresource.doGet():");
          List<String> matchedURIs = uri.getMatchedURIs();
          Assert.assertEquals(2, matchedURIs.size());
-         Assert.assertEquals("base/1/resources", matchedURIs.get(0));
-         Assert.assertEquals("", matchedURIs.get(1));
+         Assert.assertEquals("top/base/1/resources", matchedURIs.get(0));
+         Assert.assertEquals("top", matchedURIs.get(1));
          for (String ancestor : matchedURIs) System.out.println("   " + ancestor);
 
          System.out.println("Uri Ancesstors Object for Subresource.doGet():");
@@ -108,9 +108,9 @@ public class ResourceLocatorTest
       {
          System.out.println("Uri Ancesstors for Subresource.getSubresource2():");
          Assert.assertEquals(3, uri.getMatchedURIs().size());
-         Assert.assertEquals("base/1/resources/subresource2", uri.getMatchedURIs().get(0));
-         Assert.assertEquals("base/1/resources", uri.getMatchedURIs().get(1));
-         Assert.assertEquals("", uri.getMatchedURIs().get(2));
+         Assert.assertEquals("top/base/1/resources/subresource2", uri.getMatchedURIs().get(0));
+         Assert.assertEquals("top/base/1/resources", uri.getMatchedURIs().get(1));
+         Assert.assertEquals("top", uri.getMatchedURIs().get(2));
          for (String ancestor : uri.getMatchedURIs()) System.out.println("   " + ancestor);
 
          System.out.println("Uri Ancesstors Object for Subresource.getSubresource2():");
@@ -122,7 +122,7 @@ public class ResourceLocatorTest
       }
    }
 
-   @Path("/")
+   @Path("/top")
    public static class BaseResource
    {
       @Path("base/{param}/resources")
@@ -132,14 +132,16 @@ public class ResourceLocatorTest
          Assert.assertEquals("1", param);
          List<String> matchedURIs = uri.getMatchedURIs();
          Assert.assertEquals(2, matchedURIs.size());
-         Assert.assertEquals("base/1/resources", matchedURIs.get(0));
-         Assert.assertEquals("", matchedURIs.get(1));
+         Assert.assertEquals("top/base/1/resources", matchedURIs.get(0));
+         Assert.assertEquals("top", matchedURIs.get(1));
          for (String ancestor : matchedURIs) System.out.println("   " + ancestor);
 
          System.out.println("Uri Ancesstors Object for Subresource.doGet():");
          Assert.assertEquals(1, uri.getMatchedResources().size());
          Assert.assertEquals(BaseResource.class, uri.getMatchedResources().get(0).getClass());
+
          return new Subresource();
+
       }
       @Path("proxy")
       public Subresource3Interface sub3()
@@ -182,22 +184,13 @@ public class ResourceLocatorTest
    }
 
    @Test
-   public void testProxiedSubresource() throws Exception
-   {
-      ClientRequest request = new ClientRequest(generateURL("/proxy/3"));
-      ClientResponse res = request.queryParameter("foo", "1.2").queryParameter("foo", "1.3").get();
-      Assert.assertEquals(200, res.getStatus());
-
-   }
-
-   @Test
    public void testSubresource() throws Exception
    {
       Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
 
       dispatcher.getRegistry().addPerRequestResource(BaseResource.class);
       {
-         MockHttpRequest request = MockHttpRequest.get("/base/1/resources");
+         MockHttpRequest request = MockHttpRequest.get("/top/base/1/resources");
          MockHttpResponse response = new MockHttpResponse();
 
          dispatcher.invoke(request, response);
@@ -225,7 +218,7 @@ public class ResourceLocatorTest
       */
 
       {
-         MockHttpRequest request = MockHttpRequest.get("/base/1/resources/subresource2/stuff/2/bar");
+         MockHttpRequest request = MockHttpRequest.get("/top/base/1/resources/subresource2/stuff/2/bar");
          MockHttpResponse response = new MockHttpResponse();
 
          dispatcher.invoke(request, response);
@@ -236,133 +229,4 @@ public class ResourceLocatorTest
       }
    }
 
-   public static class Receiver
-   {
-      @Path("/head")
-      @GET
-      public String get()
-      {
-         return this.getClass().getName();
-      }
-   }
-
-   public static class QueueReceiver extends Receiver
-   {
-
-   }
-
-   @Path("/directory")
-   public static class Directory
-   {
-      @Path("/receivers/{id}")
-      public QueueReceiver getReceiver(@PathParam("id") String id)
-      {
-         return new QueueReceiver();
-      }
-
-      @DELETE
-      @Path("/receivers/{id}")
-      public String closeReceiver(@PathParam("id") String id) throws Exception
-      {
-         return Directory.class.getName();
-      }
-   }
-
-   @Test
-   public void testSameUri() throws Exception
-   {
-      Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
-
-      dispatcher.getRegistry().addPerRequestResource(Directory.class);
-      {
-         MockHttpRequest request = MockHttpRequest.delete("/directory/receivers/1");
-         MockHttpResponse response = new MockHttpResponse();
-
-         dispatcher.invoke(request, response);
-
-
-         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-         Assert.assertEquals(Directory.class.getName(), new String(response.getOutput()));
-      }
-   }
-
-   @Path("/collection")
-   public static class CollectionResource
-   {
-      @Path("annotation_free_subresource")
-      public Object getAnnotationFreeSubResource()
-      {
-         return new AnnotationFreeSubResource();
-      }
-   }
-
-   @Produces(MediaType.TEXT_PLAIN)
-   public interface RootInterface
-   {
-      @GET
-      String get();
-
-      @Path("{id}")
-      Object getSubSubResource(@PathParam("id") String id);
-   }
-
-   @Produces(MediaType.TEXT_PLAIN)
-   public interface SubInterface extends RootInterface
-   {
-      @POST
-      @Consumes(MediaType.TEXT_PLAIN)
-      String post(String s);
-   }
-
-   public static abstract class AbstractAnnotationFreeResouce implements RootInterface
-   {
-      public String get()
-      {
-         return "got";
-      }
-   }
-
-   public static class AnnotationFreeSubResource extends AbstractAnnotationFreeResouce implements SubInterface
-   {
-      public String post(String s)
-      {
-         return "posted: " + s;
-      }
-
-      public Object getSubSubResource(String id)
-      {
-         return null;
-      }
-   }
-
-   @Test
-   public void testAnnotationFreeSubresource() throws Exception
-   {
-      Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
-
-      dispatcher.getRegistry().addPerRequestResource(CollectionResource.class);
-      {
-         MockHttpRequest request = MockHttpRequest.get("/collection/annotation_free_subresource");
-         MockHttpResponse response = new MockHttpResponse();
-
-         dispatcher.invoke(request, response);
-
-         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-         Assert.assertEquals("got", response.getContentAsString());
-         Assert.assertNotNull(response.getOutputHeaders().get("Content-Type"));
-         Assert.assertTrue(response.getOutputHeaders().get("Content-Type").size() > 0);
-         Assert.assertEquals(MediaType.TEXT_PLAIN_TYPE, response.getOutputHeaders().get("Content-Type").get(0));
-      }
-
-      {
-         MockHttpRequest request = MockHttpRequest.post("/collection/annotation_free_subresource");
-         request.content("hello!".getBytes()).contentType(MediaType.TEXT_PLAIN);
-         MockHttpResponse response = new MockHttpResponse();
-
-         dispatcher.invoke(request, response);
-
-         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-         Assert.assertEquals("posted: hello!", response.getContentAsString());
-      }
-   }
 }

@@ -168,7 +168,7 @@ public class LinkDelegate implements RuntimeDelegate.HeaderDelegate<Link>
 
       for (Map.Entry<String, String> entry : value.getParams().entrySet())
       {
-         buf.append("; ").append(entry.getKey()).append("\"").append(entry.getValue()).append("\"");
+         buf.append("; ").append(entry.getKey()).append("=\"").append(entry.getValue()).append("\"");
       }
 
       return buf.toString();

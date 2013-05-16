@@ -200,7 +200,7 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
          ResourceInvoker invoker = match(request.getHttpMethod(), request);
          if (invoker == null)
             throw new NotFoundException("Could not find resource for relative : " + path + " of full path: " + request.getUri().getRequestUri());
-         uriInfo.pushMatchedURI(path, Encode.decode(path));
+         uriInfo.pushMatchedPath(path);
          populatePathParams(request, matcher, path);
          return invoker;
       }
@@ -218,7 +218,7 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
          if (c == '/')
          {
             String matched = path.substring(0, start + matcher.group(0).length());
-            uriInfo.pushMatchedURI(matched, Encode.decode(matched));
+            uriInfo.pushMatchedPath(matched);
             populatePathParams(request, matcher, path);
             return locator;
          }
