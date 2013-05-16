@@ -17,13 +17,13 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
-import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.PathHelper;
 import org.jboss.resteasy.util.WeightedMediaType;
 
+import javax.validation.Validator;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -67,7 +67,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    protected ContainerResponseFilter[] responseFilters;
    protected WriterInterceptor[] writerInterceptors;
    protected ConcurrentHashMap<String, AtomicLong> stats = new ConcurrentHashMap<String, AtomicLong>();
-   protected GeneralValidator validator;
+   protected Validator validator;
    protected ViolationsContainer<?> violationsContainer;
    protected ResourceInfo resourceInfo;
 
@@ -137,10 +137,10 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       providerFactory.getContainerRequestFilterRegistry().getListeners().add(this);
       providerFactory.getContainerResponseFilterRegistry().getListeners().add(this);
       providerFactory.getServerWriterInterceptorRegistry().getListeners().add(this);
-      ContextResolver<GeneralValidator> resolver = providerFactory.getContextResolver(GeneralValidator.class, MediaType.WILDCARD_TYPE);
+      ContextResolver<Validator> resolver = providerFactory.getContextResolver(Validator.class, MediaType.WILDCARD_TYPE);
       if (resolver != null)
       {
-         validator = providerFactory.getContextResolver(GeneralValidator.class, MediaType.WILDCARD_TYPE).getContext(null);
+         validator = providerFactory.getContextResolver(Validator.class, MediaType.WILDCARD_TYPE).getContext(null);
       }
    }
 
@@ -393,7 +393,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       {
          violationsContainer = new ViolationsContainer<Object>(validator.validate(target));
          request.setAttribute(ViolationsContainer.class.getName(), violationsContainer);
-         request.setAttribute(GeneralValidator.class.getName(), validator);
+         request.setAttribute(Validator.class.getName(), validator);
       }
 
       PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this);

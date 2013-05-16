@@ -91,11 +91,17 @@
             <groupId>net.jcip</groupId>
             <artifactId>jcip-annotations</artifactId>
         </dependency>
-        
+
         <dependency>
-            <groupId>org.hibernate</groupId> 
+            <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>${dep.hibernate-validator.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.el</groupId>
+                    <artifactId>javax.el-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Used by org.jboss.resteasy.plugins.server.tjws.* -->

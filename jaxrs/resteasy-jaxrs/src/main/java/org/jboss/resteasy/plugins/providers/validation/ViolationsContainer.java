@@ -10,10 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.validation.ConstraintTarget;
 import javax.validation.ConstraintViolation;
 import javax.validation.Path.Node;
-
-import org.hibernate.validator.method.MethodConstraintViolation;
 
 /**
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
@@ -157,15 +156,18 @@ public class ViolationsContainer<T> implements Serializable
       }
       return sb;
    }
-   
+
    private ConstraintType getConstraintType(ConstraintViolation<T> v)
    {
-      if (v instanceof MethodConstraintViolation)
-      {
-         MethodConstraintViolation<?> mv = MethodConstraintViolation.class.cast(v);
-         return mv.getKind() == MethodConstraintViolation.Kind.PARAMETER ? ConstraintType.PARAMETER : ConstraintType.RETURN_VALUE;
-      }
-      
+       if (v.getConstraintDescriptor().getValidationAppliesTo() == ConstraintTarget.PARAMETERS)
+       {
+           return ConstraintType.PARAMETER;
+       }
+       else if (v.getConstraintDescriptor().getValidationAppliesTo() == ConstraintTarget.RETURN_VALUE)
+       {
+           return ConstraintType.RETURN_VALUE;
+       }
+
       Object o = v.getRootBean();
       Class<?> containingClass = getRepresentedClass(v.getRootBeanClass(), o);
       String fieldName = null;
