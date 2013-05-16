@@ -306,7 +306,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return messageBodyWriters;
    }
 
-   protected Map<Class<?>, ExceptionMapper> getExceptionMappers()
+   public Map<Class<?>, ExceptionMapper> getExceptionMappers()
    {
       if (exceptionMappers == null && parent != null) return parent.getExceptionMappers();
       return exceptionMappers;
@@ -1831,9 +1831,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       getClassContracts().put(provider.getClass(), newContracts);
    }
 
+   @Override
    public <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type)
    {
-      return getExceptionMappers().get(type);
+      Class exceptionType = type;
+      ExceptionMapper<T> mapper = null;
+      while (mapper == null) {
+         if (exceptionType == null) break;
+         mapper = getExceptionMappers().get(exceptionType);
+         if (mapper == null) exceptionType = exceptionType.getSuperclass();
+      }
+      return mapper;
    }
    
    public <T extends Throwable> ClientExceptionMapper<T> getClientExceptionMapper(Class<T> type)
