@@ -322,6 +322,13 @@ public class ResteasyUriInfo implements UriInfo
       return encodedMatchedPaths;
    }
 
+   public void popMatchedPath()
+   {
+      encodedMatchedPaths.remove(0);
+   }
+
+
+
    public void pushMatchedURI(String encoded, String decoded)
    {
       if (encodedMatchedUris == null) encodedMatchedUris = new ArrayList<String>();

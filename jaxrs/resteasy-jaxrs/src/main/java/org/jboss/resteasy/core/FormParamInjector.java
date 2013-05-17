@@ -31,7 +31,7 @@ public class FormParamInjector extends StringParameterInjector implements ValueI
       List<String> list = request.getDecodedFormParameters().get(paramName);
       if (list == null)
       {
-         list = new ArrayList<String>();
+         extractValues(null);
       }
       else if (encode)
       {

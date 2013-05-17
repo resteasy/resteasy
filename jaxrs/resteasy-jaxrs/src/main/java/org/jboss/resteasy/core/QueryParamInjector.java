@@ -5,6 +5,7 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.QueryParam;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
@@ -34,6 +35,12 @@ public class QueryParamInjector extends StringParameterInjector implements Value
       {
          throw new BadRequestException("Unable to decode query string", e);
       }
+   }
+
+   @Override
+   protected void throwProcessingException(String message, Throwable cause)
+   {
+      throw new NotFoundException(message, cause);
    }
 
    public Object inject(HttpRequest request, HttpResponse response)

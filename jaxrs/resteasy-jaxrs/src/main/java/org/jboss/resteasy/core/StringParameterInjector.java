@@ -1,13 +1,14 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
-import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringConverter;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.util.StringToPrimitive;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.lang.annotation.Annotation;
@@ -312,15 +313,20 @@ public class StringParameterInjector
          }
          catch (InstantiationException e)
          {
-            throw new BadRequestException("Unable to extract parameter from http request for " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
+            throwProcessingException("Unable to extract parameter from http request for " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
          }
          catch (IllegalAccessException e)
          {
-            throw new BadRequestException("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
+            throwProcessingException("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
          }
          catch (InvocationTargetException e)
          {
-            throw new BadRequestException("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
+            Throwable targetException = e.getTargetException();
+            if (targetException instanceof WebApplicationException)
+            {
+               throw ((WebApplicationException)targetException);
+            }
+            throwProcessingException("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, targetException);
          }
       }
       else if (valueOf != null)
@@ -331,13 +337,23 @@ public class StringParameterInjector
          }
          catch (IllegalAccessException e)
          {
-            throw new BadRequestException("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
+            throwProcessingException("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
          }
          catch (InvocationTargetException e)
          {
-            throw new BadRequestException("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e.getTargetException());
+            Throwable targetException = e.getTargetException();
+            if (targetException instanceof WebApplicationException)
+            {
+               throw ((WebApplicationException)targetException);
+            }
+            throwProcessingException("Unable to extract parameter from http request: " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, targetException);
          }
       }
       return null;
+   }
+
+   protected void throwProcessingException(String message, Throwable cause)
+   {
+      throw new BadRequestException(message, cause);
    }
 }

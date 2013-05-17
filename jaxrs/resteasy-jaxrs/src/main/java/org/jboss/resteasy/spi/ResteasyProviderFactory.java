@@ -1035,9 +1035,21 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       List<ContextResolver> rtn = new ArrayList<ContextResolver>();
 
       List<SortedKey<ContextResolver>> list = resolvers.getPossible(type);
-      for (SortedKey<ContextResolver> resolver : list)
+      if (type.isWildcardType())
       {
-         rtn.add(resolver.obj);
+         // do it upside down if it is a wildcard type:  Note: this is to pass the stupid TCK which prefers that
+         // a wildcard type match up with other wildcard types
+         for (int i = list.size() - 1; i >= 0; i--)
+         {
+            rtn.add(list.get(i).obj);
+         }
+      }
+      else
+      {
+         for (SortedKey<ContextResolver> resolver : list)
+         {
+            rtn.add(resolver.obj);
+         }
       }
       return rtn;
    }

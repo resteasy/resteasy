@@ -71,7 +71,6 @@ public class SegmentTest
    }
 
    ResourceMethodRegistry registry;
-   RootSegment root = null;
 
    @BeforeClass
    public static void initEnv()
@@ -83,7 +82,6 @@ public class SegmentTest
    {
       registry = new ResourceMethodRegistry(ResteasyProviderFactory
               .getInstance());
-      root = registry.getRoot();
       registry.addSingletonResource(new NullResource());
    }
 
@@ -119,6 +117,6 @@ public class SegmentTest
    private ResourceMethodInvoker getResourceMethod(String url)
            throws URISyntaxException
    {
-      return (ResourceMethodInvoker) root.matchRoot(MockHttpRequest.get(url));
+      return (ResourceMethodInvoker) registry.getResourceInvoker(MockHttpRequest.get(url));
    }
 }

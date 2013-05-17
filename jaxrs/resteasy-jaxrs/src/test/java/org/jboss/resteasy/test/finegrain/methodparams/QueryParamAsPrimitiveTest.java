@@ -1448,7 +1448,7 @@ public class QueryParamAsPrimitiveTest
          try
          {
             ClientResponse<?> response = request.get();
-            Assert.assertEquals(400, response.getStatus());
+            Assert.assertEquals(404, response.getStatus());
             shutdown(request);
          }
          catch (Exception e)
@@ -1468,7 +1468,7 @@ public class QueryParamAsPrimitiveTest
          try
          {
             ClientResponse<?> response = request.get();
-            Assert.assertEquals(400, response.getStatus());
+            Assert.assertEquals(404, response.getStatus());
             shutdown(request);
          }
          catch (Exception e)

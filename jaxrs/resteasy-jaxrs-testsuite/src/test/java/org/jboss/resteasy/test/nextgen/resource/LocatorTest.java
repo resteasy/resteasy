@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -30,7 +31,21 @@ public class LocatorTest extends BaseResourceTest
       public String responseOk() {
          return "ok";
       }
+
+      @Path("{id}")
+      public Object locate(@PathParam("id") int id)
+      {
+         return new Locator2();
+      }
    }
+
+   public static class Locator2 {
+      @GET
+      public String ok() {
+         return "ok";
+      }
+   }
+
 
    @Path("locator")
    public static class Locator {
@@ -63,7 +78,17 @@ public class LocatorTest extends BaseResourceTest
    {
       Response response = client.target(generateURL("/locator/responseok/responseok")).request().get();
       Assert.assertEquals(response.getStatus(), 200);
+      response.close();
    }
+
+   @Test
+   public void testOptions()
+   {
+      Response response = client.target(generateURL("/resource/responseok")).request().options();
+      Assert.assertEquals(response.getStatus(), 200);
+      response.close();
+   }
+
 
 
 }

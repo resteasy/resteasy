@@ -8,11 +8,14 @@ import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
@@ -56,6 +59,33 @@ public class ExceptionMapper2Test extends BaseResourceTest
 
    }
 
+   public enum EnumProvider {
+      TCK, CTS, JAXRS;
+   }
+
+   @Provider
+   public static class EnumContextResolver implements ContextResolver<EnumProvider>
+   {
+
+      @Override
+      public EnumProvider getContext(Class<?> type) {
+         return type == EnumProvider.class ? EnumProvider.JAXRS : null;
+      }
+
+   }
+
+   @Provider
+   @Produces(MediaType.TEXT_PLAIN)
+   public static class TextPlainEnumContextResolver implements ContextResolver<EnumProvider> {
+      @Override
+      public EnumProvider getContext(Class<?> type) {
+         return type == EnumProvider.class ? EnumProvider.CTS : null;
+      }
+   }
+
+
+
+
 
    @Path("resource")
    public static class Resource {
@@ -75,6 +105,29 @@ public class ExceptionMapper2Test extends BaseResourceTest
          return Response.serverError().status(status).build();
       }
 
+      Response getResponseByEnumProvider(EnumProvider expected, EnumProvider given) {
+         Response.Status status = Response.Status.NO_CONTENT;
+         if (given != null)
+            status = given != expected ? Response.Status.NOT_ACCEPTABLE : Response.Status.OK;
+         return Response.status(status).build();
+      }
+
+      @GET
+      @Path("isRegisteredContextResolver")
+      public Response isRegisteredContextResolver() {
+         EnumProvider ep = getEnumProvider(MediaType.WILDCARD_TYPE);
+         return getResponseByEnumProvider(EnumProvider.JAXRS, ep);
+      }
+
+      private EnumProvider getEnumProvider(MediaType type) {
+         ContextResolver<EnumProvider> scr = providers.getContextResolver(
+                 EnumProvider.class, type);
+         EnumProvider ep = scr.getContext(EnumProvider.class);
+         return ep;
+      }
+
+
+
    }
 
    static Client client;
@@ -84,6 +137,8 @@ public class ExceptionMapper2Test extends BaseResourceTest
    {
       deployment.getProviderFactory().register(AnyExceptionExceptionMapper.class);
       deployment.getProviderFactory().register(IOExceptionExceptionMapper.class);
+      deployment.getProviderFactory().register(EnumContextResolver.class);
+      deployment.getProviderFactory().register(TextPlainEnumContextResolver.class);
       addPerRequestResource(Resource.class);
       client = ClientBuilder.newClient();
    }
@@ -94,12 +149,21 @@ public class ExceptionMapper2Test extends BaseResourceTest
       client.close();
    }
 
+   @Test
+   public void isRegisteredWildCardContextResolverTest()
+   {
+      Response response = client.target(generateURL("/resource/isRegisteredContextResolver")).request().get();
+      Assert.assertEquals(response.getStatus(), 200);
+      response.close();
+   }
+
 
    @Test
    public void testExceptionMapped()
    {
       Response response = client.target(generateURL("/resource/isRegisteredRuntimeExceptionMapper")).request().get();
       Assert.assertEquals(response.getStatus(), 200);
+      response.close();
    }
 
 

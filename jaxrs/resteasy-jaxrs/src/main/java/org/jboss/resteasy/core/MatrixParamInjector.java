@@ -5,6 +5,7 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.MatrixParam;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.PathSegment;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
@@ -47,6 +48,13 @@ public class MatrixParamInjector extends StringParameterInjector implements Valu
       }
       if (values.size() == 0) return extractValues(null);
       else return extractValues(values);
+   }
+
+   @Override
+   protected void throwProcessingException(String message, Throwable cause)
+   {
+      throw new NotFoundException(message, cause);
+
    }
 
    public Object inject()

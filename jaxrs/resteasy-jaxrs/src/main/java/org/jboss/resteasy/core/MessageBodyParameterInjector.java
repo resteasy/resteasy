@@ -16,6 +16,7 @@ import org.jboss.resteasy.util.ThreadLocalStack;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.Encoded;
+import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -151,7 +152,7 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
                  genericType, annotations, mediaType);
          if (reader == null)
          {
-            throw new BadRequestException(
+            throw new NotSupportedException(
                     "Could not find message body reader for type: "
                             + genericType + " of content type: " + mediaType);
          }

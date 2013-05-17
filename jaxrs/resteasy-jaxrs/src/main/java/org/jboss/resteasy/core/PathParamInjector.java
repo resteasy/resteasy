@@ -7,6 +7,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.Types;
 
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.PathSegment;
 import java.lang.annotation.Annotation;
@@ -46,7 +47,13 @@ public class PathParamInjector implements ValueInjector
       }
       else
       {
-         extractor = new StringParameterInjector(type, genericType, paramName, PathParam.class, defaultValue, target, annotations, factory);
+         extractor = new StringParameterInjector(type, genericType, paramName, PathParam.class, defaultValue, target, annotations, factory) {
+            @Override
+            protected void throwProcessingException(String message, Throwable cause)
+            {
+               throw new NotFoundException(message, cause);
+            }
+         };
       }
       this.paramName = paramName;
       this.encode = encode;

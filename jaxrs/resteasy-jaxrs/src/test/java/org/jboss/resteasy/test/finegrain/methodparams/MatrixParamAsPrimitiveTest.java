@@ -1407,7 +1407,7 @@ public class MatrixParamAsPrimitiveTest
          try
          {
             response = request.get();
-            Assert.assertEquals(400, response.getStatus());
+            Assert.assertEquals(404, response.getStatus());
 //            response.releaseConnection();
             shutdown(request);
          } catch (Exception e)
@@ -1427,7 +1427,7 @@ public class MatrixParamAsPrimitiveTest
          try
          {
             response = request.get();
-            Assert.assertEquals(400, response.getStatus());
+            Assert.assertEquals(404, response.getStatus());
 //            response.releaseConnection();
             shutdown(request);
          } catch (Exception e)
