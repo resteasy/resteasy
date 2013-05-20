@@ -7,6 +7,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.Types;
 
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.PathSegment;
 import java.lang.annotation.Annotation;
@@ -46,7 +47,13 @@ public class PathParamInjector implements ValueInjector
       }
       else
       {
-         extractor = new StringParameterInjector(type, genericType, paramName, PathParam.class, defaultValue, target, annotations, factory);
+         extractor = new StringParameterInjector(type, genericType, paramName, PathParam.class, defaultValue, target, annotations, factory) {
+            @Override
+            protected void throwProcessingException(String message, Throwable cause)
+            {
+               throw new NotFoundException(message, cause);
+            }
+         };
       }
       this.paramName = paramName;
       this.encode = encode;
@@ -105,7 +112,15 @@ public class PathParamInjector implements ValueInjector
          List<String> list = request.getUri().getPathParameters(!encode).get(paramName);
          if (list == null)
          {
-            throw new InternalServerErrorException("Unknown @PathParam: " + paramName + " for path: " + request.getUri().getPath());
+            if (extractor.defaultValue == null) throw new InternalServerErrorException("Unknown @PathParam: " + paramName + " for path: " + request.getUri().getPath());
+            if (extractor.isCollectionOrArray())
+            {
+               return extractor.extractValues(null);
+            }
+            else
+            {
+               return extractor.extractValue(null);
+            }
          }
          if (extractor.isCollectionOrArray())
          {

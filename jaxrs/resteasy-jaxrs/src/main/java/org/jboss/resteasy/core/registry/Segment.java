@@ -5,14 +5,14 @@ import org.jboss.resteasy.core.ResourceLocatorInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.MethodNotAllowedException;
-import org.jboss.resteasy.spi.NotAcceptableException;
-import org.jboss.resteasy.spi.NotFoundException;
-import org.jboss.resteasy.spi.UnsupportedMediaTypeException;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.WeightedMediaType;
 
+import javax.ws.rs.NotAcceptableException;
+import javax.ws.rs.NotAllowedException;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -109,12 +109,12 @@ public class Segment
             else
             {
                Response res = Response.status(HttpResponseCodes.SC_METHOD_NOT_ALLOWED).header(HttpHeaderNames.ALLOW, allowHeaderValue).build();
-               throw new MethodNotAllowedException("No resource method found for " + httpMethod + ", return 405 with Allow header", res);
+               throw new NotAllowedException("No resource method found for " + httpMethod + ", return 405 with Allow header", res);
             }
          }
          else if (!consumeMatch)
          {
-            throw new UnsupportedMediaTypeException("Cannot consume content type");
+            throw new NotSupportedException("Cannot consume content type");
          }
          throw new NotAcceptableException("No match for accept header");
       }
@@ -127,8 +127,17 @@ public class Segment
       {
          if (invoker.getConsumes() == null || invoker.getConsumes().length == 0)
          {
-            WeightedMediaType defaultConsumes = WeightedMediaType.valueOf("*/*;q=0.0");
-            consumesMap.put(defaultConsumes, invoker);
+            if (contentType == null || contentType.isWildcardType())
+            {
+               // give priority to */* if wildcard content
+               WeightedMediaType defaultConsumes = WeightedMediaType.valueOf("*/*;q=2.0");
+               consumesMap.put(defaultConsumes, invoker);
+            }
+            else
+            {
+               WeightedMediaType defaultConsumes = WeightedMediaType.valueOf("*/*;q=0.0");
+               consumesMap.put(defaultConsumes, invoker);
+            }
          }
          else
          {

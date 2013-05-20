@@ -33,10 +33,12 @@ import java.util.Map;
 @Provider
 @Produces("application/x-www-form-urlencoded")
 @Consumes("application/x-www-form-urlencoded")
-public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<String, String>>, MessageBodyWriter<MultivaluedMap<String, String>>
+public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>, MessageBodyWriter<MultivaluedMap>
 {
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
+      return MultivaluedMap.class.equals(type);
+      /*
       if (!MultivaluedMap.class.isAssignableFrom(type)) return false;
       if (genericType == null) return true;
 
@@ -44,9 +46,10 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<
       ParameterizedType params = (ParameterizedType) genericType;
       if (params.getActualTypeArguments().length != 2) return false;
       return params.getActualTypeArguments()[0].equals(String.class) && params.getActualTypeArguments()[1].equals(String.class);
+      */
    }
 
-   public MultivaluedMap<String, String> readFrom(Class<MultivaluedMap<String, String>> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
+   public MultivaluedMap readFrom(Class<MultivaluedMap> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
 
       boolean encoded = FindAnnotation.findAnnotation(annotations, Encoded.class) != null;
@@ -92,6 +95,8 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<
 
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
+      return MultivaluedMap.class.isAssignableFrom(type);
+      /*
       if (!MultivaluedMap.class.isAssignableFrom(type)) return false;
       if (genericType == null) return true;
 
@@ -99,15 +104,17 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap<
       ParameterizedType params = (ParameterizedType) genericType;
       if (params.getActualTypeArguments().length != 2) return false;
       return params.getActualTypeArguments()[0].equals(String.class) && params.getActualTypeArguments()[1].equals(String.class);
+      */
    }
 
-   public long getSize(MultivaluedMap<String, String> stringStringMultivaluedMap, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   public long getSize(MultivaluedMap stringStringMultivaluedMap, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
-   public void writeTo(MultivaluedMap<String, String> formData, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
+   public void writeTo(MultivaluedMap data, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
+      MultivaluedMap<String, String> formData = (MultivaluedMap<String, String>)data;
       boolean encoded = FindAnnotation.findAnnotation(annotations, Encoded.class) != null;
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       OutputStreamWriter writer = new OutputStreamWriter(baos, "UTF-8");

@@ -291,7 +291,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       finally
       {
-         uriInfo.popCurrentResource();
+         //uriInfo.popCurrentResource();
       }
    }
 
@@ -502,6 +502,8 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       boolean matches = false;
       if (contentType == null)
       {
+         return true;
+         /*
          // If there is no @Consumes annotation directly on method (i.e. a @GET or @DELETE) return true
          // this is a hack to determine if this is a @GET or @DELETE.  Because we can create new HTTP methods ad hoc
          // there is no way to determine if it is an HTTP method that doesn't require content (like PUT, POST)
@@ -517,6 +519,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
             }
          }
          return false;
+         */
       }
       else
       {

@@ -84,36 +84,6 @@
 </thead>
 <tbody>
 <row>
-<entry>BadRequestException</entry>
-<entry>400</entry>
-<entry>Bad Request.  Request wasn't formatted correctly or problem processing request input.</entry>
-</row>
-<row>
-<entry>UnauthorizedException</entry>
-<entry>401</entry>
-<entry>Unauthorized.  Security exception thrown if you're using Resteasy's simple annotation-based role-based security</entry>
-</row>
-<row>
-<entry>InternalServerErrorException</entry>
-<entry>500</entry>
-<entry>Internal Server Error.</entry>
-</row>
-<row>
-<entry>MethodNotAllowedException</entry>
-<entry>405</entry>
-<entry>Method Not Allowed.  There is no JAX-RS method for the resource that can handle the invoked HTTP operation.</entry>
-</row>
-<row>
-<entry>NotAcceptableException</entry>
-<entry>406</entry>
-<entry>Not Acceptable.  There is no JAX-RS method that can produce the media types listed in the Accept header.</entry>
-</row>
-<row>
-<entry>NotFoundException</entry>
-<entry>404</entry>
-<entry>Not Found.  There is no JAX-RS method that serves the request path/resource.</entry>
-</row>
-<row>
 <entry>ReaderException</entry>
 <entry>400</entry>
 <entry>All exceptions thrown from MessageBodyReaders are wrapped within this exception.  If there is no ExceptionMapper for the

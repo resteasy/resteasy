@@ -64,8 +64,7 @@ public class ServiceRegistry
 	private void scanRegistry() {
 		methods = new ArrayList<MethodMetaData>();
 		locators = new ArrayList<ServiceRegistry>();
-		for (Entry<String, List<ResourceInvoker>> entry : registry.getRoot()
-				.getBounded().entrySet())
+		for (Entry<String, List<ResourceInvoker>> entry : registry.getBounded().entrySet())
 		{
 			List<ResourceInvoker> invokers = entry.getValue();
 			for (ResourceInvoker invoker : invokers)

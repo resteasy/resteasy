@@ -306,7 +306,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return messageBodyWriters;
    }
 
-   protected Map<Class<?>, ExceptionMapper> getExceptionMappers()
+   public Map<Class<?>, ExceptionMapper> getExceptionMappers()
    {
       if (exceptionMappers == null && parent != null) return parent.getExceptionMappers();
       return exceptionMappers;
@@ -802,11 +802,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          for (String consume : consumeMime.value())
          {
             MediaType mime = MediaType.valueOf(consume);
+            //logger.info(">>> Adding provider: " + provider.getClass().getName() + " with mime type of: " + mime);
             messageBodyWriters.add(mime, key);
          }
       }
       else
       {
+         //logger.info(">>> Adding provider: " + provider.getClass().getName() + " with mime type of: default */*");
          messageBodyWriters.add(new MediaType("*", "*"), key);
       }
    }
@@ -815,8 +817,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       List<SortedKey<MessageBodyReader>> readers = getMessageBodyReaders().getPossible(mediaType, type);
 
+      //logger.info("******** getMessageBodyReader *******");
       for (SortedKey<MessageBodyReader> reader : readers)
       {
+         //logger.info("     matching reader: " + reader.getClass().getName());
          if (reader.obj.isReadable(type, genericType, annotations, mediaType))
          {
             return (MessageBodyReader<T>) reader.obj;
@@ -1035,9 +1039,21 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       List<ContextResolver> rtn = new ArrayList<ContextResolver>();
 
       List<SortedKey<ContextResolver>> list = resolvers.getPossible(type);
-      for (SortedKey<ContextResolver> resolver : list)
+      if (type.isWildcardType())
       {
-         rtn.add(resolver.obj);
+         // do it upside down if it is a wildcard type:  Note: this is to pass the stupid TCK which prefers that
+         // a wildcard type match up with other wildcard types
+         for (int i = list.size() - 1; i >= 0; i--)
+         {
+            rtn.add(list.get(i).obj);
+         }
+      }
+      else
+      {
+         for (SortedKey<ContextResolver> resolver : list)
+         {
+            rtn.add(resolver.obj);
+         }
       }
       return rtn;
    }
@@ -1183,6 +1199,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void registerProvider(Class provider, boolean isBuiltin, int defaultPriority, Map<Class<?>, Integer> contracts)
    {
+      if (getClasses().contains(provider))
+      {
+         logger.warn("Provider class " + provider.getName() + " is already registered.  2nd registration is being ignored.");
+         return;
+      }
       Map<Class<?>, Integer> newContracts = new HashMap<Class<?>, Integer>();
 
       if (isA(provider, ParamConverterProvider.class, contracts))
@@ -1520,6 +1541,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void registerProviderInstance(Object provider, int defaultPriority, Map<Class<?>, Integer> contracts)
    {
+      for (Object registered : getInstances())
+      {
+         if (registered == provider)
+         {
+            logger.warn("Provider instance " + provider.getClass().getName() + " is already registered.  2nd registration is being ignored.");
+            return;
+         }
+      }
       Map<Class<?>, Integer> newContracts = new HashMap<Class<?>, Integer>();
       if (isA(provider, ParamConverterProvider.class, contracts))
       {
@@ -1831,9 +1860,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       getClassContracts().put(provider.getClass(), newContracts);
    }
 
+   @Override
    public <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type)
    {
-      return getExceptionMappers().get(type);
+      Class exceptionType = type;
+      ExceptionMapper<T> mapper = null;
+      while (mapper == null) {
+         if (exceptionType == null) break;
+         mapper = getExceptionMappers().get(exceptionType);
+         if (mapper == null) exceptionType = exceptionType.getSuperclass();
+      }
+      return mapper;
    }
    
    public <T extends Throwable> ClientExceptionMapper<T> getClientExceptionMapper(Class<T> type)
@@ -1844,11 +1881,19 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       List<SortedKey<MessageBodyWriter>> writers = getMessageBodyWriters().getPossible(mediaType, type);
+      /*
+      logger.info("*******   getMessageBodyWriter(" + type.getName() + ", " + mediaType.toString() + ")****");
       for (SortedKey<MessageBodyWriter> writer : writers)
       {
-         //System.out.println("matching: " + writer.obj.getClass());
+         logger.info("     possible writer: " + writer.obj.getClass().getName());
+      }
+      */
+
+      for (SortedKey<MessageBodyWriter> writer : writers)
+      {
          if (writer.obj.isWriteable(type, genericType, annotations, mediaType))
          {
+            //logger.info("   picking: " + writer.obj.getClass().getName());
             return (MessageBodyWriter<T>) writer.obj;
          }
       }

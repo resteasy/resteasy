@@ -211,7 +211,8 @@ public class VariantsTest extends BaseResourceTest
    public void selectVariantResponseVaryTest()
    {
       Response response = client.target(generateURL("/SelectVariantTestResponse")).request()
-              .accept("application/json").get();
+              .accept("application/json")
+              .acceptEncoding("*").get();
       Assert.assertEquals(200, response.getStatus());
       List<String> headers = response.getStringHeaders().get("Vary");
       Assert.assertEquals(1, headers.size());

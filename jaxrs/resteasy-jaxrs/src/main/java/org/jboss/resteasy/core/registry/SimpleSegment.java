@@ -3,9 +3,11 @@ package org.jboss.resteasy.core.registry;
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.Encode;
+
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -43,7 +45,7 @@ public class SimpleSegment extends RootSegment
          {
             return matchChildren(request, path, start + segment.length() + 1); // + 1 to ignore '/'
          }
-         catch (Failure e)
+         catch (RuntimeException e)
          {
             if (locator != null)
             {

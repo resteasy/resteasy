@@ -609,6 +609,12 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
+   public Map<Class<?>, ExceptionMapper> getExceptionMappers()
+   {
+      return getDelegate().getExceptionMappers();
+   }
+
+   @Override
    public <T> HeaderDelegate<T> createHeaderDelegate(Class<T> tClass)
    {
       return getDelegate().createHeaderDelegate(tClass);

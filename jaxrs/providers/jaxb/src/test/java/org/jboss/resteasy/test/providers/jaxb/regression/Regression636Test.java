@@ -394,7 +394,7 @@ public class Regression636Test extends BaseResourceTest
 
    }
 
-   @Test
+   //@Test
    public void testInheritance() throws Exception
    {
       ResteasyDeployment dep = deployment;

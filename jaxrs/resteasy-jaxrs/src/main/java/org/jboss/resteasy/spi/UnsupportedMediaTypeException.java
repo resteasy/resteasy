@@ -4,7 +4,9 @@ import javax.ws.rs.core.Response;
 
 /**
  * Thrown by RESTEasy when HTTP Unsupported Media Type (415) is encountered
+ * JAX-RS now has this exception
  */
+@Deprecated
 public class UnsupportedMediaTypeException extends LoggableFailure
 {
 

@@ -4,7 +4,9 @@ import javax.ws.rs.core.Response;
 
 /**
  * Thrown by RESTEasy when HTTP Not Acceptable (406) is encountered
+ * JAX-RS now has this exception
  */
+@Deprecated
 public class NotAcceptableException extends LoggableFailure
 {
    public NotAcceptableException(String s)

@@ -49,7 +49,7 @@ public class ExceptionHandler
     */
    public Response executeExactExceptionMapper(Throwable exception)
    {
-      ExceptionMapper mapper = providerFactory.getExceptionMapper(exception.getClass());
+      ExceptionMapper mapper = providerFactory.getExceptionMappers().get(exception.getClass());
       if (mapper == null) return null;
       mapperExecuted = true;
       return mapper.toResponse(exception);
@@ -58,7 +58,7 @@ public class ExceptionHandler
 
    public Response executeExceptionMapperForClass(Throwable exception, Class clazz)
    {
-      ExceptionMapper mapper = providerFactory.getExceptionMapper(clazz);
+      ExceptionMapper mapper = providerFactory.getExceptionMappers().get(clazz);
       if (mapper == null) return null;
       mapperExecuted = true;
       return mapper.toResponse(exception);
@@ -91,7 +91,7 @@ public class ExceptionHandler
       Class causeClass = exception.getClass();
       while (mapper == null) {
          if (causeClass == null) break;
-         mapper = providerFactory.getExceptionMapper(causeClass);
+         mapper = providerFactory.getExceptionMappers().get(causeClass);
          if (mapper == null) causeClass = causeClass.getSuperclass();
       }
       if (mapper != null) {

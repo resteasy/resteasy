@@ -1,13 +1,12 @@
 package org.jboss.resteasy.core.registry;
 
 import org.jboss.resteasy.core.ResourceInvoker;
-import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
-import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.PathHelper;
 
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.PathSegment;
 import java.util.ArrayList;
 import java.util.List;

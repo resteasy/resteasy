@@ -139,8 +139,8 @@ public class WeightedMediaType extends MediaType implements Comparable<WeightedM
          if (val != null)
          {
             float rtn = Float.valueOf(val);
-            if (rtn > 1.0F)
-               throw new LoggableFailure("MediaType q value cannot be greater than 1.0: " + type.toString(), HttpResponseCodes.SC_BAD_REQUEST);
+//            if (rtn > 1.0F)
+//               throw new LoggableFailure("MediaType q value cannot be greater than 1.0: " + type.toString(), HttpResponseCodes.SC_BAD_REQUEST);
             return rtn;
          }
       }

@@ -29,10 +29,14 @@ public class XmlJAXBContextFinder extends AbstractJAXBContextFinder implements C
    {
       JAXBContext result;
 
-      JAXBContext jaxb = cache.get((Class<?>) type);
-      if (jaxb != null)
+      JAXBContext jaxb = null;
+      if (type != null)
       {
-         return jaxb;
+         jaxb = cache.get((Class<?>) type);
+         if (jaxb != null)
+         {
+            return jaxb;
+         }
       }
       jaxb = findProvidedJAXBContext((Class<?>) type, mediaType);
       if (jaxb != null)
@@ -41,7 +45,7 @@ public class XmlJAXBContextFinder extends AbstractJAXBContextFinder implements C
          return jaxb;
       }
       jaxb = createContext(parameterAnnotations, type);
-      if (jaxb != null) cache.putIfAbsent((Class<?>) type, jaxb);
+      if (jaxb != null && type != null) cache.putIfAbsent((Class<?>) type, jaxb);
       result = jaxb;
       return result;
    }

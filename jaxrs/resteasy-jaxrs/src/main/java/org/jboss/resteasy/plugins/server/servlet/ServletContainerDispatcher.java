@@ -7,7 +7,6 @@ import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -18,6 +17,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
@@ -141,15 +141,13 @@ public class ServletContainerDispatcher
          {
             if (GetRestful.isRootResource(clazz))
             {
+               logger.info("Adding class resource " + clazz.getName() + " from Application " + config.getClass());
                actualResourceClasses.add(clazz);
-            }
-            else if (clazz.isAnnotationPresent(Provider.class))
-            {
-               actualProviderClasses.add(clazz);
             }
             else
             {
-               throw new RuntimeException("Application.getClasses() returned unknown class type: " + clazz.getName());
+               logger.info("Adding provider class " + clazz.getName() + " from Application " + config.getClass());
+               actualProviderClasses.add(clazz);
             }
          }
       }
@@ -159,17 +157,13 @@ public class ServletContainerDispatcher
          {
             if (GetRestful.isRootResource(obj.getClass()))
             {
-               logger.info("Adding singleton resource " + obj.getClass().getName() + " from Application " + Application.class.getName());
+               logger.info("Adding singleton resource " + obj.getClass().getName() + " from Application " + config.getClass());
                resources.add(obj);
-            }
-            else if (obj.getClass().isAnnotationPresent(Provider.class))
-            {
-               logger.info("Adding singleton provider " + obj.getClass().getName() + " from Application " + Application.class.getName());
-               providers.add(obj);
             }
             else
             {
-               throw new RuntimeException("Application.getSingletons() returned unknown class type: " + obj.getClass().getName());
+               logger.info("Adding singleton provider " + obj.getClass().getName() + " from Application " + config.getClass());
+               providers.add(obj);
             }
          }
       }
