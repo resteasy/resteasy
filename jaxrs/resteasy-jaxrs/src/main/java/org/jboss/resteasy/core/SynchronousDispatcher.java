@@ -10,13 +10,13 @@ import org.jboss.resteasy.spi.HttpRequestPreprocessor;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InternalDispatcher;
 import org.jboss.resteasy.spi.InternalServerErrorException;
-import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.GenericEntity;

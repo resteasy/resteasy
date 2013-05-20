@@ -19,10 +19,14 @@ import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.IsHttpMethod;
 import org.jboss.resteasy.util.Types;
 
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -33,10 +37,12 @@ import java.util.Set;
  */
 public class ResourceMethodRegistry implements Registry
 {
+   public static final String REGISTRY_MATCHING_EXCEPTION = "registry.matching.exception";
    protected int size;
 
    protected ResteasyProviderFactory providerFactory;
-   protected RootSegment rootSegment = new RootSegment();
+   protected RootSegment resourceMethodRoot = new RootSegment();
+   protected RootSegment resourceLocatorRoot = new RootSegment();
 
    private final static Logger logger = Logger.getLogger(ResourceMethodRegistry.class);
 
@@ -200,13 +206,13 @@ public class ResourceMethodRegistry implements Registry
          {
             for (Class<?> intf : clazz.getInterfaces())
             {
-               ResourceClass resourceClass = ResourceBuilder.fromAnnotations(intf);
+               ResourceClass resourceClass = ResourceBuilder.rootResourceFromAnnotations(intf);
                register(ref, base, resourceClass);
             }
          }
          else
          {
-            ResourceClass resourceClass = ResourceBuilder.fromAnnotations(clazz);
+            ResourceClass resourceClass = ResourceBuilder.rootResourceFromAnnotations(clazz);
             register(ref, base, resourceClass);
          }
       }
@@ -257,12 +263,12 @@ public class ResourceMethodRegistry implements Registry
       if (method instanceof ResourceMethod)
       {
          ResourceMethodInvoker invoker = new ResourceMethodInvoker((ResourceMethod)method, injectorFactory, rf, providerFactory);
-         rootSegment.addPath(pathExpression, invoker);
+         resourceMethodRoot.addPath(pathExpression, invoker);
       }
       else
       {
          ResourceLocatorInvoker locator = new ResourceLocatorInvoker(rf, injectorFactory, providerFactory, method);
-         rootSegment.addPath(pathExpression, locator);
+         resourceLocatorRoot.addPath(pathExpression, locator);
       }
       size++;
    }
@@ -388,7 +394,8 @@ public class ResourceMethodRegistry implements Registry
 
    private void removeBinding(Method method, String pathExpression)
    {
-      ResourceInvoker invoker = rootSegment.removePath(pathExpression, method);
+      ResourceInvoker invoker = resourceMethodRoot.removePath(pathExpression, method);
+      if (invoker == null) invoker = resourceLocatorRoot.removePath(pathExpression, method);
       if (invoker != null)
       {
          size--;
@@ -398,18 +405,37 @@ public class ResourceMethodRegistry implements Registry
          }
       }
    }
-
-   public RootSegment getRoot()
+   public Map<String, List<ResourceInvoker>> getBounded()
    {
-      return rootSegment;
+      Map<String, List<ResourceInvoker>> bounded = new LinkedHashMap<String, List<ResourceInvoker>>();
+      for (Map.Entry<String, List<ResourceInvoker>> entry : resourceMethodRoot.getBounded().entrySet())
+      {
+         List<ResourceInvoker> addTo = bounded.get(entry.getKey());
+         if (addTo == null)
+         {
+            addTo = new ArrayList<ResourceInvoker>();
+            bounded.put(entry.getKey(), addTo);
+         }
+         addTo.addAll(entry.getValue());
+      }
+      for (Map.Entry<String, List<ResourceInvoker>> entry : resourceLocatorRoot.getBounded().entrySet())
+      {
+         List<ResourceInvoker> addTo = bounded.get(entry.getKey());
+         if (addTo == null)
+         {
+            addTo = new ArrayList<ResourceInvoker>();
+            bounded.put(entry.getKey(), addTo);
+         }
+         addTo.addAll(entry.getValue());
+      }
+      return bounded;
    }
 
-
-   /**
-    * Number of endpoints registered
-    *
-    * @return
-    */
+      /**
+      * Number of endpoints registered
+      *
+      * @return
+      */
    public int getSize()
    {
       return size;
@@ -425,15 +451,38 @@ public class ResourceMethodRegistry implements Registry
       try
       {
          List<String> matchedUris = request.getUri().getEncodedMatchedPaths();
-         if (matchedUris == null || matchedUris.size() == 0) return rootSegment.matchRoot(request);
+         if (matchedUris == null || matchedUris.size() == 0)
+         {
+            return resolveInvoker(request, 0);
+         }
          // resource location
          String currentUri = request.getUri().getEncodedMatchedPaths().get(0);
-         return rootSegment.matchRoot(request, currentUri.length());
+         int startAt = currentUri.length();
+         return resolveInvoker(request, startAt);
       }
       catch (RuntimeException e)
       {
-         e.printStackTrace();
          throw e;
+      }
+   }
+
+   protected ResourceInvoker resolveInvoker(HttpRequest request, int startAt)
+   {
+      try
+      {
+         return resourceMethodRoot.matchRoot(request, startAt);
+      }
+      catch (RuntimeException e)
+      {
+         try
+         {
+            if (!(e instanceof NotFoundException)) request.setAttribute(REGISTRY_MATCHING_EXCEPTION, e);
+            return resourceLocatorRoot.matchRoot(request, startAt);
+         }
+         catch (NotFoundException nfe)
+         {
+            throw e;
+         }
       }
    }
 }

@@ -33,15 +33,6 @@ public class ExceptionMapperRuntimeException3Test extends BaseResourceTest
       }
    }
 
-   public static class FailureExceptionMapper implements ExceptionMapper<Failure>
-   {
-      @Override
-      public Response toResponse(Failure exception)
-      {
-         return Response.status(Response.Status.FORBIDDEN).header("custom", "header").build();
-      }
-   }
-
    @Path("/test")
    public static class MyService
    {
@@ -64,7 +55,6 @@ public class ExceptionMapperRuntimeException3Test extends BaseResourceTest
    @Before
    public void init() throws Exception
    {
-      getProviderFactory().registerProviderInstance(new FailureExceptionMapper());
       getProviderFactory().registerProviderInstance(new WebApplicationExceptionMapper());
       addPerRequestResource(MyService.class);
    }
@@ -78,16 +68,5 @@ public class ExceptionMapperRuntimeException3Test extends BaseResourceTest
       Assert.assertEquals(Response.Status.PRECONDITION_FAILED.getStatusCode(), response.getStatus());
       Assert.assertEquals(response.getResponseHeaders().getFirst("custom"), "header");
    }
-
-   @Test
-   public void testFailure() throws Exception
-   {
-      ClientRequest request = new ClientRequest(generateBaseUrl() + "/test/failure");
-      request.accept("application/xml");
-      ClientResponse response = request.get();
-      Assert.assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
-      Assert.assertEquals(response.getResponseHeaders().getFirst("custom"), "header");
-   }
-
 
 }

@@ -81,8 +81,7 @@ public class RESTUtils {
 
 	public static List<Method> getServiceMethods(ResourceMethodRegistry registry){
 		ArrayList<Method> results = new ArrayList<Method>();
-		for (Entry<String, List<ResourceInvoker>> entry : registry.getRoot()
-				.getBounded().entrySet())
+		for (Entry<String, List<ResourceInvoker>> entry : registry.getBounded().entrySet())
 		{
 			List<ResourceInvoker> invokers = entry.getValue();
 			for (ResourceInvoker invoker : invokers)

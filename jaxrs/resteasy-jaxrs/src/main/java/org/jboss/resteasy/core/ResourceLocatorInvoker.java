@@ -3,24 +3,28 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.MethodInjector;
-import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.spi.metadata.ResourceBuilder;
+import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.GetRestful;
 
+import javax.ws.rs.NotFoundException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
@@ -62,7 +66,17 @@ public class ResourceLocatorInvoker implements ResourceInvoker
    protected Object createResource(HttpRequest request, HttpResponse response, Object locator)
    {
       ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
-      Object[] args = methodInjector.injectArguments(request, response);
+      Object[] args = new Object[0];
+      RuntimeException lastException = (RuntimeException)request.getAttribute(ResourceMethodRegistry.REGISTRY_MATCHING_EXCEPTION);
+      try
+      {
+         args = methodInjector.injectArguments(request, response);
+      }
+      catch (NotFoundException failure)
+      {
+         if (lastException != null) throw lastException;
+         throw failure;
+      }
       try
       {
          ResourceMethodInvoker.pushMatchedUri(method, classRegex, uriInfo);
@@ -125,29 +139,50 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       if (target == null)
       {
          NotFoundException notFound = new NotFoundException("Null subresource for path: " + request.getUri().getAbsolutePath());
-         notFound.setLoggable(true);
          throw notFound;
       }
-      Registry registry = cachedSubresources.get(target.getClass());
+      Class<? extends Object> clazz = target.getClass();
+      Registry registry = cachedSubresources.get(clazz);
       if (registry == null)
       {
          registry = new ResourceMethodRegistry(providerFactory);
-         if (!GetRestful.isSubResourceClass(target.getClass()))
+         if (!GetRestful.isSubResourceClass(clazz))
          {
-            String msg = "Subresource for target class has no jax-rs annotations.: " + target.getClass().getName();
+            String msg = "Subresource for target class has no jax-rs annotations.: " + clazz.getName();
             throw new InternalServerErrorException(msg);
          }
-         registry.addResourceFactory(null, null, target.getClass());//subResourceClass);
-         cachedSubresources.putIfAbsent(target.getClass(), registry);
+         if (Proxy.isProxyClass(clazz))
+         {
+            for (Class<?> intf : clazz.getInterfaces())
+            {
+               ResourceClass resourceClass = ResourceBuilder.locatorFromAnnotations(intf);
+               registry.addResourceFactory(null, null, resourceClass);
+            }
+         }
+         else
+         {
+            ResourceClass resourceClass = ResourceBuilder.locatorFromAnnotations(clazz);
+            registry.addResourceFactory(null, null, resourceClass);
+         }
+         cachedSubresources.putIfAbsent(clazz, registry);
       }
-      ResourceInvoker invoker = registry.getResourceInvoker(request);
-      if (invoker == null)
+      ResourceInvoker invoker = null;
+      RuntimeException lastException = (RuntimeException)request.getAttribute(ResourceMethodRegistry.REGISTRY_MATCHING_EXCEPTION);
+      try
       {
-         NotFoundException notFound = new NotFoundException("No path match in subresource for: " + request.getUri().getAbsolutePath());
-         notFound.setLoggable(true);
-         throw notFound;
+         invoker = registry.getResourceInvoker(request);
+         if (invoker == null)
+         {
+            NotFoundException notFound = new NotFoundException("No path match in subresource for: " + request.getUri().getAbsolutePath());
+            throw notFound;
+         }
       }
-      else if (invoker instanceof ResourceLocatorInvoker)
+      catch (NotFoundException e)
+      {
+         if (lastException != null) throw lastException;
+         throw e;
+      }
+      if (invoker instanceof ResourceLocatorInvoker)
       {
          ResourceLocatorInvoker locator = (ResourceLocatorInvoker) invoker;
          return locator.invoke(request, response, target);

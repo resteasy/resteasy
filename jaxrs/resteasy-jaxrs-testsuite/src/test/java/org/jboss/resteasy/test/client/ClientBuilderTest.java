@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.client;
 
+import junit.framework.Assert;
 import org.junit.Test;
 
 import javax.ws.rs.client.Client;
@@ -10,6 +11,12 @@ import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -65,4 +72,39 @@ public class ClientBuilderTest
 
 
    }
+
+   public static class FeatureReturningFalse implements Feature {
+      @Override
+      public boolean configure(FeatureContext context) {
+         // false returning feature is not to be registered
+         return false;
+      }
+   }
+
+   @Test
+   public void testDoubleClassRegistration()
+   {
+      Client client = ClientBuilder.newClient();
+      int count = client.getConfiguration().getClasses().size();
+      client.register(FeatureReturningFalse.class).register(FeatureReturningFalse.class);
+      Assert.assertEquals(count + 1, client.getConfiguration().getClasses().size());
+      client.close();
+
+   }
+
+   @Test
+   public void testDoubleRegistration()
+   {
+      Client client = ClientBuilder.newClient();
+      int count = client.getConfiguration().getInstances().size();
+      Object reg = new FeatureReturningFalse();
+      client.register(reg);
+      client.register(reg);
+      Assert.assertEquals(count + 1, client.getConfiguration().getInstances().size());
+      client.close();
+
+   }
+
+
+
 }

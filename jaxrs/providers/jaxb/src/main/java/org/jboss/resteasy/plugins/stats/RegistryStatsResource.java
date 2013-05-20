@@ -30,9 +30,9 @@ public class RegistryStatsResource
 
       RegistryData data = new RegistryData();
 
-      for (String key : registry.getRoot().getBounded().keySet())
+      for (String key : registry.getBounded().keySet())
       {
-         List<ResourceInvoker> invokers = registry.getRoot().getBounded().get(key);
+         List<ResourceInvoker> invokers = registry.getBounded().get(key);
 
          RegistryEntry entry = new RegistryEntry();
          data.getEntries().add(entry);

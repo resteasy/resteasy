@@ -26,7 +26,7 @@ public class POJOResourceFactory implements ResourceFactory
    public POJOResourceFactory(Class<?> scannableClass)
    {
       this.scannableClass = scannableClass;
-      this.resourceClass = ResourceBuilder.fromAnnotations(scannableClass);
+      this.resourceClass = ResourceBuilder.rootResourceFromAnnotations(scannableClass);
    }
 
    public POJOResourceFactory(ResourceClass resourceClass)

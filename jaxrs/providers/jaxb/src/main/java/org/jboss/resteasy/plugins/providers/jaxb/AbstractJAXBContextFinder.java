@@ -141,6 +141,7 @@ public abstract class AbstractJAXBContextFinder implements JAXBContextFinder
       HashSet<Class> classes1 = new HashSet<Class>();
       for (Class type : classes)
       {
+         if (type == null) continue;
          classes1.add(type);
          Class factory = findDefaultObjectFactoryClass(type);
          if (factory != null) classes1.add(factory);
