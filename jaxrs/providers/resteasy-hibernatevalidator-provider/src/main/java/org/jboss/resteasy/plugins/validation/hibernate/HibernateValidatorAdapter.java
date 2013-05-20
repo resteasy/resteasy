@@ -1,8 +1,5 @@
 package org.jboss.resteasy.plugins.validation.hibernate;
 
-import org.hibernate.validator.method.MethodConstraintViolation;
-import org.hibernate.validator.method.MethodConstraintViolationException;
-import org.hibernate.validator.method.MethodValidator;
 import org.jboss.resteasy.spi.validation.DoNotValidateRequest;
 import org.jboss.resteasy.spi.validation.ValidateRequest;
 import org.jboss.resteasy.spi.validation.ValidatorAdapter;
@@ -18,14 +15,12 @@ import java.util.Set;
 class HibernateValidatorAdapter implements ValidatorAdapter {
 
 	private final Validator validator;
-	private final MethodValidator methodValidator;
 
 	HibernateValidatorAdapter(Validator validator) {
 		if( validator == null )
 			throw new IllegalArgumentException("Validator cannot be null");
 		
 		this.validator = validator;
-		this.methodValidator = validator.unwrap(MethodValidator.class);
 	}
 
 	@Override
@@ -51,18 +46,18 @@ class HibernateValidatorAdapter implements ValidatorAdapter {
 					set.add(group);
 				}
 			}
-			
+
 			if( methodValidateRequest != null ) {
 				for (Class<?> group : methodValidateRequest.groups()) {
 					set.add(group);
 				}
 			}
-			
-			Set<MethodConstraintViolation<?>> constraintViolations = new HashSet<MethodConstraintViolation<?>>(methodValidator.validateAllParameters(resource, invokedMethod, args, set.toArray(new Class<?>[set.size()])));
-			
+
+			Set<ConstraintViolation<?>> constraintViolations = new HashSet<ConstraintViolation<?>>(validator.forExecutables().validateParameters(resource, invokedMethod, args, set.toArray(new Class<?>[set.size()])));
+
 			if(constraintViolations.size() > 0)
-				throw new MethodConstraintViolationException(constraintViolations);
+				throw new ConstraintViolationException(constraintViolations);
 		}
 	}
-	
+
 }

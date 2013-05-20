@@ -11,16 +11,11 @@ import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.metadata.MethodParameter;
 import org.jboss.resteasy.spi.metadata.ResourceLocator;
-import org.jboss.resteasy.spi.validation.GeneralValidator;
-import org.jboss.resteasy.util.Types;
 
+import javax.validation.Validator;
 import javax.ws.rs.WebApplicationException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -106,11 +101,11 @@ public class MethodInjectorImpl implements MethodInjector
    {
       Object[] args = injectArguments(request, httpResponse);
 
-      GeneralValidator validator = GeneralValidator.class.cast(request.getAttribute(GeneralValidator.class.getName()));
+      Validator validator = Validator.class.cast(request.getAttribute(Validator.class.getName()));
       ViolationsContainer<Object> violationsContainer = ViolationsContainer.class.cast(request.getAttribute(ViolationsContainer.class.getName()));
       if (validator != null && violationsContainer != null)
       {
-         violationsContainer.addViolations(validator.validateAllParameters(resource, method.getMethod(), args));
+         violationsContainer.addViolations(validator.forExecutables().validateParameters(resource, method.getMethod(), args));
          if (violationsContainer.size() > 0)
          {
             return null;
@@ -137,7 +132,7 @@ public class MethodInjectorImpl implements MethodInjector
          Object result = invokedMethod.invoke(resource, args);
          if (validator != null && violationsContainer != null)
          {
-            violationsContainer.addViolations(validator.validateReturnValue(resource, method.getMethod(), result));
+            violationsContainer.addViolations(validator.forExecutables().validateReturnValue(resource, method.getMethod(), result));
          }
          return result;
       }
