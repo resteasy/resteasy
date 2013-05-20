@@ -84,7 +84,7 @@
         <dependency>
             <groupId>commons-io</groupId>
 	        <artifactId>commons-io</artifactId>
-            <version>1.4</version>
+            <version>${dep.commons-io.version}</version>
         </dependency>
 
         <dependency>
@@ -95,7 +95,7 @@
         <dependency>
             <groupId>org.hibernate</groupId> 
             <artifactId>hibernate-validator</artifactId>
-            <version>4.2.0.Final</version>
+            <version>${dep.hibernate-validator.version}</version>
         </dependency>
 
         <!-- Used by org.jboss.resteasy.plugins.server.tjws.* -->

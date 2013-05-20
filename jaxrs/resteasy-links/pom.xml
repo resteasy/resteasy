@@ -36,7 +36,7 @@
         <dependency>
             <groupId>org.jboss.el</groupId>
             <artifactId>jboss-el</artifactId>
-            <version>1.0_02.CR4</version>
+            <version>${dep.jboss-el.version}</version>
         </dependency>
 
         <dependency>
