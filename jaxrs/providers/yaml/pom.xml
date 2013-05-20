@@ -30,6 +30,11 @@
             <artifactId>resteasy-jaxrs</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- Used by org.jboss.resteasy.plugins.providers.YamlProvider -->
         <dependency>
 			<groupId>org.yaml</groupId>

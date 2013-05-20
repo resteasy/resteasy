@@ -4,7 +4,10 @@ import javax.ws.rs.core.Response;
 
 /**
  * Thrown by RESTEasy when HTTP Not Found (404) is encountered
+ *
+ * JAX-RS now has this exception
  */
+@Deprecated
 public class NotFoundException extends Failure
 {
 

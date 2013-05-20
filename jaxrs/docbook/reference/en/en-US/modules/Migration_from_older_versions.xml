@@ -9,7 +9,20 @@
 <chapter id="Migration_from_older_versions">
 <title>Migration from older versions</title>
 <sect1>
-    <title>Migrating from 3.0-beta-4 and 3.0-rc-1</title>
+    <title>Migrating from 3.0-beta-5 and 3.0-rc-1</title>
+    <itemizedlist>
+        <listitem>
+            Any Failure exceptions in the SPI now have a corresponding JAX-RS 2.0 exception, so they have been deprecated
+            Resteasy no longer uses these old SPI exceptions internally.  It now uses the JAX-RS 2.0 ones.
+        </listitem>
+        <listitem>
+            A number of SPIs have changed.  Shouldn't be an issue for those of you who use Restasy as-is.  Specifically
+            InjectorFactory and Registry have changed.
+        </listitem>
+    </itemizedlist>
+</sect1>
+<sect1>
+    <title>Migrating from 3.0-beta-4 and 3.0-beta-5</title>
     <itemizedlist>
         <listitem>
             JSONP support is no longer on by default.  A few users have complained that it is a security hole for their applications.

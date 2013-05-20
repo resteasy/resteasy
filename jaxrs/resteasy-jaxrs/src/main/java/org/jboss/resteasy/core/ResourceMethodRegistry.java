@@ -8,7 +8,6 @@ import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.InjectorFactory;
-import org.jboss.resteasy.spi.NotFoundException;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -20,6 +19,7 @@ import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.IsHttpMethod;
 import org.jboss.resteasy.util.Types;
 
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -37,6 +37,7 @@ import java.util.Set;
  */
 public class ResourceMethodRegistry implements Registry
 {
+   public static final String REGISTRY_MATCHING_EXCEPTION = "registry.matching.exception";
    protected int size;
 
    protected ResteasyProviderFactory providerFactory;
@@ -452,30 +453,36 @@ public class ResourceMethodRegistry implements Registry
          List<String> matchedUris = request.getUri().getEncodedMatchedPaths();
          if (matchedUris == null || matchedUris.size() == 0)
          {
-            try
-            {
-               return resourceMethodRoot.matchRoot(request);
-            }
-            catch (NotFoundException e)
-            {
-               return resourceLocatorRoot.matchRoot(request);
-            }
+            return resolveInvoker(request, 0);
          }
          // resource location
          String currentUri = request.getUri().getEncodedMatchedPaths().get(0);
-         try
-         {
-            return resourceMethodRoot.matchRoot(request, currentUri.length());
-         }
-         catch (NotFoundException e)
-         {
-            return resourceLocatorRoot.matchRoot(request, currentUri.length());
-         }
+         int startAt = currentUri.length();
+         return resolveInvoker(request, startAt);
       }
       catch (RuntimeException e)
       {
-         e.printStackTrace();
          throw e;
+      }
+   }
+
+   protected ResourceInvoker resolveInvoker(HttpRequest request, int startAt)
+   {
+      try
+      {
+         return resourceMethodRoot.matchRoot(request, startAt);
+      }
+      catch (RuntimeException e)
+      {
+         try
+         {
+            if (!(e instanceof NotFoundException)) request.setAttribute(REGISTRY_MATCHING_EXCEPTION, e);
+            return resourceLocatorRoot.matchRoot(request, startAt);
+         }
+         catch (NotFoundException nfe)
+         {
+            throw e;
+         }
       }
    }
 }

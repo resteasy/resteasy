@@ -4,13 +4,12 @@ import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceLocatorInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.LoggableFailure;
-import org.jboss.resteasy.spi.NotFoundException;
-import org.jboss.resteasy.util.IsHttpMethod;
 import org.jboss.resteasy.util.PathHelper;
 
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -312,7 +311,7 @@ public class RootSegment extends Segment
          else simpleSegment = path.substring(start);
       }
 
-      Failure lastFailure = null;
+      RuntimeException lastException = null;
 
       SimpleSegment segment = simpleSegments.get(simpleSegment);
       if (segment != null)
@@ -321,9 +320,9 @@ public class RootSegment extends Segment
          {
             return segment.matchSimple(request, path, start);
          }
-         catch (Failure e)
+         catch (RuntimeException e)
          {
-            lastFailure = e;
+            lastException = e;
          }
       }
 
@@ -333,10 +332,10 @@ public class RootSegment extends Segment
          {
             return pathParamSegment.matchPattern(request, path, start);
          }
-         catch (Failure e)
+         catch (RuntimeException e)
          {
             // try and propagate matched path that threw non-404 responses, i.e. MethodNotAllowed, etc.
-            if (lastFailure == null || lastFailure instanceof NotFoundException) lastFailure = e;
+            if (lastException == null || lastException instanceof NotFoundException) lastException = e;
          }
       }
       for (PathParamSegment pathParamSegment : sortedLocatorExpressions)
@@ -345,13 +344,13 @@ public class RootSegment extends Segment
          {
             return pathParamSegment.matchPattern(request, path, start);
          }
-         catch (Failure e)
+         catch (RuntimeException e)
          {
             // try and propagate matched path that threw non-404 responses, i.e. MethodNotAllowed, etc.
-            if (lastFailure == null || lastFailure instanceof NotFoundException) lastFailure = e;
+            if (lastException == null || lastException instanceof NotFoundException) lastException = e;
          }
       }
-      if (lastFailure != null) throw lastFailure;
+      if (lastException != null) throw lastException;
       throw new NotFoundException("Could not find resource for relative : " + path + " of full path: " + request.getUri().getRequestUri());
    }
 

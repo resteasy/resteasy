@@ -455,18 +455,15 @@ public class ResteasyDeployment
          {
             if (GetRestful.isRootResource(clazz))
             {
+               logger.info("Adding class resource " + clazz.getName() + " from Application " + config.getClass());
                actualResourceClasses.add(clazz);
-               registered = true;
-            }
-            else if (clazz.isAnnotationPresent(Provider.class))
-            {
-               actualProviderClasses.add(clazz);
                registered = true;
             }
             else
             {
-               // required by spec to warn and not abort
-               logger.warn("Application.getClasses() returned unknown class type: " + clazz.getName());
+               logger.info("Adding provider class " + clazz.getName() + " from Application " + config.getClass());
+               actualProviderClasses.add(clazz);
+               registered = true;
             }
          }
       }
@@ -476,19 +473,15 @@ public class ResteasyDeployment
          {
             if (GetRestful.isRootResource(obj.getClass()))
             {
-               logger.info("Adding singleton resource " + obj.getClass().getName() + " from Application " + Application.class.getName());
+               logger.info("Adding singleton resource " + obj.getClass().getName() + " from Application " + config.getClass());
                resources.add(obj);
-               registered = true;
-            }
-            else if (obj.getClass().isAnnotationPresent(Provider.class))
-            {
-               providers.add(obj);
                registered = true;
             }
             else
             {
-               // required by spec to warn and not abort
-               logger.warn("Application.getSingletons() returned unknown class type: " + obj.getClass().getName());
+               logger.info("Adding provider singleton " + obj.getClass().getName() + " from Application " + config.getClass());
+               providers.add(obj);
+               registered = true;
             }
          }
       }

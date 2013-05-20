@@ -288,7 +288,14 @@ public class StringParameterInjector
             //System.out.println("DEFAULT VAULUE: " + strVal);
          }
       }
-      if (baseType.isPrimitive()) return StringToPrimitive.stringToPrimitiveBoxType(baseType, strVal);
+      try
+      {
+         if (baseType.isPrimitive()) return StringToPrimitive.stringToPrimitiveBoxType(baseType, strVal);
+      }
+      catch (Exception e)
+      {
+         throwProcessingException("Unable to extract parameter from http request for " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
+      }
       if (paramConverter != null)
       {
          return paramConverter.fromString(strVal);
