@@ -16,7 +16,8 @@
         <dep.jaxb-impl.version>2.2.5-2</dep.jaxb-impl.version>
         <dep.jettison.version>1.3.2</dep.jettison.version>
         <dep.commons-io.version>1.4</dep.commons-io.version>
-        <dep.hibernate-validator.version>4.2.0.Final</dep.hibernate-validator.version>
+        <dep.hibernate-validator.version>5.0.1.Final</dep.hibernate-validator.version>
+        <dep.javax.el.version>2.2.4</dep.javax.el.version>
         <dep.spring-webmvc.version>3.0.3.RELEASE</dep.spring-webmvc.version>
         <dep.snakeyaml.version>1.8</dep.snakeyaml.version>
         <dep.cdi-api.version>1.0-SP1</dep.cdi-api.version>
@@ -333,6 +334,18 @@
                         <artifactId>servlet-api</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <!-- Required by Hibernate Validator 5.x for testing -->
+            <dependency>
+                <groupId>javax.el</groupId>
+                <artifactId>javax.el-api</artifactId>
+                <version>${dep.javax.el.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.web</groupId>
+                <artifactId>javax.el</artifactId>
+                <version>${dep.javax.el.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

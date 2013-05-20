@@ -25,13 +25,13 @@
             <scope>provided</scope>
         </dependency>
         
-		<dependency>
-     		<groupId>org.hibernate</groupId>
-     		<artifactId>hibernate-validator</artifactId>
-     		<version>${dep.hibernate-validator.version}</version>
- 		</dependency>
- 		
- 		<dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${dep.hibernate-validator.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>provided</scope>
