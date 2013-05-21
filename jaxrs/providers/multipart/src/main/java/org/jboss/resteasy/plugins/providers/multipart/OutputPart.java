@@ -17,13 +17,20 @@ public class OutputPart
    private Class<?> type;
    private Type genericType;
    private MediaType mediaType;
-
+   private String filename;
+   
    public OutputPart(Object entity, Class<?> type, Type genericType, MediaType mediaType)
+   {
+	   this(entity, type, genericType, mediaType, null);
+   }
+
+   public OutputPart(Object entity, Class<?> type, Type genericType, MediaType mediaType, String filename)
    {
       this.entity = entity;
       this.type = type;
       this.genericType = genericType;
       this.mediaType = mediaType;
+      this.filename = filename;
    }
 
    public MultivaluedMap<String, Object> getHeaders()
@@ -49,5 +56,10 @@ public class OutputPart
    public MediaType getMediaType()
    {
       return mediaType;
+   }
+   
+   public String getFilename() 
+   {
+	   return filename;
    }
 }
