@@ -116,7 +116,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
 
       // hack for when message contentType == null
-      // todo this needs review on why it is here and what do we need it for
+      // and @Consumes is on the class
       methodConsumes = method.getAnnotatedMethod().isAnnotationPresent(Consumes.class);
 
       for (MediaType mediaType : method.getConsumes())
@@ -500,40 +500,18 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    public boolean doesConsume(MediaType contentType)
    {
       boolean matches = false;
+      if (preferredConsumes.size() == 0 || (contentType == null && !methodConsumes)) return true;
+
       if (contentType == null)
       {
-         return true;
-         /*
-         // If there is no @Consumes annotation directly on method (i.e. a @GET or @DELETE) return true
-         // this is a hack to determine if this is a @GET or @DELETE.  Because we can create new HTTP methods ad hoc
-         // there is no way to determine if it is an HTTP method that doesn't require content (like PUT, POST)
-         // So, we just check to see if there is an annotation directly on the method.
-         if (!methodConsumes) return true;
-
-         // Otherwise only accept if consumes is a wildcard type
-         for (MediaType type : preferredConsumes)
-         {
-            if (type.equals(MediaType.WILDCARD_TYPE))
-            {
-               return true;
-            }
-         }
-         return false;
-         */
+         contentType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
       }
-      else
+      for (MediaType type : preferredConsumes)
       {
-         if (preferredConsumes.size() == 0) return true;
-         else
+         if (type.isCompatible(contentType))
          {
-            for (MediaType type : preferredConsumes)
-            {
-               if (type.isCompatible(contentType))
-               {
-                  matches = true;
-                  break;
-               }
-            }
+            matches = true;
+            break;
          }
       }
       return matches;

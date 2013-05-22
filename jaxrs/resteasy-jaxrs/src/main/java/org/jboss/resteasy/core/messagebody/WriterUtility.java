@@ -103,13 +103,8 @@ public abstract class WriterUtility
                        MultivaluedMap<String, Object> requestHeaders,
                        OutputStream outputStream) throws IOException
    {
-      MessageBodyWriter writer = factory.getMessageBodyWriter(type,
-              genericType, annotations, mediaType);
-      if (writer == null)
-         throw createWriterNotFound(genericType, mediaType);
-
       final Map<String, Object> attributes = new HashMap<String, Object>();
-      AbstractWriterInterceptorContext messageBodyWriterContext = new ClientWriterInterceptorContext(interceptors, writer, toOutput, type,
+      AbstractWriterInterceptorContext messageBodyWriterContext = new ClientWriterInterceptorContext(interceptors, factory, toOutput, type,
               genericType, annotations, mediaType, requestHeaders, outputStream, attributes);
       messageBodyWriterContext
               .proceed();

@@ -1,7 +1,9 @@
 package org.jboss.resteasy.core.interception;
 
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
+import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -21,14 +23,23 @@ public class ServerReaderInterceptorContext extends AbstractReaderInterceptorCon
 {
    private HttpRequest request;
 
-   public ServerReaderInterceptorContext(ReaderInterceptor[] interceptors, MessageBodyReader reader, Class type,
+   public ServerReaderInterceptorContext(ReaderInterceptor[] interceptors, ResteasyProviderFactory providerFactory, Class type,
                                          Type genericType, Annotation[] annotations, MediaType mediaType,
                                          MultivaluedMap<String, String> headers, InputStream inputStream,
                                          HttpRequest request)
    {
-      super(mediaType, reader, annotations, interceptors, headers, genericType, type, inputStream);
+      super(mediaType, providerFactory, annotations, interceptors, headers, genericType, type, inputStream);
       this.request = request;
    }
+
+   @Override
+   protected void throwReaderNotFound()
+   {
+      throw new NotSupportedException(
+              "Could not find message body reader for type: "
+                      + genericType + " of content type: " + mediaType);
+   }
+
 
    @Override
    public Object getProperty(String name)

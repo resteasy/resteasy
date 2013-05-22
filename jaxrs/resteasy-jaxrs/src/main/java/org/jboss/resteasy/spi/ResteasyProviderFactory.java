@@ -1973,56 +1973,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
       Object obj = null;
-      if (constructor == null)
-      {
-         // TODO this is solely to pass the TCK.  This is WRONG WRONG WRONG!  I'm challenging.
-         if (false)//if (clazz.isAnonymousClass())
-         {
-            constructor = clazz.getDeclaredConstructors()[0];
-            constructor.setAccessible(true);
-            if (!Modifier.isStatic(clazz.getModifiers()))
-            {
-               Object[] args = {null};
-               try {
-                  obj = constructor.newInstance(args);
-               }
-               catch (InstantiationException e) {
-                  throw new RuntimeException(e);
-               }
-               catch (IllegalAccessException e) {
-                  throw new RuntimeException(e);
-               }
-               catch (InvocationTargetException e) {
-                  throw new RuntimeException(e);
-               }
-            }
-            else
-            {
-               try {
-                  obj = constructor.newInstance();
-               }
-               catch (InstantiationException e) {
-                  throw new RuntimeException(e);
-               }
-               catch (IllegalAccessException e) {
-                  throw new RuntimeException(e);
-               }
-               catch (InvocationTargetException e) {
-                  throw new RuntimeException(e);
-               }
-            }
-         }
-         else
-         {
-            throw new IllegalArgumentException("Unable to find a public constructor for class " + clazz.getName());
-         }
-      }
-      else
-      {
-         ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
-         obj = constructorInjector.construct();
+      ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
+      obj = constructorInjector.construct();
 
-      }
       PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
 
       propertyInjector.inject(obj);

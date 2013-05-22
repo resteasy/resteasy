@@ -94,16 +94,8 @@ public class ServerResponseWriter
          writerInterceptors = providerFactory.getServerWriterInterceptorRegistry().postMatch(null, null);
       }
 
-      if (writerInterceptors == null || writerInterceptors.length == 0)
-      {
-         writer.writeTo(ent, type, generic, annotations,
-                 contentType, jaxrsResponse.getMetadata(), os);
-      }
-      else
-      {
-         AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors, writer, ent, type, generic, annotations, contentType, jaxrsResponse.getMetadata(), os, request);
-         writerContext.proceed();
-      }
+      AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors, providerFactory, ent, type, generic, annotations, contentType, jaxrsResponse.getMetadata(), os, request);
+      writerContext.proceed();
       callback.commit(); // just in case the output stream is never used
    }
 

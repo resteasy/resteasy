@@ -219,7 +219,7 @@ public class ResteasyDeployment
 
          if (applicationClass != null)
          {
-            application = createApplication(applicationClass, providerFactory);
+            application = createApplication(applicationClass, dispatcher, providerFactory);
 
          }
 
@@ -266,9 +266,24 @@ public class ResteasyDeployment
       }
    }
 
-   public static Application createApplication(String applicationClass, ResteasyProviderFactory providerFactory)
+   public static Application createApplication(String applicationClass, Dispatcher dispatcher, ResteasyProviderFactory providerFactory)
    {
-      return (Application) createFromInjectorFactory(applicationClass, providerFactory);
+      Class<?> clazz = null;
+      try
+      {
+         clazz = Thread.currentThread().getContextClassLoader().loadClass(applicationClass);
+      }
+      catch (ClassNotFoundException e)
+      {
+         throw new RuntimeException(e);
+      }
+
+      Application app = (Application)providerFactory.createProviderInstance(clazz);
+      dispatcher.getDefaultContextObjects().put(Application.class, app);
+      ResteasyProviderFactory.pushContext(Application.class, app);
+      PropertyInjector propertyInjector = providerFactory.getInjectorFactory().createPropertyInjector(clazz, providerFactory);
+      propertyInjector.inject(app);
+      return app;
    }
 
    public static Object createFromInjectorFactory(String classname, ResteasyProviderFactory providerFactory)

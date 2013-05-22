@@ -181,7 +181,7 @@ public class ExceptionHandler
    {
       Response jaxrsResponse = null;
       // See if there is a general mapper for ReaderException
-      if ((jaxrsResponse = executeExceptionMapperForClass(e, WriterException.class)) != null) {
+      if ((jaxrsResponse = executeExceptionMapperForClass(e, ReaderException.class)) != null) {
          return jaxrsResponse;
       }
       if (e.getResponse() != null || e.getErrorCode() > -1) {

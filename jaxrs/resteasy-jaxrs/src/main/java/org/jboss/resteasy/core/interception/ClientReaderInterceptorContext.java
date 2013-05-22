@@ -1,5 +1,9 @@
 package org.jboss.resteasy.core.interception;
 
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
+import javax.ws.rs.NotSupportedException;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -11,6 +15,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
+import static java.lang.String.format;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -20,14 +25,22 @@ public class ClientReaderInterceptorContext extends AbstractReaderInterceptorCon
 {
    protected Map<String, Object> properties;
 
-   public ClientReaderInterceptorContext(ReaderInterceptor[] interceptors, MessageBodyReader reader, Class type,
+   public ClientReaderInterceptorContext(ReaderInterceptor[] interceptors, ResteasyProviderFactory providerFactory, Class type,
                                          Type genericType, Annotation[] annotations, MediaType mediaType,
                                          MultivaluedMap<String, String> headers, InputStream inputStream,
                                          Map<String, Object> properties)
    {
-      super(mediaType, reader, annotations, interceptors, headers, genericType, type, inputStream);
+      super(mediaType, providerFactory, annotations, interceptors, headers, genericType, type, inputStream);
       this.properties = properties;
    }
+
+   protected void throwReaderNotFound()
+   {
+      throw new ProcessingException(format(
+              "Unable to find a MessageBodyReader of content-type %s and type %s",
+              mediaType, type));
+   }
+
 
    @Override
    public Object getProperty(String name)
