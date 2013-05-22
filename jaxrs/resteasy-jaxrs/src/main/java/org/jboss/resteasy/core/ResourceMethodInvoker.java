@@ -73,7 +73,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
    protected Pattern classRegex = null;
 
-   protected boolean methodConsumes;
+   protected boolean expectsBody;
 
 
 
@@ -117,7 +117,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
       // hack for when message contentType == null
       // and @Consumes is on the class
-      methodConsumes = method.getAnnotatedMethod().isAnnotationPresent(Consumes.class);
+      expectsBody = this.methodInjector.expectsBody();
 
       for (MediaType mediaType : method.getConsumes())
       {
@@ -500,7 +500,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    public boolean doesConsume(MediaType contentType)
    {
       boolean matches = false;
-      if (preferredConsumes.size() == 0 || (contentType == null && !methodConsumes)) return true;
+      if (preferredConsumes.size() == 0 || (contentType == null && !expectsBody)) return true;
 
       if (contentType == null)
       {
