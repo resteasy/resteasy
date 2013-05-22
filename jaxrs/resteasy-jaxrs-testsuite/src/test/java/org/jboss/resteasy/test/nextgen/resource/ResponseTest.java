@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.validation.constraints.AssertTrue;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -28,6 +29,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.RuntimeDelegate;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -89,6 +91,26 @@ public class ResponseTest extends BaseResourceTest
          }
          return uri;
       }
+
+      @GET
+      @Path("entitybodyresponsetest")
+      public Response entityResponseTest() {
+         RuntimeDelegate rd = RuntimeDelegate.getInstance();
+         Response.ResponseBuilder rb = rd.createResponseBuilder();
+         String rwe = "hello";
+         Response build = rb.entity(rwe).build();
+         return build;
+      }
+
+      @GET
+      @Path("nullEntityResponse")
+      public Response nullEntityResponse() {
+         RuntimeDelegate rd = RuntimeDelegate.getInstance();
+         Response.ResponseBuilder rb = rd.createResponseBuilder();
+         return rb.entity(null).build();
+      }
+
+
 
 
    }
@@ -178,6 +200,23 @@ public class ResponseTest extends BaseResourceTest
    {
       client.close();
    }
+
+   @Test
+   public void testNoStatus()
+   {
+      Response response = client.target(generateURL("/entitybodyresponsetest")).request().get();
+      Assert.assertEquals(200, response.getStatus());
+
+   }
+
+   @Test
+   public void testNullEntityNoStatus()
+   {
+      Response response = client.target(generateURL("/nullEntityResponse")).request().get();
+      Assert.assertEquals(204, response.getStatus());
+
+   }
+
 
    @Test
    public void hasLinkWhenLinkTest()
