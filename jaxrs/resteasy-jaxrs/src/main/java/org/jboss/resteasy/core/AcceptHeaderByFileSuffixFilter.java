@@ -68,7 +68,7 @@ public class AcceptHeaderByFileSuffixFilter implements ContainerRequestFilter
             for (String value : entry.getValue()) {
                preprocessedPath.append(sep);
                sep = '&';
-					preprocessedPath.append(entry.getKey()).append('=').append(value);
+               preprocessedPath.append(entry.getKey()).append('=').append(value);
             }
          }
       }
