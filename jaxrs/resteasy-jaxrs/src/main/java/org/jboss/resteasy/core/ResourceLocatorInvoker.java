@@ -65,7 +65,7 @@ public class ResourceLocatorInvoker implements ResourceInvoker
 
    protected Object createResource(HttpRequest request, HttpResponse response, Object locator)
    {
-      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
+      ResteasyUriInfo uriInfo = request.getUri();
       Object[] args = new Object[0];
       RuntimeException lastException = (RuntimeException)request.getAttribute(ResourceMethodRegistry.REGISTRY_MATCHING_EXCEPTION);
       try
@@ -82,10 +82,6 @@ public class ResourceLocatorInvoker implements ResourceInvoker
          ResourceMethodInvoker.pushMatchedUri(method, classRegex, uriInfo);
          uriInfo.pushCurrentResource(locator);
          Object subResource = method.getMethod().invoke(locator, args);
-         // Do not do this warning as you can now use ResourceContext to inject values into locators
-         // we'll keep it here just in case somebody thinks they need to add this in the future
-         // warnIfJaxRSAnnotatedFields(subResource);
-
          return subResource;
 
       }
@@ -106,32 +102,14 @@ public class ResourceLocatorInvoker implements ResourceInvoker
 
    public BuiltResponse invoke(HttpRequest request, HttpResponse response)
    {
-      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
-      try
-      {
-         Object target = createResource(request, response);
-         return invokeOnTargetObject(request, response, target);
-      }
-      finally
-      {
-         //uriInfo.popCurrentResource();
-         //uriInfo.popMatchedPath();
-      }
+      Object target = createResource(request, response);
+      return invokeOnTargetObject(request, response, target);
    }
 
    public BuiltResponse invoke(HttpRequest request, HttpResponse response, Object locator)
    {
-      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
-      try
-      {
-         Object target = createResource(request, response, locator);
-         return invokeOnTargetObject(request, response, target);
-      }
-      finally
-      {
-         //uriInfo.popCurrentResource();
-         //uriInfo.popMatchedPath();
-      }
+      Object target = createResource(request, response, locator);
+      return invokeOnTargetObject(request, response, target);
    }
 
    protected BuiltResponse invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target)
@@ -193,38 +171,4 @@ public class ResourceLocatorInvoker implements ResourceInvoker
          return method.invoke(request, response, target);
       }
    }
-
-
-   private void warnIfJaxRSAnnotatedFields(Object obj)
-   {
-
-      if (obj == null) return;
-
-      Class<?> clazz = obj.getClass();
-
-      while (clazz != Object.class)
-      {
-
-         Field[] fields = clazz.getDeclaredFields();
-
-         for (Field field : fields)
-         {
-
-            Class<? extends Annotation>[] annotations =
-                    FindAnnotation.findJaxRSAnnotations(field.getDeclaredAnnotations());
-
-            if (annotations.length != 0)
-            {
-               logger.warn("Field {0} of subresource {1} will not be injected " +
-                       "according to spec", field.getName(), obj.getClass().getName());
-            }
-
-         }
-
-         clazz = clazz.getSuperclass();
-
-      }
-
-   }
-
 }

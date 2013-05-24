@@ -252,6 +252,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       return preferredConsumes;
    }
 
+   @Override
    public Method getMethod()
    {
       return method.getMethod();

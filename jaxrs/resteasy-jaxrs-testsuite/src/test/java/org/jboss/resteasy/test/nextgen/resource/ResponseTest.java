@@ -206,6 +206,7 @@ public class ResponseTest extends BaseResourceTest
    {
       Response response = client.target(generateURL("/entitybodyresponsetest")).request().get();
       Assert.assertEquals(200, response.getStatus());
+      response.close();
 
    }
 
@@ -214,6 +215,7 @@ public class ResponseTest extends BaseResourceTest
    {
       Response response = client.target(generateURL("/nullEntityResponse")).request().get();
       Assert.assertEquals(204, response.getStatus());
+      response.close();
 
    }
 
