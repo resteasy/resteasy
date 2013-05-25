@@ -329,8 +329,11 @@ public class ResteasyUriInfo implements UriInfo
 
 
 
-   public void pushMatchedURI(String encoded, String decoded)
+   public void pushMatchedURI(String encoded)
    {
+      if (encoded.endsWith("/")) encoded = encoded.substring(0, encoded.length() - 1);
+      if (encoded.startsWith("/")) encoded = encoded.substring(1);
+      String decoded = Encode.decode(encoded);
       if (encodedMatchedUris == null) encodedMatchedUris = new ArrayList<String>();
       encodedMatchedUris.add(0, encoded);
 

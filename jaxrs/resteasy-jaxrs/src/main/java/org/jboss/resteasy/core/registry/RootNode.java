@@ -3,14 +3,12 @@ package org.jboss.resteasy.core.registry;
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.util.PathHelper;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -20,19 +18,19 @@ public class RootNode
 {
    protected SegmentNode root = new SegmentNode("");
    protected int size = 0;
-   protected MultivaluedMap<String, Expression> bounded = new MultivaluedHashMap<String, Expression>();
+   protected MultivaluedMap<String, MethodExpression> bounded = new MultivaluedHashMap<String, MethodExpression>();
 
    public int getSize()
    {
       return size;
    }
 
-   public Map<String, List<ResourceInvoker>> getBounded()
+   public MultivaluedMap<String, ResourceInvoker> getBounded()
    {
       MultivaluedHashMap<String, ResourceInvoker> rtn = new MultivaluedHashMap<String, ResourceInvoker>();
-      for (Map.Entry<String, List<Expression>> entry : bounded.entrySet())
+      for (Map.Entry<String, List<MethodExpression>> entry : bounded.entrySet())
       {
-         for (Expression exp : entry.getValue())
+         for (MethodExpression exp : entry.getValue())
          {
             rtn.add(entry.getKey(), exp.getInvoker());
          }
@@ -47,9 +45,9 @@ public class RootNode
 
    public void removeBinding(String path, Method method)
    {
-      List<Expression> expressions = bounded.get(path);
+      List<MethodExpression> expressions = bounded.get(path);
       if (expressions == null) return;
-      for (Expression expression : expressions)
+      for (MethodExpression expression : expressions)
       {
          ResourceInvoker invoker = expression.getInvoker();
          if (invoker.getMethod().equals(method))
@@ -69,11 +67,11 @@ public class RootNode
 
    public void addInvoker(String path, ResourceInvoker invoker)
    {
-      Expression expression = addExpression(path, invoker);
+      MethodExpression expression = addExpression(path, invoker);
       size++;
       bounded.add(path, expression);
    }
-   protected Expression addExpression(String path, ResourceInvoker invoker)
+   protected MethodExpression addExpression(String path, ResourceInvoker invoker)
    {
       if (path.startsWith("/")) path = path.substring(1);
       if (path.endsWith("/")) path = path.substring(0, path.length() - 1);
@@ -81,20 +79,20 @@ public class RootNode
       {
          if (invoker instanceof ResourceMethodInvoker)
          {
-            Expression expression = new Expression(root, "", invoker);
+            MethodExpression expression = new MethodExpression(root, "", invoker);
             root.addExpression(expression);
             return expression;
 
          }
          else
          {
-            Expression expression = new Expression(root, "", invoker, "(.*)");
+            MethodExpression expression = new MethodExpression(root, "", invoker, "(.*)");
             root.addExpression(expression);
             return expression;
          }
       }
       String expression = null;
-      Expression exp;
+      MethodExpression exp;
       //Matcher param = PathHelper.URI_PARAM_PATTERN.matcher(path);
       int expidx = path.indexOf('{');
       if (expidx > -1)
@@ -127,11 +125,11 @@ public class RootNode
          }
          if (invoker instanceof ResourceMethodInvoker)
          {
-            exp = new Expression(node, path, invoker);
+            exp = new MethodExpression(node, path, invoker);
          }
          else
          {
-            exp = new Expression(node, path, invoker, "(/.+)?");
+            exp = new MethodExpression(node, path, invoker, "(/.+)?");
 
          }
          node.addExpression(exp);
@@ -152,12 +150,12 @@ public class RootNode
          }
          if (invoker instanceof ResourceMethodInvoker)
          {
-            exp = new Expression(node, path, invoker);
+            exp = new MethodExpression(node, path, invoker);
             node.addExpression(exp);
          }
          else
          {
-            exp = new Expression(node, path, invoker, "(.*)");
+            exp = new MethodExpression(node, path, invoker, "(.*)");
             node.addExpression(exp);
          }
       }

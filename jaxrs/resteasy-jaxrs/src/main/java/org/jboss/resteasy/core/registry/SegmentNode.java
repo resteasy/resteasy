@@ -41,7 +41,7 @@ public class SegmentNode
    }
    protected String segment;
    protected Map<String, SegmentNode> children = new HashMap<String, SegmentNode>();
-   protected List<Expression> targets = new ArrayList<Expression>();
+   protected List<MethodExpression> targets = new ArrayList<MethodExpression>();
 
    public SegmentNode(String segment)
    {
@@ -50,10 +50,10 @@ public class SegmentNode
 
    protected static class Match
    {
-      Expression expression;
+      MethodExpression expression;
       Matcher matcher;
 
-      public Match(Expression expression, Matcher matcher)
+      public Match(MethodExpression expression, Matcher matcher)
       {
          this.expression = expression;
          this.matcher = matcher;
@@ -64,12 +64,12 @@ public class SegmentNode
    {
       String path = request.getUri().getMatchingPath();
       if (start < path.length() && path.charAt(start) == '/') start++;
-      List<Expression> potentials = new ArrayList<Expression>();
+      List<MethodExpression> potentials = new ArrayList<MethodExpression>();
       potentials(path, start, potentials);
 
       boolean expressionMatched = false;
       List<Match> matches = new ArrayList<Match>();
-      for (Expression expression : potentials)
+      for (MethodExpression expression : potentials)
       {
          // We ignore locators if the first match was a resource method as per the spec Section 3, Step 2(h)
          if (expressionMatched && expression.isLocator()) continue;
@@ -89,11 +89,13 @@ public class SegmentNode
                if (length == -1)
                {
                   uriInfo.pushMatchedPath(path);
+                  uriInfo.pushMatchedURI(path);
                }
                else
                {
                   String substring = path.substring(0, length);
                   uriInfo.pushMatchedPath(substring);
+                  uriInfo.pushMatchedURI(substring);
                }
                expression.populatePathParams(request, matcher, path);
                return invoker;
@@ -110,13 +112,11 @@ public class SegmentNode
       }
       Match match = match(matches, request.getHttpMethod(), request);
       match.expression.populatePathParams(request, match.matcher, path);
-      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
-      uriInfo.pushMatchedPath(path);
       return match.expression.getInvoker();
 
    }
 
-   public void potentials(String path, int start, List<Expression> matches)
+   public void potentials(String path, int start, List<MethodExpression> matches)
    {
       if (start == path.length()) // we've reached end of string
       {
@@ -138,7 +138,7 @@ public class SegmentNode
             child.potentials(path, next, matches);
          }
       }
-      for (Expression exp : targets)
+      for (MethodExpression exp : targets)
       {
          // skip any static matches as they will not match anyways
          if (exp.getNumGroups() > 0 || exp.getInvoker() instanceof ResourceLocatorInvoker)
@@ -155,7 +155,7 @@ public class SegmentNode
       String subtype;
       if (client.isWildcardType() != server.isWildcardType())
       {
-         type = (client.isWildcardType()) ? client.getType() : client.getType();
+         type = (client.isWildcardType()) ? server.getType() : client.getType();
          d++;
       }
       else
@@ -164,7 +164,7 @@ public class SegmentNode
       }
       if (client.isWildcardSubtype() != server.isWildcardSubtype())
       {
-         subtype = (client.isWildcardSubtype()) ? client.getSubtype() : client.getSubtype();
+         subtype = (client.isWildcardSubtype()) ? server.getSubtype() : client.getSubtype();
          d++;
       }
       else
@@ -361,7 +361,7 @@ public class SegmentNode
 
             if (httpMethod.equals("OPTIONS"))
             {
-               Response res = Response.ok().header(HttpHeaderNames.ALLOW, allowHeaderValue).build();
+               Response res = Response.ok(allowHeaderValue,  MediaType.TEXT_PLAIN_TYPE).header(HttpHeaderNames.ALLOW, allowHeaderValue).build();
                throw new DefaultOptionsMethodException("No resource method found for options, return OK with Allow header", res);
             }
             else
@@ -410,9 +410,21 @@ public class SegmentNode
                if (accept.isCompatible(produce))
                {
                   MediaType sortFactor = createSortFactor(accept, produce);
+                  // take params from produce and type and subtype from sort factor
+                  // to define the returned media type
+                  Map<String, String> params = new HashMap<String, String>();
+                  for (Map.Entry<String, String> entry : produce.getParameters().entrySet())
+                  {
+                     String name = entry.getKey();
+                     if ("q".equals(name)
+                             || "qs".equals(name)) continue;
+                     params.put(name, entry.getValue());
+                  }
+                  MediaType chosen = new MediaType(sortFactor.getType(), sortFactor.getSubtype(), params);
+
                   for (MediaType consume : consumeCombo)
                   {
-                     sortList.add(new SortEntry(match, consume, sortFactor, WeightedMediaType.parse(accept)));
+                     sortList.add(new SortEntry(match, consume, sortFactor, chosen));
                   }
                }
 
@@ -425,7 +437,7 @@ public class SegmentNode
       return sortEntry.match;
    }
 
-   protected void addExpression(Expression expression)
+   protected void addExpression(MethodExpression expression)
    {
       targets.add(expression);
       Collections.sort(targets);

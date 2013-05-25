@@ -5,7 +5,6 @@ import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceLocatorInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
-import org.jboss.resteasy.core.registry.RootSegment;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
