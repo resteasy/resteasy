@@ -232,28 +232,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          uriInfo.pushMatchedURI(uriInfo.getMatchingPath());
       }
       uriInfo.pushCurrentResource(target);
-
-      try
-      {
-         BuiltResponse jaxrsResponse = invokeOnTarget(request, response, target);
-
-         if (jaxrsResponse != null && jaxrsResponse.getEntity() != null)
-         {
-            // if the content type isn't set, then set it to be either most desired type from the Accept header
-            // or the first media type in the @Produces annotation
-            // See RESTEASY-144
-            Object type = jaxrsResponse.getMetadata().getFirst(
-                    HttpHeaderNames.CONTENT_TYPE);
-            if (type == null)
-               jaxrsResponse.getMetadata().putSingle(HttpHeaderNames.CONTENT_TYPE, resolveContentType(request, jaxrsResponse.getEntity()));
-         }
-         return jaxrsResponse;
-
-      }
-      finally
-      {
-         //uriInfo.popCurrentResource();
-      }
+      return invokeOnTarget(request, response, target);
    }
 
    protected BuiltResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
@@ -324,7 +303,6 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
 
       Response.ResponseBuilder builder = Response.ok(rtn);
-      builder.type(resolveContentType(request, rtn));
       BuiltResponse jaxrsResponse = (BuiltResponse)builder.build();
       if (jaxrsResponse.getGenericType() == null)
       {

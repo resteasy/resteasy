@@ -13,12 +13,27 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.List;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -255,7 +270,160 @@ public class ResourceMatchingTest extends BaseResourceTest
 
    }
 
+   @Path("error")
+   public static class ErrorResource {
+      @GET
+      @Produces("text/*")
+      public String test(){
+         return getClass().getSimpleName();
+      }
 
+      @POST
+      @Produces("text/*")
+      public Response response(String msg){
+         return Response.ok(msg).build();
+      }
+   }
+
+
+   public static class StringBean {
+      private String header;
+
+      public String get() {
+         return header;
+      }
+
+      public void set(String header) {
+         this.header = header;
+      }
+
+      @Override
+      public String toString() {
+         return "StringBean. To get a value, use rather #get() method.";
+      }
+
+      public StringBean(String header) {
+         super();
+         this.header = header;
+      }
+   }
+   public static final//
+   String readFromStream(InputStream stream) throws IOException {
+      InputStreamReader isr = new InputStreamReader(stream);
+      return readFromReader(isr);
+   }
+
+   public static final//
+   String readFromReader(Reader reader) throws IOException {
+      BufferedReader br = new BufferedReader(reader);
+      String entity = br.readLine();
+      br.close();
+      return entity;
+   }
+
+
+   @Provider
+   public static class StringBeanEntityProvider implements MessageBodyReader<StringBean>,
+           MessageBodyWriter<StringBean>
+   {
+
+      @Override
+      public boolean isWriteable(Class<?> type, Type genericType,
+                                 Annotation[] annotations, MediaType mediaType) {
+         return StringBean.class.isAssignableFrom(type);
+      }
+
+      @Override
+      public long getSize(StringBean t, Class<?> type, Type genericType,
+                          Annotation[] annotations, MediaType mediaType) {
+         return t.get().length();
+      }
+
+      @Override
+      public void writeTo(StringBean t, Class<?> type, Type genericType,
+                          Annotation[] annotations, MediaType mediaType,
+                          MultivaluedMap<String, Object> httpHeaders,
+                          OutputStream entityStream) throws IOException,
+              WebApplicationException
+      {
+         entityStream.write(t.get().getBytes());
+      }
+
+      @Override
+      public boolean isReadable(Class<?> type, Type genericType,
+                                Annotation[] annotations, MediaType mediaType) {
+         return isWriteable(type, genericType, annotations, mediaType);
+      }
+
+      @Override
+      public StringBean readFrom(Class<StringBean> type, Type genericType,
+                                 Annotation[] annotations, MediaType mediaType,
+                                 MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+              throws IOException, WebApplicationException {
+         String stream = readFromStream(entityStream);
+         StringBean bean = new StringBean(stream);
+         return bean;
+      }
+
+   }
+
+
+   @Path("nomedia")
+   public static class NoMediaResource {
+
+      @GET
+      @Path("list")
+      public List<String> serializable() {
+         return java.util.Collections.singletonList("AA");
+      }
+
+      @GET
+      @Path("responseoverride")
+      public Response overrideNoProduces() {
+         return Response.ok("<a>responseoverride</a>")
+                 .type(MediaType.APPLICATION_XML_TYPE).build();
+      }
+
+      @GET
+      @Path("nothing")
+      public StringBean nothing() {
+         return new StringBean("nothing");
+      }
+
+      @GET
+      @Path("response")
+      public Response response() {
+         return Response.ok(nothing()).build();
+      }
+
+   }
+
+   @Provider
+   @Produces(MediaType.APPLICATION_SVG_XML)
+   public static class MediaWriter implements MessageBodyWriter<List<?>> {
+
+      @Override
+      public boolean isWriteable(Class<?> type, Type genericType,
+                                 Annotation[] annotations, MediaType mediaType) {
+         return List.class.isAssignableFrom(type);
+      }
+
+      @Override
+      public long getSize(List<?> t, Class<?> type, Type genericType,
+                          Annotation[] annotations, MediaType mediaType) {
+         return List.class.getSimpleName().length();
+      }
+
+      @Override
+      public void writeTo(List<?> t, Class<?> type, Type genericType,
+                          Annotation[] annotations, MediaType mediaType,
+                          MultivaluedMap<String, Object> httpHeaders,
+                          OutputStream entityStream) throws IOException,
+              WebApplicationException {
+         entityStream.write(List.class.getSimpleName().getBytes());
+      }
+
+   }
 
 
 
@@ -268,6 +436,10 @@ public class ResourceMatchingTest extends BaseResourceTest
       addPerRequestResource(MainSubResource.class);
       addPerRequestResource(AnotherSubResource.class);
       addPerRequestResource(WeightResource.class);
+      addPerRequestResource(ErrorResource.class);
+      addPerRequestResource(NoMediaResource.class);
+      deployment.getProviderFactory().register(StringBeanEntityProvider.class);
+      deployment.getProviderFactory().register(MediaWriter.class);
       client = ClientBuilder.newClient();
    }
 
@@ -275,6 +447,37 @@ public class ResourceMatchingTest extends BaseResourceTest
    public static void cleanup()
    {
       client.close();
+   }
+
+   @Test
+   public void testMediaTypeFromProvider()
+   {
+      Response response = client.target(generateURL("/nomedia/list")).request().get();
+      Assert.assertEquals(response.getStatus(), 200);
+      Assert.assertEquals(MediaType.APPLICATION_SVG_XML_TYPE, response.getMediaType());
+      response.close();
+
+   }
+
+
+   @Test
+   public void testNoProduces()
+   {
+      Response response = client.target(generateURL("/nomedia/nothing")).request().get();
+      Assert.assertEquals(response.getStatus(), 200);
+      Assert.assertEquals(MediaType.APPLICATION_OCTET_STREAM_TYPE, response.getMediaType());
+      response.close();
+
+   }
+
+
+   @Test
+   public void testNonConcreteMatch()
+   {
+      Response response = client.target(generateURL("/error")).request("text/*").get();
+      Assert.assertEquals(response.getStatus(), 406);
+      response.close();
+
    }
 
 

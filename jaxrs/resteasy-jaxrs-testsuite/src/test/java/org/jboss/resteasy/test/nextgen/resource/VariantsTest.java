@@ -18,6 +18,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Context;
@@ -60,6 +61,7 @@ public class VariantsTest extends BaseResourceTest
    public static class LanguageVariantResource
    {
       @GET
+      @Produces("text/plain")
       public Response doGet(@Context Request r)
       {
          List<Variant> vs = Variant.VariantListBuilder.newInstance().languages(new Locale("zh")).languages(
@@ -73,6 +75,7 @@ public class VariantsTest extends BaseResourceTest
       }
       @Path("/brazil")
       @GET
+      @Produces("text/plain")
       public Response doGetBrazil(@Context Request r)
       {
          List<Variant> vs = Variant.VariantListBuilder.newInstance().languages(new Locale("pt", "BR")).add().build();

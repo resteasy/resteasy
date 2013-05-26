@@ -376,7 +376,7 @@ public class SegmentNode
          }
          throw new NotAcceptableException("No match for accept header");
       }
-      if (list.size() == 1) return list.get(0);
+      //if (list.size() == 1) return list.get(0); don't do this optimization so that was can set chosen accept
       List<SortEntry> sortList = new ArrayList<SortEntry>();
       for (Match match : list)
       {

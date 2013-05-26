@@ -1877,7 +1877,31 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       return getClientExceptionMappers().get(type);
    }
-   
+
+   public MediaType getConcreteMediaTypeFromMessageBodyWriters(Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   {
+      List<SortedKey<MessageBodyWriter>> writers = getMessageBodyWriters().getPossible(mediaType, type);
+      for (SortedKey<MessageBodyWriter> writer : writers)
+      {
+         if (writer.obj.isWriteable(type, genericType, annotations, mediaType))
+         {
+            MessageBodyWriter mbw = writer.obj;
+            Class writerType = Types.getTemplateParameterOfInterface(mbw.getClass(), MessageBodyWriter.class);
+            if (writerType == null || writerType.equals(Object.class) || !writerType.isAssignableFrom(type)) continue;
+            Produces produces = mbw.getClass().getAnnotation(Produces.class);
+            if (produces == null) continue;
+            for (String produce : produces.value())
+            {
+               MediaType mt = MediaType.valueOf(produce);
+               if (mt.isWildcardType() || mt.isWildcardSubtype()) continue;
+               return mt;
+            }
+         }
+      }
+      return null;
+   }
+
+
    public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       List<SortedKey<MessageBodyWriter>> writers = getMessageBodyWriters().getPossible(mediaType, type);
