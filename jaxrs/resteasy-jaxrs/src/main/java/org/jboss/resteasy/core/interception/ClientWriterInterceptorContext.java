@@ -1,5 +1,8 @@
 package org.jboss.resteasy.core.interception;
 
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -20,13 +23,21 @@ public class ClientWriterInterceptorContext extends AbstractWriterInterceptorCon
 {
    protected Map<String, Object> properties;
 
-   public ClientWriterInterceptorContext(WriterInterceptor[] interceptors, MessageBodyWriter writer,
+   public ClientWriterInterceptorContext(WriterInterceptor[] interceptors, ResteasyProviderFactory providerFactory,
                                          Object entity, Class type, Type genericType, Annotation[] annotations,
                                          MediaType mediaType, MultivaluedMap<String, Object> headers,
                                          OutputStream outputStream, Map<String, Object> properties)
    {
-      super(interceptors, annotations, entity, genericType, mediaType, type, outputStream, writer, headers);
+      super(interceptors, annotations, entity, genericType, mediaType, type, outputStream, providerFactory, headers);
       this.properties = properties;
+   }
+
+   @Override
+   void throwWriterNotFoundException()
+   {
+      throw new ProcessingException("could not find writer for content-type "
+              + mediaType + " type: " + type.getName());
+
    }
 
    @Override

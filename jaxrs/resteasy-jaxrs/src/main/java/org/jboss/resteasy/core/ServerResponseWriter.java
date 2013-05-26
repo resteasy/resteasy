@@ -4,6 +4,7 @@ import org.jboss.resteasy.core.interception.AbstractWriterInterceptorContext;
 import org.jboss.resteasy.core.interception.ContainerResponseContextImpl;
 import org.jboss.resteasy.core.interception.ResponseContainerRequestContext;
 import org.jboss.resteasy.core.interception.ServerWriterInterceptorContext;
+import org.jboss.resteasy.core.registry.SegmentNode;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -12,7 +13,10 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
+import javax.ws.rs.NotAcceptableException;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
@@ -37,6 +41,11 @@ public class ServerResponseWriter
    {
       ResourceMethodInvoker method = (ResourceMethodInvoker) request.getAttribute(ResourceMethodInvoker.class.getName());
 
+      if (jaxrsResponse.getEntity() != null && jaxrsResponse.getMediaType() == null)
+      {
+         setDefaultContentType(request, jaxrsResponse, providerFactory, method);
+      }
+
       executeFilters(jaxrsResponse, request, response, providerFactory, method);
 
       if (jaxrsResponse.getEntity() == null)
@@ -59,13 +68,12 @@ public class ServerResponseWriter
       {
          annotations = method.getMethodAnnotations();
       }
-      MediaType contentType = resolveContentType(jaxrsResponse);
       MessageBodyWriter writer = providerFactory.getMessageBodyWriter(
-              type, generic, annotations, contentType);
+              type, generic, annotations, jaxrsResponse.getMediaType());
 
       if (writer == null)
       {
-         throw new NoMessageBodyWriterFoundFailure(type, contentType);
+         throw new NoMessageBodyWriterFoundFailure(type, jaxrsResponse.getMediaType());
       }
 
       response.setStatus(jaxrsResponse.getStatus());
@@ -94,16 +102,10 @@ public class ServerResponseWriter
          writerInterceptors = providerFactory.getServerWriterInterceptorRegistry().postMatch(null, null);
       }
 
-      if (writerInterceptors == null || writerInterceptors.length == 0)
-      {
-         writer.writeTo(ent, type, generic, annotations,
-                 contentType, jaxrsResponse.getMetadata(), os);
-      }
-      else
-      {
-         AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors, writer, ent, type, generic, annotations, contentType, jaxrsResponse.getMetadata(), os, request);
-         writerContext.proceed();
-      }
+      AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors,
+              providerFactory, ent, type, generic, annotations, jaxrsResponse.getMediaType(),
+              jaxrsResponse.getMetadata(), os, request);
+      writerContext.proceed();
       callback.commit(); // just in case the output stream is never used
    }
 
@@ -130,6 +132,69 @@ public class ServerResponseWriter
          }
       }
    }
+
+   protected static void setDefaultContentType(HttpRequest request, BuiltResponse jaxrsResponse, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)
+   {
+      MediaType chosen = (MediaType)request.getAttribute(SegmentNode.RESTEASY_CHOSEN_ACCEPT);
+      if (chosen != null && chosen.isWildcardSubtype()) chosen = null;
+      if (chosen == null)
+      {
+         if (method != null)
+         {
+            // pick most specific
+            for (MediaType produce : method.getProduces())
+            {
+
+               if (!produce.isWildcardType())
+               {
+                  chosen = produce;
+                  if (!produce.isWildcardSubtype())
+                  {
+                     break;
+                  }
+               }
+            }
+         }
+      }
+      if (chosen == null)
+      {
+         chosen = MediaType.WILDCARD_TYPE;
+         Class type = jaxrsResponse.getEntityClass();
+         Object ent = jaxrsResponse.getEntity();
+         Type generic = jaxrsResponse.getGenericType();
+         if (generic == null)
+         {
+            if (method != null && !Response.class.isAssignableFrom(method.getMethod().getReturnType())) generic = method.getGenericReturnType();
+            else generic = type;
+         }
+         Annotation[] annotations = jaxrsResponse.getAnnotations();
+         if (annotations == null && method != null)
+         {
+            annotations = method.getMethodAnnotations();
+         }
+         MediaType mt = providerFactory.getConcreteMediaTypeFromMessageBodyWriters(type, generic, annotations, chosen);
+         if (mt != null)
+         {
+            jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mt);
+            return;
+         }
+      }
+
+      if (chosen.isWildcardType())
+      {
+         chosen = MediaType.APPLICATION_OCTET_STREAM_TYPE;
+      }
+      else if (chosen.isWildcardSubtype() && chosen.getSubtype().equals("application"))
+      {
+         chosen = MediaType.APPLICATION_OCTET_STREAM_TYPE;
+      }
+      else if (chosen.isWildcardSubtype())
+      {
+         throw new NotAcceptableException("Illegal response media type: " + chosen.toString());
+      }
+      jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, chosen);
+   }
+
 
    public static MediaType resolveContentType(BuiltResponse response)
    {

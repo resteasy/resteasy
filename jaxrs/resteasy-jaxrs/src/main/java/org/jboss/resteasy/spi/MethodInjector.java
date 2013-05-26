@@ -32,4 +32,6 @@ public interface MethodInjector
    Object[] injectArguments(HttpRequest request, HttpResponse response) throws Failure;
 
    ValueInjector[] getParams();
+
+   boolean expectsBody();
 }

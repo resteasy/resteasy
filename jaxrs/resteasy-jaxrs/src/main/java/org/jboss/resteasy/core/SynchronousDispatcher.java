@@ -150,8 +150,6 @@ public class SynchronousDispatcher implements Dispatcher
       if (handledResponse == null) throw new UnhandledException(e);
       try
       {
-         // if the content type is null and there is an entity, we'll set it to some default
-         setDefaultContentType(request, handledResponse);
          ServerResponseWriter.writeNomapResponse(((BuiltResponse) handledResponse), request, response, providerFactory);
       }
       catch (Exception e1)
@@ -384,8 +382,6 @@ public class SynchronousDispatcher implements Dispatcher
       try
       {
          pushContextObjects(request, response);
-
-         setDefaultContentType(request, jaxrsResponse);
          ServerResponseWriter.writeNomapResponse((BuiltResponse) jaxrsResponse, request, response, providerFactory);
       }
       finally
@@ -410,8 +406,6 @@ public class SynchronousDispatcher implements Dispatcher
 
    protected void writeResponse(HttpRequest request, HttpResponse response, Response jaxrsResponse)
    {
-      setDefaultContentType(request, jaxrsResponse);
-
       try
       {
          ServerResponseWriter.writeNomapResponse((BuiltResponse) jaxrsResponse, request, response, providerFactory);
@@ -422,50 +416,6 @@ public class SynchronousDispatcher implements Dispatcher
          writeException(request, response, e);
       }
    }
-
-   protected void setDefaultContentType(HttpRequest request, Response jaxrsResponse)
-   {
-      Object type = jaxrsResponse.getMetadata().getFirst(
-              HttpHeaderNames.CONTENT_TYPE);
-      if (type == null && jaxrsResponse.getEntity() != null)
-      {
-         ResourceMethodInvoker method = (ResourceMethodInvoker) request.getAttribute(ResourceMethodInvoker.class.getName());
-         if (method != null)
-         {
-            jaxrsResponse.getMetadata().putSingle(HttpHeaderNames.CONTENT_TYPE, method.resolveContentType(request, jaxrsResponse.getEntity()));
-         }
-         else
-         {
-            MediaType contentType = resolveContentTypeByAccept(request.getHttpHeaders().getAcceptableMediaTypes(), jaxrsResponse.getEntity());
-            jaxrsResponse.getMetadata().putSingle(HttpHeaderNames.CONTENT_TYPE, contentType);
-         }
-      }
-   }
-
-   protected MediaType resolveContentTypeByAccept(List<MediaType> accepts, Object entity)
-   {
-      if (accepts == null || accepts.size() == 0 || entity == null)
-      {
-         return MediaType.WILDCARD_TYPE;
-      }
-      Class clazz = entity.getClass();
-      Type type = null;
-      if (entity instanceof GenericEntity)
-      {
-         GenericEntity gen = (GenericEntity) entity;
-         clazz = gen.getRawType();
-         type = gen.getType();
-      }
-      for (MediaType accept : accepts)
-      {
-         if (providerFactory.getMessageBodyWriter(clazz, type, null, accept) != null)
-         {
-            return accept;
-         }
-      }
-      return MediaType.WILDCARD_TYPE;
-   }
-
 
    public void addHttpPreprocessor(HttpRequestPreprocessor httpPreprocessor)
    {

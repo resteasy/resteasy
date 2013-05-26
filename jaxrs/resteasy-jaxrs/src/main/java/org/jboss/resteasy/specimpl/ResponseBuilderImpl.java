@@ -34,12 +34,14 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
 {
    protected Object entity;
    protected Annotation[] entityAnnotations;
-   protected int status;
+   protected int status = -1;
    protected Headers<Object> metadata = new Headers<Object>();
 
    @Override
    public Response build()
    {
+      if (status == -1 && entity == null) status = 204;
+      else if (status == -1) status = 200;
       return new BuiltResponse(status, metadata, entity, entityAnnotations);
    }
 

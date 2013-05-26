@@ -195,18 +195,6 @@ public abstract class ClientResponse extends BuiltResponse
       }
 
 
-      MessageBodyReader reader1 = configuration.getMessageBodyReader(useType,
-              useGeneric, annotations, media);
-      if (reader1 == null)
-      {
-         throw new ProcessingException(format(
-                 "Unable to find a MessageBodyReader of content-type %s and type %s",
-                 media, useType));
-      }
-
-
-
-
       Providers current = ResteasyProviderFactory.getContextData(Providers.class);
       ResteasyProviderFactory.pushContext(Providers.class, configuration);
       try
@@ -224,7 +212,7 @@ public abstract class ClientResponse extends BuiltResponse
 
          ReaderInterceptor[] readerInterceptors = configuration.getReaderInterceptors(null, null);
 
-         final Object obj = new ClientReaderInterceptorContext(readerInterceptors, reader1, useType,
+         final Object obj = new ClientReaderInterceptorContext(readerInterceptors, configuration.getProviderFactory(), useType,
                  useGeneric, annotations, media, getStringHeaders(), is, properties)
                  .proceed();
          if (isMarshalledEntity)

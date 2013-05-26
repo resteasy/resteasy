@@ -17,6 +17,7 @@ import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
@@ -73,6 +74,7 @@ public class CookieTest
 
       @Path("/param")
       @GET
+      @Produces("text/plain")
       public int param(@CookieParam("meaning") int value)
       {
          Assert.assertEquals(value, 42);
@@ -89,6 +91,7 @@ public class CookieTest
 
       @Path("/default")
       @GET
+      @Produces("text/plain")
       public int defaultValue(@CookieParam("defaulted") @DefaultValue("24") int value)
       {
          Assert.assertEquals(value, 24);

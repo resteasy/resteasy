@@ -107,11 +107,12 @@ public class ResourceLocatorTest
       public Object getSubresource2(@Context UriInfo uri)
       {
          System.out.println("Uri Ancesstors for Subresource.getSubresource2():");
-         Assert.assertEquals(3, uri.getMatchedURIs().size());
-         Assert.assertEquals("base/1/resources/subresource2", uri.getMatchedURIs().get(0));
-         Assert.assertEquals("base/1/resources", uri.getMatchedURIs().get(1));
-         Assert.assertEquals("", uri.getMatchedURIs().get(2));
-         for (String ancestor : uri.getMatchedURIs()) System.out.println("   " + ancestor);
+         List<String> matchedURIs = uri.getMatchedURIs();
+         Assert.assertEquals(3, matchedURIs.size());
+         Assert.assertEquals("base/1/resources/subresource2", matchedURIs.get(0));
+         Assert.assertEquals("base/1/resources", matchedURIs.get(1));
+         Assert.assertEquals("", matchedURIs.get(2));
+         for (String ancestor : matchedURIs) System.out.println("   " + ancestor);
 
          System.out.println("Uri Ancesstors Object for Subresource.getSubresource2():");
          Assert.assertEquals(2, uri.getMatchedResources().size());

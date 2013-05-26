@@ -463,15 +463,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
       {
          setWriterInterceptors(providerFactory.getClientWriterInterceptorRegistry().postMatch(null, null));
       }
-      MessageBodyWriter writer = providerFactory
-              .getMessageBodyWriter(bodyType, bodyGenericType,
-                      bodyAnnotations, bodyContentType);
-      if (writer == null)
-      {
-         throw new RuntimeException("could not find writer for content-type "
-                 + bodyContentType + " type: " + bodyType.getName());
-      }
-      new ClientWriterInterceptorContext(getWriterInterceptors(), writer, body,
+      new ClientWriterInterceptorContext(getWriterInterceptors(), providerFactory, body,
               bodyType, bodyGenericType, bodyAnnotations, bodyContentType,
               headers, outputStream, attributes).proceed();
    }

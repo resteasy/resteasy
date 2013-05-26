@@ -415,16 +415,6 @@ public class BaseClientResponse<T> extends ClientResponse<T>
          useType = Types.getRawType(useGeneric);
       }
 
-
-      MessageBodyReader reader1 = providerFactory.getMessageBodyReader(useType,
-              useGeneric, this.annotations, media);
-      if (reader1 == null)
-      {
-         throw createResponseFailure(format(
-                 "Unable to find a MessageBodyReader of content-type %s and type %s",
-                 media, genericType));
-      }
-
       Providers current = ResteasyProviderFactory.getContextData(Providers.class);
       ResteasyProviderFactory.pushContext(Providers.class, providerFactory);
       try
@@ -440,7 +430,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
          }
 
-         final Object obj = new ClientReaderInterceptorContext(readerInterceptors, reader1, useType,
+         final Object obj = new ClientReaderInterceptorContext(readerInterceptors, providerFactory, useType,
                  useGeneric, this.annotations, media, getResponseHeaders(), is, attributes)
                  .proceed();
          if (isMarshalledEntity)

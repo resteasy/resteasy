@@ -8,6 +8,7 @@ import org.jboss.resteasy.security.smime.SignedOutput;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import java.security.PrivateKey;
@@ -53,6 +54,7 @@ public class SMIMEResource
 
    @Path("signed")
    @GET
+   @Produces("multipart/signed")
    public SignedOutput getSigned()
    {
       Customer cust = new Customer();

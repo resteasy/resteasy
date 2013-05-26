@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.core.registry.RootSegment;
+import org.jboss.resteasy.core.registry.RootClassNode;
+import org.jboss.resteasy.core.registry.RootNode;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiResourceFactory;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
@@ -19,12 +20,9 @@ import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.IsHttpMethod;
 import org.jboss.resteasy.util.Types;
 
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,12 +36,9 @@ import java.util.Set;
 public class ResourceMethodRegistry implements Registry
 {
    public static final String REGISTRY_MATCHING_EXCEPTION = "registry.matching.exception";
-   protected int size;
 
    protected ResteasyProviderFactory providerFactory;
-   protected RootSegment resourceMethodRoot = new RootSegment();
-   protected RootSegment resourceLocatorRoot = new RootSegment();
-
+   protected RootClassNode root = new RootClassNode();
    private final static Logger logger = Logger.getLogger(ResourceMethodRegistry.class);
 
 
@@ -254,23 +249,30 @@ public class ResourceMethodRegistry implements Registry
       ResteasyUriBuilder builder = new ResteasyUriBuilder();
       if (base != null)
          builder.path(base);
-      builder.path(method.getPath());
-      String pathExpression = builder.getPath();
-      if (pathExpression == null)
-         pathExpression = "";
+      builder.path(method.getFullpath());
+      String fullpath = builder.getPath();
+      if (fullpath == null)
+         fullpath = "";
+
+      builder = new ResteasyUriBuilder();
+      if (base != null)
+         builder.path(base);
+      builder.path(method.getResourceClass().getPath());
+      String classExpression = builder.getPath();
+      if (classExpression == null)
+         classExpression = "";
 
       InjectorFactory injectorFactory = providerFactory.getInjectorFactory();
       if (method instanceof ResourceMethod)
       {
          ResourceMethodInvoker invoker = new ResourceMethodInvoker((ResourceMethod)method, injectorFactory, rf, providerFactory);
-         resourceMethodRoot.addPath(pathExpression, invoker);
+         root.addInvoker(classExpression, fullpath, invoker);
       }
       else
       {
          ResourceLocatorInvoker locator = new ResourceLocatorInvoker(rf, injectorFactory, providerFactory, method);
-         resourceLocatorRoot.addPath(pathExpression, locator);
+         root.addInvoker(classExpression, fullpath, locator);
       }
-      size++;
    }
 
 	private Method findAnnotatedInterfaceMethod(Class<?> root, Class<?> iface, Method implementation)
@@ -365,11 +367,11 @@ public class ResourceMethodRegistry implements Registry
    {
       for (ResourceMethod method : resourceClass.getResourceMethods())
       {
-         removeBinding(method.getMethod(), method.getPath());
+         root.removeBinding(resourceClass.getPath(), method.getFullpath(), method.getMethod());
       }
       for (ResourceLocator method : resourceClass.getResourceLocators())
       {
-         removeBinding(method.getMethod(), method.getPath());
+         root.removeBinding(resourceClass.getPath(), method.getFullpath(), method.getMethod());
       }
    }
 
@@ -384,51 +386,18 @@ public class ResourceMethodRegistry implements Registry
          ResteasyUriBuilder builder = new ResteasyUriBuilder();
          if (base != null) builder.path(base);
          if (clazz.isAnnotationPresent(Path.class)) builder.path(clazz);
+         String classExpression = builder.getPath();
          if (path != null) builder.path(method);
-         String pathExpression = builder.getPath();
-         if (pathExpression == null) pathExpression = "";
+         String fullpath = builder.getPath();
+         if (fullpath == null) fullpath = "";
 
-         removeBinding(method, pathExpression);
+         root.removeBinding(classExpression, fullpath, method);
       }
    }
 
-   private void removeBinding(Method method, String pathExpression)
-   {
-      ResourceInvoker invoker = resourceMethodRoot.removePath(pathExpression, method);
-      if (invoker == null) invoker = resourceLocatorRoot.removePath(pathExpression, method);
-      if (invoker != null)
-      {
-         size--;
-         if (invoker instanceof ResourceMethodInvoker)
-         {
-            ((ResourceMethodInvoker) invoker).cleanup();
-         }
-      }
-   }
    public Map<String, List<ResourceInvoker>> getBounded()
    {
-      Map<String, List<ResourceInvoker>> bounded = new LinkedHashMap<String, List<ResourceInvoker>>();
-      for (Map.Entry<String, List<ResourceInvoker>> entry : resourceMethodRoot.getBounded().entrySet())
-      {
-         List<ResourceInvoker> addTo = bounded.get(entry.getKey());
-         if (addTo == null)
-         {
-            addTo = new ArrayList<ResourceInvoker>();
-            bounded.put(entry.getKey(), addTo);
-         }
-         addTo.addAll(entry.getValue());
-      }
-      for (Map.Entry<String, List<ResourceInvoker>> entry : resourceLocatorRoot.getBounded().entrySet())
-      {
-         List<ResourceInvoker> addTo = bounded.get(entry.getKey());
-         if (addTo == null)
-         {
-            addTo = new ArrayList<ResourceInvoker>();
-            bounded.put(entry.getKey(), addTo);
-         }
-         addTo.addAll(entry.getValue());
-      }
-      return bounded;
+      return root.getBounded();
    }
 
       /**
@@ -438,7 +407,7 @@ public class ResourceMethodRegistry implements Registry
       */
    public int getSize()
    {
-      return size;
+      return root.getSize();
    }
 
    /**
@@ -450,39 +419,11 @@ public class ResourceMethodRegistry implements Registry
    {
       try
       {
-         List<String> matchedUris = request.getUri().getEncodedMatchedPaths();
-         if (matchedUris == null || matchedUris.size() == 0)
-         {
-            return resolveInvoker(request, 0);
-         }
-         // resource location
-         String currentUri = request.getUri().getEncodedMatchedPaths().get(0);
-         int startAt = currentUri.length();
-         return resolveInvoker(request, startAt);
+         return root.match(request, 0);
       }
       catch (RuntimeException e)
       {
          throw e;
-      }
-   }
-
-   protected ResourceInvoker resolveInvoker(HttpRequest request, int startAt)
-   {
-      try
-      {
-         return resourceMethodRoot.matchRoot(request, startAt);
-      }
-      catch (RuntimeException e)
-      {
-         try
-         {
-            if (!(e instanceof NotFoundException)) request.setAttribute(REGISTRY_MATCHING_EXCEPTION, e);
-            return resourceLocatorRoot.matchRoot(request, startAt);
-         }
-         catch (NotFoundException nfe)
-         {
-            throw e;
-         }
       }
    }
 }

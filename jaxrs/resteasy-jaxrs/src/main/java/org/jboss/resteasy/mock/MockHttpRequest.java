@@ -92,6 +92,15 @@ public class MockHttpRequest implements HttpRequest
       return request;
    }
 
+   public static MockHttpRequest options(String uri) throws URISyntaxException
+   {
+      MockHttpRequest request = initWithUri(uri);
+      request.httpMethod = "OPTIONS";
+      return request;
+   }
+
+
+
    public static MockHttpRequest get(String uri) throws URISyntaxException
    {
       MockHttpRequest request = initWithUri(uri);
@@ -202,6 +211,11 @@ public class MockHttpRequest implements HttpRequest
 
    public MockHttpRequest contentType(MediaType type)
    {
+      if (type == null)
+      {
+         httpHeaders.getMutableHeaders().remove(HttpHeaderNames.CONTENT_TYPE);
+         return this;
+      }
       httpHeaders.getMutableHeaders().add(HttpHeaderNames.CONTENT_TYPE, type.toString());
       return this;
    }
