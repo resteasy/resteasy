@@ -54,9 +54,9 @@ public class ResourceBuilder
       List<ResourceMethod> resourceMethods = new ArrayList<ResourceMethod>();
       List<ResourceLocator> resourceLocators = new ArrayList<ResourceLocator>();
 
-      public ResourceClassBuilder(Class<?> root)
+      public ResourceClassBuilder(Class<?> root, String path)
       {
-         this.resourceClass = new ResourceClass(root);
+         this.resourceClass = new ResourceClass(root, path);
       }
 
       public ResourceMethodBuilder method(Method method)
@@ -477,6 +477,13 @@ public class ResourceBuilder
 
       public ResourceClassBuilder buildMethod()
       {
+         ResteasyUriBuilder builder = new ResteasyUriBuilder();
+         if (locator.resourceClass.path != null) builder.path(locator.resourceClass.path);
+         if (locator.path != null) builder.path(locator.path);
+         String pathExpression = builder.getPath();
+         if (pathExpression == null)
+            pathExpression = "";
+         locator.fullpath = pathExpression;
          if (locator.resourceClass.getClazz().isAnonymousClass())
          {
             locator.getMethod().setAccessible(true);
@@ -591,6 +598,13 @@ public class ResourceBuilder
 
       public ResourceClassBuilder buildMethod()
       {
+         ResteasyUriBuilder builder = new ResteasyUriBuilder();
+         if (method.resourceClass.path != null) builder.path(method.resourceClass.path);
+         if (method.path != null) builder.path(method.path);
+         String pathExpression = builder.getPath();
+         if (pathExpression == null)
+            pathExpression = "";
+         method.fullpath = pathExpression;
          if (method.resourceClass.getClazz().isAnonymousClass())
          {
             method.getMethod().setAccessible(true);
@@ -639,11 +653,21 @@ public class ResourceBuilder
    }
 
 
-
-   public static ResourceClassBuilder resourceClass(Class<?> root)
+   public static ResourceClassBuilder rootResource(Class<?> root)
    {
-      return new ResourceClassBuilder(root);
+      return new ResourceClassBuilder(root, "/");
    }
+
+   public static ResourceClassBuilder rootResource(Class<?> root, String path)
+   {
+      return new ResourceClassBuilder(root, path);
+   }
+
+   public static ResourceClassBuilder locator(Class<?> root)
+   {
+      return new ResourceClassBuilder(root, null);
+   }
+
 
    /**
     * Picks a constructor from an annotated resource class based on spec rules
@@ -654,7 +678,7 @@ public class ResourceBuilder
    public static ResourceConstructor constructor(Class<?> annotatedResourceClass)
    {
       Constructor constructor = PickConstructor.pickPerRequestConstructor(annotatedResourceClass);
-      ResourceConstructorBuilder builder = resourceClass(annotatedResourceClass).constructor(constructor);
+      ResourceConstructorBuilder builder = rootResource(annotatedResourceClass).constructor(constructor);
       if (constructor.getParameterTypes() != null)
       {
          for (int i = 0; i < constructor.getParameterTypes().length; i++) builder.param(i).fromAnnotations();
@@ -680,7 +704,14 @@ public class ResourceBuilder
 
    private static ResourceClass fromAnnotations(boolean isLocator, Class<?> clazz)
    {
-      ResourceClassBuilder builder = resourceClass(clazz);
+      ResourceClassBuilder builder = null;
+      if (isLocator) builder = locator(clazz);
+      else
+      {
+         Path path = clazz.getAnnotation(Path.class);
+         if (path == null) builder = rootResource(clazz, null);
+         else builder = rootResource(clazz, path.value());
+      }
       for (Method method : clazz.getMethods())
       {
          if(!method.isSynthetic() && !method.getDeclaringClass().equals(Object.class))
@@ -837,21 +868,7 @@ public class ResourceBuilder
       Method method = findAnnotatedMethod(root, implementation);
       if (method != null)
       {
-         Path path = method.getAnnotation(Path.class);
          Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
-
-         ResteasyUriBuilder builder = new ResteasyUriBuilder();
-         if (!isLocator && root.isAnnotationPresent(Path.class))
-         {
-            builder.path(root);
-         }
-         if (path != null)
-         {
-            builder.path(method);
-         }
-         String pathExpression = builder.getPath();
-         if (pathExpression == null)
-            pathExpression = "";
 
          ResourceLocatorBuilder resourceLocatorBuilder;
 
@@ -884,7 +901,8 @@ public class ResourceBuilder
             if (consumes == null) consumes = method.getDeclaringClass().getAnnotation(Consumes.class);
             if (consumes != null) resourceMethodBuilder.consumes(consumes.value());
          }
-         resourceLocatorBuilder.path(pathExpression);
+         Path methodPath = method.getAnnotation(Path.class);
+         if (methodPath != null) resourceLocatorBuilder.path(methodPath.value());
          for (int i = 0; i < resourceLocatorBuilder.locator.params.length; i++)
          {
             resourceLocatorBuilder.param(i).fromAnnotations();

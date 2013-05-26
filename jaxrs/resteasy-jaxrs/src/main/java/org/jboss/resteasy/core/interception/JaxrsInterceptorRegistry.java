@@ -121,19 +121,22 @@ public class JaxrsInterceptorRegistry<T>
          {
             if (nameBound.size() > 0)
             {
+               // must match all namebound annotations
                for (Class<? extends Annotation> annotation : nameBound)
                {
-                  if (targetClass.isAnnotationPresent(annotation) ||
-                          target.isAnnotationPresent(annotation))
+                  if (!targetClass.isAnnotationPresent(annotation) &&
+                          !target.isAnnotationPresent(annotation))
                   {
-                     Object intercept = getInterceptor();
-                     if (intercept == null)
-                        throw new NullPointerException("interceptor null from class: " + this.getClass().getName());
-                     return new Match(intercept, order);
+                     return null;
                   }
                }
-               return null;
-            } else
+               // we matched all of them
+               Object intercept = getInterceptor();
+               if (intercept == null)
+                  throw new NullPointerException("interceptor null from class: " + this.getClass().getName());
+               return new Match(intercept, order);
+            }
+            else
             {
                Object intercept = getInterceptor();
                if (intercept == null)

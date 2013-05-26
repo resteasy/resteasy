@@ -191,6 +191,7 @@ public class InternalDispatcherTest
 
       @GET
       @Path("/infinite-forward")
+      @Produces("text/plain")
       public int infinitFoward(@Context InternalDispatcher dispatcher,
                                @QueryParam("count") @DefaultValue("0") int count)
       {

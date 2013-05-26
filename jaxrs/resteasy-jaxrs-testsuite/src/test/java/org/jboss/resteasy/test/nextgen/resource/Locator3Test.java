@@ -369,7 +369,7 @@ public class Locator3Test extends BaseResourceTest
    }
 
 
-   //@Test
+   @Test
    public void testLocatorWithSubWithPathAnnotation()
    {
       Response response = client.target(generateURL("/resource/subresource/ParamEntityWithConstructor/ParamEntityWithConstructor=JAXRS")).request().get();

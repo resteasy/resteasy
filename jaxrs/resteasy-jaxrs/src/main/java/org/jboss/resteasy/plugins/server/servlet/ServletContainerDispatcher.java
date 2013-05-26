@@ -90,11 +90,10 @@ public class ServletContainerDispatcher
             {
                try
                {
-                  Application app = ResteasyDeployment.createApplication(application.trim(), providerFactory);
-                  dispatcher.getDefaultContextObjects().put(Application.class, app);
-                  // push context data so we can inject it
                   Map contextDataMap = ResteasyProviderFactory.getContextDataMap();
                   contextDataMap.putAll(dispatcher.getDefaultContextObjects());
+                  Application app = ResteasyDeployment.createApplication(application.trim(), dispatcher, providerFactory);
+                  // push context data so we can inject it
                   processApplication(app);
                }
                finally

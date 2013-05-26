@@ -9,6 +9,7 @@ import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.plugins.providers.jackson.JacksonJsonpInterceptor;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -190,6 +191,7 @@ public class JacksonTest extends BaseResourceTest
    {
       dispatcher.getRegistry().addPerRequestResource(JacksonService.class);
       dispatcher.getRegistry().addPerRequestResource(XmlService.class);
+      deployment.getProviderFactory().register(JacksonJsonpInterceptor.class);
       //dispatcher.getRegistry().addPerRequestResource(JAXBService.class);
    }
 

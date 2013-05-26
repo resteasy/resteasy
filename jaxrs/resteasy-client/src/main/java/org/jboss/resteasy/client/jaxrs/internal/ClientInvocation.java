@@ -304,30 +304,9 @@ public class ClientInvocation implements Invocation
          return;
       }
 
-      MessageBodyWriter writer = getWriter();
       WriterInterceptor[] interceptors = getWriterInterceptors();
-      if (interceptors == null || interceptors.length == 0)
-      {
-         writer.writeTo(entity, entityClass, entityGenericType, entityAnnotations, headers.getMediaType(), headers.getHeaders(), outputStream);
-      }
-      else
-      {
-         AbstractWriterInterceptorContext ctx = new ClientWriterInterceptorContext(interceptors, writer, entity, entityClass, entityGenericType, entityAnnotations, headers.getMediaType(), headers.getHeaders(), outputStream, getMutableProperties());
-         ctx.proceed();
-      }
-   }
-
-   public MessageBodyWriter getWriter()
-   {
-      MessageBodyWriter writer = configuration
-              .getMessageBodyWriter(entityClass, entityGenericType,
-                      entityAnnotations, this.getHeaders().getMediaType());
-      if (writer == null)
-      {
-         throw new ProcessingException("could not find writer for content-type "
-                 + this.getHeaders().getMediaType() + " type: " + entityClass.getName());
-      }
-      return writer;
+      AbstractWriterInterceptorContext ctx = new ClientWriterInterceptorContext(interceptors, configuration.getProviderFactory(), entity, entityClass, entityGenericType, entityAnnotations, headers.getMediaType(), headers.getHeaders(), outputStream, getMutableProperties());
+      ctx.proceed();
    }
 
 

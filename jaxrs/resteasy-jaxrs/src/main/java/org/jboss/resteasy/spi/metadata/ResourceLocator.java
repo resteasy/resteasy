@@ -4,7 +4,6 @@ import org.jboss.resteasy.util.Types;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -18,6 +17,7 @@ public class ResourceLocator
    protected Method method;
    protected Method annotatedMethod;
    protected MethodParameter[] params = {};
+   protected String fullpath;
    protected String path;
 
    public ResourceLocator(ResourceClass resourceClass, Method method, Method annotatedMethod)
@@ -64,6 +64,11 @@ public class ResourceLocator
    public MethodParameter[] getParams()
    {
       return params;
+   }
+
+   public String getFullpath()
+   {
+      return fullpath;
    }
 
    public String getPath()

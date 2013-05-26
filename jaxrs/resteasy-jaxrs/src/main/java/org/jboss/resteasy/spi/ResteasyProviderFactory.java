@@ -1877,7 +1877,31 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       return getClientExceptionMappers().get(type);
    }
-   
+
+   public MediaType getConcreteMediaTypeFromMessageBodyWriters(Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   {
+      List<SortedKey<MessageBodyWriter>> writers = getMessageBodyWriters().getPossible(mediaType, type);
+      for (SortedKey<MessageBodyWriter> writer : writers)
+      {
+         if (writer.obj.isWriteable(type, genericType, annotations, mediaType))
+         {
+            MessageBodyWriter mbw = writer.obj;
+            Class writerType = Types.getTemplateParameterOfInterface(mbw.getClass(), MessageBodyWriter.class);
+            if (writerType == null || writerType.equals(Object.class) || !writerType.isAssignableFrom(type)) continue;
+            Produces produces = mbw.getClass().getAnnotation(Produces.class);
+            if (produces == null) continue;
+            for (String produce : produces.value())
+            {
+               MediaType mt = MediaType.valueOf(produce);
+               if (mt.isWildcardType() || mt.isWildcardSubtype()) continue;
+               return mt;
+            }
+         }
+      }
+      return null;
+   }
+
+
    public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       List<SortedKey<MessageBodyWriter>> writers = getMessageBodyWriters().getPossible(mediaType, type);
@@ -1973,56 +1997,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
       Object obj = null;
-      if (constructor == null)
-      {
-         // TODO this is solely to pass the TCK.  This is WRONG WRONG WRONG!  I'm challenging.
-         if (false)//if (clazz.isAnonymousClass())
-         {
-            constructor = clazz.getDeclaredConstructors()[0];
-            constructor.setAccessible(true);
-            if (!Modifier.isStatic(clazz.getModifiers()))
-            {
-               Object[] args = {null};
-               try {
-                  obj = constructor.newInstance(args);
-               }
-               catch (InstantiationException e) {
-                  throw new RuntimeException(e);
-               }
-               catch (IllegalAccessException e) {
-                  throw new RuntimeException(e);
-               }
-               catch (InvocationTargetException e) {
-                  throw new RuntimeException(e);
-               }
-            }
-            else
-            {
-               try {
-                  obj = constructor.newInstance();
-               }
-               catch (InstantiationException e) {
-                  throw new RuntimeException(e);
-               }
-               catch (IllegalAccessException e) {
-                  throw new RuntimeException(e);
-               }
-               catch (InvocationTargetException e) {
-                  throw new RuntimeException(e);
-               }
-            }
-         }
-         else
-         {
-            throw new IllegalArgumentException("Unable to find a public constructor for class " + clazz.getName());
-         }
-      }
-      else
-      {
-         ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
-         obj = constructorInjector.construct();
+      ConstructorInjector constructorInjector = getInjectorFactory().createConstructor(constructor, this);
+      obj = constructorInjector.construct();
 
-      }
       PropertyInjector propertyInjector = getInjectorFactory().createPropertyInjector(clazz, this);
 
       propertyInjector.inject(obj);

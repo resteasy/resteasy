@@ -75,7 +75,7 @@ public class ProgammaticTest extends BaseResourceTest
       Field uriInfo = MyResource.class.getDeclaredField("uriInfo");
       Constructor constructor = MyResource.class.getConstructor(Configurable.class);
 
-      ResourceClass resourceclass = ResourceBuilder.resourceClass(MyResource.class)
+      ResourceClass resourceclass = ResourceBuilder.rootResource(MyResource.class)
               .constructor(constructor).param(0).context().buildConstructor()
               .method(get).get().path("test").produces("text/plain").param(0).queryParam("a").buildMethod()
               .method(put).put().path("test").consumes("text/plain").param(0).messageBody().buildMethod()
@@ -107,7 +107,7 @@ public class ProgammaticTest extends BaseResourceTest
       Method setter = MyResource.class.getMethod("setHeaders", HttpHeaders.class);
       Field uriInfo = MyResource.class.getDeclaredField("uriInfo");
 
-      ResourceClass resourceclass = ResourceBuilder.resourceClass(MyResource.class)
+      ResourceClass resourceclass = ResourceBuilder.rootResource(MyResource.class)
               .method(get).get().path("test").produces("text/plain").param(0).queryParam("a").buildMethod()
               .field(uriInfo).context().buildField()
               .setter(setter).context().buildSetter()

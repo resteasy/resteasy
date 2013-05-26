@@ -148,15 +148,6 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
       }
       else
       {
-         MessageBodyReader reader = factory.getMessageBodyReader(type,
-                 genericType, annotations, mediaType);
-         if (reader == null)
-         {
-            throw new NotSupportedException(
-                    "Could not find message body reader for type: "
-                            + genericType + " of content type: " + mediaType);
-         }
-
          try
          {
             InputStream is = request.getInputStream();
@@ -165,7 +156,7 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
                is = new InputStreamToByteArray(is);
 
             }
-            AbstractReaderInterceptorContext messageBodyReaderContext = new ServerReaderInterceptorContext(interceptors, reader, type,
+            AbstractReaderInterceptorContext messageBodyReaderContext = new ServerReaderInterceptorContext(interceptors, factory, type,
                     genericType, annotations, mediaType, request
                     .getHttpHeaders().getRequestHeaders(), is, request);
             final Object obj = messageBodyReaderContext.proceed();
