@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
@@ -36,6 +37,18 @@ public class ExceptionMapperTest extends BaseResourceTest
    }
 
    @Provider
+   public static class ThrowableMapper implements
+           ExceptionMapper<Throwable>
+   {
+
+      @Override
+      public Response toResponse(Throwable exception) {
+         return Response.ok(getClass().getName()).build();
+      }
+   }
+
+
+   @Provider
    public static class WebAppExceptionMapper implements
            ExceptionMapper<WebApplicationException> {
 
@@ -59,6 +72,13 @@ public class ExceptionMapperTest extends BaseResourceTest
          throw new WebApplicationException(r);
       }
 
+      @GET
+      @Path("throwable")
+      public String throwable() throws Throwable
+      {
+         throw new Throwable(new RuntimeException(new ClientErrorException(499)));
+      }
+
    }
 
    static Client client;
@@ -66,6 +86,7 @@ public class ExceptionMapperTest extends BaseResourceTest
    @BeforeClass
    public static void setup()
    {
+      deployment.getProviderFactory().register(ThrowableMapper.class);
       deployment.getProviderFactory().register(WebAppExceptionMapper.class);
       deployment.getProviderFactory().register(RuntimeExceptionMapper.class);
       addPerRequestResource(Resource.class);
@@ -78,12 +99,22 @@ public class ExceptionMapperTest extends BaseResourceTest
       client.close();
    }
 
+   //@Test
+   public void testThrowable()
+   {
+      Response response = client.target(generateURL("/resource/throwable")).request().get();
+      Assert.assertEquals(response.getStatus(), 200);
+      Assert.assertEquals(ThrowableMapper.class.getName(), response.readEntity(String.class));
+   }
+
+
 
    @Test
    public void testWAEResponseUsed()
    {
       Response response = client.target(generateURL("/resource/responseok")).request().get();
       Assert.assertEquals(response.getStatus(), 200);
+      Assert.assertEquals("hello", response.readEntity(String.class));
    }
 
 

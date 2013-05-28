@@ -240,9 +240,13 @@ public abstract class ClientResponse extends BuiltResponse
          }
 
       }
-      catch (IOException io)
+      catch (ProcessingException pe)
       {
-         throw new ProcessingException(io);
+         throw pe;
+      }
+      catch (Exception ex)
+      {
+         throw new ProcessingException(ex);
       }
       finally
       {

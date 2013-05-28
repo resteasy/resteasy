@@ -73,8 +73,9 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>
 
       String form = buf.toString();
 
-
       MultivaluedMap<String, String> formData = new MultivaluedMapImpl<String, String>();
+      if ("".equals(form)) return formData;
+
       String[] params = form.split("&");
 
       for (String param : params)

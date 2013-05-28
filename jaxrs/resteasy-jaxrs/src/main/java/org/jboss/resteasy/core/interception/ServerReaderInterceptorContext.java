@@ -3,11 +3,14 @@ package org.jboss.resteasy.core.interception;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.NoContentException;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.ReaderInterceptor;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -40,6 +43,18 @@ public class ServerReaderInterceptorContext extends AbstractReaderInterceptorCon
                       + genericType + " of content type: " + mediaType);
    }
 
+   @Override
+   protected Object readFrom(MessageBodyReader reader) throws IOException
+   {
+      try
+      {
+         return super.readFrom(reader);
+      }
+      catch (NoContentException e)
+      {
+         throw new BadRequestException(e);
+      }
+   }
 
    @Override
    public Object getProperty(String name)

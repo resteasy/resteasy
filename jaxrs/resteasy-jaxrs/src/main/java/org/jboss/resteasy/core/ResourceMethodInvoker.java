@@ -286,6 +286,13 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       if (Response.class.isAssignableFrom(method.getReturnType()) || rtn instanceof Response)
       {
+         if (!(rtn instanceof BuiltResponse))
+         {
+            Response r = (Response)rtn;
+            Headers<Object> metadata = new Headers<Object>();
+            metadata.putAll(r.getMetadata());
+            rtn = new BuiltResponse(r.getStatus(), metadata, r.getEntity(), null);
+         }
          BuiltResponse rtn1 = (BuiltResponse) rtn;
          if (rtn1.getAnnotations() == null) rtn1.setAnnotations(method.getAnnotatedMethod().getAnnotations());
          if (rtn1.getGenericType() == null)
