@@ -15,6 +15,7 @@ import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.ReaderInterceptorContext;
@@ -119,6 +120,30 @@ public class ResponseFilterTest
       }
 
    }
+
+   @Test
+   public void getStringHeadersUsingHeaderDelegateTest()
+   {
+      RuntimeDelegate original = RuntimeDelegate.getInstance();
+      RuntimeDelegate.setInstance(new StringBeanRuntimeDelegate(original));
+      try {
+         StringBuilder builder = new StringBuilder("s1");
+         StringBuffer buffer = new StringBuffer("s2");
+         StringBean bean = new StringBean("s3");
+         Response response = Response.ok()
+                 .header(builder.toString(), builder)
+                 .header(buffer.toString(), buffer).header(bean.get(), bean)
+                 .build();
+         MultivaluedMap<String, String> headers = response
+                 .getStringHeaders();
+         String header = headers.getFirst(bean.get());
+         Assert.assertTrue(bean.get().equalsIgnoreCase(header));
+      } finally {
+         RuntimeDelegate.setInstance(original);
+         StringBeanRuntimeDelegate.assertNotStringBeanRuntimeDelegate();
+      }
+   }
+
 
    @Test
    public void testLength()

@@ -279,9 +279,9 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public void registerProvider(Class provider, boolean isBuiltin, int defaultPriority, Map<Class<?>, Integer> contracts)
+   public void registerProvider(Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts)
    {
-      getDelegate().registerProvider(provider, isBuiltin, defaultPriority, contracts);
+      getDelegate().registerProvider(provider, priorityOverride, isBuiltin, contracts);
    }
 
    @Override
@@ -543,9 +543,9 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public void registerProviderInstance(Object provider, int defaultPriority, Map<Class<?>, Integer> contracts)
+   public void registerProviderInstance(Object provider, Map<Class<?>, Integer> contracts, Integer defaultPriority)
    {
-      getDelegate().registerProviderInstance(provider, defaultPriority, contracts);
+      getDelegate().registerProviderInstance(provider, contracts, defaultPriority);
    }
 
    @Override

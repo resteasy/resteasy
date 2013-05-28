@@ -587,7 +587,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             result = instance;
             if (result == null)
             { // Second check (with locking)
-               instance = result = (ResteasyProviderFactory) RuntimeDelegate.getInstance();
+               RuntimeDelegate runtimeDelegate = RuntimeDelegate.getInstance();
+               if (runtimeDelegate instanceof ResteasyProviderFactory)
+               {
+                  instance = result = (ResteasyProviderFactory) runtimeDelegate;
+               }
+               else
+               {
+                  instance = result = new ResteasyProviderFactory();
+               }
                if (registerBuiltinByDefault) RegisterBuiltin.register(instance);
             }
          }
@@ -1169,7 +1177,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public void registerProvider(Class provider, boolean isBuiltin)
    {
-      registerProvider(provider, isBuiltin, Priorities.USER, null);
+      registerProvider(provider, null, isBuiltin, null);
    }
 
    protected boolean isA(Class target, Class type, Map<Class<?>, Integer> contracts)
@@ -1188,8 +1196,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return isA(target.getClass(), type, contracts);
    }
 
-   protected int getPriority(Map<Class<?>, Integer> contracts, Class type, Class<?> component)
+   protected int getPriority(Integer override, Map<Class<?>, Integer> contracts, Class type, Class<?> component)
    {
+      if (override != null) return override;
       if (contracts != null)
       {
          Integer p = contracts.get(type);
@@ -1200,7 +1209,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return priority.value();
    }
 
-   public void registerProvider(Class provider, boolean isBuiltin, int defaultPriority, Map<Class<?>, Integer> contracts)
+   public void registerProvider(Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts)
    {
       if (getClasses().contains(provider))
       {
@@ -1218,14 +1227,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>(parent.getParamConverterProviders());
          }
          paramConverterProviders.add(paramConverterProvider);
-         newContracts.put(ParamConverterProvider.class, getPriority(contracts, ParamConverterProvider.class, provider));
+         newContracts.put(ParamConverterProvider.class, getPriority(priorityOverride, contracts, ParamConverterProvider.class, provider));
       }
       if (isA(provider, MessageBodyReader.class, contracts))
       {
          try
          {
             addMessageBodyReader(provider, isBuiltin);
-            newContracts.put(MessageBodyReader.class, getPriority(contracts, MessageBodyReader.class, provider));
+            newContracts.put(MessageBodyReader.class, getPriority(priorityOverride, contracts, MessageBodyReader.class, provider));
          }
          catch (Exception e)
          {
@@ -1237,7 +1246,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addMessageBodyWriter(provider, isBuiltin);
-            newContracts.put(MessageBodyWriter.class, getPriority(contracts, MessageBodyWriter.class, provider));
+            newContracts.put(MessageBodyWriter.class, getPriority(priorityOverride, contracts, MessageBodyWriter.class, provider));
          }
          catch (Exception e)
          {
@@ -1249,7 +1258,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addExceptionMapper(provider);
-            newContracts.put(ExceptionMapper.class, getPriority(contracts, ExceptionMapper.class, provider));
+            newContracts.put(ExceptionMapper.class, getPriority(priorityOverride, contracts, ExceptionMapper.class, provider));
          }
          catch (Exception e)
          {
@@ -1261,7 +1270,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addClientExceptionMapper(provider);
-            newContracts.put(ClientExceptionMapper.class, getPriority(contracts, ClientExceptionMapper.class, provider));
+            newContracts.put(ClientExceptionMapper.class, getPriority(priorityOverride, contracts, ClientExceptionMapper.class, provider));
          }
          catch (Exception e)
          {
@@ -1274,7 +1283,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             clientRequestFilters = parent.getClientRequestFilters().clone(this);
          }
-         int priority = getPriority(contracts, ClientRequestFilter.class, provider);
+         int priority = getPriority(priorityOverride, contracts, ClientRequestFilter.class, provider);
          clientRequestFilters.registerClass(provider, priority);
          newContracts.put(ClientRequestFilter.class, priority);
       }
@@ -1284,7 +1293,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             clientResponseFilters = parent.getClientResponseFilters().clone(this);
          }
-         int priority = getPriority(contracts, ClientResponseFilter.class, provider);
+         int priority = getPriority(priorityOverride, contracts, ClientResponseFilter.class, provider);
          clientResponseFilters.registerClass(provider, priority);
          newContracts.put(ClientResponseFilter.class, priority);
       }
@@ -1321,7 +1330,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(this);
          }
-         int priority = getPriority(contracts, ContainerRequestFilter.class, provider);
+         int priority = getPriority(priorityOverride, contracts, ContainerRequestFilter.class, provider);
          containerRequestFilterRegistry.registerClass(provider, priority);
          newContracts.put(ContainerRequestFilter.class, priority);
       }
@@ -1331,14 +1340,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
          }
-         int priority = getPriority(contracts, ContainerResponseFilter.class, provider);
+         int priority = getPriority(priorityOverride, contracts, ContainerResponseFilter.class, provider);
          containerResponseFilterRegistry.registerClass(provider, priority);
          newContracts.put(ContainerResponseFilter.class, priority);
       }
       if (isA(provider, ReaderInterceptor.class, contracts))
       {
          ConstrainedTo constrainedTo = (ConstrainedTo) provider.getAnnotation(ConstrainedTo.class);
-         int priority = getPriority(contracts, ReaderInterceptor.class, provider);
+         int priority = getPriority(priorityOverride, contracts, ReaderInterceptor.class, provider);
          if (constrainedTo != null && constrainedTo.value() == RuntimeType.SERVER)
          {
             if (serverReaderInterceptorRegistry == null)
@@ -1373,7 +1382,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (isA(provider, WriterInterceptor.class, contracts))
       {
          ConstrainedTo constrainedTo = (ConstrainedTo) provider.getAnnotation(ConstrainedTo.class);
-         int priority = getPriority(contracts, WriterInterceptor.class, provider);
+         int priority = getPriority(priorityOverride, contracts, WriterInterceptor.class, provider);
          if (constrainedTo != null && constrainedTo.value() == RuntimeType.SERVER)
          {
             if (serverWriterInterceptorRegistry == null)
@@ -1460,7 +1469,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addContextResolver(provider, true);
-            int priority = getPriority(contracts, ContextResolver.class, provider);
+            int priority = getPriority(priorityOverride, contracts, ContextResolver.class, provider);
             newContracts.put(ContextResolver.class, priority);
          }
          catch (Exception e)
@@ -1471,13 +1480,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (isA(provider, StringConverter.class, contracts))
       {
          addStringConverter(provider);
-         int priority = getPriority(contracts, StringConverter.class, provider);
+         int priority = getPriority(priorityOverride, contracts, StringConverter.class, provider);
          newContracts.put(StringConverter.class, priority);
       }
       if (isA(provider, StringParameterUnmarshaller.class, contracts))
       {
          addStringParameterUnmarshaller(provider);
-         int priority = getPriority(contracts, StringParameterUnmarshaller.class, provider);
+         int priority = getPriority(priorityOverride, contracts, StringParameterUnmarshaller.class, provider);
          newContracts.put(StringParameterUnmarshaller.class, priority);
       }
       if (isA(provider, InjectorFactory.class, contracts))
@@ -1495,7 +1504,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (isA(provider, DynamicFeature.class, contracts))
       {
          ConstrainedTo constrainedTo = (ConstrainedTo) provider.getAnnotation(ConstrainedTo.class);
-         int priority = getPriority(contracts, DynamicFeature.class, provider);
+         int priority = getPriority(priorityOverride, contracts, DynamicFeature.class, provider);
          if (constrainedTo != null && constrainedTo.value() == RuntimeType.SERVER)
          {
             if (serverDynamicFeatures == null)
@@ -1529,7 +1538,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       if (isA(provider, Feature.class, contracts))
       {
-         int priority = getPriority(contracts, Feature.class, provider);
+         int priority = getPriority(priorityOverride, contracts, Feature.class, provider);
          Feature feature = injectedInstance((Class<? extends Feature>) provider);
          if (feature.configure(new FeatureContextDelegate(this)))
          {
@@ -1550,10 +1559,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public void registerProviderInstance(Object provider)
    {
-      registerProviderInstance(provider, Priorities.USER, null);
+      registerProviderInstance(provider, null, null);
    }
 
-   public void registerProviderInstance(Object provider, int defaultPriority, Map<Class<?>, Integer> contracts)
+   public void registerProviderInstance(Object provider, Map<Class<?>, Integer> contracts, Integer priorityOverride)
    {
       for (Object registered : getInstances())
       {
@@ -1572,7 +1581,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>(parent.getParamConverterProviders());
          }
          paramConverterProviders.add((ParamConverterProvider) provider);
-         int priority = getPriority(contracts, ParamConverterProvider.class, provider.getClass());
+         int priority = getPriority(priorityOverride, contracts, ParamConverterProvider.class, provider.getClass());
          newContracts.put(ParamConverterProvider.class, priority);
       }
       if (isA(provider, MessageBodyReader.class, contracts))
@@ -1580,7 +1589,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addMessageBodyReader((MessageBodyReader) provider);
-            int priority = getPriority(contracts, MessageBodyReader.class, provider.getClass());
+            int priority = getPriority(priorityOverride, contracts, MessageBodyReader.class, provider.getClass());
             newContracts.put(MessageBodyReader.class, priority);
          }
          catch (Exception e)
@@ -1593,7 +1602,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addMessageBodyWriter((MessageBodyWriter) provider);
-            int priority = getPriority(contracts, MessageBodyWriter.class, provider.getClass());
+            int priority = getPriority(priorityOverride, contracts, MessageBodyWriter.class, provider.getClass());
             newContracts.put(MessageBodyWriter.class, priority);
          }
          catch (Exception e)
@@ -1606,7 +1615,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addExceptionMapper((ExceptionMapper) provider);
-            int priority = getPriority(contracts, ExceptionMapper.class, provider.getClass());
+            int priority = getPriority(priorityOverride, contracts, ExceptionMapper.class, provider.getClass());
             newContracts.put(ExceptionMapper.class, priority);
          }
          catch (Exception e)
@@ -1631,7 +1640,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addContextResolver((ContextResolver) provider);
-            int priority = getPriority(contracts, ExceptionMapper.class, provider.getClass());
+            int priority = getPriority(priorityOverride, contracts, ExceptionMapper.class, provider.getClass());
             newContracts.put(ContextResolver.class, priority);
          }
          catch (Exception e)
@@ -1645,7 +1654,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             clientRequestFilters = parent.getClientRequestFilters().clone(this);
          }
-         int priority = getPriority(contracts, ClientRequestFilter.class, provider.getClass());
+         int priority = getPriority(priorityOverride, contracts, ClientRequestFilter.class, provider.getClass());
          clientRequestFilters.registerSingleton((ClientRequestFilter) provider, priority);
          newContracts.put(ClientRequestFilter.class, priority);
       }
@@ -1655,7 +1664,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             clientResponseFilters = parent.getClientResponseFilters().clone(this);
          }
-         int priority = getPriority(contracts, ClientResponseFilter.class, provider.getClass());
+         int priority = getPriority(priorityOverride, contracts, ClientResponseFilter.class, provider.getClass());
          clientResponseFilters.registerSingleton((ClientResponseFilter) provider, priority);
          newContracts.put(ClientResponseFilter.class, priority);
       }
@@ -1684,7 +1693,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(this);
          }
          containerRequestFilterRegistry.registerSingleton((ContainerRequestFilter) provider);
-         int priority = getPriority(contracts, ContainerRequestFilter.class, provider.getClass());
+         int priority = getPriority(priorityOverride, contracts, ContainerRequestFilter.class, provider.getClass());
          newContracts.put(ContainerRequestFilter.class, priority);
       }
       if (isA(provider, PostProcessInterceptor.class, contracts))
@@ -1703,13 +1712,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
          }
          containerResponseFilterRegistry.registerSingleton((ContainerResponseFilter) provider);
-         int priority = getPriority(contracts, ContainerResponseFilter.class, provider.getClass());
+         int priority = getPriority(priorityOverride, contracts, ContainerResponseFilter.class, provider.getClass());
          newContracts.put(ContainerResponseFilter.class, priority);
       }
       if (isA(provider, ReaderInterceptor.class, contracts))
       {
          ConstrainedTo constrainedTo = (ConstrainedTo) provider.getClass().getAnnotation(ConstrainedTo.class);
-         int priority = getPriority(contracts, ReaderInterceptor.class, provider.getClass());
+         int priority = getPriority(priorityOverride, contracts, ReaderInterceptor.class, provider.getClass());
          if (constrainedTo != null && constrainedTo.value() == RuntimeType.SERVER)
          {
             if (serverReaderInterceptorRegistry == null)
@@ -1744,7 +1753,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (isA(provider, WriterInterceptor.class, contracts))
       {
          ConstrainedTo constrainedTo = (ConstrainedTo) provider.getClass().getAnnotation(ConstrainedTo.class);
-         int priority = getPriority(contracts, WriterInterceptor.class, provider.getClass());
+         int priority = getPriority(priorityOverride, contracts, WriterInterceptor.class, provider.getClass());
          if (constrainedTo != null && constrainedTo.value() == RuntimeType.SERVER)
          {
             if (serverWriterInterceptorRegistry == null)
@@ -1838,7 +1847,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (isA(provider, DynamicFeature.class, contracts))
       {
          ConstrainedTo constrainedTo = (ConstrainedTo) provider.getClass().getAnnotation(ConstrainedTo.class);
-         int priority = getPriority(contracts, DynamicFeature.class, provider.getClass());
+         int priority = getPriority(priorityOverride, contracts, DynamicFeature.class, provider.getClass());
          if (constrainedTo != null && constrainedTo.value() == RuntimeType.SERVER)
          {
             if (serverDynamicFeatures == null)
@@ -1879,7 +1888,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             enabledFeatures.add(feature);
          }
          featureInstances.add(provider);
-         int priority = getPriority(contracts, Feature.class, provider.getClass());
+         int priority = getPriority(priorityOverride, contracts, Feature.class, provider.getClass());
          newContracts.put(Feature.class, priority);
 
       }
@@ -2203,52 +2212,88 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    @Override
    public ResteasyProviderFactory register(Class<?> componentClass, int priority)
    {
-      registerProvider(componentClass, false, priority, null);
+      registerProvider(componentClass, priority, false, null);
       return this;
    }
 
    @Override
    public ResteasyProviderFactory register(Class<?> componentClass, Class<?>... contracts)
    {
-      Map<Class<?>, Integer> cons = new HashMap<Class<?>, Integer>();
-      for (Class<?> clazz : contracts)
+      if (contracts == null || contracts.length == 0)
       {
-         cons.put(clazz, Priorities.USER);
+         logger.warn("Attempting to register empty contracts for " + componentClass.getName());
+         return this;
       }
-      registerProvider(componentClass, false, Priorities.USER, cons);
+      Map<Class<?>, Integer> cons = new HashMap<Class<?>, Integer>();
+      for (Class<?> contract : contracts)
+      {
+         if (!contract.isAssignableFrom(componentClass))
+         {
+            logger.warn("Attempting to register unassignable contract for " + componentClass.getName());
+            return this;
+         }
+         cons.put(contract, Priorities.USER);
+      }
+      registerProvider(componentClass, null, false, cons);
       return this;
    }
 
    @Override
    public ResteasyProviderFactory register(Object component, int priority)
    {
-      registerProviderInstance(component, priority, null);
+      registerProviderInstance(component, null, priority);
       return this;
    }
 
    @Override
    public ResteasyProviderFactory register(Object component, Class<?>... contracts)
    {
-      Map<Class<?>, Integer> cons = new HashMap<Class<?>, Integer>();
-      for (Class<?> clazz : contracts)
+      if (contracts == null || contracts.length == 0)
       {
-         cons.put(clazz, Priorities.USER);
+         logger.warn("Attempting to register empty contracts for " + component.getClass().getName());
+         return this;
       }
-      registerProviderInstance(component, Priorities.USER, cons);
+      Map<Class<?>, Integer> cons = new HashMap<Class<?>, Integer>();
+      for (Class<?> contract : contracts)
+      {
+         if (!contract.isAssignableFrom(component.getClass()))
+         {
+            logger.warn("Attempting to register unassignable contract for " + component.getClass().getName());
+            return this;
+         }
+         cons.put(contract, Priorities.USER);
+      }
+      registerProviderInstance(component, cons, null);
       return this;
    }
 
    @Override
    public ResteasyProviderFactory register(Class<?> componentClass, Map<Class<?>, Integer> contracts)
    {
-      registerProvider(componentClass, false, Priorities.USER, contracts);
+      for (Class<?> contract : contracts.keySet())
+      {
+         if (!contract.isAssignableFrom(componentClass))
+         {
+            logger.warn("Attempting to register unassignable contract for " + componentClass.getName());
+            return this;
+         }
+      }
+      registerProvider(componentClass, null, false, contracts);
       return this;
    }
 
    @Override
    public ResteasyProviderFactory register(Object component, Map<Class<?>, Integer> contracts)
    {
-      registerProviderInstance(component, Priorities.USER, contracts);
+      for (Class<?> contract : contracts.keySet())
+      {
+         if (!contract.isAssignableFrom(component.getClass()))
+         {
+            logger.warn("Attempting to register unassignable contract for " + component.getClass().getName());
+            return this;
+         }
+      }
+      registerProviderInstance(component, contracts, null);
       return this;
    }
 
