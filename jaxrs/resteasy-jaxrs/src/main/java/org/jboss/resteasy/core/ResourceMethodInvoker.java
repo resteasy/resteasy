@@ -17,6 +17,8 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
+import org.jboss.resteasy.spi.validation.GeneralValidator;
+import org.jboss.resteasy.spi.validation.ResteasyViolationException;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -67,7 +69,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    protected ContainerResponseFilter[] responseFilters;
    protected WriterInterceptor[] writerInterceptors;
    protected ConcurrentHashMap<String, AtomicLong> stats = new ConcurrentHashMap<String, AtomicLong>();
-   protected Validator validator;
+   protected GeneralValidator validator;
    protected ViolationsContainer<?> violationsContainer;
    protected ResourceInfo resourceInfo;
 
@@ -137,10 +139,10 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       providerFactory.getContainerRequestFilterRegistry().getListeners().add(this);
       providerFactory.getContainerResponseFilterRegistry().getListeners().add(this);
       providerFactory.getServerWriterInterceptorRegistry().getListeners().add(this);
-      ContextResolver<Validator> resolver = providerFactory.getContextResolver(Validator.class, MediaType.WILDCARD_TYPE);
+      ContextResolver<GeneralValidator> resolver = providerFactory.getContextResolver(GeneralValidator.class, MediaType.WILDCARD_TYPE);
       if (resolver != null)
       {
-         validator = providerFactory.getContextResolver(Validator.class, MediaType.WILDCARD_TYPE).getContext(null);
+         validator = providerFactory.getContextResolver(GeneralValidator.class, MediaType.WILDCARD_TYPE).getContext(null);
       }
    }
 
@@ -418,7 +420,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
       if (violationsContainer != null && violationsContainer.size() > 0)
       {
-         throw new ResteasyViolationExceptionExtension(violationsContainer);
+         throw new ResteasyViolationException(violationsContainer);
       }
 
       if (request.getAsyncContext().isSuspended())

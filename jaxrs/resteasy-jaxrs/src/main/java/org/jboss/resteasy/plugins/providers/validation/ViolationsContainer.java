@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +14,8 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.ElementKind;
 import javax.validation.Path.Node;
+
+import org.jboss.resteasy.validation.ResteasyConstraintViolation;
 
 /**
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
@@ -24,105 +27,147 @@ public class ViolationsContainer<T> implements Serializable
 {
    private static final long serialVersionUID = -5048958457582876197L;
    
-   private Set<ConstraintViolation<T>> fieldViolations       = new HashSet<ConstraintViolation<T>>();
-   private Set<ConstraintViolation<T>> propertyViolations    = new HashSet<ConstraintViolation<T>>();
-   private Set<ConstraintViolation<T>> classViolations       = new HashSet<ConstraintViolation<T>>();
-   private Set<ConstraintViolation<T>> parameterViolations   = new HashSet<ConstraintViolation<T>>();
-   private Set<ConstraintViolation<T>> returnValueViolations = new HashSet<ConstraintViolation<T>>();
-   
+//   private Set<ResteasyConstraintViolation> fieldViolations       = new HashSet<ResteasyConstraintViolation>();
+//   private Set<ResteasyConstraintViolation> propertyViolations    = new HashSet<ResteasyConstraintViolation>();
+//   private Set<ResteasyConstraintViolation> classViolations       = new HashSet<ResteasyConstraintViolation>();
+//   private Set<ResteasyConstraintViolation> parameterViolations   = new HashSet<ResteasyConstraintViolation>();
+//   private Set<ResteasyConstraintViolation> returnValueViolations = new HashSet<ResteasyConstraintViolation>();
+
+   private List<ResteasyConstraintViolation> fieldViolations       = new ArrayList<ResteasyConstraintViolation>();
+   private List<ResteasyConstraintViolation> propertyViolations    = new ArrayList<ResteasyConstraintViolation>();
+   private List<ResteasyConstraintViolation> classViolations       = new ArrayList<ResteasyConstraintViolation>();
+   private List<ResteasyConstraintViolation> parameterViolations   = new ArrayList<ResteasyConstraintViolation>();
+   private List<ResteasyConstraintViolation> returnValueViolations = new ArrayList<ResteasyConstraintViolation>();
+
    private enum ConstraintType {CLASS, FIELD, PROPERTY, PARAMETER, RETURN_VALUE};
    
    public ViolationsContainer()
    {   
    }
    
-   public ViolationsContainer(Set<ConstraintViolation<T>> set)
-   {
-      addViolations(set);
-   }
+//   public ViolationsContainer(Set<ConstraintViolation<T>> set)
+//   {
+//      addViolations(set);
+//   }
    
    public ViolationsContainer(String s)
    {
       
    }
    
-   public void addViolations(Set<? extends ConstraintViolation<T>> set)
+   public ViolationsContainer(Set<ResteasyConstraintViolation> set)
    {
-      Iterator<? extends ConstraintViolation<T>> it = set.iterator();
-      while (it.hasNext())
-      {
-         ConstraintViolation<T> violation = it.next();
-         switch (getConstraintType(violation))
-         {
-            case FIELD:
-               fieldViolations.add(violation);
-               break;
+      addViolations(set);
+   } 
+   
+//   public void addViolations(Set<? extends ConstraintViolation<T>> set)
+//   {
+//      Iterator<? extends ConstraintViolation<T>> it = set.iterator();
+//      while (it.hasNext())
+//      {
+//         ConstraintViolation<T> violation = it.next();
+//         switch (getConstraintType(violation))
+//         {
+//            case FIELD:
+//               fieldViolations.add(violation);
+//               break;
+//
+//            case PROPERTY:
+//               propertyViolations.add(violation);
+//               break;
+//
+//            case CLASS:
+//               classViolations.add(violation);
+//               break;
+//
+//            case PARAMETER:
+//               parameterViolations.add(violation);
+//               break;
+//
+//            case RETURN_VALUE:
+//               returnValueViolations.add(violation);
+//               break;
+//         }
+//      }
+//   }
+   
+   public void addViolations(Set<? extends ResteasyConstraintViolation> set)
+   {
+    Iterator<? extends ResteasyConstraintViolation> it = set.iterator();
+    while (it.hasNext())
+    {
+       ResteasyConstraintViolation violation = it.next();
+       switch (violation.getConstraintType())
+       {
+          case FIELD:
+             fieldViolations.add(violation);
+             break;
 
-            case PROPERTY:
-               propertyViolations.add(violation);
-               break;
+          case PROPERTY:
+             propertyViolations.add(violation);
+             break;
 
-            case CLASS:
-               classViolations.add(violation);
-               break;
+          case CLASS:
+             classViolations.add(violation);
+             break;
 
-            case PARAMETER:
-               parameterViolations.add(violation);
-               break;
+          case PARAMETER:
+             parameterViolations.add(violation);
+             break;
 
-            case RETURN_VALUE:
-               returnValueViolations.add(violation);
-               break;
-         }
-      }
+          case RETURN_VALUE:
+             returnValueViolations.add(violation);
+             break;
+       }
+    }
    }
    
-   public void addFieldViolation(ConstraintViolation<T> v)
+   public void addFieldViolation(ResteasyConstraintViolation v)
    {
       fieldViolations.add(v);
    }
    
-   public void addPropertyViolation(ConstraintViolation<T> v)
+   public void addPropertyViolation(ResteasyConstraintViolation v)
    {
       propertyViolations.add(v);
    }
    
-   public void addClassViolation(ConstraintViolation<T> v)
+   public void addClassViolation(ResteasyConstraintViolation v)
    {
       classViolations.add(v);
    }
    
-   public void addParameterViolation(ConstraintViolation<T> v)
+   public void addParameterViolation(ResteasyConstraintViolation v)
    {
       parameterViolations.add(v);
    }
    
-   public void addReturnValueViolation(ConstraintViolation<T> v)
+   public void addReturnValueViolation(ResteasyConstraintViolation v)
    {
       returnValueViolations.add(v);
    }
    
-   public Set<ConstraintViolation<T>> getFieldViolations()
+   public List<ResteasyConstraintViolation> getFieldViolations()
    {
       return fieldViolations;
    }
    
-   public Set<ConstraintViolation<T>> getPropertyViolations()
+   public List<ResteasyConstraintViolation> getPropertyViolations()
    {
       return propertyViolations;
    }
    
-   public Set<ConstraintViolation<T>> getClassViolations()
+   public List<ResteasyConstraintViolation> getClassViolations()
    {
       return classViolations;
    }
    
-   public Set<ConstraintViolation<T>> getParameterViolations()
+   public List<ResteasyConstraintViolation> getParameterViolations()
    {
       return parameterViolations;
    }
    
-   public Set<ConstraintViolation<T>> getReturnValueViolations()
+   public List<ResteasyConstraintViolation> getReturnValueViolations()
    {
       return returnValueViolations;
    }
@@ -146,10 +191,10 @@ public class ViolationsContainer<T> implements Serializable
       return sb.toString();
    }
    
-   private StringBuffer setToStringBuffer(Set<ConstraintViolation<T>> set)
+   private StringBuffer setToStringBuffer(List<ResteasyConstraintViolation> set)
    {
       StringBuffer sb = new StringBuffer();
-      Iterator<ConstraintViolation<T>> it = set.iterator();
+      Iterator<ResteasyConstraintViolation> it = set.iterator();
       while (it.hasNext())
       {
          sb.append(it.next().toString()).append('\r');

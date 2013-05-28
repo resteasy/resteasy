@@ -1,12 +1,15 @@
 package org.jboss.resteasy.spi.validation;
 
-import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
-
-import javax.validation.ConstraintViolation;
-import javax.ws.rs.WebApplicationException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ValidationException;
+
+import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
+import org.jboss.resteasy.validation.ResteasyConstraintViolation;
+//import org.jboss.resteasy.validation.ViolationsContainer;
 
 /**
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
@@ -17,201 +20,173 @@ import java.util.List;
  * @TODO Need to work on representation of exceptions
  * @TODO Add javadoc.
  */
-public class ResteasyViolationException extends WebApplicationException
-{
+public class ResteasyViolationException extends ValidationException
+{  
    private static final long serialVersionUID = 2623733139912277260L;
    
-   @SuppressWarnings("rawtypes")
-   private ViolationsContainer container;
+   private Exception exception;
    
-   private List<String> allExceptions;
+   private List<ResteasyConstraintViolation> fieldViolations       = new ArrayList<ResteasyConstraintViolation>();
+   private List<ResteasyConstraintViolation> propertyViolations    = new ArrayList<ResteasyConstraintViolation>();
+   private List<ResteasyConstraintViolation> classViolations       = new ArrayList<ResteasyConstraintViolation>();
+   private List<ResteasyConstraintViolation> parameterViolations   = new ArrayList<ResteasyConstraintViolation>();
+   private List<ResteasyConstraintViolation> returnValueViolations = new ArrayList<ResteasyConstraintViolation>();
    
-   private List<String> fieldViolations       = new ArrayList<String>();
-   private List<String> propertyViolations    = new ArrayList<String>();
-   private List<String> classViolations       = new ArrayList<String>();
-   private List<String> parameterViolations   = new ArrayList<String>();
-   private List<String> returnValueViolations = new ArrayList<String>();
-   private List<List<String>> allViolations;
+   private List<ResteasyConstraintViolation> allViolations; 
+   private List<List<ResteasyConstraintViolation>> violationLists;
    
-   public ResteasyViolationException()
+   public ResteasyViolationException(ViolationsContainer container)
    {
-      super(500);
+      convertToStrings(container);
+//      exception = container.getException();
+   }
+   
+   public Exception getException()
+   {
+      return exception;
    }
 
-   public ResteasyViolationException(ViolationsContainer<?> container)
+   public void setException(Exception exception)
    {
-      super(500);
-      this.container = container;
+      this.exception = exception;
    }
-   
-   public void setExceptions(List<String> exceptions)
+
+   public List<ResteasyConstraintViolation> getViolations()
    {
-      this.allExceptions = exceptions;
-   }
-   
-   public List<String> getExceptions()
-   {
-      if (allExceptions == null)
+      if (allViolations == null)
       {
-         allExceptions = new ArrayList<String>();
-         allExceptions.addAll(fieldViolations);
-         allExceptions.addAll(propertyViolations);
-         allExceptions.addAll(classViolations);
-         allExceptions.addAll(parameterViolations);
-         allExceptions.addAll(returnValueViolations);
+         allViolations = new ArrayList<ResteasyConstraintViolation>();
+         allViolations.addAll(fieldViolations);
+         allViolations.addAll(propertyViolations);
+         allViolations.addAll(classViolations);
+         allViolations.addAll(parameterViolations);
+         allViolations.addAll(returnValueViolations);
       }
-      return allExceptions;
+      return allViolations;
    }
    
-   public List<String> getFieldViolations()
+   public List<ResteasyConstraintViolation> getFieldViolations()
    {
-      if (size() == 0)
-      {
-         convertToStrings();
-      }
       return fieldViolations;
    }
    
-   public List<String> getPropertyViolations()
+   public List<ResteasyConstraintViolation> getPropertyViolations()
    {
-      if (size() == 0)
-      {
-         convertToStrings();
-      }
       return propertyViolations;
    }
    
-   public List<String> getClassViolations()
+   public List<ResteasyConstraintViolation> getClassViolations()
    {
-      if (size() == 0)
-      {
-         convertToStrings();
-      }
       return classViolations;
    }
    
-   public List<String> getParameterViolations()
+   public List<ResteasyConstraintViolation> getParameterViolations()
    {
-      if (size() == 0)
-      {
-         convertToStrings();
-      }
       return parameterViolations;
    }
    
-   public List<String> getReturnValueViolations()
+   public List<ResteasyConstraintViolation> getReturnValueViolations()
    {
-      if (size() == 0)
-      {
-         convertToStrings();
-      }
       return returnValueViolations;
    }
    
    public int size()
    {
-      return fieldViolations.size() +
-            propertyViolations.size() +
-            classViolations.size() + 
-            parameterViolations.size() +
-            returnValueViolations.size();
+      return getViolations().size();
    }
    
-   public List<List<String>> getStrings()
+   public List<List<ResteasyConstraintViolation>> getViolationLists()
    {
-      if (size() == 0)
+      return violationLists;
+   }
+   
+   public String toString()
+   {
+      StringBuffer sb = new StringBuffer();
+      for (Iterator<List<ResteasyConstraintViolation>> it = violationLists.iterator(); it.hasNext(); )
       {
-         convertToStrings();
+         List<ResteasyConstraintViolation> violations = it.next();
+         for (Iterator<ResteasyConstraintViolation> it2 = violations.iterator(); it2.hasNext(); )
+         {
+            sb.append(it2.next().toString()).append('\r');
+         }
       }
-      return allViolations;
+      return sb.toString();
    }
    
    @SuppressWarnings("rawtypes")
-   protected ViolationsContainer getViolationsContainer()
+   protected void convertToStrings(ViolationsContainer container)
    {
-      return container;
-   }
-   
-   @SuppressWarnings("rawtypes")
-   protected void setViolationsContainer(ViolationsContainer container)
-   {
-      this.container = container;
-   }
-   
-   @SuppressWarnings("rawtypes")
-   protected void convertToStrings()
-   {
-      if (allViolations != null)
+      if (violationLists != null)
       {
          return;
       }
-      allViolations = new ArrayList<List<String>>();
-      Iterator it = container.getFieldViolations().iterator();
-      while (it.hasNext())
-      {
-         ConstraintViolation cv = (ConstraintViolation) it.next();
-         fieldViolations.add("field " + cv.getPropertyPath() + ": " + cv.getMessage() + ": " + cv.getInvalidValue().toString());
-      }
+      violationLists = new ArrayList<List<ResteasyConstraintViolation>>();
+      fieldViolations = container.getFieldViolations();
+      propertyViolations = container.getPropertyViolations();
+      classViolations = container.getClassViolations();
+      parameterViolations = container.getParameterViolations();
+      returnValueViolations = container.getReturnValueViolations();
       
-      it = container.getPropertyViolations().iterator();
-      while (it.hasNext())
-      {
-         ConstraintViolation cv = (ConstraintViolation) it.next();
-         propertyViolations.add("property " + cv.getPropertyPath() + ": " + cv.getMessage() + ": " + cv.getInvalidValue().toString());
-      }
-      
-      it = container.getClassViolations().iterator();
-      while (it.hasNext())
-      {
-         ConstraintViolation cv = (ConstraintViolation) it.next();
-         classViolations.add(cv.getMessage() + ": " + cv.getInvalidValue().toString());
-      }
-      
-      it = container.getParameterViolations().iterator();
-      while (it.hasNext())
-      {
-         ConstraintViolation cv = (ConstraintViolation) it.next();
-         parameterViolations.add("parameter " + cv.getPropertyPath() + ": " + cv.getMessage() + ": " + cv.getInvalidValue().toString());
-      }
-      
-      it = container.getReturnValueViolations().iterator();
-      while (it.hasNext())
-      {
-         ConstraintViolation cv = (ConstraintViolation) it.next();
-         returnValueViolations.add("return value: " + cv.getMessage() + ": " + cv.getInvalidValue().toString());
-      }
-      allViolations.add(fieldViolations);
-      allViolations.add(propertyViolations);
-      allViolations.add(classViolations);
-      allViolations.add(parameterViolations);
-      allViolations.add(returnValueViolations);
+//      Iterator it = container.getFieldViolations().iterator();
+//      while (it.hasNext())
+//      {
+//         ConstraintViolation cv = (ConstraintViolation) it.next();
+//         fieldViolations.add(new ResteasyConstraintViolation(ConstraintType.Type.FIELD, cv.getPropertyPath().toString(), cv.getMessage(), cv.getInvalidValue().toString()));
+//      }
+//      
+//      it = container.getPropertyViolations().iterator();
+//      while (it.hasNext())
+//      {
+//         ConstraintViolation cv = (ConstraintViolation) it.next();
+//         propertyViolations.add(new ResteasyConstraintViolation(ConstraintType.Type.PROPERTY, cv.getPropertyPath().toString(), cv.getMessage(), cv.getInvalidValue().toString()));
+//      }
+//      
+//      it = container.getClassViolations().iterator();
+//      while (it.hasNext())
+//      {
+//         ConstraintViolation cv = (ConstraintViolation) it.next();
+//         classViolations.add(new ResteasyConstraintViolation(ConstraintType.Type.CLASS, cv.getRootBeanClass().getName(), cv.getMessage(), cv.getInvalidValue().toString()));
+//      }
+//      
+//      it = container.getParameterViolations().iterator();
+//      while (it.hasNext())
+//      {
+//         ConstraintViolation cv = (ConstraintViolation) it.next();
+//         parameterViolations.add(new ResteasyConstraintViolation(ConstraintType.Type.PARAMETER, cv.getPropertyPath().toString(), cv.getMessage(), convertArrayToString(cv.getInvalidValue())));
+//      }
+//      
+//      it = container.getReturnValueViolations().iterator();
+//      while (it.hasNext())
+//      {
+//         ConstraintViolation cv = (ConstraintViolation) it.next();
+//         returnValueViolations.add(new ResteasyConstraintViolation(ConstraintType.Type.RETURN_VALUE, cv.getPropertyPath().toString(), cv.getMessage(), cv.getInvalidValue().toString()));
+//      }
+      violationLists.add(fieldViolations);
+      violationLists.add(propertyViolations);
+      violationLists.add(classViolations);
+      violationLists.add(parameterViolations);
+      violationLists.add(returnValueViolations);
    }
-   
-   protected String expandDelimiter(String s)
+
+   protected String convertArrayToString(Object o)
    {
-      StringBuffer sb = new StringBuffer();
-      for (int i = 0; i < s.length(); i++)
+      String result = null;
+      if (o instanceof Object[])
       {
-         sb.append(s.charAt(i));
-         if (s.charAt(i) == ':')
+         Object[] array = Object[].class.cast(o);
+         StringBuffer sb = new StringBuffer("[").append(convertArrayToString(array[0]));
+         for (int i = 1; i < array.length; i++)
          {
-            sb.append(':');
+            sb.append(", ").append(convertArrayToString(array[i]));
          }
+         sb.append("]");
+         result = sb.toString();
       }
-      return sb.toString();
-   }
-   
-   protected String contractDelimiter(String s)
-   {
-      StringBuffer sb = new StringBuffer();
-      for (int i = 0; i < s.length(); i++)
+      else
       {
-         sb.append(s.charAt(i));
-         if (s.charAt(i) == ':' && s.charAt(i + 1) == ':')
-         {
-            i++;
-         }
+         result = o.toString();
       }
-      return sb.toString();
+      return result;
    }
 }
