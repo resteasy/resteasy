@@ -9,6 +9,7 @@ import org.junit.Test;
 import javax.validation.constraints.AssertTrue;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProcessingException;
@@ -21,6 +22,9 @@ import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
@@ -57,6 +61,41 @@ public class ResponseTest extends BaseResourceTest
    public static class Resource
    {
       public static final String ENTITY = "ENtiTy";
+
+      @GET
+      @Path("getentityannotations")
+      public Response getEntityAnnotations() {
+         Annotation[] annotations = ResponseFilter.class.getAnnotations();
+         Response.ResponseBuilder builder = Response.ok();
+         builder = builder.entity("entity", annotations);
+         Response response = builder.build();
+         return response;
+      }
+
+      @POST
+      @Path("hasentity")
+      public Response hasEntity(String entity) {
+         Response.ResponseBuilder builder = Response.ok();
+         if (entity != null && entity.length() != 0)
+            builder = builder.entity(entity);
+         Response response = builder.build();
+         return response;
+      }
+
+      @GET
+      @Path("empty")
+      public Response empty()
+      {
+         return Response.ok().build();
+      }
+
+      @HEAD
+      @Path("head")
+      public String head()
+      {
+         System.out.println("here!!");
+         return "head";
+      }
 
       @GET
       @Path("entity")
@@ -185,6 +224,27 @@ public class ResponseTest extends BaseResourceTest
       }
    }
 
+   @Provider
+   public static class ResponseFilter implements ContainerResponseFilter
+   {
+      @Override
+      public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException
+      {
+         if (requestContext.getUriInfo().getPath().contains("hasentity"))
+         {
+         System.out.println("HASENTITY: " + responseContext.hasEntity());
+         responseContext.setEntity(String.valueOf(responseContext.hasEntity()), null, MediaType.TEXT_PLAIN_TYPE);
+         }
+         else if (requestContext.getUriInfo().getPath().contains("getentityannotations"))
+         {
+            for (Annotation annotation : responseContext.getEntityAnnotations())
+            {
+               System.out.println(annotation.annotationType().getName());
+            }
+         }
+      }
+   }
+
 
    static Client client;
 
@@ -192,6 +252,7 @@ public class ResponseTest extends BaseResourceTest
    public static void setup() throws Exception
    {
       addPerRequestResource(Resource.class);
+      deployment.getProviderFactory().register(ResponseFilter.class);
       client = ClientBuilder.newClient();
    }
 
@@ -200,6 +261,54 @@ public class ResponseTest extends BaseResourceTest
    {
       client.close();
    }
+
+   @Test
+   public void testHasEntity()
+   {
+      Response response = client.target(generateURL("/hasentity")).request("*/*").post(Entity.entity("entity", MediaType.WILDCARD_TYPE));
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals(response.getMediaType(), MediaType.TEXT_PLAIN_TYPE);
+      response.close();
+
+   }
+
+
+   @Test
+   public void testHead()
+   {
+      // mucks up stream so create our own client.
+      //Client client = ClientBuilder.newClient();
+      Response response = client.target(generateURL("/head")).request().head();
+      Assert.assertEquals(200, response.getStatus());
+      if (response.hasEntity())
+      {
+         String str = response.readEntity(String.class);
+      }
+      response.close();
+      //client.close();
+
+   }
+
+   @Test
+   public void testEmpty()
+   {
+      Response response = client.target(generateURL("/empty")).request().head();
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertFalse(response.hasEntity());
+      response.close();
+
+   }
+
+   @Test
+   public void testEntityAnnotations()
+   {
+      Response response = client.target(generateURL("/getentityannotations")).request().get();
+      Assert.assertEquals(200, response.getStatus());
+      response.close();
+
+   }
+
+
 
    @Test
    public void testNoStatus()

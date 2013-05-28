@@ -115,13 +115,18 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
       if (interceptors == null || index >= interceptors.length)
       {
          MessageBodyWriter writer = getWriter();
-         writer.writeTo(entity, type, genericType, annotations, mediaType, headers, outputStream);
+         writeTo(writer);
       }
       else
       {
          interceptors[index++].aroundWriteTo(this);
          // we used to pop the index, but the TCK doesn't like this
       }
+   }
+
+   protected void writeTo(MessageBodyWriter writer) throws IOException
+   {
+      writer.writeTo(entity, type, genericType, annotations, mediaType, headers, outputStream);
    }
 
    protected MessageBodyWriter getWriter()

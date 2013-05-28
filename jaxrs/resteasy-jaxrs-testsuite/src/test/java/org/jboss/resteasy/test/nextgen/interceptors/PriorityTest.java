@@ -151,6 +151,22 @@ public class PriorityTest
 
    }
 
+   @Test
+   public void testPriorityOverride()
+   {
+      JaxrsInterceptorRegistry<ClientRequestFilter> clientRequestFilterRegistry = new JaxrsInterceptorRegistry<ClientRequestFilter>(new ResteasyProviderFactory(), ClientRequestFilter.class);
+
+      clientRequestFilterRegistry.registerClass(ClientRequestFilter3.class, 100);
+      clientRequestFilterRegistry.registerClass(ClientRequestFilter1.class, 200);
+      clientRequestFilterRegistry.registerClass(ClientRequestFilter2.class, 300);
+
+      ClientRequestFilter[] clientRequestFilters = clientRequestFilterRegistry.postMatch(null, null);
+      Assert.assertTrue(clientRequestFilters[0] instanceof ClientRequestFilter3);
+      Assert.assertTrue(clientRequestFilters[1] instanceof ClientRequestFilter1);
+      Assert.assertTrue(clientRequestFilters[2] instanceof ClientRequestFilter2);
+
+   }
+
 
 
 

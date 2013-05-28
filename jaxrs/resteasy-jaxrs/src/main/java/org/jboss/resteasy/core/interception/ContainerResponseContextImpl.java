@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core.interception;
 
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -28,6 +29,8 @@ import java.util.Set;
  */
 public class ContainerResponseContextImpl implements ContainerResponseContext
 {
+   private final static Logger logger = Logger.getLogger(ContainerResponseContextImpl.class);
+
    protected final HttpRequest request;
    protected final HttpResponse httpResponse;
    protected final BuiltResponse jaxrsResponse;
@@ -90,6 +93,7 @@ public class ContainerResponseContextImpl implements ContainerResponseContext
    @Override
    public void setEntity(Object entity)
    {
+      //if (entity != null) logger.info("*** setEntity(Object) " + entity.toString());
       jaxrsResponse.setEntity(entity);
       // todo TCK does weird things in its testing of get length
       // it resets the entity in a response filter which results
@@ -101,6 +105,7 @@ public class ContainerResponseContextImpl implements ContainerResponseContext
    @Override
    public void setEntity(Object entity, Annotation[] annotations, MediaType mediaType)
    {
+      //if (entity != null) logger.info("*** setEntity(Object, Annotation[], MediaType) " + entity.toString() + ", " + mediaType);
       jaxrsResponse.setEntity(entity);
       jaxrsResponse.setAnnotations(annotations);
       jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mediaType);
