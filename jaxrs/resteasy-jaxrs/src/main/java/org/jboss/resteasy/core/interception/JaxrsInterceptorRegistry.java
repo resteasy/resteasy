@@ -426,10 +426,10 @@ public class JaxrsInterceptorRegistry<T>
       register(new OnDemandInterceptorFactory(declaring));
    }
 
-   public void registerClass(Class<? extends T> declaring, int Priority)
+   public void registerClass(Class<? extends T> declaring, int priority)
    {
       OnDemandInterceptorFactory factory = new OnDemandInterceptorFactory(declaring);
-      if (Priority > Integer.MIN_VALUE) factory.setOrder(Priority);
+      factory.setOrder(priority);
       register(factory);
    }
 
@@ -438,10 +438,10 @@ public class JaxrsInterceptorRegistry<T>
       register(new SingletonInterceptorFactory(interceptor.getClass(), interceptor));
    }
 
-   public void registerSingleton(T interceptor, int Priority)
+   public void registerSingleton(T interceptor, int priority)
    {
       SingletonInterceptorFactory factory = new SingletonInterceptorFactory(interceptor.getClass(), interceptor);
-      if (Priority > Integer.MIN_VALUE) factory.setOrder(Priority);
+      factory.setOrder(priority);
       register(factory);
    }
 }

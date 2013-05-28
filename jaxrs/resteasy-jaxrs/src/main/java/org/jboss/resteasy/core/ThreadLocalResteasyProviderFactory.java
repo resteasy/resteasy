@@ -79,7 +79,7 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    @Override
    public MediaType getConcreteMediaTypeFromMessageBodyWriters(Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return getDelegate().getConcreteMediaTypeFromMessageBodyWriters(type, genericType, annotations, mediaType);
+      return super.getConcreteMediaTypeFromMessageBodyWriters(type, genericType, annotations, mediaType);
    }
 
    @Override
