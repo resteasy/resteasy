@@ -3,6 +3,7 @@ package org.jboss.resteasy.core.interception;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.NotSupportedException;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -47,14 +48,25 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
       if (interceptors == null || index >= interceptors.length)
       {
          MessageBodyReader reader = getReader();
-         return reader.readFrom(type, genericType, annotations, mediaType, headers, inputStream);
+         return readFrom(reader);
       }
       return interceptors[index++].aroundReadFrom(this);
       // index--;  we used to pop the index, but the TCK does not like this
    }
 
+   protected Object readFrom(MessageBodyReader reader) throws IOException
+   {
+      return reader.readFrom(type, genericType, annotations, mediaType, headers, inputStream);
+   }
+
    protected MessageBodyReader getReader()
    {
+      MediaType mediaType = this.mediaType;
+      // spec says set to octet stream
+      if (getHeaders() != null && getHeaders().getFirst(HttpHeaders.CONTENT_TYPE) == null && mediaType.isWildcardType())
+      {
+         mediaType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
+      }
       MessageBodyReader reader = providerFactory.getMessageBodyReader(type,
               genericType, annotations, mediaType);
       if (reader == null)

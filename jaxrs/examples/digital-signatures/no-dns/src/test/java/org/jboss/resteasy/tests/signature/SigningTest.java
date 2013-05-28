@@ -20,6 +20,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
@@ -107,10 +108,11 @@ public class SigningTest
       try
       {
          System.out.println(response.readEntity(String.class));
-         throw new RuntimeException("UNREACHABLE!!!");
+         Assert.fail();
       }
-      catch (UnauthorizedSignatureException e)
+      catch (ProcessingException pe)
       {
+         UnauthorizedSignatureException e = (UnauthorizedSignatureException)pe.getCause();
          System.out.println("We expect this failure: " + e.getMessage());
 
       }
@@ -178,10 +180,11 @@ public class SigningTest
       try
       {
          String output = response.readEntity(String.class);
-         throw new Exception("unreachable!");
+         Assert.fail();
       }
-      catch (UnauthorizedSignatureException e)
+      catch (ProcessingException pe)
       {
+         UnauthorizedSignatureException e = (UnauthorizedSignatureException)pe.getCause();
          System.out.println("Verification failed: " + e.getMessage());
       }
       response.close();
