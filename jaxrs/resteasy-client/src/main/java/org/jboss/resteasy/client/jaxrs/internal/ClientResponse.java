@@ -79,7 +79,7 @@ public abstract class ClientResponse extends BuiltResponse
    public boolean hasEntity()
    {
       abortIfClosed();
-      return entity != null || getMediaType() != null;
+      return getInputStream() != null && (entity != null || getMediaType() != null);
    }
 
    @Override

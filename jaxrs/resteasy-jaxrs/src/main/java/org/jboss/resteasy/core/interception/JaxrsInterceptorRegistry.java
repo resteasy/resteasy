@@ -7,6 +7,7 @@ import javax.annotation.Priority;
 import javax.ws.rs.NameBinding;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.PreMatching;
+import javax.ws.rs.core.Application;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
@@ -121,11 +122,13 @@ public class JaxrsInterceptorRegistry<T>
          {
             if (nameBound.size() > 0)
             {
+               Application application = ResteasyProviderFactory.getContextData(Application.class);
                // must match all namebound annotations
                for (Class<? extends Annotation> annotation : nameBound)
                {
                   if (!targetClass.isAnnotationPresent(annotation) &&
-                          !target.isAnnotationPresent(annotation))
+                          !target.isAnnotationPresent(annotation)
+                          && (application == null || !application.getClass().isAnnotationPresent(annotation)))
                   {
                      return null;
                   }
