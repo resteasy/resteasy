@@ -232,7 +232,16 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          uriInfo.pushMatchedURI(uriInfo.getMatchingPath());
       }
       uriInfo.pushCurrentResource(target);
-      return invokeOnTarget(request, response, target);
+      BuiltResponse rtn = invokeOnTarget(request, response, target);
+      if (rtn != null && request.getHttpMethod().equalsIgnoreCase("HEAD"))
+      {
+         // STUPID TCK sending a response back with HEAD request causes unread client input stream
+         // to screw up socket state.
+         rtn.setEntity(null);
+         rtn.setEntityClass(null);
+         rtn.setGenericType(null);
+      }
+      return rtn;
    }
 
    protected BuiltResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
@@ -281,7 +290,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       if (rtn == null || method.getReturnType().equals(void.class))
       {
          BuiltResponse build = (BuiltResponse) Response.noContent().build();
-         build.setAnnotations(method.getAnnotatedMethod().getAnnotations());
+         build.addMethodAnnotations(method.getAnnotatedMethod());
          return build;
       }
       if (Response.class.isAssignableFrom(method.getReturnType()) || rtn instanceof Response)
@@ -294,7 +303,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
             rtn = new BuiltResponse(r.getStatus(), metadata, r.getEntity(), null);
          }
          BuiltResponse rtn1 = (BuiltResponse) rtn;
-         if (rtn1.getAnnotations() == null) rtn1.setAnnotations(method.getAnnotatedMethod().getAnnotations());
+         rtn1.addMethodAnnotations(method.getAnnotatedMethod());
          if (rtn1.getGenericType() == null)
          {
             if (getMethod().getReturnType().equals(Response.class))
@@ -322,7 +331,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
             jaxrsResponse.setGenericType(method.getGenericReturnType());
          }
       }
-      if (jaxrsResponse.getAnnotations() == null) jaxrsResponse.setAnnotations(method.getAnnotatedMethod().getAnnotations());
+      jaxrsResponse.addMethodAnnotations(method.getAnnotatedMethod());
       return jaxrsResponse;
    }
 
