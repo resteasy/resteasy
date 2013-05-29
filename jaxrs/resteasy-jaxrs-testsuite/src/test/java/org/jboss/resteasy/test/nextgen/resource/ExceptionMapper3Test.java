@@ -17,55 +17,18 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-import java.io.IOException;
 import java.lang.reflect.Type;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
+ * RESTEASY-666
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class ExceptionMapperTest extends BaseResourceTest
+public class ExceptionMapper3Test extends BaseResourceTest
 {
-   @Provider
-   public static class RuntimeExceptionMapper implements
-           ExceptionMapper<RuntimeException>
-   {
-
-      @Override
-      public Response toResponse(RuntimeException exception) {
-         return Response.status(Response.Status.NOT_ACCEPTABLE).build();
-      }
-   }
-
-   @Provider
-   public static class ThrowableMapper implements
-           ExceptionMapper<Throwable>
-   {
-
-      @Override
-      public Response toResponse(Throwable exception) {
-         return Response.ok(getClass().getName()).build();
-      }
-   }
-
-
-   @Provider
-   public static class WebAppExceptionMapper implements
-           ExceptionMapper<WebApplicationException> {
-
-      @Override
-      public Response toResponse(WebApplicationException exception) {
-         // When not found, i.e. url is wrong, one get also
-         // WebApplicationException
-         if (exception.getClass() != WebApplicationException.class)
-            return exception.getResponse();
-         return Response.status(Response.Status.ACCEPTED).build();
-      }
-
-   }
-
    public static class MyCustomException extends RuntimeException {
       public MyCustomException(final String message) {
          super(message);
@@ -87,6 +50,14 @@ public class ExceptionMapperTest extends BaseResourceTest
    }
 
    @Provider
+   public static class DefaultExceptionMapper extends AbstractExceptionMapper<RuntimeException> {
+      @Override
+      protected void handleError(final Response.ResponseBuilder builder, final RuntimeException e) {
+         builder.entity("default").type(MediaType.TEXT_HTML_TYPE);
+      }
+   }
+
+   @Provider
    public static class MyCustomExceptionMapper extends AbstractExceptionMapper<MyCustomException> {
       @Override
       protected void handleError(final Response.ResponseBuilder builder, final MyCustomException e) {
@@ -96,21 +67,7 @@ public class ExceptionMapperTest extends BaseResourceTest
 
    @Path("resource")
    public static class Resource {
-      @GET
-      @Path("responseok")
-      public String responseOk() {
-         Response r = Response.ok("hello").build();
-         throw new WebApplicationException(r);
-      }
-
-      @GET
-      @Path("throwable")
-      public String throwable() throws Throwable
-      {
-         throw new Throwable(new RuntimeException(new ClientErrorException(499)));
-      }
-
-      @GET
+    @GET
       @Path("custom")
       public String custom() throws Throwable
       {
@@ -125,9 +82,7 @@ public class ExceptionMapperTest extends BaseResourceTest
    @BeforeClass
    public static void setup()
    {
-      deployment.getProviderFactory().register(ThrowableMapper.class);
-      deployment.getProviderFactory().register(WebAppExceptionMapper.class);
-      deployment.getProviderFactory().register(RuntimeExceptionMapper.class);
+      deployment.getProviderFactory().register(DefaultExceptionMapper.class);
       deployment.getProviderFactory().register(MyCustomExceptionMapper.class);
       addPerRequestResource(Resource.class);
       client = ClientBuilder.newClient();
@@ -137,14 +92,6 @@ public class ExceptionMapperTest extends BaseResourceTest
    public static void cleanup()
    {
       client.close();
-   }
-
-   //@Test
-   public void testThrowable()
-   {
-      Response response = client.target(generateURL("/resource/throwable")).request().get();
-      Assert.assertEquals(response.getStatus(), 200);
-      Assert.assertEquals(ThrowableMapper.class.getName(), response.readEntity(String.class));
    }
 
    @Test
@@ -157,16 +104,4 @@ public class ExceptionMapperTest extends BaseResourceTest
       Assert.assertEquals(response.getStatus(), 200);
       Assert.assertEquals("custom", response.readEntity(String.class));
    }
-
-
-
-   @Test
-   public void testWAEResponseUsed()
-   {
-      Response response = client.target(generateURL("/resource/responseok")).request().get();
-      Assert.assertEquals(response.getStatus(), 200);
-      Assert.assertEquals("hello", response.readEntity(String.class));
-   }
-
-
 }
