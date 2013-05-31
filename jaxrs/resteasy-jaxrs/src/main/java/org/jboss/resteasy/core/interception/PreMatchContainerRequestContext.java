@@ -156,7 +156,7 @@ public class PreMatchContainerRequestContext implements ContainerRequestContext
    @Override
    public boolean hasEntity()
    {
-      return false;
+      return getMediaType() != null;
    }
 
    @Override

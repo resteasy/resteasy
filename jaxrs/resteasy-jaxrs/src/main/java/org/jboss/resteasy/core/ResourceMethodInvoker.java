@@ -233,14 +233,6 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       uriInfo.pushCurrentResource(target);
       BuiltResponse rtn = invokeOnTarget(request, response, target);
-      if (rtn != null && request.getHttpMethod().equalsIgnoreCase("HEAD"))
-      {
-         // STUPID TCK sending a response back with HEAD request causes unread client input stream
-         // to screw up socket state.
-         rtn.setEntity(null);
-         rtn.setEntityClass(null);
-         rtn.setGenericType(null);
-      }
       return rtn;
    }
 
