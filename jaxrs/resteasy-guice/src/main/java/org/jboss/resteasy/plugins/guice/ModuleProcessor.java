@@ -5,14 +5,16 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
+
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
 
-import javax.ws.rs.ext.Provider;
 import java.lang.reflect.Type;
+
+import javax.ws.rs.ext.Provider;
 
 public class ModuleProcessor
 {
@@ -51,7 +53,7 @@ public class ModuleProcessor
       processInjector(injector);
    }
 
-   private void processInjector(final Injector injector)
+   public void processInjector(final Injector injector)
    {
       for (final Binding<?> binding : injector.getBindings().values())
       {
