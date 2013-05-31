@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.validation.constraints.AssertTrue;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
@@ -52,6 +53,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 public class Response4Test extends BaseResourceTest
 {
    @Path("/")
+   @Produces("text/plain")
    public static class Resource
    {
 
@@ -61,6 +63,12 @@ public class Response4Test extends BaseResourceTest
       {
       }
 
+      @GET
+      @Path("default_head")
+      public Response defaultHead()
+      {
+         return Response.ok(" ").build();
+      }
    }
 
 
@@ -91,6 +99,22 @@ public class Response4Test extends BaseResourceTest
    {
       client.close();
    }
+
+   @Test
+   public void testDefaultHead()
+   {
+      // mucks up stream so create our own client.
+      //Client client = ClientBuilder.newClient();
+      Response response = client.target(generateURL("/default_head")).request().head();
+      Assert.assertEquals(201, response.getStatus());
+      Assert.assertNotNull(response.getMediaType());
+      System.out.println(response.getMediaType());
+      Assert.assertTrue(response.getMediaType().equals(MediaType.TEXT_PLAIN_TYPE));
+      response.close();
+      //client.close();
+
+   }
+
 
    @Test
    public void testChangeStatus()

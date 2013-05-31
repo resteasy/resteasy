@@ -2360,7 +2360,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    @Override
    public boolean isRegistered(Class<?> componentClass)
    {
-      return getProviderClasses().contains(componentClass);
+      if (getProviderClasses().contains(componentClass)) return true;
+      for (Object obj : getProviderInstances())
+      {
+         if (obj.getClass().equals(componentClass)) return true;
+      }
+      return false;
    }
 
    @Override
