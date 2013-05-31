@@ -89,6 +89,14 @@ public class ResponseTest extends BaseResourceTest
          return Response.ok().build();
       }
 
+      @GET
+      @Produces("text/plain")
+      @Path("default_head")
+      public Response defaultHead()
+      {
+         return Response.ok("f").build();
+      }
+
       @HEAD
       @Path("head")
       public String head()
@@ -269,6 +277,19 @@ public class ResponseTest extends BaseResourceTest
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals(response.getMediaType(), MediaType.TEXT_PLAIN_TYPE);
       response.close();
+
+   }
+
+   @Test
+   public void testDefaultHead()
+   {
+      // mucks up stream so create our own client.
+      //Client client = ClientBuilder.newClient();
+      Response response = client.target(generateURL("/default_head")).request().head();
+      Assert.assertEquals(200, response.getStatus());
+      System.out.println(response.getMediaType());
+      response.close();
+      //client.close();
 
    }
 

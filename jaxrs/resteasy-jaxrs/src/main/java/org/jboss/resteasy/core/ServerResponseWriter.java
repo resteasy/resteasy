@@ -48,7 +48,7 @@ public class ServerResponseWriter
 
       executeFilters(jaxrsResponse, request, response, providerFactory, method);
 
-      if (jaxrsResponse.getEntity() == null)
+      if (jaxrsResponse.getEntity() == null || request.getHttpMethod().equalsIgnoreCase("HEAD"))
       {
          response.setStatus(jaxrsResponse.getStatus());
          commitHeaders(jaxrsResponse, response);
