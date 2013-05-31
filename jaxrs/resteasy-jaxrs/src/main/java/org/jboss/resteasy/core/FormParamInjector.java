@@ -9,6 +9,7 @@ import javax.ws.rs.FormParam;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class FormParamInjector extends StringParameterInjector implements ValueI
          List<String> encodedList = new ArrayList<String>();
          for (String s : list)
          {
-            encodedList.add(Encode.encodePath(s));
+            encodedList.add(URLEncoder.encode(s));
          }
          list = encodedList;
       }

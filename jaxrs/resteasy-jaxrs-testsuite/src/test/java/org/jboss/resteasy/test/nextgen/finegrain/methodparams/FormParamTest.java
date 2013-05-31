@@ -75,7 +75,17 @@ public class FormParamTest extends BaseResourceTest
       }
    }
 
-
+   @Path("/")
+   public static class FormResource
+   {
+      @POST
+      @Path("form")
+      @Consumes("application/x-www-form-urlencoded")
+      public String post(@Encoded @FormParam("param") String param)
+      {
+         return param;
+      }
+   }
 
    @Path(value = "/FormParamTest/")
    public static class Resource {
@@ -135,6 +145,7 @@ public class FormParamTest extends BaseResourceTest
    public static void setup()
    {
       addPerRequestResource(Resource.class);
+      addPerRequestResource(FormResource.class);
       client = ClientBuilder.newClient();
    }
 
@@ -145,8 +156,22 @@ public class FormParamTest extends BaseResourceTest
    }
 
 
+   private static final String DECODED = "_`'$X Y@\"a a\"";
    private static final String SENT = "_`'$X Y@\"a a\"";
+   private static final String ENCODED = "_%60%27%24X+Y%40%22a+a%22";
 
+   @Test
+   public void postTest()
+   {
+      Entity entity = Entity.entity("param=" + ENCODED, MediaType.APPLICATION_FORM_URLENCODED_TYPE);
+      Response response = client.target(generateURL("/form")).request().post(entity);
+      Assert.assertEquals(response.getStatus(), 200);
+      System.out.println(response.readEntity(String.class));
+      response.close();
+   }
+
+
+   @Test
    public void nonDefaultFormParamFromStringTest()
    {
       Entity entity = Entity.entity("default_argument=" + SENT, MediaType.APPLICATION_FORM_URLENCODED_TYPE);

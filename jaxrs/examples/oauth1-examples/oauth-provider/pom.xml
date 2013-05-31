@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>examples-oauth-provider</artifactId>
-    <version>3.0-beta-6</version>
+    <version>3.0-rc-1</version>
     <packaging>jar</packaging>
     <name>Example: OAuth Provider</name>
     <description/>
