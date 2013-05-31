@@ -239,7 +239,7 @@ public class ParameterEncodingTest
       response = request.post(String.class);
       System.out.println("Received encoded form param: " + response.getEntity());
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("bee%20bop", response.getEntity());
+      Assert.assertEquals("bee+bop", response.getEntity());
       response.releaseConnection();
 
       request = new ClientRequest("http://localhost:8081/decoded/form");
