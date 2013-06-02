@@ -67,6 +67,29 @@ public class HelloModule implements Module
     resteasy.guice.modules context-param.  This can take a comma delimited list of class names that
     are Guice Modules.</para>
     <section>
+      <title>Request Scope</title>
+      <para>
+        The Guice integration allows objects to be scoped to the HTTP request by adding the @RequestScoped annotation to your class.
+        All the objects injectable via the @Context annotation are also injectable, except ServletConfig and ServletContext.
+      </para>
+<programlisting>
+<![CDATA[
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
+
+import org.jboss.resteasy.plugins.guice.RequestScoped;
+
+@RequestScoped
+public class MyClass
+{
+    @Inject @Context
+    private HttpRequest request;
+}
+]]>
+</programlisting>
+    </section>
+    <section>
         <title>Configuring Stage</title>
         <para>
             You can configure the stage Guice uses to deploy your modules by specific a context param, resteasy.guice.stage.
