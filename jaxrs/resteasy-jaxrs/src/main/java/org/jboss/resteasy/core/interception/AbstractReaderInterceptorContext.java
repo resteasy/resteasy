@@ -1,5 +1,9 @@
 package org.jboss.resteasy.core.interception;
 
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
+import javax.ws.rs.NotSupportedException;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -17,7 +21,7 @@ import java.lang.reflect.Type;
 public abstract class AbstractReaderInterceptorContext implements ReaderInterceptorContext
 {
    protected ReaderInterceptor[] interceptors;
-   protected MessageBodyReader reader;
+   protected ResteasyProviderFactory providerFactory;
    protected Class type;
    protected Type genericType;
    protected Annotation[] annotations;
@@ -26,26 +30,53 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
    protected InputStream inputStream;
    protected int index = 0;
 
-   public AbstractReaderInterceptorContext(MediaType mediaType, MessageBodyReader reader, Annotation[] annotations, ReaderInterceptor[] interceptors, MultivaluedMap<String, String> headers, Type genericType, Class type, InputStream inputStream)
+   public AbstractReaderInterceptorContext(MediaType mediaType, ResteasyProviderFactory providerFactory, Annotation[] annotations, ReaderInterceptor[] interceptors, MultivaluedMap<String, String> headers, Type genericType, Class type, InputStream inputStream)
    {
       this.mediaType = mediaType;
-      this.reader = reader;
       this.annotations = annotations;
       this.interceptors = interceptors;
       this.headers = headers;
       this.genericType = genericType;
       this.type = type;
       this.inputStream = inputStream;
+      this.providerFactory = providerFactory;
    }
 
    @Override
    public Object proceed() throws IOException
    {
       if (interceptors == null || index >= interceptors.length)
-         return reader.readFrom(type, genericType, annotations, mediaType, headers, inputStream);
+      {
+         MessageBodyReader reader = getReader();
+         return readFrom(reader);
+      }
       return interceptors[index++].aroundReadFrom(this);
       // index--;  we used to pop the index, but the TCK does not like this
    }
+
+   protected Object readFrom(MessageBodyReader reader) throws IOException
+   {
+      return reader.readFrom(type, genericType, annotations, mediaType, headers, inputStream);
+   }
+
+   protected MessageBodyReader getReader()
+   {
+      MediaType mediaType = this.mediaType;
+      // spec says set to octet stream
+      if (getHeaders() != null && getHeaders().getFirst(HttpHeaders.CONTENT_TYPE) == null && mediaType.isWildcardType())
+      {
+         mediaType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
+      }
+      MessageBodyReader reader = providerFactory.getMessageBodyReader(type,
+              genericType, annotations, mediaType);
+      if (reader == null)
+      {
+         throwReaderNotFound();
+      }
+      return reader;
+   }
+
+   abstract protected void throwReaderNotFound();
 
    @Override
    public InputStream getInputStream()

@@ -102,17 +102,10 @@ public abstract class ReaderUtility
                        MultivaluedMap<String, String> requestHeaders, InputStream inputStream)
            throws IOException
    {
-      MessageBodyReader reader = factory.getMessageBodyReader(type,
-              genericType, annotations, mediaType);
-      if (reader == null)
-      {
-         throw createReaderNotFound(genericType, mediaType);
-      }
-
       try
       {
          final Map<String, Object> attributes = new HashMap<String, Object>();
-         AbstractReaderInterceptorContext messageBodyReaderContext = new ClientReaderInterceptorContext(interceptors, reader, type,
+         AbstractReaderInterceptorContext messageBodyReaderContext = new ClientReaderInterceptorContext(interceptors, factory, type,
                  genericType, annotations, mediaType, requestHeaders, inputStream, attributes);
          return (T) messageBodyReaderContext
                  .proceed();

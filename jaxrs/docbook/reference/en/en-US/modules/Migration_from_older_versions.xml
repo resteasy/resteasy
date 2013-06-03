@@ -9,8 +9,18 @@
 <chapter id="Migration_from_older_versions">
 <title>Migration from older versions</title>
 <sect1>
-    <title>Migrating from 3.0-beta-5 and 3.0-rc-1</title>
+    <title>Migrating from 3.0-beta-5 and 3.0-beta-6</title>
     <itemizedlist>
+        <listitem>
+            The JAX-RS 2.0 TCK has become very very strict in terms of the matching algorithm.  Unfortunately, the matching
+            algorithm is quite poor so there are a number of resource schemes that will no longer match.
+            For example, resource classes are scanned for a best match, other are ignored in the match.
+            Resource locators are not visited unless they are a best match over resource methods.
+        </listitem>
+        <listitem>
+            The JAX-RS TCK has become very strict with a ton more tests.  I can't remember them all, but there are a number
+            of edge cases which earlier Resteasy releases misinterpreted.
+        </listitem>
         <listitem>
             Any Failure exceptions in the SPI now have a corresponding JAX-RS 2.0 exception, so they have been deprecated
             Resteasy no longer uses these old SPI exceptions internally.  It now uses the JAX-RS 2.0 ones.

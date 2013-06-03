@@ -1,11 +1,15 @@
 package org.jboss.resteasy.core.interception;
 
+import org.jboss.resteasy.core.NoMessageBodyWriterFoundFailure;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.WriterInterceptor;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -19,22 +23,36 @@ import java.util.Enumeration;
  */
 public class ServerWriterInterceptorContext extends AbstractWriterInterceptorContext
 {
+   private final static Logger logger = Logger.getLogger(ServerWriterInterceptorContext.class);
    private HttpRequest request;
 
-   public ServerWriterInterceptorContext(WriterInterceptor[] interceptors, MessageBodyWriter writer,
+   public ServerWriterInterceptorContext(WriterInterceptor[] interceptors, ResteasyProviderFactory providerFactory,
                                          Object entity, Class type, Type genericType, Annotation[] annotations,
                                          MediaType mediaType, MultivaluedMap<String, Object> headers,
                                          OutputStream outputStream,
                                          HttpRequest request)
    {
-      super(interceptors, annotations, entity, genericType, mediaType, type, outputStream, writer, headers);
+      super(interceptors, annotations, entity, genericType, mediaType, type, outputStream, providerFactory, headers);
       this.request = request;
+   }
+
+   @Override
+   void throwWriterNotFoundException()
+   {
+      throw new NoMessageBodyWriterFoundFailure(type, mediaType);
    }
 
    @Override
    public Object getProperty(String name)
    {
       return request.getAttribute(name);
+   }
+
+   @Override
+   protected void writeTo(MessageBodyWriter writer) throws IOException
+   {
+      //logger.info("*** " + request.getUri().getPath() + " writeTo(" + entity.toString() + ", " + mediaType);
+      super.writeTo(writer);
    }
 
    @Override

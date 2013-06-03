@@ -28,9 +28,19 @@ public class AbstractMultipartFormDataWriter extends AbstractMultipartWriter {
 				continue;
 			MultivaluedMap<String, Object> headers = new MultivaluedMapImpl<String, Object>();
 			headers.putSingle("Content-Disposition", "form-data; name=\""
-					+ entry.getKey() + "\"");
+					+ entry.getKey() + "\""
+					+ getFilename(entry.getValue()));
 			writePart(entityStream, boundaryBytes, entry.getValue(), headers);
 		}
 
 	}
+	
+	private String getFilename(OutputPart part) {
+		String filename = part.getFilename(); 
+		if (filename == null) {
+			return "";
+		} else {
+			return "; filename=\"" + filename + "\"";
+		}
+	}	
 }

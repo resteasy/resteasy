@@ -43,8 +43,7 @@ public class ResourceLocatorInvoker implements ResourceInvoker
    protected ResourceFactory resource;
    protected ResteasyProviderFactory providerFactory;
    protected ResourceLocator method;
-   protected ConcurrentHashMap<Class, Registry> cachedSubresources = new ConcurrentHashMap<Class, Registry>();
-   protected Pattern classRegex = null;
+   protected ConcurrentHashMap<Class, LocatorRegistry> cachedSubresources = new ConcurrentHashMap<Class, LocatorRegistry>();
 
    public ResourceLocatorInvoker(ResourceFactory resource, InjectorFactory injector, ResteasyProviderFactory providerFactory, ResourceLocator locator)
    {
@@ -53,7 +52,6 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       this.providerFactory = providerFactory;
       this.method = locator;
       this.methodInjector = injector.createMethodInjector(locator, providerFactory);
-      classRegex = ResourceMethodInvoker.setupClassRegex(method);
    }
 
    protected Object createResource(HttpRequest request, HttpResponse response)
@@ -65,7 +63,7 @@ public class ResourceLocatorInvoker implements ResourceInvoker
 
    protected Object createResource(HttpRequest request, HttpResponse response, Object locator)
    {
-      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
+      ResteasyUriInfo uriInfo = request.getUri();
       Object[] args = new Object[0];
       RuntimeException lastException = (RuntimeException)request.getAttribute(ResourceMethodRegistry.REGISTRY_MATCHING_EXCEPTION);
       try
@@ -79,13 +77,8 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       }
       try
       {
-         ResourceMethodInvoker.pushMatchedUri(method, classRegex, uriInfo);
          uriInfo.pushCurrentResource(locator);
          Object subResource = method.getMethod().invoke(locator, args);
-         // Do not do this warning as you can now use ResourceContext to inject values into locators
-         // we'll keep it here just in case somebody thinks they need to add this in the future
-         // warnIfJaxRSAnnotatedFields(subResource);
-
          return subResource;
 
       }
@@ -106,32 +99,14 @@ public class ResourceLocatorInvoker implements ResourceInvoker
 
    public BuiltResponse invoke(HttpRequest request, HttpResponse response)
    {
-      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
-      try
-      {
-         Object target = createResource(request, response);
-         return invokeOnTargetObject(request, response, target);
-      }
-      finally
-      {
-         //uriInfo.popCurrentResource();
-         //uriInfo.popMatchedPath();
-      }
+      Object target = createResource(request, response);
+      return invokeOnTargetObject(request, response, target);
    }
 
    public BuiltResponse invoke(HttpRequest request, HttpResponse response, Object locator)
    {
-      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
-      try
-      {
-         Object target = createResource(request, response, locator);
-         return invokeOnTargetObject(request, response, target);
-      }
-      finally
-      {
-         //uriInfo.popCurrentResource();
-         //uriInfo.popMatchedPath();
-      }
+      Object target = createResource(request, response, locator);
+      return invokeOnTargetObject(request, response, target);
    }
 
    protected BuiltResponse invokeOnTargetObject(HttpRequest request, HttpResponse response, Object target)
@@ -142,46 +117,18 @@ public class ResourceLocatorInvoker implements ResourceInvoker
          throw notFound;
       }
       Class<? extends Object> clazz = target.getClass();
-      Registry registry = cachedSubresources.get(clazz);
+      LocatorRegistry registry = cachedSubresources.get(clazz);
       if (registry == null)
       {
-         registry = new ResourceMethodRegistry(providerFactory);
          if (!GetRestful.isSubResourceClass(clazz))
          {
             String msg = "Subresource for target class has no jax-rs annotations.: " + clazz.getName();
             throw new InternalServerErrorException(msg);
          }
-         if (Proxy.isProxyClass(clazz))
-         {
-            for (Class<?> intf : clazz.getInterfaces())
-            {
-               ResourceClass resourceClass = ResourceBuilder.locatorFromAnnotations(intf);
-               registry.addResourceFactory(null, null, resourceClass);
-            }
-         }
-         else
-         {
-            ResourceClass resourceClass = ResourceBuilder.locatorFromAnnotations(clazz);
-            registry.addResourceFactory(null, null, resourceClass);
-         }
+         registry = new LocatorRegistry(clazz, providerFactory);
          cachedSubresources.putIfAbsent(clazz, registry);
       }
-      ResourceInvoker invoker = null;
-      RuntimeException lastException = (RuntimeException)request.getAttribute(ResourceMethodRegistry.REGISTRY_MATCHING_EXCEPTION);
-      try
-      {
-         invoker = registry.getResourceInvoker(request);
-         if (invoker == null)
-         {
-            NotFoundException notFound = new NotFoundException("No path match in subresource for: " + request.getUri().getAbsolutePath());
-            throw notFound;
-         }
-      }
-      catch (NotFoundException e)
-      {
-         if (lastException != null) throw lastException;
-         throw e;
-      }
+      ResourceInvoker invoker = registry.getResourceInvoker(request);
       if (invoker instanceof ResourceLocatorInvoker)
       {
          ResourceLocatorInvoker locator = (ResourceLocatorInvoker) invoker;
@@ -193,38 +140,4 @@ public class ResourceLocatorInvoker implements ResourceInvoker
          return method.invoke(request, response, target);
       }
    }
-
-
-   private void warnIfJaxRSAnnotatedFields(Object obj)
-   {
-
-      if (obj == null) return;
-
-      Class<?> clazz = obj.getClass();
-
-      while (clazz != Object.class)
-      {
-
-         Field[] fields = clazz.getDeclaredFields();
-
-         for (Field field : fields)
-         {
-
-            Class<? extends Annotation>[] annotations =
-                    FindAnnotation.findJaxRSAnnotations(field.getDeclaredAnnotations());
-
-            if (annotations.length != 0)
-            {
-               logger.warn("Field {0} of subresource {1} will not be injected " +
-                       "according to spec", field.getName(), obj.getClass().getName());
-            }
-
-         }
-
-         clazz = clazz.getSuperclass();
-
-      }
-
-   }
-
 }

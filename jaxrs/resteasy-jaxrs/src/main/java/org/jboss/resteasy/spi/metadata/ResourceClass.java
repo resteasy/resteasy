@@ -17,10 +17,17 @@ public class ResourceClass
    protected ResourceMethod[] resourceMethods = EMPTY_RESOURCE_METHODS;
    protected ResourceLocator[] resourceLocators = EMPTY_RESOURCE_LOCATORS;
    protected ResourceConstructor constructor; // only one allowed
+   protected String path;
 
-   public ResourceClass(Class<?> clazz)
+   public ResourceClass(Class<?> clazz, String path)
    {
       this.clazz = clazz;
+      this.path = path;
+   }
+
+   public String getPath()
+   {
+      return path;
    }
 
    public Class<?> getClazz()

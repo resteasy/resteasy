@@ -73,6 +73,34 @@ public class ResteasyUriInfo implements UriInfo
       absolutePath = UriBuilder.fromUri(requestURI).replaceQuery(null).build();
    }
 
+   public ResteasyUriInfo(URI requestURI)
+   {
+      String r = requestURI.getRawPath();
+      if (r.startsWith("/"))
+      {
+         encodedPath =  r;
+         path = requestURI.getPath();
+      }
+      else
+      {
+         encodedPath = "/" + r;
+         path = "/" + requestURI.getPath();
+      }
+      this.requestURI = requestURI;
+      baseURI = UriBuilder.fromUri(requestURI).replacePath("").build();
+      encodedPathSegments = PathSegmentImpl.parseSegments(encodedPath, false);
+      this.pathSegments = new ArrayList<PathSegment>(encodedPathSegments.size());
+      for (PathSegment segment : encodedPathSegments)
+      {
+         pathSegments.add(new PathSegmentImpl(((PathSegmentImpl) segment).getOriginal(), true));
+      }
+      extractParameters(requestURI.getRawQuery());
+      extractMatchingPath(encodedPathSegments);
+
+      absolutePath = UriBuilder.fromUri(requestURI).replaceQuery(null).build();
+
+   }
+
    /**
     * matching path without matrix parameters
     *
@@ -329,8 +357,11 @@ public class ResteasyUriInfo implements UriInfo
 
 
 
-   public void pushMatchedURI(String encoded, String decoded)
+   public void pushMatchedURI(String encoded)
    {
+      if (encoded.endsWith("/")) encoded = encoded.substring(0, encoded.length() - 1);
+      if (encoded.startsWith("/")) encoded = encoded.substring(1);
+      String decoded = Encode.decode(encoded);
       if (encodedMatchedUris == null) encodedMatchedUris = new ArrayList<String>();
       encodedMatchedUris.add(0, encoded);
 

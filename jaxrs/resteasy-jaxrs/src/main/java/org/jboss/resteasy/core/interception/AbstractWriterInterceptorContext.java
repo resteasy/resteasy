@@ -1,5 +1,8 @@
 package org.jboss.resteasy.core.interception;
 
+import org.jboss.resteasy.core.NoMessageBodyWriterFoundFailure;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -18,7 +21,6 @@ import java.lang.reflect.Type;
 public abstract class AbstractWriterInterceptorContext implements WriterInterceptorContext
 {
    protected WriterInterceptor[] interceptors;
-   protected MessageBodyWriter writer;
    protected Object entity;
    protected Class type;
    protected Type genericType;
@@ -27,9 +29,11 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
    protected MultivaluedMap<String, Object> headers;
    protected OutputStream outputStream;
    protected int index = 0;
+   protected ResteasyProviderFactory providerFactory;
 
-   public AbstractWriterInterceptorContext(WriterInterceptor[] interceptors, Annotation[] annotations, Object entity, Type genericType, MediaType mediaType, Class type, OutputStream outputStream, MessageBodyWriter writer, MultivaluedMap<String, Object> headers)
+   public AbstractWriterInterceptorContext(WriterInterceptor[] interceptors, Annotation[] annotations, Object entity, Type genericType, MediaType mediaType, Class type, OutputStream outputStream, ResteasyProviderFactory providerFactory, MultivaluedMap<String, Object> headers)
    {
+      this.providerFactory = providerFactory;
       this.interceptors = interceptors;
       this.annotations = annotations;
       this.entity = entity;
@@ -37,7 +41,6 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
       this.mediaType = mediaType;
       this.type = type;
       this.outputStream = outputStream;
-      this.writer = writer;
       this.headers = headers;
    }
 
@@ -111,7 +114,8 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
    {
       if (interceptors == null || index >= interceptors.length)
       {
-         writer.writeTo(entity, type, genericType, annotations, mediaType, headers, outputStream);
+         MessageBodyWriter writer = getWriter();
+         writeTo(writer);
       }
       else
       {
@@ -119,4 +123,24 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
          // we used to pop the index, but the TCK doesn't like this
       }
    }
+
+   protected void writeTo(MessageBodyWriter writer) throws IOException
+   {
+      writer.writeTo(entity, type, genericType, annotations, mediaType, headers, outputStream);
+   }
+
+   protected MessageBodyWriter getWriter()
+   {
+      MessageBodyWriter writer = providerFactory.getMessageBodyWriter(
+              type, genericType, annotations, mediaType);
+
+      if (writer == null)
+      {
+         throwWriterNotFoundException();
+      }
+      return writer;
+
+   }
+
+   abstract void throwWriterNotFoundException();
 }

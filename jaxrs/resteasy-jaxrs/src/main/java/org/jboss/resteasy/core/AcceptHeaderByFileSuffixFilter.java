@@ -1,7 +1,6 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.specimpl.PathSegmentImpl;
-import org.jboss.resteasy.util.LocaleHelper;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -61,6 +60,17 @@ public class AcceptHeaderByFileSuffixFilter implements ContainerRequestFilter
       for (PathSegment pathSegment : segments)
       {
          preprocessedPath.append("/").append(pathSegment.getPath());
+      }
+      if (! requestContext.getUriInfo().getQueryParameters().isEmpty())
+      {
+         char sep = '?';
+         for (Map.Entry<String, List<String>> entry : requestContext.getUriInfo().getQueryParameters(false).entrySet()) {
+            for (String value : entry.getValue()) {
+               preprocessedPath.append(sep);
+               sep = '&';
+               preprocessedPath.append(entry.getKey()).append('=').append(value);
+            }
+         }
       }
       URI requestUri = URI.create(preprocessedPath.toString());
       requestContext.setRequestUri(requestUri);

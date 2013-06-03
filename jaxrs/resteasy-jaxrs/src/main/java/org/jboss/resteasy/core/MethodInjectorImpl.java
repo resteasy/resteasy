@@ -28,6 +28,7 @@ public class MethodInjectorImpl implements MethodInjector
    protected ResteasyProviderFactory factory;
    protected ResourceLocator method;
    protected Method interfaceBasedMethod;
+   protected boolean expectsBody;
 
    public MethodInjectorImpl(ResourceLocator resourceMethod, ResteasyProviderFactory factory)
    {
@@ -38,8 +39,16 @@ public class MethodInjectorImpl implements MethodInjector
       int i = 0;
       for (MethodParameter parameter : resourceMethod.getParams())
       {
-         params[i++] = factory.getInjectorFactory().createParameterExtractor(parameter, factory);
+         params[i] = factory.getInjectorFactory().createParameterExtractor(parameter, factory);
+         if (params[i] instanceof MessageBodyParameterInjector) expectsBody = true;
+         i++;
       }
+   }
+
+   @Override
+   public boolean expectsBody()
+   {
+      return expectsBody;
    }
 
    public static Method findInterfaceBasedMethod(Class root, Method method)

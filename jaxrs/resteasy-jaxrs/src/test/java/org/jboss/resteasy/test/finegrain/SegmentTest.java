@@ -1,16 +1,20 @@
 package org.jboss.resteasy.test.finegrain;
 
 import junit.framework.Assert;
+import org.jboss.resteasy.core.ResourceInvoker;
+import org.jboss.resteasy.core.ResourceLocatorInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
-import org.jboss.resteasy.core.registry.RootSegment;
 import org.jboss.resteasy.mock.MockHttpRequest;
+import org.jboss.resteasy.spi.DefaultOptionsMethodException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.NotAllowedException;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -70,51 +74,146 @@ public class SegmentTest
       }
    }
 
-   ResourceMethodRegistry registry;
-
-   @BeforeClass
-   public static void initEnv()
+   public static class Locator
    {
+      @OPTIONS
+      public void options() {}
    }
 
-   @Before
-   public void init()
+   @Path("/resource")
+   public static class Resource
    {
-      registry = new ResourceMethodRegistry(ResteasyProviderFactory
+      @GET
+      @Path("sub")
+      public String get() {return null;}
+
+      @Path("{id}")
+      public Locator locator()
+      {
+         return new Locator();}
+
+   }
+
+   @Path("/resource")
+   public static class Resource2
+   {
+      @GET
+      @Path("{id}")
+      public String get() {return null;}
+
+      @Path("sub")
+      public Locator locator()
+      {
+         return new Locator();}
+
+   }
+
+
+
+   @Test
+   public void testBasic() throws URISyntaxException
+   {
+      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory
               .getInstance());
       registry.addSingletonResource(new NullResource());
+      assertMatchRoot(registry, "/", "doNothing", NullResource.class);
+      assertMatchRoot(registry, "/child", "childDoNothing", NullResource.class);
+      assertMatchRoot(registry, "/child/foo", "childWithName", NullResource.class);
+      assertMatchRoot(registry, "/child/1", "childWithId", NullResource.class);
+      assertMatchRoot(registry, "/child1/1", "child1WithId", NullResource.class);
    }
 
    @Test
-   public void testRoot() throws URISyntaxException
+   public void testDefaultOptions() throws URISyntaxException
    {
-      assertMatchRoot("/", "doNothing", NullResource.class);
+      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory
+              .getInstance());
+      registry.addPerRequestResource(Resource.class);
+      try
+      {
+         ResourceInvoker invoker = registry.getResourceInvoker(MockHttpRequest.options("/resource/sub"));
+      }
+      catch (DefaultOptionsMethodException e)
+      {
+      }
+      try
+      {
+         ResourceInvoker invoker = registry.getResourceInvoker(MockHttpRequest.put("/resource/sub"));
+      }
+      catch (NotAllowedException e)
+      {
+      }
    }
 
    @Test
-   public void testChild() throws URISyntaxException
+   public void testLocatorOptions() throws URISyntaxException
    {
-      assertMatchRoot("/child", "childDoNothing", NullResource.class);
-      assertMatchRoot("/child/foo", "childWithName", NullResource.class);
-      assertMatchRoot("/child/1", "childWithId", NullResource.class);
+      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory
+              .getInstance());
+      registry.addPerRequestResource(Resource2.class);
+      ResourceLocatorInvoker invoker = (ResourceLocatorInvoker)registry.getResourceInvoker(MockHttpRequest.options("/resource/sub"));
+      Assert.assertNotNull(invoker);
+      Assert.assertEquals(invoker.getMethod().getName(), "locator");
    }
+
+   @Path("resource")
+   public static class Resource3 {
+      @GET
+      @Path("responseok")
+      public String responseOk() {
+         return "ok";
+      }
+
+      @Path("{id}")
+      public Object locate(@PathParam("id") int id)
+      {
+         return new Locator2();
+      }
+   }
+
+   public static class Locator2 {
+      @GET
+      public String ok() {
+         return "ok";
+      }
+   }
+
+
+   @Path("locator")
+   public static class Locator3 {
+      @Path("responseok")
+      public Resource3 responseOk() {
+         return new Resource3();
+      }
+   }
+
+
 
    @Test
-   public void testChildWithSlashD() throws URISyntaxException
+   public void testLocator3() throws URISyntaxException
    {
-      assertMatchRoot("/child1/1", "child1WithId", NullResource.class);
+      ResourceMethodRegistry registry = new ResourceMethodRegistry(ResteasyProviderFactory
+              .getInstance());
+      registry.addPerRequestResource(Locator3.class);
+      ResourceLocatorInvoker invoker = (ResourceLocatorInvoker)registry.getResourceInvoker(MockHttpRequest.get("/locator/responseok/responseok"));
+      Assert.assertNotNull(invoker);
+      Assert.assertEquals(invoker.getMethod().getName(), "responseOk");
    }
 
 
-   private void assertMatchRoot(final String url, final String methodName,
+
+
+
+
+   private void assertMatchRoot(ResourceMethodRegistry registry, final String url, final String methodName,
                                 final Class<?> clazz) throws URISyntaxException
    {
-      ResourceMethodInvoker matchRoot = getResourceMethod(url);
+      ResourceMethodInvoker matchRoot = getResourceMethod(url, registry);
       Assert.assertEquals(clazz, matchRoot.getResourceClass());
       Assert.assertEquals(methodName, matchRoot.getMethod().getName());
    }
 
-   private ResourceMethodInvoker getResourceMethod(String url)
+   private ResourceMethodInvoker getResourceMethod(String url, ResourceMethodRegistry registry)
            throws URISyntaxException
    {
       return (ResourceMethodInvoker) registry.getResourceInvoker(MockHttpRequest.get(url));

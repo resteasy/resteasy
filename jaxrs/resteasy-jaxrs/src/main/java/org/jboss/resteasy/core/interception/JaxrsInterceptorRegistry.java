@@ -7,6 +7,7 @@ import javax.annotation.Priority;
 import javax.ws.rs.NameBinding;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.PreMatching;
+import javax.ws.rs.core.Application;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
@@ -121,19 +122,24 @@ public class JaxrsInterceptorRegistry<T>
          {
             if (nameBound.size() > 0)
             {
+               Application application = ResteasyProviderFactory.getContextData(Application.class);
+               // must match all namebound annotations
                for (Class<? extends Annotation> annotation : nameBound)
                {
-                  if (targetClass.isAnnotationPresent(annotation) ||
-                          target.isAnnotationPresent(annotation))
+                  if (!targetClass.isAnnotationPresent(annotation) &&
+                          !target.isAnnotationPresent(annotation)
+                          && (application == null || !application.getClass().isAnnotationPresent(annotation)))
                   {
-                     Object intercept = getInterceptor();
-                     if (intercept == null)
-                        throw new NullPointerException("interceptor null from class: " + this.getClass().getName());
-                     return new Match(intercept, order);
+                     return null;
                   }
                }
-               return null;
-            } else
+               // we matched all of them
+               Object intercept = getInterceptor();
+               if (intercept == null)
+                  throw new NullPointerException("interceptor null from class: " + this.getClass().getName());
+               return new Match(intercept, order);
+            }
+            else
             {
                Object intercept = getInterceptor();
                if (intercept == null)
@@ -423,10 +429,10 @@ public class JaxrsInterceptorRegistry<T>
       register(new OnDemandInterceptorFactory(declaring));
    }
 
-   public void registerClass(Class<? extends T> declaring, int Priority)
+   public void registerClass(Class<? extends T> declaring, int priority)
    {
       OnDemandInterceptorFactory factory = new OnDemandInterceptorFactory(declaring);
-      if (Priority > Integer.MIN_VALUE) factory.setOrder(Priority);
+      factory.setOrder(priority);
       register(factory);
    }
 
@@ -435,10 +441,10 @@ public class JaxrsInterceptorRegistry<T>
       register(new SingletonInterceptorFactory(interceptor.getClass(), interceptor));
    }
 
-   public void registerSingleton(T interceptor, int Priority)
+   public void registerSingleton(T interceptor, int priority)
    {
       SingletonInterceptorFactory factory = new SingletonInterceptorFactory(interceptor.getClass(), interceptor);
-      if (Priority > Integer.MIN_VALUE) factory.setOrder(Priority);
+      factory.setOrder(priority);
       register(factory);
    }
 }

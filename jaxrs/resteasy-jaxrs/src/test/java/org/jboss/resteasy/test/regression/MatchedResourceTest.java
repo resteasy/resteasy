@@ -71,7 +71,7 @@ public class MatchedResourceTest
       }
 
       @Path("match")
-      @Produces("*/*;q=0.0")
+      @Produces("*/*;qs=0.0")
       @GET
       public String getObj()
       {

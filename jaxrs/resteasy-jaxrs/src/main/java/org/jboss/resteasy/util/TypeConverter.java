@@ -68,11 +68,62 @@ public final class TypeConverter
       {
          throw new IllegalArgumentException("Date instances are not supported by this class.");
       }
+      if (Character.class.equals(targetType))
+      {
+         if (source.length() == 0) return targetType.cast(new Character('\0'));
+         return targetType.cast(new Character(source.charAt(0)));
+      }
+      if (char.class.equals(targetType))
+      {
+         Character c = null;
+         if (source.length() == 0)c = new Character('\0');
+         else c = new Character(source.charAt(0));
+         try
+         {
+            return (T)Character.class.getMethod("charValue").invoke(c);
+         }
+         catch (IllegalAccessException e)
+         {
+            throw new RuntimeException(e);
+         }
+         catch (InvocationTargetException e)
+         {
+            throw new RuntimeException(e);
+         }
+         catch (NoSuchMethodException e)
+         {
+            throw new RuntimeException(e);
+         }
+
+      }
       T result;
       // boolean types need special handling
       if (Boolean.class.equals(targetType) || boolean.class.equals(targetType))
       {
-         return targetType.cast(getBooleanValue(source));
+         Boolean booleanValue = getBooleanValue(source);
+         if (Boolean.class.equals(targetType))
+         {
+            return targetType.cast(booleanValue);
+         }
+         else
+         {
+            try
+            {
+               return (T)Boolean.class.getMethod("booleanValue").invoke(booleanValue);
+            }
+            catch (IllegalAccessException e)
+            {
+               throw new RuntimeException(e);
+            }
+            catch (InvocationTargetException e)
+            {
+               throw new RuntimeException(e);
+            }
+            catch (NoSuchMethodException e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
       }
       try
       {
@@ -101,6 +152,11 @@ public final class TypeConverter
       {
          return true;
       }
+      if (Character.class.equals(targetType))
+      {
+         return true;
+      }
+
       if (targetType.isPrimitive())
       {
          return true;

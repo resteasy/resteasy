@@ -20,8 +20,10 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -163,6 +165,24 @@ public class BuiltResponse extends Response
    {
       return annotations;
    }
+
+   public void addMethodAnnotations(Method method)
+   {
+      List<Annotation> ann = new ArrayList<Annotation>();
+      if (annotations != null)
+      {
+         for (Annotation annotation : annotations)
+         {
+            ann.add(annotation);
+         }
+      }
+      for (Annotation annotation : method.getAnnotations())
+      {
+         ann.add(annotation);
+      }
+      annotations = ann.toArray(new Annotation[ann.size()]);
+   }
+
 
    public void setAnnotations(Annotation[] annotations)
    {

@@ -3,7 +3,7 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistryListener;
 import org.jboss.resteasy.core.interception.PostMatchContainerRequestContext;
-import org.jboss.resteasy.core.registry.Segment;
+import org.jboss.resteasy.core.registry.SegmentNode;
 import org.jboss.resteasy.plugins.providers.validation.ResteasyViolationExceptionExtension;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.specimpl.BuiltResponse;
@@ -27,7 +27,6 @@ import org.jboss.resteasy.util.PathHelper;
 import org.jboss.resteasy.util.WeightedMediaType;
 
 import javax.validation.Validator;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseFilter;
@@ -58,8 +57,6 @@ import java.util.regex.Pattern;
  */
 public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorRegistryListener
 {
-   protected List<WeightedMediaType> preferredProduces = new ArrayList<WeightedMediaType>();
-   protected List<WeightedMediaType> preferredConsumes = new ArrayList<WeightedMediaType>();
    protected MethodInjector methodInjector;
    protected InjectorFactory injector;
    protected ResourceFactory resource;
@@ -75,9 +72,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    protected boolean methodIsValidatable;
    protected ResourceInfo resourceInfo;
 
-   protected Pattern classRegex = null;
-
-   protected boolean methodConsumes;
+   protected boolean expectsBody;
 
 
 
@@ -103,8 +98,6 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          }
       };
 
-      classRegex = setupClassRegex(method);
-
       this.resourceMethodProviderFactory = new ResteasyProviderFactory(providerFactory);
       for (DynamicFeature feature : providerFactory.getServerDynamicFeatures())
       {
@@ -113,24 +106,9 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
       this.methodInjector = injector.createMethodInjector(method, resourceMethodProviderFactory);
 
-      for (MediaType mediaType : method.getProduces())
-      {
-         preferredProduces.add(WeightedMediaType.parse(mediaType));
-
-      }
-
       // hack for when message contentType == null
-      // todo this needs review on why it is here and what do we need it for
-      methodConsumes = method.getAnnotatedMethod().isAnnotationPresent(Consumes.class);
-
-      for (MediaType mediaType : method.getConsumes())
-      {
-         preferredConsumes.add(WeightedMediaType.parse(mediaType));
-
-      }
-
-      Collections.sort(preferredProduces);
-      Collections.sort(preferredConsumes);
+      // and @Consumes is on the class
+      expectsBody = this.methodInjector.expectsBody();
 
       requestFilters = resourceMethodProviderFactory.getContainerRequestFilterRegistry().postMatch(method.getResourceClass().getClazz(), method.getAnnotatedMethod());
       responseFilters = resourceMethodProviderFactory.getContainerResponseFilterRegistry().postMatch(method.getResourceClass().getClazz(), method.getAnnotatedMethod());
@@ -240,26 +218,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       return method.getAnnotatedMethod().getAnnotations();
    }
 
-   /**
-    * Presorted list of preferred types, 1st entry is most preferred
-    *
-    * @return
-    */
-   public List<WeightedMediaType> getPreferredProduces()
-   {
-      return preferredProduces;
-   }
-
-   /**
-    * Presorted list of preferred types, 1st entry is most preferred
-    *
-    * @return
-    */
-   public List<WeightedMediaType> getPreferredConsumes()
-   {
-      return preferredConsumes;
-   }
-
+   @Override
    public Method getMethod()
    {
       return method.getMethod();
@@ -276,122 +235,13 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       request.setAttribute(ResourceMethodInvoker.class.getName(), this);
       incrementMethodCount(request.getHttpMethod());
       ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
-
-      pushMatchedUri(method, classRegex, uriInfo);
+      if (method.getPath() != null)
+      {
+         uriInfo.pushMatchedURI(uriInfo.getMatchingPath());
+      }
       uriInfo.pushCurrentResource(target);
-
-      try
-      {
-         BuiltResponse jaxrsResponse = invokeOnTarget(request, response, target);
-
-         if (jaxrsResponse != null && jaxrsResponse.getEntity() != null)
-         {
-            // if the content type isn't set, then set it to be either most desired type from the Accept header
-            // or the first media type in the @Produces annotation
-            // See RESTEASY-144
-            Object type = jaxrsResponse.getMetadata().getFirst(
-                    HttpHeaderNames.CONTENT_TYPE);
-            if (type == null)
-               jaxrsResponse.getMetadata().putSingle(HttpHeaderNames.CONTENT_TYPE, resolveContentType(request, jaxrsResponse.getEntity()));
-         }
-         return jaxrsResponse;
-
-      }
-      finally
-      {
-         //uriInfo.popCurrentResource();
-      }
-   }
-
-   public static Pattern setupClassRegex(ResourceLocator method)
-   {
-      String segment = "";
-      if (method.getResourceClass().getClazz().isAnnotationPresent(Path.class))
-      {
-         segment = method.getResourceClass().getClazz().getAnnotation(Path.class).value();
-         if (segment.startsWith("/")) segment = segment.substring(1);
-         if ("".equals(segment)) return null;
-      }
-      else
-      {
-         return null;
-      }
-      return getClassRegexPattern(segment);
-   }
-
-   public static Pattern getClassRegexPattern(String segment)
-   {
-      String replacedCurlySegment = PathHelper.replaceEnclosedCurlyBraces(segment);
-
-      String[] split = PathHelper.URI_PARAM_PATTERN.split(replacedCurlySegment);
-      Matcher withPathParam = PathHelper.URI_PARAM_PATTERN.matcher(replacedCurlySegment);
-      int i = 0;
-      StringBuffer buffer = new StringBuffer();
-      if (i < split.length) buffer.append(Pattern.quote(split[i++]));
-
-      while (withPathParam.find())
-      {
-         buffer.append("(");
-         if (withPathParam.group(3) == null)
-         {
-            buffer.append("[^/]+");
-         }
-         else
-         {
-            String expr = withPathParam.group(3);
-            expr = PathHelper.recoverEnclosedCurlyBraces(expr);
-            buffer.append(expr);
-         }
-         buffer.append(")");
-         if (i < split.length) buffer.append(Pattern.quote(split[i++]));
-      }
-      return Pattern.compile(buffer.toString());
-   }
-
-   public static void pushMatchedUri(ResourceLocator method, Pattern classRegex, ResteasyUriInfo uriInfo)
-   {
-      // we're at the top so setup matched uri for class
-      if (uriInfo.getMatchedResources().size() == 0)
-      {
-         String encoded = uriInfo.getEncodedMatchedPaths().get(0);
-         if (encoded.startsWith("/")) encoded = encoded.substring(1);
-         String decoded = Encode.decode(encoded);
-         if (method.getPath() != null && !method.getPath().equals(""))
-         {
-            if (classRegex == null)
-            {
-               uriInfo.pushMatchedURI("", "");
-               uriInfo.pushMatchedURI(encoded, decoded);
-            }
-            else
-            {
-               Matcher match = classRegex.matcher(encoded);
-               if (match.find())
-               {
-                  int end = match.end();
-                  String classMatch = encoded.substring(0, end);
-                  uriInfo.pushMatchedURI(classMatch, Encode.decode(classMatch));
-                  uriInfo.pushMatchedURI(encoded, decoded);
-
-               }
-               else
-               {
-                  // fuckit
-               }
-            }
-         }
-         else
-         {
-            uriInfo.pushMatchedURI(encoded, decoded);
-         }
-      }
-      else if (method.getPath() != null && !method.getPath().equals(""))
-      {
-         String encoded = uriInfo.getEncodedMatchedPaths().get(0);
-         if (encoded.startsWith("/")) encoded = encoded.substring(1);
-         String decoded = Encode.decode(encoded);
-         uriInfo.pushMatchedURI(encoded, decoded);
-      }
+      BuiltResponse rtn = invokeOnTarget(request, response, target);
+      return rtn;
    }
 
    protected BuiltResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
@@ -443,13 +293,20 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       if (rtn == null || method.getReturnType().equals(void.class))
       {
          BuiltResponse build = (BuiltResponse) Response.noContent().build();
-         build.setAnnotations(method.getAnnotatedMethod().getAnnotations());
+         build.addMethodAnnotations(method.getAnnotatedMethod());
          return build;
       }
       if (Response.class.isAssignableFrom(method.getReturnType()) || rtn instanceof Response)
       {
+         if (!(rtn instanceof BuiltResponse))
+         {
+            Response r = (Response)rtn;
+            Headers<Object> metadata = new Headers<Object>();
+            metadata.putAll(r.getMetadata());
+            rtn = new BuiltResponse(r.getStatus(), metadata, r.getEntity(), null);
+         }
          BuiltResponse rtn1 = (BuiltResponse) rtn;
-         if (rtn1.getAnnotations() == null) rtn1.setAnnotations(method.getAnnotatedMethod().getAnnotations());
+         rtn1.addMethodAnnotations(method.getAnnotatedMethod());
          if (rtn1.getGenericType() == null)
          {
             if (getMethod().getReturnType().equals(Response.class))
@@ -465,7 +322,6 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
 
       Response.ResponseBuilder builder = Response.ok(rtn);
-      builder.type(resolveContentType(request, rtn));
       BuiltResponse jaxrsResponse = (BuiltResponse)builder.build();
       if (jaxrsResponse.getGenericType() == null)
       {
@@ -478,7 +334,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
             jaxrsResponse.setGenericType(method.getGenericReturnType());
          }
       }
-      if (jaxrsResponse.getAnnotations() == null) jaxrsResponse.setAnnotations(method.getAnnotatedMethod().getAnnotations());
+      jaxrsResponse.addMethodAnnotations(method.getAnnotatedMethod());
       return jaxrsResponse;
    }
 
@@ -489,7 +345,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          //System.out.println("**** no accepts " +" method: " + method);
          return true;
       }
-      if (preferredProduces.size() == 0)
+      if (method.getProduces().length == 0)
       {
          //System.out.println("**** no produces " +" method: " + method);
          return true;
@@ -497,7 +353,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
       for (MediaType accept : accepts)
       {
-         for (MediaType type : preferredProduces)
+         for (MediaType type : method.getProduces())
          {
             if (type.isCompatible(accept))
             {
@@ -511,40 +367,18 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    public boolean doesConsume(MediaType contentType)
    {
       boolean matches = false;
+      if (method.getConsumes().length == 0 || (contentType == null && !expectsBody)) return true;
+
       if (contentType == null)
       {
-         return true;
-         /*
-         // If there is no @Consumes annotation directly on method (i.e. a @GET or @DELETE) return true
-         // this is a hack to determine if this is a @GET or @DELETE.  Because we can create new HTTP methods ad hoc
-         // there is no way to determine if it is an HTTP method that doesn't require content (like PUT, POST)
-         // So, we just check to see if there is an annotation directly on the method.
-         if (!methodConsumes) return true;
-
-         // Otherwise only accept if consumes is a wildcard type
-         for (MediaType type : preferredConsumes)
-         {
-            if (type.equals(MediaType.WILDCARD_TYPE))
-            {
-               return true;
-            }
-         }
-         return false;
-         */
+         contentType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
       }
-      else
+      for (MediaType type : method.getConsumes())
       {
-         if (preferredConsumes.size() == 0) return true;
-         else
+         if (type.isCompatible(contentType))
          {
-            for (MediaType type : preferredConsumes)
-            {
-               if (type.isCompatible(contentType))
-               {
-                  matches = true;
-                  break;
-               }
-            }
+            matches = true;
+            break;
          }
       }
       return matches;
@@ -552,7 +386,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
    public MediaType resolveContentType(HttpRequest in, Object entity)
    {
-      MediaType chosen = (MediaType)in.getAttribute(Segment.RESTEASY_CHOSEN_ACCEPT);
+      MediaType chosen = (MediaType)in.getAttribute(SegmentNode.RESTEASY_CHOSEN_ACCEPT);
       if (chosen != null  && !chosen.equals(MediaType.WILDCARD_TYPE))
       {
          return chosen;
@@ -562,18 +396,18 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
       if (accepts == null || accepts.size() == 0)
       {
-         if (preferredProduces.size() == 0) return MediaType.WILDCARD_TYPE;
-         else return preferredProduces.get(0);
+         if (method.getProduces().length == 0) return MediaType.WILDCARD_TYPE;
+         else return method.getProduces()[0];
       }
 
-      if (preferredProduces.size() == 0)
+      if (method.getProduces().length == 0)
       {
          return resolveContentTypeByAccept(accepts, entity);
       }
 
       for (MediaType accept : accepts)
       {
-         for (MediaType type : preferredProduces)
+         for (MediaType type : method.getProduces())
          {
             if (type.isCompatible(accept)) return type;
          }

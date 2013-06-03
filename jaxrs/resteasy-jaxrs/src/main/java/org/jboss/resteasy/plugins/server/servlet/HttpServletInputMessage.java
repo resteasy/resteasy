@@ -70,7 +70,7 @@ public class HttpServletInputMessage implements HttpRequest
    @Override
    public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
    {
-      uri = new ResteasyUriInfo(baseUri, requestUri);
+      uri = new ResteasyUriInfo(baseUri.resolve(requestUri));
    }
 
    public MultivaluedMap<String, String> getPutFormParameters()
