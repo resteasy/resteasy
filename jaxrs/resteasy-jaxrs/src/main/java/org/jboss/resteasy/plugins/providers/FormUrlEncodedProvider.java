@@ -4,9 +4,11 @@ import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.FindAnnotation;
 
+import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Encoded;
 import javax.ws.rs.Produces;
+import javax.ws.rs.RuntimeType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -33,6 +35,7 @@ import java.util.Map;
 @Provider
 @Produces("application/x-www-form-urlencoded")
 @Consumes("application/x-www-form-urlencoded")
+@ConstrainedTo(RuntimeType.CLIENT)
 public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>, MessageBodyWriter<MultivaluedMap>
 {
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)

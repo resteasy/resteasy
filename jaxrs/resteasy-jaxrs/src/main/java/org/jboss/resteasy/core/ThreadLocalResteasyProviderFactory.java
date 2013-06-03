@@ -625,4 +625,28 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    {
       return getDelegate().createHeaderDelegate(tClass);
    }
+
+   @Override
+   public <T> MessageBodyWriter<T> getClientMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   {
+      return getDelegate().getClientMessageBodyWriter(type, genericType, annotations, mediaType);
+   }
+
+   @Override
+   public <T> MessageBodyReader<T> getClientMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   {
+      return getDelegate().getClientMessageBodyReader(type, genericType, annotations, mediaType);
+   }
+
+   @Override
+   public <T> MessageBodyReader<T> getServerMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   {
+      return getDelegate().getServerMessageBodyReader(type, genericType, annotations, mediaType);
+   }
+
+   @Override
+   public <T> MessageBodyWriter<T> getServerMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   {
+      return getDelegate().getServerMessageBodyWriter(type, genericType, annotations, mediaType);
+   }
 }

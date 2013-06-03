@@ -41,6 +41,12 @@ public class ClientReaderInterceptorContext extends AbstractReaderInterceptorCon
               mediaType, type));
    }
 
+   @Override
+   protected MessageBodyReader resolveReader(MediaType mediaType)
+   {
+      return providerFactory.getClientMessageBodyReader(type,
+              genericType, annotations, mediaType);
+   }
 
    @Override
    public Object getProperty(String name)

@@ -37,6 +37,13 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
    }
 
    @Override
+   protected MessageBodyWriter resolveWriter()
+   {
+      return providerFactory.getServerMessageBodyWriter(
+              type, genericType, annotations, mediaType);
+
+   }
+   @Override
    void throwWriterNotFoundException()
    {
       throw new NoMessageBodyWriterFoundFailure(type, mediaType);

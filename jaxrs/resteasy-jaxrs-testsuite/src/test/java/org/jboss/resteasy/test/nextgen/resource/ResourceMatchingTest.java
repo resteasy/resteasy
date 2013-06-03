@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.nextgen.resource;
 
+import org.jboss.resteasy.core.ResourceInvoker;
+import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -34,6 +36,7 @@ import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -447,6 +450,17 @@ public class ResourceMatchingTest extends BaseResourceTest
    public static void cleanup()
    {
       client.close();
+   }
+
+   @Test
+   public void testBounded()
+   {
+      ResourceMethodRegistry registry = (ResourceMethodRegistry)deployment.getRegistry();
+      for (Map.Entry<String, List<ResourceInvoker>> entry : registry.getBounded().entrySet())
+      {
+         List<ResourceInvoker> invokers = entry.getValue();
+
+      }
    }
 
    @Test
