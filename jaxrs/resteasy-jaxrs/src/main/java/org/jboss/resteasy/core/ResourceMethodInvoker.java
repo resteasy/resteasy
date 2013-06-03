@@ -19,6 +19,7 @@ import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.ResteasyViolationException;
+import org.jboss.resteasy.spi.validation.ValidationSupport;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -71,6 +72,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    protected ConcurrentHashMap<String, AtomicLong> stats = new ConcurrentHashMap<String, AtomicLong>();
    protected GeneralValidator validator;
    protected ViolationsContainer<?> violationsContainer;
+   protected boolean methodIsValidatable;
    protected ResourceInfo resourceInfo;
 
    protected Pattern classRegex = null;
@@ -143,6 +145,10 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       if (resolver != null)
       {
          validator = providerFactory.getContextResolver(GeneralValidator.class, MediaType.WILDCARD_TYPE).getContext(null);
+      }
+      if (validator != null)
+      {
+         methodIsValidatable = validator.isMethodValidatable(getMethod());
       }
    }
 
@@ -394,6 +400,9 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       if (validator != null)
       {
          violationsContainer = new ViolationsContainer<Object>(validator.validate(target));
+      }
+      if (methodIsValidatable)
+      {
          request.setAttribute(ViolationsContainer.class.getName(), violationsContainer);
          request.setAttribute(Validator.class.getName(), validator);
       }

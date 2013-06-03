@@ -27,6 +27,10 @@
     <property name="output.dir" value="target"/>
 
     <target name="all">
+      <delete dir="target/mavenized"/>
+      <copy todir="src/main/resources/modules/org/jboss/resteasy/resteasy-jaxrs" overwrite="true">
+          <fileset dir="src/main/resources/modules/org/jboss/resteasy/resteasy-jaxrs-as7"/>
+      </copy>
         <antcall target="modules">
             <!-- TODO add OSGI later when we can have maven repo references to those jars -->
             <param name="mavenized.modules" value="true"/>
@@ -139,6 +143,14 @@
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-multipart-provider" jandex="true"/>
         </module-def>
 
+        <!--module-def name="org.jboss.resteasy.resteasy-validator-provider-10">
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-validator-provider-10" jandex="true"/>
+        </module-def-->
+        	
+        <module-def name="org.jboss.resteasy.resteasy-hibernatevalidator-provider">
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-hibernatevalidator-provider" jandex="true"/>
+        </module-def>
+    	
         <module-def name="org.jboss.resteasy.resteasy-yaml-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-yaml-provider" jandex="true"/>
         </module-def>
@@ -149,7 +161,9 @@
         </module-def>
 
         <zip destfile="${output.dir}/resteasy-jboss-modules-${project.version}.zip">
-            <zipfileset dir="${output.dir}/modules"/>
+            <zipfileset dir="${output.dir}/modules">
+            	<exclude name="**/resteasy-validator-provider-11/**"/>
+            </zipfileset>
         </zip>
 
     </target>

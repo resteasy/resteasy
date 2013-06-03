@@ -44,7 +44,7 @@
             <mkdir dir="${module.repo.output.dir}/${current.module.path}"/>
 
             <!-- Copy the module.xml and other stuff to the output director -->
-            <copy todir="${module.repo.output.dir}/${current.module.path}">
+            <copy todir="${module.repo.output.dir}/${current.module.path}" overwrite="true">
                 <fileset dir="${module.repo.src.dir}/${current.module.path}">
                     <include name="**"/>
                 </fileset>

@@ -34,6 +34,6 @@ public interface GeneralValidator {
 	public abstract <T> Set<ResteasyConstraintViolation> validateReturnValue(
 			T object, Method method, Object returnValue, Class<?>... groups);
 
-//	public abstract TypeDescriptor getConstraintsForType(Class<?> clazz);
+	public abstract boolean isMethodValidatable(Method m);
 
 }

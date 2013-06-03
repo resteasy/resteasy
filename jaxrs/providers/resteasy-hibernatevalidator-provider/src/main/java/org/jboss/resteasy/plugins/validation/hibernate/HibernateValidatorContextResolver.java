@@ -10,11 +10,18 @@ import javax.ws.rs.ext.Provider;
 public class HibernateValidatorContextResolver implements
 		ContextResolver<ValidatorAdapter> {
 
-	private static final HibernateValidatorAdapter adapter = new HibernateValidatorAdapter(Validation.buildDefaultValidatorFactory().getValidator());
-	
-	@Override
-	public ValidatorAdapter getContext(Class<?> type) {
-		return adapter; 
-	}
+   @Override
+   public ValidatorAdapter getContext(Class<?> type)
+   {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+//	private static final HibernateValidatorAdapter adapter = new HibernateValidatorAdapter(Validation.buildDefaultValidatorFactory().getValidator());
+//	
+//	@Override
+//	public ValidatorAdapter getContext(Class<?> type) {
+//		return adapter; 
+//	}
 
 }

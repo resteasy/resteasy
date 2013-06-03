@@ -31,6 +31,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import javax.validation.executable.ExecutableType;
+import javax.validation.executable.ValidateOnExecution;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
@@ -59,7 +61,6 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.validation.ResteasyViolationException;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.validation.ResteasyConstraintViolation;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -596,20 +597,80 @@ public class TestValidation
       }
    }
    
-   public interface InterfaceTest
+   @Documented
+   @Constraint(validatedBy = TestClassValidatorSubInheritance.class)
+   @Target({TYPE})
+   @Retention(RUNTIME)
+   public @interface TestClassInheritanceSubConstraint {
+      String message() default "u must have value {value}";
+      Class<?>[] groups() default {};
+      Class<? extends Payload>[] payload() default {};
+      String value();
+   }
+   
+   @Documented
+   @Constraint(validatedBy = TestClassValidatorSuperInheritance.class)
+   @Target({TYPE})
+   @Retention(RUNTIME)
+   public @interface TestClassInheritanceSuperConstraint {
+      String message() default "t must have length > {value}";
+      Class<?>[] groups() default {};
+      Class<? extends Payload>[] payload() default {};
+      int value();
+   }
+   
+   public static class TestClassValidatorSubInheritance implements ConstraintValidator<TestClassInheritanceSubConstraint, InterfaceTestSub>
    {
-	   @Path("/inherit")
-	   @POST
-	   @Size(min=2,max=3) String postInherit(@Size(min=2,max=3) String s);
-	   
-	   @Path("/override")
-	   @POST
-	   @Size(min=2,max=3) String postOverride(@Size(min=2,max=3) String s);
+      String pattern;
+
+      public void initialize(TestClassInheritanceSubConstraint constraintAnnotation)
+      {
+         pattern = constraintAnnotation.value();
+      }
+
+      public boolean isValid(InterfaceTestSub value, ConstraintValidatorContext context)
+      {
+         System.out.println(this + "u: " + value.u);
+         System.out.println("pattern: " + pattern + ", matches: " + value.u.matches(pattern));
+         return value.u.matches(pattern);
+      }
+   }
+   
+   public static class TestClassValidatorSuperInheritance implements ConstraintValidator<TestClassInheritanceSuperConstraint, InterfaceTestSuper>
+   {
+      int length;
+
+      public void initialize(TestClassInheritanceSuperConstraint constraintAnnotation)
+      {
+         length = constraintAnnotation.value();
+      }
+
+      public boolean isValid(InterfaceTestSuper value, ConstraintValidatorContext context)
+      {
+         System.out.println(this + " t: " + value.t);
+         return value.t.length() >= length;
+      }
    }
    
    @Path("/")
-   public static class InterFaceTestSuper implements InterfaceTest
+   public interface InterfaceTest
    {
+      @Path("/inherit")
+      @POST
+      @Size(min=2,max=3) String postInherit(@Size(min=2,max=4) String s);
+      
+      @Path("/override")
+      @POST
+      @Size(min=2,max=3) String postOverride(@Size(min=2,max=4) String s);
+   }
+   
+   @Path("/")
+   @TestClassInheritanceSuperConstraint(3)
+   public static class InterfaceTestSuper implements InterfaceTest
+   {
+//      @PathParam("t")
+      static String t;
+      
 	   public String postInherit(String s)
 	   {
 		   return s;
@@ -618,12 +679,20 @@ public class TestValidation
 	   {
 		   return s;
 	   }
+	   public String concat()
+	   {
+	      return t + t;
+	   }
    }
    
    @Path("/")
-   public static class InterfaceTestSub extends InterFaceTestSuper
+   @TestClassInheritanceSubConstraint("[a-c]+")
+   public static class InterfaceTestSub extends InterfaceTestSuper
    {
-	   @Pattern(regexp="[a-z]+") public String postOverride(@Pattern(regexp="[a-z]+") String s)
+//      @PathParam("u")
+      static String u;
+      
+	   @Pattern(regexp="[a-c]+") public String postOverride(String s)
 	   {
 		   return s;
 	   }
@@ -631,7 +700,7 @@ public class TestValidation
    
    @Path("/")
    public static class TestResourceWithSubLocators
-   {
+   {  
       @Path("validField")
       public TestResourceWithValidField validField()
       {
@@ -710,6 +779,97 @@ public class TestValidation
          }
       }
    }
+   
+   @Path("")
+   @ValidateOnExecution(type = {ExecutableType.NONE})
+   public static class TestValidateOnExecutionResource
+   {  
+      @POST
+      @Path("none")
+      @Size(min=1)
+      public String none(@Size(max=1) String s)
+      {
+         return s;
+      }
+      
+      @POST
+      @Path("getterOnNonGetter")
+      @Size(min=1)
+      @ValidateOnExecution(type = {ExecutableType.GETTER_METHODS, ExecutableType.CONSTRUCTORS, ExecutableType.NONE})
+      public String nongetter1(@Size(max=1) String s)
+      {
+         return s;
+      }
+      
+      @POST
+      @Path("nonGetterOnGetter")
+      @Size(min=1)
+      @ValidateOnExecution(type = {ExecutableType.NON_GETTER_METHODS, ExecutableType.CONSTRUCTORS, ExecutableType.NONE})
+      public String getS1()
+      {
+         return "abc";
+      }
+      
+      @POST
+      @Path("implicitOnNonGetter")
+      @Size(min=1)
+      @ValidateOnExecution(type = {ExecutableType.IMPLICIT})
+      public String nongetter2(@Size(max=1) String s)
+      {
+         return s;
+      }
+      
+      @POST
+      @Path("implicitOnGetter")
+      @Size(max=1)
+      @ValidateOnExecution(type = {ExecutableType.IMPLICIT})
+      // Will be validated when other methods are called, returning a property violation.
+      public String getS2()
+      {
+         return "abc";
+      }
+      
+      @POST
+      @Path("allOnNonGetter")
+      @Size(min=1)
+      @ValidateOnExecution(type = {ExecutableType.ALL})
+      public String nongetter3(@Size(max=1) String s)
+      {
+         return s;
+      }
+      
+      @POST
+      @Path("allOnGetter")
+      @Size(max=1)
+      @ValidateOnExecution(type = {ExecutableType.ALL})
+      // Will be validated when other methods are called, returning a property violation.
+      public String getS3()
+      {
+         return "abc";
+      }
+      
+      @POST
+      @Path("override")
+      @Size(min=1)
+      @ValidateOnExecution(type = {ExecutableType.ALL})
+      public String override(@Size(max=1) String s)
+      {
+         return s;
+      }
+   }
+   
+   @Path("")
+   @ValidateOnExecution(type = {ExecutableType.NONE})
+   public static class TestValidateOnExecutionSubResource extends TestValidateOnExecutionResource
+   {  
+      @POST
+      @Path("override")
+      @Size(min=1)
+      public String override(@Size(max=1) String s)
+      {
+         return s;
+      }
+   }
 
    public static void before(Class<?> resourceClass) throws Exception
    {
@@ -718,7 +878,7 @@ public class TestValidation
       dispatcher = deployment.getDispatcher();
       deployment.getRegistry().addPerRequestResource(resourceClass);
    }
-
+   
    public static void beforeFoo(Class<?> resourceClass) throws Exception
    {
       before(resourceClass);
@@ -745,7 +905,7 @@ public class TestValidation
    }
 
    @Test
-   @Ignore
+//   @Ignore
    public void testFieldValid() throws Exception
    {
       before(TestResourceWithValidField.class);
@@ -757,7 +917,7 @@ public class TestValidation
    }
 
    @Test
-   @Ignore
+//   @Ignore
    public void testFieldInvalid() throws Exception
    {
       before(TestResourceWithInvalidField.class);
@@ -776,7 +936,7 @@ public class TestValidation
    }
 
    @Test
-   @Ignore
+//   @Ignore
    public void testPropertyValid() throws Exception
    {
       before(TestResourceWithProperty.class);
@@ -788,7 +948,7 @@ public class TestValidation
    }
 
    @Test
-   @Ignore
+//   @Ignore
    public void testPropertyInvalid() throws Exception
    {
       before(TestResourceWithProperty.class);
@@ -806,7 +966,7 @@ public class TestValidation
    }
 
    @Test
-   @Ignore
+//   @Ignore
    public void testFieldAndProperty() throws Exception
    {
       before(TestResourceWithFieldAndProperty.class);
@@ -835,7 +995,7 @@ public class TestValidation
    }
 
    @Test
-   @Ignore
+//   @Ignore
    public void testClassConstraint() throws Exception
    {
       before(TestResourceWithClassConstraint.class);
@@ -862,7 +1022,7 @@ public class TestValidation
    }
 
    @Test
-   @Ignore
+//   @Ignore
    public void testGraph() throws Exception
    {
       before(TestResourceWithGraph.class);
@@ -891,7 +1051,7 @@ public class TestValidation
    }
 
    @Test
-   @Ignore
+//   @Ignore
    public void testArray() throws Exception
    {
       before(TestResourceWithArray.class);
@@ -918,7 +1078,7 @@ public class TestValidation
    }
 
    @Test
-   @Ignore
+//   @Ignore
    public void testList() throws Exception
    {
       before(TestResourceWithList.class);
@@ -944,7 +1104,7 @@ public class TestValidation
    }
 
    @Test
-   @Ignore
+//   @Ignore
    public void testMap() throws Exception
    {
       before(TestResourceWithMap.class);
@@ -970,7 +1130,7 @@ public class TestValidation
    }
 
    @Test
-   @Ignore
+//   @Ignore
    public void testMapOfListOfArrayOfStrings() throws Exception
    {
       before(TestResourceWithMapOfListOfArrayOfStrings.class);
@@ -997,7 +1157,7 @@ public class TestValidation
    }
 
    @Test
-   @Ignore
+//   @Ignore
    public void testParameters() throws Exception
    {
       beforeFoo(TestResourceWithParameters.class);
@@ -1109,7 +1269,7 @@ public class TestValidation
    }
 
    @Test
-   @Ignore
+//   @Ignore
    public void testReturnValues() throws Exception
    {
       beforeFoo(TestResourceWithReturnValues.class);
@@ -1190,7 +1350,7 @@ public class TestValidation
    }
 
    @Test
-   @Ignore
+//   @Ignore
    public void testViolationsBeforeReturnValue() throws Exception
    {
       beforeFoo(TestResourceWithAllFivePotentialViolations.class);
@@ -1230,29 +1390,97 @@ public class TestValidation
    }
    
    @Test
-   // Commenting out until inheritance issues are worked out in JAX-RS spec.
 //   @Ignore
    public void testInheritence() throws Exception
    {
-      beforeFoo(InterfaceTestSub.class);
+      before(InterfaceTestSub.class);
 
-      // Valid - inherited annotations
-      ClientRequest request = new ClientRequest(generateURL("/inherit"));
-      request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
-      ClientResponse<?> response = request.post(String.class);     
-      Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("abc", response.getEntity());
+      {
+         // Valid - inherited annotations
+         InterfaceTestSuper.t = "aaa";
+         InterfaceTestSub.u = "bbb";
+         ClientRequest request = new ClientRequest(generateURL("/inherit"));
+         request.body(MediaType.TEXT_PLAIN_TYPE, "ccc");
+         ClientResponse<?> response = request.post(String.class);
+         Assert.assertEquals(200, response.getStatus());
+         Assert.assertEquals("ccc", response.getEntity());
+      }
       
-      // Valid - overridden annotations
-      request = new ClientRequest(generateURL("/override"));
-      request.body(MediaType.TEXT_PLAIN_TYPE, "abcde");
-      response = request.post(String.class);     
-      Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("abcde", response.getEntity());
+      {
+         // Valid - overridden annotations
+         InterfaceTestSuper.t = "aaa";
+         InterfaceTestSub.u = "bbb";
+         ClientRequest request = new ClientRequest(generateURL("/override"));
+         request.body(MediaType.TEXT_PLAIN_TYPE, "ccc");
+         ClientResponse<?> response = request.post(String.class);     
+         Assert.assertEquals(200, response.getStatus());
+         Assert.assertEquals("ccc", response.getEntity());
+      }
+      
+      {
+         // Invalid - inherited class, parameter annotations
+         InterfaceTestSuper.t = "a";
+         InterfaceTestSub.u = "d";
+         ClientRequest request = new ClientRequest(generateURL("/inherit"));
+         request.body(MediaType.TEXT_PLAIN_TYPE, "e");
+         ClientResponse<?> response = request.post(Serializable.class);
+         System.out.println("status: " + response.getStatus());
+         Assert.assertEquals(400, response.getStatus());
+         Object entity = response.getEntity();
+         Assert.assertTrue(entity instanceof ResteasyViolationException);
+         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+         countViolations(e, 3, 0, 0, 2, 1, 0);
+      }
+      
+      {
+         // Invalid - overridden class, parameter annotations
+         InterfaceTestSuper.t = "a";
+         InterfaceTestSub.u = "d";
+         ClientRequest request = new ClientRequest(generateURL("/override"));
+         request.body(MediaType.TEXT_PLAIN_TYPE, "e");
+         ClientResponse<?> response = request.post(Serializable.class);
+         System.out.println("status: " + response.getStatus());
+         Assert.assertEquals(400, response.getStatus());
+         Object entity = response.getEntity();
+         Assert.assertTrue(entity instanceof ResteasyViolationException);
+         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+         countViolations(e, 3, 0, 0, 2, 1, 0);
+      }
+      
+      {
+         // Invalid - inherited return value annotations
+         InterfaceTestSuper.t = "aaa";
+         InterfaceTestSub.u = "bbb";
+         ClientRequest request = new ClientRequest(generateURL("/inherit"));
+         request.body(MediaType.TEXT_PLAIN_TYPE, "eeee");
+         ClientResponse<?> response = request.post(Serializable.class);
+         System.out.println("status: " + response.getStatus());
+         Assert.assertEquals(500, response.getStatus());
+         Object entity = response.getEntity();
+         Assert.assertTrue(entity instanceof ResteasyViolationException);
+         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+         countViolations(e, 1, 0, 0, 0, 0, 1);
+      }
+      
+      {
+         // Invalid - overridden return value annotations
+         InterfaceTestSuper.t = "aaa";
+         InterfaceTestSub.u = "bbb";
+         ClientRequest request = new ClientRequest(generateURL("/override"));
+         request.body(MediaType.TEXT_PLAIN_TYPE, "eeee");
+         ClientResponse<?> response = request.post(Serializable.class);
+         System.out.println("status: " + response.getStatus());
+         Assert.assertEquals(500, response.getStatus());
+         Object entity = response.getEntity();
+         Assert.assertTrue(entity instanceof ResteasyViolationException);
+         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+         countViolations(e, 2, 0, 0, 0, 0, 2);
+      }
+      after();
    }
    
    @Test
-   @Ignore
+//   @Ignore
    public void testLocators() throws Exception
    {
       beforeFoo(TestResourceWithSubLocators.class);
@@ -1346,7 +1574,7 @@ public class TestValidation
    }
 
    @Test
-   @Ignore
+//   @Ignore
    public void testAsynch() throws Exception
    {
       beforeFooAsynch(TestResourceWithAllFivePotentialViolations.class);
@@ -1430,6 +1658,100 @@ public class TestValidation
       Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
       response.releaseConnection();
 
+      after();
+   }
+   
+   @Test
+//     @Ignore
+   public void testValidateOnExecution() throws Exception
+   {
+      before(TestValidateOnExecutionSubResource.class);
+      
+//      {
+//         // No validation.
+//         ClientRequest request = new ClientRequest(generateURL("/none"));
+//         request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
+//         ClientResponse<?> response = request.post(String.class);
+//         Assert.assertEquals(200, response.getStatus());
+//         Assert.assertEquals("abc", response.getEntity());
+//      }
+//
+//      {
+//         // No validation.
+//         ClientRequest request = new ClientRequest(generateURL("/getterOnNonGetter"));
+//         request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
+//         ClientResponse<?> response = request.post(String.class);
+//         Assert.assertEquals(200, response.getStatus());
+//         Assert.assertEquals("abc", response.getEntity());
+//      }
+//      
+//      {
+//         // No validation.
+//         ClientRequest request = new ClientRequest(generateURL("/nonGetterOnGetter"));
+//         ClientResponse<?> response = request.post(String.class);
+//         Assert.assertEquals(200, response.getStatus());
+//         Assert.assertEquals("abc", response.getEntity());
+//      }
+//      
+      {
+         // Failure.
+         ClientRequest request = new ClientRequest(generateURL("/implicitOnNonGetter"));
+         request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
+         ClientResponse<?> response = request.post(Serializable.class);
+         Assert.assertEquals(400, response.getStatus());
+         Object entity = response.getEntity();
+         Assert.assertTrue(entity instanceof ResteasyViolationException);
+         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+         System.out.println(e);
+         countViolations(e, 3, 0, 2, 0, 1, 0);
+      }
+      
+      {
+         // Failure.
+         ClientRequest request = new ClientRequest(generateURL("/implicitOnGetter"));
+         ClientResponse<?> response = request.post(Serializable.class);
+         Assert.assertEquals(400, response.getStatus());
+         Object entity = response.getEntity();
+         Assert.assertTrue(entity instanceof ResteasyViolationException);
+         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+         countViolations(e, 2, 0, 2, 0, 0, 0);
+      }
+
+      {
+         // Failure.
+         ClientRequest request = new ClientRequest(generateURL("/allOnNonGetter"));
+         request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
+         ClientResponse<?> response = request.post(Serializable.class);
+         Assert.assertEquals(400, response.getStatus());
+         Object entity = response.getEntity();
+         Assert.assertTrue(entity instanceof ResteasyViolationException);
+         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+         countViolations(e, 3, 0, 2, 0, 1, 0);
+      }
+      
+      {
+         // Failure.
+         ClientRequest request = new ClientRequest(generateURL("/allOnGetter"));
+         ClientResponse<?> response = request.post(Serializable.class);
+         Assert.assertEquals(400, response.getStatus());
+         Object entity = response.getEntity();
+         Assert.assertTrue(entity instanceof ResteasyViolationException);
+         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+         countViolations(e, 2, 0, 2, 0, 0, 0);
+      }
+      
+      {
+         // Failure.
+         ClientRequest request = new ClientRequest(generateURL("/override"));
+         request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
+         ClientResponse<?> response = request.post(Serializable.class);
+         Assert.assertEquals(400, response.getStatus());
+         Object entity = response.getEntity();
+         Assert.assertTrue(entity instanceof ResteasyViolationException);
+         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+         countViolations(e, 3, 0, 2, 0, 1, 0);
+      }
+      
       after();
    }
    
