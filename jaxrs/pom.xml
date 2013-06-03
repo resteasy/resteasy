@@ -105,7 +105,7 @@
         <module>resteasy-links</module>
         <module>resteasy-spring</module>
         <module>resteasy-jsapi</module>
-         <module>resteasy-jsapi-testing</module>
+        <!-- <module>resteasy-jsapi-testing</module> -->
         <module>resteasy-cdi</module>
         <module>server-adapters</module>
         <module>war-tests</module>

@@ -52,9 +52,9 @@ public class SmokingTest {
         assertTrue(selenium.isTextPresent("11111111"));
 
 
-//        assertTrue(selenium.isTextPresent("Weinan"));
-//        assertTrue(selenium.isTextPresent("exact:g::h::i::"));
-//        assertTrue(selenium.isTextPresent("/resteasy-jsapi-testing/"));
+        assertTrue(selenium.isTextPresent("Weinan"));
+        assertTrue(selenium.isTextPresent("exact:g::h::i::"));
+        assertTrue(selenium.isTextPresent("/resteasy-jsapi-testing/"));
         assertTrue(selenium.isTextPresent("RESTEASY-731-false"));
         assertTrue(selenium.isTextPresent("RESTEASY-731-0"));
 
