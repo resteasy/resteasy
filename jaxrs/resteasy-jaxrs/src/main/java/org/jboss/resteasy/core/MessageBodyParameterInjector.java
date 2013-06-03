@@ -136,64 +136,51 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
          //throw new BadRequestException("content-type was null and expecting to extract a body into " + this.target);
       }
 
-      // We have to do this isFormData() hack because of servlets and servlet filters
-      // A filter that does getParameter() will screw up the input stream which will screw up the
-      // provider.  We do it here rather than hack the provider as the provider is reused for client side
-      // and also, the server may be using the client framework to make another remote call.
-      if (isFormData(type, genericType, annotations, mediaType))
+      try
       {
-         boolean encoded = FindAnnotation.findAnnotation(annotations, Encoded.class) != null;
-         if (encoded) return request.getFormParameters();
-         else return request.getDecodedFormParameters();
-      }
-      else
-      {
-         try
+         InputStream is = request.getInputStream();
+         if (isMarshalledEntity)
          {
-            InputStream is = request.getInputStream();
-            if (isMarshalledEntity)
-            {
-               is = new InputStreamToByteArray(is);
+            is = new InputStreamToByteArray(is);
 
-            }
-            AbstractReaderInterceptorContext messageBodyReaderContext = new ServerReaderInterceptorContext(interceptors, factory, type,
-                    genericType, annotations, mediaType, request
-                    .getHttpHeaders().getRequestHeaders(), is, request);
-            final Object obj = messageBodyReaderContext.proceed();
-            if (isMarshalledEntity)
-            {
-               InputStreamToByteArray isba = (InputStreamToByteArray) is;
-               final byte[] bytes = isba.toByteArray();
-               return new MarshalledEntity()
-               {
-                  @Override
-                  public byte[] getMarshalledBytes()
-                  {
-                     return bytes;
-                  }
-
-                  @Override
-                  public Object getEntity()
-                  {
-                     return obj;
-                  }
-               };
-            }
-            else
-            {
-               return obj;
-            }
          }
-         catch (Exception e)
+         AbstractReaderInterceptorContext messageBodyReaderContext = new ServerReaderInterceptorContext(interceptors, factory, type,
+                 genericType, annotations, mediaType, request
+                 .getHttpHeaders().getRequestHeaders(), is, request);
+         final Object obj = messageBodyReaderContext.proceed();
+         if (isMarshalledEntity)
          {
-            if (e instanceof ReaderException)
+            InputStreamToByteArray isba = (InputStreamToByteArray) is;
+            final byte[] bytes = isba.toByteArray();
+            return new MarshalledEntity()
             {
-               throw (ReaderException) e;
-            }
-            else
-            {
-               throw new ReaderException(e);
-            }
+               @Override
+               public byte[] getMarshalledBytes()
+               {
+                  return bytes;
+               }
+
+               @Override
+               public Object getEntity()
+               {
+                  return obj;
+               }
+            };
+         }
+         else
+         {
+            return obj;
+         }
+      }
+      catch (Exception e)
+      {
+         if (e instanceof ReaderException)
+         {
+            throw (ReaderException) e;
+         }
+         else
+         {
+            throw new ReaderException(e);
          }
       }
    }

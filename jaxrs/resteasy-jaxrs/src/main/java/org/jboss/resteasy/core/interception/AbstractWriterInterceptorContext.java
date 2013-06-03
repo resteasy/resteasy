@@ -131,8 +131,7 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
 
    protected MessageBodyWriter getWriter()
    {
-      MessageBodyWriter writer = providerFactory.getMessageBodyWriter(
-              type, genericType, annotations, mediaType);
+      MessageBodyWriter writer = resolveWriter();
 
       if (writer == null)
       {
@@ -141,6 +140,8 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
       return writer;
 
    }
+
+   abstract protected MessageBodyWriter resolveWriter();
 
    abstract void throwWriterNotFoundException();
 }

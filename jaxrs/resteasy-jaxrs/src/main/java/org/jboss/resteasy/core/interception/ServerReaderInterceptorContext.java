@@ -36,6 +36,13 @@ public class ServerReaderInterceptorContext extends AbstractReaderInterceptorCon
    }
 
    @Override
+   protected MessageBodyReader resolveReader(MediaType mediaType)
+   {
+      return providerFactory.getServerMessageBodyReader(type,
+              genericType, annotations, mediaType);
+   }
+
+   @Override
    protected void throwReaderNotFound()
    {
       throw new NotSupportedException(

@@ -79,12 +79,12 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
 
    public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return providerFactory.getMessageBodyWriter(type, genericType, annotations, mediaType);
+      return providerFactory.getClientMessageBodyWriter(type, genericType, annotations, mediaType);
    }
 
    public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return providerFactory.getMessageBodyReader(type, genericType, annotations, mediaType);
+      return providerFactory.getClientMessageBodyReader(type, genericType, annotations, mediaType);
    }
 
    public WriterInterceptor[] getWriterInterceptors(Class declaring, AccessibleObject target)
