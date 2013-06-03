@@ -1,12 +1,14 @@
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.http.HttpStatus;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -86,18 +88,32 @@ public class SmokingTest {
 
     @Test
     public void testJSAPICache() throws Exception {
-        HttpClient client = new HttpClient();
-        HttpMethod get1 = new GetMethod("http://127.0.0.1:8080/resteasy-jsapi-testing/rest-js");
-        int statusCode = client.executeMethod(get1);
-        assertEquals(HttpStatus.SC_OK, statusCode);
+        {
+            Client client = ClientBuilder.newBuilder().build();
+            WebTarget target = client.target("http://127.0.0.1:8080/resteasy-jsapi-testing/rest-js");
+            Response response = target.request().get();
+            assertEquals(HttpStatus.SC_OK, response.getStatus());
+            response.close();
+        }
 
-        HttpMethod get2 = new GetMethod("http://127.0.0.1:8080/resteasy-jsapi-testing/rest-js");
-        String etag = get1.getResponseHeader("Etag").getValue();
-        get2.addRequestHeader("If-None-Match", etag);
-        statusCode = client.executeMethod(get2);
-        assertEquals(HttpStatus.SC_NOT_MODIFIED, statusCode);
+        String etag;
+        {
+            Client client = ClientBuilder.newBuilder().build();
+            WebTarget target = client.target("http://127.0.0.1:8080/resteasy-jsapi-testing/rest-js");
+            Response response = target.request().get();
+            etag = response.getHeaderString("Etag");
+            response.close();
+
+        }
+
+        {
+            Client client = ClientBuilder.newBuilder().build();
+            WebTarget target = client.target("http://127.0.0.1:8080/resteasy-jsapi-testing/rest-js");
+            Response response = target.request().header("If-None-Match", etag).get();
+            assertEquals(HttpStatus.SC_NOT_MODIFIED, response.getStatus());
+            response.close();
+        }
     }
-
 
     @After
     public void tearDown() throws Exception {
