@@ -109,8 +109,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       public Class readerClass;
       public T obj;
 
-      public boolean isGeneric = false;
-
       public boolean isBuiltin = false;
 
       public Class template = null;
@@ -129,19 +127,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          this.obj = reader;
          // check the super class for the generic type 1st
          template = Types.getTemplateParameterOfInterface(readerClass, intf);
-         isGeneric = template == null || Object.class.equals(template);
+         if (template == null) template = Object.class;
       }
 
       public int compareTo(SortedKey<T> tMessageBodyKey)
       {
-         // Sort more specific template parameter types before non-specific
          // Sort user provider before builtins
          if (this == tMessageBodyKey) return 0;
-         if (isGeneric != tMessageBodyKey.isGeneric)
-         {
-            if (isGeneric) return 1;
-            else return -1;
-         }
          if (isBuiltin == tMessageBodyKey.isBuiltin) return 0;
          if (isBuiltin) return 1;
          else return -1;
@@ -159,8 +151,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected static volatile ResteasyProviderFactory instance;
    public static boolean registerBuiltinByDefault = true;
 
-   protected MediaTypeMap<SortedKey<MessageBodyReader>> messageBodyReaders;
-   protected MediaTypeMap<SortedKey<MessageBodyWriter>> messageBodyWriters;
+   protected MediaTypeMap<SortedKey<MessageBodyReader>> serverMessageBodyReaders;
+   protected MediaTypeMap<SortedKey<MessageBodyWriter>> serverMessageBodyWriters;
+   protected MediaTypeMap<SortedKey<MessageBodyReader>> clientMessageBodyReaders;
+   protected MediaTypeMap<SortedKey<MessageBodyWriter>> clientMessageBodyWriters;
    protected Map<Class<?>, ExceptionMapper> exceptionMappers;
    protected Map<Class<?>, ClientExceptionMapper> clientExceptionMappers;
    protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> contextResolvers;
@@ -239,8 +233,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       providerClasses = new CopyOnWriteArraySet<Class<?>>();
       providerInstances = new CopyOnWriteArraySet<Object>();
       classContracts = new ConcurrentHashMap<Class<?>, Map<Class<?>, Integer>>();
-      messageBodyReaders = new MediaTypeMap<SortedKey<MessageBodyReader>>();
-      messageBodyWriters = new MediaTypeMap<SortedKey<MessageBodyWriter>>();
+      serverMessageBodyReaders = new MediaTypeMap<SortedKey<MessageBodyReader>>();
+      serverMessageBodyWriters = new MediaTypeMap<SortedKey<MessageBodyWriter>>();
+      clientMessageBodyReaders = new MediaTypeMap<SortedKey<MessageBodyReader>>();
+      clientMessageBodyWriters = new MediaTypeMap<SortedKey<MessageBodyWriter>>();
       exceptionMappers = new ConcurrentHashMap<Class<?>, ExceptionMapper>();
       clientExceptionMappers = new ConcurrentHashMap<Class<?>, ClientExceptionMapper>();
       contextResolvers = new ConcurrentHashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
@@ -294,17 +290,31 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    }
 
 
-   protected MediaTypeMap<SortedKey<MessageBodyReader>> getMessageBodyReaders()
+   protected MediaTypeMap<SortedKey<MessageBodyReader>> getServerMessageBodyReaders()
    {
-      if (messageBodyReaders == null && parent != null) return parent.getMessageBodyReaders();
-      return messageBodyReaders;
+      if (serverMessageBodyReaders == null && parent != null) return parent.getServerMessageBodyReaders();
+      return serverMessageBodyReaders;
    }
 
-   protected MediaTypeMap<SortedKey<MessageBodyWriter>> getMessageBodyWriters()
+   protected MediaTypeMap<SortedKey<MessageBodyWriter>> getServerMessageBodyWriters()
    {
-      if (messageBodyWriters == null && parent != null) return parent.getMessageBodyWriters();
-      return messageBodyWriters;
+      if (serverMessageBodyWriters == null && parent != null) return parent.getServerMessageBodyWriters();
+      return serverMessageBodyWriters;
    }
+
+   protected MediaTypeMap<SortedKey<MessageBodyReader>> getClientMessageBodyReaders()
+   {
+      if (clientMessageBodyReaders == null && parent != null) return parent.getClientMessageBodyReaders();
+      return clientMessageBodyReaders;
+   }
+
+   protected MediaTypeMap<SortedKey<MessageBodyWriter>> getClientMessageBodyWriters()
+   {
+      if (clientMessageBodyWriters == null && parent != null) return parent.getClientMessageBodyWriters();
+      return clientMessageBodyWriters;
+   }
+
+
 
    public Map<Class<?>, ExceptionMapper> getExceptionMappers()
    {
@@ -758,26 +768,67 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * @param isBuiltin
     */
 
-   protected void addMessageBodyReader(MessageBodyReader provider, Class providerClass, boolean isBuiltin)
+   protected void addMessageBodyReader(MessageBodyReader provider, Class<?> providerClass, boolean isBuiltin)
    {
       SortedKey<MessageBodyReader> key = new SortedKey<MessageBodyReader>(MessageBodyReader.class, provider, providerClass, isBuiltin);
       injectProperties(providerClass, provider);
       Consumes consumeMime = provider.getClass().getAnnotation(Consumes.class);
-      if (messageBodyReaders == null)
+      RuntimeType type = null;
+      ConstrainedTo constrainedTo = providerClass.getAnnotation(ConstrainedTo.class);
+      if (constrainedTo != null) type = constrainedTo.value();
+
+      if (type == null)
       {
-         messageBodyReaders = parent.getMessageBodyReaders().clone();
+         addClientMessageBodyReader(key, consumeMime);
+         addServerMessageBodyReader(key, consumeMime);
+      }
+      else if (type == RuntimeType.CLIENT)
+      {
+         addClientMessageBodyReader(key, consumeMime);
+      }
+      else
+      {
+         addServerMessageBodyReader(key, consumeMime);
+      }
+   }
+
+   protected void addServerMessageBodyReader(SortedKey<MessageBodyReader> key, Consumes consumeMime)
+   {
+      if (serverMessageBodyReaders == null)
+      {
+         serverMessageBodyReaders = parent.getServerMessageBodyReaders().clone();
       }
       if (consumeMime != null)
       {
          for (String consume : consumeMime.value())
          {
             MediaType mime = MediaType.valueOf(consume);
-            messageBodyReaders.add(mime, key);
+            serverMessageBodyReaders.add(mime, key);
          }
       }
       else
       {
-         messageBodyReaders.add(new MediaType("*", "*"), key);
+         serverMessageBodyReaders.add(new MediaType("*", "*"), key);
+      }
+   }
+
+   protected void addClientMessageBodyReader(SortedKey<MessageBodyReader> key, Consumes consumeMime)
+   {
+      if (clientMessageBodyReaders == null)
+      {
+         clientMessageBodyReaders = parent.getClientMessageBodyReaders().clone();
+      }
+      if (consumeMime != null)
+      {
+         for (String consume : consumeMime.value())
+         {
+            MediaType mime = MediaType.valueOf(consume);
+            clientMessageBodyReaders.add(mime, key);
+         }
+      }
+      else
+      {
+         clientMessageBodyReaders.add(new MediaType("*", "*"), key);
       }
    }
 
@@ -800,14 +851,36 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * @param providerClass
     * @param isBuiltin
     */
-   protected void addMessageBodyWriter(MessageBodyWriter provider, Class providerClass, boolean isBuiltin)
+   protected void addMessageBodyWriter(MessageBodyWriter provider, Class<?> providerClass, boolean isBuiltin)
    {
       injectProperties(providerClass, provider);
       Produces consumeMime = provider.getClass().getAnnotation(Produces.class);
       SortedKey<MessageBodyWriter> key = new SortedKey<MessageBodyWriter>(MessageBodyWriter.class, provider, providerClass, isBuiltin);
-      if (messageBodyWriters == null)
+      RuntimeType type = null;
+      ConstrainedTo constrainedTo = providerClass.getAnnotation(ConstrainedTo.class);
+      if (constrainedTo != null) type = constrainedTo.value();
+      if (type == null)
       {
-         messageBodyWriters = parent.getMessageBodyWriters().clone();
+         addClientMessageBodyWriter(consumeMime, key);
+         addServerMessageBodyWriter(consumeMime, key);
+
+      }
+      else if (type == RuntimeType.CLIENT)
+      {
+         addClientMessageBodyWriter(consumeMime, key);
+
+      }
+      else
+      {
+         addServerMessageBodyWriter(consumeMime, key);
+      }
+   }
+
+   protected void addServerMessageBodyWriter(Produces consumeMime, SortedKey<MessageBodyWriter> key)
+   {
+      if (serverMessageBodyWriters == null)
+      {
+         serverMessageBodyWriters = parent.getServerMessageBodyWriters().clone();
       }
       if (consumeMime != null)
       {
@@ -815,19 +888,76 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             MediaType mime = MediaType.valueOf(consume);
             //logger.info(">>> Adding provider: " + provider.getClass().getName() + " with mime type of: " + mime);
-            messageBodyWriters.add(mime, key);
+            serverMessageBodyWriters.add(mime, key);
          }
       }
       else
       {
          //logger.info(">>> Adding provider: " + provider.getClass().getName() + " with mime type of: default */*");
-         messageBodyWriters.add(new MediaType("*", "*"), key);
+         serverMessageBodyWriters.add(new MediaType("*", "*"), key);
       }
    }
 
+   protected void addClientMessageBodyWriter(Produces consumeMime, SortedKey<MessageBodyWriter> key)
+   {
+      if (clientMessageBodyWriters == null)
+      {
+         clientMessageBodyWriters = parent.getClientMessageBodyWriters().clone();
+      }
+      if (consumeMime != null)
+      {
+         for (String consume : consumeMime.value())
+         {
+            MediaType mime = MediaType.valueOf(consume);
+            //logger.info(">>> Adding provider: " + provider.getClass().getName() + " with mime type of: " + mime);
+            clientMessageBodyWriters.add(mime, key);
+         }
+      }
+      else
+      {
+         //logger.info(">>> Adding provider: " + provider.getClass().getName() + " with mime type of: default */*");
+         clientMessageBodyWriters.add(new MediaType("*", "*"), key);
+      }
+   }
+
+   public <T> MessageBodyReader<T> getServerMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   {
+      MediaTypeMap<SortedKey<MessageBodyReader>> availableReaders = getServerMessageBodyReaders();
+      return resolveMessageBodyReader(type, genericType, annotations, mediaType, availableReaders);
+   }
+
+   /**
+    * Always returns server MBRs
+    *
+    * @param type        the class of the object that is to be read.
+    * @param genericType the type of object to be produced. E.g. if the
+    *                    message body is to be converted into a method parameter, this will be
+    *                    the formal type of the method parameter as returned by
+    *                    {@code Class.getGenericParameterTypes}.
+    * @param annotations an array of the annotations on the declaration of the
+    *                    artifact that will be initialized with the produced instance. E.g. if
+    *                    the message body is to be converted into a method parameter, this will
+    *                    be the annotations on that parameter returned by
+    *                    {@code Class.getParameterAnnotations}.
+    * @param mediaType   the media type of the data that will be read.
+    * @param <T>
+    * @return
+    */
    public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      List<SortedKey<MessageBodyReader>> readers = getMessageBodyReaders().getPossible(mediaType, type);
+      MediaTypeMap<SortedKey<MessageBodyReader>> availableReaders = getServerMessageBodyReaders();
+      return resolveMessageBodyReader(type, genericType, annotations, mediaType, availableReaders);
+   }
+
+   public <T> MessageBodyReader<T> getClientMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   {
+      MediaTypeMap<SortedKey<MessageBodyReader>> availableReaders = getClientMessageBodyReaders();
+      return resolveMessageBodyReader(type, genericType, annotations, mediaType, availableReaders);
+   }
+
+   protected <T> MessageBodyReader<T> resolveMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType, MediaTypeMap<SortedKey<MessageBodyReader>> availableReaders)
+   {
+      List<SortedKey<MessageBodyReader>> readers = availableReaders.getPossible(mediaType, type);
 
       //logger.info("******** getMessageBodyReader *******");
       for (SortedKey<MessageBodyReader> reader : readers)
@@ -1917,7 +2047,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public MediaType getConcreteMediaTypeFromMessageBodyWriters(Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      List<SortedKey<MessageBodyWriter>> writers = getMessageBodyWriters().getPossible(mediaType, type);
+      List<SortedKey<MessageBodyWriter>> writers = getServerMessageBodyWriters().getPossible(mediaType, type);
       for (SortedKey<MessageBodyWriter> writer : writers)
       {
          if (writer.obj.isWriteable(type, genericType, annotations, mediaType))
@@ -1938,10 +2068,43 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return null;
    }
 
+   public <T> MessageBodyWriter<T> getServerMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   {
+      MediaTypeMap<SortedKey<MessageBodyWriter>> availableWriters = getServerMessageBodyWriters();
+      return resolveMessageBodyWriter(type, genericType, annotations, mediaType, availableWriters);
+   }
 
+   /**
+    * Always gets server MBW
+    *
+    * @param type        the class of the object that is to be written.
+    * @param genericType the type of object to be written. E.g. if the
+    *                    message body is to be produced from a field, this will be
+    *                    the declared type of the field as returned by {@code Field.getGenericType}.
+    * @param annotations an array of the annotations on the declaration of the
+    *                    artifact that will be written. E.g. if the
+    *                    message body is to be produced from a field, this will be
+    *                    the annotations on that field returned by
+    *                    {@code Field.getDeclaredAnnotations}.
+    * @param mediaType   the media type of the data that will be written.
+    * @param <T>
+    * @return
+    */
    public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      List<SortedKey<MessageBodyWriter>> writers = getMessageBodyWriters().getPossible(mediaType, type);
+      MediaTypeMap<SortedKey<MessageBodyWriter>> availableWriters = getServerMessageBodyWriters();
+      return resolveMessageBodyWriter(type, genericType, annotations, mediaType, availableWriters);
+   }
+
+   public <T> MessageBodyWriter<T> getClientMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   {
+      MediaTypeMap<SortedKey<MessageBodyWriter>> availableWriters = getClientMessageBodyWriters();
+      return resolveMessageBodyWriter(type, genericType, annotations, mediaType, availableWriters);
+   }
+
+   protected <T> MessageBodyWriter<T> resolveMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType, MediaTypeMap<SortedKey<MessageBodyWriter>> availableWriters)
+   {
+      List<SortedKey<MessageBodyWriter>> writers = availableWriters.getPossible(mediaType, type);
       /*
       logger.info("*******   getMessageBodyWriter(" + type.getName() + ", " + mediaType.toString() + ")****");
       for (SortedKey<MessageBodyWriter> writer : writers)

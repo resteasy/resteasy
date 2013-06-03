@@ -67,14 +67,15 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
       {
          mediaType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
       }
-      MessageBodyReader reader = providerFactory.getMessageBodyReader(type,
-              genericType, annotations, mediaType);
+      MessageBodyReader reader = resolveReader(mediaType);
       if (reader == null)
       {
          throwReaderNotFound();
       }
       return reader;
    }
+
+   protected abstract MessageBodyReader resolveReader(MediaType mediaType);
 
    abstract protected void throwReaderNotFound();
 

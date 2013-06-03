@@ -41,6 +41,14 @@ public class ClientWriterInterceptorContext extends AbstractWriterInterceptorCon
    }
 
    @Override
+   protected MessageBodyWriter resolveWriter()
+   {
+      return providerFactory.getClientMessageBodyWriter(
+              type, genericType, annotations, mediaType);
+
+   }
+
+   @Override
    public Object getProperty(String name)
    {
       return properties.get(name);

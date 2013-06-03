@@ -148,7 +148,7 @@ public class RegressionBasketTest extends BaseResourceTest
 
    private static class SubFactory extends ResteasyProviderFactory
    {
-      public MediaTypeMap<SortedKey<MessageBodyReader>> getMBRMap() { return messageBodyReaders; }
+      public MediaTypeMap<SortedKey<MessageBodyReader>> getMBRMap() { return serverMessageBodyReaders; }
 
    }
 

@@ -51,19 +51,7 @@
                 <groupId>org.jboss.as.plugins</groupId>
                 <artifactId>jboss-as-maven-plugin</artifactId>
                 <version>7.4.Final</version>
-                <configuration>
-                    <!-- <jbossHome>${project.build.directory}/jboss-as-${jboss.dist.version}</jbossHome> -->
-                    <jboss-as-version>${jboss.dist.version}</jboss-as-version>
-                    <jvm-args>-Dremote.maven.repo=http://repository.jboss.org/nexus/content/groups/public/</jvm-args>
-                </configuration>
                 <executions>
-                    <execution>
-                        <id>jboss-start</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                    </execution>
                     <execution>
                         <id>jboss-deploy</id>
                         <phase>pre-integration-test</phase>
@@ -76,13 +64,6 @@
                         <phase>post-integration-test</phase>
                         <goals>
                             <goal>undeploy</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>jboss-stop</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>shutdown</goal>
                         </goals>
                     </execution>
                 </executions>

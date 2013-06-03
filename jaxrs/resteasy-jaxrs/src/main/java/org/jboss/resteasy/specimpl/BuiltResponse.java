@@ -107,7 +107,7 @@ public class BuiltResponse extends Response
             @Override
             public Status.Family getFamily()
             {
-               return Status.Family.OTHER;
+               return Status.Family.familyOf(status);
             }
 
             @Override

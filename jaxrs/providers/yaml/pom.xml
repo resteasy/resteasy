@@ -34,6 +34,7 @@
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         <!-- Used by org.jboss.resteasy.plugins.providers.YamlProvider -->
         <dependency>
