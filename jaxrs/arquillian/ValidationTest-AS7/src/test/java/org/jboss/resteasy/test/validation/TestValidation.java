@@ -14,14 +14,14 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.plugins.providers.SerializableProvider;
+import org.jboss.resteasy.spi.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.spi.validation.ResteasyViolationException;
-import org.jboss.resteasy.spi.validation.ValidationSupport;
+import org.jboss.resteasy.spi.validation.Validation;
 import org.jboss.resteasy.validation.Foo;
 import org.jboss.resteasy.validation.FooConstraint;
 import org.jboss.resteasy.validation.FooReaderWriter;
 import org.jboss.resteasy.validation.FooValidator;
 import org.jboss.resteasy.validation.JaxRsActivator;
-import org.jboss.resteasy.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.validation.TestClassConstraint;
 import org.jboss.resteasy.validation.TestClassValidator;
 import org.jboss.resteasy.validation.TestResourceWithAllViolationTypes;
@@ -90,7 +90,7 @@ public class TestValidation
          request.body("application/foo", new Foo("abcdef"));
          response = request.post();
          Assert.assertEquals(500, response.getStatus());
-         String header = response.getResponseHeaders().getFirst(ValidationSupport.VALIDATION_HEADER);
+         String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
          Assert.assertNotNull(header);
          Assert.assertTrue(Boolean.valueOf(header));
          MediaType mediaType = response.getMediaType();
@@ -101,8 +101,8 @@ public class TestValidation
          ResteasyViolationException exception = ResteasyViolationException.class.cast(entity);
          ResteasyConstraintViolation violation = exception.getReturnValueViolations().iterator().next();
          System.out.println("violation: " + violation);
-         Assert.assertTrue(ValidationSupport.getViolationMessage(violation).equals("s must have length: 1 <= length <= 3"));
-         Assert.assertEquals("Foo[abcdef]", ValidationSupport.getViolationValue(violation));
+         Assert.assertTrue(violation.getMessage().equals("s must have length: 1 <= length <= 3"));
+         Assert.assertEquals("Foo[abcdef]", violation.getValue());
       }
       
       {
@@ -111,7 +111,7 @@ public class TestValidation
          request.body("application/foo", new Foo("abcdef"));
          response = request.post(Foo.class);
          Assert.assertEquals(500, response.getStatus());
-         String header = response.getResponseHeaders().getFirst(ValidationSupport.VALIDATION_HEADER);
+         String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
          Assert.assertNotNull(header);
          Assert.assertTrue(Boolean.valueOf(header));
          MediaType mediaType = response.getMediaType();
@@ -123,8 +123,8 @@ public class TestValidation
          countViolations(exception, 1, 0, 0, 0, 0, 1);
          ResteasyConstraintViolation violation = exception.getReturnValueViolations().iterator().next();
          System.out.println("violation: " + violation);
-         Assert.assertTrue(ValidationSupport.getViolationMessage(violation).equals("s must have length: 3 <= length <= 5"));
-         Assert.assertEquals("Foo[abcdef]", ValidationSupport.getViolationValue(violation));
+         Assert.assertTrue(violation.getMessage().equals("s must have length: 3 <= length <= 5"));
+         Assert.assertEquals("Foo[abcdef]", violation.getValue());
       }
       
       {
@@ -133,7 +133,7 @@ public class TestValidation
          request.body("application/foo", new Foo("abcdef"));
          response = request.post(Foo.class); 
          Assert.assertEquals(500, response.getStatus());
-         String header = response.getResponseHeaders().getFirst(ValidationSupport.VALIDATION_HEADER);
+         String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
          Assert.assertNotNull(header);
          Assert.assertTrue(Boolean.valueOf(header));
          MediaType mediaType = response.getMediaType();
@@ -152,10 +152,10 @@ public class TestValidation
             cv1 = cv2;
             cv2 = temp;
          }
-         Assert.assertTrue(ValidationSupport.getViolationMessage(cv1).equals("s must have length: 1 <= length <= 3"));
-         Assert.assertEquals("Foo[abcdef]", ValidationSupport.getViolationValue(cv1));
-         Assert.assertTrue(ValidationSupport.getViolationMessage(cv2).equals("s must have length: 3 <= length <= 5"));
-         Assert.assertEquals("Foo[abcdef]", ValidationSupport.getViolationValue(cv2));
+         Assert.assertTrue(cv1.getMessage().equals("s must have length: 1 <= length <= 3"));
+         Assert.assertEquals("Foo[abcdef]", cv1.getValue());
+         Assert.assertTrue(cv2.getMessage().equals("s must have length: 3 <= length <= 5"));
+         Assert.assertEquals("Foo[abcdef]", cv2.getValue());
       }
    }
 
@@ -177,7 +177,7 @@ public class TestValidation
       request.body("application/foo", foo);
       response = request.post(Foo.class);
       Assert.assertEquals(400, response.getStatus());
-      String header = response.getResponseHeaders().getFirst(ValidationSupport.VALIDATION_HEADER);
+      String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
       Assert.assertNotNull(header);
       Assert.assertTrue(Boolean.valueOf(header));
       MediaType mediaType = response.getMediaType();
@@ -189,21 +189,21 @@ public class TestValidation
       countViolations(exception, 4, 1, 1, 1, 1, 0);
       ResteasyConstraintViolation violation = exception.getFieldViolations().iterator().next();
       System.out.println("violation: " + violation);
-      Assert.assertEquals("size must be between 2 and 4", ValidationSupport.getViolationMessage(violation));
-      Assert.assertEquals("a", ValidationSupport.getViolationValue(violation));
+      Assert.assertEquals("size must be between 2 and 4", violation.getMessage());
+      Assert.assertEquals("a", violation.getValue());
       violation = exception.getPropertyViolations().iterator().next();
       System.out.println("violation: " + violation);
-      Assert.assertEquals("size must be between 3 and 5", ValidationSupport.getViolationMessage(violation));
-      Assert.assertEquals("z", ValidationSupport.getViolationValue(violation));
+      Assert.assertEquals("size must be between 3 and 5", violation.getMessage());
+      Assert.assertEquals("z", violation.getValue());
       violation = exception.getClassViolations().iterator().next();
       System.out.println("violation: " + violation);
-      Assert.assertEquals("Concatenation of s and t must have length > 5", ValidationSupport.getViolationMessage(violation));
-      System.out.println("violation value: " + ValidationSupport.getViolationValue(violation));
-      Assert.assertTrue(ValidationSupport.getViolationValue(violation).startsWith("org.jboss.resteasy.validation.TestResourceWithAllViolationTypes@"));
+      Assert.assertEquals("Concatenation of s and t must have length > 5", violation.getMessage());
+      System.out.println("violation value: " + violation.getValue());
+      Assert.assertTrue(violation.getValue().startsWith("org.jboss.resteasy.validation.TestResourceWithAllViolationTypes@"));
       violation = exception.getParameterViolations().iterator().next();
       System.out.println("violation: " + violation);
-      Assert.assertEquals("s must have length: 3 <= length <= 5", ValidationSupport.getViolationMessage(violation));
-      Assert.assertEquals("Foo[p]", ValidationSupport.getViolationValue(violation));
+      Assert.assertEquals("s must have length: 3 <= length <= 5", violation.getMessage());
+      Assert.assertEquals("Foo[p]", violation.getValue());
    }
    
    private void countViolations(ResteasyViolationException e, int totalCount, int fieldCount, int propertyCount, int classCount, int parameterCount, int returnValueCount)

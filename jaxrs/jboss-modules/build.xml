@@ -108,8 +108,12 @@
         <module-def name="org.jboss.resteasy.resteasy-crypto">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-crypto" jandex="true"/>
         </module-def>
+      
+        <module-def name="org.jboss.resteasy.resteasy-hibernatevalidator-provider">
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-hibernatevalidator-provider" jandex="true"/>
+        </module-def>
 
-        <module-def name="org.jboss.resteasy.resteasy-jackson-provider">
+    	  <module-def name="org.jboss.resteasy.resteasy-jackson-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jackson-provider" jandex="true"/>
         </module-def>
 
@@ -141,14 +145,6 @@
 
         <module-def name="org.jboss.resteasy.resteasy-multipart-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-multipart-provider" jandex="true"/>
-        </module-def>
-
-        <!--module-def name="org.jboss.resteasy.resteasy-validator-provider-10">
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-validator-provider-10" jandex="true"/>
-        </module-def-->
-        	
-        <module-def name="org.jboss.resteasy.resteasy-hibernatevalidator-provider">
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-hibernatevalidator-provider" jandex="true"/>
         </module-def>
     	
         <module-def name="org.jboss.resteasy.resteasy-yaml-provider">

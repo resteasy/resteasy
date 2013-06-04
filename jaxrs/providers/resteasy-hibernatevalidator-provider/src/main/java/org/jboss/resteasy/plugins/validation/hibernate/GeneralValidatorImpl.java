@@ -12,12 +12,12 @@ import javax.validation.metadata.BeanDescriptor;
 import org.hibernate.validator.method.MethodConstraintViolation;
 import org.hibernate.validator.method.MethodValidator;
 import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
+import org.jboss.resteasy.plugins.providers.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.ConstraintType.Type;
 import org.jboss.resteasy.spi.validation.DoNotValidateRequest;
-import org.jboss.resteasy.spi.validation.GeneralValidator;
+import org.jboss.resteasy.spi.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.spi.validation.ValidateRequest;
 import org.jboss.resteasy.util.FindAnnotation;
-import org.jboss.resteasy.validation.ResteasyConstraintViolation;
 
 /**
  * 
@@ -135,12 +135,20 @@ public class GeneralValidatorImpl implements GeneralValidator
    }
 
    @Override
+   public boolean isValidatable(Class<?> clazz)
+   {
+      ValidateRequest resourceValidateRequest = FindAnnotation.findAnnotation(clazz.getAnnotations(), ValidateRequest.class);
+      DoNotValidateRequest doNotValidateRequest = FindAnnotation.findAnnotation(clazz.getAnnotations(), DoNotValidateRequest.class);
+      return resourceValidateRequest != null && doNotValidateRequest == null;
+   }
+   
+   @Override
    public boolean isMethodValidatable(Method m)
    {
-//      ValidateRequest resourceValidateRequest = FindAnnotation.findAnnotation(m.getDeclaringClass().getAnnotations(), ValidateRequest.class);
-//      ValidateRequest methodValidateRequest = FindAnnotation.findAnnotation(m.getAnnotations(), ValidateRequest.class);
-//      DoNotValidateRequest doNotValidateRequest = FindAnnotation.findAnnotation(m.getAnnotations(), DoNotValidateRequest.class);
-//      return (resourceValidateRequest != null || methodValidateRequest != null) && doNotValidateRequest == null;
-      return FindAnnotation.findAnnotation(m.getAnnotations(), DoNotValidateRequest.class) == null;
+      ValidateRequest resourceValidateRequest = FindAnnotation.findAnnotation(m.getDeclaringClass().getAnnotations(), ValidateRequest.class);
+      ValidateRequest methodValidateRequest = FindAnnotation.findAnnotation(m.getAnnotations(), ValidateRequest.class);
+      DoNotValidateRequest doNotValidateRequest = FindAnnotation.findAnnotation(m.getAnnotations(), DoNotValidateRequest.class);
+      return (resourceValidateRequest != null || methodValidateRequest != null) && doNotValidateRequest == null;
+//      return FindAnnotation.findAnnotation(m.getAnnotations(), DoNotValidateRequest.class) == null;
    }
 }

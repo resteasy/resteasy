@@ -4,6 +4,8 @@ import javax.validation.Valid;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
+import org.jboss.resteasy.spi.validation.ValidateRequest;
+
 /**
  * 
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
@@ -12,6 +14,7 @@ import javax.ws.rs.Path;
  * Copyright May 18, 2013
  */
 @Path("/return")
+@ValidateRequest
 public class TestResourceWithReturnValues
 {
    @POST

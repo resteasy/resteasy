@@ -8,6 +8,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.plugins.providers.SerializableProvider;
 import org.jboss.resteasy.spi.validation.ResteasyViolationException;
+import org.jboss.resteasy.spi.validation.Validation;
 
 
 /**
@@ -22,18 +23,12 @@ public class ResteasyViolationExceptionMapper implements ExceptionMapper<Resteas
 {
    public Response toResponse(ResteasyViolationException exception)
    {
-//      exception.convertToStrings();
-//      exception.setViolationsContainer(null);
       if (exception.getReturnValueViolations().size() == 0)
       {
-//        return Response.status(Status.BAD_REQUEST).type("application/x-java-serialized-object").entity(exception).build();
-//         return Response.status(Status.BAD_REQUEST).entity(exception.getStrings()).build();
          return buildResponse(exception, SerializableProvider.APPLICATION_SERIALIZABLE, Status.BAD_REQUEST); 
       }
       else
       {
-//         return Response.status(Status.INTERNAL_SERVER_ERROR).type("application/x-java-serialized-object").entity(exception).build();
-//         return Response.status(Status.INTERNAL_SERVER_ERROR).entity(exception.getStrings()).build();
          return buildResponse(exception, SerializableProvider.APPLICATION_SERIALIZABLE, Status.INTERNAL_SERVER_ERROR);
       }
    }
@@ -42,7 +37,7 @@ public class ResteasyViolationExceptionMapper implements ExceptionMapper<Resteas
    {
       ResponseBuilder builder =  Response.status(status).entity(entity);
       builder.type(SerializableProvider.APPLICATION_SERIALIZABLE);
-      builder.header(ValidationSupport.VALIDATION_HEADER, "true");
+      builder.header(Validation.VALIDATION_HEADER, "true");
       return builder.build();
    }
 }

@@ -12,9 +12,9 @@ import javax.validation.metadata.BeanDescriptor;
 import org.hibernate.validator.method.MethodConstraintViolation;
 import org.hibernate.validator.method.MethodValidator;
 import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
+import org.jboss.resteasy.plugins.providers.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.ConstraintType.Type;
-import org.jboss.resteasy.spi.validation.GeneralValidator;
-import org.jboss.resteasy.validation.ResteasyConstraintViolation;
+import org.jboss.resteasy.spi.validation.ResteasyConstraintViolation;
 
 /**
  * 

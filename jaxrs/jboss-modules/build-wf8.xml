@@ -147,14 +147,13 @@
              <maven-resource group="org.jboss.resteasy" artifact="resteasy-multipart-provider" jandex="true"/>
          </module-def>
 
+        <module-def name="org.jboss.resteasy.resteasy-validator-provider-11">
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-validator-provider-11" jandex="true"/>
+        </module-def>
+    	
         <module-def name="org.jboss.resteasy.skeleton-key">
             <maven-resource group="org.jboss.resteasy" artifact="skeleton-key-as7"/>
             <maven-resource group="org.jboss.resteasy" artifact="skeleton-key-core"/>
-        </module-def>
-
-         
-        <module-def name="org.jboss.resteasy.resteasy-validator-provider-11">
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-validator-provider-11" jandex="true"/>
         </module-def>
     	
         <zip destfile="${output.dir}/resteasy-jboss-modules-wf8-${project.version}.zip">

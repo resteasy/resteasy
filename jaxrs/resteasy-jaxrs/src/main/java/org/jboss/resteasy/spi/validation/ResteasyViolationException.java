@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.validation.ConstraintViolation;
 import javax.validation.ValidationException;
 
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
-import org.jboss.resteasy.validation.ResteasyConstraintViolation;
-//import org.jboss.resteasy.validation.ViolationsContainer;
 
 /**
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
@@ -35,10 +32,9 @@ public class ResteasyViolationException extends ValidationException
    private List<ResteasyConstraintViolation> allViolations; 
    private List<List<ResteasyConstraintViolation>> violationLists;
    
-   public ResteasyViolationException(ViolationsContainer container)
+   public ResteasyViolationException(ViolationsContainer<?> container)
    {
       convertToStrings(container);
-//      exception = container.getException();
    }
    
    public Exception getException()
@@ -127,41 +123,7 @@ public class ResteasyViolationException extends ValidationException
       classViolations = container.getClassViolations();
       parameterViolations = container.getParameterViolations();
       returnValueViolations = container.getReturnValueViolations();
-      
-//      Iterator it = container.getFieldViolations().iterator();
-//      while (it.hasNext())
-//      {
-//         ConstraintViolation cv = (ConstraintViolation) it.next();
-//         fieldViolations.add(new ResteasyConstraintViolation(ConstraintType.Type.FIELD, cv.getPropertyPath().toString(), cv.getMessage(), cv.getInvalidValue().toString()));
-//      }
-//      
-//      it = container.getPropertyViolations().iterator();
-//      while (it.hasNext())
-//      {
-//         ConstraintViolation cv = (ConstraintViolation) it.next();
-//         propertyViolations.add(new ResteasyConstraintViolation(ConstraintType.Type.PROPERTY, cv.getPropertyPath().toString(), cv.getMessage(), cv.getInvalidValue().toString()));
-//      }
-//      
-//      it = container.getClassViolations().iterator();
-//      while (it.hasNext())
-//      {
-//         ConstraintViolation cv = (ConstraintViolation) it.next();
-//         classViolations.add(new ResteasyConstraintViolation(ConstraintType.Type.CLASS, cv.getRootBeanClass().getName(), cv.getMessage(), cv.getInvalidValue().toString()));
-//      }
-//      
-//      it = container.getParameterViolations().iterator();
-//      while (it.hasNext())
-//      {
-//         ConstraintViolation cv = (ConstraintViolation) it.next();
-//         parameterViolations.add(new ResteasyConstraintViolation(ConstraintType.Type.PARAMETER, cv.getPropertyPath().toString(), cv.getMessage(), convertArrayToString(cv.getInvalidValue())));
-//      }
-//      
-//      it = container.getReturnValueViolations().iterator();
-//      while (it.hasNext())
-//      {
-//         ConstraintViolation cv = (ConstraintViolation) it.next();
-//         returnValueViolations.add(new ResteasyConstraintViolation(ConstraintType.Type.RETURN_VALUE, cv.getPropertyPath().toString(), cv.getMessage(), cv.getInvalidValue().toString()));
-//      }
+
       violationLists.add(fieldViolations);
       violationLists.add(propertyViolations);
       violationLists.add(classViolations);

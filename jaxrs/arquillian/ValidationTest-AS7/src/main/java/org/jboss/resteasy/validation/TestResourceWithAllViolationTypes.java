@@ -5,6 +5,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import org.jboss.resteasy.spi.validation.ValidateRequest;
+
 /**
  * 
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
@@ -14,6 +16,7 @@ import javax.ws.rs.PathParam;
  */
 @Path("all")
 @TestClassConstraint(5)
+@ValidateRequest
 public class TestResourceWithAllViolationTypes
 {
    @Size(min=2, max=4)

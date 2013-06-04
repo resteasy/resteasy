@@ -1,9 +1,14 @@
-package org.jboss.resteasy.validation;
+package org.jboss.resteasy.spi.validation;
 
 import java.io.Serializable;
 
-import org.jboss.resteasy.spi.validation.ConstraintType;
-
+/**
+ * 
+ * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
+ * @version $Revision: 1.1 $
+ *
+ * Copyright Jun 4, 2013
+ */
 public class ResteasyConstraintViolation implements Serializable
 {
    private static final long serialVersionUID = -5441628046215135260L;

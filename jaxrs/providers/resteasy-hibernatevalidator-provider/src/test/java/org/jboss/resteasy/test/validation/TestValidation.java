@@ -56,9 +56,10 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.spi.validation.ResteasyViolationException;
+import org.jboss.resteasy.spi.validation.ValidateRequest;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.validation.ResteasyConstraintViolation;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -75,6 +76,7 @@ public class TestValidation
    protected static Dispatcher dispatcher;
 
    @Path("/")
+   @ValidateRequest
    public static class TestResourceWithValidField
    {
       @SuppressWarnings("unused")
@@ -88,6 +90,7 @@ public class TestValidation
    }
 
    @Path("/")
+   @ValidateRequest
    public static class TestResourceWithInvalidField
    {
       @SuppressWarnings("unused")
@@ -101,6 +104,7 @@ public class TestValidation
    }
 
    @Path("/{s}")
+   @ValidateRequest
    public static class TestResourceWithProperty
    {
       private String s;
@@ -125,6 +129,7 @@ public class TestValidation
    }
 
    @Path("/{s}/{t}")
+   @ValidateRequest
    public static class TestResourceWithFieldAndProperty
    {
       @SuppressWarnings("unused")
@@ -172,6 +177,7 @@ public class TestValidation
    @Constraint(validatedBy = TestClassValidator.class)
    @Target({TYPE})
    @Retention(RUNTIME)
+   @ValidateRequest
    public @interface TestClassConstraint {
       String message() default "Concatenation of s and t must have length > {value}";
       Class<?>[] groups() default {};
@@ -181,6 +187,7 @@ public class TestValidation
 
    @Path("/{s}/{t}")
    @TestClassConstraint(5)
+   @ValidateRequest
    public static class TestResourceWithClassConstraint
    {
       @NotNull String s;
@@ -231,6 +238,7 @@ public class TestValidation
    }
 
    @Path("/{s}/{t}")
+   @ValidateRequest
    public static class TestResourceWithGraph
    {
       @Valid B b;
@@ -275,6 +283,7 @@ public class TestValidation
    }
 
    @Path("/{s}")
+   @ValidateRequest
    public static class TestResourceWithArray
    {
       @Valid ArrayOfStrings aos;
@@ -303,6 +312,7 @@ public class TestValidation
    }
 
    @Path("/{s}")
+   @ValidateRequest
    public static class TestResourceWithList
    {
       @Valid ListOfStrings los;
@@ -330,6 +340,7 @@ public class TestValidation
    }
 
    @Path("/{s}")
+   @ValidateRequest
    public static class TestResourceWithMap
    {
       @Valid MapOfStrings mos;
@@ -368,6 +379,7 @@ public class TestValidation
    }
 
    @Path("/{s}")
+   @ValidateRequest
    public static class TestResourceWithMapOfListOfArrayOfStrings
    {
       @Valid MapOfListOfArrayOfStrings mlas;
@@ -476,6 +488,7 @@ public class TestValidation
    }
 
    @Path("/")
+   @ValidateRequest
    public static class TestResourceWithParameters
    {  
       @POST
@@ -510,6 +523,7 @@ public class TestValidation
    }
 
    @Path("/")
+   @ValidateRequest
    public static class TestResourceWithReturnValues
    {  
       @POST
@@ -558,6 +572,7 @@ public class TestValidation
    @Constraint(validatedBy = TestClassValidator2.class)
    @Target({TYPE})
    @Retention(RUNTIME)
+   @ValidateRequest
    public @interface TestClassConstraint2 {
       String message() default "Concatenation of s and t must have length > {value}";
       Class<?>[] groups() default {};
@@ -567,6 +582,7 @@ public class TestValidation
    
    @Path("/{s}/{t}")
    @TestClassConstraint2(5)
+   @ValidateRequest
    public static class TestResourceWithAllFivePotentialViolations
    {
       @Size(min=2, max=4)
@@ -596,6 +612,7 @@ public class TestValidation
       }
    }
    
+   @ValidateRequest
    public interface InterfaceTest
    {
 	   @Path("/inherit")
@@ -630,6 +647,7 @@ public class TestValidation
    }
    
    @Path("/")
+   @ValidateRequest
    public static class TestResourceWithSubLocators
    {
       @Path("validField")
@@ -678,6 +696,7 @@ public class TestValidation
       }
       
       @Path("")
+      @ValidateRequest
       public static class SubResource
       {
          @Path("sublocator/{s}")
@@ -691,6 +710,7 @@ public class TestValidation
       }
       
       @Path("")
+      @ValidateRequest
       public static class SubSubResource
       {
          @Size(min=2,max=3) String s;

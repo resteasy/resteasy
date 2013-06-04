@@ -58,9 +58,10 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.spi.validation.ResteasyViolationException;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.validation.ResteasyConstraintViolation;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -1662,37 +1663,49 @@ public class TestValidation
    }
    
    @Test
-//     @Ignore
+//   @Ignore
    public void testValidateOnExecution() throws Exception
    {
       before(TestValidateOnExecutionSubResource.class);
       
-//      {
-//         // No validation.
-//         ClientRequest request = new ClientRequest(generateURL("/none"));
-//         request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
-//         ClientResponse<?> response = request.post(String.class);
-//         Assert.assertEquals(200, response.getStatus());
-//         Assert.assertEquals("abc", response.getEntity());
-//      }
-//
-//      {
-//         // No validation.
-//         ClientRequest request = new ClientRequest(generateURL("/getterOnNonGetter"));
-//         request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
-//         ClientResponse<?> response = request.post(String.class);
-//         Assert.assertEquals(200, response.getStatus());
-//         Assert.assertEquals("abc", response.getEntity());
-//      }
-//      
-//      {
-//         // No validation.
-//         ClientRequest request = new ClientRequest(generateURL("/nonGetterOnGetter"));
-//         ClientResponse<?> response = request.post(String.class);
-//         Assert.assertEquals(200, response.getStatus());
-//         Assert.assertEquals("abc", response.getEntity());
-//      }
-//      
+      {
+         // No method validation. Two property violations.
+         ClientRequest request = new ClientRequest(generateURL("/none"));
+         request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
+         ClientResponse<?> response = request.post(Serializable.class);
+         Assert.assertEquals(400, response.getStatus());
+         Object entity = response.getEntity();
+         Assert.assertTrue(entity instanceof ResteasyViolationException);
+         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+         System.out.println(e);
+         countViolations(e, 2, 0, 2, 0, 0, 0);
+      }
+
+      {
+         // No method validation. Two property violations.
+         ClientRequest request = new ClientRequest(generateURL("/getterOnNonGetter"));
+         request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
+         ClientResponse<?> response = request.post(Serializable.class);
+         Assert.assertEquals(400, response.getStatus());
+         Object entity = response.getEntity();
+         Assert.assertTrue(entity instanceof ResteasyViolationException);
+         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+         System.out.println(e);
+         countViolations(e, 2, 0, 2, 0, 0, 0);
+      }
+      
+      {
+         // No method validation. Two property violations
+         ClientRequest request = new ClientRequest(generateURL("/nonGetterOnGetter"));
+         ClientResponse<?> response = request.post(Serializable.class);
+         Assert.assertEquals(400, response.getStatus());
+         Object entity = response.getEntity();
+         Assert.assertTrue(entity instanceof ResteasyViolationException);
+         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+         System.out.println(e);
+         countViolations(e, 2, 0, 2, 0, 0, 0);
+      }
+      
       {
          // Failure.
          ClientRequest request = new ClientRequest(generateURL("/implicitOnNonGetter"));

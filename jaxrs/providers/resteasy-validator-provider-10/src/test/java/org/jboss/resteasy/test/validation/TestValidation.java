@@ -56,9 +56,9 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.spi.validation.ResteasyViolationException;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.validation.ResteasyConstraintViolation;
 import org.junit.Ignore;
 import org.junit.Test;
 
