@@ -1,10 +1,7 @@
 package org.jboss.resteasy.plugins.guice;
 
 import com.google.inject.Binding;
-import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.google.inject.Stage;
 
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.Registry;
@@ -27,30 +24,6 @@ public class ModuleProcessor
    {
       this.registry = registry;
       this.providerFactory = providerFactory;
-   }
-
-   public void process(final Module... modules)
-   {
-      final Injector injector = Guice.createInjector(modules);
-      processInjector(injector);
-   }
-
-   public void process(final Stage stage, final Module... modules)
-   {
-      final Injector injector = Guice.createInjector(stage, modules);
-      processInjector(injector);
-   }
-
-   public void process(final Iterable<Module> modules)
-   {
-      final Injector injector = Guice.createInjector(modules);
-      processInjector(injector);
-   }
-
-   public void process(final Stage stage, final Iterable<Module> modules)
-   {
-      final Injector injector = Guice.createInjector(stage, modules);
-      processInjector(injector);
    }
 
    public void processInjector(final Injector injector)

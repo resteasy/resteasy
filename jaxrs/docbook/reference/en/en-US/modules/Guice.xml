@@ -69,8 +69,9 @@ public class HelloModule implements Module
     <section>
       <title>Request Scope</title>
       <para>
-        The Guice integration allows objects to be scoped to the HTTP request by adding the @RequestScoped annotation to your class.
-        All the objects injectable via the @Context annotation are also injectable, except ServletConfig and ServletContext.
+        Add the RequestScopeModule to your modules to allow objects to be scoped to the HTTP request by adding
+        the @RequestScoped annotation to your class.  All the objects injectable via the @Context annotation are 
+        also injectable, except ServletConfig and ServletContext.
       </para>
 <programlisting>
 <![CDATA[
@@ -88,6 +89,12 @@ public class MyClass
 }
 ]]>
 </programlisting>
+    </section>
+    <section>
+        <title>Binding JAX-RS utilities</title>
+        <para>
+            Add the JaxrsModule to bind javax.ws.rs.ext.RuntimeDelegate, javax.ws.rs.core.Response.ResponseBuilder, javax.ws.rs.core.UriBuilder, javax.ws.rs.core.Variant.VariantListBuilder and org.jboss.resteasy.client.ClientExecutor.
+        </para>
     </section>
     <section>
         <title>Configuring Stage</title>
@@ -129,6 +136,47 @@ public class MyClass
     </servlet-mapping>
 
 </web-app>
+]]>
+</programlisting>        
+    </section>
+    <section>
+      <title>Custom Injector creation</title>
+      <para>
+        GuiceResteasyBootstrapServletContextListener can be extended to allow more flexibility in the way the Injector and Modules
+        are created.  Two methods can be overridden: getModules() and withInjector() Register your subclass as the listener in the web.xml.
+      </para>
+      <para>
+        Override getModules() when you need to pass arguments to your modules' constructor or perform more complex operations.
+      </para>
+      <para>
+        Override withInjector(Injector) when you need to interact with the Injector after it has been created.
+      </para>
+<programlisting>
+<![CDATA[
+<web-app>
+    <!-- other tags omitted -->
+    <listener>
+      <listener-class>
+         org.jboss.resteasy.plugins.guice.GuiceResteasyBootstrapServletContextListener
+      </listener-class>
+    </listener>
+</web-app>
+
+public class MyServletContextListener extends GuiceResteasyBootstrapServletContextListener
+{
+
+    @Override
+    protected List<Module> getModules(ServletContext context)
+    {
+        return asList((Module)new JpaPersistModule("consulting_hours"), new MyModule());
+    }
+    
+    @Override
+    public void withInjector(Injector injector)
+    {
+        injector.getInstance(PersistService.class).start();
+    }
+}
 ]]>
 </programlisting>        
     </section>

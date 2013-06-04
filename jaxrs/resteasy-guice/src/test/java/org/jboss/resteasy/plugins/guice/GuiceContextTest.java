@@ -1,21 +1,24 @@
 package org.jboss.resteasy.plugins.guice;
 
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+
 import com.google.inject.Binder;
+import com.google.inject.Guice;
 import com.google.inject.Module;
+
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class GuiceContextTest
 {
@@ -38,13 +41,14 @@ public class GuiceContextTest
    {
       final Module module = new Module()
       {
+         @Override
          public void configure(final Binder binder)
          {
             binder.bind(MethodTestResource.class);
          }
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
-      processor.process(module);
+      processor.processInjector(Guice.createInjector(module));
       final TestResource resource = ProxyFactory.create(TestResource.class, generateBaseUrl());
       Assert.assertEquals("method", resource.getName());
       dispatcher.getRegistry().removeRegistrations(MethodTestResource.class);
@@ -55,13 +59,14 @@ public class GuiceContextTest
    {
       final Module module = new Module()
       {
+         @Override
          public void configure(final Binder binder)
          {
             binder.bind(FieldTestResource.class);
          }
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
-      processor.process(module);
+      processor.processInjector(Guice.createInjector(module));
       final TestResource resource = ProxyFactory.create(TestResource.class, generateBaseUrl());
       Assert.assertEquals("field", resource.getName());
       dispatcher.getRegistry().removeRegistrations(FieldTestResource.class);
@@ -72,13 +77,14 @@ public class GuiceContextTest
    {
       final Module module = new Module()
       {
+         @Override
          public void configure(final Binder binder)
          {
             binder.bind(ConstructorTestResource.class);
          }
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
-      processor.process(module);
+      processor.processInjector(Guice.createInjector(module));
       final TestResource resource = ProxyFactory.create(TestResource.class, generateBaseUrl());
       Assert.assertEquals("constructor", resource.getName());
       dispatcher.getRegistry().removeRegistrations(ConstructorTestResource.class);

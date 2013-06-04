@@ -1,20 +1,23 @@
 package org.jboss.resteasy.plugins.guice;
 
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+
 import com.google.inject.Binder;
+import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Module;
+
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class ResourceTest
 {
@@ -37,13 +40,14 @@ public class ResourceTest
    {
       final Module module = new Module()
       {
+         @Override
          public void configure(final Binder binder)
          {
             binder.bind(TestResource.class).to(TestResourceSimple.class);
          }
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
-      processor.process(module);
+      processor.processInjector(Guice.createInjector(module));
       final TestResource resource = ProxyFactory.create(TestResource.class, generateBaseUrl());
       Assert.assertEquals("name", resource.getName());
       dispatcher.getRegistry().removeRegistrations(TestResource.class);
@@ -54,6 +58,7 @@ public class ResourceTest
    {
       final Module module = new Module()
       {
+         @Override
          public void configure(final Binder binder)
          {
             binder.bind(String.class).toInstance("injected-name");
@@ -61,7 +66,7 @@ public class ResourceTest
          }
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
-      processor.process(module);
+      processor.processInjector(Guice.createInjector(module));
       final TestResource resource = ProxyFactory.create(TestResource.class, generateBaseUrl());
       Assert.assertEquals("injected-name", resource.getName());
       dispatcher.getRegistry().removeRegistrations(TestResource.class);
@@ -76,6 +81,7 @@ public class ResourceTest
 
    public static class TestResourceSimple implements TestResource
    {
+      @Override
       public String getName()
       {
          return "name";
@@ -92,6 +98,7 @@ public class ResourceTest
          this.name = name;
       }
 
+      @Override
       public String getName()
       {
          return name;
