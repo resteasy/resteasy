@@ -1,14 +1,14 @@
 package org.jboss.resteasy.plugins.guice;
 
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+
 import com.google.inject.Binder;
+import com.google.inject.Guice;
 import com.google.inject.Module;
+
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -16,7 +16,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class GuiceProviderTest
 {
@@ -39,6 +42,7 @@ public class GuiceProviderTest
    {
       final Module module = new Module()
       {
+         @Override
          public void configure(final Binder binder)
          {
             binder.bind(TestExceptionProvider.class);
@@ -46,7 +50,7 @@ public class GuiceProviderTest
          }
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
-      processor.process(module);
+      processor.processInjector(Guice.createInjector(module));
       final TestResource resource = ProxyFactory.create(TestResource.class, generateBaseUrl());
       Assert.assertEquals("exception", resource.getName());
       dispatcher.getRegistry().removeRegistrations(TestResource.class);
@@ -61,6 +65,7 @@ public class GuiceProviderTest
 
    public static class TestResourceException implements TestResource
    {
+      @Override
       public String getName()
       {
          throw new TestException();
@@ -74,6 +79,7 @@ public class GuiceProviderTest
    @Provider
    public static class TestExceptionProvider implements ExceptionMapper<TestException>
    {
+      @Override
       public Response toResponse(final TestException exception)
       {
          return Response.ok("exception").build();

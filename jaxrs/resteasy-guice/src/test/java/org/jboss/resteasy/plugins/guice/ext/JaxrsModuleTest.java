@@ -1,17 +1,17 @@
 package org.jboss.resteasy.plugins.guice.ext;
 
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+
 import com.google.inject.Binder;
+import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Module;
+
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.guice.ModuleProcessor;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -20,7 +20,10 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.RuntimeDelegate;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class JaxrsModuleTest
 {
@@ -43,13 +46,14 @@ public class JaxrsModuleTest
    {
       final Module module = new Module()
       {
+         @Override
          public void configure(final Binder binder)
          {
             binder.bind(TestResource.class).to(JaxrsTestResource.class);
          }
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
-      processor.process(module, new JaxrsModule());
+      processor.processInjector(Guice.createInjector(module, new JaxrsModule()));
       final TestResource resource = ProxyFactory.create(TestResource.class, generateBaseUrl());
       Assert.assertEquals("ok", resource.getName());
       dispatcher.getRegistry().removeRegistrations(TestResource.class);
@@ -80,6 +84,7 @@ public class JaxrsModuleTest
          this.variantListBuilder = variantListBuilder;
       }
 
+      @Override
       public String getName()
       {
          Assert.assertNotNull(clientExecutor);

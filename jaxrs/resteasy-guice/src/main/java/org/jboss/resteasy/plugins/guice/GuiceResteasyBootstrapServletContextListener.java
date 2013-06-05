@@ -1,22 +1,26 @@
 package org.jboss.resteasy.plugins.guice;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
+
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootstrap implements ServletContextListener
 {
@@ -24,6 +28,7 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
 
    private List<Module> modules;
 
+   @Override
    public void contextInitialized(final ServletContextEvent event)
    {
       super.contextInitialized(event);
@@ -33,16 +38,28 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
       final ModuleProcessor processor = new ModuleProcessor(registry, providerFactory);
       final List<Module> modules = getModules(context);
       final Stage stage = getStage(context);
+      final Injector injector;
       if (stage == null)
       {
-         processor.process(modules);
+         injector = Guice.createInjector(modules);
       }
       else
       {
-         processor.process(stage, modules);
+         injector = Guice.createInjector(stage, modules);
       }
+      withInjector(injector);
+      processor.processInjector(injector);
       this.modules = modules;
-      triggerAnnotatedMethods(this.modules, PostConstruct.class);
+      triggerAnnotatedMethods(PostConstruct.class);
+   }
+
+   /**
+    * Override this method to interact with the {@link Injector} after it has been created.
+    *
+    * @param injector
+    */
+   protected void withInjector(Injector injector)
+   {
    }
 
    private Stage getStage(ServletContext context)
@@ -63,6 +80,12 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
       }
    }
 
+   /**
+    * Override this method to instantiate your {@link Module}s yourself.
+    *
+    * @param context
+    * @return
+    */
    protected List<Module> getModules(final ServletContext context)
    {
       final List<Module> result = new ArrayList<Module>();
@@ -97,12 +120,13 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
       return result;
    }
 
+   @Override
    public void contextDestroyed(final ServletContextEvent event)
    {
-      triggerAnnotatedMethods(this.modules, PreDestroy.class);
+      triggerAnnotatedMethods(PreDestroy.class);
    }
 
-   private void triggerAnnotatedMethods(final List<Module> modules, final Class<? extends Annotation> annotationClass)
+   private void triggerAnnotatedMethods(final Class<? extends Annotation> annotationClass)
    {
       for (Module module : this.modules)
       {
