@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.util.NoContent;
 import org.jboss.resteasy.util.ReadFromStream;
 
 import javax.ws.rs.Consumes;
@@ -8,6 +9,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,6 +31,7 @@ public class ByteArrayProvider implements MessageBodyReader<byte[]>, MessageBody
 
    public byte[] readFrom(Class<byte[]> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
+      if (NoContent.isContentLengthZero(httpHeaders)) return new byte[0];
       return ReadFromStream.readFromStream(1024, entityStream);
    }
 

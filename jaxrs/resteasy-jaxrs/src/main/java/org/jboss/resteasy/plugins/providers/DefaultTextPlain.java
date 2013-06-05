@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.util.NoContent;
 import org.jboss.resteasy.util.NoContentInputStreamDelegate;
 import org.jboss.resteasy.util.TypeConverter;
 
@@ -35,7 +36,7 @@ public class DefaultTextPlain implements MessageBodyReader, MessageBodyWriter
 
    public Object readFrom(Class type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
    {
-      NoContentInputStreamDelegate delegate = new NoContentInputStreamDelegate(entityStream);
+      InputStream delegate = NoContent.noContentCheck(httpHeaders, entityStream);
       String value = ProviderHelper.readString(delegate, mediaType);
       return TypeConverter.getType(type, value);
    }

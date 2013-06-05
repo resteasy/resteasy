@@ -3,6 +3,8 @@
  */
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.util.NoContent;
+
 import javax.activation.DataSource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -10,6 +12,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
+import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -116,7 +119,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
     * @param genericType
     * @param annotations
     * @return
-    * @see javax.ws.rs.ext.MessageBodyReader#isReadable(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[])
+    * @see javax.ws.rs.ext.MessageBodyReader
     */
    public boolean isReadable(Class<?> type,
                              Type genericType,
@@ -147,7 +150,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
                               MultivaluedMap<String, String> httpHeaders,
                               InputStream entityStream) throws IOException
    {
-
+      if (NoContent.isContentLengthZero(httpHeaders)) return readDataSource(new ByteArrayInputStream(new byte[0]), mediaType);
       return readDataSource(entityStream, mediaType);
    }
 

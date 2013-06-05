@@ -221,6 +221,26 @@ public class ProduceConsumeTest extends BaseResourceTest
    }
 
    @Test
+   public void testEmptyInteger()
+   {
+      Response response = client.target(generateURL("/resource/empty")).request().get();
+      Assert.assertEquals(response.getStatus(), 200);
+      response.getHeaders().add(HttpHeaders.CONTENT_TYPE,
+              MediaType.TEXT_PLAIN_TYPE);
+      try
+      {
+         Integer big = response.readEntity(Integer.class);
+         Assert.fail();
+      }
+      catch (ProcessingException e)
+      {
+         Assert.assertTrue(e.getCause() instanceof NoContentException);
+      }
+
+   }
+
+
+   @Test
    public void testEmptyForm()
    {
       Response response = client.target(generateURL("/resource/empty")).request().get();

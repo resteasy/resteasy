@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.util.NoContent;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -9,6 +11,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -71,6 +74,7 @@ public class FileProvider implements MessageBodyReader<File>,
       if (downloadedFile == null)
          downloadedFile = File.createTempFile(PREFIX, SUFFIX);
 
+      if (NoContent.isContentLengthZero(httpHeaders)) return downloadedFile;
       OutputStream output = new BufferedOutputStream(new FileOutputStream(
               downloadedFile));
 

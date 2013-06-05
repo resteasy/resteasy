@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.util.NoContent;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -34,6 +36,7 @@ public class StringTextStar implements MessageBodyReader<String>, MessageBodyWri
                           MultivaluedMap<String, String> httpHeaders,
                           InputStream entityStream) throws IOException
    {
+      if (NoContent.isContentLengthZero(httpHeaders)) return "";
       return ProviderHelper.readString(entityStream, mediaType);
    }
 
