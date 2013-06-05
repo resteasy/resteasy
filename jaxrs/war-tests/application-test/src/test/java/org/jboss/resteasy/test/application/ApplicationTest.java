@@ -34,7 +34,7 @@ public class ApplicationTest
 //      request.header("Content-Length", "0");
       request.header("Content-Type", "application/xml");
       ClientResponse res = request.post();
-      Assert.assertEquals(204, res.getStatus());
+      Assert.assertEquals(400, res.getStatus());
    }
 
    /**

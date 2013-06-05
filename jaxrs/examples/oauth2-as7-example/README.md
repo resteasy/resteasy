@@ -37,11 +37,27 @@ Step 2: Copy configuration to JBoss AS7
 The OAUTH example comes with a configuration directory.  You must copy the contents to the standalone configuration of AS7
 
 1. cd oauth2-as7-example/configuration/standalone
-2. cp * $JBOSS_HOME/standalone/configuration
+2. cp *.jks $JBOSS_HOME/standalone/configuration
+3. cp *.ts $JBOSS_HOME/standalone/configuration
+4. cp *.properties $JBOSS_HOME/standalone/configuration
 
-This sets up the security domain used by the examples, enables SSL and HTTPS, and also copies over all the keystore
-files used by the distro.  This pretty much overrides any existing changes to standalone.xml, so you might want to
-use a clean JBoss distro, or do a diff to see what you need to change (or look at our documentation on OAuth2).
+There's also a standalone.xml file.  For AS7.1.1 you can copy that too, but for EAP 6.1, you'll instead want to modify the distro's standalone.xml
+ with the following security domain
+
+                <security-domain name="commerce" cache-type="default">
+                    <authentication>
+                        <login-module code="UsersRoles" flag="required">
+                            <module-option name="usersProperties" value="${jboss.server.config.dir}/commerce-users.properties"/>
+                            <module-option name="rolesProperties" value="${jboss.server.config.dir}/commerce-roles.properties"/>
+                        </login-module>
+                    </authentication>
+                </security-domain>
+
+and add SSL
+
+            <connector name="https" protocol="HTTP/1.1" scheme="https" socket-binding="https" secure="true">
+                <ssl name="ssl" key-alias="server" password="password" certificate-key-file="${jboss.server.config.dir}/server.jks" verify-client="false"/>
+            </connector>
 
 Step 3: Boot AS7
 ---------------------------------------

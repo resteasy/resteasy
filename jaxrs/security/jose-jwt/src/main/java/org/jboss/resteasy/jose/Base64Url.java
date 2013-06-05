@@ -1,5 +1,6 @@
 package org.jboss.resteasy.jose;
 
+
 import org.jboss.resteasy.util.Base64;
 
 /**

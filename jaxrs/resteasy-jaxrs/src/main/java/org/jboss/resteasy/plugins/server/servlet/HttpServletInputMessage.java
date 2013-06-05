@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.SynchronousExecutionContext;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
@@ -32,6 +33,7 @@ import java.util.Map;
  */
 public class HttpServletInputMessage implements HttpRequest
 {
+   private final static Logger logger = Logger.getLogger(HttpServletInputMessage.class);
    protected ResteasyHttpHeaders httpHeaders;
    protected HttpServletRequest request;
    protected SynchronousDispatcher dispatcher;
