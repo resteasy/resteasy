@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-jaxrs-all</artifactId>
+    <version>3.0-rc-1</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>Validation-test</artifactId>
+  <packaging>jar</packaging>
+  <name>Validation test</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <as-version>8.0.0.Alpha2-SNAPSHOT</as-version>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.12</version>
+      </plugin>
+        <plugin>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>unpack</id>
+                    <phase>process-test-classes</phase>
+                    <goals>
+                        <goal>unpack</goal>
+                    </goals>
+                    <configuration>
+                        <artifactItems>
+                            <artifactItem>
+                                <groupId>org.wildfly</groupId>
+                                <artifactId>wildfly-dist</artifactId>
+                                <version>${as-version}</version>
+                                <type>zip</type>
+                                <overWrite>false</overWrite>
+                                <outputDirectory>target</outputDirectory>
+                            </artifactItem>
+                        </artifactItems>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.6</version>
+        <executions>
+          <execution>
+            <id>unpack resteasy</id>
+            <phase>process-test-classes</phase>
+            <configuration>
+              <target>
+                <unzip src="../../jboss-modules/target/resteasy-jboss-modules-wf8-${project.version}.zip"
+                       dest="${project.build.directory}/wildfly-${as-version}/modules"
+                       overwrite="false" />
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <!--execution>
+            <id>update validation api</id>
+            <phase>process-test-classes</phase>
+            <configuration>
+              <target>
+                <copy file="src/test/resources/modules/javax/validation/api/main/module.xml"
+                      todir="${project.build.directory}/jboss-as-${as-version}/modules/javax/validation/api/main"
+                      overwrite="true"/>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>update hibernate validator</id>
+            <phase>process-test-classes</phase>
+            <configuration>
+              <target>
+                <copy file="src/test/resources/modules/org/hibernate/validator/main/module.xml"
+                      todir="${project.build.directory}/jboss-as-${as-version}/modules/org/hibernate/validator/main"
+                      overwrite="true"/>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution-->
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.jboss.arquillian</groupId>
+            <artifactId>arquillian-bom</artifactId>
+            <version>1.0.3.Final</version>
+            <scope>import</scope>
+            <type>pom</type>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+  
+  <dependencies>
+    <dependency>
+        <groupId>org.jboss.spec</groupId>
+        <artifactId>jboss-javaee-6.0</artifactId>
+        <version>1.0.0.Final</version>
+        <type>pom</type>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.8.1</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.arquillian.junit</groupId>
+        <artifactId>arquillian-junit-container</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <!--groupId>org.jboss.as</groupId-->
+        <groupId>org.wildfly</groupId>
+        <!--artifactId>jboss-as-arquillian-container-managed</artifactId-->
+        <artifactId>wildfly-arquillian-container-managed</artifactId>
+        <!--version>7.1.1.Final</version-->
+        <version>8.0.0.Alpha1-SNAPSHOT</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.arquillian.protocol</groupId>
+        <artifactId>arquillian-protocol-servlet</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>jaxrs-api</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>1.1.0.Final</version>
+    </dependency>
+    <dependency>
+        <groupId>org.hibernate</groupId> 
+        <artifactId>hibernate-validator</artifactId>
+        <version>5.0.1.Final</version>
+    </dependency>
+    <dependency>
+        <groupId>javax.el</groupId>
+        <artifactId>javax.el-api</artifactId>
+        <version>2.2.4</version>
+    </dependency>
+    <dependency>
+        <groupId>org.glassfish.web</groupId>
+        <artifactId>javax.el</artifactId>
+        <version>2.2.4</version>
+    </dependency>
+  </dependencies>
+</project>

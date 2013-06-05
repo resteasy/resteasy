@@ -84,7 +84,6 @@ public class ResourceLocatorTest
 
    public static class Subresource
    {
-
       @GET
       public String doGet(@Context UriInfo uri)
       {

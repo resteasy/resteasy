@@ -31,6 +31,9 @@ import java.lang.reflect.Type;
 @Consumes("application/x-java-serialized-object")
 public class SerializableProvider implements MessageBodyReader<Serializable>, MessageBodyWriter<Serializable>
 {
+   public static final MediaType APPLICATION_SERIALIZABLE_TYPE = new MediaType("application", "x-java-serialized-object");
+   public static final String APPLICATION_SERIALIZABLE = APPLICATION_SERIALIZABLE_TYPE.toString();
+   
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return Serializable.class.isAssignableFrom(type) && "application/x-java-serialized-object".equals(mediaType.toString());

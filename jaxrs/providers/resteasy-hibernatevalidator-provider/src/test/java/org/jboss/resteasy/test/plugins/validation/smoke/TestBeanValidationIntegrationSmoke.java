@@ -266,7 +266,7 @@ public class TestBeanValidationIntegrationSmoke {
 	}
 	
 	@Test
-	@Ignore
+//	@Ignore
 	public void shouldValidateNothing() {
 		POJOResourceFactory factory = new POJOResourceFactory(ShouldNotValidateResource.Impl.class);
 		dispatcher.getRegistry().addResourceFactory(factory);
@@ -278,7 +278,7 @@ public class TestBeanValidationIntegrationSmoke {
 	}
 	
 	@Test
-	@Ignore
+//	@Ignore
 	public void shouldValidateJustOneMethod() {
 		POJOResourceFactory noDefaults = new POJOResourceFactory(ShouldValidateJustOneMethod.Impl.class);
 		dispatcher.getRegistry().addResourceFactory(noDefaults);
@@ -289,13 +289,13 @@ public class TestBeanValidationIntegrationSmoke {
 		try {
 			resource.sumGet("c3", "2d");
 		} catch (ClientResponseFailure e) {
-			Assert.assertEquals(500, e.getResponse().getStatus());
+			Assert.assertEquals(400, e.getResponse().getStatus());
 			// should validate more things, not just status code
 		}
 	}
 	
 	@Test
-	@Ignore
+//	@Ignore
 	public void shouldValidateAllMethods() {
 		POJOResourceFactory noDefaults = new POJOResourceFactory(ShouldValidateAllMethods.Impl.class);
 		dispatcher.getRegistry().addResourceFactory(noDefaults);
@@ -305,19 +305,19 @@ public class TestBeanValidationIntegrationSmoke {
 		try {
 			resource.sumPost("a", "b");
 		} catch (ClientResponseFailure e) {
-			Assert.assertEquals(500, e.getResponse().getStatus());
+			Assert.assertEquals(400, e.getResponse().getStatus());
 			// should validate more things, not just status code
 		}
 		try {
 			resource.sumGet("c3", "2d");
 		} catch (ClientResponseFailure e) {
-			Assert.assertEquals(500, e.getResponse().getStatus());
+			Assert.assertEquals(400, e.getResponse().getStatus());
 			// should validate more things, not just status code
 		}
 	}
 	
 	@Test
-	@Ignore
+//	@Ignore
 	public void shouldNotValidateOneMethod() {
 		POJOResourceFactory noDefaults = new POJOResourceFactory(ShouldNotValidateOneMethod.Impl.class);
 		dispatcher.getRegistry().addResourceFactory(noDefaults);
@@ -328,13 +328,13 @@ public class TestBeanValidationIntegrationSmoke {
 		try {
 			resource.sumGet("c3", "2d");
 		} catch (ClientResponseFailure e) {
-			Assert.assertEquals(500, e.getResponse().getStatus());
+			Assert.assertEquals(400, e.getResponse().getStatus());
 			// should validate more things, not just status code
 		}
 	}
 	
 	@Test
-	@Ignore
+//	@Ignore
 	public void shouldRespectInsertGroup() {
 		POJOResourceFactory noDefaults = new POJOResourceFactory(ShouldRespectGroups.Impl.class);
 		dispatcher.getRegistry().addResourceFactory(noDefaults);
@@ -352,7 +352,7 @@ public class TestBeanValidationIntegrationSmoke {
 			input.setAge(1000);
 			resource.insert(input);
 		} catch (ClientResponseFailure e) {
-			Assert.assertEquals(500, e.getResponse().getStatus());
+			Assert.assertEquals(400, e.getResponse().getStatus());
 			// should validate more things, not just status code
 		}
 		
@@ -361,7 +361,7 @@ public class TestBeanValidationIntegrationSmoke {
 			input.setAge(27);
 			resource.insert(input);
 		} catch (ClientResponseFailure e) {
-			Assert.assertEquals(500, e.getResponse().getStatus());
+			Assert.assertEquals(400, e.getResponse().getStatus());
 			// should validate more things, not just status code
 		}
 	}
