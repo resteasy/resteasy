@@ -18,6 +18,8 @@
         <module>RESTEASY-767-jetty</module>
         <module>RESTEASY-800-AS71</module>
         <module>resteasy-cdi-ejb-test</module>
+        <module>ValidationTest</module>
+        <module>ValidationTest-AS7</module>
     </modules>
     
     <artifactId>arquillian</artifactId>

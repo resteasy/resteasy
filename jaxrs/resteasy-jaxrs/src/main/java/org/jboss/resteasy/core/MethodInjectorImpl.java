@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.plugins.providers.validation.GeneralValidator;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.BadRequestException;
@@ -110,11 +111,11 @@ public class MethodInjectorImpl implements MethodInjector
    {
       Object[] args = injectArguments(request, httpResponse);
 
-      Validator validator = Validator.class.cast(request.getAttribute(Validator.class.getName()));
+      GeneralValidator validator = GeneralValidator.class.cast(request.getAttribute(Validator.class.getName()));
       ViolationsContainer<Object> violationsContainer = ViolationsContainer.class.cast(request.getAttribute(ViolationsContainer.class.getName()));
       if (validator != null && violationsContainer != null)
       {
-         violationsContainer.addViolations(validator.forExecutables().validateParameters(resource, method.getMethod(), args));
+         violationsContainer.addViolations(validator.validateAllParameters(resource, method.getMethod(), args));
          if (violationsContainer.size() > 0)
          {
             return null;
@@ -141,7 +142,7 @@ public class MethodInjectorImpl implements MethodInjector
          Object result = invokedMethod.invoke(resource, args);
          if (validator != null && violationsContainer != null)
          {
-            violationsContainer.addViolations(validator.forExecutables().validateReturnValue(resource, method.getMethod(), result));
+            violationsContainer.addViolations(validator.validateReturnValue(resource, method.getMethod(), result));
          }
          return result;
       }

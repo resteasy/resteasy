@@ -69,6 +69,8 @@ public class ResourcePropertyInjector implements PropertyInjector
 
       for (FieldParameter param : resourceClass.getFields())
       {
+         System.out.println("class: " + resourceClass);
+         System.out.println("field: " + param.getParamName());
          ValueInjector injector = factory.getInjectorFactory().createParameterExtractor(param, factory);
          if (injector == null) continue;
          fields.add(new FieldInjector(param, injector));
@@ -87,6 +89,7 @@ public class ResourcePropertyInjector implements PropertyInjector
       {
          try
          {
+            System.out.println("injecting field: " + injector.param.getField().getName());
             injector.param.getField().set(target, injector.injector.inject(request, response));
          }
          catch (IllegalAccessException e)

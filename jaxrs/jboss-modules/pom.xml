@@ -174,7 +174,18 @@
             <version>${project.version}</version>
         </dependency>
 
-
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-validator-provider-11</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+  
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-hibernatevalidator-provider</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+  
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-yaml-provider</artifactId>
@@ -192,7 +203,7 @@
                 <inherited>false</inherited>
                 <executions>
                     <execution>
-                        <id>build-dist</id>
+                        <id>build-dist-as7</id>
                         <goals>
                             <goal>run</goal>
                         </goals>
@@ -200,6 +211,20 @@
                         <configuration>
                             <target>
                                 <ant antfile="build.xml" inheritRefs="true">
+                                    <target name="all"/>
+                                </ant>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>build-dist-wf8</id>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <phase>compile</phase>
+                        <configuration>
+                            <target>
+                                <ant antfile="build-wf8.xml" inheritRefs="true">
                                     <target name="all"/>
                                 </ant>
                             </target>
