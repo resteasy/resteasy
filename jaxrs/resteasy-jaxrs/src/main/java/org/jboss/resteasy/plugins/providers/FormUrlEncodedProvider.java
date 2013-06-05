@@ -1,8 +1,10 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.util.NoContent;
 
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.Consumes;
@@ -15,6 +17,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +41,7 @@ import java.util.Map;
 @ConstrainedTo(RuntimeType.CLIENT)
 public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>, MessageBodyWriter<MultivaluedMap>
 {
+   private final static Logger logger = Logger.getLogger(FormUrlEncodedProvider.class);
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return MultivaluedMap.class.equals(type);
@@ -54,7 +58,7 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>
 
    public MultivaluedMap readFrom(Class<MultivaluedMap> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
-
+      if (NoContent.isContentLengthZero(httpHeaders)) return null;
       boolean encoded = FindAnnotation.findAnnotation(annotations, Encoded.class) != null;
       if (encoded) return parseForm(entityStream);
       else return Encode.decode(parseForm(entityStream));
@@ -145,6 +149,8 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>
       }
 
       byte[] bytes = baos.toByteArray();
+      //logger.info("*** FORM PROVIDER WRITING: " + new String(bytes));
+
 //      httpHeaders.putSingle(HttpHeaderNames.CONTENT_LENGTH, Integer.toString(bytes.length));
       entityStream.write(bytes);
 

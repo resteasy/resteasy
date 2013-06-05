@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.NoContent;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -21,6 +22,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -43,6 +45,7 @@ public class SourceProvider implements MessageBodyReader<Source>, MessageBodyWri
 
    public Source readFrom(Class<Source> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
+      if (NoContent.isContentLengthZero(httpHeaders)) return new StreamSource(new ByteArrayInputStream(new byte[0]));
       return new StreamSource(entityStream);
    }
 

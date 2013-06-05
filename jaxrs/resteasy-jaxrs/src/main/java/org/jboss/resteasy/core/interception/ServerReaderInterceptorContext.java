@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core.interception;
 
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -24,6 +25,7 @@ import java.util.Enumeration;
  */
 public class ServerReaderInterceptorContext extends AbstractReaderInterceptorContext
 {
+   private final static Logger logger = Logger.getLogger(ServerReaderInterceptorContext.class);
    private HttpRequest request;
 
    public ServerReaderInterceptorContext(ReaderInterceptor[] interceptors, ResteasyProviderFactory providerFactory, Class type,
@@ -38,8 +40,10 @@ public class ServerReaderInterceptorContext extends AbstractReaderInterceptorCon
    @Override
    protected MessageBodyReader resolveReader(MediaType mediaType)
    {
-      return providerFactory.getServerMessageBodyReader(type,
+      MessageBodyReader reader =  providerFactory.getServerMessageBodyReader(type,
               genericType, annotations, mediaType);
+      //logger.info("**** picked reader: " + reader.getClass().getName());
+      return reader;
    }
 
    @Override

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
+import org.jboss.resteasy.util.NoContent;
 import org.jboss.resteasy.util.Types;
 import org.xml.sax.InputSource;
 
@@ -61,6 +62,7 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
                                   MultivaluedMap<String, String> httpHeaders,
                                   InputStream entityStream) throws IOException
    {
+      NoContent.contentLengthCheck(httpHeaders);
       Class<?> typeArg = Object.class;
       if (genericType != null) typeArg = Types.getTypeArgument(genericType);
       JAXBContext jaxb = null;

@@ -4,8 +4,8 @@ import org.apache.catalina.Context;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.skeleton.key.EnvUtil;
+import org.jboss.resteasy.skeleton.key.PemUtils;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 
 import java.io.File;

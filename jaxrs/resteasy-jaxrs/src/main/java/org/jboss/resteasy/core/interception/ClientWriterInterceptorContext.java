@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core.interception;
 
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.ProcessingException;
@@ -21,6 +22,7 @@ import java.util.Map;
  */
 public class ClientWriterInterceptorContext extends AbstractWriterInterceptorContext
 {
+   private final static Logger logger = Logger.getLogger(ClientWriterInterceptorContext.class);
    protected Map<String, Object> properties;
 
    public ClientWriterInterceptorContext(WriterInterceptor[] interceptors, ResteasyProviderFactory providerFactory,
@@ -43,9 +45,10 @@ public class ClientWriterInterceptorContext extends AbstractWriterInterceptorCon
    @Override
    protected MessageBodyWriter resolveWriter()
    {
-      return providerFactory.getClientMessageBodyWriter(
+      MessageBodyWriter writer = providerFactory.getClientMessageBodyWriter(
               type, genericType, annotations, mediaType);
-
+      //logger.info("********* WRITER: " + writer.getClass().getName());
+      return writer;
    }
 
    @Override

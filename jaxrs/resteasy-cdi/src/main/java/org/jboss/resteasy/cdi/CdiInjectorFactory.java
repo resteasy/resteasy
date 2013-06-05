@@ -138,7 +138,7 @@ public class CdiInjectorFactory implements InjectorFactory
       beanManager = lookupBeanManagerInJndi("java:comp/BeanManager");
       if (beanManager != null)
       {
-         log.info("Found BeanManager at java:comp/BeanManager");
+         log.debug("Found BeanManager at java:comp/BeanManager");
          return beanManager;
       }
 
@@ -146,7 +146,7 @@ public class CdiInjectorFactory implements InjectorFactory
       beanManager = lookupBeanManagerInJndi("java:app/BeanManager");
       if (beanManager != null)
       {
-         log.info("Found BeanManager at java:app/BeanManager");
+         log.debug("Found BeanManager at java:app/BeanManager");
          return beanManager;
       }
 
