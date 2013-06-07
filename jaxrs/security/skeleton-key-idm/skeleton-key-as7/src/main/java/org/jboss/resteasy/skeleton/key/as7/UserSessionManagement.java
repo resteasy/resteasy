@@ -62,19 +62,19 @@ public class UserSessionManagement implements SessionListener
 
    public void logout(String user)
    {
-      log.info("logoutUser: " + user);
+      log.debug("logoutUser: " + user);
       Map<String, Session> map = userSessionMap.remove(user);
       if (map == null)
       {
-         log.info("no session for user: " + user);
+         log.debug("no session for user: " + user);
          return;
       }
-      log.info("found session for user");
+      log.debug("found session for user");
       synchronized (map)
       {
          for (Session session : map.values())
          {
-            log.info("invalidating session for user: " + user);
+            log.debug("invalidating session for user: " + user);
             session.setPrincipal(null);
             session.setAuthType(null);
             session.getSession().invalidate();
