@@ -252,7 +252,7 @@ public class ServletOAuthLogin
       // abort if not HTTPS
       if (realmInfo.isSslRequired() && !isRequestSecure())
       {
-         log.info("SSL is required");
+         log.error("SSL is required");
          sendError(Response.Status.FORBIDDEN.getStatusCode());
          return false;
       }
@@ -274,12 +274,12 @@ public class ServletOAuthLogin
       {
          if (res.getStatus() != 200)
          {
-            log.info("failed to turn code into token");
+            log.error("failed to turn code into token");
             sendError(Response.Status.FORBIDDEN.getStatusCode());
             return false;
          }
-         log.info("media type: " + res.getMediaType());
-         log.info("Content-Type header: " + res.getHeaderString("Content-Type"));
+         log.debug("media type: " + res.getMediaType());
+         log.debug("Content-Type header: " + res.getHeaderString("Content-Type"));
          tokenResponse = res.readEntity(AccessTokenResponse.class);
       }
       finally
@@ -291,11 +291,11 @@ public class ServletOAuthLogin
       try
       {
          token = RSATokenVerifier.verifyToken(tokenString, realmInfo.getMetadata());
-         log.info("Verification succeeded!");
+         log.debug("Verification succeeded!");
       }
       catch (VerificationException e)
       {
-         log.info("failed verification of token");
+         log.error("failed verification of token");
          sendError(Response.Status.FORBIDDEN.getStatusCode());
          return false;
       }

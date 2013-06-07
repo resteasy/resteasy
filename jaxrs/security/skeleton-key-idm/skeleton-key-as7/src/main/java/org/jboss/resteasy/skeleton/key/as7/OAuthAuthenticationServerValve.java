@@ -361,7 +361,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       {
          String contextPath = request.getContextPath();
          String requestURI = request.getDecodedRequestURI();
-         log.info("--- invoke: " + requestURI);
+         log.debug("--- invoke: " + requestURI);
          if (request.getMethod().equalsIgnoreCase("GET")
                  && context.getLoginConfig().getLoginPage().equals(request.getRequestPathMB().toString()))
          {
@@ -451,7 +451,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
               && request.getSessionInternal().getPrincipal() != null
               && request.getParameter("login") != null)
       {
-         log.info("We're ALREADY LOGGED IN!!!");
+         log.debug("We're ALREADY LOGGED IN!!!");
          GenericPrincipal gp = (GenericPrincipal) request.getSessionInternal().getPrincipal();
          redirectAccessCode(true, response, redirect_uri, client_id, state, gp);
       }
@@ -484,7 +484,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
 
    protected void adminLogout(Request request, HttpServletResponse response) throws IOException
    {
-      log.info("<< adminLogout");
+      log.debug("<< adminLogout");
       GenericPrincipal gp = checkLoggedIn(request, response);
       if (gp == null)
       {
@@ -579,7 +579,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
             {
                try
                {
-                  log.info("logging out: " + resource);
+                  log.debug("logging out: " + resource);
                   WebTarget target = client.target(resource).path(Actions.J_OAUTH_REMOTE_LOGOUT);
                   if (username != null) target = target.queryParam("user", username);
                   javax.ws.rs.core.Response response = target.request()
@@ -700,7 +700,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
    protected void register(Request request, HttpServletResponse response, Principal principal, String authType, String username, String password)
    {
       super.register(request, response, principal, authType, username, password);
-      log.info("authenticate userSessionManage.login(): " + principal.getName());
+      log.debug("authenticate userSessionManage.login(): " + principal.getName());
       userSessionManagement.login(request.getSessionInternal(), principal.getName());
       if (!skeletonKeyConfig.isCancelPropagation())
       {
@@ -746,7 +746,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       }
       catch (Exception ignored)
       {
-         log.debug("Failed to verify signature", ignored);
+         log.error("Failed to verify signature", ignored);
       }
       if (!verifiedCode)
       {
@@ -777,7 +777,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       }
       if (accessCode.isExpired())
       {
-         log.error("Access code expired");
+         log.debug("Access code expired");
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
          res.put("error_description", "Code is expired");
@@ -789,7 +789,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       }
       if (!accessCode.getToken().isActive())
       {
-         log.error("token not active");
+         log.debug("token not active");
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
          res.put("error_description", "Token expired");
@@ -801,7 +801,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       }
       if (!gp.getName().equals(accessCode.getClient()))
       {
-         log.error("not equal client");
+         log.debug("not equal client");
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
          res.put("error_description", "Auth error");
@@ -813,7 +813,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       }
       if (!accessCode.getRedirect().equals(redirect))
       {
-         log.error("not equal redirect");
+         log.debug("not equal redirect");
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
          res.put("error_description", "Auth error");
@@ -829,7 +829,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
          // but, the client_id does not have permission to bypass this on a simple grant.  We want
          // to always ask for credentials from a simple oath request
 
-         log.error("does not have login permission");
+         log.debug("does not have login permission");
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
          res.put("error_description", "Auth error");
@@ -841,7 +841,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       }
       else if (!gp.hasRole(skeletonKeyConfig.getClientRole()) && !gp.hasRole(skeletonKeyConfig.getLoginRole()))
       {
-         log.error("does not have login or client role permission for access token request");
+         log.debug("does not have login or client role permission for access token request");
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
          res.put("error_description", "Auth error");
@@ -929,7 +929,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
 
    protected void handleOAuth(Request request, Response response) throws IOException
    {
-      log.info("<--- Begin oauthAuthenticate");
+      log.debug("<--- Begin oauthAuthenticate");
       String redirect_uri = request.getParameter("redirect_uri");
       String client_id = request.getParameter("client_id");
       String state = request.getParameter("state");
@@ -1010,7 +1010,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       int expiration = skeletonKeyConfig.getAccessCodeLifetime() == 0 ? 300 : skeletonKeyConfig.getAccessCodeLifetime();
       code.setExpiration((System.currentTimeMillis() / 1000) + expiration);
       accessCodeMap.put(code.getId(), code);
-      log.info("--- sign access code");
+      log.debug("--- sign access code");
       String accessCode = null;
       try
       {
@@ -1020,11 +1020,11 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       {
          throw new RuntimeException(e);
       }
-      log.info("--- build redirect");
+      log.debug("--- build redirect");
       UriBuilder redirectUri = UriBuilder.fromUri(redirect_uri).queryParam("code", accessCode);
       if (state != null) redirectUri.queryParam("state", state);
       response.sendRedirect(redirectUri.toTemplate());
-      log.info("<--- end oauthAuthenticate");
+      log.debug("<--- end oauthAuthenticate");
    }
 
    protected SkeletonKeyToken buildToken(GenericPrincipal gp)

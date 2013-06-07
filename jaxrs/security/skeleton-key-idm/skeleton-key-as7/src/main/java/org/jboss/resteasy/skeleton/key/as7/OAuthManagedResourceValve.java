@@ -154,12 +154,12 @@ public class OAuthManagedResourceValve extends FormAuthenticator implements Life
             {
                if (restoreRequest(request, request.getSessionInternal()))
                {
-                  log.info("restoreRequest");
+                  log.debug("restoreRequest");
                   return (true);
                }
                else
                {
-                  log.info("Restore of original request failed");
+                  log.debug("Restore of original request failed");
                   response.sendError(HttpServletResponse.SC_BAD_REQUEST);
                   return (false);
                }
@@ -183,16 +183,16 @@ public class OAuthManagedResourceValve extends FormAuthenticator implements Life
    {
       try
       {
-         log.info("->> remoteLogout: ");
+         log.debug("->> remoteLogout: ");
          if (!bearer(true, request, response))
          {
-            log.info("remoteLogout: bearer auth failed");
+            log.debug("remoteLogout: bearer auth failed");
             return;
          }
          GenericPrincipal gp = (GenericPrincipal) request.getPrincipal();
          if (!gp.hasRole(remoteSkeletonKeyConfig.getAdminRole()))
          {
-            log.info("remoteLogout: role failure");
+            log.debug("remoteLogout: role failure");
             response.sendError(403);
             return;
          }
@@ -227,7 +227,7 @@ public class OAuthManagedResourceValve extends FormAuthenticator implements Life
    {
       if (request.getSessionInternal() == null || request.getSessionInternal().getPrincipal() == null)
          return false;
-      log.info("remote logged in already");
+      log.debug("remote logged in already");
       GenericPrincipal principal = (GenericPrincipal) request.getSessionInternal().getPrincipal();
       request.setUserPrincipal(principal);
       request.setAuthType("OAUTH");
@@ -295,7 +295,7 @@ public class OAuthManagedResourceValve extends FormAuthenticator implements Life
          }
 
          String username = token.getPrincipal();
-         log.info("userSessionManage.login: " + username);
+         log.debug("userSessionManage.login: " + username);
          userSessionManagement.login(session, username);
       }
    }
