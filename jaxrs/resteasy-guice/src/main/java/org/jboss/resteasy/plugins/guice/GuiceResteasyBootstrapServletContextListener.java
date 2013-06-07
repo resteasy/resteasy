@@ -54,7 +54,7 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
    }
 
    /**
-    * Override this method to interact with the {@link Injector} after it has been created.
+    * Override this method to interact with the {@link Injector} after it has been created. The default is no-op.
     *
     * @param injector
     */
@@ -62,7 +62,13 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
    {
    }
 
-   private Stage getStage(ServletContext context)
+   /**
+    * Override this method to set the Stage. By default it is taken from resteasy.guice.stage context param.
+    *
+    * @param context
+    * @return Guice Stage
+    */
+   protected Stage getStage(ServletContext context)
    {
       final String stageAsString = context.getInitParameter("resteasy.guice.stage");
       if (stageAsString == null)
