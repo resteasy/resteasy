@@ -143,6 +143,8 @@ public class TestStats extends BaseResourceTest {
     }
     
     private List<Class> prepareRequiredTypes(Class... types) {
-        return Arrays.asList(types);
+       ArrayList<Class> list = new ArrayList<Class>();
+       for (Class type : types) list.add(type);
+       return list;
     }
 }
