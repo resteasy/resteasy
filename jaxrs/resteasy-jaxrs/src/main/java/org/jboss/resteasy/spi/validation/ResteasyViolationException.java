@@ -35,6 +35,7 @@ public class ResteasyViolationException extends ValidationException
    public ResteasyViolationException(ViolationsContainer<?> container)
    {
       convertToStrings(container);
+      exception = container.getException();
    }
    
    public Exception getException()
@@ -129,26 +130,5 @@ public class ResteasyViolationException extends ValidationException
       violationLists.add(classViolations);
       violationLists.add(parameterViolations);
       violationLists.add(returnValueViolations);
-   }
-
-   protected String convertArrayToString(Object o)
-   {
-      String result = null;
-      if (o instanceof Object[])
-      {
-         Object[] array = Object[].class.cast(o);
-         StringBuffer sb = new StringBuffer("[").append(convertArrayToString(array[0]));
-         for (int i = 1; i < array.length; i++)
-         {
-            sb.append(", ").append(convertArrayToString(array[i]));
-         }
-         sb.append("]");
-         result = sb.toString();
-      }
-      else
-      {
-         result = o.toString();
-      }
-      return result;
    }
 }

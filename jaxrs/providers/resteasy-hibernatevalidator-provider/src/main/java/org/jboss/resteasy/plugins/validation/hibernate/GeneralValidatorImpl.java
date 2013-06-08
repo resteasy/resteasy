@@ -93,20 +93,6 @@ public class GeneralValidatorImpl implements GeneralValidator
    }
 
    @Override
-   public <T> Set<ResteasyConstraintViolation> validateParameter(T object, Method method, Object parameterValue, int parameterIndex, Class<?>... groups)
-   {
-      Set<MethodConstraintViolation<T>> cvs = methodValidator.validateParameter(object, method, parameterValue, parameterIndex, groups);
-      Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
-      for (Iterator<MethodConstraintViolation<T>> it = cvs.iterator(); it.hasNext(); )
-      {
-         ConstraintViolation<T> cv = it.next();
-         Type ct = util.getConstraintType(cv);
-         rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), cv.getInvalidValue().toString()));
-      }
-      return rcvs;
-   }
-
-   @Override
    public <T> Set<ResteasyConstraintViolation> validateAllParameters(T object, Method method, Object[] parameterValues, Class<?>... groups)
    {
       Set<MethodConstraintViolation<T>> cvs = methodValidator.validateAllParameters(object, method, parameterValues, groups);
@@ -149,6 +135,5 @@ public class GeneralValidatorImpl implements GeneralValidator
       ValidateRequest methodValidateRequest = FindAnnotation.findAnnotation(m.getAnnotations(), ValidateRequest.class);
       DoNotValidateRequest doNotValidateRequest = FindAnnotation.findAnnotation(m.getAnnotations(), DoNotValidateRequest.class);
       return (resourceValidateRequest != null || methodValidateRequest != null) && doNotValidateRequest == null;
-//      return FindAnnotation.findAnnotation(m.getAnnotations(), DoNotValidateRequest.class) == null;
    }
 }

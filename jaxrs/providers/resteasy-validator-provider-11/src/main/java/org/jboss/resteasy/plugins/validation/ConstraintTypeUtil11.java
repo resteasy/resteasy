@@ -46,17 +46,6 @@ public class ConstraintTypeUtil11 implements ConstraintTypeUtil
             throw new RuntimeException("unexpected path node type in method violation: " + secondNode.getKind());
          }
       }
-      
-//      Node leafNode = getLeafNode(v);  
-//      if (leafNode.getKind() == ElementKind.PARAMETER ||
-//         leafNode.getKind() == ElementKind.CROSS_PARAMETER)
-//      {
-//         return ConstraintType.Type.PARAMETER;
-//      }
-//      else if (leafNode.getKind() == ElementKind.RETURN_VALUE)
-//      {
-//         return ConstraintType.Type.RETURN_VALUE;
-//      }
 
       if (firstNode.getKind() == ElementKind.BEAN)
       {
@@ -65,7 +54,6 @@ public class ConstraintTypeUtil11 implements ConstraintTypeUtil
       
       if (firstNode.getKind() == ElementKind.PROPERTY)
       {
-//         String fieldName = firstNode.getName();
          String fieldName = getLeafNode(v).getName();
          try
          {
@@ -75,35 +63,27 @@ public class ConstraintTypeUtil11 implements ConstraintTypeUtil
          }
          catch (NoSuchMethodException e)
          {
-            return ConstraintType.Type.FIELD;
+            try
+            {
+               String getterName = "is" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+               Method m = getMethod(v.getLeafBean().getClass(), getterName);
+               if (m.getReturnType().equals(boolean.class))
+                {
+                  return ConstraintType.Type.PROPERTY;
+                }
+               else
+               {
+                  return ConstraintType.Type.FIELD;
+               }
+            }
+            catch (NoSuchMethodException e1)
+            {
+               return ConstraintType.Type.FIELD;
+            }
          }
       }
       
       throw new RuntimeException("unexpeced path node type: " + firstNode.getKind());
-//      Object b = v.getRootBean();
-//      Class<?> containingClass = getRepresentedClass(v.getRootBeanClass(), b);
-//      String fieldName = null;
-//      Iterator<Node>it = v.getPropertyPath().iterator();
-//      while (it.hasNext())
-//      {
-//         Node node = it.next();
-//         fieldName = node.getName();
-//         if (fieldName == null)
-//         {
-//            return ConstraintType.Type.CLASS;
-//         }
-//      }
-//      String getterName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-//      try
-//      {
-//         getMethod(v.getLeafBean().getClass(), getterName);
-////         getMethod(containingClass, getterName);
-//         return ConstraintType.Type.PROPERTY;
-//      }
-//      catch (NoSuchMethodException e)
-//      {
-//         return ConstraintType.Type.FIELD;
-//      }
    }
    
    private static Method getMethod(Class<?> clazz, String methodName) throws NoSuchMethodException
@@ -140,7 +120,7 @@ public class ConstraintTypeUtil11 implements ConstraintTypeUtil
       return method;
    }
    
-   private Node getLeafNode(ConstraintViolation violation) 
+   private Node getLeafNode(ConstraintViolation<?> violation) 
    {
       Iterator<Node> nodes = violation.getPropertyPath().iterator();
       Node leafNode = null;

@@ -23,7 +23,8 @@ public class ViolationsContainer<T> implements Serializable
    private List<ResteasyConstraintViolation> classViolations       = new ArrayList<ResteasyConstraintViolation>();
    private List<ResteasyConstraintViolation> parameterViolations   = new ArrayList<ResteasyConstraintViolation>();
    private List<ResteasyConstraintViolation> returnValueViolations = new ArrayList<ResteasyConstraintViolation>();
-
+   private Exception exception;
+   
    public ViolationsContainer()
    {   
    }
@@ -31,7 +32,17 @@ public class ViolationsContainer<T> implements Serializable
    public ViolationsContainer(Set<ResteasyConstraintViolation> set)
    {
       addViolations(set);
-   } 
+   }
+   
+   public Exception getException()
+   {
+      return exception;
+   }
+
+   public void setException(Exception exception)
+   {
+      this.exception = exception;
+   }
    
    public void addViolations(Set<? extends ResteasyConstraintViolation> set)
    {

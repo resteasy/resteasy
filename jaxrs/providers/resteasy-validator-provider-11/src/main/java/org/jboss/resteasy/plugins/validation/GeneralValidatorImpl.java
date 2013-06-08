@@ -1,11 +1,16 @@
 package org.jboss.resteasy.plugins.validation;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
+import javax.validation.BootstrapConfiguration;
 import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.ValidationException;
 import javax.validation.Validator;
 import javax.validation.executable.ExecutableType;
 import javax.validation.executable.ValidateOnExecution;
@@ -29,10 +34,15 @@ public class GeneralValidatorImpl implements GeneralValidator
    
    private Validator validator;
    private ConstraintTypeUtil util = new ConstraintTypeUtil11();
+   private boolean isExecutableValidationEnabled;
+   private ExecutableType[] defaultValidatedExecutableTypes;
 
    public GeneralValidatorImpl(Validator validator)
    {
       this.validator = validator;
+      BootstrapConfiguration bc = Validation.byDefaultProvider().configure().getBootstrapConfiguration();
+      isExecutableValidationEnabled = bc.isExecutableValidationEnabled();
+      defaultValidatedExecutableTypes = bc.getDefaultValidatedExecutableTypes().toArray(new ExecutableType[]{});
    }
 
    @Override
@@ -90,20 +100,6 @@ public class GeneralValidatorImpl implements GeneralValidator
    }
 
    @Override
-   public <T> Set<ResteasyConstraintViolation> validateParameter(T object, Method method, Object parameterValue, int parameterIndex, Class<?>... groups)
-   {
-//      Set<ConstraintViolation<T>> cvs = validator.forExecutables().v(object, method, parameterValues, groups)(object, method, parameterValue, parameterIndex, groups);
-      Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
-//      for (Iterator<MethodConstraintViolation<T>> it = cvs.iterator(); it.hasNext(); )
-//      {
-//         ConstraintViolation<T> cv = it.next();
-//         Type ct = util.getConstraintType(cv);
-//         rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), cv.getInvalidValue().toString()));
-//      }
-      return rcvs;
-   }
-
-   @Override
    public <T> Set<ResteasyConstraintViolation> validateAllParameters(T object, Method method, Object[] parameterValues, Class<?>... groups)
    {
       if (method.getParameterTypes().length == 0)
@@ -116,7 +112,7 @@ public class GeneralValidatorImpl implements GeneralValidator
       {
          ConstraintViolation<T> cv = it.next();
          Type ct = util.getConstraintType(cv);
-         rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), cv.getInvalidValue().toString()));
+         rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), convertArrayToString(cv.getInvalidValue())));
       }
       return rcvs;
    }
@@ -145,24 +141,41 @@ public class GeneralValidatorImpl implements GeneralValidator
    @Override
    public boolean isMethodValidatable(Method m)
    {
-      ExecutableType[] types = null;
-      ValidateOnExecution voe = m.getAnnotation(ValidateOnExecution.class);
-      if (voe == null || voe.type().length == 0)
+   	if (!isExecutableValidationEnabled)
+   	{
+   		return false;
+   	}
+   	
+   	ExecutableType[] types = null;
+      List<ExecutableType[]> typesList = getExecutableTypesOnMethodInHierarchy(m);
+      if (typesList.size() > 1)
       {
-         types = getSuperMethodExecutableTypes(m);
-         if (types == null)
-         {
-            types = getClassExecutableTypes(m);
-         }
+      	throw new ValidationException("@ValidateOnExecution found on multiple overridden methods");
+      }
+      if (typesList.size() == 1)
+      {
+      	types = typesList.get(0);
       }
       else
       {
-         types = voe.type();
+      	ValidateOnExecution voe = m.getDeclaringClass().getAnnotation(ValidateOnExecution.class);
+      	if (voe == null)
+      	{
+      		types = defaultValidatedExecutableTypes;
+      	}
+      	else
+      	{
+      		if (voe.type().length > 0)
+      		{
+      			types = voe.type();
+      		}
+      		else
+      		{
+      			types = defaultValidatedExecutableTypes;
+      		}
+      	}
       }
-      if (types == null || types.length == 0)
-      {
-         return true;
-      }
+      
       boolean isGetterMethod = isGetter(m);
       for (int i = 0; i < types.length; i++)
       {
@@ -196,63 +209,77 @@ public class GeneralValidatorImpl implements GeneralValidator
       return false;
    }
    
-   static protected ExecutableType[] getSuperMethodExecutableTypes(Method m)
+   static protected List<ExecutableType[]> getExecutableTypesOnMethodInHierarchy(Method method)
    {
-      Class<?> c = m.getDeclaringClass().getSuperclass();
-      ExecutableType[] executableTypes = null;
-      while (c != null)
+      Class<?> clazz = method.getDeclaringClass();
+      List<ExecutableType[]> typesList = new ArrayList<ExecutableType[]>();
+      while (clazz != null)
       {
          try
          {
-            Method superMethod = c.getDeclaredMethod(m.getName(), m.getParameterTypes());
-            if (superMethod == null)
+            Method superMethod = clazz.getDeclaredMethod(method.getName(), method.getParameterTypes());
+            if (superMethod != null)
             {
-               continue;
+               ExecutableType[] types = getExecutableTypesOnMethod(superMethod);
+               if (types != null)
+               {
+               	typesList.add(types);
+               }
             }
-            ValidateOnExecution voe = superMethod.getAnnotation(ValidateOnExecution.class);
-            if (voe == null || voe.type().length == 0)
-            {
-               continue;
-            }
-            ExecutableType[] types = voe.type();
-            if (types == null || types.length == 0)
-            {
-               continue;
-            }
-            executableTypes = types;
          }
          catch (NoSuchMethodException e)
          {
             // Ignore.
          }
-         finally
-         {
-            c = c.getSuperclass();
-         }
+         
+         typesList.addAll(getExecutableTypesOnMethodInInterfaces(clazz, method));
+         clazz = clazz.getSuperclass();
       }
-      return executableTypes;
+      return typesList;
    }
    
-   static protected ExecutableType[] getClassExecutableTypes(Method m)
+   static protected List<ExecutableType[]> getExecutableTypesOnMethodInInterfaces(Class<?> clazz, Method method)
    {
-      ValidateOnExecution voe = m.getDeclaringClass().getAnnotation(ValidateOnExecution.class);
-      if (voe == null)
-      {
-         return null;
-      }
-      ExecutableType[] types = voe.type();
-      if (types == null || types.length == 0)
-      {
-         return null;
-      }
-      for (int i = 0; i < types.length; i++)
-      {
-         if (types[i].equals(ExecutableType.IMPLICIT))
+   	List<ExecutableType[]> typesList = new ArrayList<ExecutableType[]>();
+   	Class<?>[] interfaces = clazz.getInterfaces();
+   	for (int i = 0; i < interfaces.length; i++)
+   	{
+         Method declaredMethod;
+         try
          {
-            return null;
+	         declaredMethod = interfaces[i].getDeclaredMethod(method.getName(), method.getParameterTypes());
+	         ExecutableType[] types = getExecutableTypesOnMethod(declaredMethod);
+	         if (types != null)
+	         {
+	         	typesList.add(types);
+	         }
          }
-      }
-      return types;
+         catch (NoSuchMethodException e)
+         {
+         	// Ignore.
+         }
+         List<ExecutableType[]> superList = getExecutableTypesOnMethodInInterfaces(interfaces[i], method);
+         if (superList.size() > 0)
+         {
+         	typesList.addAll(superList);
+         }
+   	}
+   	return typesList;
+   }
+   
+   static protected ExecutableType[] getExecutableTypesOnMethod(Method method)
+   {
+   	ValidateOnExecution voe = method.getAnnotation(ValidateOnExecution.class);
+   	if (voe == null || voe.type().length == 0)
+   	{
+   		return null;
+   	}
+   	ExecutableType[] types = voe.type();
+   	if (types == null || types.length == 0)
+   	{
+   		return null;
+   	}
+   	return types;
    }
    
    static protected boolean isGetter(Method m)
@@ -271,10 +298,31 @@ public class GeneralValidatorImpl implements GeneralValidator
       {
          return true;
       }
-      if (name.startsWith("is") && returnType.equals(Boolean.class))
+      if (name.startsWith("is") && returnType.equals(boolean.class))
       {
          return true;
       }
       return false;
+   }
+   
+   protected String convertArrayToString(Object o)
+   {
+      String result = null;
+      if (o instanceof Object[])
+      {
+         Object[] array = Object[].class.cast(o);
+         StringBuffer sb = new StringBuffer("[").append(convertArrayToString(array[0]));
+         for (int i = 1; i < array.length; i++)
+         {
+            sb.append(", ").append(convertArrayToString(array[i]));
+         }
+         sb.append("]");
+         result = sb.toString();
+      }
+      else
+      {
+         result = o.toString();
+      }
+      return result;
    }
 }

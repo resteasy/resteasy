@@ -29,10 +29,6 @@ public interface GeneralValidator {
 
 	public abstract <T> T unwrap(Class<T> type);
 
-	public abstract <T> Set<ResteasyConstraintViolation> validateParameter(
-			T object, Method method, Object parameterValue, int parameterIndex,
-			Class<?>... groups);
-
 	public abstract <T> Set<ResteasyConstraintViolation> validateAllParameters(
 			T object, Method method, Object[] parameterValues,
 			Class<?>... groups);

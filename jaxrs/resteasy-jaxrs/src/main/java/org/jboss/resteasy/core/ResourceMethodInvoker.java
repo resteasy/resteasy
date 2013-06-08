@@ -253,15 +253,22 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          violationsContainer = new ViolationsContainer<Object>();
       }
       
-      if (validator != null && isValidatable)
+      try
       {
-//         violationsContainer = new ViolationsContainer<Object>(validator.validate(target));
-         violationsContainer.addViolations(validator.validate(target));
+      	if (validator != null && isValidatable)
+      	{
+      		violationsContainer.addViolations(validator.validate(target));
+      	}
+      	if (validator != null && methodIsValidatable)
+      	{
+      		request.setAttribute(ViolationsContainer.class.getName(), violationsContainer);
+      		request.setAttribute(Validator.class.getName(), validator);
+      	}
       }
-      if (validator != null && methodIsValidatable)
+      catch (Exception e)
       {
-         request.setAttribute(ViolationsContainer.class.getName(), violationsContainer);
-         request.setAttribute(Validator.class.getName(), validator);
+      	violationsContainer.setException(e);
+      	throw new ResteasyViolationException(violationsContainer);
       }
 
       PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this);
@@ -284,7 +291,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
       Object rtn = methodInjector.invoke(request, response, target);
 
-      if (violationsContainer != null && violationsContainer.size() > 0)
+      if (violationsContainer != null && (violationsContainer.getException() != null || violationsContainer.size() > 0))
       {
          throw new ResteasyViolationException(violationsContainer);
       }
