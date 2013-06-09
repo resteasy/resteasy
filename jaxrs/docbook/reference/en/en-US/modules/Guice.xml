@@ -143,13 +143,17 @@ public class MyClass
       <title>Custom Injector creation</title>
       <para>
         GuiceResteasyBootstrapServletContextListener can be extended to allow more flexibility in the way the Injector and Modules
-        are created.  Two methods can be overridden: getModules() and withInjector() Register your subclass as the listener in the web.xml.
+        are created.  Three methods can be overridden: getModules(), withInjector() and getStage(). Register your subclass as the
+        listener in the web.xml.
       </para>
       <para>
         Override getModules() when you need to pass arguments to your modules' constructor or perform more complex operations.
       </para>
       <para>
         Override withInjector(Injector) when you need to interact with the Injector after it has been created.
+      </para>
+      <para>
+        Override getStage(ServletContext) to set the Stage yourself.
       </para>
 <programlisting>
 <![CDATA[
