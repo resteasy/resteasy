@@ -102,7 +102,7 @@ public class ServletContainerDispatcher
                }
             }
          }
-         servletMappingPrefix = bootstrap.getParameter("resteasy.servlet.mapping.prefix");
+         servletMappingPrefix = bootstrap.getParameter(ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX);
          if (servletMappingPrefix == null) servletMappingPrefix = "";
          servletMappingPrefix = servletMappingPrefix.trim();
       }
@@ -113,7 +113,7 @@ public class ServletContainerDispatcher
          dispatcher = deployment.getDispatcher();
          providerFactory = deployment.getProviderFactory();
 
-         servletMappingPrefix = bootstrap.getParameter("resteasy.servlet.mapping.prefix");
+         servletMappingPrefix = bootstrap.getParameter(ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX);
          if (servletMappingPrefix == null) servletMappingPrefix = "";
          servletMappingPrefix = servletMappingPrefix.trim();
       }
