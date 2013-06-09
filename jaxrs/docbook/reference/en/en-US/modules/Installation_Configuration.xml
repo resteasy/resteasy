@@ -450,6 +450,31 @@
                                 Expand external entities in org.w3c.dom.Document files
                             </entry>
                         </row>
+                        <row>
+                            <entry>
+                                resteasy.wider.request.matching
+                            </entry>
+                            <entry>
+                                true
+                            </entry>
+                            <entry>
+                                Turns off the JAX-RS spec defined class-level expression filtering and instead
+                                tries to match version every method's full path.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                resteasy.use.container.form.params
+                            </entry>
+                            <entry>
+                                true
+                            </entry>
+                            <entry>
+                                Will use the HttpServletRequest.getParameterMap() method to obtain form parameters.
+                                Use this switch if you are calling this method within a servlet filter or eating
+                                the input stream within the filter.
+                            </entry>
+                        </row>
                     </tbody>
                 </tgroup>
             </table>
