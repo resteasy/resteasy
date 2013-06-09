@@ -1689,10 +1689,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public void registerProviderInstance(Object provider)
    {
-      registerProviderInstance(provider, null, null);
+      registerProviderInstance(provider, null, null, false);
    }
 
-   public void registerProviderInstance(Object provider, Map<Class<?>, Integer> contracts, Integer priorityOverride)
+   public void registerProviderInstance(Object provider, Map<Class<?>, Integer> contracts, Integer priorityOverride, boolean builtIn)
    {
       for (Object registered : getInstances())
       {
@@ -1718,7 +1718,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          try
          {
-            addMessageBodyReader((MessageBodyReader) provider);
+            addMessageBodyReader((MessageBodyReader) provider, builtIn);
             int priority = getPriority(priorityOverride, contracts, MessageBodyReader.class, provider.getClass());
             newContracts.put(MessageBodyReader.class, priority);
          }
@@ -1731,7 +1731,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          try
          {
-            addMessageBodyWriter((MessageBodyWriter) provider);
+            addMessageBodyWriter((MessageBodyWriter) provider, provider.getClass(), builtIn);
             int priority = getPriority(priorityOverride, contracts, MessageBodyWriter.class, provider.getClass());
             newContracts.put(MessageBodyWriter.class, priority);
          }
@@ -2404,7 +2404,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    @Override
    public ResteasyProviderFactory register(Object component, int priority)
    {
-      registerProviderInstance(component, null, priority);
+      registerProviderInstance(component, null, priority, false);
       return this;
    }
 
@@ -2426,7 +2426,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          cons.put(contract, Priorities.USER);
       }
-      registerProviderInstance(component, cons, null);
+      registerProviderInstance(component, cons, null, false);
       return this;
    }
 
@@ -2456,7 +2456,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             return this;
          }
       }
-      registerProviderInstance(component, contracts, null);
+      registerProviderInstance(component, contracts, null, false);
       return this;
    }
 

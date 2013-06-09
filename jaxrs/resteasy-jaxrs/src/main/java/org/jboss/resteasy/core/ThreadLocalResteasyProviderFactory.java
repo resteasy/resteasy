@@ -543,9 +543,9 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public void registerProviderInstance(Object provider, Map<Class<?>, Integer> contracts, Integer defaultPriority)
+   public void registerProviderInstance(Object provider, Map<Class<?>, Integer> contracts, Integer defaultPriority, boolean builtIn)
    {
-      getDelegate().registerProviderInstance(provider, contracts, defaultPriority);
+      getDelegate().registerProviderInstance(provider, contracts, defaultPriority, builtIn);
    }
 
    @Override

@@ -2,6 +2,7 @@ package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HeaderValueProcessor;
 import org.jboss.resteasy.spi.MarshalledEntity;
@@ -36,6 +37,7 @@ import static java.lang.String.format;
  */
 public abstract class ClientResponse extends BuiltResponse
 {
+   private final static Logger logger = Logger.getLogger(ClientResponse.class);
    // One thing to note, I don't cache header objects because I was too lazy to proxy the headers multivalued map
    protected Map<String, Object> properties;
    protected ClientConfiguration configuration;
@@ -167,11 +169,28 @@ public abstract class ClientResponse extends BuiltResponse
             if (entity == null || (entity != null
                     && !InputStream.class.isInstance(entity)
                     && !Reader.class.isInstance(entity)
-                    && bufferedEntity == null)) close();
+                    && bufferedEntity == null))
+            {
+               try
+               {
+                  close();
+               }
+               catch (Exception ignored)
+               {
+               }
+            }
          }
          catch (RuntimeException e)
          {
-            close();
+            //logger.error("failed", e);
+            try
+            {
+               close();
+            }
+            catch (Exception ignored)
+            {
+
+            }
             throw e;
          }
       }
