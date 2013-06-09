@@ -38,4 +38,5 @@ public interface ResteasyContextParameters
    String RESTEASY_SCANNED_PROVIDERS = "resteasy.scanned.providers";
    String RESTEASY_SCANNED_JNDI_RESOURCES = "resteasy.scanned.jndi.resources";
    String RESTEASY_CONTEXT_OBJECTS = "resteasy.context.objects";
+   String USE_CONTAINER_FORM_PARAMS = "use.container.form.params";
 }

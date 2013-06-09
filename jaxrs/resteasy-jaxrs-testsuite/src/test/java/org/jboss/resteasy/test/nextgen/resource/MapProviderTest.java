@@ -139,6 +139,7 @@ public class MapProviderTest extends BaseResourceTest
       Assert.assertEquals(response.getStatus(), 200);
       String data = response.readEntity(String.class);
       System.out.println(data);
+      Assert.assertTrue(data.contains("MapWriter"));
       response.close();
    }
 

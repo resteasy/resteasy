@@ -7,7 +7,6 @@ org.jboss.resteasy.plugins.providers.InputStreamProvider
 org.jboss.resteasy.plugins.providers.ReaderProvider
 org.jboss.resteasy.plugins.providers.ByteArrayProvider
 org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider
-org.jboss.resteasy.plugins.providers.ServerFormUrlEncodedProvider
 org.jboss.resteasy.plugins.providers.JaxrsFormProvider
 org.jboss.resteasy.plugins.providers.FileProvider
 org.jboss.resteasy.plugins.providers.StreamingOutputProvider
