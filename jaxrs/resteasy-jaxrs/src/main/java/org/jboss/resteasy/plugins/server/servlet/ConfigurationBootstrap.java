@@ -287,12 +287,20 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
          }
       }
 
-      String useContainerFormParams = getParameter(ResteasyContextParameters.USE_CONTAINER_FORM_PARAMS);
+      String useContainerFormParams = getParameter(ResteasyContextParameters.RESTEASY_USE_CONTAINER_FORM_PARAMS);
       if (useContainerFormParams != null)
       {
-         boolean useContainer = parseBooleanParam(ResteasyContextParameters.USE_CONTAINER_FORM_PARAMS, useContainerFormParams);
+         boolean useContainer = parseBooleanParam(ResteasyContextParameters.RESTEASY_USE_CONTAINER_FORM_PARAMS, useContainerFormParams);
          deployment.setUseContainerFormParams(useContainer);
       }
+
+      String widerMatching = getParameter(ResteasyContextParameters.RESTEASY_WIDER_REQUEST_MATCHING);
+      if (widerMatching != null)
+      {
+         boolean wider = parseBooleanParam("resteasy.wider.request.matching", widerMatching);
+         deployment.setWiderRequestMatching(wider);
+      }
+
 
 
       String injectorFactoryClass = getParameter("resteasy.injector.factory");

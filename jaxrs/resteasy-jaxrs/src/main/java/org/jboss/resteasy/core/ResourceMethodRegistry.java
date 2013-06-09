@@ -39,12 +39,24 @@ public class ResourceMethodRegistry implements Registry
 
    protected ResteasyProviderFactory providerFactory;
    protected RootClassNode root = new RootClassNode();
+   protected boolean widerMatching;
+   protected RootNode rootNode = new RootNode();
    private final static Logger logger = Logger.getLogger(ResourceMethodRegistry.class);
 
 
    public ResourceMethodRegistry(ResteasyProviderFactory providerFactory)
    {
       this.providerFactory = providerFactory;
+   }
+
+   public boolean isWiderMatching()
+   {
+      return widerMatching;
+   }
+
+   public void setWiderMatching(boolean widerMatching)
+   {
+      this.widerMatching = widerMatching;
    }
 
    public void addPerRequestResource(Class clazz, String basePath)
@@ -133,8 +145,6 @@ public class ResourceMethodRegistry implements Registry
    }
 
 
-
-
    /**
     * Bind an endpoint ResourceFactory.  ResourceFactory.getScannableClass() defines what class should be scanned
     * for JAX-RS annotations.  The class and any implemented interfaces are scanned for annotations.
@@ -151,7 +161,7 @@ public class ResourceMethodRegistry implements Registry
     * for JAX-RS annotations.    The class and any implemented interfaces are scanned for annotations.
     *
     * @param ref
-    * @param base    base URI path for any resources provided by the factory, in addition to rootPath
+    * @param base base URI path for any resources provided by the factory, in addition to rootPath
     */
    public void addResourceFactory(ResourceFactory ref, String base)
    {
@@ -174,8 +184,8 @@ public class ResourceMethodRegistry implements Registry
     * of the clazz parameter.
     *
     * @param ref
-    * @param base    base URI path for any resources provided by the factory, in addition to rootPath
-    * @param clazz   specific class
+    * @param base  base URI path for any resources provided by the factory, in addition to rootPath
+    * @param clazz specific class
     */
    public void addResourceFactory(ResourceFactory ref, String base, Class<?> clazz)
    {
@@ -183,19 +193,19 @@ public class ResourceMethodRegistry implements Registry
       addResourceFactory(ref, base, classes);
       if (ref != null) ref.registered(providerFactory);
    }
-   
+
    /**
     * ResourceFactory.getScannableClass() is not used, only the clazz parameter and not any implemented interfaces
     * of the clazz parameter.
     *
     * @param ref
     * @param base    base URI path for any resources provided by the factory, in addition to rootPath
-    * @param classes   specific class
+    * @param classes specific class
     */
    public void addResourceFactory(ResourceFactory ref, String base, Class<?>[] classes)
    {
       if (ref != null) ref.registered(providerFactory);
-      for (Class<?> clazz: classes)
+      for (Class<?> clazz : classes)
       {
          if (Proxy.isProxyClass(clazz))
          {
@@ -211,13 +221,15 @@ public class ResourceMethodRegistry implements Registry
             register(ref, base, resourceClass);
          }
       }
-      
+
       // https://issues.jboss.org/browse/JBPAPP-7871
-      for (Class<?> clazz: classes)
+      for (Class<?> clazz : classes)
       {
-         for (Method method : clazz.getDeclaredMethods()) {
+         for (Method method : clazz.getDeclaredMethods())
+         {
             Method _method = findAnnotatedMethod(clazz, method);
-            if (_method != null && !java.lang.reflect.Modifier.isPublic(_method.getModifiers())) {
+            if (_method != null && !java.lang.reflect.Modifier.isPublic(_method.getModifiers()))
+            {
                logger.warn("JAX-RS annotations found at non-public method: " + method.getDeclaringClass().getName() + "." + method.getName() + "(); Only public methods may be exposed as resource methods.");
             }
          }
@@ -265,18 +277,22 @@ public class ResourceMethodRegistry implements Registry
       InjectorFactory injectorFactory = providerFactory.getInjectorFactory();
       if (method instanceof ResourceMethod)
       {
-         ResourceMethodInvoker invoker = new ResourceMethodInvoker((ResourceMethod)method, injectorFactory, rf, providerFactory);
-         root.addInvoker(classExpression, fullpath, invoker);
+         ResourceMethodInvoker invoker = new ResourceMethodInvoker((ResourceMethod) method, injectorFactory, rf, providerFactory);
+         if (widerMatching)
+            rootNode.addInvoker(fullpath, invoker);
+         else root.addInvoker(classExpression, fullpath, invoker);
       }
       else
       {
          ResourceLocatorInvoker locator = new ResourceLocatorInvoker(rf, injectorFactory, providerFactory, method);
-         root.addInvoker(classExpression, fullpath, locator);
+         if (widerMatching)
+            rootNode.addInvoker(fullpath, locator);
+         else root.addInvoker(classExpression, fullpath, locator);
       }
    }
 
-	private Method findAnnotatedInterfaceMethod(Class<?> root, Class<?> iface, Method implementation)
-	{
+   private Method findAnnotatedInterfaceMethod(Class<?> root, Class<?> iface, Method implementation)
+   {
       for (Method method : iface.getMethods())
       {
          if (method.isSynthetic()) continue;
@@ -291,60 +307,60 @@ public class ResourceMethodRegistry implements Registry
             return method;
 
       }
-		for (Class<?> extended : iface.getInterfaces())
-		{
-			Method m = findAnnotatedInterfaceMethod(root, extended, implementation);
-			if(m != null)
-				return m;
-		}
-		return null;
-	}
+      for (Class<?> extended : iface.getInterfaces())
+      {
+         Method m = findAnnotatedInterfaceMethod(root, extended, implementation);
+         if (m != null)
+            return m;
+      }
+      return null;
+   }
 
-	private Method findAnnotatedMethod(Class<?> root, Method implementation)
-	{
+   private Method findAnnotatedMethod(Class<?> root, Method implementation)
+   {
       // check the method itself
       if (implementation.isAnnotationPresent(Path.class) || IsHttpMethod.getHttpMethods(implementation) != null)
          return implementation;
 
-		// Per http://download.oracle.com/auth/otn-pub/jcp/jaxrs-1.0-fr-oth-JSpec/jaxrs-1.0-final-spec.pdf
-		// Section 3.2 Annotation Inheritance
+      // Per http://download.oracle.com/auth/otn-pub/jcp/jaxrs-1.0-fr-oth-JSpec/jaxrs-1.0-final-spec.pdf
+      // Section 3.2 Annotation Inheritance
 
-		// Check possible superclass declarations
-		for (Class<?> clazz = implementation.getDeclaringClass().getSuperclass(); clazz != null; clazz = clazz.getSuperclass())
-		{
-			try
-			{
-				Method method = clazz.getDeclaredMethod(implementation.getName(), implementation.getParameterTypes());
-				if (method.isAnnotationPresent(Path.class) || IsHttpMethod.getHttpMethods(method) != null)
-					return method;
-			}
-			catch (NoSuchMethodException e)
-			{
-				// ignore
-			}
-		}
+      // Check possible superclass declarations
+      for (Class<?> clazz = implementation.getDeclaringClass().getSuperclass(); clazz != null; clazz = clazz.getSuperclass())
+      {
+         try
+         {
+            Method method = clazz.getDeclaredMethod(implementation.getName(), implementation.getParameterTypes());
+            if (method.isAnnotationPresent(Path.class) || IsHttpMethod.getHttpMethods(method) != null)
+               return method;
+         }
+         catch (NoSuchMethodException e)
+         {
+            // ignore
+         }
+      }
 
-		// Not found yet, so next check ALL interfaces from the root, 
-		// but ensure no redefinition by peer interfaces (ambiguous) to preserve logic found in 
-		// original implementation
-		for (Class<?> clazz = root; clazz != null; clazz = clazz.getSuperclass())
-		{
-			Method method = null;
-			for (Class<?> iface : clazz.getInterfaces())
-			{
-				Method m = findAnnotatedInterfaceMethod(root, iface, implementation);
-				if (m != null)
-				{
-					if(method != null && !m.equals(method))
-						throw new RuntimeException("Ambiguous inherited JAX-RS annotations applied to method: " + implementation);
-					method = m;
-				}
-			}
-			if (method != null)
-				return method;
-		}
-		return null;
-	}
+      // Not found yet, so next check ALL interfaces from the root,
+      // but ensure no redefinition by peer interfaces (ambiguous) to preserve logic found in
+      // original implementation
+      for (Class<?> clazz = root; clazz != null; clazz = clazz.getSuperclass())
+      {
+         Method method = null;
+         for (Class<?> iface : clazz.getInterfaces())
+         {
+            Method m = findAnnotatedInterfaceMethod(root, iface, implementation);
+            if (m != null)
+            {
+               if (method != null && !m.equals(method))
+                  throw new RuntimeException("Ambiguous inherited JAX-RS annotations applied to method: " + implementation);
+               method = m;
+            }
+         }
+         if (method != null)
+            return method;
+      }
+      return null;
+   }
 
    /**
     * Find all endpoints reachable by clazz and unregister them
@@ -367,11 +383,13 @@ public class ResourceMethodRegistry implements Registry
    {
       for (ResourceMethod method : resourceClass.getResourceMethods())
       {
-         root.removeBinding(resourceClass.getPath(), method.getFullpath(), method.getMethod());
+         if (widerMatching) rootNode.removeBinding(method.getFullpath(), method.getMethod());
+         else root.removeBinding(resourceClass.getPath(), method.getFullpath(), method.getMethod());
       }
       for (ResourceLocator method : resourceClass.getResourceLocators())
       {
-         root.removeBinding(resourceClass.getPath(), method.getFullpath(), method.getMethod());
+         if (widerMatching) rootNode.removeBinding(method.getFullpath(), method.getMethod());
+         else root.removeBinding(resourceClass.getPath(), method.getFullpath(), method.getMethod());
       }
    }
 
@@ -391,23 +409,26 @@ public class ResourceMethodRegistry implements Registry
          String fullpath = builder.getPath();
          if (fullpath == null) fullpath = "";
 
-         root.removeBinding(classExpression, fullpath, method);
+         if (widerMatching) rootNode.removeBinding(fullpath, method);
+         else root.removeBinding(classExpression, fullpath, method);
       }
    }
 
    public Map<String, List<ResourceInvoker>> getBounded()
    {
-      return root.getBounded();
+      if (widerMatching) return rootNode.getBounded();
+      else return root.getBounded();
    }
 
-      /**
-      * Number of endpoints registered
-      *
-      * @return
-      */
+   /**
+    * Number of endpoints registered
+    *
+    * @return
+    */
    public int getSize()
    {
-      return root.getSize();
+      if (widerMatching) return rootNode.getSize();
+      else return root.getSize();
    }
 
    /**
@@ -419,7 +440,8 @@ public class ResourceMethodRegistry implements Registry
    {
       try
       {
-         return root.match(request, 0);
+         if (widerMatching) return rootNode.match(request, 0);
+         else return root.match(request, 0);
       }
       catch (RuntimeException e)
       {

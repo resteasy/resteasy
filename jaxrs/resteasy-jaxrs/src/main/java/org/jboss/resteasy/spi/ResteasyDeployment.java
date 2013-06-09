@@ -4,6 +4,7 @@ import org.jboss.resteasy.core.AcceptHeaderByFileSuffixFilter;
 import org.jboss.resteasy.core.AcceptParameterHttpPreprocessor;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.logging.Logger;
@@ -32,6 +33,7 @@ import java.util.Map;
  */
 public class ResteasyDeployment
 {
+   protected boolean widerRequestMatching;
    protected boolean useContainerFormParams = false;
    protected boolean deploymentSensitiveFactoryEnabled = false;
    protected boolean asyncJobServiceEnabled = false;
@@ -118,6 +120,10 @@ public class ResteasyDeployment
          dispatcher = dis;
       }
       registry = dispatcher.getRegistry();
+      if (widerRequestMatching)
+      {
+         ((ResourceMethodRegistry)registry).setWiderMatching(widerRequestMatching);
+      }
 
 
       dispatcher.getDefaultContextObjects().putAll(defaultContextObjects);
@@ -878,5 +884,15 @@ public class ResteasyDeployment
    public void setScannedJndiComponentResources(List<String> scannedJndiComponentResources)
    {
       this.scannedJndiComponentResources = scannedJndiComponentResources;
+   }
+
+   public boolean isWiderRequestMatching()
+   {
+      return widerRequestMatching;
+   }
+
+   public void setWiderRequestMatching(boolean widerRequestMatching)
+   {
+      this.widerRequestMatching = widerRequestMatching;
    }
 }
