@@ -33,7 +33,7 @@ public class JSAPIServiceTest
       rmr.addPerRequestResource(FooResource.class);
       ServiceRegistry service = new ServiceRegistry(null, rmr, providerFactory, null);
       PrintWriter printWriter = new PrintWriter(System.out);
-      new JSAPIWriter("/base").writeJavaScript("", printWriter, service);
+      new JSAPIWriter().writeJavaScript("", printWriter, service);
       printWriter.close();
    }
 }
