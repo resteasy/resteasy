@@ -20,6 +20,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+
 /**
  * 
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
@@ -121,7 +123,7 @@ public class EntityBufferingInFileTest
          sb.append("0");
       }
       String body = sb.toString();
-      ClientRequest request = new ClientRequest("http://localhost:8081/hello/", executor);
+      ClientRequest request = new ClientRequest(generateURL("/hello"), executor);
       request.body("text/plain", body);
       System.out.println("Sending request");
       ClientResponse<String> response = request.post(String.class);
