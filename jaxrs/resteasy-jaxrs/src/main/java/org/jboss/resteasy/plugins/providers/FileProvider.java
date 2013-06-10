@@ -1,9 +1,14 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.NoContent;
 
+import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
+import javax.ws.rs.RuntimeType;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -105,6 +110,79 @@ public class FileProvider implements MessageBodyReader<File>,
                        Annotation[] annotations, MediaType mediaType,
                        MultivaluedMap<String, Object> httpHeaders,
                        OutputStream entityStream) throws IOException
+   {
+      HttpHeaders headers = ResteasyProviderFactory.getContextData(HttpHeaders.class);
+      if (headers == null)
+      {
+         writeIt(uploadFile, entityStream);
+         return;
+      }
+      String range = headers.getRequestHeaders().getFirst("Range");
+      if (range == null)
+      {
+         writeIt(uploadFile, entityStream);
+         return;
+      }
+      range = range.trim();
+      if (range.indexOf(',') > -1)
+      {
+         // we don't support this
+         writeIt(uploadFile, entityStream);
+         return;
+      }
+      int separator = range.indexOf('-');
+      if (separator < 0)
+      {
+         writeIt(uploadFile, entityStream);
+         return;
+      }
+      else if (separator == 0)
+      {
+         long fileSize = uploadFile.length();
+         long begin = Long.parseLong(range);
+         if (fileSize + begin < 1)
+         {
+            writeIt(uploadFile, entityStream);
+            return;
+         }
+         throw new FileRangeException(mediaType, uploadFile, fileSize + begin, fileSize - 1);
+      }
+      else
+      {
+         try
+         {
+            long fileSize = uploadFile.length();
+            long begin = Long.parseLong(range.substring(0, separator));
+            if (begin >= fileSize)
+            {
+               throw new WebApplicationException(416);
+            }
+            long end;
+            if (range.endsWith("-"))
+            {
+               end = fileSize - 1;
+            }
+            else
+            {
+               String substring = range.substring(separator + 1);
+               end = Long.parseLong(substring);
+            }
+            if (begin == 0 && end + 1 >= fileSize)
+            {
+               writeIt(uploadFile, entityStream);
+               return;
+            }
+            throw new FileRangeException(mediaType, uploadFile, begin, end);
+         }
+         catch (NumberFormatException e)
+         {
+            writeIt(uploadFile, entityStream);
+            return;
+         }
+      }
+   }
+
+   protected void writeIt(File uploadFile, OutputStream entityStream) throws IOException
    {
       InputStream inputStream = new BufferedInputStream(new FileInputStream(uploadFile));
 
