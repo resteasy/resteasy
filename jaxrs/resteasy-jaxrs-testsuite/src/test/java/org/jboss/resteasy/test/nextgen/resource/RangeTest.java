@@ -20,6 +20,12 @@ import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -74,6 +80,24 @@ public class RangeTest extends BaseResourceTest
    {
       client.close();
       file.delete();
+   }
+
+   @Test
+   public void testDate()
+   {
+      SimpleDateFormat dateFormatRFC822 = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+      dateFormatRFC822.setTimeZone(TimeZone.getTimeZone("GMT"));
+      String format = dateFormatRFC822.format(new Date());
+      System.out.println(format);
+      try
+      {
+         Date date = dateFormatRFC822.parse(format);
+         System.out.println(date.toString());
+      }
+      catch (ParseException e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 
 
