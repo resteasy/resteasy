@@ -58,7 +58,7 @@ public class FormParameterTest
       ClientResponse<String> response = request.put(String.class);
       assertTrue(response != null);
       System.out.println("response: " + response.getEntity());
-      assertEquals("abc%20xyz", response.getEntity());
+      assertEquals("abc+xyz", response.getEntity());
    }
 
    @Test
@@ -82,7 +82,7 @@ public class FormParameterTest
       ClientResponse<String> response = request.post(String.class);
       assertTrue(response != null);
       System.out.println("response: " + response.getEntity());
-      assertEquals("abc%20xyz", response.getEntity());
+      assertEquals("abc+xyz", response.getEntity());
    }
 
    @Test
@@ -106,7 +106,7 @@ public class FormParameterTest
       ClientResponse<String> response = request.put(String.class);
       assertTrue(response != null);
       System.out.println("response: " + response.getEntity());
-      assertEquals("abc%20xyz", response.getEntity());
+      assertEquals("abc+xyz", response.getEntity());
    }
 
    @Test
@@ -130,6 +130,6 @@ public class FormParameterTest
       ClientResponse<String> response = request.post(String.class);
       assertTrue(response != null);
       System.out.println("response: " + response.getEntity());
-      assertEquals("abc%20xyz", response.getEntity());
+      assertEquals("abc+xyz", response.getEntity());
    }
 }
