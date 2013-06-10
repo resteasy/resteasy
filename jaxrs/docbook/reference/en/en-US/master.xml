@@ -38,6 +38,7 @@
                 <!ENTITY Migration_from_older_versions SYSTEM "modules/Migration_from_older_versions.xml">
                 <!ENTITY Multipart SYSTEM "modules/Multipart.xml">
                 <!ENTITY Atom SYSTEM "modules/Atom.xml">
+                <!ENTITY ContentRange SYSTEM "modules/content-range.xml">
                 <!ENTITY Json SYSTEM "modules/Json.xml">
                 <!ENTITY Jaxb SYSTEM "modules/Jaxb.xml">
                 <!ENTITY Yaml SYSTEM "modules/Yaml.xml">
@@ -120,6 +121,7 @@
    &ExceptionMappers;
    &Configuring_Individual_JAX-RS_Resource_Beans;
    &GZIP;
+   &ContentRange;
    &Cache_NoCache_CacheControl;
    &Interceptors;
    &Asynchronous_HTTP;
