@@ -9,14 +9,14 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>Validation-test-AS7</artifactId>
+  <artifactId>Validation-test-WF8</artifactId>
   <packaging>jar</packaging>
-  <name>Validation test AS7</name>
+  <name>Validation test WF8</name>
   <url>http://maven.apache.org</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <as-version>7.1.1.Final</as-version>
+    <as-version>8.0.0.Alpha2-SNAPSHOT</as-version>
   </properties>
 
   <build>
@@ -46,9 +46,9 @@
                     <configuration>
                         <artifactItems>
                             <artifactItem>
-                                <groupId>org.jboss.as</groupId>
-                                <artifactId>jboss-as-dist</artifactId>
-                                <version>7.1.1.Final</version>
+                                <groupId>org.wildfly</groupId>
+                                <artifactId>wildfly-dist</artifactId>
+                                <version>${as-version}</version>
                                 <type>zip</type>
                                 <overWrite>false</overWrite>
                                 <outputDirectory>target</outputDirectory>
@@ -68,8 +68,8 @@
             <phase>process-test-classes</phase>
             <configuration>
               <target>
-                <unzip src="../../jboss-modules/target/resteasy-jboss-modules-${project.version}.zip"
-                       dest="${project.build.directory}/jboss-as-${as-version}/modules"
+                <unzip src="../../jboss-modules/target/resteasy-jboss-modules-wf8-${project.version}.zip"
+                       dest="${project.build.directory}/wildfly-${as-version}/modules"
                        overwrite="true" />
               </target>
             </configuration>
@@ -77,6 +77,34 @@
               <goal>run</goal>
             </goals>
           </execution>
+          <!--execution>
+            <id>update validation api</id>
+            <phase>process-test-classes</phase>
+            <configuration>
+              <target>
+                <copy file="src/test/resources/modules/javax/validation/api/main/module.xml"
+                      todir="${project.build.directory}/jboss-as-${as-version}/modules/javax/validation/api/main"
+                      overwrite="true"/>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>update hibernate validator</id>
+            <phase>process-test-classes</phase>
+            <configuration>
+              <target>
+                <copy file="src/test/resources/modules/org/hibernate/validator/main/module.xml"
+                      todir="${project.build.directory}/jboss-as-${as-version}/modules/org/hibernate/validator/main"
+                      overwrite="true"/>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution-->
         </executions>
       </plugin>
     </plugins>
@@ -114,9 +142,12 @@
         <scope>test</scope>
     </dependency>
     <dependency>
-        <groupId>org.jboss.as</groupId>
-        <artifactId>jboss-as-arquillian-container-managed</artifactId>
-        <version>7.1.1.Final</version>
+        <!--groupId>org.jboss.as</groupId-->
+        <groupId>org.wildfly</groupId>
+        <!--artifactId>jboss-as-arquillian-container-managed</artifactId-->
+        <artifactId>wildfly-arquillian-container-managed</artifactId>
+        <!--version>7.1.1.Final</version-->
+        <version>8.0.0.Alpha1</version>
         <scope>test</scope>
     </dependency>
     <dependency>
@@ -137,12 +168,12 @@
     <dependency>
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
-        <version>1.0.0.GA</version>
+        <version>1.1.0.Final</version>
     </dependency>
     <dependency>
         <groupId>org.hibernate</groupId> 
         <artifactId>hibernate-validator</artifactId>
-        <version>4.3.1.Final</version>
+        <version>5.0.1.Final</version>
     </dependency>
     <dependency>
         <groupId>javax.el</groupId>

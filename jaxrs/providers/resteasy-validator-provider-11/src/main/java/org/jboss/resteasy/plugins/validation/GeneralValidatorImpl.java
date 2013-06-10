@@ -37,12 +37,11 @@ public class GeneralValidatorImpl implements GeneralValidator
    private boolean isExecutableValidationEnabled;
    private ExecutableType[] defaultValidatedExecutableTypes;
 
-   public GeneralValidatorImpl(Validator validator)
+   public GeneralValidatorImpl(Validator validator, boolean isExecutableValidationEnabled, Set<ExecutableType> defaultValidatedExecutableTypes)
    {
       this.validator = validator;
-      BootstrapConfiguration bc = Validation.byDefaultProvider().configure().getBootstrapConfiguration();
-      isExecutableValidationEnabled = bc.isExecutableValidationEnabled();
-      defaultValidatedExecutableTypes = bc.getDefaultValidatedExecutableTypes().toArray(new ExecutableType[]{});
+      this.isExecutableValidationEnabled = isExecutableValidationEnabled;
+      this.defaultValidatedExecutableTypes = defaultValidatedExecutableTypes.toArray(new ExecutableType[]{});
    }
 
    @Override

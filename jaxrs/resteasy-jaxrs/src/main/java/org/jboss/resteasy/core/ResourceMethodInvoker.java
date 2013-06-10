@@ -268,6 +268,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       catch (Exception e)
       {
       	violationsContainer.setException(e);
+      	e.printStackTrace();
       	throw new ResteasyViolationException(violationsContainer);
       }
 
@@ -290,7 +291,6 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
 
       Object rtn = methodInjector.invoke(request, response, target);
-
       if (violationsContainer != null && (violationsContainer.getException() != null || violationsContainer.size() > 0))
       {
          throw new ResteasyViolationException(violationsContainer);

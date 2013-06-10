@@ -9,7 +9,7 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>Validation-test</artifactId>
+  <artifactId>Validation-test-wf8</artifactId>
   <packaging>jar</packaging>
   <name>Validation test</name>
   <url>http://maven.apache.org</url>
