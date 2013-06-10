@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -297,8 +298,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
       return this;
    }
 
-   private static final SimpleDateFormat dateFormatRFC822 = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
-
+   private static final SimpleDateFormat dateFormatRFC822 = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+   static
+   {
+      dateFormatRFC822.setTimeZone(TimeZone.getTimeZone("GMT"));
+   }
    public Response.ResponseBuilder expires(Date expires)
    {
       if (expires == null)
