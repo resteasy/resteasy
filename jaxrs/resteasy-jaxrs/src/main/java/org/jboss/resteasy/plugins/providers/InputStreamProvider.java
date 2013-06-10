@@ -61,10 +61,7 @@ public class InputStreamProvider implements MessageBodyReader<InputStream>, Mess
 		   }
 		   else
 			   entityStream.write(c);
-		   while ((c = inputStream.read()) != -1)
-		   {
-			   entityStream.write(c);
-		   }
+         ProviderHelper.writeTo(inputStream, entityStream);
 	   }
 	   finally
 	   {
