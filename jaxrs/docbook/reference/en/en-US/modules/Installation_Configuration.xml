@@ -18,10 +18,26 @@
             with the modules/ directory of the JBoss AS7 distribution.  This will overwrite some of the existing files there.
         </para>
     </sect1>
-    <sect1>
-        <title>Configuring in JBoss AS 7</title>
+    <sect1 id="upgrading-eap61">
+        <title>Upgrading Resteasy Within JBoss EAP 6.1</title>
         <para>
-            RESTEasy is bundled with JBoss AS 7 and completely integrated as per the requirements of Java EE 6.
+            Resteasy is bundled with JBoss EAP 6.1.  You will likely have the need to upgrade Resteasy in JBoss EAP 6.1.  The Resteasy
+            distribution comes with a zip file called resteasy-jboss-modules-3.0-rc-1.zip.  Unzip this file while
+            with the modules/system/layers/base/ directory of the JBoss EAP 6.1 distribution.  This will overwrite some of the existing files there.
+        </para>
+    </sect1>
+    <sect1 id="upgrading-wildfly">
+        <title>Upgrading Resteasy Within Wildfly</title>
+        <para>
+            Resteasy is bundled with Wildfly.  You will likely have the need to upgrade Resteasy in Wildfly.  The Resteasy
+            distribution comes with a zip file called resteasy-jboss-modules-wf8-3.0-rc-1.zip.  Unzip this file while
+            with the modules/system/layers/base/ directory of the Wildfly distribution.  This will overwrite some of the existing files there.
+        </para>
+    </sect1>
+    <sect1>
+        <title>Configuring in JBoss AS 7, EAP, and Wildfly</title>
+        <para>
+            RESTEasy is bundled with JBoss/Wildfly and completely integrated as per the requirements of Java EE 6.
             First you must at least provide an empty web.xml file.  You can of course deploy any custom servlet, filter
             or security constraint you want to within your web.xml, but the least amount of work is to create an empty
             web.xml file.  Also, resteasy context-params are available if you want to tweak turn on/off any specific
@@ -57,7 +73,7 @@
         </para>
     </sect1>
     <section>
-        <title>Resteasy Modules in AS7</title>
+        <title>Resteasy Modules in AS7, EAP6.1, Wildfly</title>
         <para>
             Resteasy and JAX-RS are automically loaded into your deployment's classpath, if and only if you are deploying
             a JAX-RS Application.  If you only want to use the client library, you will have to create a dependency
@@ -239,7 +255,7 @@
     <sect1>
         <title>Standalone Resteasy</title>
         <para>
-            If you are using resteasy outside of JBoss AS 7, you will need to do a few manual steps to install and
+            If you are using resteasy outside of JBoss/Wildfly, you will need to do a few manual steps to install and
             configure resteasy.
             RESTeasy is deployed as a WAR archive and thus depends on a Servlet container. We strongly suggest that you
             use Maven to build your WAR files as RESTEasy is split into

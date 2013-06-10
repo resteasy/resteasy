@@ -1,4 +1,4 @@
-<chapter id="Atom">
+<chapter id="ContentRange">
    <title>Content-Range Support</title>
    <para>
       Resteasy supports <literal>Range</literal> requests for <literal>java.io.File</literal> response entities.
