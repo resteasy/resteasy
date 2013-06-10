@@ -4,7 +4,7 @@
     <parent>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <groupId>org.jboss.resteasy</groupId>
-        <version>3.0-rc-1</version>
+        <version>3.0.0.Final</version>
     </parent>
 
     <artifactId>resteasy-jaxrs-testsuite</artifactId>
