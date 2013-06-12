@@ -9,8 +9,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -25,6 +28,8 @@ public class ListenerBootstrap extends ConfigurationBootstrap
       this.servletContext = servletContext;
    }
 
+   private static Object RD_LOCK = new Object();
+
    @Override
    public ResteasyDeployment createDeployment()
    {
@@ -32,6 +37,20 @@ public class ListenerBootstrap extends ConfigurationBootstrap
       if (deployment == null) deployment = super.createDeployment();
       deployment.getDefaultContextObjects().put(ServletContext.class, servletContext);
       deployment.getDefaultContextObjects().put(ResteasyConfiguration.class, this);
+      String servletMappingPrefix = getParameter(ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX);
+      if (servletMappingPrefix == null) servletMappingPrefix = "";
+      servletMappingPrefix = servletMappingPrefix.trim();
+
+      synchronized (RD_LOCK)
+      {
+         Map<String, ResteasyDeployment> deployments = (Map<String, ResteasyDeployment>) servletContext.getAttribute(ResteasyContextParameters.RESTEASY_DEPLOYMENTS);
+         if (deployments == null)
+         {
+            deployments = new ConcurrentHashMap<String, ResteasyDeployment>();
+            servletContext.setAttribute("resteasy.deployments", deployments);
+         }
+         deployments.put(servletMappingPrefix, deployment);
+      }
       return deployment;
    }
 

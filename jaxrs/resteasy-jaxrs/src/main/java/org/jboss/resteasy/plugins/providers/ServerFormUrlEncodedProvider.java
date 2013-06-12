@@ -27,6 +27,13 @@ import java.lang.reflect.Type;
 @ConstrainedTo(RuntimeType.SERVER)
 public class ServerFormUrlEncodedProvider extends FormUrlEncodedProvider
 {
+   protected boolean useContainerParams;
+
+   public ServerFormUrlEncodedProvider(boolean useContainerParams)
+   {
+      this.useContainerParams = useContainerParams;
+   }
+
    @Context
    HttpRequest request;
 
@@ -34,6 +41,8 @@ public class ServerFormUrlEncodedProvider extends FormUrlEncodedProvider
    @Override
    public MultivaluedMap readFrom(Class<MultivaluedMap> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
+      if (!useContainerParams) return super.readFrom(type, genericType, annotations, mediaType, httpHeaders, entityStream);
+
       boolean encoded = FindAnnotation.findAnnotation(annotations, Encoded.class) != null;
       if (encoded) return request.getFormParameters();
       else return request.getDecodedFormParameters();

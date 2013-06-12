@@ -7,9 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.validation.BootstrapConfiguration;
 import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
 import javax.validation.ValidationException;
 import javax.validation.Validator;
 import javax.validation.executable.ExecutableType;
@@ -21,6 +19,14 @@ import org.jboss.resteasy.plugins.providers.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.ConstraintType.Type;
 import org.jboss.resteasy.spi.validation.ResteasyConstraintViolation;
 
+import com.fasterxml.classmate.Filter;
+import com.fasterxml.classmate.MemberResolver;
+import com.fasterxml.classmate.ResolvedType;
+import com.fasterxml.classmate.ResolvedTypeWithMembers;
+import com.fasterxml.classmate.TypeResolver;
+import com.fasterxml.classmate.members.RawMethod;
+import com.fasterxml.classmate.members.ResolvedMethod;
+
 /**
  * 
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
@@ -31,6 +37,11 @@ import org.jboss.resteasy.spi.validation.ResteasyConstraintViolation;
 public class GeneralValidatorImpl implements GeneralValidator
 {
    private static final Set<ResteasyConstraintViolation> empty = new HashSet<ResteasyConstraintViolation>();
+   
+   /**
+    * Used for resolving type parameters. Thread-safe.
+    */
+   private static final TypeResolver typeResolver = new TypeResolver();
    
    private Validator validator;
    private ConstraintTypeUtil util = new ConstraintTypeUtil11();
@@ -212,25 +223,20 @@ public class GeneralValidatorImpl implements GeneralValidator
    {
       Class<?> clazz = method.getDeclaringClass();
       List<ExecutableType[]> typesList = new ArrayList<ExecutableType[]>();
+      
       while (clazz != null)
       {
-         try
+         // We start by examining the method itself.
+         Method superMethod = getSuperMethod(method, clazz);
+         if (superMethod != null)
          {
-            Method superMethod = clazz.getDeclaredMethod(method.getName(), method.getParameterTypes());
-            if (superMethod != null)
+            ExecutableType[] types = getExecutableTypesOnMethod(superMethod);
+            if (types != null)
             {
-               ExecutableType[] types = getExecutableTypesOnMethod(superMethod);
-               if (types != null)
-               {
-               	typesList.add(types);
-               }
+               typesList.add(types);
             }
          }
-         catch (NoSuchMethodException e)
-         {
-            // Ignore.
-         }
-         
+
          typesList.addAll(getExecutableTypesOnMethodInInterfaces(clazz, method));
          clazz = clazz.getSuperclass();
       }
@@ -243,25 +249,20 @@ public class GeneralValidatorImpl implements GeneralValidator
    	Class<?>[] interfaces = clazz.getInterfaces();
    	for (int i = 0; i < interfaces.length; i++)
    	{
-         Method declaredMethod;
-         try
-         {
-	         declaredMethod = interfaces[i].getDeclaredMethod(method.getName(), method.getParameterTypes());
-	         ExecutableType[] types = getExecutableTypesOnMethod(declaredMethod);
-	         if (types != null)
-	         {
-	         	typesList.add(types);
-	         }
-         }
-         catch (NoSuchMethodException e)
-         {
-         	// Ignore.
-         }
-         List<ExecutableType[]> superList = getExecutableTypesOnMethodInInterfaces(interfaces[i], method);
-         if (superList.size() > 0)
-         {
-         	typesList.addAll(superList);
-         }
+   	   Method interfaceMethod = getSuperMethod(method, interfaces[i]);
+   	   if (interfaceMethod != null)
+   	   {
+   	      ExecutableType[] types = getExecutableTypesOnMethod(interfaceMethod);
+   	      if (types != null)
+   	      {
+   	         typesList.add(types);
+   	      }
+   	   }
+   	   List<ExecutableType[]> superList = getExecutableTypesOnMethodInInterfaces(interfaces[i], method);
+   	   if (superList.size() > 0)
+   	   {
+   	      typesList.addAll(superList);
+   	   }
    	}
    	return typesList;
    }
@@ -304,7 +305,7 @@ public class GeneralValidatorImpl implements GeneralValidator
       return false;
    }
    
-   protected String convertArrayToString(Object o)
+   static protected String convertArrayToString(Object o)
    {
       String result = null;
       if (o instanceof Object[])
@@ -323,5 +324,123 @@ public class GeneralValidatorImpl implements GeneralValidator
          result = o.toString();
       }
       return result;
+   }
+   
+   /**
+    * Returns a super method, if any, of a method in a class.
+    * Here, the "super" relationship is reflexive.  That is, a method
+    * is a super method of itself.
+    */
+   static protected Method getSuperMethod(Method method, Class<?> clazz)
+   {
+      Method[] methods = clazz.getDeclaredMethods();
+      for (int i = 0; i < methods.length; i++)
+      {
+         if (overrides(method, methods[i]))
+         {
+            return methods[i];
+         }
+      }
+      return null;
+   }
+   
+	/**
+	 * Checks, whether {@code subTypeMethod} overrides {@code superTypeMethod}.
+	 * 
+	 * N.B. "Override" here is reflexive. I.e., a method overrides itself.
+	 * 
+	 * @param subTypeMethod   The sub type method (cannot be {@code null}).
+	 * @param superTypeMethod The super type method (cannot be {@code null}).
+	 * 
+	 * @return Returns {@code true} if {@code subTypeMethod} overrides {@code superTypeMethod}, {@code false} otherwise.
+	 *         
+	 * Taken from Hibernate Validator
+	 */
+   static protected boolean overrides(Method subTypeMethod, Method superTypeMethod)
+   {
+      if (subTypeMethod == null || superTypeMethod == null)
+      {
+         throw new RuntimeException("Expect two non-null methods");
+      }
+
+      if (!subTypeMethod.getName().equals(superTypeMethod.getName()))
+      {
+         return false;
+      }
+
+      if (subTypeMethod.getParameterTypes().length != superTypeMethod.getParameterTypes().length)
+      {
+         return false;
+      }
+
+      if (!superTypeMethod.getDeclaringClass().isAssignableFrom(subTypeMethod.getDeclaringClass()))
+      {
+         return false;
+      }
+
+      return parametersResolveToSameTypes(subTypeMethod, superTypeMethod);
+   }
+
+   /**
+    * Taken from Hibernate Validator
+    */
+   static protected boolean parametersResolveToSameTypes(Method subTypeMethod, Method superTypeMethod)
+   {
+      if (subTypeMethod.getParameterTypes().length == 0)
+      {
+         return true;
+      }
+
+      ResolvedType resolvedSubType = typeResolver.resolve(subTypeMethod.getDeclaringClass());
+      MemberResolver memberResolver = new MemberResolver(typeResolver);
+      memberResolver.setMethodFilter(new SimpleMethodFilter(subTypeMethod, superTypeMethod));
+      ResolvedTypeWithMembers typeWithMembers = memberResolver.resolve(resolvedSubType, null, null);
+      ResolvedMethod[] resolvedMethods = typeWithMembers.getMemberMethods();
+
+      // The ClassMate doc says that overridden methods are flattened to one
+      // resolved method. But that is the case only for methods without any
+      // generic parameters.
+      if (resolvedMethods.length == 1)
+      {
+         return true;
+      }
+
+      // For methods with generic parameters I have to compare the argument
+      // types (which are resolved) of the two filtered member methods.
+      for (int i = 0; i < resolvedMethods[0].getArgumentCount(); i++)
+      {
+
+         if (!resolvedMethods[0].getArgumentType(i).equals(resolvedMethods[1].getArgumentType(i)))
+         {
+            return false;
+         }
+      }
+
+      return true;
+   }
+
+   /**
+    * A filter implementation filtering methods matching given methods.
+    * 
+    * @author Gunnar Morling
+    * 
+    * Taken from Hibernate Validator
+    */
+   static protected class SimpleMethodFilter implements Filter<RawMethod>
+   {
+      private final Method method1;
+      private final Method method2;
+
+      private SimpleMethodFilter(Method method1, Method method2)
+      {
+         this.method1 = method1;
+         this.method2 = method2;
+      }
+
+      @Override
+      public boolean include(RawMethod element)
+      {
+         return element.getRawMember().equals(method1) || element.getRawMember().equals(method2);
+      }
    }
 }

@@ -51,11 +51,11 @@ public class ValidatorContextResolver implements ContextResolver<GeneralValidato
                {
                   Context context = new InitialContext();
                   validatorFactory = tmpValidatorFactory = ValidatorFactory.class.cast(context.lookup("java:comp/ValidatorFactory"));
-                  logger.debug("Using CDI enabled " + validatorFactory);
+                  logger.debug("Using CDI supporting " + validatorFactory);
                }
                catch (NamingException e)
                {
-                  logger.info("Unable to find CDI enabled ValidatorFactory. Using default ValidatorFactory");
+                  logger.info("Unable to find CDI supporting ValidatorFactory. Using default ValidatorFactory");
                   HibernateValidatorConfiguration config = Validation.byProvider(HibernateValidator.class).configure();
                   validatorFactory = tmpValidatorFactory = config.buildValidatorFactory();
                }

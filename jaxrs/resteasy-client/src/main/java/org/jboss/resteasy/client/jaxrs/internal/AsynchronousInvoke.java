@@ -52,28 +52,28 @@ public class AsynchronousInvoke implements AsyncInvoker
    @Override
    public Future<Response> trace()
    {
-      invocation.setMethod(HttpMethod.GET);
+      invocation.setMethod("TRACE");
       return invocation.submit();
    }
 
    @Override
    public <T> Future<T> trace(Class<T> responseType)
    {
-      invocation.setMethod(HttpMethod.GET);
+      invocation.setMethod("TRACE");
       return invocation.submit(responseType);
    }
 
    @Override
    public <T> Future<T> trace(GenericType<T> responseType)
    {
-      invocation.setMethod(HttpMethod.GET);
+      invocation.setMethod("TRACE");
       return invocation.submit(responseType);
    }
 
    @Override
    public <T> Future<T> trace(InvocationCallback<T> callback)
    {
-      invocation.setMethod(HttpMethod.GET);
+      invocation.setMethod("TRACE");
       return invocation.submit(callback);
    }
 

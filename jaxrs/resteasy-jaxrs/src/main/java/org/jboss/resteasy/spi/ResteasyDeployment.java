@@ -4,11 +4,13 @@ import org.jboss.resteasy.core.AcceptHeaderByFileSuffixFilter;
 import org.jboss.resteasy.core.AcceptParameterHttpPreprocessor;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.interceptors.RoleBasedSecurityFeature;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.plugins.providers.ServerFormUrlEncodedProvider;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
 import org.jboss.resteasy.util.GetRestful;
 
@@ -31,6 +33,8 @@ import java.util.Map;
  */
 public class ResteasyDeployment
 {
+   protected boolean widerRequestMatching;
+   protected boolean useContainerFormParams = false;
    protected boolean deploymentSensitiveFactoryEnabled = false;
    protected boolean asyncJobServiceEnabled = false;
    protected int asyncJobServiceMaxJobResults = 100;
@@ -116,6 +120,10 @@ public class ResteasyDeployment
          dispatcher = dis;
       }
       registry = dispatcher.getRegistry();
+      if (widerRequestMatching)
+      {
+         ((ResourceMethodRegistry)registry).setWiderMatching(widerRequestMatching);
+      }
 
 
       dispatcher.getDefaultContextObjects().putAll(defaultContextObjects);
@@ -211,6 +219,12 @@ public class ResteasyDeployment
          {
             providerFactory.setRegisterBuiltins(true);
             RegisterBuiltin.register(providerFactory);
+
+            // having problems using form parameters from container for a couple of TCK tests.  I couldn't figure out
+            // why, specifically:
+            // com/sun/ts/tests/jaxrs/spec/provider/standardhaspriority/JAXRSClient.java#readWriteMapProviderTest_from_standalone                                               Failed. Test case throws exception: [JAXRSCommonClient] null failed!  Check output for cause of failure.
+            // com/sun/ts/tests/jaxrs/spec/provider/standardwithjaxrsclient/JAXRSClient.java#mapElementProviderTest_from_standalone                                             Failed. Test case throws exception: returned MultivaluedMap is null
+            providerFactory.registerProviderInstance(new ServerFormUrlEncodedProvider(useContainerFormParams), null, null, true);
          }
          else
          {
@@ -515,6 +529,16 @@ public class ResteasyDeployment
          throw new RuntimeException(e);
       }
       providerFactory.registerProvider(provider);
+   }
+
+   public boolean isUseContainerFormParams()
+   {
+      return useContainerFormParams;
+   }
+
+   public void setUseContainerFormParams(boolean useContainerFormParams)
+   {
+      this.useContainerFormParams = useContainerFormParams;
    }
 
    public List<String> getJndiComponentResources()
@@ -860,5 +884,15 @@ public class ResteasyDeployment
    public void setScannedJndiComponentResources(List<String> scannedJndiComponentResources)
    {
       this.scannedJndiComponentResources = scannedJndiComponentResources;
+   }
+
+   public boolean isWiderRequestMatching()
+   {
+      return widerRequestMatching;
+   }
+
+   public void setWiderRequestMatching(boolean widerRequestMatching)
+   {
+      this.widerRequestMatching = widerRequestMatching;
    }
 }

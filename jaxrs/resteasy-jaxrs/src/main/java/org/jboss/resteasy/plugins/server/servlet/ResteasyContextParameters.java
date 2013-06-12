@@ -38,4 +38,8 @@ public interface ResteasyContextParameters
    String RESTEASY_SCANNED_PROVIDERS = "resteasy.scanned.providers";
    String RESTEASY_SCANNED_JNDI_RESOURCES = "resteasy.scanned.jndi.resources";
    String RESTEASY_CONTEXT_OBJECTS = "resteasy.context.objects";
+   String RESTEASY_USE_CONTAINER_FORM_PARAMS = "resteasy.use.container.form.params";
+   String RESTEASY_DEPLOYMENTS = "resteasy.deployments";
+   String RESTEASY_SERVLET_MAPPING_PREFIX = "resteasy.servlet.mapping.prefix";
+   String RESTEASY_WIDER_REQUEST_MATCHING = "resteasy.wider.request.matching";
 }
