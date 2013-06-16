@@ -7,8 +7,8 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ElementKind;
 import javax.validation.Path.Node;
 
+import org.jboss.resteasy.api.validation.ConstraintType;
 import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
-import org.jboss.resteasy.spi.validation.ConstraintType;
 
 /**
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>

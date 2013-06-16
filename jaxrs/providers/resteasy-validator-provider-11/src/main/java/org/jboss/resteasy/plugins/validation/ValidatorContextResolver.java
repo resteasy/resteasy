@@ -17,7 +17,7 @@ import javax.ws.rs.ext.Provider;
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.plugins.providers.validation.GeneralValidator;
+import org.jboss.resteasy.spi.validation.GeneralValidator;
 
 /**
  * 

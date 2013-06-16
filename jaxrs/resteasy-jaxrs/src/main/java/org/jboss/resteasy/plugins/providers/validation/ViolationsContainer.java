@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.jboss.resteasy.spi.validation.ResteasyConstraintViolation;
+import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 
 /**
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>

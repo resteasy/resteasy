@@ -1,6 +1,5 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.plugins.providers.validation.GeneralValidator;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.BadRequestException;
@@ -12,6 +11,7 @@ import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.metadata.MethodParameter;
 import org.jboss.resteasy.spi.metadata.ResourceLocator;
+import org.jboss.resteasy.spi.validation.GeneralValidator;
 
 import javax.validation.Validator;
 import javax.ws.rs.WebApplicationException;

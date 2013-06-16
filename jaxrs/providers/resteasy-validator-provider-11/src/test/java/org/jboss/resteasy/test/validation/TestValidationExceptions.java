@@ -31,12 +31,12 @@ import javax.ws.rs.core.Response;
 
 import junit.framework.Assert;
 
+import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.providers.SerializableProvider;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.validation.Validation;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.Test;
 

@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.validation;
 
 import java.io.Serializable;
-import java.util.Iterator;
 
 import javax.ws.rs.core.MediaType;
 
@@ -9,12 +8,12 @@ import junit.framework.Assert;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
+import org.jboss.resteasy.api.validation.ResteasyViolationException;
+import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.plugins.providers.SerializableProvider;
-import org.jboss.resteasy.spi.validation.ResteasyConstraintViolation;
-import org.jboss.resteasy.spi.validation.ResteasyViolationException;
-import org.jboss.resteasy.spi.validation.Validation;
 import org.jboss.resteasy.validation.Foo;
 import org.jboss.resteasy.validation.FooConstraint;
 import org.jboss.resteasy.validation.FooReaderWriter;

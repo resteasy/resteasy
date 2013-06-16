@@ -22,10 +22,10 @@ import javax.validation.constraintvalidation.ValidationTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 
-import org.jboss.resteasy.plugins.providers.validation.GeneralValidator;
+import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.validation.ResteasyConstraintViolation;
+import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

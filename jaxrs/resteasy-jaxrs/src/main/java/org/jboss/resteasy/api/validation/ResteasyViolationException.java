@@ -1,4 +1,4 @@
-package org.jboss.resteasy.spi.validation;
+package org.jboss.resteasy.api.validation;
 
 import java.util.ArrayList;
 import java.util.Iterator;

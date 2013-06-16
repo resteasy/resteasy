@@ -14,10 +14,10 @@ import javax.validation.executable.ExecutableType;
 import javax.validation.executable.ValidateOnExecution;
 import javax.validation.metadata.BeanDescriptor;
 
+import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
+import org.jboss.resteasy.api.validation.ConstraintType.Type;
 import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
-import org.jboss.resteasy.plugins.providers.validation.GeneralValidator;
-import org.jboss.resteasy.spi.validation.ConstraintType.Type;
-import org.jboss.resteasy.spi.validation.ResteasyConstraintViolation;
+import org.jboss.resteasy.spi.validation.GeneralValidator;
 
 import com.fasterxml.classmate.Filter;
 import com.fasterxml.classmate.MemberResolver;

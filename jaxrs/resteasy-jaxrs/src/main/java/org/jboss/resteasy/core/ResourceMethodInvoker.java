@@ -1,10 +1,11 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.api.validation.ResteasyViolationException;
+import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistryListener;
 import org.jboss.resteasy.core.interception.PostMatchContainerRequestContext;
 import org.jboss.resteasy.core.registry.SegmentNode;
-import org.jboss.resteasy.plugins.providers.validation.GeneralValidator;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
@@ -17,8 +18,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
-import org.jboss.resteasy.spi.validation.ResteasyViolationException;
-import org.jboss.resteasy.spi.validation.Validation;
+import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.HttpHeaderNames;

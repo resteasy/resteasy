@@ -1,4 +1,4 @@
-package org.jboss.resteasy.spi.validation;
+package org.jboss.resteasy.api.validation;
 
 /**
  * 

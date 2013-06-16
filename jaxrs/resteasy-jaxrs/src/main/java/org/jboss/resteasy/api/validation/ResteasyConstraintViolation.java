@@ -1,4 +1,4 @@
-package org.jboss.resteasy.spi.validation;
+package org.jboss.resteasy.api.validation;
 
 import java.io.Serializable;
 
@@ -26,27 +26,49 @@ public class ResteasyConstraintViolation implements Serializable
       this.value = value;
    }
    
+   /**
+    * @return type of constraint
+    */
    public ConstraintType.Type getConstraintType()
    {
       return constraintType;
    }
    
+   /**
+    * @return description of element violating constraint
+    */
    public String getPath()
    {
       return path;
    }
+   
+   /**
+    * @return description of constraint violation
+    */
    public String getMessage()
    {
       return message;
    }
+   
+   /**
+    * @return object in violation of constraint
+    */
    public String getValue()
    {
       return value;
    }
+   
+   /**
+    * @return String representation of violation
+    */
    public String toString()
    {
       return type() + "| " + path + "| " + message + "| " + value;
    }
+   
+   /**
+    * @return String form of violation type 
+    */
    public String type()
    {
       return constraintType.toString();

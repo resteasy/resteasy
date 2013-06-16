@@ -15,11 +15,11 @@ import javax.ws.rs.core.MediaType;
 
 import junit.framework.Assert;
 
+import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.validation.ResteasyViolationException;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.Test;
 

@@ -77,34 +77,6 @@
               <goal>run</goal>
             </goals>
           </execution>
-          <!--execution>
-            <id>update validation api</id>
-            <phase>process-test-classes</phase>
-            <configuration>
-              <target>
-                <copy file="src/test/resources/modules/javax/validation/api/main/module.xml"
-                      todir="${project.build.directory}/jboss-as-${as-version}/modules/javax/validation/api/main"
-                      overwrite="true"/>
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>update hibernate validator</id>
-            <phase>process-test-classes</phase>
-            <configuration>
-              <target>
-                <copy file="src/test/resources/modules/org/hibernate/validator/main/module.xml"
-                      todir="${project.build.directory}/jboss-as-${as-version}/modules/org/hibernate/validator/main"
-                      overwrite="true"/>
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution-->
         </executions>
       </plugin>
     </plugins>

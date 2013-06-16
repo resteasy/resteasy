@@ -10,9 +10,9 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.jboss.resteasy.api.validation.ResteasyViolationException;
+import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.plugins.providers.SerializableProvider;
-import org.jboss.resteasy.spi.validation.ResteasyViolationException;
-import org.jboss.resteasy.spi.validation.Validation;
 
 
 /**
