@@ -52,13 +52,13 @@ import javax.ws.rs.ext.Provider;
 
 import junit.framework.Assert;
 
+import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
+import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.plugins.validation.hibernate.ValidateRequest;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.validation.ResteasyConstraintViolation;
-import org.jboss.resteasy.spi.validation.ResteasyViolationException;
-import org.jboss.resteasy.spi.validation.ValidateRequest;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.Ignore;
 import org.junit.Test;

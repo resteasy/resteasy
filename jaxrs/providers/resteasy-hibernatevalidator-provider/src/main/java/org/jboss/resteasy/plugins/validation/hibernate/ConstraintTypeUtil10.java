@@ -7,8 +7,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Path.Node;
 
 import org.hibernate.validator.method.MethodConstraintViolation;
-import org.jboss.resteasy.spi.validation.ConstraintType.Type;
-import org.jboss.resteasy.spi.validation.ResteasyViolationException;
+import org.jboss.resteasy.api.validation.ConstraintType.Type;
 import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
 
 /**
@@ -33,7 +32,6 @@ public class ConstraintTypeUtil10 implements ConstraintTypeUtil
       }
       
       Object b = v.getRootBean();
-//      Class<?> containingClass = getRepresentedClass(v.getRootBeanClass(), b);
       String fieldName = null;
       Iterator<Node>it = v.getPropertyPath().iterator();
       while (it.hasNext())
@@ -44,36 +42,10 @@ public class ConstraintTypeUtil10 implements ConstraintTypeUtil
          {
             return Type.CLASS;
          }
-//         try
-//         {
-//            o = unwrapCompoundObject(o, node);
-//            containingClass = getRepresentedClass(o.getClass(), o);
-//            field = getField(containingClass, fieldName);
-//            field.setAccessible(true);
-//            o = getTargetInstance(o);
-//            if (o != null)
-//            {
-//               o = field.get(o);
-//            }
-//         }
-//         catch (NoSuchFieldException e)
-//         {
-//            // Could be a CDI proxy.
-//            if (!containingClass.equals(o.getClass()))
-//            {
-//               break;
-//            }
-//            throw new RuntimeException("Missing field", e);
-//         }
-//         catch (IllegalAccessException e)
-//         {
-//            throw new RuntimeException("Unable to access " + fieldName, e);
-//         }
       }
       String getterName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
       try
       {
-//         getMethod(containingClass, getterName);
          getMethod(v.getLeafBean().getClass(), getterName);
          return Type.PROPERTY;
       }
@@ -115,26 +87,5 @@ public class ConstraintTypeUtil10 implements ConstraintTypeUtil
          throw new NoSuchMethodException(methodName);
       }
       return method;
-   }
-   
-   private static Class<?> getRepresentedClass(Class<?> clazz, Object target)
-   {
-      Method method;
-      try
-      {
-         method = clazz.getDeclaredMethod("getTargetClass");
-      }
-      catch (NoSuchMethodException e)
-      {
-         return clazz;
-      }
-      try
-      {
-         return Class.class.cast(method.invoke(target));
-      }
-      catch (Exception e)
-      {
-         return clazz;
-      }
    }
 }

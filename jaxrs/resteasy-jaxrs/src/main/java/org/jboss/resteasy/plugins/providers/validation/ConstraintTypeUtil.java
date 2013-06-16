@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.providers.validation;
 
-import org.jboss.resteasy.spi.validation.ConstraintType;
+import org.jboss.resteasy.api.validation.ConstraintType;
 
 /**
  * 

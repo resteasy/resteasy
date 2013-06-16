@@ -11,7 +11,7 @@
 
   <artifactId>Validation-test-AS7</artifactId>
   <packaging>jar</packaging>
-  <name>Validation test-AS7</name>
+  <name>Validation test AS7</name>
   <url>http://maven.apache.org</url>
 
   <properties>
@@ -135,6 +135,11 @@
         <version>${project.version}</version>
     </dependency>
     <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-hibernatevalidator-provider</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
         <version>1.0.0.GA</version>
@@ -142,7 +147,7 @@
     <dependency>
         <groupId>org.hibernate</groupId> 
         <artifactId>hibernate-validator</artifactId>
-        <version>4.2.0.Final</version>
+        <version>4.3.1.Final</version>
     </dependency>
     <dependency>
         <groupId>javax.el</groupId>

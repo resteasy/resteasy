@@ -31,11 +31,14 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import javax.validation.constraintvalidation.SupportedValidationTarget;
+import javax.validation.constraintvalidation.ValidationTarget;
 import javax.validation.executable.ExecutableType;
 import javax.validation.executable.ValidateOnExecution;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
@@ -54,12 +57,16 @@ import javax.ws.rs.ext.Provider;
 
 import junit.framework.Assert;
 
+import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
+import org.jboss.resteasy.api.validation.ResteasyViolationException;
+import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ClientResponseFailure;
+import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.plugins.providers.SerializableProvider;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.validation.ResteasyConstraintViolation;
-import org.jboss.resteasy.spi.validation.ResteasyViolationException;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -781,97 +788,149 @@ public class TestValidation
       }
    }
    
-   @Path("")
-   @ValidateOnExecution(type = {ExecutableType.NONE})
-   public static class TestValidateOnExecutionResource
-   {  
-      @POST
-      @Path("none")
-      @Size(min=1)
-      public String none(@Size(max=1) String s)
-      {
-         return s;
-      }
-      
-      @POST
-      @Path("getterOnNonGetter")
-      @Size(min=1)
-      @ValidateOnExecution(type = {ExecutableType.GETTER_METHODS, ExecutableType.CONSTRUCTORS, ExecutableType.NONE})
-      public String nongetter1(@Size(max=1) String s)
-      {
-         return s;
-      }
-      
-      @POST
-      @Path("nonGetterOnGetter")
-      @Size(min=1)
-      @ValidateOnExecution(type = {ExecutableType.NON_GETTER_METHODS, ExecutableType.CONSTRUCTORS, ExecutableType.NONE})
-      public String getS1()
-      {
-         return "abc";
-      }
-      
-      @POST
-      @Path("implicitOnNonGetter")
-      @Size(min=1)
-      @ValidateOnExecution(type = {ExecutableType.IMPLICIT})
-      public String nongetter2(@Size(max=1) String s)
-      {
-         return s;
-      }
-      
-      @POST
-      @Path("implicitOnGetter")
-      @Size(max=1)
-      @ValidateOnExecution(type = {ExecutableType.IMPLICIT})
-      // Will be validated when other methods are called, returning a property violation.
-      public String getS2()
-      {
-         return "abc";
-      }
-      
-      @POST
-      @Path("allOnNonGetter")
-      @Size(min=1)
-      @ValidateOnExecution(type = {ExecutableType.ALL})
-      public String nongetter3(@Size(max=1) String s)
-      {
-         return s;
-      }
-      
-      @POST
-      @Path("allOnGetter")
-      @Size(max=1)
-      @ValidateOnExecution(type = {ExecutableType.ALL})
-      // Will be validated when other methods are called, returning a property violation.
-      public String getS3()
-      {
-         return "abc";
-      }
-      
-      @POST
-      @Path("override")
-      @Size(min=1)
-      @ValidateOnExecution(type = {ExecutableType.ALL})
-      public String override(@Size(max=1) String s)
-      {
-         return s;
-      }
+
+   
+   @Documented
+   @Constraint(validatedBy = CrossParameterValidator.class)
+   @Target({METHOD})
+   @Retention(RUNTIME)
+   public @interface CrossParameterConstraint
+   {
+      String message() default "Parameters must total <= {value}";
+      Class<?>[] groups() default {};
+      Class<? extends Payload>[] payload() default {};
+      int value();
    }
    
-   @Path("")
-   @ValidateOnExecution(type = {ExecutableType.NONE})
-   public static class TestValidateOnExecutionSubResource extends TestValidateOnExecutionResource
-   {  
-      @POST
-      @Path("override")
-      @Size(min=1)
-      public String override(@Size(max=1) String s)
+   @SupportedValidationTarget(ValidationTarget.PARAMETERS)
+   public static class CrossParameterValidator implements ConstraintValidator<CrossParameterConstraint, Object[]>
+   {
+      private CrossParameterConstraint constraintAnnotation;
+      
+      @Override
+      public void initialize(CrossParameterConstraint constraintAnnotation)
       {
-         return s;
+         this.constraintAnnotation = constraintAnnotation;
+      }
+      @Override
+      public boolean isValid(Object[] value, ConstraintValidatorContext context)
+      {
+         int sum = 0;
+         
+         for (int i = 0; i < value.length; i++)
+         {
+            if (!(value[i] instanceof Integer))
+            {
+               return false;
+            }
+            sum += Integer.class.cast(value[i]);
+         }
+         return sum <= constraintAnnotation.value();
       }
    }
 
+   @Path("/{s}/{t}")
+   public static class TestSubResourceWithCrossParameterConstraint
+   {
+      @POST
+      @CrossParameterConstraint(7)
+      public void test(@PathParam("s") int s, @PathParam("t") int t)
+      {
+      }
+   }
+   
+
+   @Path("proxy")
+   public static interface TestProxyInterface
+   {
+      @GET
+      @Produces("text/plain")
+      @Size(min=2, max=4)
+      public String g();
+      
+      @POST
+      @Path("{s}")
+      public void s(@PathParam("s") String s);
+   }
+   
+   @Path("proxy")
+   public static class TestProxyResource implements TestProxyInterface
+   {
+      static private String s;
+      
+      @GET
+      @Produces("text/plain")
+      @Size(min=2, max=4)
+      public String g()
+      {
+         return s;
+      }
+
+      @POST
+      @Path("{s}")
+      public void s(@PathParam("s") String s)
+      {
+         TestProxyResource.s = s;
+      }
+   }
+   
+  interface OtherGroup {}
+   
+   @Documented
+   @Constraint(validatedBy = TestClassValidator.class)
+   @Target({TYPE})
+   @Retention(RUNTIME)
+   public @interface OtherGroupConstraint
+   {
+      String message() default "Concatenation of s and t must have length > {value}";
+      Class<?>[] groups() default {};
+      Class<? extends Payload>[] payload() default {};
+      String value() default "";
+   }
+   
+   public static class OtherGroupValidator<T> implements ConstraintValidator<OtherGroupConstraint, T>
+   {
+      public void initialize(OtherGroupConstraint constraintAnnotation)
+      {
+      }
+      
+      @Override
+      public boolean isValid(T value, ConstraintValidatorContext context)
+      {
+         return false;
+      }
+   }
+   
+   @Path("/")
+   @OtherGroupConstraint(groups=OtherGroup.class)
+   public static class TestResourceWithOtherGroups
+   {
+      @Size(min=2, groups=OtherGroup.class)
+      String s = "abc";
+      
+      String t;
+      
+      @POST
+      @Path("test/{t}/{u}")
+      @Size(min=2, groups={OtherGroup.class})
+      public String test(@Size(min=2, groups=OtherGroup.class) @PathParam("u") String u)
+      {
+         return u;
+      }
+      
+      @PathParam("t")
+      public void setT(String t)
+      {
+         this.t = t;
+      }
+      
+      @Size(min=2, groups=OtherGroup.class)
+      public String getT()
+      {
+         return t;
+      }
+   }
+   
    public static void before(Class<?> resourceClass) throws Exception
    {
       after();
@@ -1661,110 +1720,99 @@ public class TestValidation
 
       after();
    }
+      
+   @Test
+   public void testCrossParameterConstraint() throws Exception
+   {
+      before(TestSubResourceWithCrossParameterConstraint.class);
+
+      // Valid
+      ClientRequest request = new ClientRequest(generateURL("/2/3"));
+      ClientResponse<?> response = request.post();
+      Assert.assertEquals(204, response.getStatus());
+      response.releaseConnection();
+     
+      // Invalid
+      request = new ClientRequest(generateURL("/5/7"));
+      response = request.post();
+      Assert.assertEquals(400, response.getStatus());
+      String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
+      Assert.assertNotNull(header);
+      Assert.assertTrue(Boolean.valueOf(header));
+      MediaType mediaType = response.getMediaType();
+      Assert.assertEquals(SerializableProvider.APPLICATION_SERIALIZABLE_TYPE, mediaType);
+      Object entity = response.getEntity(Serializable.class);
+      System.out.println("entity: " + entity);
+      Assert.assertTrue(entity instanceof ResteasyViolationException);
+      ResteasyViolationException exception = ResteasyViolationException.class.cast(entity);
+      countViolations(exception, 1, 0, 0, 0, 1, 0);
+      ResteasyConstraintViolation violation = exception.getParameterViolations().iterator().next();
+      System.out.println("violation: " + violation);
+      Assert.assertEquals("Parameters must total <= 7", violation.getMessage());
+      System.out.println("violation value: " + violation.getValue());
+      Assert.assertEquals("[5, 7]", violation.getValue());
+      after();
+   }
+   
    
    @Test
-//   @Ignore
-   public void testValidateOnExecution() throws Exception
+   public void testProxy() throws Exception
    {
-      before(TestValidateOnExecutionSubResource.class);
-      
-      {
-         // No method validation. Two property violations.
-         ClientRequest request = new ClientRequest(generateURL("/none"));
-         request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
-         ClientResponse<?> response = request.post(Serializable.class);
-         Assert.assertEquals(400, response.getStatus());
-         Object entity = response.getEntity();
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
-         System.out.println(e);
-         countViolations(e, 2, 0, 2, 0, 0, 0);
-      }
+      before(TestProxyResource.class);
 
-      {
-         // No method validation. Two property violations.
-         ClientRequest request = new ClientRequest(generateURL("/getterOnNonGetter"));
-         request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
-         ClientResponse<?> response = request.post(Serializable.class);
-         Assert.assertEquals(400, response.getStatus());
-         Object entity = response.getEntity();
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
-         System.out.println(e);
-         countViolations(e, 2, 0, 2, 0, 0, 0);
-      }
+      // Valid
+      TestProxyInterface client = ProxyFactory.create(TestProxyInterface.class, generateURL("/"));
+      client.s("abcd");
+      String result = client.g();
+      Assert.assertEquals("abcd", result);
       
+      // Invalid
+      client.s("abcde");
+      try
       {
-         // No method validation. Two property violations
-         ClientRequest request = new ClientRequest(generateURL("/nonGetterOnGetter"));
-         ClientResponse<?> response = request.post(Serializable.class);
-         Assert.assertEquals(400, response.getStatus());
-         Object entity = response.getEntity();
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
-         System.out.println(e);
-         countViolations(e, 2, 0, 2, 0, 0, 0);
+         result = client.g();
       }
-      
+      catch (ClientResponseFailure e)
       {
-         // Failure.
-         ClientRequest request = new ClientRequest(generateURL("/implicitOnNonGetter"));
-         request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
-         ClientResponse<?> response = request.post(Serializable.class);
-         Assert.assertEquals(400, response.getStatus());
-         Object entity = response.getEntity();
+         ClientResponse<?> response = e.getResponse();
+         System.out.println("status: " + response.getStatus());
+         String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
+         Assert.assertNotNull(header);
+         Assert.assertTrue(Boolean.valueOf(header));
+         MediaType mediaType = response.getMediaType();
+         Assert.assertEquals(SerializableProvider.APPLICATION_SERIALIZABLE_TYPE, mediaType);
+         Object entity = response.getEntity(Serializable.class);
+         System.out.println("entity: " + entity);
          Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
-         System.out.println(e);
-         countViolations(e, 3, 0, 2, 0, 1, 0);
+         ResteasyViolationException exception = ResteasyViolationException.class.cast(entity);
+         countViolations(exception, 1, 0, 0, 0, 0, 1);
+         ResteasyConstraintViolation violation = exception.getReturnValueViolations().iterator().next();
+         System.out.println("violation: " + violation);
+         Assert.assertEquals("size must be between 2 and 4", violation.getMessage());
+         Assert.assertEquals("abcde", violation.getValue());
       }
-      
+      catch (Exception e)
       {
-         // Failure.
-         ClientRequest request = new ClientRequest(generateURL("/implicitOnGetter"));
-         ClientResponse<?> response = request.post(Serializable.class);
-         Assert.assertEquals(400, response.getStatus());
-         Object entity = response.getEntity();
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
-         countViolations(e, 2, 0, 2, 0, 0, 0);
+         Assert.fail("expected ClientResponseFailure");
       }
+      finally
+      {
+         after();
+      }
+   }
+   
+   @Test
+   public void testOtherGroups() throws Exception
+   {
+      before(TestResourceWithOtherGroups.class);
 
-      {
-         // Failure.
-         ClientRequest request = new ClientRequest(generateURL("/allOnNonGetter"));
-         request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
-         ClientResponse<?> response = request.post(Serializable.class);
-         Assert.assertEquals(400, response.getStatus());
-         Object entity = response.getEntity();
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
-         countViolations(e, 3, 0, 2, 0, 1, 0);
-      }
-      
-      {
-         // Failure.
-         ClientRequest request = new ClientRequest(generateURL("/allOnGetter"));
-         ClientResponse<?> response = request.post(Serializable.class);
-         Assert.assertEquals(400, response.getStatus());
-         Object entity = response.getEntity();
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
-         countViolations(e, 2, 0, 2, 0, 0, 0);
-      }
-      
-      {
-         // Failure.
-         ClientRequest request = new ClientRequest(generateURL("/override"));
-         request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
-         ClientResponse<?> response = request.post(Serializable.class);
-         Assert.assertEquals(400, response.getStatus());
-         Object entity = response.getEntity();
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
-         countViolations(e, 3, 0, 2, 0, 1, 0);
-      }
-      
+      // Test invalid field, property, parameter, and class.
+      ClientRequest request = new ClientRequest(generateURL("/test/a/z"));
+      ClientResponse<?> response = request.post(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Object entity = response.getEntity();
+      System.out.println("entity: " + entity);
+      Assert.assertEquals("z", entity);
       after();
    }
    
