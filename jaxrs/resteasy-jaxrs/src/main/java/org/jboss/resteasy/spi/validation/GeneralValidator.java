@@ -3,13 +3,14 @@ package org.jboss.resteasy.spi.validation;
 import java.lang.reflect.Method;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ValidationException;
-import javax.validation.groups.Default;
-import javax.validation.metadata.BeanDescriptor;
-import javax.validation.metadata.ConstraintDescriptor;
+//import javax.validation.ConstraintViolation;
+//import javax.validation.ValidationException;
+//import javax.validation.groups.Default;
+//import javax.validation.metadata.BeanDescriptor;
+//import javax.validation.metadata.ConstraintDescriptor;
 
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
+import org.jboss.resteasy.spi.HttpRequest;
 
 /**
  * 
@@ -36,77 +37,7 @@ public interface GeneralValidator
     * @throws ValidationException if a non recoverable error happens
     *         during the validation process
     */
-   public abstract <T> Set<ResteasyConstraintViolation> validate(T object, Class<?>... groups);
-
-    /**
-    * Validates all constraints placed on the property of {@code object}
-    * named {@code propertyName}.
-    *
-    * @param object object to validate
-    * @param propertyName property to validate (i.e. field and getter constraints)
-    * @param groups the group or list of groups targeted for validation (defaults to
-    *        {@link Default})
-    * @return constraint violations or an empty set if none
-    * @throws IllegalArgumentException if {@code object} is {@code null},
-    *         if {@code propertyName} is {@code null}, empty or not a valid object property
-    *         or if {@code null} is passed to the varargs groups
-    * @throws ValidationException if a non recoverable error happens
-    *         during the validation process
-    */
-   public abstract <T> Set<ResteasyConstraintViolation> validateProperty(T object,
-         String propertyName, Class<?>... groups);
-
-     /**
-    * Validates all constraints placed on the property named {@code propertyName}
-    * of the class {@code beanType} would the property value be {@code value}.
-    * <p/>
-    * {@link ConstraintViolation} objects return {@code null} for
-    * {@link ConstraintViolation#getRootBean()} and {@link ConstraintViolation#getLeafBean()}.
-    *
-    * @param beanType the bean type
-    * @param propertyName property to validate
-    * @param value property value to validate
-    * @param groups the group or list of groups targeted for validation (defaults to
-    *        {@link Default}).
-    * @return constraint violations or an empty set if none
-    * @throws IllegalArgumentException if {@code beanType} is {@code null},
-    *         if {@code propertyName} is {@code null}, empty or not a valid object property
-    *         or if {@code null} is passed to the varargs groups
-    * @throws ValidationException if a non recoverable error happens
-    *         during the validation process
-    */
-   public abstract <T> Set<ResteasyConstraintViolation> validateValue(
-         Class<T> beanType, String propertyName, Object value,
-         Class<?>... groups);
-
-    /**
-    * Returns the descriptor object describing bean constraints.
-    * <p/>
-    * The returned object (and associated objects including
-    * {@link ConstraintDescriptor}s) are immutable.
-    *
-    * @param clazz class or interface type evaluated
-    * @return the bean descriptor for the specified class
-    * @throws IllegalArgumentException if clazz is {@code null}
-    * @throws ValidationException if a non recoverable error happens
-    *         during the metadata discovery or if some
-    *         constraints are invalid.
-    */
-   public abstract BeanDescriptor getConstraintsForClass(Class<?> clazz);
-
-    /**
-    * Returns an instance of the specified type allowing access to
-    * provider-specific APIs.
-    * <p/>
-    * If the Bean Validation provider implementation does not support
-    * the specified class, {@link ValidationException} is thrown.
-    *
-    * @param type the class of the object to be returned
-    * @return an instance of the specified class
-    * @throws ValidationException if the provider does not support the call
-    */
-   public abstract <T> T unwrap(Class<T> type);
-
+   public abstract void validate(HttpRequest request, Object object, Class<?>... groups);
    /**
     * Validates all constraints placed on the parameters of the given method.
     *
@@ -124,9 +55,7 @@ public interface GeneralValidator
     * @throws ValidationException if a non recoverable error happens during the
     *         validation process
     */
-   public abstract <T> Set<ResteasyConstraintViolation> validateAllParameters(
-         T object, Method method, Object[] parameterValues,
-         Class<?>... groups);
+   public abstract void validateAllParameters(HttpRequest request, Object object, Method method, Object[] parameterValues, Class<?>... groups);
 
    /**
     * Validates all return value constraints of the given method.
@@ -144,8 +73,8 @@ public interface GeneralValidator
     * @throws ValidationException if a non recoverable error happens during the
     *         validation process
     */
-   public abstract <T> Set<ResteasyConstraintViolation> validateReturnValue(
-         T object, Method method, Object returnValue, Class<?>... groups);
+   public abstract void validateReturnValue(
+         HttpRequest request, Object object, Method method, Object returnValue, Class<?>... groups);
 
    /**
     * Indicates if validation is turned on for a class.
@@ -162,4 +91,6 @@ public interface GeneralValidator
     * @return true if and only if validation is turned on for method
     */   
    public abstract boolean isMethodValidatable(Method method);
+
+   void checkViolations(HttpRequest request);
 }

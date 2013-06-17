@@ -60,7 +60,6 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.validation.hibernate.ValidateRequest;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**

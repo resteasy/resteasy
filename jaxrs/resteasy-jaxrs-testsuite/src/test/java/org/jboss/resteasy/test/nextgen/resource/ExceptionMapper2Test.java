@@ -19,7 +19,6 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
-
 import java.io.IOException;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;

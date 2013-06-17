@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.nextgen.encoding;
 
-import org.jboss.resteasy.client.ClientResponse;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;

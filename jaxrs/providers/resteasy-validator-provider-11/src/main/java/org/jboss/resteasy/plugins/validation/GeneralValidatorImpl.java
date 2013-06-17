@@ -12,11 +12,13 @@ import javax.validation.ValidationException;
 import javax.validation.Validator;
 import javax.validation.executable.ExecutableType;
 import javax.validation.executable.ValidateOnExecution;
-import javax.validation.metadata.BeanDescriptor;
 
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ConstraintType.Type;
+import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
+import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
+import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 
 import com.fasterxml.classmate.Filter;
@@ -56,89 +58,109 @@ public class GeneralValidatorImpl implements GeneralValidator
    }
 
    @Override
-   public <T> Set<ResteasyConstraintViolation> validate(T object, Class<?>... groups)
+   public void validate(HttpRequest request, Object object, Class<?>... groups)
    {
-      Set<ConstraintViolation<T>> cvs = validator.validate(object, groups);
       Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
-      for (Iterator<ConstraintViolation<T>> it = cvs.iterator(); it.hasNext(); )
+      try
       {
-         ConstraintViolation<T> cv = it.next();
-         Type ct = util.getConstraintType(cv);
-         rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), cv.getInvalidValue().toString()));
+         Set<ConstraintViolation<Object>> cvs = validator.validate(object, groups);
+         for (Iterator<ConstraintViolation<Object>> it = cvs.iterator(); it.hasNext(); )
+         {
+            ConstraintViolation<Object> cv = it.next();
+            Type ct = util.getConstraintType(cv);
+            rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), cv.getInvalidValue().toString()));
+         }
       }
-      return rcvs;
-   }
-
-   @Override
-   public <T> Set<ResteasyConstraintViolation> validateProperty(T object, String propertyName, Class<?>... groups)
-   {
-      Set<ConstraintViolation<T>> cvs = validator.validateProperty(object, propertyName, groups);
-      Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
-      for (Iterator<ConstraintViolation<T>> it = cvs.iterator(); it.hasNext(); )
+      catch (Exception e)
       {
-         ConstraintViolation<T> cv = it.next();
-         Type ct = util.getConstraintType(cv);
-         rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), cv.getInvalidValue().toString()));
+         ViolationsContainer<Object> violationsContainer = getViolationsContainer(request);
+         violationsContainer.setException(e);
+         throw new ResteasyViolationException(violationsContainer);
       }
-      return rcvs;
+      ViolationsContainer<Object> violationsContainer = getViolationsContainer(request);
+      violationsContainer.addViolations(rcvs);
    }
 
-   @Override
-   public <T> Set<ResteasyConstraintViolation> validateValue(Class<T> beanType, String propertyName, Object value, Class<?>... groups)
+   protected ViolationsContainer<Object> getViolationsContainer(HttpRequest request)
    {
-      Set<ConstraintViolation<T>> cvs = validator.validateValue(beanType, propertyName, value, groups);
-      Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
-      for (Iterator<ConstraintViolation<T>> it = cvs.iterator(); it.hasNext(); )
+      ViolationsContainer<Object> violationsContainer = ViolationsContainer.class.cast(request.getAttribute(ViolationsContainer.class.getName()));
+      if (violationsContainer == null)
       {
-         ConstraintViolation<T> cv = it.next();
-         Type ct = util.getConstraintType(cv);
-         rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), cv.getInvalidValue().toString()));
+         violationsContainer = new ViolationsContainer<Object>();
+         request.setAttribute(ViolationsContainer.class.getName(), violationsContainer);
       }
-      return rcvs;
+      return violationsContainer;
    }
 
    @Override
-   public BeanDescriptor getConstraintsForClass(Class<?> clazz)
+   public void checkViolations(HttpRequest request)
    {
-      return validator.getConstraintsForClass(clazz);
-   }
-   
-   @Override
-   public <T> T unwrap(Class<T> type)
-   {
-      return validator.unwrap(type);
+      ViolationsContainer<Object> violationsContainer = ViolationsContainer.class.cast(request.getAttribute(ViolationsContainer.class.getName()));
+      if (violationsContainer != null && violationsContainer.size() > 0)
+      {
+         throw new ResteasyViolationException(violationsContainer);
+      }
+
    }
 
    @Override
-   public <T> Set<ResteasyConstraintViolation> validateAllParameters(T object, Method method, Object[] parameterValues, Class<?>... groups)
+   public void validateAllParameters(HttpRequest request, Object object, Method method, Object[] parameterValues, Class<?>... groups)
    {
       if (method.getParameterTypes().length == 0)
       {
-         return empty;
+         checkViolations(request);
+         return;
       }
-      Set<ConstraintViolation<T>> cvs = validator.forExecutables().validateParameters(object, method, parameterValues, groups);
+
+      ViolationsContainer<Object> violationsContainer = getViolationsContainer(request);
       Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
-      for (Iterator<ConstraintViolation<T>> it = cvs.iterator(); it.hasNext(); )
+      try
       {
-         ConstraintViolation<T> cv = it.next();
-         Type ct = util.getConstraintType(cv);
-         rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), convertArrayToString(cv.getInvalidValue())));
+         Set<ConstraintViolation<Object>> cvs = validator.forExecutables().validateParameters(object, method, parameterValues, groups);
+         for (Iterator<ConstraintViolation<Object>> it = cvs.iterator(); it.hasNext(); )
+         {
+            ConstraintViolation<Object> cv = it.next();
+            Type ct = util.getConstraintType(cv);
+            rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), convertArrayToString(cv.getInvalidValue())));
+         }
       }
-      return rcvs;
+      catch (Exception e)
+      {
+         violationsContainer.setException(e);
+         throw new ResteasyViolationException(violationsContainer);
+      }
+      violationsContainer.addViolations(rcvs);
+      if (violationsContainer.size() > 0)
+      {
+         throw new ResteasyViolationException(violationsContainer);
+      }
    }
 
    @Override
-   public <T> Set<ResteasyConstraintViolation> validateReturnValue(T object, Method method, Object returnValue, Class<?>... groups)
+   public void validateReturnValue(HttpRequest request, Object object, Method method, Object returnValue, Class<?>... groups)
    {
-      Set<ConstraintViolation<T>> cvs = validator.forExecutables().validateReturnValue(object, method, returnValue, groups);
       Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
-      for (Iterator<ConstraintViolation<T>> it = cvs.iterator(); it.hasNext(); )
+      ViolationsContainer<Object> violationsContainer = getViolationsContainer(request);
+      try
       {
-         ConstraintViolation<T> cv = it.next();
-         Type ct = util.getConstraintType(cv);
-         rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), cv.getInvalidValue().toString()));
+         Set<ConstraintViolation<Object>> cvs = validator.forExecutables().validateReturnValue(object, method, returnValue, groups);
+         for (Iterator<ConstraintViolation<Object>> it = cvs.iterator(); it.hasNext(); )
+         {
+            ConstraintViolation<Object> cv = it.next();
+            Type ct = util.getConstraintType(cv);
+            rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), cv.getInvalidValue().toString()));
+         }
       }
-      return rcvs;
+      catch (Exception e)
+      {
+         violationsContainer.setException(e);
+         throw new ResteasyViolationException(violationsContainer);
+      }
+      violationsContainer.addViolations(rcvs);
+      if (violationsContainer.size() > 0)
+      {
+         throw new ResteasyViolationException(violationsContainer);
+      }
    }
 
 

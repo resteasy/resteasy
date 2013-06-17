@@ -13,7 +13,6 @@ org.jboss.resteasy.plugins.providers.FileRangeWriter
 org.jboss.resteasy.plugins.providers.StreamingOutputProvider
 org.jboss.resteasy.plugins.providers.IIOImageProvider
 org.jboss.resteasy.plugins.providers.SerializableProvider
-org.jboss.resteasy.plugins.providers.validation.ResteasyViolationExceptionMapper
 org.jboss.resteasy.plugins.interceptors.CacheControlFeature
 org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPInterceptor
 org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPFilter
