@@ -8,6 +8,7 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 
 import javax.ws.rs.core.GenericType;
 import java.io.InputStream;
+import java.io.Reader;
 import java.lang.reflect.Method;
 
 /**
@@ -55,7 +56,7 @@ public class BodyEntityExtractor implements EntityExtractor
             gt = new GenericType(method.getReturnType());
          }
          Object obj = ClientInvocation.extractResult(gt, response, method.getAnnotations());
-         if (obj instanceof InputStream)
+         if (obj instanceof InputStream || obj instanceof Reader)
             releaseConnectionAfter = false;
          return obj;
       }
