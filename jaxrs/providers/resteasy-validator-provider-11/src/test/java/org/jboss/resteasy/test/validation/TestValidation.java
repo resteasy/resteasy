@@ -33,8 +33,6 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.validation.constraintvalidation.SupportedValidationTarget;
 import javax.validation.constraintvalidation.ValidationTarget;
-import javax.validation.executable.ExecutableType;
-import javax.validation.executable.ValidateOnExecution;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
@@ -68,7 +66,6 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.providers.SerializableProvider;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
