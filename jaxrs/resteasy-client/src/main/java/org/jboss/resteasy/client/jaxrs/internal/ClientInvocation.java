@@ -35,7 +35,9 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.WriterInterceptor;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -99,7 +101,18 @@ public class ClientInvocation implements Invocation
             }
             else
             {
-               return response.readEntity(responseType, annotations);
+               T rtn = response.readEntity(responseType, annotations);
+               if (InputStream.class.isInstance(rtn)
+                    || Reader.class.isInstance(rtn))
+               {
+                  if (response instanceof ClientResponse)
+                  {
+                     ClientResponse clientResponse = (ClientResponse)response;
+                     clientResponse.noReleaseConnection();
+                  }
+               }
+               return rtn;
+
             }
          }
          catch (WebApplicationException wae)

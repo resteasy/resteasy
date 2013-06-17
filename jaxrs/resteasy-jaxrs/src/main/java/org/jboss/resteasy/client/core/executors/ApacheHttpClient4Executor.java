@@ -50,12 +50,12 @@ import java.util.logging.Logger;
  * @version $Revision: 1 $
  */
 public class ApacheHttpClient4Executor implements ClientExecutor
-{   
+{
    public static final String BYTE_MEMORY_UNIT = "BY";
    public static final String KILOBYTE_MEMORY_UNIT = "KB";
    public static final String MEGABYTE_MEMORY_UNIT = "MB";
    public static final String GIGABYTE_MEMORY_UNIT = "GB";
-      
+
    /**
     * Used to build temp file prefix.
     */
@@ -65,57 +65,57 @@ public class ApacheHttpClient4Executor implements ClientExecutor
    {
       ApacheHttpClient4Executor.processId = ManagementFactory.getRuntimeMXBean().getName().replaceAll("[^0-9a-zA-Z]", "");
    }
-   
+
    static synchronized private void checkClientExceptionMapper()
-   {  
+   {
       if (ResteasyProviderFactory.getInstance().getClientExceptionMapper(Exception.class) == null)
       {
          Type exceptionType = Types.getActualTypeArgumentsOfAnInterface(ApacheHttpClient4ExceptionMapper.class, ClientExceptionMapper.class)[0];
          ResteasyProviderFactory.getInstance().addClientExceptionMapper(new ApacheHttpClient4ExceptionMapper(), exceptionType);
       }
    }
-  
+
    protected HttpClient httpClient;
    protected boolean createdHttpClient;
    protected HttpContext httpContext;
    protected boolean closed;
 
-  /**
-   * For uploading File's over JAX-RS framework, this property, together with {@link #fileUploadMemoryUnit},
-   * defines the maximum File size allowed in memory. If fileSize exceeds this size, it will be stored to
-   * {@link #fileUploadTempFileDir}. <br>
-   * <br>
-   * Defaults to 1 MB
-   */
-  private int fileUploadInMemoryThresholdLimit = 1;
-  
-  /**
-   * The unit for {@link #fileUploadInMemoryThresholdLimit}. <br>
-   * <br>
-   * Defaults to MB.
-   * 
-   * @see MemoryUnit
-   */
-  private MemoryUnit fileUploadMemoryUnit = MemoryUnit.MB;
-  
-  /**
-   * Temp directory to write output request stream to. Any file to be uploaded has to be written out to the
-   * output request stream to be sent to the service and when the File is too huge the output request stream is
-   * written out to the disk rather than to memory. <br>
-   * <br>
-   * Defaults to JVM temp directory.
-   */
-  private File fileUploadTempFileDir = new File(System.getProperty("java.io.tmpdir"));
-  
-  /**
-   * Java Util Logger
-   */
-  private final static Logger LOGGER = Logger.getLogger(ApacheHttpClient4Executor.class.getName());
+   /**
+    * For uploading File's over JAX-RS framework, this property, together with {@link #fileUploadMemoryUnit},
+    * defines the maximum File size allowed in memory. If fileSize exceeds this size, it will be stored to
+    * {@link #fileUploadTempFileDir}. <br>
+    * <br>
+    * Defaults to 1 MB
+    */
+   private int fileUploadInMemoryThresholdLimit = 1;
+
+   /**
+    * The unit for {@link #fileUploadInMemoryThresholdLimit}. <br>
+    * <br>
+    * Defaults to MB.
+    *
+    * @see MemoryUnit
+    */
+   private MemoryUnit fileUploadMemoryUnit = MemoryUnit.MB;
+
+   /**
+    * Temp directory to write output request stream to. Any file to be uploaded has to be written out to the
+    * output request stream to be sent to the service and when the File is too huge the output request stream is
+    * written out to the disk rather than to memory. <br>
+    * <br>
+    * Defaults to JVM temp directory.
+    */
+   private File fileUploadTempFileDir = new File(System.getProperty("java.io.tmpdir"));
+
+   /**
+    * Java Util Logger
+    */
+   private final static Logger LOGGER = Logger.getLogger(ApacheHttpClient4Executor.class.getName());
 
    public ApacheHttpClient4Executor()
    {
       this.httpClient = new DefaultHttpClient();
-      this.createdHttpClient  = true;
+      this.createdHttpClient = true;
       checkClientExceptionMapper();
    }
 
@@ -131,15 +131,15 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       this.httpContext = httpContext;
       checkClientExceptionMapper();
    }
-   
+
    public HttpClient getHttpClient()
    {
       return httpClient;
    }
-   
+
    public HttpContext getHttpContext()
    {
-	  return httpContext;
+      return httpContext;
    }
 
    public void setHttpContext(HttpContext httpContext)
@@ -169,6 +169,26 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       return new ClientRequest(uriBuilder, this);
    }
 
+   static class ResponseStream extends SelfExpandingBufferredInputStream
+   {
+      BaseClientResponse response;
+
+      public ResponseStream(InputStream in, BaseClientResponse response)
+      {
+         super(in);
+         // Keep a reference to the response object to prevent it being finalized prematurely
+         this.response = response;
+      }
+
+      public synchronized void close() throws IOException
+      {
+         super.close();
+         // Response object is no longer needed and can be finalized
+         response = null;
+      }
+   }
+
+
    @SuppressWarnings("unchecked")
    public ClientResponse execute(ClientRequest request) throws Exception
    {
@@ -177,13 +197,14 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       try
       {
          loadHttpMethod(request, httpMethod);
-   
+
          final HttpResponse res = httpClient.execute(httpMethod, httpContext);
-   
-         BaseClientResponse response = new BaseClientResponse(new BaseClientResponseStreamFactory()
+
+         final BaseClientResponse response = new BaseClientResponse(null, this);
+         BaseClientResponseStreamFactory sf = new BaseClientResponseStreamFactory()
          {
             InputStream stream;
-   
+
             public InputStream getInputStream() throws IOException
             {
                if (stream == null)
@@ -194,7 +215,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
                }
                return stream;
             }
-   
+
             public void performReleaseConnection()
             {
                // Apache Client 4 is stupid, You have to get the InputStream and close it if there is an entity
@@ -219,7 +240,8 @@ public class ApacheHttpClient4Executor implements ClientExecutor
                {
                }
             }
-         }, this);
+         };
+         response.setStreamFactory(sf);
          response.setAttributes(request.getAttributes());
          response.setStatus(res.getStatusLine().getStatusCode());
          response.setHeaders(extractHeaders(res));
@@ -236,9 +258,9 @@ public class ApacheHttpClient4Executor implements ClientExecutor
     * If passed httpMethod is of type HttpPost then obtain its entity. If the entity has an enclosing File then
     * delete it by invoking this method after the request has completed. The entity will have an enclosing File
     * only if it was too huge to fit into memory.
-    * 
-    * @see #writeRequestBodyToOutputStream(ClientRequest)
+    *
     * @param httpMethod - the httpMethod to clean up.
+    * @see #writeRequestBodyToOutputStream(ClientRequest)
     */
    protected void cleanUpAfterExecute(final HttpRequestBase httpMethod)
    {
@@ -264,7 +286,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
          }
       }
    }
-   
+
    private HttpRequestBase createHttpMethod(String url, String restVerb)
    {
       if ("GET".equals(restVerb))
@@ -325,7 +347,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       else if (request.getBody() != null)
       {
          if (httpMethod instanceof HttpGet) throw new RuntimeException("A GET request cannot have a body.");
-         
+
          try
          {
             HttpEntity entity = buildEntity(request);
@@ -348,7 +370,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
     * Build the HttpEntity to be sent to the Service as part of (POST) request. Creates a off-memory
     * {@link FileExposingFileEntity} or a regular in-memory {@link ByteArrayEntity} depending on if the request
     * OutputStream fit into memory when built by calling {@link #writeRequestBodyToOutputStream(ClientRequest)}.
-    * 
+    *
     * @param request -
     * @return - the built HttpEntity
     * @throws IOException -
@@ -378,8 +400,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
     * Creates the request OutputStream, to be sent to the end Service invoked, as a
     * <a href="http://commons.apache.org/io/api-release/org/apache/commons/io/output/DeferredFileOutputStream.html"
     * >DeferredFileOutputStream</a>.
-    * 
-    * 
+    *
     * @param request -
     * @return - DeferredFileOutputStream with the ClientRequest written out per HTTP specification.
     * @throws IOException -
@@ -387,8 +408,8 @@ public class ApacheHttpClient4Executor implements ClientExecutor
    private DeferredFileOutputStream writeRequestBodyToOutputStream(final ClientRequest request) throws IOException
    {
       DeferredFileOutputStream memoryManagedOutStream =
-            new DeferredFileOutputStream(this.fileUploadInMemoryThresholdLimit * getMemoryUnitMultiplier(),
-                  getTempfilePrefix(), ".tmp", this.fileUploadTempFileDir);
+              new DeferredFileOutputStream(this.fileUploadInMemoryThresholdLimit * getMemoryUnitMultiplier(),
+                      getTempfilePrefix(), ".tmp", this.fileUploadTempFileDir);
       request.writeRequestBody(request.getHeadersAsObjects(), memoryManagedOutStream);
       memoryManagedOutStream.close();
       return memoryManagedOutStream;
@@ -417,7 +438,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
    /**
     * Use context information, which will include node name, to avoid conflicts in case of multiple VMS using same
     * temp directory location.
-    * 
+    *
     * @return -
     */
    protected String getTempfilePrefix()
@@ -428,9 +449,9 @@ public class ApacheHttpClient4Executor implements ClientExecutor
    /**
     * Log that the file did not get deleted but prevent the request from failing by eating the exception. The file
     * has been registered to delete on exit, so it will get deleted eventually.
-    * 
+    *
     * @param tempRequestFile -
-    * @param ex - a null may be passed in which case this param gets ignored.
+    * @param ex              - a null may be passed in which case this param gets ignored.
     */
    private void handleFileNotDeletedError(File tempRequestFile, Exception ex)
    {
@@ -443,7 +464,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
    /**
     * Setter for the {@link HttpClient} to which this class delegates the actual HTTP call. Note that this class
     * acts as the adapter between RestEasy and Apache HTTP Component library.
-    * 
+    *
     * @param pHttpClient -
     */
    void setHttpClient(HttpClient pHttpClient)
@@ -453,7 +474,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
 
    /**
     * Setter for {@link #fileUploadInMemoryThresholdLimit}
-    * 
+    *
     * @param pInMemoryThresholdLimit - the inMemoryThresholdLimitMB to set
     */
    public void setFileUploadInMemoryThresholdLimit(int pInMemoryThresholdLimit)
@@ -463,7 +484,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
 
    /**
     * Setter for {@link #fileUploadTempFileDir}
-    * 
+    *
     * @param pTempFileDir the tempFileDir to set
     */
    public void setFileUploadTempFileDir(File pTempFileDir)
@@ -473,7 +494,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
 
    /**
     * Setter for {@link #fileUploadMemoryUnit}
-    * 
+    *
     * @param pMemoryUnit the memoryUnit to set
     */
    public void setFileUploadMemoryUnit(String pMemoryUnit)
@@ -495,11 +516,11 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       }
    }
 
-   public void close() 
+   public void close()
    {
       if (closed)
          return;
-      
+
       if (createdHttpClient && httpClient != null)
       {
          ClientConnectionManager manager = httpClient.getConnectionManager();
@@ -510,12 +531,12 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       }
       closed = true;
    }
-   
+
    public boolean isClosed()
    {
       return closed;
    }
-   
+
    public void finalize() throws Throwable
    {
       close();
@@ -531,13 +552,13 @@ public class ApacheHttpClient4Executor implements ClientExecutor
     * content File as a protected field. For the enclosing parent class ( {@link ApacheHttpClient4Executor} ) to be
     * able to get a handle to this content File and delete it, this class expose the content File.<br>
     * This class is private scoped to prevent access to this content File outside of the parent class.
-    * 
+    *
     * @author <a href="mailto:stikoo@digitalriver.com">Sandeep Tikoo</a>
     */
    private static class FileExposingFileEntity extends FileEntity
    {
       /**
-       * @param pFile -
+       * @param pFile        -
        * @param pContentType -
        */
       public FileExposingFileEntity(File pFile, String pContentType)
@@ -552,7 +573,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       {
          return this.file;
       }
-   }   
+   }
 
    /**
     * Enumeration to represent memory units.

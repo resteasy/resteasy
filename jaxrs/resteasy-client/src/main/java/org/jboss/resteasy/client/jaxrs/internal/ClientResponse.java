@@ -84,6 +84,16 @@ public abstract class ClientResponse extends BuiltResponse
       return getInputStream() != null && (entity != null || getMediaType() != null);
    }
 
+   /**
+    * In case of an InputStream or Reader and a invocation that returns no Response object, we need to make
+    * sure the GC does not close the returned InputStream or Reader
+    */
+   public void noReleaseConnection()
+   {
+
+      isClosed = true;
+   }
+
    @Override
    public void close()
    {
