@@ -103,10 +103,10 @@ public class InterceptorResource
       stereotyped.test();
       ArrayList<Class<?>> expectedList = new ArrayList<Class<?>>();
       expectedList.add(RequestFilterInterceptor.class);          // TestRequestFilter.filter()
+      expectedList.add(BookReaderInterceptorInterceptor.class);  // BookReaderInterceptor.aroundReadFrom()    
+      expectedList.add(BookReaderInterceptor.class);             // BookReader.[isReadable() and readFrom()]
       expectedList.add(Interceptor0.class);                      // BookReader.isReadable()
-      expectedList.add(Interceptor2.class);                      // BookReader.isReadable()
-      expectedList.add(BookReaderInterceptorInterceptor.class);  // BookReaderInterceptor.aroundReadFrom()
-      expectedList.add(BookReaderInterceptor.class);             // BookReader.readFrom()
+      expectedList.add(Interceptor2.class);                      // BookReader.isReadable() 
       expectedList.add(Interceptor0.class);                      // BookReader.readFrom()
       expectedList.add(Interceptor1.class);                      // BookReader.readFrom()
       expectedList.add(Interceptor2.class);                      // BookReader.readFrom()
@@ -127,21 +127,21 @@ public class InterceptorResource
       expectedList.add(Interceptor2.class);                      // InterceptorResource.lookBookById()
       expectedList.add(Interceptor3.class);                      // InterceptorResource.lookBookById()
       expectedList.add(ResponseFilterInterceptor.class);         // TestResponseFilter.filter()
+      expectedList.add(Interceptor0.class);                      // BookWriter.isWriteable() // Called as initial check
+      expectedList.add(Interceptor2.class);                      // BookWriter.isWriteable() // Called as initial check
+      expectedList.add(BookWriterInterceptorInterceptor.class);  // BookWriterInterceptor.aroundWriteTo()
+      expectedList.add(BookWriterInterceptor.class);             // BookWriter.[isWriteable() and writeTo()]
       expectedList.add(Interceptor0.class);                      // BookWriter.isWriteable()
       expectedList.add(Interceptor2.class);                      // BookWriter.isWriteable()
-      expectedList.add(Interceptor0.class);                      // BookWriter.getSize()
-      expectedList.add(Interceptor2.class);                      // BookWriter.getSize()
-      expectedList.add(BookWriterInterceptorInterceptor.class);  // BookWriterInterceptor.aroundWriteTo()
-      expectedList.add(BookWriterInterceptor.class);             // BookWriter.writeTo()
       expectedList.add(Interceptor0.class);                      // BookWriter.writeTo()
       expectedList.add(Interceptor1.class);                      // BookWriter.writeTo()
       expectedList.add(Interceptor2.class);                      // BookWriter.writeTo()
       expectedList.add(Interceptor3.class);                      // BookWriter.writeTo()
       expectedList.add(PreDestroyInterceptor.class);             // InterceptorResource.preDestroy()
+      expectedList.add(BookReaderInterceptorInterceptor.class);  // BookReaderInterceptor.aroundReadFrom()
+      expectedList.add(BookReaderInterceptor.class);             // BookReader.[isReadable() and readFrom()]
       expectedList.add(Interceptor0.class);                      // BookReader.isReadable()
       expectedList.add(Interceptor2.class);                      // BookReader.isReadable()
-      expectedList.add(BookReaderInterceptorInterceptor.class);  // BookReaderInterceptor.aroundReadFrom()
-      expectedList.add(BookReaderInterceptor.class);             // BookReader.readFrom()
       expectedList.add(Interceptor0.class);                      // BookReader.readFrom()
       expectedList.add(Interceptor1.class);                      // BookReader.readFrom()
       expectedList.add(Interceptor2.class);                      // BookReader.readFrom()

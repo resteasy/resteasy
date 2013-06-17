@@ -14,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.cdi.util.Constants;
@@ -46,6 +47,7 @@ public class EJBBookResource implements EJBLocalResource, EJBRemoteResource
    @GET
    @Override
    @Path("verifyScopes")
+   @Produces(MediaType.TEXT_PLAIN)
    public int verifyScopes()
    {
       log.info("entering verifyScopes()");
@@ -66,6 +68,7 @@ public class EJBBookResource implements EJBLocalResource, EJBRemoteResource
    @GET
    @Override
    @Path("verifyInjection")
+   @Produces(MediaType.TEXT_PLAIN)
    public int verifyInjection()
    {
       log.info("entering verifyInjection()");
@@ -85,6 +88,7 @@ public class EJBBookResource implements EJBLocalResource, EJBRemoteResource
    @POST
    @Path("create")
    @Consumes(Constants.MEDIA_TYPE_TEST_XML)
+   @Produces(MediaType.TEXT_PLAIN)
    public int createBook(Book book)
    {
       log.info("entering createBook()");
@@ -112,6 +116,7 @@ public class EJBBookResource implements EJBLocalResource, EJBRemoteResource
    
    @GET
    @Path("uses/{count}")
+   @Produces(MediaType.TEXT_PLAIN)
    public int testUse(@PathParam("count") int count)
    {
       log.info("entering testUse()");

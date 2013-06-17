@@ -1,10 +1,11 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.api.validation.ResteasyViolationException;
+import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistryListener;
 import org.jboss.resteasy.core.interception.PostMatchContainerRequestContext;
 import org.jboss.resteasy.core.registry.SegmentNode;
-import org.jboss.resteasy.plugins.providers.validation.GeneralValidator;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
@@ -17,8 +18,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
-import org.jboss.resteasy.spi.validation.ResteasyViolationException;
-import org.jboss.resteasy.spi.validation.Validation;
+import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -253,15 +253,22 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          violationsContainer = new ViolationsContainer<Object>();
       }
       
-      if (validator != null && isValidatable)
+      try
       {
-//         violationsContainer = new ViolationsContainer<Object>(validator.validate(target));
-         violationsContainer.addViolations(validator.validate(target));
+      	if (validator != null && isValidatable)
+      	{
+      		violationsContainer.addViolations(validator.validate(target));
+      	}
+      	if (validator != null && methodIsValidatable)
+      	{
+      		request.setAttribute(ViolationsContainer.class.getName(), violationsContainer);
+      		request.setAttribute(Validator.class.getName(), validator);
+      	}
       }
-      if (validator != null && methodIsValidatable)
+      catch (Exception e)
       {
-         request.setAttribute(ViolationsContainer.class.getName(), violationsContainer);
-         request.setAttribute(Validator.class.getName(), validator);
+      	violationsContainer.setException(e);
+      	throw new ResteasyViolationException(violationsContainer);
       }
 
       PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this);
@@ -283,8 +290,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
 
       Object rtn = methodInjector.invoke(request, response, target);
-
-      if (violationsContainer != null && violationsContainer.size() > 0)
+      if (violationsContainer != null && (violationsContainer.getException() != null || violationsContainer.size() > 0))
       {
          throw new ResteasyViolationException(violationsContainer);
       }
