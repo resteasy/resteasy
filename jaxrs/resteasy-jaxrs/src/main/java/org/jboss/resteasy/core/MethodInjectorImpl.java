@@ -13,7 +13,6 @@ import org.jboss.resteasy.spi.metadata.MethodParameter;
 import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 
-import javax.validation.Validator;
 import javax.ws.rs.WebApplicationException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -111,15 +110,10 @@ public class MethodInjectorImpl implements MethodInjector
    {
       Object[] args = injectArguments(request, httpResponse);
 
-      GeneralValidator validator = GeneralValidator.class.cast(request.getAttribute(Validator.class.getName()));
-      ViolationsContainer<Object> violationsContainer = ViolationsContainer.class.cast(request.getAttribute(ViolationsContainer.class.getName()));
-      if (validator != null && violationsContainer != null)
+      GeneralValidator validator = GeneralValidator.class.cast(request.getAttribute(GeneralValidator.class.getName()));
+      if (validator != null)
       {
-         violationsContainer.addViolations(validator.validateAllParameters(resource, method.getMethod(), args));
-         if (violationsContainer.size() > 0)
-         {
-            return null;
-         }
+         validator.validateAllParameters(request, resource, method.getMethod(), args);
       }
 
       Method invokedMethod = method.getMethod();
@@ -137,14 +131,10 @@ public class MethodInjectorImpl implements MethodInjector
          invokedMethod = interfaceBasedMethod;
       }
 
+      Object result = null;
       try
       {
-         Object result = invokedMethod.invoke(resource, args);
-         if (validator != null && violationsContainer != null)
-         {
-            violationsContainer.addViolations(validator.validateReturnValue(resource, method.getMethod(), result));
-         }
-         return result;
+         result = invokedMethod.invoke(resource, args);
       }
       catch (IllegalAccessException e)
       {
@@ -182,6 +172,11 @@ public class MethodInjectorImpl implements MethodInjector
          msg += " )";
          throw new InternalServerErrorException(msg, e);
       }
+      if (validator != null)
+      {
+         validator.validateReturnValue(request, resource, method.getMethod(), result);
+      }
+      return result;
    }
 
 }

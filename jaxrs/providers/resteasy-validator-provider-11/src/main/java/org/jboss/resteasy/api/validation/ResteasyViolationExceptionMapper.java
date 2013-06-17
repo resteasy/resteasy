@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.providers.validation;
+package org.jboss.resteasy.api.validation;
 
 import javax.validation.ConstraintDeclarationException;
 import javax.validation.ConstraintDefinitionException;

@@ -1,12 +1,9 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.api.validation.ResteasyViolationException;
-import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistryListener;
 import org.jboss.resteasy.core.interception.PostMatchContainerRequestContext;
 import org.jboss.resteasy.core.registry.SegmentNode;
-import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -16,17 +13,10 @@ import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
-import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
-import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.FeatureContextDelegate;
-import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.util.PathHelper;
-import org.jboss.resteasy.util.WeightedMediaType;
 
-import javax.validation.Validator;
-import javax.ws.rs.Path;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.DynamicFeature;
@@ -40,15 +30,11 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -67,7 +53,6 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    protected WriterInterceptor[] writerInterceptors;
    protected ConcurrentHashMap<String, AtomicLong> stats = new ConcurrentHashMap<String, AtomicLong>();
    protected GeneralValidator validator;
-   protected ViolationsContainer<?> violationsContainer;
    protected boolean isValidatable;
    protected boolean methodIsValidatable;
    protected ResourceInfo resourceInfo;
@@ -248,28 +233,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    protected BuiltResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
    {
       ResteasyProviderFactory.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
-      if (validator != null & (isValidatable || methodIsValidatable))
-      {
-         violationsContainer = new ViolationsContainer<Object>();
-      }
-      
-      try
-      {
-      	if (validator != null && isValidatable)
-      	{
-      		violationsContainer.addViolations(validator.validate(target));
-      	}
-      	if (validator != null && methodIsValidatable)
-      	{
-      		request.setAttribute(ViolationsContainer.class.getName(), violationsContainer);
-      		request.setAttribute(Validator.class.getName(), validator);
-      	}
-      }
-      catch (Exception e)
-      {
-      	violationsContainer.setException(e);
-      	throw new ResteasyViolationException(violationsContainer);
-      }
+
 
       PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this);
       for (ContainerRequestFilter filter : requestFilters)
@@ -289,11 +253,23 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          }
       }
 
-      Object rtn = methodInjector.invoke(request, response, target);
-      if (violationsContainer != null && (violationsContainer.getException() != null || violationsContainer.size() > 0))
+      if (validator != null)
       {
-         throw new ResteasyViolationException(violationsContainer);
+         if (isValidatable)
+         {
+            validator.validate(request, target);
+         }
+         if (methodIsValidatable)
+         {
+            request.setAttribute(GeneralValidator.class.getName(), validator);
+         }
+         else if (isValidatable)
+         {
+            validator.checkViolations(request);
+         }
       }
+
+      Object rtn = methodInjector.invoke(request, response, target);
 
       if (request.getAsyncContext().isSuspended())
       {
