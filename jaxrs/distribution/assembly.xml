@@ -200,6 +200,8 @@
                 <include>org.jboss.resteasy:resteasy-crypto</include>
                 <include>org.jboss.resteasy:jose-jwt</include>
                 <include>org.jboss.resteasy:skeleton-key-core</include>
+                <include>org.jboss.resteasy:resteasy-hibernatevalidator-provider</include>
+                <include>org.jboss.resteasy:resteasy-validator-provider-11</include>
             </includes>
             <excludes>
                 <exclude>org.jboss.resteasy:tjws</exclude>
