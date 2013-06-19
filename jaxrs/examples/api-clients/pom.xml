@@ -4,13 +4,13 @@
 	<parent>
 		<groupId>org.jboss.resteasy</groupId>
 		<artifactId>testable-examples-pom</artifactId>
-		<version>3.0.1.Final</version>
+		<version>3.0.2.Final</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jboss.resteasy.examples</groupId>
 	<artifactId>examples-api-clients</artifactId>
-	<version>3.0.1.Final</version>
+	<version>3.0.2.Final</version>
     <description/>
 
 	<repositories>
@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jaxrs</artifactId>
-			<version>3.0.1.Final</version>
+			<version>3.0.2.Final</version>
 			<!-- filter out unwanted jars -->
 			<exclusions>
 				<exclusion>
@@ -41,7 +41,7 @@
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jaxb-provider</artifactId>
-			<version>3.0.1.Final</version>
+			<version>3.0.2.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-httpclient</groupId>

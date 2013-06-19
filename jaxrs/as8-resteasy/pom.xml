@@ -3,12 +3,12 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0.1.Final</version>
+        <version>3.0.2.Final</version>
     </parent>
 
     <groupId>org.jboss.as</groupId>
     <artifactId>jboss-as-dist</artifactId>
-    <version>8.0.0m-alpha-20130417-resteasy-3.0.1.Final</version>
+    <version>8.0.0m-alpha-20130417-resteasy-3.0.2.Final</version>
     <packaging>pom</packaging>
     <name>Custom AS8 Resteasy Distribution</name>
     <description/>

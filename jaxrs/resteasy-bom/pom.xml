@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0.1.Final</version>
+        <version>3.0.2.Final</version>
     </parent>
 
     <name>RESTEasy Maven Import</name>
@@ -18,107 +18,107 @@
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>async-http-servlet-3.0</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>jaxrs-api</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-atom-provider</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-cache-core</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-guice</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jaxb-provider</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jettison-provider</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jackson-provider</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jackson2-provider</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-fastinfoset-provider</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jaxrs</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-client</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-multipart-provider</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-spring</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-yaml-provider</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>tjws</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jdk-http</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jdk-http</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-crypto</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-links</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jsapi</artifactId>
-                <version>3.0.1.Final</version>
+                <version>3.0.2.Final</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

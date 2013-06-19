@@ -5,13 +5,13 @@
     <parent>
         <groupId>org.jboss.resteasy.examples</groupId>
         <artifactId>examples-spring-hibernate-contacts</artifactId>
-        <version>3.0.1.Final</version>
+        <version>3.0.2.Final</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>examples-spring-hibernate-contacts-core</artifactId>
     <name>Example: Spring + Hibernate Contacts - Core</name>
-    <version>3.0.1.Final</version>
+    <version>3.0.2.Final</version>
     <description/>
 
     <dependencies>

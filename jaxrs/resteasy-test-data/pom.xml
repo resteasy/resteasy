@@ -5,7 +5,7 @@
     <parent>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <groupId>org.jboss.resteasy</groupId>
-        <version>3.0.1.Final</version>
+        <version>3.0.2.Final</version>
     </parent>
     <artifactId>resteasy-test-data</artifactId>
     <name>RESTEasy JAX-RS Test Data</name>
