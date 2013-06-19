@@ -21,7 +21,6 @@ import java.lang.reflect.Type;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Provider
 @Produces("application/x-www-form-urlencoded")
 @Consumes("application/x-www-form-urlencoded")
 @ConstrainedTo(RuntimeType.SERVER)
