@@ -100,7 +100,7 @@ public class RangeTest extends BaseResourceTest
    public void testRange0to3()
    {
       Response response = client.target(generateURL("/file")).request()
-              .header("Range", "0-3").get();
+              .header("Range", "bytes=0-3").get();
       Assert.assertEquals(response.getStatus(), 206);
       Assert.assertEquals(4, response.getLength());
       System.out.println("Content-Range: " + response.getHeaderString("Content-Range"));
@@ -112,7 +112,7 @@ public class RangeTest extends BaseResourceTest
    public void testRange1to4()
    {
       Response response = client.target(generateURL("/file")).request()
-              .header("Range", "1-4").get();
+              .header("Range", "bytes=1-4").get();
       Assert.assertEquals(response.getStatus(), 206);
       Assert.assertEquals(4, response.getLength());
       System.out.println("Content-Range: " + response.getHeaderString("Content-Range"));
@@ -124,7 +124,7 @@ public class RangeTest extends BaseResourceTest
    public void testRange0to3000()
    {
       Response response = client.target(generateURL("/file")).request()
-              .header("Range", "0-3000").get();
+              .header("Range", "bytes=0-3000").get();
       Assert.assertEquals(response.getStatus(), 206);
       Assert.assertEquals(3001, response.getLength());
       System.out.println("Content-Range: " + response.getHeaderString("Content-Range"));
@@ -137,7 +137,7 @@ public class RangeTest extends BaseResourceTest
    public void testNegative4()
    {
       Response response = client.target(generateURL("/file")).request()
-              .header("Range", "-4").get();
+              .header("Range", "bytes=-4").get();
       Assert.assertEquals(response.getStatus(), 206);
       Assert.assertEquals(4, response.getLength());
       System.out.println("Content-Range: " + response.getHeaderString("Content-Range"));
@@ -149,7 +149,7 @@ public class RangeTest extends BaseResourceTest
    public void testNegative6000()
    {
       Response response = client.target(generateURL("/file")).request()
-              .header("Range", "-6000").get();
+              .header("Range", "bytes=-6000").get();
       Assert.assertEquals(response.getStatus(), 200);
       response.close();
    }
