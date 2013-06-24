@@ -32,7 +32,7 @@ public class FileRangeWriter implements MessageBodyWriter<FileRange>
    public void writeTo(FileRange fileRange, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
       long fileSize = fileRange.getFile().length();
-      String contentRange = fileRange.getBegin() + "-" + fileRange.getEnd() + "/" + fileSize;
+      String contentRange = "bytes " + fileRange.getBegin() + "-" + fileRange.getEnd() + "/" + fileSize;
       long length = (fileRange.getEnd() - fileRange.getBegin()) + 1;
       httpHeaders.putSingle("Content-Range", contentRange);
       httpHeaders.putSingle("Content-Length", length);

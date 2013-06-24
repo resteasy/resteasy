@@ -124,6 +124,14 @@ public class FileProvider implements MessageBodyReader<File>,
          return;
       }
       range = range.trim();
+      int byteUnit = range.indexOf("bytes=");
+      if ( byteUnit < 0)
+      {
+    	  //must start with 'bytes'
+          writeIt(uploadFile, entityStream);
+          return;
+      }
+      range = range.substring("bytes=".length());
       if (range.indexOf(',') > -1)
       {
          // we don't support this
