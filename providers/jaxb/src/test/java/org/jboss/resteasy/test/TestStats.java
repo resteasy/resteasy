@@ -1,5 +1,8 @@
 package org.jboss.resteasy.test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import static org.jboss.resteasy.test.TestPortProvider.*;
 
 import javax.ws.rs.Consumes;
@@ -22,6 +25,7 @@ import org.jboss.resteasy.plugins.stats.PutResourceMethod;
 import org.jboss.resteasy.plugins.stats.RegistryData;
 import org.jboss.resteasy.plugins.stats.RegistryEntry;
 import org.jboss.resteasy.plugins.stats.RegistryStatsResource;
+import org.jboss.resteasy.plugins.stats.ResourceMethodEntry;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -88,8 +92,9 @@ public class TestStats extends BaseResourceTest {
         for (RegistryEntry entry : data.getEntries()) {
             if (entry.getUriTemplate().equals("/entry/{foo:.*}")) {
                 Assert.assertEquals(2, entry.getMethods().size());
-                Assert.assertTrue(entry.getMethods().get(0) instanceof PutResourceMethod);
-                Assert.assertTrue(entry.getMethods().get(1) instanceof PostResourceMethod);
+                List<Class> prepareRequiredTypes = prepareRequiredTypes(PostResourceMethod.class, PutResourceMethod.class);
+                Assert.assertTrue(testMethodTypes(entry.getMethods().get(0), prepareRequiredTypes));
+                Assert.assertTrue(testMethodTypes(entry.getMethods().get(1), prepareRequiredTypes));
                 found = true;
                 break;
             }
@@ -99,8 +104,9 @@ public class TestStats extends BaseResourceTest {
         for (RegistryEntry entry : data.getEntries()) {
             if (entry.getUriTemplate().equals("/resource")) {
                 Assert.assertEquals(2, entry.getMethods().size());
-                Assert.assertTrue(entry.getMethods().get(0) instanceof DeleteResourceMethod);
-                Assert.assertTrue(entry.getMethods().get(1) instanceof HeadResourceMethod);
+                List<Class> prepareRequiredTypes = prepareRequiredTypes(HeadResourceMethod.class, DeleteResourceMethod.class);
+                Assert.assertTrue(testMethodTypes(entry.getMethods().get(0), prepareRequiredTypes));
+                Assert.assertTrue(testMethodTypes(entry.getMethods().get(1), prepareRequiredTypes));
                 found = true;
                 break;
             }
@@ -126,5 +132,18 @@ public class TestStats extends BaseResourceTest {
         }
         Assert.assertTrue(found);
 
+    }
+    
+    private boolean testMethodTypes(ResourceMethodEntry entry, List<Class> types) {
+        if (types.contains(entry.getClass())) {
+            types.remove(entry.getClass());
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    private List<Class> prepareRequiredTypes(Class... types) {
+        return new ArrayList(Arrays.asList(types));
     }
 }
