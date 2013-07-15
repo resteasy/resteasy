@@ -86,7 +86,7 @@ public interface Resource {
 <programlisting><![CDATA[<dependency>
    <groupId>org.jboss.resteasy</groupId>
    <artifactId>resteasy-hibernatevalidator-provider</artifactId>
-   <version>2.3.6.Final</version>
+   <version>2.3.7.Final</version>
 </dependency>]]></programlisting>
 		</para>
 		<para>

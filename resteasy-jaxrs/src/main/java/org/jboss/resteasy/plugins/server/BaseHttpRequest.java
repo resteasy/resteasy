@@ -88,6 +88,20 @@ public abstract class BaseHttpRequest implements HttpRequest
                latch.countDown();
             }
          }
+
+         @Override
+         public void setFailure(Exception ex)
+         {
+            try
+            {
+               dispatcher.asynchronousDelivery(BaseHttpRequest.this, httpResponse, ex);
+            }
+            finally
+            {
+               latch.countDown();
+            }
+
+         }
       };
       return asynchronousResponse;
    }

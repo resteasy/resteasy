@@ -230,6 +230,20 @@ public class HttpServletInputMessage implements HttpRequest
                latch.countDown();
             }
          }
+
+         @Override
+         public void setFailure(Exception ex)
+         {
+            try
+            {
+               dispatcher.asynchronousDelivery(HttpServletInputMessage.this, httpResponse, ex);
+            }
+            finally
+            {
+               latch.countDown();
+            }
+
+         }
       };
       return asynchronousResponse;
    }

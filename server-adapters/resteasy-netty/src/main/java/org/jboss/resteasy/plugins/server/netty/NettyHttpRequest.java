@@ -171,6 +171,20 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
                latch.countDown();
             }
          }
+
+         @Override
+         public void setFailure(Exception ex)
+         {
+            try
+            {
+               dispatcher.asynchronousDelivery(NettyHttpRequest.this, httpResponse, ex);
+            }
+            finally
+            {
+               latch.countDown();
+            }
+
+         }
       };
       return asynchronousResponse;
    }
