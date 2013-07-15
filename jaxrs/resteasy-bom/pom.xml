@@ -112,6 +112,11 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
+                <artifactId>jose-jwt</artifactId>
+                <version>3.0.2.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-links</artifactId>
                 <version>3.0.2.Final</version>
             </dependency>
