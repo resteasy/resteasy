@@ -145,7 +145,6 @@ public class URLConnectionClientExecutor implements ClientExecutor
    {
       if (request.getBody() != null)
       {
-         // System.out.println(request.getBody());
          if (connection.getRequestProperty(CONTENT_TYPE) == null)
          {
             String type = request.getBodyContentType().toString();
@@ -153,17 +152,10 @@ public class URLConnectionClientExecutor implements ClientExecutor
          }
          try
          {
+            commitHeaders(request, connection);
+            connection.setDoOutput(true);
             OutputStream os = connection.getOutputStream();
-            CommitHeaderOutputStream commit = new CommitHeaderOutputStream(os,
-                    new CommitHeaderOutputStream.CommitCallback()
-                    {
-                       @Override
-                       public void commit()
-                       {
-                          commitHeaders(request, connection);
-                       }
-                    });
-            request.writeRequestBody(request.getHeadersAsObjects(), commit);
+            request.writeRequestBody(request.getHeadersAsObjects(), os);
             os.flush();
             os.close();
          }
