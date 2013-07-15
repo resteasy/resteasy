@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>examples-oauth-push-messaging</artifactId>
-    <version>3.0.1.Final</version>
+    <version>3.0.2.Final</version>
     <packaging>war</packaging>
     <name>Example: OAuth Push Messaging</name>
     <description/>

@@ -14,7 +14,7 @@
         <title>Upgrading Resteasy Within JBoss AS 7</title>
         <para>
             Resteasy is bundled with JBoss AS 7.  You will likely have the need to upgrade Resteasy in AS7.  The Resteasy
-            distribution comes with a zip file called resteasy-jboss-modules-3.0.1.Final.zip.  Unzip this file while
+            distribution comes with a zip file called resteasy-jboss-modules-3.0.2.Final.zip.  Unzip this file while
             with the modules/ directory of the JBoss AS7 distribution.  This will overwrite some of the existing files there.
         </para>
     </sect1>
@@ -22,7 +22,7 @@
         <title>Upgrading Resteasy Within JBoss EAP 6.1</title>
         <para>
             Resteasy is bundled with JBoss EAP 6.1.  You will likely have the need to upgrade Resteasy in JBoss EAP 6.1.  The Resteasy
-            distribution comes with a zip file called resteasy-jboss-modules-3.0.1.Final.zip.  Unzip this file while
+            distribution comes with a zip file called resteasy-jboss-modules-3.0.2.Final.zip.  Unzip this file while
             with the modules/system/layers/base/ directory of the JBoss EAP 6.1 distribution.  This will overwrite some of the existing files there.
         </para>
     </sect1>
@@ -30,7 +30,7 @@
         <title>Upgrading Resteasy Within Wildfly</title>
         <para>
             Resteasy is bundled with Wildfly.  You will likely have the need to upgrade Resteasy in Wildfly.  The Resteasy
-            distribution comes with a zip file called resteasy-jboss-modules-wf8-3.0.1.Final.zip.  Unzip this file while
+            distribution comes with a zip file called resteasy-jboss-modules-wf8-3.0.2.Final.zip.  Unzip this file while
             with the modules/system/layers/base/ directory of the Wildfly distribution.  This will overwrite some of the existing files there.
         </para>
     </sect1>

@@ -2,6 +2,7 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
@@ -29,7 +30,7 @@ public class AsynchronousResponseInjector implements ValueInjector
    @Override
    public Object inject(HttpRequest request, HttpResponse response)
    {
-      AsyncResponse asynchronousResponse = null;
+      ResteasyAsynchronousResponse asynchronousResponse = null;
       if (timeout == -1)
       {
          asynchronousResponse = request.getAsyncContext().suspend();
@@ -38,6 +39,9 @@ public class AsynchronousResponseInjector implements ValueInjector
       {
          asynchronousResponse = request.getAsyncContext().suspend(timeout, unit);
       }
+      ResourceMethodInvoker invoker =  (ResourceMethodInvoker)request.getAttribute(ResourceMethodInvoker.class.getName());
+      invoker.initializeAsync(asynchronousResponse);
+
       return asynchronousResponse;
    }
 }

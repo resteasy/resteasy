@@ -6,13 +6,13 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0.1.Final</version>
+        <version>3.0.2.Final</version>
 	    <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>examples-jaxb-json</artifactId>
-    <version>3.0.1.Final</version>
+    <version>3.0.2.Final</version>
     <packaging>war</packaging>
     <name>Example: JAXB-JSON</name>
     <description/>
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>3.0.1.Final</version>
+            <version>3.0.2.Final</version>
             <!-- filter out unwanted jars -->
             <exclusions>
                 <exclusion>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jettison-provider</artifactId>
-            <version>3.0.1.Final</version>
+            <version>3.0.2.Final</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.xml.bind</groupId>

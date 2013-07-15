@@ -4,13 +4,16 @@ import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistryListener;
 import org.jboss.resteasy.core.interception.PostMatchContainerRequestContext;
 import org.jboss.resteasy.core.registry.SegmentNode;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
 import org.jboss.resteasy.spi.ResourceFactory;
+import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
@@ -42,6 +45,8 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorRegistryListener
 {
+   final static Logger logger = Logger.getLogger(ResourceMethodInvoker.class);
+
    protected MethodInjector methodInjector;
    protected InjectorFactory injector;
    protected ResourceFactory resource;
@@ -269,14 +274,35 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          }
       }
 
-      Object rtn = methodInjector.invoke(request, response, target);
+      Object rtn = null;
+      try
+      {
+         rtn = methodInjector.invoke(request, response, target);
+      }
+      catch (RuntimeException ex)
+      {
+         if (request.getAsyncContext().isSuspended())
+         {
+            try
+            {
+               request.getAsyncContext().getAsyncResponse().resume(ex);
+            }
+            catch (Exception e)
+            {
+               logger.error("Error resuming failed async operation", e);
+            }
+            return null;
+         }
+         else
+         {
+            throw ex;
+         }
+
+      }
+
 
       if (request.getAsyncContext().isSuspended())
       {
-         request.getAsyncContext().getAsyncResponse().setAnnotations(method.getAnnotatedMethod().getAnnotations());
-         request.getAsyncContext().getAsyncResponse().setWriterInterceptors(writerInterceptors);
-         request.getAsyncContext().getAsyncResponse().setResponseFilters(responseFilters);
-         request.getAsyncContext().getAsyncResponse().setMethod(this);
          return null;
       }
       if (rtn == null || method.getReturnType().equals(void.class))
@@ -325,6 +351,14 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       jaxrsResponse.addMethodAnnotations(method.getAnnotatedMethod());
       return jaxrsResponse;
+   }
+
+   public void initializeAsync(ResteasyAsynchronousResponse asyncResponse)
+   {
+      asyncResponse.setAnnotations(method.getAnnotatedMethod().getAnnotations());
+      asyncResponse.setWriterInterceptors(writerInterceptors);
+      asyncResponse.setResponseFilters(responseFilters);
+      asyncResponse.setMethod(this);
    }
 
    public boolean doesProduce(List<? extends MediaType> accepts)

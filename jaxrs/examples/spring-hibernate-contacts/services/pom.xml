@@ -5,14 +5,14 @@
     <parent>
         <groupId>org.jboss.resteasy.examples</groupId>
         <artifactId>examples-spring-hibernate-contacts</artifactId>
-        <version>3.0.1.Final</version>
+        <version>3.0.2.Final</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>examples-spring-hibernate-contacts-services</artifactId>
     <packaging>war</packaging>
     <name>Example: Spring + Hibernate Contacts - Services</name>
-    <version>3.0.1.Final</version>
+    <version>3.0.2.Final</version>
     <description/>
 
     <build>
