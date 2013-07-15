@@ -77,6 +77,33 @@ public class Tomcat6AsyncHttpRequest extends HttpServletInputMessage
                }
             }
          }
+
+         @Override
+         public void setFailure(Exception ex)
+         {
+            try
+            {
+               dispatcher.asynchronousDelivery(Tomcat6AsyncHttpRequest.this, httpResponse, ex);
+               try
+               {
+                  httpResponse.getOutputStream().flush();
+               }
+               catch (IOException e)
+               {
+               }
+            }
+            finally
+            {
+               try
+               {
+                  event.close();
+               }
+               catch (IOException ignored)
+               {
+               }
+            }
+
+         }
       };
       return asynchronousResponse;
    }

@@ -57,6 +57,26 @@ public class JBossWebAsyncHttpRequest extends HttpServletInputMessage
                }
             }
          }
+
+         @Override
+         public void setFailure(Exception ex)
+         {
+            try
+            {
+               dispatcher.asynchronousDelivery(JBossWebAsyncHttpRequest.this, httpResponse, ex);
+            }
+            finally
+            {
+               try
+               {
+                  event.close();
+               }
+               catch (IOException ignored)
+               {
+               }
+            }
+
+         }
       };
       return asynchronousResponse;
    }

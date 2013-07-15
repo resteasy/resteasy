@@ -13,4 +13,5 @@ import javax.ws.rs.core.Response;
 public interface AsynchronousResponse
 {
    void setResponse(Response response);
+   void setFailure(Exception ex);
 }

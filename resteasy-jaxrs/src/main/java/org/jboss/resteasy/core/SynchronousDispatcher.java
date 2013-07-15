@@ -579,6 +579,20 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
+   public void asynchronousDelivery(HttpRequest request, HttpResponse response, Exception exception)
+   {
+      try
+      {
+         pushContextObjects(request, response);
+         handleException(request, response, exception);
+      }
+      finally
+      {
+         clearContextData();
+      }
+   }
+
+
    protected void writeJaxrsResponse(HttpRequest request, HttpResponse response, Response jaxrsResponse)
            throws WriterException
    {
