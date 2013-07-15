@@ -104,6 +104,7 @@ public class ClientCacheTest extends BaseResourceTest
    {
       @GET
       @Produces("text/plain")
+      @Cache(maxAge = 2)
       public String get();
 
       @Path("/etag/always/good")
@@ -141,6 +142,8 @@ public class ClientCacheTest extends BaseResourceTest
    {
       MyProxy proxy = ProxyFactory.create(MyProxy.class, generateBaseUrl());
       CacheFactory.makeCacheable(proxy);
+      
+      count = 0;
       String rtn = null;
       rtn = proxy.get();
       Assert.assertEquals("hello world" + 1, rtn);
