@@ -10,20 +10,20 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.ClientResponseFailure;
-import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.*;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
+import org.jboss.resteasy.client.core.executors.URLConnectionClientExecutor;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -32,8 +32,21 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@RunWith(value = Parameterized.class)
 public class ApacheHttpClient4Test extends BaseResourceTest
 {
+
+    private Class<ClientExecutor> clazz;
+
+    public ApacheHttpClient4Test(Class<ClientExecutor> clazz) {
+        this.clazz = clazz;
+    }
+
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() {
+        Object[][] data = new Object[][] { { ApacheHttpClient4Executor.class }, {URLConnectionClientExecutor.class} };
+        return Arrays.asList(data);
+    }
 
    public static class MyResourceImpl implements MyResource
    {
@@ -45,6 +58,12 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       public String error()
       {
          throw new NoLogWebApplicationException(404);
+      }
+
+      @Override
+      public String getData(String data)
+      {
+         return "Here is your string:"+data;
       }
    }
 
@@ -59,6 +78,12 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       @Path("error")
       @Produces("text/plain")
       String error();
+
+      @POST
+      @Path("data")
+      @Produces("text/plain")
+      @Consumes("text/plain")
+      public String getData(String data);
    }
 
    @BeforeClass
@@ -72,7 +97,7 @@ public class ApacheHttpClient4Test extends BaseResourceTest
    @Test
    public void testConnectionCleanupGC() throws Exception
    {
-      final ApacheHttpClient4Executor executor = createClient();
+      final ClientExecutor executor = createClient();
       counter.set(0);
 
 
@@ -103,7 +128,7 @@ public class ApacheHttpClient4Test extends BaseResourceTest
    @Test
    public void testConnectionCleanupManual() throws Exception
    {
-      final ApacheHttpClient4Executor executor = createClient();
+      final ClientExecutor executor = createClient();
       counter.set(0);
 
 
@@ -130,10 +155,45 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       Assert.assertEquals(30l, counter.get());
    }
 
+    @Test
+    public void testConnectionWithRequestBody() throws InterruptedException {
+        final ClientExecutor executor = createClient();
+        final MyResource proxy = ProxyFactory.create(MyResource.class, "http://localhost:8081", executor);
+        counter.set(0);
+
+        Thread[] threads = new Thread[3];
+
+
+        for (int i = 0; i < 3; i++)
+        {
+            threads[i] = new Thread()
+            {
+                @Override
+                public void run()
+                {
+                    for (int j = 0; j < 10; j++)
+                    {
+                        System.out.println("calling proxy");
+                        String res = proxy.getData(String.valueOf(j));
+                        Assert.assertNotNull(res);
+                        counter.incrementAndGet();
+                        System.out.println("returned:"+res);
+                    }
+                }
+            };
+        }
+
+        for (int i = 0; i < 3; i++) threads[i].start();
+        for (int i = 0; i < 3; i++) threads[i].join();
+
+        Assert.assertEquals(30l, counter.get());
+
+    }
+
    @Test
    public void testConnectionCleanupProxy() throws Exception
    {
-      final ApacheHttpClient4Executor executor = createClient();
+      final ClientExecutor executor = createClient();
       final MyResource proxy = ProxyFactory.create(MyResource.class, "http://localhost:8081", executor);
       counter.set(0);
 
@@ -169,7 +229,7 @@ public class ApacheHttpClient4Test extends BaseResourceTest
    @Test
    public void testConnectionCleanupErrorGC() throws Exception
    {
-      final ApacheHttpClient4Executor executor = createClient();
+      final ClientExecutor executor = createClient();
       final MyResource proxy = ProxyFactory.create(MyResource.class, "http://localhost:8081", executor);
       counter.set(0);
 
@@ -204,7 +264,7 @@ public class ApacheHttpClient4Test extends BaseResourceTest
    @Test
    public void testConnectionCleanupErrorNoGC() throws Exception
    {
-      final ApacheHttpClient4Executor executor = createClient();
+      final ClientExecutor executor = createClient();
       final MyResource proxy = ProxyFactory.create(MyResource.class, "http://localhost:8081", executor);
       counter.set(0);
 
@@ -260,7 +320,7 @@ public class ApacheHttpClient4Test extends BaseResourceTest
    }
 
 
-   private ApacheHttpClient4Executor createClient()
+   private ClientExecutor createClient()
    {
       HttpParams params = new BasicHttpParams();
       ConnManagerParams.setMaxTotalConnections(params, 3);
@@ -277,11 +337,18 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
       HttpClient httpClient = new DefaultHttpClient(cm, params);
 
-      final ApacheHttpClient4Executor executor = new ApacheHttpClient4Executor(httpClient);
+      final ClientExecutor executor;
+
+      if (clazz.isAssignableFrom(ApacheHttpClient4Executor.class)) {
+          executor = new ApacheHttpClient4Executor(httpClient);
+      } else {
+          executor = new URLConnectionClientExecutor();
+      }
+
       return executor;
    }
 
-   private void runit(ApacheHttpClient4Executor executor, boolean release)
+   private void runit(ClientExecutor executor, boolean release)
    {
       ClientRequest request = executor.createRequest("http://localhost:8081/test");
       ClientResponse response = null;
