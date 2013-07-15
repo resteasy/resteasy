@@ -8,7 +8,7 @@
     </description>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>3.0.1.Final</version>
+    <version>3.0.2.Final</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -100,7 +100,7 @@
         <module>resteasy-bom</module>
         <module>resteasy-cache</module>
         <module>resteasy-guice</module>
-        <module>eagledns</module>
+        <!-- <module>eagledns</module> -->
         <module>security</module>
         <module>resteasy-links</module>
         <module>resteasy-spring</module>

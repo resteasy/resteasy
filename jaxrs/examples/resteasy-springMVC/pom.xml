@@ -5,7 +5,7 @@
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>examples-resteasy-springMVC</artifactId>
     <packaging>war</packaging>
-    <version>3.0.1.Final</version>
+    <version>3.0.2.Final</version>
     <name>Spring MVC RestContact Maven Webapp</name>
     <description/>
     <url>http://maven.apache.org</url>
@@ -13,17 +13,17 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-spring</artifactId>
-            <version>3.0.1.Final</version>
+            <version>3.0.2.Final</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
-            <version>3.0.1.Final</version>
+            <version>3.0.2.Final</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
-            <version>3.0.1.Final</version>
+            <version>3.0.2.Final</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>tjws</artifactId>
-            <version>3.0.1.Final</version>
+            <version>3.0.2.Final</version>
             <scope>test</scope>
         </dependency>
         <!--

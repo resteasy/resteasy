@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0.1.Final</version>
+        <version>3.0.2.Final</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -15,7 +15,7 @@
     <url>http://maven.apache.org</url>
 
     <properties>
-        <jboss.dist.version>8.0.0m-alpha-20130417-resteasy-3.0.1.Final</jboss.dist.version>
+        <jboss.dist.version>8.0.0m-alpha-20130417-resteasy-3.0.2.Final</jboss.dist.version>
     </properties>
     <dependencies>
         <dependency>

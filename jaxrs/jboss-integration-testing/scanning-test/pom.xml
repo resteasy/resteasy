@@ -2,7 +2,7 @@
 	<parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-jboss-integration-testing</artifactId>
-        <version>3.0.1.Final</version>
+        <version>3.0.2.Final</version>
     </parent>
     
     <name>Resteasy Scanning Tests</name>
@@ -11,7 +11,7 @@
     <groupId>org.jboss.resteasy.test</groupId>
     <artifactId>scanning-test</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.1.Final</version>
+    <version>3.0.2.Final</version>
 
     <modules>
         <module>scanning-test-jar</module>

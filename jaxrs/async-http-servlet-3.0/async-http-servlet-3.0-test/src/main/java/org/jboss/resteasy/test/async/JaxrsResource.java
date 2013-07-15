@@ -1,9 +1,12 @@
 package org.jboss.resteasy.test.async;
 
 
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
@@ -20,6 +23,20 @@ import java.util.concurrent.TimeUnit;
 public class JaxrsResource
 {
    protected boolean cancelled;
+
+   @GET
+   @Path("injection-failure/{param}")
+   public void injectionFailure(@Suspended final AsyncResponse response, @PathParam("param") int id) {
+      throw new ForbiddenException("Should be unreachable");
+   }
+
+   @GET
+   @Path("method-failure")
+   public void injectionFailure(@Suspended final AsyncResponse response) {
+      throw new ForbiddenException("Should be unreachable");
+   }
+
+
 
    @GET
    @Path("cancelled")
@@ -39,7 +56,7 @@ public class JaxrsResource
 
    @GET
    @Produces("text/plain")
-   public void get(@Suspended final AsyncResponse response)
+   public void get(@Suspended final AsyncResponse response) throws Exception
    {
       response.setTimeout(2000, TimeUnit.MILLISECONDS);
       Thread t = new Thread()

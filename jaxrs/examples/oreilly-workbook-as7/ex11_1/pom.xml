@@ -17,13 +17,13 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>3.0.1.Final</version>
+            <version>3.0.2.Final</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
-            <version>3.0.1.Final</version>
+            <version>3.0.2.Final</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
