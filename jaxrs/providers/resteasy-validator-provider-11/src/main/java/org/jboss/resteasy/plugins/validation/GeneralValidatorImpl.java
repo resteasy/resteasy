@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.validation;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,16 +44,16 @@ public class GeneralValidatorImpl implements GeneralValidator
    /**
     * Used for resolving type parameters. Thread-safe.
     */
-   private static final TypeResolver typeResolver = new TypeResolver();
+   private final TypeResolver typeResolver = new TypeResolver();
    
-   private Validator validator;
+   private final WeakReference<Validator> validator;
    private ConstraintTypeUtil util = new ConstraintTypeUtil11();
    private boolean isExecutableValidationEnabled;
    private ExecutableType[] defaultValidatedExecutableTypes;
 
    public GeneralValidatorImpl(Validator validator, boolean isExecutableValidationEnabled, Set<ExecutableType> defaultValidatedExecutableTypes)
    {
-      this.validator = validator;
+      this.validator = new WeakReference<Validator>(validator);
       this.isExecutableValidationEnabled = isExecutableValidationEnabled;
       this.defaultValidatedExecutableTypes = defaultValidatedExecutableTypes.toArray(new ExecutableType[]{});
    }
@@ -63,7 +64,7 @@ public class GeneralValidatorImpl implements GeneralValidator
       Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
       try
       {
-         Set<ConstraintViolation<Object>> cvs = validator.validate(object, groups);
+         Set<ConstraintViolation<Object>> cvs = validator.get().validate(object, groups);
          for (Iterator<ConstraintViolation<Object>> it = cvs.iterator(); it.hasNext(); )
          {
             ConstraintViolation<Object> cv = it.next();
@@ -116,7 +117,7 @@ public class GeneralValidatorImpl implements GeneralValidator
       Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
       try
       {
-         Set<ConstraintViolation<Object>> cvs = validator.forExecutables().validateParameters(object, method, parameterValues, groups);
+         Set<ConstraintViolation<Object>> cvs = validator.get().forExecutables().validateParameters(object, method, parameterValues, groups);
          for (Iterator<ConstraintViolation<Object>> it = cvs.iterator(); it.hasNext(); )
          {
             ConstraintViolation<Object> cv = it.next();
@@ -143,7 +144,7 @@ public class GeneralValidatorImpl implements GeneralValidator
       ViolationsContainer<Object> violationsContainer = getViolationsContainer(request);
       try
       {
-         Set<ConstraintViolation<Object>> cvs = validator.forExecutables().validateReturnValue(object, method, returnValue, groups);
+         Set<ConstraintViolation<Object>> cvs = validator.get().forExecutables().validateReturnValue(object, method, returnValue, groups);
          for (Iterator<ConstraintViolation<Object>> it = cvs.iterator(); it.hasNext(); )
          {
             ConstraintViolation<Object> cv = it.next();
@@ -241,7 +242,7 @@ public class GeneralValidatorImpl implements GeneralValidator
       return false;
    }
    
-   static protected List<ExecutableType[]> getExecutableTypesOnMethodInHierarchy(Method method)
+   protected List<ExecutableType[]> getExecutableTypesOnMethodInHierarchy(Method method)
    {
       Class<?> clazz = method.getDeclaringClass();
       List<ExecutableType[]> typesList = new ArrayList<ExecutableType[]>();
@@ -265,7 +266,7 @@ public class GeneralValidatorImpl implements GeneralValidator
       return typesList;
    }
    
-   static protected List<ExecutableType[]> getExecutableTypesOnMethodInInterfaces(Class<?> clazz, Method method)
+   protected List<ExecutableType[]> getExecutableTypesOnMethodInInterfaces(Class<?> clazz, Method method)
    {
    	List<ExecutableType[]> typesList = new ArrayList<ExecutableType[]>();
    	Class<?>[] interfaces = clazz.getInterfaces();
@@ -353,7 +354,7 @@ public class GeneralValidatorImpl implements GeneralValidator
     * Here, the "super" relationship is reflexive.  That is, a method
     * is a super method of itself.
     */
-   static protected Method getSuperMethod(Method method, Class<?> clazz)
+   protected Method getSuperMethod(Method method, Class<?> clazz)
    {
       Method[] methods = clazz.getDeclaredMethods();
       for (int i = 0; i < methods.length; i++)
@@ -378,7 +379,7 @@ public class GeneralValidatorImpl implements GeneralValidator
 	 *         
 	 * Taken from Hibernate Validator
 	 */
-   static protected boolean overrides(Method subTypeMethod, Method superTypeMethod)
+   protected boolean overrides(Method subTypeMethod, Method superTypeMethod)
    {
       if (subTypeMethod == null || superTypeMethod == null)
       {
@@ -406,7 +407,7 @@ public class GeneralValidatorImpl implements GeneralValidator
    /**
     * Taken from Hibernate Validator
     */
-   static protected boolean parametersResolveToSameTypes(Method subTypeMethod, Method superTypeMethod)
+   protected boolean parametersResolveToSameTypes(Method subTypeMethod, Method superTypeMethod)
    {
       if (subTypeMethod.getParameterTypes().length == 0)
       {
