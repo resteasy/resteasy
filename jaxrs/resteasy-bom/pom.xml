@@ -102,12 +102,17 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-jdk-http</artifactId>
+                <artifactId>resteasy-netty</artifactId>
                 <version>3.0.2.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-crypto</artifactId>
+                <version>3.0.2.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>jose-jwt</artifactId>
                 <version>3.0.2.Final</version>
             </dependency>
             <dependency>
