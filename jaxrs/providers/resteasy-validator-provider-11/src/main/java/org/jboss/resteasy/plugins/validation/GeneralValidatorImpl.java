@@ -343,7 +343,7 @@ public class GeneralValidatorImpl implements GeneralValidator
       }
       else
       {
-         result = o.toString();
+         result = (o == null ? "" : o.toString());
       }
       return result;
    }
