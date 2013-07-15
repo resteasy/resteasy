@@ -24,11 +24,13 @@ import javax.ws.rs.core.UriInfo;
 public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
 {
    protected HttpServletResponse response;
+   protected HttpServletRequest theRequest;
 
    public Servlet3AsyncHttpRequest(HttpServletRequest httpServletRequest, HttpServletResponse response, HttpResponse httpResponse, HttpHeaders httpHeaders, UriInfo uriInfo, String s, SynchronousDispatcher synchronousDispatcher)
    {
       super(httpServletRequest, httpResponse, httpHeaders, uriInfo, s, synchronousDispatcher);
       this.response = response;
+      this.theRequest = httpServletRequest;
    }
 
    @Override
@@ -40,7 +42,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
    public AsynchronousResponse createAsynchronousResponse(long l)
    {
       suspended = true;
-      final AsyncContext context = request.startAsync(request, response);
+      final AsyncContext context = theRequest.startAsync(request, response);
       if (l >= 0)
       {
          context.setTimeout(l);
@@ -64,6 +66,24 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
             {
                context.complete();
             }
+         }
+
+         @Override
+         public void setFailure(Exception ex)
+         {
+            if (timeoutListener.timedOut())
+            {
+               return;
+            }
+            try
+            {
+               dispatcher.asynchronousDelivery(Servlet3AsyncHttpRequest.this, httpResponse, ex);
+            }
+            finally
+            {
+               context.complete();
+            }
+
          }
       };
       asynchronousResponse.setAnnotations((Annotation[]) getAttribute(Annotation.class.getName()));

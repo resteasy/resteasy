@@ -271,7 +271,25 @@ public class ResourceMethod implements ResourceInvoker, InterceptorRegistryListe
       catch (WebApplicationException wae)
       {
          prepareResponse(ServerResponse.copyIfNotServerResponse(wae.getResponse()));
-         throw wae;
+         if (request.isSuspended())
+         {
+            request.getAsynchronousResponse().setFailure(wae);
+         }
+         else
+         {
+            throw wae;
+         }
+      }
+      catch (RuntimeException ex)
+      {
+         if (request.isSuspended())
+         {
+            request.getAsynchronousResponse().setFailure(ex);
+         }
+         else
+         {
+            throw ex;
+         }
       }
 
       if (request.isSuspended())

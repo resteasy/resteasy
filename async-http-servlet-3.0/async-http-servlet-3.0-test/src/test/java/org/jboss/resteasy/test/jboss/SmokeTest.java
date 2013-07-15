@@ -22,13 +22,29 @@ import java.util.zip.GZIPInputStream;
  */
 public class SmokeTest
 {
+
+   @Test
+   public void testFailure() throws Exception
+   {
+      HttpClient client = new HttpClient();
+
+      {
+         GetMethod method = new GetMethod("http://localhost:8080/failure");
+         long start = System.currentTimeMillis();
+         int status = client.executeMethod(method);
+         long end = System.currentTimeMillis() - start;
+         Assert.assertTrue(end < 1000);
+         Assert.assertEquals(403, status);
+         method.releaseConnection();
+      }
+   }
    @Test
    public void testNoDefaultsResource() throws Exception
    {
       HttpClient client = new HttpClient();
 
       {
-         GetMethod method = new GetMethod("http://localhost:8080/async-http-servlet-3.0-test/basic");
+         GetMethod method = new GetMethod("http://localhost:8080/basic");
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpResponseCodes.SC_OK, status);
          Assert.assertEquals("basic", method.getResponseBodyAsString());
@@ -36,7 +52,7 @@ public class SmokeTest
       }
       {
          // I'm testing unknown content-length here
-         GetMethod method = new GetMethod("http://localhost:8080/async-http-servlet-3.0-test/xml");
+         GetMethod method = new GetMethod("http://localhost:8080/xml");
          int status = client.executeMethod(method);
          Assert.assertEquals(HttpResponseCodes.SC_OK, status);
          String result = method.getResponseBodyAsString();
@@ -73,7 +89,7 @@ public class SmokeTest
    {
       HttpClient client = new HttpClient();
       {
-         GetMethod get = new GetMethod("http://localhost:8080/async-http-servlet-3.0-test/gzip");
+         GetMethod get = new GetMethod("http://localhost:8080/gzip");
          get.addRequestHeader("Accept-Encoding", "gzip, deflate");
          int status = client.executeMethod(get);
          Assert.assertEquals(200, status);
