@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.validation;
 
+import java.lang.ref.WeakReference;
 import java.util.Set;
 
 import javax.naming.Context;
@@ -31,7 +32,7 @@ import org.jboss.resteasy.spi.validation.GeneralValidator;
 public class ValidatorContextResolver implements ContextResolver<GeneralValidator>
 {
    private final static Logger logger = Logger.getLogger(ValidatorContextResolver.class);
-   private static volatile ValidatorFactory validatorFactory;
+   private static volatile WeakReference<ValidatorFactory> validatorFactory = new WeakReference<ValidatorFactory>(null);
    final static Object RD_LOCK = new Object();
 
    // this used to be initialized in a static block, but I was having trouble class loading the context resolver in some
@@ -39,30 +40,30 @@ public class ValidatorContextResolver implements ContextResolver<GeneralValidato
    // we log any validation warning when trying to obtain the ValidatorFactory. 
    static ValidatorFactory getValidatorFactory()
    {
-      ValidatorFactory tmpValidatorFactory = validatorFactory;
+      ValidatorFactory tmpValidatorFactory = validatorFactory.get();
       if (tmpValidatorFactory == null)
       {
          synchronized (RD_LOCK)
          {
-            tmpValidatorFactory = validatorFactory;
+            tmpValidatorFactory = validatorFactory.get();
             if (tmpValidatorFactory == null)
             {
                try
                {
                   Context context = new InitialContext();
-                  validatorFactory = tmpValidatorFactory = ValidatorFactory.class.cast(context.lookup("java:comp/ValidatorFactory"));
+                  validatorFactory = new WeakReference<ValidatorFactory>(ValidatorFactory.class.cast(context.lookup("java:comp/ValidatorFactory")));
                   logger.debug("Using CDI supporting " + validatorFactory);
                }
                catch (NamingException e)
                {
                   logger.info("Unable to find CDI supporting ValidatorFactory. Using default ValidatorFactory");
                   HibernateValidatorConfiguration config = Validation.byProvider(HibernateValidator.class).configure();
-                  validatorFactory = tmpValidatorFactory = config.buildValidatorFactory();
+                  validatorFactory = new WeakReference<ValidatorFactory>(config.buildValidatorFactory());
                }
             }
          }
       }
-      return validatorFactory;
+      return validatorFactory.get();
    }
 
    @Override

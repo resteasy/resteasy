@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.validation.hibernate;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,13 +30,13 @@ import org.jboss.resteasy.util.FindAnnotation;
  */
 public class GeneralValidatorImpl implements GeneralValidator
 {
-   private Validator validator;
+   private final WeakReference<Validator> validator;
    private MethodValidator methodValidator;
    private ConstraintTypeUtil util = new ConstraintTypeUtil10();
 
    public GeneralValidatorImpl(Validator validator, MethodValidator methodValidator)
    {
-      this.validator = validator;
+      this.validator = new WeakReference<Validator>(validator);
       this.methodValidator = methodValidator;
    }
 
@@ -67,7 +68,7 @@ public class GeneralValidatorImpl implements GeneralValidator
       Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
       try
       {
-         Set<ConstraintViolation<Object>> cvs = validator.validate(object, groups);
+         Set<ConstraintViolation<Object>> cvs = validator.get().validate(object, groups);
          for (Iterator<ConstraintViolation<Object>> it = cvs.iterator(); it.hasNext(); )
          {
             ConstraintViolation<Object> cv = it.next();

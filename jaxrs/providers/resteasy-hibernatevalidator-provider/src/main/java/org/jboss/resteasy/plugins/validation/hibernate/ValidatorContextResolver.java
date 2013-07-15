@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.validation.hibernate;
 
+import java.lang.ref.WeakReference;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.ws.rs.ext.ContextResolver;
@@ -23,7 +24,7 @@ import org.jboss.resteasy.spi.validation.GeneralValidator;
 public class ValidatorContextResolver implements ContextResolver<GeneralValidator>
 {
    private final static Logger logger = Logger.getLogger(ValidatorContextResolver.class);
-   private static volatile GeneralValidator generalValidator;
+   private static volatile WeakReference<GeneralValidator> generalValidator;
    final static Object RD_LOCK = new Object();
 
    // this used to be initialized in a static block, but I was having trouble class loading the context resolver in some
@@ -31,23 +32,23 @@ public class ValidatorContextResolver implements ContextResolver<GeneralValidato
    // we log any validation warning when trying to obtain the validator.
    static GeneralValidator getGeneralValidator()
    {
-      GeneralValidator tmpValidator = generalValidator;
+      GeneralValidator tmpValidator = generalValidator.get();
       if (tmpValidator == null)
       {
          synchronized (RD_LOCK)
          {
-            tmpValidator = generalValidator;
+            tmpValidator = generalValidator.get();
             if (generalValidator == null)
             {
                HibernateValidatorConfiguration config = Validation.byProvider(HibernateValidator.class).configure();
                Validator validator = config.buildValidatorFactory().getValidator();
                MethodValidator methodValidator = validator.unwrap(MethodValidator.class);
-               generalValidator = tmpValidator = new GeneralValidatorImpl(validator, methodValidator);
+               generalValidator = new WeakReference<GeneralValidator>(new GeneralValidatorImpl(validator, methodValidator));
 
             }
          }
       }
-      return generalValidator;
+      return generalValidator.get();
    }
 
    @Override
