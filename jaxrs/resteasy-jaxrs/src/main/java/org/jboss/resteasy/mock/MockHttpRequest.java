@@ -391,19 +391,19 @@ public class MockHttpRequest implements HttpRequest
          }
 
          @Override
-         public AsyncResponse suspend() throws IllegalStateException
+         public ResteasyAsynchronousResponse suspend() throws IllegalStateException
          {
             return null;
          }
 
          @Override
-         public AsyncResponse suspend(long millis) throws IllegalStateException
+         public ResteasyAsynchronousResponse suspend(long millis) throws IllegalStateException
          {
             return null;
          }
 
          @Override
-         public AsyncResponse suspend(long time, TimeUnit unit) throws IllegalStateException
+         public ResteasyAsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException
          {
             return null;
          }

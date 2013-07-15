@@ -12,9 +12,9 @@ public interface ResteasyAsynchronousContext
    boolean isSuspended();
    ResteasyAsynchronousResponse getAsyncResponse();
 
-   AsyncResponse suspend() throws IllegalStateException;
+   ResteasyAsynchronousResponse suspend() throws IllegalStateException;
 
-   AsyncResponse suspend(long millis) throws IllegalStateException;
+   ResteasyAsynchronousResponse suspend(long millis) throws IllegalStateException;
 
-   AsyncResponse suspend(long time, TimeUnit unit) throws IllegalStateException;
+   ResteasyAsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException;
 }

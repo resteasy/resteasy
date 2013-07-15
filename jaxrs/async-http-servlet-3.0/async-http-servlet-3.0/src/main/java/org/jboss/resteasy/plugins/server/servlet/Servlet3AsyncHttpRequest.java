@@ -255,19 +255,19 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
       }
 
       @Override
-      public AsyncResponse suspend() throws IllegalStateException
+      public ResteasyAsynchronousResponse suspend() throws IllegalStateException
       {
          return suspend(-1);
       }
 
       @Override
-      public AsyncResponse suspend(long millis) throws IllegalStateException
+      public ResteasyAsynchronousResponse suspend(long millis) throws IllegalStateException
       {
          return suspend(millis, TimeUnit.MILLISECONDS);
       }
 
       @Override
-      public AsyncResponse suspend(long time, TimeUnit unit) throws IllegalStateException
+      public ResteasyAsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException
       {
          if (servletRequest.isAsyncStarted())
          {
