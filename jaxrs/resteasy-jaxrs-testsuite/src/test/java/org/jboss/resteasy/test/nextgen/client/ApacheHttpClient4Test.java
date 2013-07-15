@@ -10,23 +10,28 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
+import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
+import org.jboss.resteasy.client.jaxrs.engines.URLConnectionEngine;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicLong;
+
+import static org.junit.runners.Parameterized.Parameters;
 
 /**
  * Test connection cleanup
@@ -34,8 +39,21 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@RunWith(value = Parameterized.class)
 public class ApacheHttpClient4Test extends BaseResourceTest
 {
+
+    private Class<ClientHttpEngine> clazz;
+
+    public ApacheHttpClient4Test(Class<ClientHttpEngine> clazz) {
+        this.clazz = clazz;
+    }
+
+    @Parameters
+    public static Collection<Object[]> data() {
+        Object[][] data = new Object[][] { { ApacheHttpClient4Engine.class }, {URLConnectionEngine.class} };
+        return Arrays.asList(data);
+    }
 
    public static class MyResourceImpl implements MyResource
    {
@@ -48,6 +66,10 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       {
          throw new NoLogWebApplicationException(404);
       }
+
+       public String getData(String data) {
+           return "Here is your string:"+data;
+       }
    }
 
    @Path("/test")
@@ -61,6 +83,12 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       @Path("error")
       @Produces("text/plain")
       String error();
+
+      @POST
+      @Path("data")
+       @Produces("text/plain")
+      @Consumes("text/plain")
+       public String getData(String data);
    }
 
    @BeforeClass
@@ -247,6 +275,41 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       Assert.assertEquals(30l, counter.get());
    }
 
+   @Test
+   public void testConnectionWithRequestBody() throws InterruptedException {
+       final ResteasyClient client = createEngine();
+       final MyResource proxy = client.target("http://localhost:8081").proxy(MyResource.class);
+       counter.set(0);
+
+       Thread[] threads = new Thread[3];
+
+
+       for (int i = 0; i < 3; i++)
+       {
+           threads[i] = new Thread()
+           {
+               @Override
+               public void run()
+               {
+                   for (int j = 0; j < 10; j++)
+                   {
+                       System.out.println("calling proxy");
+                       String res = proxy.getData(String.valueOf(j));
+                       Assert.assertNotNull(res);
+                       counter.incrementAndGet();
+                       System.out.println("returned:"+res);
+                   }
+               }
+           };
+       }
+
+       for (int i = 0; i < 3; i++) threads[i].start();
+       for (int i = 0; i < 3; i++) threads[i].join();
+
+       Assert.assertEquals(30l, counter.get());
+
+   }
+
    private void callProxy(MyResource proxy)
    {
       String str = null;
@@ -279,7 +342,15 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
       HttpClient httpClient = new DefaultHttpClient(cm, params);
 
-      final ApacheHttpClient4Engine executor = new ApacheHttpClient4Engine(httpClient);
+       final ClientHttpEngine executor;
+
+      if (clazz.isAssignableFrom(ApacheHttpClient4Engine.class)) {
+          executor = new ApacheHttpClient4Engine(httpClient);
+      } else {
+          executor = new URLConnectionEngine();
+      }
+
+
       ResteasyClient client = new ResteasyClientBuilder().httpEngine(executor).build();
       return client;
    }
