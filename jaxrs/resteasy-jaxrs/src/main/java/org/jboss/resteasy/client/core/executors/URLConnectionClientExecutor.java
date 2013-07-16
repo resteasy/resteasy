@@ -19,37 +19,15 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map.Entry;
 
-import static org.jboss.resteasy.util.HttpHeaderNames.CONTENT_TYPE;
+import static org.jboss.resteasy.util.HttpHeaderNames.*;
 
-@SuppressWarnings("unchecked")
 public class URLConnectionClientExecutor implements ClientExecutor
 {
 
-   public ClientResponse execute(ClientRequest request) throws Exception
+   public ClientResponse<?> execute(ClientRequest request) throws Exception
    {
       HttpURLConnection connection = createConnection(request);
-
-      setupRequest(request, connection);
       return execute(request, connection);
-   }
-
-   protected void setupRequest(ClientRequest request, HttpURLConnection connection)
-           throws ProtocolException
-   {
-      boolean isGet = "GET".equals(request.getHttpMethod());
-      connection.setInstanceFollowRedirects(isGet && request.followRedirects());
-      connection.setDoOutput(request.getBody() != null
-              || !request.getFormParameters().isEmpty());
-
-      if (request.getBody() != null && !request.getFormParameters().isEmpty())
-         throw new RuntimeException(
-                 "You cannot send both form parameters and an entity body");
-
-      if (!request.getFormParameters().isEmpty())
-      {
-         throw new RuntimeException(
-                 "URLConnectionClientExecutor doesn't support form parameters yet");
-      }
    }
 
    private void commitHeaders(ClientRequest request, HttpURLConnection connection)
@@ -86,19 +64,19 @@ public class URLConnectionClientExecutor implements ClientExecutor
 
    protected HttpURLConnection createConnection(ClientRequest request) throws Exception
    {
-	  String uri = request.getUri();
-	  String httpMethod = request.getHttpMethod();
+      String uri = request.getUri();
+      String httpMethod = request.getHttpMethod();
 
-	  HttpURLConnection connection = (HttpURLConnection) new URL(uri).openConnection();
-	  connection.setRequestMethod(httpMethod);
-	  return connection;
+      HttpURLConnection connection = (HttpURLConnection) new URL(uri).openConnection();
+      connection.setRequestMethod(httpMethod);
+      return connection;
    }
 
-   private ClientResponse execute(ClientRequest request, final HttpURLConnection connection) throws IOException
+   private <T> ClientResponse<T> execute(ClientRequest request, final HttpURLConnection connection) throws IOException
    {
       outputBody(request, connection);
       final int status = connection.getResponseCode();
-      BaseClientResponse response = new BaseClientResponse(new BaseClientResponseStreamFactory()
+      BaseClientResponse<T> response = new BaseClientResponse<T>(new BaseClientResponseStreamFactory()
       {
          public InputStream getInputStream() throws IOException
          {
@@ -123,7 +101,7 @@ public class URLConnectionClientExecutor implements ClientExecutor
       response.setAttributes(request.getAttributes());
       return response;
    }
-   
+
    public void close()
    {
       // empty
@@ -156,19 +134,37 @@ public class URLConnectionClientExecutor implements ClientExecutor
          }
          try
          {
-            OutputStream os = connection.getOutputStream();
-            CommitHeaderOutputStream commit = new CommitHeaderOutputStream(os,
-                    new CommitHeaderOutputStream.CommitCallback()
-                    {
-                       @Override
-                       public void commit()
-                       {
-                          commitHeaders(request, connection);
-                       }
-                    });
-            request.writeRequestBody(request.getHeadersAsObjects(), commit);
-            os.flush();
-            os.close();
+            final CommitHeaderOutputStream commit = new CommitHeaderOutputStream();
+            CommitHeaderOutputStream.CommitCallback callback = new CommitHeaderOutputStream.CommitCallback()
+            {
+               @Override
+               public void commit()
+               {
+                  connection.setDoOutput(true);
+                  commitHeaders(request, connection);
+                  OutputStream os = null;
+                  try
+                  {
+                     os = connection.getOutputStream();
+                  }
+                  catch (IOException e)
+                  {
+                     throw new RuntimeException(e);
+                  }
+                  commit.setDelegate(os);
+
+               }
+            };
+            commit.setHeaders(callback);
+            try
+            {
+               request.writeRequestBody(request.getHeadersAsObjects(), commit);
+            }
+            finally
+            {
+               commit.getDelegate().flush();
+               commit.getDelegate().close();
+            }
          }
          catch (IOException e)
          {

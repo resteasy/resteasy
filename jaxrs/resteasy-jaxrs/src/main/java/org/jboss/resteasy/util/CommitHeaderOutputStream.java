@@ -19,6 +19,25 @@ public class CommitHeaderOutputStream extends OutputStream
       this.headers = headers;
    }
 
+   public CommitHeaderOutputStream()
+   {
+   }
+
+   public OutputStream getDelegate()
+   {
+      return delegate;
+   }
+
+   public void setDelegate(OutputStream delegate)
+   {
+      this.delegate = delegate;
+   }
+
+   public void setHeaders(CommitCallback headers)
+   {
+      this.headers = headers;
+   }
+
    public interface CommitCallback
    {
       void commit();
@@ -58,6 +77,8 @@ public class CommitHeaderOutputStream extends OutputStream
       commit();
       delegate.flush();
    }
+
+
 
    @Override
    public void close() throws IOException
