@@ -301,7 +301,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
 
 
-      if (request.getAsyncContext().isSuspended())
+      if (request.getAsyncContext().isSuspended() || request.wasForwarded())
       {
          return null;
       }

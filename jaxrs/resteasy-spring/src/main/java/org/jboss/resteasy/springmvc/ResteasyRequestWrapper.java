@@ -47,7 +47,7 @@ public class ResteasyRequestWrapper
       // are not needed here... They are only needed for asynchronous
       // invocations. Suggest Core RESTEasy refactoring to change the
       // async invocation
-      httpRequest = new HttpServletInputMessage(request, null, headers, uriInfo, httpMethod
+      httpRequest = new HttpServletInputMessage(request, null, null, null, headers, uriInfo, httpMethod
               .toUpperCase(), null);
    }
 

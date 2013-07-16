@@ -13,6 +13,15 @@ import org.junit.Test;
 public class EchoTest
 {
    @Test
+   public void testForward() throws Exception
+   {
+      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
+      ClientRequest request = new ClientRequest("http://localhost:9095/test/forward");
+      ClientResponse<String> response = request.get(String.class);
+      Assert.assertEquals("hello world", response.getEntity());
+   }
+
+   @Test
    public void testRepeat() throws Exception
    {
       RegisterBuiltin.register(ResteasyProviderFactory.getInstance());

@@ -10,6 +10,7 @@ import org.jboss.resteasy.spi.ResteasyUriInfo;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -25,6 +26,7 @@ import java.io.IOException;
 public class FilterDispatcher implements Filter, HttpRequestFactory, HttpResponseFactory
 {
    protected ServletContainerDispatcher servletContainerDispatcher;
+   protected ServletContext servletContext;
 
    public Dispatcher getDispatcher()
    {
@@ -36,14 +38,15 @@ public class FilterDispatcher implements Filter, HttpRequestFactory, HttpRespons
    {
       servletContainerDispatcher = new ServletContainerDispatcher();
       FilterBootstrap bootstrap = new FilterBootstrap(servletConfig);
-      servletContainerDispatcher.init(servletConfig.getServletContext(), bootstrap, this, this);
+      servletContext = servletConfig.getServletContext();
+      servletContainerDispatcher.init(servletContext, bootstrap, this, this);
       servletContainerDispatcher.getDispatcher().getDefaultContextObjects().put(FilterConfig.class, servletConfig);
 
    }
 
    public HttpRequest createResteasyHttpRequest(String httpMethod, HttpServletRequest request, ResteasyHttpHeaders headers, ResteasyUriInfo uriInfo, HttpResponse theResponse, HttpServletResponse response)
    {
-      return new HttpServletInputMessage(request, theResponse, headers, uriInfo, httpMethod.toUpperCase(), (SynchronousDispatcher) getDispatcher());
+      return new HttpServletInputMessage(request, response, servletContext, theResponse, headers, uriInfo, httpMethod.toUpperCase(), (SynchronousDispatcher) getDispatcher());
    }
 
 
