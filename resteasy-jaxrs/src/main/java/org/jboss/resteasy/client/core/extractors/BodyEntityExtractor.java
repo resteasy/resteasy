@@ -61,7 +61,11 @@ public class BodyEntityExtractor implements EntityExtractor
          }
          Object obj = response.getEntity(method.getReturnType(), method.getGenericReturnType());
          if (obj instanceof InputStream)
+         {
             releaseConnectionAfter = false;
+            // we make sure that on GC, the Response does not release the InputStream
+            response.setWasReleased(true);
+         }
          return obj;
       }
       catch (RuntimeException e)

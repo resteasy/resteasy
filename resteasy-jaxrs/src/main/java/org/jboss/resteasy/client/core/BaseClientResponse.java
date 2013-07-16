@@ -534,6 +534,11 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       return wasReleased;
    }
 
+   public void setWasReleased(boolean wasReleased)
+   {
+      this.wasReleased = wasReleased;
+   }
+
    public final void releaseConnection()
    {
       if (!wasReleased)

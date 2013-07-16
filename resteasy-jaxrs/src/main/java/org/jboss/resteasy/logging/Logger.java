@@ -30,15 +30,15 @@ public abstract class Logger
          Class loggerClass = null;
          if (loggerType == LoggerType.JUL)
          {
-            loggerClass = Thread.currentThread().getContextClassLoader().loadClass("org.jboss.resteasy.logging.impl.JULLogger");
+            loggerClass = Logger.class.getClassLoader().loadClass("org.jboss.resteasy.logging.impl.JULLogger");
          }
          else if (loggerType == LoggerType.LOG4J)
          {
-            loggerClass = Thread.currentThread().getContextClassLoader().loadClass("org.jboss.resteasy.logging.impl.Log4jLogger");
+            loggerClass = Logger.class.getClassLoader().loadClass("org.jboss.resteasy.logging.impl.Log4jLogger");
          }
          else if (loggerType == LoggerType.SLF4J)
          {
-            loggerClass = Thread.currentThread().getContextClassLoader().loadClass("org.jboss.resteasy.logging.impl.Slf4jLogger");
+            loggerClass = Logger.class.getClassLoader().loadClass("org.jboss.resteasy.logging.impl.Slf4jLogger");
          }
          if (loggerClass == null)
             throw new RuntimeException("Could not match up an implementation for LoggerType: " + loggerType);
