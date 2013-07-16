@@ -26,27 +26,8 @@ public class URLConnectionClientExecutor implements ClientExecutor
 
    public ClientResponse<?> execute(ClientRequest request) throws Exception
    {
-	  HttpURLConnection connection = createConnection(request);
+	   HttpURLConnection connection = createConnection(request);
       return execute(request, connection);
-   }
-
-   protected void setupRequest(ClientRequest request, HttpURLConnection connection)
-           throws ProtocolException
-   {
-      boolean isGet = "GET".equals(request.getHttpMethod());
-      connection.setInstanceFollowRedirects(isGet && request.followRedirects());
-      connection.setDoOutput(request.getBody() != null
-              || !request.getFormParameters().isEmpty());
-
-      if (request.getBody() != null && !request.getFormParameters().isEmpty())
-         throw new RuntimeException(
-                 "You cannot send both form parameters and an entity body");
-
-      if (!request.getFormParameters().isEmpty())
-      {
-         throw new RuntimeException(
-                 "URLConnectionClientExecutor doesn't support form parameters yet");
-      }
    }
 
    private void commitHeaders(ClientRequest request, HttpURLConnection connection)
@@ -153,19 +134,37 @@ public class URLConnectionClientExecutor implements ClientExecutor
          }
          try
          {
-            OutputStream os = connection.getOutputStream();
-            CommitHeaderOutputStream commit = new CommitHeaderOutputStream(os,
-                    new CommitHeaderOutputStream.CommitCallback()
-                    {
-                       @Override
-                       public void commit()
-                       {
-                          commitHeaders(request, connection);
-                       }
-                    });
-            request.writeRequestBody(request.getHeadersAsObjects(), commit);
-            os.flush();
-            os.close();
+            final CommitHeaderOutputStream commit = new CommitHeaderOutputStream();
+            CommitHeaderOutputStream.CommitCallback callback = new CommitHeaderOutputStream.CommitCallback()
+            {
+               @Override
+               public void commit()
+               {
+                  connection.setDoOutput(true);
+                  commitHeaders(request, connection);
+                  OutputStream os = null;
+                  try
+                  {
+                     os = connection.getOutputStream();
+                  }
+                  catch (IOException e)
+                  {
+                     throw new RuntimeException(e);
+                  }
+                  commit.setDelegate(os);
+
+               }
+            };
+            commit.setHeaders(callback);
+            try
+            {
+               request.writeRequestBody(request.getHeadersAsObjects(), commit);
+            }
+            finally
+            {
+               commit.getDelegate().flush();
+               commit.getDelegate().close();
+            }
          }
          catch (IOException e)
          {
