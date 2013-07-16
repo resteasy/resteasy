@@ -1,11 +1,6 @@
 package org.jboss.resteasy.test.validation;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
-
-import java.io.Serializable;
 import java.util.Iterator;
-
-import javax.ws.rs.core.MediaType;
 
 import junit.framework.Assert;
 
@@ -16,7 +11,6 @@ import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.plugins.providers.SerializableProvider;
 import org.jboss.resteasy.validation.Foo;
 import org.jboss.resteasy.validation.FooConstraint;
 import org.jboss.resteasy.validation.FooReaderWriter;
@@ -26,10 +20,9 @@ import org.jboss.resteasy.validation.TestClassConstraint;
 import org.jboss.resteasy.validation.TestClassValidator;
 import org.jboss.resteasy.validation.TestResourceWithAllViolationTypes;
 import org.jboss.resteasy.validation.TestResourceWithReturnValues;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -93,13 +86,10 @@ public class TestValidation
          String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
          Assert.assertNotNull(header);
          Assert.assertTrue(Boolean.valueOf(header));
-         MediaType mediaType = response.getMediaType();
-         Assert.assertEquals(SerializableProvider.APPLICATION_SERIALIZABLE_TYPE, mediaType);
-         Object entity = response.getEntity(Serializable.class);
+         String entity = response.getEntity(String.class);
          System.out.println("entity: " + entity);
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException exception = ResteasyViolationException.class.cast(entity);
-         ResteasyConstraintViolation violation = exception.getReturnValueViolations().iterator().next();
+         ResteasyViolationException e = new ResteasyViolationException(entity);
+         ResteasyConstraintViolation violation = e.getReturnValueViolations().iterator().next();
          System.out.println("violation: " + violation);
          Assert.assertTrue(violation.getMessage().equals("s must have length: 1 <= length <= 3"));
          Assert.assertEquals("Foo[abcdef]", violation.getValue());
@@ -114,14 +104,11 @@ public class TestValidation
          String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
          Assert.assertNotNull(header);
          Assert.assertTrue(Boolean.valueOf(header));
-         MediaType mediaType = response.getMediaType();
-         Assert.assertEquals(SerializableProvider.APPLICATION_SERIALIZABLE_TYPE, mediaType);
-         Object entity = response.getEntity(Serializable.class);
+         String entity = response.getEntity(String.class);
          System.out.println("entity: " + entity);
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException exception = ResteasyViolationException.class.cast(entity);
-         countViolations(exception, 1, 0, 0, 0, 0, 1);
-         ResteasyConstraintViolation violation = exception.getReturnValueViolations().iterator().next();
+         ResteasyViolationException e = new ResteasyViolationException(entity);
+         countViolations(e, 1, 0, 0, 0, 0, 1);
+         ResteasyConstraintViolation violation = e.getReturnValueViolations().iterator().next();
          System.out.println("violation: " + violation);
          Assert.assertTrue(violation.getMessage().equals("s must have length: 3 <= length <= 5"));
          Assert.assertEquals("Foo[abcdef]", violation.getValue());
@@ -136,14 +123,11 @@ public class TestValidation
          String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
          Assert.assertNotNull(header);
          Assert.assertTrue(Boolean.valueOf(header));
-         MediaType mediaType = response.getMediaType();
-         Assert.assertEquals(SerializableProvider.APPLICATION_SERIALIZABLE_TYPE, mediaType);
-         Object entity = response.getEntity(Serializable.class);
+         String entity = response.getEntity(String.class);
          System.out.println("entity: " + entity);
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException exception = ResteasyViolationException.class.cast(entity);
-         countViolations(exception, 2, 0, 0, 0, 0, 2);
-         Iterator<ResteasyConstraintViolation > it = exception.getReturnValueViolations().iterator(); 
+         ResteasyViolationException e = new ResteasyViolationException(entity);
+         countViolations(e, 2, 0, 0, 0, 0, 2);
+         Iterator<ResteasyConstraintViolation > it = e.getReturnValueViolations().iterator(); 
          ResteasyConstraintViolation cv1 = it.next();
          ResteasyConstraintViolation cv2 = it.next();
          if (cv1.getMessage().indexOf('1') < 0)
@@ -180,27 +164,24 @@ public class TestValidation
       String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
       Assert.assertNotNull(header);
       Assert.assertTrue(Boolean.valueOf(header));
-      MediaType mediaType = response.getMediaType();
-      Assert.assertEquals(SerializableProvider.APPLICATION_SERIALIZABLE_TYPE, mediaType);
-      Object entity = response.getEntity(Serializable.class);
+      String entity = response.getEntity(String.class);
       System.out.println("entity: " + entity);
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      ResteasyViolationException exception = ResteasyViolationException.class.cast(entity);
-      countViolations(exception, 4, 1, 1, 1, 1, 0);
-      ResteasyConstraintViolation violation = exception.getFieldViolations().iterator().next();
+      ResteasyViolationException e = new ResteasyViolationException(entity);
+      countViolations(e, 4, 1, 1, 1, 1, 0);
+      ResteasyConstraintViolation violation = e.getFieldViolations().iterator().next();
       System.out.println("violation: " + violation);
       Assert.assertEquals("size must be between 2 and 4", violation.getMessage());
       Assert.assertEquals("a", violation.getValue());
-      violation = exception.getPropertyViolations().iterator().next();
+      violation = e.getPropertyViolations().iterator().next();
       System.out.println("violation: " + violation);
       Assert.assertEquals("size must be between 3 and 5", violation.getMessage());
       Assert.assertEquals("z", violation.getValue());
-      violation = exception.getClassViolations().iterator().next();
+      violation = e.getClassViolations().iterator().next();
       System.out.println("violation: " + violation);
       Assert.assertEquals("Concatenation of s and t must have length > 5", violation.getMessage());
       System.out.println("violation value: " + violation.getValue());
       Assert.assertTrue(violation.getValue().startsWith("org.jboss.resteasy.validation.TestResourceWithAllViolationTypes@"));
-      violation = exception.getParameterViolations().iterator().next();
+      violation = e.getParameterViolations().iterator().next();
       System.out.println("violation: " + violation);
       Assert.assertEquals("s must have length: 3 <= length <= 5", violation.getMessage());
       Assert.assertEquals("Foo[p]", violation.getValue());

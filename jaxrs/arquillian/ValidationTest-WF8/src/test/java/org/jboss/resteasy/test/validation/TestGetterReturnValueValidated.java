@@ -1,9 +1,5 @@
 package org.jboss.resteasy.test.validation;
 
-import java.io.Serializable;
-
-import javax.ws.rs.core.MediaType;
-
 import junit.framework.Assert;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -12,7 +8,6 @@ import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.plugins.providers.SerializableProvider;
 import org.jboss.resteasy.validation.JaxRsActivator;
 import org.jboss.resteasy.validation.TestResourceWithGetterViolation;
 import org.jboss.shrinkwrap.api.Archive;
@@ -55,14 +50,11 @@ public class TestGetterReturnValueValidated
       String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
       Assert.assertNotNull(header);
       Assert.assertTrue(Boolean.valueOf(header));
-      MediaType mediaType = response.getMediaType();
-      Assert.assertEquals(SerializableProvider.APPLICATION_SERIALIZABLE_TYPE, mediaType);
-      Object entity = response.getEntity(Serializable.class);
+      String entity = response.getEntity(String.class);
       System.out.println("entity: " + entity);
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      ResteasyViolationException exception = ResteasyViolationException.class.cast(entity);
-      System.out.println(exception.toString());
-      countViolations(exception, 1, 0, 0, 0, 0, 1);
+      ResteasyViolationException e = new ResteasyViolationException(entity);
+      System.out.println(e.toString());
+      countViolations(e, 1, 0, 0, 0, 0, 1);
    }
    
    private void countViolations(ResteasyViolationException e, int totalCount, int fieldCount, int propertyCount, int classCount, int parameterCount, int returnValueCount)

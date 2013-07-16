@@ -1,7 +1,9 @@
 package org.jboss.resteasy.validation;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 
+import javax.validation.ValidatorFactory;
 import javax.validation.constraints.AssertTrue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -37,7 +39,15 @@ public class TestResourceLazyValidator
          {
             return false;
          }
-         return o.getClass().getName().equals("org.jboss.as.ee.beanvalidation.LazyValidatorFactory");
+         if (!(o instanceof WeakReference))
+         {
+            return false;
+         }
+         @SuppressWarnings("unchecked")
+         WeakReference<ValidatorFactory> ref = WeakReference.class.cast(o);
+         ValidatorFactory factory = ref.get();
+         System.out.println("real ValidatorFactory: " + factory);
+         return factory.getClass().getName().equals("org.jboss.as.ee.beanvalidation.LazyValidatorFactory");
       }
       catch (Exception e)
       {

@@ -313,84 +313,67 @@ public class TestValidateOnExecution
          // No method validation. Two property violations.
          ClientRequest request = new ClientRequest(generateURL("/none"));
          request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
-         ClientResponse<?> response = request.post(Serializable.class);
+         ClientResponse<?> response = request.post(String.class);
          Assert.assertEquals(400, response.getStatus());
-         Object entity = response.getEntity();
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class
-               .cast(entity);
+         String entity = response.getEntity(String.class);
+         ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
          System.out.println(e);
          countViolations(e, 2, 0, 2, 0, 0, 0);
       }
 
       {
          // No method validation. Two property violations.
-         ClientRequest request = new ClientRequest(
-               generateURL("/getterOnNonGetter"));
+         ClientRequest request = new ClientRequest(generateURL("/getterOnNonGetter"));
          request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
          ClientResponse<?> response = request.post(Serializable.class);
          Assert.assertEquals(400, response.getStatus());
-         Object entity = response.getEntity();
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class
-               .cast(entity);
+         String entity = response.getEntity(String.class);
+         ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
          System.out.println(e);
          countViolations(e, 2, 0, 2, 0, 0, 0);
       }
 
       {
          // No method validation. Two property violations
-         ClientRequest request = new ClientRequest(
-               generateURL("/nonGetterOnGetter"));
+         ClientRequest request = new ClientRequest(generateURL("/nonGetterOnGetter"));
          ClientResponse<?> response = request.post(Serializable.class);
          Assert.assertEquals(400, response.getStatus());
-         Object entity = response.getEntity();
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class
-               .cast(entity);
+         String entity = response.getEntity(String.class);
+         ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
          System.out.println(e);
          countViolations(e, 2, 0, 2, 0, 0, 0);
       }
 
       {
          // Failure.
-         ClientRequest request = new ClientRequest(
-               generateURL("/implicitOnNonGetter"));
+         ClientRequest request = new ClientRequest(generateURL("/implicitOnNonGetter"));
          request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
          ClientResponse<?> response = request.post(Serializable.class);
          Assert.assertEquals(400, response.getStatus());
-         Object entity = response.getEntity();
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class
-               .cast(entity);
+         String entity = response.getEntity(String.class);
+         ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
          System.out.println(e);
          countViolations(e, 3, 0, 2, 0, 1, 0);
       }
 
       {
          // Failure.
-         ClientRequest request = new ClientRequest(
-               generateURL("/implicitOnGetter"));
+         ClientRequest request = new ClientRequest(generateURL("/implicitOnGetter"));
          ClientResponse<?> response = request.post(Serializable.class);
          Assert.assertEquals(400, response.getStatus());
-         Object entity = response.getEntity();
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class
-               .cast(entity);
+         String entity = response.getEntity(String.class);
+         ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
          countViolations(e, 2, 0, 2, 0, 0, 0);
       }
 
       {
          // Failure.
-         ClientRequest request = new ClientRequest(
-               generateURL("/allOnNonGetter"));
+         ClientRequest request = new ClientRequest(generateURL("/allOnNonGetter"));
          request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
          ClientResponse<?> response = request.post(Serializable.class);
          Assert.assertEquals(400, response.getStatus());
-         Object entity = response.getEntity();
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class
-               .cast(entity);
+         String entity = response.getEntity(String.class);
+         ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
          countViolations(e, 3, 0, 2, 0, 1, 0);
       }
 
@@ -399,10 +382,8 @@ public class TestValidateOnExecution
          ClientRequest request = new ClientRequest(generateURL("/allOnGetter"));
          ClientResponse<?> response = request.post(Serializable.class);
          Assert.assertEquals(400, response.getStatus());
-         Object entity = response.getEntity();
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class
-               .cast(entity);
+         String entity = response.getEntity(String.class);
+         ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
          countViolations(e, 2, 0, 2, 0, 0, 0);
       }
 
@@ -412,10 +393,8 @@ public class TestValidateOnExecution
          request.body(MediaType.TEXT_PLAIN_TYPE, "abc");
          ClientResponse<?> response = request.post(Serializable.class);
          Assert.assertEquals(400, response.getStatus());
-         Object entity = response.getEntity();
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class
-               .cast(entity);
+         String entity = response.getEntity(String.class);
+         ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
          countViolations(e, 3, 0, 2, 0, 1, 0);
       }
 
