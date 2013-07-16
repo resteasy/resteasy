@@ -1,5 +1,6 @@
 package org.jboss.resteasy.tests.context;
 
+import org.jboss.resteasy.spi.HttpRequest;
 import org.junit.Assert;
 
 import javax.servlet.ServletConfig;
@@ -17,6 +18,13 @@ import javax.ws.rs.core.UriInfo;
 @Path("/")
 public class ContextService
 {
+   @GET
+   @Path("/forward")
+   public void forward(@Context HttpRequest request)
+   {
+      request.forward("/index.html");
+   }
+
    @GET
    @Path("/test")
    @Produces("text/plain")

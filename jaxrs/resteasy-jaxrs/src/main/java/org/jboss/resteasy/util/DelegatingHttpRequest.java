@@ -125,4 +125,16 @@ public class DelegatingHttpRequest implements HttpRequest
    {
       return delegate.getAsyncContext();
    }
+
+   @Override
+   public void forward(String path)
+   {
+      delegate.forward(path);
+   }
+
+   @Override
+   public boolean wasForwarded()
+   {
+      return delegate.wasForwarded();
+   }
 }

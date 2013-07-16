@@ -5,6 +5,7 @@ import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
@@ -408,5 +409,17 @@ public class MockHttpRequest implements HttpRequest
             return null;
          }
       };
+   }
+
+   @Override
+   public void forward(String path)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public boolean wasForwarded()
+   {
+      return false;
    }
 }

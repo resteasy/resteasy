@@ -6,6 +6,7 @@ import org.jboss.resteasy.core.SynchronousExecutionContext;
 import org.jboss.resteasy.plugins.server.BaseHttpRequest;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 
@@ -145,5 +146,17 @@ public class HttpServerRequest extends BaseHttpRequest
    public ResteasyAsynchronousContext getAsyncContext()
    {
       return new SynchronousExecutionContext(dispatcher, this, httpResponse);
+   }
+
+   @Override
+   public void forward(String path)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public boolean wasForwarded()
+   {
+      return false;
    }
 }
