@@ -22,6 +22,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -492,7 +493,12 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
       BaseClientResponse<T> response = (BaseClientResponse<T>) get(returnType);
       if (response.getStatus() == 204) return null;
       if (response.getStatus() != 200) throw new ClientResponseFailure(response);
-      return response.getEntity();
+      T obj = response.getEntity();
+      if (obj instanceof InputStream)
+      {
+         response.setWasReleased(true);
+      }
+      return obj;
    }
 
    /**
@@ -578,7 +584,12 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
       BaseClientResponse<T> response = (BaseClientResponse<T>) post(returnType);
       if (response.getStatus() == 204) return null;
       if (response.getStatus() != 200) throw new ClientResponseFailure(response);
-      return response.getEntity();
+      T obj = response.getEntity();
+      if (obj instanceof InputStream)
+      {
+         response.setWasReleased(true);
+      }
+      return obj;
    }
 
    public <T> ClientResponse<T> post(Class<T> returnType, Type genericType)
