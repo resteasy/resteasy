@@ -31,13 +31,11 @@ import org.jboss.resteasy.spi.validation.GeneralValidator;
 public class ValidatorContextResolver implements ContextResolver<GeneralValidator>
 {
    private final static Logger logger = Logger.getLogger(ValidatorContextResolver.class);
-   private static volatile ValidatorFactory validatorFactory;
+   private volatile ValidatorFactory validatorFactory;
    final static Object RD_LOCK = new Object();
 
-   // this used to be initialized in a static block, but I was having trouble class loading the context resolver in some
-   // environments.  So instead of failing and logging a warning when the resolver is instantiated at deploy time
-   // we log any validation warning when trying to obtain the ValidatorFactory. 
-   static ValidatorFactory getValidatorFactory()
+   // this must be resolved at deployment as it may be specific to the deployment
+   protected ValidatorFactory getValidatorFactory()
    {
       ValidatorFactory tmpValidatorFactory = validatorFactory;
       if (tmpValidatorFactory == null)
