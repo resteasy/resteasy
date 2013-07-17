@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.validation;
+                                                                                              package org.jboss.resteasy.plugins.validation;
 
 import java.util.Set;
 
@@ -8,7 +8,7 @@ import javax.naming.NamingException;
 import javax.validation.BootstrapConfiguration;
 import javax.validation.Configuration;
 import javax.validation.Validation;
-import javax.validation.Validator;
+import javax.validation.ValidationException;
 import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableType;
 import javax.ws.rs.ext.ContextResolver;
@@ -34,8 +34,10 @@ public class ValidatorContextResolver implements ContextResolver<GeneralValidato
    private volatile ValidatorFactory validatorFactory;
    final static Object RD_LOCK = new Object();
 
-   // this must be resolved at deployment as it may be specific to the deployment
-   protected ValidatorFactory getValidatorFactory()
+   // this used to be initialized in a static block, but I was having trouble class loading the context resolver in some
+   // environments.  So instead of failing and logging a warning when the resolver is instantiated at deploy time
+   // we log any validation warning when trying to obtain the ValidatorFactory. 
+   ValidatorFactory getValidatorFactory()
    {
       ValidatorFactory tmpValidatorFactory = validatorFactory;
       if (tmpValidatorFactory == null)
@@ -67,17 +69,15 @@ public class ValidatorContextResolver implements ContextResolver<GeneralValidato
    public GeneralValidator getContext(Class<?> type) {
       try
       {
-         Validator validator = getValidatorFactory().getValidator();
          Configuration<?> config = Validation.byDefaultProvider().configure();
          BootstrapConfiguration bootstrapConfiguration = config.getBootstrapConfiguration();
          boolean isExecutableValidationEnabled = bootstrapConfiguration.isExecutableValidationEnabled();
          Set<ExecutableType> defaultValidatedExecutableTypes = bootstrapConfiguration.getDefaultValidatedExecutableTypes();
-         return new GeneralValidatorImpl(validator, isExecutableValidationEnabled, defaultValidatedExecutableTypes);
+         return new GeneralValidatorImpl(getValidatorFactory(), isExecutableValidationEnabled, defaultValidatedExecutableTypes);
       }
       catch (Exception e)
       {
-         logger.warn("Unable to load Validation support", e);
+         throw new ValidationException("Unable to load Validation support", e);
       }
-      return null;
    }
 }

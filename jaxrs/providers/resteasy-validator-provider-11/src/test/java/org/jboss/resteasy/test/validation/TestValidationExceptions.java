@@ -7,17 +7,13 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
-import java.io.Serializable;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import javax.validation.Constraint;
-import javax.validation.ConstraintDeclarationException;
-import javax.validation.ConstraintDefinitionException;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import javax.validation.GroupDefinitionException;
 import javax.validation.GroupSequence;
 import javax.validation.Payload;
 import javax.validation.ValidationException;
@@ -31,11 +27,11 @@ import javax.ws.rs.core.Response;
 
 import junit.framework.Assert;
 
+import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.plugins.providers.SerializableProvider;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.Test;
@@ -117,6 +113,22 @@ public class TestValidationExceptions
    public static class OtherValidationException extends ValidationException
    {
       private static final long serialVersionUID = 1L;
+      OtherValidationException() {}
+      OtherValidationException(Exception cause) {super(cause);}
+   }
+   
+   public static class OtherValidationException2 extends ValidationException
+   {
+      private static final long serialVersionUID = 1L;
+      OtherValidationException2() {}
+      OtherValidationException2(Exception cause) {super(cause);}
+   }
+   
+   public static class OtherValidationException3 extends ValidationException
+   {
+      private static final long serialVersionUID = 1L;
+      OtherValidationException3() {}
+      OtherValidationException3(Exception cause) {super(cause);}
    }
    
    @Documented
@@ -178,7 +190,7 @@ public class TestValidationExceptions
       @Path("execution/{s}")
       public void testExecution()
       {
-         throw new OtherValidationException();
+         throw new OtherValidationException(new OtherValidationException2(new OtherValidationException3()));
       }
    }
    
@@ -189,6 +201,48 @@ public class TestValidationExceptions
    @Path("/")
    @GroupSequence({ TestGroup1.class, TestGroup2.class })
    public static class TestResourceWithInvalidConstraintGroup
+   {
+      private String s;
+      
+      @GET
+      public String test()
+      {
+         return s;
+      }
+   }
+   
+   ///////////////////////////////////////////////////////////////////////////////////////
+   @Documented
+   @Constraint(validatedBy = CrazyValidator.class)
+   @Target({FIELD, METHOD, PARAMETER, TYPE})
+   @Retention(RUNTIME)
+   public @interface CrazyConstraint
+   {
+      String message() default "a[][]][][b";
+      Class<?>[] groups() default {};
+      Class<? extends Payload>[] payload() default {};
+      String value() default "";
+   }
+   
+   public static class CrazyValidator implements ConstraintValidator<CrazyConstraint, TestResourceCrazy>
+   {
+      CrazyConstraint constraint;
+      
+      @Override
+      public void initialize(CrazyConstraint constraintAnnotation)
+      {
+         constraint = constraintAnnotation;
+      }
+      @Override
+      public boolean isValid(TestResourceCrazy r, ConstraintValidatorContext context)
+      {
+         return false;
+      }
+   }
+   
+   @Path("/")
+   @CrazyConstraint
+   public static class TestResourceCrazy
    {
       private String s;
       
@@ -212,11 +266,9 @@ public class TestValidationExceptions
       String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
       Assert.assertNotNull(header);
       Assert.assertTrue(Boolean.valueOf(header));
-      MediaType mediaType = response.getMediaType();
-      Assert.assertEquals(SerializableProvider.APPLICATION_SERIALIZABLE_TYPE, mediaType);
-      Object entity = response.getEntity(Serializable.class);
+      String entity = response.getEntity(String.class);
       System.out.println("entity: " + entity);
-      Assert.assertTrue(entity instanceof ConstraintDefinitionException);
+      Assert.assertTrue(entity.contains("ConstraintDefinitionException"));
       after();
    }
    
@@ -232,16 +284,14 @@ public class TestValidationExceptions
       String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
       Assert.assertNotNull(header);
       Assert.assertTrue(Boolean.valueOf(header));
-      MediaType mediaType = response.getMediaType();
-      Assert.assertEquals(SerializableProvider.APPLICATION_SERIALIZABLE_TYPE, mediaType);
-      Object entity = response.getEntity(Serializable.class);
+      String entity = response.getEntity(String.class);
       System.out.println("entity: " + entity);
-      Assert.assertTrue(entity instanceof ConstraintDeclarationException);
+      Assert.assertTrue(entity.contains("ConstraintDeclarationException"));
       after();
    }
    
    @Test
-   public void TestGroupDefinitionException() throws Exception
+   public void testGroupDefinitionException() throws Exception
    {
       before(TestResourceWithInvalidConstraintGroup.class);
 
@@ -253,10 +303,9 @@ public class TestValidationExceptions
       Assert.assertNotNull(header);
       Assert.assertTrue(Boolean.valueOf(header));
       MediaType mediaType = response.getMediaType();
-      Assert.assertEquals(SerializableProvider.APPLICATION_SERIALIZABLE_TYPE, mediaType);
-      Object entity = response.getEntity(Serializable.class);
+      String entity = response.getEntity(String.class);
       System.out.println("entity: " + entity);
-      Assert.assertTrue(entity instanceof GroupDefinitionException);
+      Assert.assertTrue(entity.contains("GroupDefinitionException"));
       after();
    }
    
@@ -274,13 +323,10 @@ public class TestValidationExceptions
          String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
          Assert.assertNotNull(header);
          Assert.assertTrue(Boolean.valueOf(header));
-         MediaType mediaType = response.getMediaType();
-         Assert.assertEquals(SerializableProvider.APPLICATION_SERIALIZABLE_TYPE, mediaType);
-         Object entity = response.getEntity(Serializable.class);
+         String entity = response.getEntity(String.class);
          System.out.println("entity: " + entity);
-         Assert.assertTrue(entity instanceof ValidationException);
-         ValidationException ve = ValidationException.class.cast(entity);
-         Assert.assertTrue(ve.getCause() instanceof OtherValidationException);
+         Assert.assertTrue(entity.contains("ValidationException"));
+         Assert.assertTrue(entity.contains("OtherValidationException"));
       }
       
       {
@@ -292,13 +338,10 @@ public class TestValidationExceptions
          String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
          Assert.assertNotNull(header);
          Assert.assertTrue(Boolean.valueOf(header));
-         MediaType mediaType = response.getMediaType();
-         Assert.assertEquals(SerializableProvider.APPLICATION_SERIALIZABLE_TYPE, mediaType);
-         Object entity = response.getEntity(Serializable.class);
+         String entity = response.getEntity(String.class);
          System.out.println("entity: " + entity);
-         Assert.assertTrue(entity instanceof ValidationException);
-         ValidationException ve = ValidationException.class.cast(entity);
-         Assert.assertTrue(ve.getCause() instanceof OtherValidationException);
+         Assert.assertTrue(entity.contains("ValidationException"));
+         Assert.assertTrue(entity.contains("OtherValidationException"));
       }
       
       {
@@ -310,13 +353,10 @@ public class TestValidationExceptions
          String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
          Assert.assertNotNull(header);
          Assert.assertTrue(Boolean.valueOf(header));
-         MediaType mediaType = response.getMediaType();
-         Assert.assertEquals(SerializableProvider.APPLICATION_SERIALIZABLE_TYPE, mediaType);
-         Object entity = response.getEntity(Serializable.class);
+         String entity = response.getEntity(String.class);
          System.out.println("entity: " + entity);
-         Assert.assertTrue(entity instanceof ValidationException);
-         ValidationException ve = ValidationException.class.cast(entity);
-         Assert.assertTrue(ve.getCause() instanceof OtherValidationException);
+         Assert.assertTrue(entity.contains("ValidationException"));
+         Assert.assertTrue(entity.contains("OtherValidationException"));
       }
       
       {
@@ -327,13 +367,32 @@ public class TestValidationExceptions
          String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
          Assert.assertNotNull(header);
          Assert.assertTrue(Boolean.valueOf(header));
-         MediaType mediaType = response.getMediaType();
-         Assert.assertEquals(SerializableProvider.APPLICATION_SERIALIZABLE_TYPE, mediaType);
-         Object entity = response.getEntity(Serializable.class);
-         System.out.println("entity: " + entity);
-         Assert.assertTrue(entity instanceof OtherValidationException);
+         String entity = response.getEntity(String.class);
+         System.out.println("last entity: " + entity);
+         Assert.assertTrue(entity.contains("OtherValidationException"));
+         Assert.assertTrue(entity.contains("OtherValidationException2"));
+         Assert.assertTrue(entity.contains("OtherValidationException3"));
       }
       
+      after();
+   }
+   
+   @Test
+   public void testCrazyMessage() throws Exception
+   {
+      before(TestResourceCrazy.class);
+
+      // Valid
+      ClientRequest request = new ClientRequest(generateURL("/"));
+      ClientResponse<?> response = request.get(String.class);
+      Assert.assertEquals(400, response.getStatus());
+      String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
+      Assert.assertNotNull(header);
+      Assert.assertTrue(Boolean.valueOf(header));
+      MediaType mediaType = response.getMediaType();
+      String entity = response.getEntity(String.class);
+      System.out.println("entity: " + entity);
+      ResteasyViolationException e = new ResteasyViolationException(entity);
       after();
    }
 }

@@ -1,18 +1,12 @@
 package org.jboss.resteasy.test.validation;
 
-import java.io.Serializable;
-
-import javax.ws.rs.core.MediaType;
-
 import junit.framework.Assert;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.plugins.providers.SerializableProvider;
 import org.jboss.resteasy.validation.JaxRsActivator;
 import org.jboss.resteasy.validation.TestResourceWithGetterViolation;
 import org.jboss.shrinkwrap.api.Archive;
