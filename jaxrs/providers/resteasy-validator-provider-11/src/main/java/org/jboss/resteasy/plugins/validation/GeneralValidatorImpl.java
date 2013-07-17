@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.ValidationException;
 import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableType;
 import javax.validation.executable.ValidateOnExecution;
 
@@ -38,21 +39,20 @@ import com.fasterxml.classmate.members.ResolvedMethod;
  */
 public class GeneralValidatorImpl implements GeneralValidator
 {
-   private static final Set<ResteasyConstraintViolation> empty = new HashSet<ResteasyConstraintViolation>();
-   
    /**
     * Used for resolving type parameters. Thread-safe.
     */
-   private static final TypeResolver typeResolver = new TypeResolver();
+   private TypeResolver typeResolver = new TypeResolver();
    
+   private ValidatorFactory validatorFactory;
    private Validator validator;
    private ConstraintTypeUtil util = new ConstraintTypeUtil11();
    private boolean isExecutableValidationEnabled;
    private ExecutableType[] defaultValidatedExecutableTypes;
 
-   public GeneralValidatorImpl(Validator validator, boolean isExecutableValidationEnabled, Set<ExecutableType> defaultValidatedExecutableTypes)
+   public GeneralValidatorImpl(ValidatorFactory validatorFactory, boolean isExecutableValidationEnabled, Set<ExecutableType> defaultValidatedExecutableTypes)
    {
-      this.validator = validator;
+      this.validatorFactory = validatorFactory;
       this.isExecutableValidationEnabled = isExecutableValidationEnabled;
       this.defaultValidatedExecutableTypes = defaultValidatedExecutableTypes.toArray(new ExecutableType[]{});
    }
@@ -60,6 +60,7 @@ public class GeneralValidatorImpl implements GeneralValidator
    @Override
    public void validate(HttpRequest request, Object object, Class<?>... groups)
    {
+      installValidator();
       Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
       try
       {
@@ -83,6 +84,7 @@ public class GeneralValidatorImpl implements GeneralValidator
 
    protected ViolationsContainer<Object> getViolationsContainer(HttpRequest request)
    {
+      @SuppressWarnings("unchecked")
       ViolationsContainer<Object> violationsContainer = ViolationsContainer.class.cast(request.getAttribute(ViolationsContainer.class.getName()));
       if (violationsContainer == null)
       {
@@ -95,6 +97,7 @@ public class GeneralValidatorImpl implements GeneralValidator
    @Override
    public void checkViolations(HttpRequest request)
    {
+      @SuppressWarnings("unchecked")
       ViolationsContainer<Object> violationsContainer = ViolationsContainer.class.cast(request.getAttribute(ViolationsContainer.class.getName()));
       if (violationsContainer != null && violationsContainer.size() > 0)
       {
@@ -112,6 +115,7 @@ public class GeneralValidatorImpl implements GeneralValidator
          return;
       }
 
+      installValidator();
       ViolationsContainer<Object> violationsContainer = getViolationsContainer(request);
       Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
       try
@@ -139,6 +143,7 @@ public class GeneralValidatorImpl implements GeneralValidator
    @Override
    public void validateReturnValue(HttpRequest request, Object object, Method method, Object returnValue, Class<?>... groups)
    {
+      installValidator();
       Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
       ViolationsContainer<Object> violationsContainer = getViolationsContainer(request);
       try
@@ -162,7 +167,6 @@ public class GeneralValidatorImpl implements GeneralValidator
          throw new ResteasyViolationException(violationsContainer);
       }
    }
-
 
    @Override
    public boolean isValidatable(Class<?> clazz)
@@ -241,7 +245,7 @@ public class GeneralValidatorImpl implements GeneralValidator
       return false;
    }
    
-   static protected List<ExecutableType[]> getExecutableTypesOnMethodInHierarchy(Method method)
+   protected List<ExecutableType[]> getExecutableTypesOnMethodInHierarchy(Method method)
    {
       Class<?> clazz = method.getDeclaringClass();
       List<ExecutableType[]> typesList = new ArrayList<ExecutableType[]>();
@@ -265,7 +269,7 @@ public class GeneralValidatorImpl implements GeneralValidator
       return typesList;
    }
    
-   static protected List<ExecutableType[]> getExecutableTypesOnMethodInInterfaces(Class<?> clazz, Method method)
+   protected List<ExecutableType[]> getExecutableTypesOnMethodInInterfaces(Class<?> clazz, Method method)
    {
    	List<ExecutableType[]> typesList = new ArrayList<ExecutableType[]>();
    	Class<?>[] interfaces = clazz.getInterfaces();
@@ -353,7 +357,7 @@ public class GeneralValidatorImpl implements GeneralValidator
     * Here, the "super" relationship is reflexive.  That is, a method
     * is a super method of itself.
     */
-   static protected Method getSuperMethod(Method method, Class<?> clazz)
+   protected Method getSuperMethod(Method method, Class<?> clazz)
    {
       Method[] methods = clazz.getDeclaredMethods();
       for (int i = 0; i < methods.length; i++)
@@ -378,7 +382,7 @@ public class GeneralValidatorImpl implements GeneralValidator
 	 *         
 	 * Taken from Hibernate Validator
 	 */
-   static protected boolean overrides(Method subTypeMethod, Method superTypeMethod)
+   protected boolean overrides(Method subTypeMethod, Method superTypeMethod)
    {
       if (subTypeMethod == null || superTypeMethod == null)
       {
@@ -406,7 +410,7 @@ public class GeneralValidatorImpl implements GeneralValidator
    /**
     * Taken from Hibernate Validator
     */
-   static protected boolean parametersResolveToSameTypes(Method subTypeMethod, Method superTypeMethod)
+   protected boolean parametersResolveToSameTypes(Method subTypeMethod, Method superTypeMethod)
    {
       if (subTypeMethod.getParameterTypes().length == 0)
       {
@@ -439,6 +443,14 @@ public class GeneralValidatorImpl implements GeneralValidator
       }
 
       return true;
+   }
+   
+   protected void installValidator()
+   {
+      if (validator == null)
+      {
+         validator = validatorFactory.getValidator();
+      }
    }
 
    /**

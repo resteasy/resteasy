@@ -1,9 +1,5 @@
 package org.jboss.resteasy.test.validation;
 
-import java.io.Serializable;
-
-import javax.ws.rs.core.MediaType;
-
 import junit.framework.Assert;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -13,7 +9,6 @@ import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.plugins.providers.SerializableProvider;
 import org.jboss.resteasy.validation.Foo;
 import org.jboss.resteasy.validation.FooConstraint;
 import org.jboss.resteasy.validation.FooReaderWriter;
@@ -137,22 +132,19 @@ public class TestExecutableValidationDisabled
       String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
       Assert.assertNotNull(header);
       Assert.assertTrue(Boolean.valueOf(header));
-      MediaType mediaType = response.getMediaType();
-      Assert.assertEquals(SerializableProvider.APPLICATION_SERIALIZABLE_TYPE, mediaType);
-      Object entity = response.getEntity(Serializable.class);
+      String entity = response.getEntity(String.class);
       System.out.println("entity: " + entity);
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      ResteasyViolationException exception = ResteasyViolationException.class.cast(entity);
-      countViolations(exception, 3, 1, 1, 1, 0, 0);
-      ResteasyConstraintViolation violation = exception.getFieldViolations().iterator().next();
+      ResteasyViolationException e = new ResteasyViolationException(entity);
+      countViolations(e, 3, 1, 1, 1, 0, 0);
+      ResteasyConstraintViolation violation = e.getFieldViolations().iterator().next();
       System.out.println("violation: " + violation);
       Assert.assertEquals("size must be between 2 and 4", violation.getMessage());
       Assert.assertEquals("a", violation.getValue());
-      violation = exception.getPropertyViolations().iterator().next();
+      violation = e.getPropertyViolations().iterator().next();
       System.out.println("violation: " + violation);
       Assert.assertEquals("size must be between 3 and 5", violation.getMessage());
       Assert.assertEquals("z", violation.getValue());
-      violation = exception.getClassViolations().iterator().next();
+      violation = e.getClassViolations().iterator().next();
       System.out.println("violation: " + violation);
       Assert.assertEquals("Concatenation of s and t must have length > 5", violation.getMessage());
       System.out.println("violation value: " + violation.getValue());

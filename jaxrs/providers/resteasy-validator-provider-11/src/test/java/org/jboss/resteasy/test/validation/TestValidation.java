@@ -63,7 +63,6 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.plugins.providers.SerializableProvider;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.Test;
@@ -83,7 +82,6 @@ public class TestValidation
    @Path("/")
    public static class TestResourceWithValidField
    {
-      @SuppressWarnings("unused")
       @Size(min=2, max=4)
       private String s = "abc";
 
@@ -96,7 +94,6 @@ public class TestValidation
    @Path("/")
    public static class TestResourceWithInvalidField
    {
-      @SuppressWarnings("unused")
       @Size(min=2, max=4)
       private String s = "abcde";
 
@@ -133,7 +130,6 @@ public class TestValidation
    @Path("/{s}/{t}")
    public static class TestResourceWithFieldAndProperty
    {
-      @SuppressWarnings("unused")
       @Size(min=2, max=4)
       @PathParam("s")
       private String s;
@@ -979,11 +975,10 @@ public class TestValidation
    {
       before(TestResourceWithInvalidField.class);
       ClientRequest request = new ClientRequest(generateURL("/"));
-      ClientResponse<?> response = request.post(Serializable.class);
+      ClientResponse<?> response = request.post();
       Assert.assertEquals(400, response.getStatus());
-      Object entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+      Object entity = response.getEntity(String.class);
+      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 1, 1, 0, 0, 0, 0);
       ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
       System.out.println("cv: " + cv);
@@ -1010,11 +1005,10 @@ public class TestValidation
    {
       before(TestResourceWithProperty.class);
       ClientRequest request = new ClientRequest(generateURL("/abcdef/unused"));
-      ClientResponse<?> response = request.post(Serializable.class);
+      ClientResponse<?> response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       Object entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 1, 0, 1, 0, 0, 0);
       ResteasyConstraintViolation cv = e.getPropertyViolations().iterator().next();
       Assert.assertEquals("size must be between 2 and 4", cv.getMessage());
@@ -1030,17 +1024,16 @@ public class TestValidation
 
       // Valid
       ClientRequest request = new ClientRequest(generateURL("/abc/wxyz"));
-      ClientResponse<?> response = request.post(Serializable.class);
+      ClientResponse<?> response = request.post();
       Assert.assertEquals(204, response.getStatus());
       response.releaseConnection();
 
       // Invalid
       request = new ClientRequest(generateURL("/a/uvwxyz"));
-      response = request.post(Serializable.class);
+      response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       Object entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 2, 1, 1, 0, 0, 0);
       ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
       Assert.assertEquals("size must be between 2 and 4", cv.getMessage());
@@ -1059,17 +1052,16 @@ public class TestValidation
 
       // Valid
       ClientRequest request = new ClientRequest(generateURL("/abc/xyz"));
-      ClientResponse<?> response = request.post(Serializable.class);      
+      ClientResponse<?> response = request.post();      
       Assert.assertEquals(204, response.getStatus());
       response.releaseConnection();
 
       // Invalid
       request = new ClientRequest(generateURL("/a/b"));
-      response = request.post(Serializable.class);
+      response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       Object entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 1, 0, 0, 1, 0, 0);
       ResteasyConstraintViolation cv = e.getClassViolations().iterator().next();
       Assert.assertEquals("Concatenation of s and t must have length > 5", cv.getMessage());
@@ -1086,17 +1078,16 @@ public class TestValidation
 
       // Valid
       ClientRequest request = new ClientRequest(generateURL("/abcd/vwxyz"));
-      ClientResponse<?> response = request.post(Serializable.class);      
+      ClientResponse<?> response = request.post();      
       Assert.assertEquals(204, response.getStatus());
       response.releaseConnection();
 
       // Invalid
       request = new ClientRequest(generateURL("/abc/xyz"));
-      response = request.post(Serializable.class);
+      response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       Object entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 2, 1, 1, 0, 0, 0);
       ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().startsWith("size must be between 4 and"));
@@ -1115,17 +1106,16 @@ public class TestValidation
 
       // Valid
       ClientRequest request = new ClientRequest(generateURL("/abcde"));
-      ClientResponse<?> response = request.post(Serializable.class);      
+      ClientResponse<?> response = request.post();      
       Assert.assertEquals(204, response.getStatus());
       response.releaseConnection();
 
       // Invalid
       request = new ClientRequest(generateURL("/abc"));
-      response = request.post(Serializable.class);
+      response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       Object entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
       System.out.println("exception: " + e);
       countViolations(e, 1, 0, 1, 0, 0, 0);
       ResteasyConstraintViolation cv = e.getPropertyViolations().iterator().next();
@@ -1142,17 +1132,16 @@ public class TestValidation
 
       // Valid
       ClientRequest request = new ClientRequest(generateURL("/abcde"));
-      ClientResponse<?> response = request.post(Serializable.class);      
+      ClientResponse<?> response = request.post();      
       Assert.assertEquals(204, response.getStatus());
       response.releaseConnection();
 
       // Invalid
       request = new ClientRequest(generateURL("/abc"));
-      response = request.post(Serializable.class);
+      response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       Object entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 1, 0, 1, 0, 0, 0);
       ResteasyConstraintViolation cv = e.getPropertyViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().startsWith("size must be between 5 and"));
@@ -1168,17 +1157,16 @@ public class TestValidation
 
       // Valid
       ClientRequest request = new ClientRequest(generateURL("/abcde"));
-      ClientResponse<?> response = request.post(Serializable.class);      
+      ClientResponse<?> response = request.post();      
       Assert.assertEquals(204, response.getStatus());
       response.releaseConnection();
 
       // Invalid
       request = new ClientRequest(generateURL("/abc"));
-      response = request.post(Serializable.class);
+      response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       Object entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 1, 0, 1, 0, 0, 0);
       ResteasyConstraintViolation cv = e.getPropertyViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().startsWith("size must be between 5 and"));
@@ -1194,17 +1182,16 @@ public class TestValidation
 
       // Valid
       ClientRequest request = new ClientRequest(generateURL("/abcde"));
-      ClientResponse<?> response = request.post(Serializable.class);      
+      ClientResponse<?> response = request.post();      
       Assert.assertEquals(204, response.getStatus());
       response.releaseConnection();
 
       // Invalid
       request = new ClientRequest(generateURL("/abc"));
-      response = request.post(Serializable.class);
+      response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       Object entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
       System.out.println("exception: " + e);
       countViolations(e, 1, 0, 1, 0, 0, 0);
       ResteasyConstraintViolation cv = e.getPropertyViolations().iterator().next();
@@ -1222,32 +1209,31 @@ public class TestValidation
       // Valid native constraint
       ClientRequest request = new ClientRequest(generateURL("/native"));
       request.body("application/foo", new Foo("a"));
-      ClientResponse<?> response = request.post(Serializable.class);      
+      ClientResponse<?> response = request.post();      
       Assert.assertEquals(204, response.getStatus());
       response.releaseConnection();
 
       // Valid imposed constraint
       request = new ClientRequest(generateURL("/imposed"));
       request.body("application/foo", new Foo("abcde"));
-      response = request.post(Serializable.class);      
+      response = request.post();      
       Assert.assertEquals(204, response.getStatus());
       response.releaseConnection();
 
       // Valid native and imposed constraints.
       request = new ClientRequest(generateURL("/nativeAndImposed"));
       request.body("application/foo", new Foo("abc"));
-      response = request.post(Serializable.class);      
+      response = request.post();      
       Assert.assertEquals(204, response.getStatus());
       response.releaseConnection();
 
       // Invalid native constraint
       request = new ClientRequest(generateURL("/native"));
       request.body("application/foo", new Foo("abcdef"));
-      response = request.post(Serializable.class);
+      response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       Object entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 1, 0, 0, 0, 1, 0);
       ResteasyConstraintViolation cv = e.getParameterViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("s must have length: 1 <= length <= 3"));
@@ -1256,11 +1242,10 @@ public class TestValidation
       // Invalid imposed constraint
       request = new ClientRequest(generateURL("/imposed"));
       request.body("application/foo", new Foo("abcdef"));
-      response = request.post(Serializable.class);
+      response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      e = ResteasyViolationException.class.cast(entity);
+      e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 1, 0, 0, 0, 1, 0);
       cv = e.getParameterViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("s must have length: 3 <= length <= 5"));
@@ -1269,11 +1254,10 @@ public class TestValidation
       // Invalid native and imposed constraints
       request = new ClientRequest(generateURL("/nativeAndImposed"));
       request.body("application/foo", new Foo("abcdef"));
-      response = request.post(Serializable.class);
+      response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      e = ResteasyViolationException.class.cast(entity);
+      e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 2, 0, 0, 0, 2, 0);
       Iterator<ResteasyConstraintViolation> it = e.getParameterViolations().iterator(); 
       ResteasyConstraintViolation cv1 = it.next();
@@ -1309,11 +1293,10 @@ public class TestValidation
       request.formParameter("f", "ffff");      // form param
       request.header("h", "hhhh");             // header param
       request.cookie(new Cookie("c", "cccc")); // cookie param
-      response = request.post(Serializable.class);
+      response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      e = ResteasyViolationException.class.cast(entity);
+      e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 6, 0, 0, 0, 6, 0);
       List<String> list = getMessages(new ArrayList<ResteasyConstraintViolation>(e.getViolations()));
       Assert.assertTrue(list.contains("size must be between 2 and 3; pppp"));
@@ -1360,9 +1343,9 @@ public class TestValidation
       request.body("application/foo", new Foo("abcdef"));
       response = request.post(Foo.class);
       Assert.assertEquals(500, response.getStatus());
-      Object entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+      Object entity = response.getEntity(String.class);
+      System.out.println("entity: " + entity);
+      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 1, 0, 0, 0, 0, 1);
       ResteasyConstraintViolation cv = e.getReturnValueViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("s must have length: 1 <= length <= 3"));
@@ -1373,9 +1356,8 @@ public class TestValidation
       request.body("application/foo", new Foo("abcdef"));
       response = request.post(Foo.class);
       Assert.assertEquals(500, response.getStatus());
-      entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      e = ResteasyViolationException.class.cast(entity);
+      entity = response.getEntity(String.class);
+      e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 1, 0, 0, 0, 0, 1);
       cv = e.getReturnValueViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("s must have length: 3 <= length <= 5"));
@@ -1386,9 +1368,8 @@ public class TestValidation
       request.body("application/foo", new Foo("abcdef"));
       response = request.post(Foo.class); 
       Assert.assertEquals(500, response.getStatus());
-      entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      e = ResteasyViolationException.class.cast(entity);
+      entity = response.getEntity(String.class);
+      e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 2, 0, 0, 0, 0, 2);
       Iterator<ResteasyConstraintViolation> it = e.getReturnValueViolations().iterator(); 
       ResteasyConstraintViolation cv1 = it.next();
@@ -1427,9 +1408,8 @@ public class TestValidation
       request.body("application/foo", foo);
       response = request.post(Foo.class);
       Assert.assertEquals(400, response.getStatus());
-      Object entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+      Object entity = response.getEntity(String.class);
+      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 4, 1, 1, 1, 1, 0);
       ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
       Assert.assertEquals("size must be between 2 and 4", cv.getMessage());
@@ -1480,12 +1460,11 @@ public class TestValidation
          InterfaceTestSub.u = "d";
          ClientRequest request = new ClientRequest(generateURL("/inherit"));
          request.body(MediaType.TEXT_PLAIN_TYPE, "e");
-         ClientResponse<?> response = request.post(Serializable.class);
+         ClientResponse<?> response = request.post(String.class);
          System.out.println("status: " + response.getStatus());
          Assert.assertEquals(400, response.getStatus());
          Object entity = response.getEntity();
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+         ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
          countViolations(e, 3, 0, 0, 2, 1, 0);
       }
       
@@ -1495,12 +1474,11 @@ public class TestValidation
          InterfaceTestSub.u = "d";
          ClientRequest request = new ClientRequest(generateURL("/override"));
          request.body(MediaType.TEXT_PLAIN_TYPE, "e");
-         ClientResponse<?> response = request.post(Serializable.class);
+         ClientResponse<?> response = request.post(String.class);
          System.out.println("status: " + response.getStatus());
          Assert.assertEquals(400, response.getStatus());
          Object entity = response.getEntity();
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+         ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
          countViolations(e, 3, 0, 0, 2, 1, 0);
       }
       
@@ -1510,12 +1488,11 @@ public class TestValidation
          InterfaceTestSub.u = "bbb";
          ClientRequest request = new ClientRequest(generateURL("/inherit"));
          request.body(MediaType.TEXT_PLAIN_TYPE, "eeee");
-         ClientResponse<?> response = request.post(Serializable.class);
+         ClientResponse<?> response = request.post(String.class);
          System.out.println("status: " + response.getStatus());
          Assert.assertEquals(500, response.getStatus());
          Object entity = response.getEntity();
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+         ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
          countViolations(e, 1, 0, 0, 0, 0, 1);
       }
       
@@ -1525,12 +1502,11 @@ public class TestValidation
          InterfaceTestSub.u = "bbb";
          ClientRequest request = new ClientRequest(generateURL("/override"));
          request.body(MediaType.TEXT_PLAIN_TYPE, "eeee");
-         ClientResponse<?> response = request.post(Serializable.class);
+         ClientResponse<?> response = request.post(String.class);
          System.out.println("status: " + response.getStatus());
          Assert.assertEquals(500, response.getStatus());
          Object entity = response.getEntity();
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+         ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
          countViolations(e, 2, 0, 0, 0, 0, 2);
       }
       after();
@@ -1550,11 +1526,10 @@ public class TestValidation
 
       // Sub-resource locator returns resource with invalid field.
       request = new ClientRequest(generateURL("/invalidField"));
-      response = request.post(Serializable.class);
+      response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       Object entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 1, 1, 0, 0, 0, 0);
       ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
       Assert.assertEquals("size must be between 2 and 4", cv.getMessage());
@@ -1570,11 +1545,10 @@ public class TestValidation
       
       // Sub-resource locator returns resource with invalid property.
       request = new ClientRequest(generateURL("/property/abcdef/unused"));
-      response = request.post(Serializable.class);
+      response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      e = ResteasyViolationException.class.cast(entity);
+      e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 1, 0, 1, 0, 0, 0);
       cv = e.getPropertyViolations().iterator().next();
       Assert.assertEquals("size must be between 2 and 4", cv.getMessage());
@@ -1596,9 +1570,8 @@ public class TestValidation
       request.body("application/foo", foo);
       response = request.post(Foo.class);
       Assert.assertEquals(400, response.getStatus());
-      entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      e = ResteasyViolationException.class.cast(entity);
+      entity = response.getEntity(String.class);
+      e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 4, 1, 1, 1, 1, 0);
       cv = e.getFieldViolations().iterator().next();
       Assert.assertEquals("size must be between 2 and 4", cv.getMessage());
@@ -1617,11 +1590,10 @@ public class TestValidation
 
       // Sub-resource locator returns resource with invalid property.
       request = new ClientRequest(generateURL("/locator/sublocator/abcdef"));
-      response = request.post(Serializable.class);
+      response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
-      entity = response.getEntity();
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      e = ResteasyViolationException.class.cast(entity);
+      entity = response.getEntity(String.class);
+      e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 1, 1, 0, 0, 0, 0);
       cv = e.getFieldViolations().iterator().next();
       Assert.assertEquals("size must be between 2 and 3", cv.getMessage());
@@ -1657,9 +1629,8 @@ public class TestValidation
          response = request.get();
       }
       Assert.assertEquals(400, response.getStatus());
-      Object entity = response.getEntity(Exception.class);
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      ResteasyViolationException e = ResteasyViolationException.class.cast(entity);
+      Object entity = response.getEntity(String.class);
+      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 4, 1, 1, 1, 1, 0);
       ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
       Assert.assertEquals("size must be between 2 and 4", cv.getMessage());
@@ -1701,9 +1672,8 @@ public class TestValidation
          response = request.get();
       }
       Assert.assertEquals(500, response.getStatus());
-      entity = response.getEntity(Exception.class);
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      e = ResteasyViolationException.class.cast(entity);
+      entity = response.getEntity(String.class);
+      e = new ResteasyViolationException(String.class.cast(entity));
       countViolations(e, 1, 0, 0, 0, 0, 1);
       cv = e.getReturnValueViolations().iterator().next();
       Assert.assertEquals("s must have length: 4 <= length <= 5", cv.getMessage());
@@ -1736,14 +1706,11 @@ public class TestValidation
       String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
       Assert.assertNotNull(header);
       Assert.assertTrue(Boolean.valueOf(header));
-      MediaType mediaType = response.getMediaType();
-      Assert.assertEquals(SerializableProvider.APPLICATION_SERIALIZABLE_TYPE, mediaType);
-      Object entity = response.getEntity(Serializable.class);
+      Object entity = response.getEntity(String.class);
       System.out.println("entity: " + entity);
-      Assert.assertTrue(entity instanceof ResteasyViolationException);
-      ResteasyViolationException exception = ResteasyViolationException.class.cast(entity);
-      countViolations(exception, 1, 0, 0, 0, 1, 0);
-      ResteasyConstraintViolation violation = exception.getParameterViolations().iterator().next();
+      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
+      countViolations(e, 1, 0, 0, 0, 1, 0);
+      ResteasyConstraintViolation violation = e.getParameterViolations().iterator().next();
       System.out.println("violation: " + violation);
       Assert.assertEquals("Parameters must total <= 7", violation.getMessage());
       System.out.println("violation value: " + violation.getValue());
@@ -1776,14 +1743,11 @@ public class TestValidation
          String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
          Assert.assertNotNull(header);
          Assert.assertTrue(Boolean.valueOf(header));
-         MediaType mediaType = response.getMediaType();
-         Assert.assertEquals(SerializableProvider.APPLICATION_SERIALIZABLE_TYPE, mediaType);
-         Object entity = response.getEntity(Serializable.class);
+         Object entity = response.getEntity(String.class);
          System.out.println("entity: " + entity);
-         Assert.assertTrue(entity instanceof ResteasyViolationException);
-         ResteasyViolationException exception = ResteasyViolationException.class.cast(entity);
-         countViolations(exception, 1, 0, 0, 0, 0, 1);
-         ResteasyConstraintViolation violation = exception.getReturnValueViolations().iterator().next();
+         ResteasyViolationException e1 = new ResteasyViolationException(String.class.cast(entity));
+         countViolations(e1, 1, 0, 0, 0, 0, 1);
+         ResteasyConstraintViolation violation = e1.getReturnValueViolations().iterator().next();
          System.out.println("violation: " + violation);
          Assert.assertEquals("size must be between 2 and 4", violation.getMessage());
          Assert.assertEquals("abcde", violation.getValue());

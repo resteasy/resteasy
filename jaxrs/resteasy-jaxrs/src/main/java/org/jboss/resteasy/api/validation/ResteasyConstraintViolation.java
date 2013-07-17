@@ -63,7 +63,7 @@ public class ResteasyConstraintViolation implements Serializable
     */
    public String toString()
    {
-      return type() + "| " + path + "| " + message + "| " + value;
+      return "[" + type() + "]\r[" + path + "]\r[" + message + "]\r[" + value + "]\r";
    }
    
    /**
