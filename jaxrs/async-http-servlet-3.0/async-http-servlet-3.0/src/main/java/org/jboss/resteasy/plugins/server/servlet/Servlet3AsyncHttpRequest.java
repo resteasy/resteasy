@@ -12,6 +12,7 @@ import org.jboss.resteasy.spi.ResteasyUriInfo;
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,9 +32,9 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
    protected HttpServletResponse response;
    protected ResteasyAsynchronousContext asynchronousContext;
 
-   public Servlet3AsyncHttpRequest(HttpServletRequest httpServletRequest, HttpServletResponse response, HttpResponse httpResponse, ResteasyHttpHeaders httpHeaders, ResteasyUriInfo uriInfo, String s, SynchronousDispatcher synchronousDispatcher)
+   public Servlet3AsyncHttpRequest(HttpServletRequest httpServletRequest, HttpServletResponse response, ServletContext servletContext, HttpResponse httpResponse, ResteasyHttpHeaders httpHeaders, ResteasyUriInfo uriInfo, String s, SynchronousDispatcher synchronousDispatcher)
    {
-      super(httpServletRequest, httpResponse, httpHeaders, uriInfo, s, synchronousDispatcher);
+      super(httpServletRequest, response, servletContext, httpResponse, httpHeaders, uriInfo, s, synchronousDispatcher);
       this.response = response;
       asynchronousContext = new Servlet3ExecutionContext((ServletRequest) httpServletRequest);
    }

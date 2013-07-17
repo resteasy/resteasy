@@ -1,6 +1,5 @@
-package org.jboss.resteasy.plugins.validation;
+                                                                                              package org.jboss.resteasy.plugins.validation;
 
-import java.lang.ref.WeakReference;
 import java.util.Set;
 
 import javax.naming.Context;
@@ -10,7 +9,6 @@ import javax.validation.BootstrapConfiguration;
 import javax.validation.Configuration;
 import javax.validation.Validation;
 import javax.validation.ValidationException;
-import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableType;
 import javax.ws.rs.ext.ContextResolver;
@@ -33,15 +31,15 @@ import org.jboss.resteasy.spi.validation.GeneralValidator;
 public class ValidatorContextResolver implements ContextResolver<GeneralValidator>
 {
    private final static Logger logger = Logger.getLogger(ValidatorContextResolver.class);
-   private static volatile WeakReference<ValidatorFactory> validatorFactory;
+   private volatile ValidatorFactory validatorFactory;
    final static Object RD_LOCK = new Object();
 
    // this used to be initialized in a static block, but I was having trouble class loading the context resolver in some
    // environments.  So instead of failing and logging a warning when the resolver is instantiated at deploy time
    // we log any validation warning when trying to obtain the ValidatorFactory. 
-   static WeakReference<ValidatorFactory> getValidatorFactory()
+   ValidatorFactory getValidatorFactory()
    {
-      WeakReference<ValidatorFactory> tmpValidatorFactory = validatorFactory;
+      ValidatorFactory tmpValidatorFactory = validatorFactory;
       if (tmpValidatorFactory == null)
       {
          synchronized (RD_LOCK)
@@ -52,14 +50,14 @@ public class ValidatorContextResolver implements ContextResolver<GeneralValidato
                try
                {
                   Context context = new InitialContext();
-                  validatorFactory = tmpValidatorFactory = new WeakReference<ValidatorFactory>(ValidatorFactory.class.cast(context.lookup("java:comp/ValidatorFactory")));
+                  validatorFactory = tmpValidatorFactory = ValidatorFactory.class.cast(context.lookup("java:comp/ValidatorFactory"));
                   logger.debug("Using CDI supporting " + validatorFactory);
                }
                catch (NamingException e)
                {
                   logger.info("Unable to find CDI supporting ValidatorFactory. Using default ValidatorFactory");
                   HibernateValidatorConfiguration config = Validation.byProvider(HibernateValidator.class).configure();
-                  validatorFactory = tmpValidatorFactory = new WeakReference<ValidatorFactory>(config.buildValidatorFactory());
+                  validatorFactory = tmpValidatorFactory = config.buildValidatorFactory();
                }
             }
          }
@@ -75,7 +73,7 @@ public class ValidatorContextResolver implements ContextResolver<GeneralValidato
          BootstrapConfiguration bootstrapConfiguration = config.getBootstrapConfiguration();
          boolean isExecutableValidationEnabled = bootstrapConfiguration.isExecutableValidationEnabled();
          Set<ExecutableType> defaultValidatedExecutableTypes = bootstrapConfiguration.getDefaultValidatedExecutableTypes();
-         return new GeneralValidatorImpl(getValidatorFactory().get(), isExecutableValidationEnabled, defaultValidatedExecutableTypes);
+         return new GeneralValidatorImpl(getValidatorFactory(), isExecutableValidationEnabled, defaultValidatedExecutableTypes);
       }
       catch (Exception e)
       {

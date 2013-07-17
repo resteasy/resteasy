@@ -12,7 +12,10 @@ import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.Encode;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -36,19 +39,25 @@ public class HttpServletInputMessage implements HttpRequest
    private final static Logger logger = Logger.getLogger(HttpServletInputMessage.class);
    protected ResteasyHttpHeaders httpHeaders;
    protected HttpServletRequest request;
+   protected HttpServletResponse servletResponse;
+   protected ServletContext servletContext;
    protected SynchronousDispatcher dispatcher;
    protected HttpResponse httpResponse;
+
    protected ResteasyUriInfo uri;
    protected String httpMethod;
    protected MultivaluedMap<String, String> formParameters;
    protected MultivaluedMap<String, String> decodedFormParameters;
    protected InputStream overridenStream;
    protected SynchronousExecutionContext executionContext;
+   protected boolean wasForwarded;
 
 
-   public HttpServletInputMessage(HttpServletRequest request, HttpResponse httpResponse, ResteasyHttpHeaders httpHeaders, ResteasyUriInfo uri, String httpMethod, SynchronousDispatcher dispatcher)
+   public HttpServletInputMessage(HttpServletRequest request, HttpServletResponse servletResponse, ServletContext servletContext, HttpResponse httpResponse, ResteasyHttpHeaders httpHeaders, ResteasyUriInfo uri, String httpMethod, SynchronousDispatcher dispatcher)
    {
       this.request = request;
+      this.servletResponse = servletResponse;
+      this.servletContext = servletContext;
       this.dispatcher = dispatcher;
       this.httpResponse = httpResponse;
       this.httpHeaders = httpHeaders;
@@ -233,5 +242,29 @@ public class HttpServletInputMessage implements HttpRequest
    public boolean isInitial()
    {
       return true;
+   }
+
+   @Override
+   public void forward(String path)
+   {
+      try
+      {
+         wasForwarded = true;
+         servletContext.getRequestDispatcher(path).forward(request, servletResponse);
+      }
+      catch (ServletException e)
+      {
+         throw new RuntimeException(e);
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
+   @Override
+   public boolean wasForwarded()
+   {
+      return wasForwarded;
    }
 }

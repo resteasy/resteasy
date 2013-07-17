@@ -8,9 +8,15 @@ import javax.validation.constraints.AssertTrue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Providers;
 
-//import org.jboss.as.ee.beanvalidation.LazyValidatorFactory;
 import org.jboss.resteasy.plugins.validation.ValidatorContextResolver;
+import org.jboss.resteasy.spi.validation.GeneralValidator;
+//import org.jboss.resteasy.spi.validation.GeneralValidator;
+//import org.jboss.as.ee.beanvalidation.LazyValidatorFactory;
 
 /**
  * 
@@ -26,27 +32,24 @@ public class TestResourceLazyValidator
    @Path("lazy")
    @Produces("text/plain")
    @AssertTrue
-   public boolean testLazyValidator()
+   public boolean testLazyValidator(@Context Providers providers)
    {
+      ContextResolver<GeneralValidator> resolver = providers.getContextResolver(GeneralValidator.class, MediaType.WILDCARD_TYPE);
+      if (resolver == null)
+      {
+         return false;
+      }
       Field field = null;
       try
       {
          field = ValidatorContextResolver.class.getDeclaredField("validatorFactory");
          field.setAccessible(true);
-         Object o = field.get(null);
-         System.out.println("ValidatorFactory: " + o);
-         if (o == null)
+         Object factory = field.get(resolver);
+         System.out.println("ValidatorFactory: " + factory);
+         if (factory == null)
          {
             return false;
          }
-         if (!(o instanceof WeakReference))
-         {
-            return false;
-         }
-         @SuppressWarnings("unchecked")
-         WeakReference<ValidatorFactory> ref = WeakReference.class.cast(o);
-         ValidatorFactory factory = ref.get();
-         System.out.println("real ValidatorFactory: " + factory);
          return factory.getClass().getName().equals("org.jboss.as.ee.beanvalidation.LazyValidatorFactory");
       }
       catch (Exception e)

@@ -4,6 +4,7 @@ import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.SynchronousExecutionContext;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
+import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.Encode;
@@ -204,4 +205,17 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
    {
        return is100ContinueExpected;
    }
+
+   @Override
+   public void forward(String path)
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public boolean wasForwarded()
+   {
+      return false;
+   }
+
 }

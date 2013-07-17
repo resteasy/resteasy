@@ -64,4 +64,8 @@ public interface HttpRequest
 
    public boolean isInitial();
 
+   public void forward(String path);
+
+   public boolean wasForwarded();
+
 }
