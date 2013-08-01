@@ -389,7 +389,7 @@ public class ClientInvocation implements Invocation
          response.setProperties(configuration.getMutableProperties());
 
          ClientResponseFilter[] responseFilters = getResponseFilters();
-         if (requestFilters != null && requestFilters.length > 0)
+         if (responseFilters != null && responseFilters.length > 0)
          {
             ClientResponseContextImpl responseContext = new ClientResponseContextImpl(response);
             for (ClientResponseFilter filter : responseFilters)
