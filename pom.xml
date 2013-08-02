@@ -80,7 +80,7 @@
 
     <modules>
 
-        <!-- Should probably be removed and be treated as external dependency   -->
+        <!-- Should probably be removed and be treated as external dependency -->
         <module>tjws</module>
         <module>jaxrs-api</module>
         <module>resteasy-test-data</module>
@@ -164,7 +164,7 @@
                 <version>1.0.1</version>
                 <exclusions>
                     <!-- This results in duplicate stax-api jars. This is the older
-            one. A newer is brought in by com.sun.xml.bind:jaxb-impl -->
+one. A newer is brought in by com.sun.xml.bind:jaxb-impl -->
                     <exclusion>
                         <groupId>stax</groupId>
                         <artifactId>stax-api</artifactId>
@@ -195,12 +195,12 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-			<dependency>
-				<groupId>commons-logging</groupId>
-				<artifactId>commons-logging</artifactId>
-				<version>1.1.1</version>
-				<scope>test</scope>
-			</dependency>
+<dependency>
+<groupId>commons-logging</groupId>
+<artifactId>commons-logging</artifactId>
+<version>1.1.1</version>
+<scope>test</scope>
+</dependency>
             <dependency>
                 <groupId>net.jcip</groupId>
                 <artifactId>jcip-annotations</artifactId>
@@ -212,7 +212,7 @@
                 <version>${dep.jettison.version}</version>
                 <exclusions>
                     <!-- This results in duplicate stax-api jars. This is the older
-            one. A newer is brought in by com.sun.xml.bind:jaxb-impl -->
+one. A newer is brought in by com.sun.xml.bind:jaxb-impl -->
                     <exclusion>
                         <groupId>stax</groupId>
                         <artifactId>stax-api</artifactId>
@@ -233,14 +233,14 @@
             </dependency>
 
             <!--
-            We forked it for now because of startup/shutdown race conditions
+We forked it for now because of startup/shutdown race conditions
 
-                        <dependency>
-                            <groupId>tjws</groupId>
-                            <artifactId>webserver</artifactId>
-                            <version>1.7.0</version>
-                        </dependency>
-            -->
+<dependency>
+<groupId>tjws</groupId>
+<artifactId>webserver</artifactId>
+<version>1.7.0</version>
+</dependency>
+-->
 
             <dependency>
                 <groupId>org.jyaml</groupId>
