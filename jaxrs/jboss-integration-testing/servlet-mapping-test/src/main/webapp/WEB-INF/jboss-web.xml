@@ -1,0 +1,5 @@
+<jboss-web>
+   <security-domain>java:/jaas/other</security-domain>
+   <context-root>resteasy</context-root>
+
+</jboss-web>

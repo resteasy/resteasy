@@ -1,0 +1,35 @@
+<chapter id="_QueryParam">
+<title>@QueryParam</title>
+
+<para>
+
+The @QueryParam annotation allows you to map a URI query string parameter or url form encoded parameter to your method invocation.
+</para>
+<para>
+
+GET /books?num=5
+</para>
+<para>
+
+<programlisting>
+   
+
+
+   @GET
+   public String getBooks(@QueryParam("num") int num) {
+   ...
+   }
+</programlisting>
+</para>
+<para>
+
+Currently since Resteasy is built on top of a Servlet, it does not distinguish between URI query strings or url form encoded paramters.  Like PathParam, your parameter type can be an String, primitive, or class that has a String constructor or static valueOf() method.
+</para>
+<para>
+
+</para>
+<para>
+
+
+</para>
+</chapter>

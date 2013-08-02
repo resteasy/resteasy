@@ -1,0 +1,40 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <context:component-scan base-package="org.jboss.resteasy.spring.scanned" >
+        <context:include-filter type="annotation" expression="javax.ws.rs.Path"/>
+    </context:component-scan>
+
+    <bean id="bill" class="org.jboss.resteasy.spring.TestSpringBeanProcessor$Customer" p:name="bill"/>
+    <bean id="myProvider" class="org.jboss.resteasy.spring.TestSpringBeanProcessor$MyWriter"/>
+    <bean id="myResource" class="org.jboss.resteasy.spring.TestSpringBeanProcessor$MyResource" p:customer-ref="bill" />
+    <bean id="myInterceptedResource" class="org.jboss.resteasy.spring.TestSpringBeanProcessor$MyInterceptedResource"
+    	p:customer-ref="bill" />
+    <bean id="myResource2" class="org.jboss.resteasy.spring.TestSpringBeanProcessor$MyPrototypedResource"
+          scope="prototype" p:customer-ref="bill" />
+
+    <bean id="myInterceptor" class="org.jboss.resteasy.spring.TestSpringBeanProcessor$MyInterceptor"/>
+
+    <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames" value="myInterceptedResource" />
+        <property name="interceptorNames">
+            <list>
+                <value>myInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="singletonCounter" class="org.jboss.resteasy.spring.TestSpringBeanProcessor$Counter"/>
+    <bean id="prototypeCounter" class="org.jboss.resteasy.spring.TestSpringBeanProcessor$Counter" scope="prototype"/>
+
+    <bean class="org.jboss.resteasy.plugins.spring.ResteasyRegistration" p:context="/registered/singleton"
+    	p:beanName="singletonCounter"/>
+
+    <bean class="org.jboss.resteasy.plugins.spring.ResteasyRegistration" p:context="/registered/prototype"
+    	p:beanName="prototypeCounter" />
+</beans>

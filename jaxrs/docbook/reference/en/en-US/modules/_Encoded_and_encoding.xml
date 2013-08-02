@@ -1,0 +1,105 @@
+<chapter id="_Encoded_and_encoding">
+<title>@Encoded and encoding</title>
+
+<para>
+
+JAX-RS allows you to get encoded or decoded @*Params and specify path definitions and parameter names using encoded or decoded strings.
+</para>
+<para>
+
+
+</para>
+<para>
+
+The @javax.ws.rs.Encoded annotation can be used on a class, method, or param.  By default, inject @PathParam and @QueryParams are decoded.  By additionally adding the @Encoded annotation, the value of these params will be provided in encoded form.
+</para>
+<para>
+
+<programlisting>
+@Path("/")
+public class MyResource {
+
+  @Path("/{param}")
+  @GET
+  public String get(@PathParam("param") @Encoded String param) {...}
+</programlisting>
+</para>
+<para>
+
+In the above example, the value of the @PathParam injected into the param of the get() method will be URL encoded.  Adding the @Encoded annotation as a paramater annotation triggers this affect.
+</para>
+<para>
+
+You may also use the @Encoded annotation on the entire method and any combination of @QueryParam or @PathParam's values will be encoded.
+</para>
+<para>
+
+<programlisting>
+@Path("/")
+public class MyResource {
+  
+   @Path("/{param}")
+   @GET
+   @Encoded
+   public String get(@QueryParam("foo") String foo, @PathParam("param") String param) {}
+}
+
+
+</programlisting>
+</para>
+<para>
+
+In the above example, the values of the &quot;foo&quot; query param and &quot;param&quot; path param will be injected as encoded values.
+</para>
+<para>
+
+You can also set the default to be encoded for the entire class.
+<programlisting>
+@Path("/")
+@Encoded
+public class ClassEncoded {
+  
+   @GET
+   public String get(@QueryParam("foo") String foo) {}
+}
+</programlisting>
+</para>
+<para>
+
+
+</para>
+<para>
+
+The @Path annotation has an attribute called encode.  Controls whether the literal part of the supplied value (those characters that are not part of a template variable) are URL encoded. If true, any characters in the URI template that are not valid URI character will be automatically encoded. If false then all characters must be valid URI characters.  By default this is set to true.  If you want to encoded the characters yourself, you may.
+</para>
+<para>
+
+<programlisting>
+@Path(value="hello%20world", encode=false)
+</programlisting>
+</para>
+<para>
+
+
+</para>
+<para>
+
+Much like @Path.encode(), this controls whether the specified query param name should be encoded by the container before it tries to find the query param in the request.
+</para>
+<para>
+
+<programlisting>
+@QueryParam(value="hello%20world", encode=false)
+</programlisting>
+</para>
+<para>
+
+</para>
+<para>
+
+</para>
+<para>
+
+
+</para>
+</chapter>

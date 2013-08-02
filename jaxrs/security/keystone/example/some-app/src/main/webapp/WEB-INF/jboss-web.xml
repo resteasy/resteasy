@@ -1,0 +1,9 @@
+<jboss-web>
+    <!--
+ -->
+
+    <security-domain>java:/jaas/skeleton</security-domain>
+    <valve>
+        <class-name>org.jboss.security.web.DomainDelegatingAuthenticator</class-name>
+    </valve>
+</jboss-web>

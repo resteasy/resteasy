@@ -1,0 +1,35 @@
+<project>
+    <parent>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs-all</artifactId>
+        <version>3.0.2.Final</version>
+	    <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <name>Resteasy Examples</name>
+    <description/>
+    <url>http://wiki.jboss.org/wiki/Wiki.jsp?page=RESTeasyJAXRS</url>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>signature-examples-pom</artifactId>
+    <packaging>pom</packaging>
+
+    <!-- this is only here for RESTEasy automated testing of examples build.  You can remove if you are copying this
+         pom.xml as a template    -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <modules>
+        <module>no-dns</module>
+        <module>use-dns</module>
+    </modules>
+</project>

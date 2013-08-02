@@ -1,0 +1,61 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+	    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+	    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		">
+
+    <!-- Import basic SpringMVC Resteasy integration -->
+    <import resource="classpath:springmvc-resteasy.xml"/>
+
+    <!-- imports beans: MyCustomView, BasicResourceImpl and TestInterceptorCountController -->
+    <context:component-scan base-package="org.jboss.resteasy.springmvc.test"/>
+
+    <!--  use MyCustomView as a view - this takes the bean name and uses it to resolve the name "myCustomView" -->
+    <bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
+
+	<bean id="resteasy.handlerMapping" parent="abstract.resteasy.handlerMapping" p:order="1" p:throwNotFound="true">
+		<property name="interceptors" ref="resteasy.dispatcher.interceptors"/>
+	</bean>
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" p:order="0"/>
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+
+    <!-- Register the same class twice, under two different scopes and URL "root contexts" -->
+    <bean id="singletonScopedResource" scope="singleton"
+          class="org.jboss.resteasy.springmvc.test.resources.CounterResource"/>
+    <bean id="requestScopedResource" scope="prototype"
+          class="org.jboss.resteasy.springmvc.test.resources.CounterResource"/>
+
+    <bean id="singletonReg" class="org.jboss.resteasy.plugins.spring.ResteasyRegistration"
+          p:context="/basic/singleton/">
+        <property name="beanName">
+            <idref local="singletonScopedResource"/>
+        </property>
+    </bean>
+    <bean id="prototypeReg" class="org.jboss.resteasy.plugins.spring.ResteasyRegistration"
+          p:context="/basic/prototype/">
+        <property name="beanName">
+            <idref local="requestScopedResource"/>
+        </property>
+    </bean>
+
+    <!--
+         See the 'jaxrs.handlerMapping' bean in springmvc-resteasy.xml. This is
+         magically added through OptionalValueBeanFactory.
+     -->
+    <bean id="myTestInterceptor" class="org.jboss.resteasy.springmvc.test.spring.MyTestInterceptor"/>
+    <util:list id="resteasy.dispatcher.interceptors">
+        <ref local="myTestInterceptor"/>
+    </util:list>
+
+	<bean id="jsonView" class="org.jboss.resteasy.springmvc.ResteasyView"
+		p:contentType="application/json" p:deployment-ref="resteasy.deployment" />
+
+	<bean id="xmlView" class="org.jboss.resteasy.springmvc.ResteasyView"
+		p:contentType="application/xml" p:deployment-ref="resteasy.deployment" />
+
+</beans>

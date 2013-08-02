@@ -1,0 +1,3 @@
+org.jboss.resteasy.plugins.validation.ValidatorContextResolver
+org.jboss.resteasy.api.validation.ResteasyViolationExceptionMapper
+

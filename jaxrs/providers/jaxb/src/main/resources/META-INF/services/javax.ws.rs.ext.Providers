@@ -1,0 +1,7 @@
+org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlSeeAlsoProvider
+org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider
+org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider
+org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider
+org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider
+org.jboss.resteasy.plugins.providers.jaxb.MapProvider
+org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder

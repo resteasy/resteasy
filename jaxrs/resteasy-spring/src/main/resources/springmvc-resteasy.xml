@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ @author <a href="mailto:sduskis@gmail.com">Solomn Duskis</a>
+ @version $Revision: 1 $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+    <description>
+        Import this file in a Spring MVC dispatcher XML
+        environment to get the default implementation of the Spring
+        MVC/RestEasy integration. You can also use this as a template for more
+        advanced functionality, such as configuring multiple RestEasy
+        factories/dispatchers/registries for different scenarios.
+    </description>
+
+    <!-- ========== Resteasy setup ================ -->
+
+    <bean id="resteasy.deployment" class="org.jboss.resteasy.spi.ResteasyDeployment" init-method="start" destroy-method="stop">
+        <description>
+            This bean manages configuring your resteasy runtime.
+        </description>
+    </bean>
+
+    <bean id="resteasy.registry" factory-bean="resteasy.deployment"
+          factory-method="getRegistry">
+        <description>
+            Expose the dispatcher's registry as a full-blown Spring
+            bean, so that it can be passed in as a reference.
+        </description>
+    </bean>
+
+    <bean id="resteasy.dispatcher" factory-bean="resteasy.deployment"
+          factory-method="getDispatcher">
+        <description>
+            Expose the dispatcher's registry as a full-blown Spring
+            bean, so that it can be passed in as a reference.
+        </description>
+    </bean>
+
+    <bean id="resteasy.providerFactory" factory-bean="resteasy.deployment"
+          factory-method="getProviderFactory">
+        <description>
+            This bean manages all of the JAX-RS @Providers.
+            @Providers convert from the inputStream to a java object and from a
+            Java object to an output stream. The SpringBeanPreprocessor scans
+            through the context for all @Provider, and adds them to this
+            instance.
+        </description>
+    </bean>
+
+
+
+
+    <bean id="resteasy.spring.bean.processor" class="org.jboss.resteasy.plugins.spring.SpringBeanProcessor"
+          depends-on="resteasy.deployment">
+        <description>
+            Add Resources and @Providers to the appropriate places
+            in Resteasy's infrastructure
+        </description>
+        <constructor-arg ref="resteasy.deployment"/>
+    </bean>
+
+    <!-- ========== Resteasy Spring MVC setup ================ -->
+
+    <bean abstract="true" class="org.jboss.resteasy.springmvc.ResteasyHandlerMapping"
+          id="abstract.resteasy.handlerMapping" depends-on="resteasy.deployment">
+        <description>
+            Tap into the RestEasy registry to find out if any of it's
+            Resources handle a specific URL.
+
+            This abstract bean has default settings. You can optimize settings for
+            this handler mappings by overriding the "resteasy.handlerMapping" bean
+            and customizing the following:
+
+            1) setting a list of interceptors into the "interceptors" property.
+            This is useful when you want to do things like use the OpenSessionInViewInterceptor
+
+            2) set order and/or throwNotFound=true which will return the HTTP status
+            codes that core RESTEasy recommends back to the client. It works in conjunction
+            with the "resteasy.exception.handler"
+
+        </description>
+        <constructor-arg ref="resteasy.deployment"/>
+        <property name="interceptors">
+            <description>
+                Look for a list/array bean named "resteasy.dispatcher.interceptors"
+                which is composed of HandlerInterceptors to apply to this handler adapter.
+            </description>
+            <bean class="org.jboss.resteasy.plugins.spring.OptionalValueBeanFactory"
+                  p:beanName="resteasy.dispatcher.interceptors"/>
+        </property>
+    </bean>
+
+    <bean id="resteasy.handlerMapping" parent="abstract.resteasy.handlerMapping"/>
+
+    <bean id="resteasy.handlerAdapter" class="org.jboss.resteasy.springmvc.ResteasyHandlerAdapter" depends-on="resteasy.deployment">
+        <description>
+            This HandlerAdapter knows how to forward requests to
+            Resteasy for the handling of the service functionality, but not the
+            rendering, which is handled by a ResteasyView.
+        </description>
+
+        <constructor-arg ref="resteasy.deployment"/>
+    </bean>
+
+    <bean id="resteasy.exception.handler"
+          class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"
+          p:exceptionMappings="org.jboss.resteasy.spi.NoResourceFoundFailure=resteasy.no.resource.found.view"
+          p:exceptionAttribute="exception">
+        <description>
+            This will be invoked if an end user overrides resteasy.handlerMapping with throwNotFound=true
+        </description>
+    </bean>
+
+    <bean id="resteasy.no.resource.found.view"
+          class="org.jboss.resteasy.springmvc.ResteasyNoResourceFoundView"
+          p:deployment-ref="resteasy.deployment"/>
+
+    <bean id="reateasy.error.view.resolver"
+          class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
+    
+</beans>

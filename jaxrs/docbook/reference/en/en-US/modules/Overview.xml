@@ -1,0 +1,48 @@
+<chapter id="Overview">
+<title>Overview</title>
+
+<para>
+
+JAX-RS, JSR-311, is a new JCP specification that provides a Java API for RESTful Web Services over the HTTP protocol.
+    Resteasy is an portable implementation of this specification which can run in any Servlet container. Tighter
+    integration with JBoss Application Server is also available to make the user experience nicer in that environment.
+    While JAX-RS is only a server-side specification, Resteasy has innovated to bring JAX-RS to the client through the
+    RESTEasy JAX-RS Client Framework. This client-side framework allows you to map outgoing HTTP requests to remote
+    servers using JAX-RS annotations and interface proxies.
+</para>
+<para>
+
+
+</para>
+<para>
+
+<itemizedlist>
+
+<listitem>
+ JAX-RS implementation
+</listitem>
+
+<listitem>
+ Portable to any app-server/Tomcat that runs on JDK 5 or higher
+</listitem>
+
+<listitem>
+ Embeddable server implementation for junit testing
+</listitem>
+
+<listitem>
+ EJB and Spring integration
+</listitem>
+
+<listitem>
+ Client framework to make writing HTTP clients easy (JAX-RS only define server bindings)
+</listitem>
+
+</itemizedlist>
+
+</para>
+<para>
+
+
+</para>
+</chapter>

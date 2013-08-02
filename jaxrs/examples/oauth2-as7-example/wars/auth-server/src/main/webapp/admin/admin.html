@@ -1,0 +1,17 @@
+<html>
+<body bgcolor="#CED8F6">
+<h2>Logout User</h2>
+<form action="j_oauth_admin_forced_logout" method=post>
+<p><strong>User: </strong>
+    <input type="text" name="user" size="25">
+    <input type="hidden" name="forward" value="/admin/admin.html"/>
+    <input type="submit" value="Logout User">
+</form>
+<h2>Logout All</h2>
+<form action="j_oauth_admin_forced_logout" method=post>
+    <p><strong>User: </strong>
+        <input type="hidden" name="forward" value="/admin/admin.html"/>
+        <input type="submit" value="Logout All">
+</form>
+</body>
+</html>
