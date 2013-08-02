@@ -1,0 +1,22 @@
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha1;  boundary="----=_Part_0_1083228271.1313024422098"
+
+------=_Part_0_1083228271.1313024422098
+Content-Type: application/xml
+Content-Transfer-Encoding: 7bit
+
+<customer name="bill"/>
+------=_Part_0_1083228271.1313024422098
+Content-Type: application/pkcs7-signature; name=smime.p7s; smime-type=signed-data
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAMYIBVzCCAVMC
+AQEwUjBFMQswCQYDVQQGEwJBVTETMBEGA1UECBMKU29tZS1TdGF0ZTEhMB8GA1UEChMYSW50ZXJu
+ZXQgV2lkZ2l0cyBQdHkgTHRkAgkA7oW81OriflAwCQYFKw4DAhoFAKBdMBgGCSqGSIb3DQEJAzEL
+BgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTExMDgxMTAxMDAyMlowIwYJKoZIhvcNAQkEMRYE
+FH32BfR1l1vzDshtQvJrgvpGvjADMA0GCSqGSIb3DQEBAQUABIGAL3KVi3ul9cPRUMYcGgQmWtsZ
+0bLbAldO+okrt8mQ87SrUv2LGkIJbEhGHsOlsgSU80/YumP+Q4lYsVanVfoI8GgQH3Iztp+Rce2c
+y42f86ZypE7ueynI4HTPNHfr78EpyKGzWuZHW4yMo70LpXhk5RqfM9a/n4TEa9QuTU76atAAAAAA
+AAA=
+------=_Part_0_1083228271.1313024422098--

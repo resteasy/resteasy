@@ -1,0 +1,23 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs-all</artifactId>
+        <version>3.0.2.Final</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <name>Resteasy Skeleton Key POM</name>
+    <description/>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-skeleton-key-pom</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>skeleton-key-core</module>
+        <module>skeleton-key-idp</module>
+        <module>skeleton-key-as7</module>
+        <module>skeleton-key-idp-war</module>
+    </modules>
+</project>

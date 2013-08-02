@@ -1,0 +1,38 @@
+/* 
+    Document   : jboss
+    Created on : Feb 25, 2009, 1:57:15 AM
+    Author     : edgarsilva
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+root {
+    display: block;
+
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #4a5d75;
+    line-height: 130%;
+    margin-top: 0em;
+    font-family: 'Lucida Grande', Geneva, Verdana, Arial, sans-serif;
+    background-color: transparent;
+}
+
+h1 {
+/*	background: #3B4E64 none repeat scroll 0% 50%; */
+    background-image: url(bg.png);
+    background-repeat: no-repeat;
+    border-top: 1px dotted #CCCCCC;
+    line-height: 1.2em;
+    color: #182737;
+    font-size: 2em;
+    padding: 1.5em;
+}
+
+

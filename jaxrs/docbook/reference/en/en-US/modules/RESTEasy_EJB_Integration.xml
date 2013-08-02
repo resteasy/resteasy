@@ -1,0 +1,117 @@
+<chapter id="RESTEasy_EJB_Integration">
+<title>EJB Integration</title>
+
+<para>
+
+To integrate with EJB you must first modify your EJB's published interfaces.  Resteasy currently only has simple portable integration with EJBs so you must also manually configure your Resteasy WAR.
+</para>
+<para>
+
+
+</para>
+<para>
+
+Resteasy currently only has simple integration with EJBs.  To make an EJB a JAX-RS resource, you must annotate an SLSB's @Remote or @Local interface with JAX-RS annotations:
+</para>
+<para>
+
+<programlisting>
+@Local
+@Path("/Library")
+public interface Library {
+   
+   @GET
+   @Path("/books/{isbn}")
+   public String getBook(@PathParam("isbn") String isbn);
+}
+
+@Stateless
+public class LibraryBean implements Library {
+
+...
+
+}
+</programlisting>
+</para>
+<para>
+
+</para>
+<para>
+
+
+</para>
+<para>
+
+Next, in RESTeasy's web.xml file you must manually register the EJB with RESTeasy using the resteasy.jndi.resources &lt;context-param&gt;
+</para>
+<para>
+
+<programlisting>
+&lt;web-app&gt;
+   &lt;display-name&gt;Archetype Created Web Application&lt;/display-name&gt;
+   &lt;context-param&gt;
+      &lt;param-name&gt;resteasy.jndi.resources&lt;/param-name&gt;
+      &lt;param-value&gt;LibraryBean/local&lt;/param-value&gt;
+   &lt;/context-param&gt;
+
+   &lt;listener&gt;
+      &lt;listener-class&gt;org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap&lt;/listener-class&gt;
+   &lt;/listener&gt;
+
+   &lt;servlet&gt;
+      &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
+      &lt;servlet-class&gt;org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher&lt;/servlet-class&gt;
+   &lt;/servlet&gt;
+
+   &lt;servlet-mapping&gt;
+      &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
+      &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+   &lt;/servlet-mapping&gt;
+
+&lt;/web-app&gt;
+</programlisting>
+</para>
+<para>
+
+This is the only portable way we can offer EJB integration.  Future versions of RESTeasy will have tighter integration
+    with JBoss AS so you do not have to do any manual registrations or modifications to web.xml.  For right now though,
+    we're focusing on portability.
+</para>
+<para>
+
+</para>
+<para>
+
+
+</para>
+<para>
+
+If you're using Resteasy with an EAR and EJB, a good structure to have is:
+</para>
+<para>
+
+<programlisting>
+my-ear.ear
+|------myejb.jar
+|------resteasy-jaxrs.war
+       |
+       ----WEB-INF/web.xml
+       ----WEB-INF/lib (nothing)
+|------lib/
+       |
+       ----All Resteasy jar files
+</programlisting>
+</para>
+<para>
+
+From the distribution, remove all libraries from WEB-INF/lib and place them in a common EAR lib.  OR.  Just place the Resteasy jar dependencies in your application server's system classpath.  (i.e. In JBoss put them in server/default/lib)
+</para>
+<para>
+
+An example EAR project is available from our testsuite here.
+</para>
+<para>
+
+
+</para>
+</chapter>

@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs-all</artifactId>
+        <version>3.0.2.Final</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <name>Resteasy Security</name>
+    <description/>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>security-pom</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>resteasy-crypto</module>
+        <module>resteasy-oauth</module>
+        <module>jose-jwt</module>
+        <module>login-module-authenticator</module>
+        <module>skeleton-key-idm</module>
+        <module>keystone/keystone-core</module>
+        <module>keystone/keystone-as7</module>
+        <module>keystone/keystone-as7-modules</module>
+        <!--
+        <module>skeleton-keystone-idm/example/skeleton-key-server</module>
+        <module>skeleton-keystone-idm/example/some-app</module>
+        -->
+
+    </modules>
+</project>

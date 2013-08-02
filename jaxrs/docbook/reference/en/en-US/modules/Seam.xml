@@ -1,0 +1,5 @@
+<chapter id="Seam">
+    <title>Seam Integration</title>
+    <para>RESTEasy integrates quite nicely with the JBoss Seam framework.  This integration is maintained
+    by the Seam developers and documented there as well.  Check out <ulink url="http://docs.jboss.org/seam/latest/en-US/html/webservices.html#d0e22078">Seam documentation</ulink>.</para>
+</chapter>
