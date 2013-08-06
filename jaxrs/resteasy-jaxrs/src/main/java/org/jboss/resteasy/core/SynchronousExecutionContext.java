@@ -172,7 +172,8 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
       {
          synchronized (responseLock)
          {
-            if (done || cancelled) return false;
+            if (cancelled) return true;
+            if (done) return false;
             done = true;
             cancelled = true;
          }
@@ -184,7 +185,8 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
       {
          synchronized (responseLock)
          {
-            if (done || cancelled) return false;
+            if (cancelled) return true;
+            if (done) return false;
             done = true;
             cancelled = true;
          }
@@ -196,7 +198,8 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
       {
          synchronized (responseLock)
          {
-            if (done || cancelled) return false;
+            if (cancelled) return true;
+            if (done) return false;
             done = true;
             cancelled = true;
          }

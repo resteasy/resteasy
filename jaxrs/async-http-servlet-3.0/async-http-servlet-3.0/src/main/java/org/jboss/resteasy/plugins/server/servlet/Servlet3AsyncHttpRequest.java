@@ -3,11 +3,13 @@ package org.jboss.resteasy.plugins.server.servlet;
 import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.AbstractExecutionContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.spi.UnhandledException;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
@@ -16,11 +18,16 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.TimeoutHandler;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.Date;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -29,8 +36,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
 {
+   private final static Logger logger = Logger.getLogger(Servlet3AsyncHttpRequest.class);
    protected HttpServletResponse response;
    protected ResteasyAsynchronousContext asynchronousContext;
+   protected ScheduledExecutorService asyncScheduler; // this is to get around TCK tests that call setTimeout in a separate thread which is illegal.
 
    public Servlet3AsyncHttpRequest(HttpServletRequest httpServletRequest, HttpServletResponse response, ServletContext servletContext, HttpResponse httpResponse, ResteasyHttpHeaders httpHeaders, ResteasyUriInfo uriInfo, String s, SynchronousDispatcher synchronousDispatcher)
    {
@@ -48,10 +57,9 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
    private class Servlet3ExecutionContext extends AbstractExecutionContext
    {
       protected final ServletRequest servletRequest;
-      protected boolean done;
-      protected boolean cancelled;
-      protected boolean timeout;
-      protected boolean wasSuspended;
+      protected volatile boolean done;
+      protected volatile boolean cancelled;
+      protected volatile boolean wasSuspended;
       protected Servle3AsychronousResponse asynchronousResponse;
 
       public Servlet3ExecutionContext(ServletRequest servletRequest)
@@ -63,6 +71,8 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
       private class Servle3AsychronousResponse extends AbstractAsynchronousResponse implements AsyncListener
       {
          private Object responseLock = new Object();
+         protected WeakReference<Thread> creatingThread = new WeakReference<Thread>(Thread.currentThread());
+         protected ScheduledFuture timeoutFuture; // this is to get around TCK tests that call setTimeout in a separate thread which is illegal.
 
          private Servle3AsychronousResponse()
          {
@@ -102,6 +112,10 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                {
                   return internalResume(exc);
                }
+               catch (UnhandledException unhandled)
+               {
+                  return internalResume(Response.status(500).build());
+               }
                finally
                {
                   done = true;
@@ -122,23 +136,52 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
             synchronized (responseLock)
             {
                if (done || cancelled) return false;
+               Thread thread = creatingThread.get();
+               if (thread != null && thread != Thread.currentThread()) {
+                  // this is to get around TCK tests that call setTimeout in a separate thread which is illegal.
+                  if (timeoutFuture != null  && !timeoutFuture.cancel(false)) {
+                     return false;
+                  }
+                  Runnable task = new Runnable() {
+                     @Override
+                     public void run()
+                     {
+                        logger.debug("scheduled timeout");
+                        handleTimeout();
+                     }
+                  };
+                  logger.debug("scheduling timeout");
+                  timeoutFuture = asyncScheduler.schedule(task, time, unit);
+               } else {
+                  AsyncContext asyncContext = getAsyncContext();
+                  long l = unit.toMillis(time);
+                  asyncContext.setTimeout(l);
+               }
+
             }
-            AsyncContext asyncContext = getAsyncContext();
-            asyncContext.setTimeout(unit.toMillis(time));
             return true;
          }
 
          @Override
          public boolean cancel()
          {
+            logger.debug("cancel()");
             synchronized (responseLock)
             {
-               if (done || cancelled) return false;
+               if (cancelled) {
+                  logger.debug("-- already canceled");
+                  return true;
+               }
+               if (done) {
+                  logger.debug("-- already done");
+                  return false;
+               }
                done = true;
                cancelled = true;
                AsyncContext asyncContext = getAsyncContext();
                try
                {
+                  logger.debug("-- cancelling with 503");
                   return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).build());
                }
                finally
@@ -153,7 +196,8 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          {
             synchronized (responseLock)
             {
-               if (done || cancelled) return false;
+               if (cancelled) return true;
+               if (done) return false;
                done = true;
                cancelled = true;
                AsyncContext asyncContext = getAsyncContext();
@@ -173,7 +217,8 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          {
             synchronized (responseLock)
             {
-               if (done || cancelled) return false;
+               if (cancelled) return true;
+               if (done) return false;
                done = true;
                cancelled = true;
                AsyncContext asyncContext = getAsyncContext();
@@ -210,6 +255,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          @Override
          public void onComplete(AsyncEvent asyncEvent) throws IOException
          {
+            logger.debug("onComplete");
             synchronized (responseLock)
             {
                done = true;
@@ -219,18 +265,24 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          @Override
          public void onTimeout(AsyncEvent asyncEvent) throws IOException
          {
+            logger.debug("onTimeout");
             synchronized (responseLock)
             {
                if (done || cancelled) return;
 
                response.reset();
-               if (timeoutHandler != null)
-               {
-                  timeoutHandler.handleTimeout(this);
-               }
-               if (done) return;
-               cancel();
+               handleTimeout();
             }
+         }
+
+         protected void handleTimeout()
+         {
+            if (timeoutHandler != null)
+            {
+               timeoutHandler.handleTimeout(this);
+            }
+            if (done) return;
+            resume(new ServiceUnavailableException());
          }
 
          @Override
@@ -270,16 +322,22 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
       @Override
       public ResteasyAsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException
       {
+         AsyncContext asyncContext = setupAsyncContext();
+         asyncContext.setTimeout(unit.toMillis(time));
+         return asynchronousResponse;
+      }
+
+      protected AsyncContext setupAsyncContext()
+      {
          if (servletRequest.isAsyncStarted())
          {
             throw new IllegalStateException("Already suspended");
          }
          asynchronousResponse = new Servle3AsychronousResponse();
          AsyncContext asyncContext = servletRequest.startAsync();
-         asyncContext.setTimeout(unit.toMillis(time));
          asyncContext.addListener(asynchronousResponse);
          wasSuspended = true;
-         return asynchronousResponse;
+         return asyncContext;
       }
 
 
