@@ -3,7 +3,6 @@ package org.jboss.resteasy.specimpl;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HeaderHelper;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
@@ -298,11 +297,13 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
       return this;
    }
 
-   private static final SimpleDateFormat dateFormatRFC822 = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
-   static
+   public static SimpleDateFormat getDateFormatRFC822()
    {
+      SimpleDateFormat dateFormatRFC822 = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
       dateFormatRFC822.setTimeZone(TimeZone.getTimeZone("GMT"));
+      return dateFormatRFC822;
    }
+
    public Response.ResponseBuilder expires(Date expires)
    {
       if (expires == null)
@@ -310,7 +311,7 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
          metadata.remove(HttpHeaderNames.EXPIRES);
          return this;
       }
-      metadata.putSingle(HttpHeaderNames.EXPIRES, dateFormatRFC822.format(expires));
+      metadata.putSingle(HttpHeaderNames.EXPIRES, getDateFormatRFC822().format(expires));
       return this;
    }
 

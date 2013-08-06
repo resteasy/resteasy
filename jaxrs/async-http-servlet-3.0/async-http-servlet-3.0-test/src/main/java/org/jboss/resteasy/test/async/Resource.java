@@ -19,8 +19,6 @@ public class Resource
 {
 
    public static final String RESUMED = "Response resumed";
-   public static final String ISE = "Illegal State Exception Thrown";
-   public static final String NOE = "No Exception Thrown";
    public static final String FALSE = "A method returned false";
    public static final String TRUE = "A method return true";
 
