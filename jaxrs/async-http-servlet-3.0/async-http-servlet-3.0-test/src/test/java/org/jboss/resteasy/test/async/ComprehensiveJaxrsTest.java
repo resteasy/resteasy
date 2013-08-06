@@ -54,15 +54,6 @@ public class ComprehensiveJaxrsTest
       System.out.println(objectsToString(msg));
    }
 
-   /*
-    * @testName: cancelVoidTest
-    * @assertion_ids: JAXRS:JAVADOC:980;
-    * @test_Strategy: Cancel the suspended request processing. When a request 
-    * 					processing is cancelled using this method, the JAX-RS 
-    * 					implementation MUST indicate to the client that the 
-    * 					request processing has been cancelled by sending back 
-    * 					a HTTP 503 (Service unavailable) error response.
-    */
    @Test
    public void cancelVoidTest()throws Exception {
       invokeClear();
@@ -72,14 +63,6 @@ public class ComprehensiveJaxrsTest
       assertString(cancel, Resource.TRUE);
    }
 
-   /*
-    * @testName: cancelVoidOnResumedTest
-    * @assertion_ids: JAXRS:JAVADOC:980;
-    * @test_Strategy: Cancel the suspended request processing.  Invoking a 
-    * 					cancel(...) method on an asynchronous response instance 
-    * 					that has already been resumed has no effect and the 
-    * 					method call is ignored while returning false when resumed.
-    */
    @Test
    public void cancelVoidOnResumedTest()throws Exception {
       suspendResumeTest();
@@ -87,14 +70,6 @@ public class ComprehensiveJaxrsTest
       assertString(cancel, Resource.FALSE);
    }
 
-   /*
-    * @testName: cancelVoidOnCanceledTest
-    * @assertion_ids: JAXRS:JAVADOC:980;
-    * @test_Strategy: Cancel the suspended request processing.  Invoking a 
-    * 					cancel(...) method on an asynchronous response instance 
-    * 					that has already been resumed has no effect and the 
-    * 					method call is ignored while returning true when canceled.
-    */
    @Test
    public void cancelVoidOnCanceledTest()throws Exception {
       cancelVoidTest();
@@ -102,12 +77,6 @@ public class ComprehensiveJaxrsTest
       assertString(cancel, Resource.TRUE);
    }
 
-   /*
-    * @testName: resumeCanceledTest
-    * @assertion_ids: JAXRS:JAVADOC:980;
-    * @test_Strategy: returns false in case the request processing is not 
-    * 							suspended and could not be resumed.
-    */
    @Test
    public void resumeCanceledTest()throws Exception {
       cancelVoidTest();
@@ -115,17 +84,6 @@ public class ComprehensiveJaxrsTest
       assertString(resumeCanceled, Resource.FALSE);
    }
 
-   /*
-    * @testName: cancelIntTest
-    * @assertion_ids: JAXRS:JAVADOC:980;
-    * @test_Strategy: Cancel the suspended request processing. When a request 
-    * 					processing is cancelled using this method, the JAX-RS 
-    * 					implementation MUST indicate to the client that the 
-    * 					request processing has been cancelled by sending back 
-    * 					a HTTP 503 (Service unavailable) error response with a 
-    * 					Retry-After header set to the value provided by the 
-    * 					method parameter.
-    */
    @Test
    public void cancelIntTest()throws Exception {
       String seconds = "20";
@@ -146,14 +104,6 @@ public class ComprehensiveJaxrsTest
       Assert.assertEquals(objectsToString(msg), expected, actual);
    }
 
-   /*
-    * @testName: cancelIntOnResumedTest
-    * @assertion_ids: JAXRS:JAVADOC:981;
-    * @test_Strategy: Cancel the suspended request processing.  Invoking a 
-    * 					cancel(...) method on an asynchronous response instance 
-    * 					that has already been resumed has no effect and the 
-    * 					method call is ignored while returning false when resumed
-    */
    @Test
    public void cancelIntOnResumedTest()throws Exception {
       suspendResumeTest();
@@ -161,14 +111,6 @@ public class ComprehensiveJaxrsTest
       assertString(cancel, Resource.FALSE);
    }
 
-   /*
-    * @testName: cancelIntOnCanceledTest
-    * @assertion_ids: JAXRS:JAVADOC:981;
-    * @test_Strategy: Cancel the suspended request processing.  Invoking a 
-    * 					cancel(...) method on an asynchronous response instance 
-    * 					that has already been resumed has no effect and the 
-    * 					method call is ignored while returning true when canceled
-    */
    @Test
    public void cancelIntOnCanceledTest()throws Exception {
       cancelVoidTest();
@@ -176,12 +118,6 @@ public class ComprehensiveJaxrsTest
       assertString(cancel, Resource.TRUE);
    }
 
-   /*
-    * @testName: resumeCanceledIntTest
-    * @assertion_ids: JAXRS:JAVADOC:981;
-    * @test_Strategy: returns false in case the request processing is not 
-    * 							suspended and could not be resumed.
-    */
    @Test
    public void resumeCanceledIntTest()throws Exception {
       cancelIntTest();
@@ -189,17 +125,6 @@ public class ComprehensiveJaxrsTest
       assertString(resume, Resource.FALSE);
    }
 
-   /*
-    * @testName: cancelDateTest
-    * @assertion_ids: JAXRS:JAVADOC:982;
-    * @test_Strategy: Cancel the suspended request processing. When a request 
-    * 					processing is cancelled using this method, the JAX-RS 
-    * 					implementation MUST indicate to the client that the 
-    * 					request processing has been cancelled by sending back 
-    * 					a HTTP 503 (Service unavailable) error response with a 
-    * 					Retry-After header set to the value provided by the 
-    * 					method parameter.
-    */
    @Test
    public void cancelDateTest()throws Exception {
       long milis = (System.currentTimeMillis() / 1000) * 1000 + 20000;
@@ -244,14 +169,6 @@ public class ComprehensiveJaxrsTest
    }
 
 
-   /*
-    * @testName: cancelDateOnResumedTest
-    * @assertion_ids: JAXRS:JAVADOC:982;
-    * @test_Strategy: Cancel the suspended request processing.  Invoking a 
-    * 					cancel(...) method on an asynchronous response instance 
-    * 					that has already been resumed has no effect and the 
-    * 					method call is ignored while returning false when resumed
-    */
    @Test
    public void cancelDateOnResumedTest()throws Exception {
       suspendResumeTest();
@@ -260,14 +177,6 @@ public class ComprehensiveJaxrsTest
       assertString(cancel, Resource.FALSE);
    }
 
-   /*
-    * @testName: cancelDateOnCanceledTest
-    * @assertion_ids: JAXRS:JAVADOC:982;
-    * @test_Strategy: Cancel the suspended request processing.  Invoking a 
-    * 					cancel(...) method on an asynchronous response instance 
-    * 					that has already been resumed has no effect and the 
-    * 					method call is ignored while returning true when canceled
-    */
    @Test
    public void cancelDateOnCanceledTest()throws Exception {
       cancelVoidTest();
@@ -276,12 +185,6 @@ public class ComprehensiveJaxrsTest
       assertString(cancel, Resource.TRUE);
    }
 
-   /*
-    * @testName: resumeCanceledDateTest
-    * @assertion_ids: JAXRS:JAVADOC:982;
-    * @test_Strategy:  returns false in case the request processing is not 
-    * 							suspended and could not be resumed.
-    */
    @Test
    public void resumeCanceledDateTest()throws Exception {
       cancelDateTest();
@@ -289,13 +192,6 @@ public class ComprehensiveJaxrsTest
       assertString(resumeResumed, Resource.FALSE);
    }
 
-   /*
-    * @testName: isCanceledWhenCanceledTest
-    * @assertion_ids: JAXRS:JAVADOC:628;
-    * @test_Strategy: Check if the asynchronous response instance has been 
-    * 					cancelled. Method returns true if this asynchronous 
-    * 					response has been canceled before completion.
-    */
    @Test
    public void isCanceledWhenCanceledTest()throws Exception {
       cancelVoidTest();
@@ -303,13 +199,6 @@ public class ComprehensiveJaxrsTest
       assertString(is, Resource.TRUE);
    }
 
-   /*
-    * @testName: isCanceledWhenSuspendedTest
-    * @assertion_ids: JAXRS:JAVADOC:628;
-    * @test_Strategy: Check if the asynchronous response instance has been 
-    * 					cancelled. Method returns true if this asynchronous 
-    * 					response has been canceled before completion.
-    */
    @Test
    public void isCanceledWhenSuspendedTest()throws Exception {
       invokeClear();
@@ -318,13 +207,6 @@ public class ComprehensiveJaxrsTest
       assertString(is, Resource.FALSE);
    }
 
-   /*
-    * @testName: isCanceledWhenResumedTest
-    * @assertion_ids: JAXRS:JAVADOC:628;
-    * @test_Strategy: Check if the asynchronous response instance has been 
-    * 					cancelled. Method returns true if this asynchronous 
-    * 					response has been canceled before completion.
-    */
    @Test
    public void isCanceledWhenResumedTest()throws Exception {
       suspendResumeTest();
@@ -332,17 +214,6 @@ public class ComprehensiveJaxrsTest
       assertString(is, Resource.FALSE);
    }
 
-   /*
-    * @testName: isDoneWhenResumedTest
-    * @assertion_ids: JAXRS:JAVADOC:629;
-    * @test_Strategy: Check if the processing of a request this asynchronous 
-    * 					response instance belongs to has finished. Method 
-    * 					returns true if the processing of a request this 
-    * 					asynchronous response is bound to is finished. 
-    * 					The request processing may be finished due to a normal 
-    * 					termination, a suspend timeout, or cancellation -- in 
-    * 					all of these cases, this method will return true.
-    */
    @Test
    public void isDoneWhenResumedTest()throws Exception {
       suspendResumeTest();
@@ -350,17 +221,6 @@ public class ComprehensiveJaxrsTest
       assertString(is, Resource.TRUE);
    }
 
-   /*
-    * @testName: isDoneWhenSuspendedTest
-    * @assertion_ids: JAXRS:JAVADOC:629;
-    * @test_Strategy: Check if the processing of a request this asynchronous 
-    * 					response instance belongs to has finished. Method 
-    * 					returns true if the processing of a request this 
-    * 					asynchronous response is bound to is finished. 
-    * 					The request processing may be finished due to a normal 
-    * 					termination, a suspend timeout, or cancellation -- in 
-    * 					all of these cases, this method will return true.
-    */
    @Test
    public void isDoneWhenSuspendedTest()throws Exception {
       invokeClear();
@@ -369,17 +229,6 @@ public class ComprehensiveJaxrsTest
       assertString(is, Resource.FALSE);
    }
 
-   /*
-    * @testName: isDoneWhenCanceledTest
-    * @assertion_ids: JAXRS:JAVADOC:629;
-    * @test_Strategy: Check if the processing of a request this asynchronous 
-    * 					response instance belongs to has finished. Method 
-    * 					returns true if the processing of a request this 
-    * 					asynchronous response is bound to is finished. 
-    * 					The request processing may be finished due to a normal 
-    * 					termination, a suspend timeout, or cancellation -- in 
-    * 					all of these cases, this method will return true.
-    */
    @Test
    public void isDoneWhenCanceledTest()throws Exception {
       cancelVoidTest();
@@ -387,17 +236,6 @@ public class ComprehensiveJaxrsTest
       assertString(is, Resource.TRUE);
    }
 
-   /*
-    * @testName: isDoneWhenTimedOutTest
-    * @assertion_ids: JAXRS:JAVADOC:629;
-    * @test_Strategy: Check if the processing of a request this asynchronous 
-    * 					response instance belongs to has finished. Method 
-    * 					returns true if the processing of a request this 
-    * 					asynchronous response is bound to is finished. 
-    * 					The request processing may be finished due to a normal 
-    * 					termination, a suspend timeout, or cancellation -- in 
-    * 					all of these cases, this method will return true.
-    */
    @Test
    public void isDoneWhenTimedOutTest()throws Exception {
       setTimeoutTest();
@@ -405,15 +243,6 @@ public class ComprehensiveJaxrsTest
       assertString(is, Resource.TRUE);
    }
 
-   /*
-    * @testName: isSuspendedWhenSuspendedTest
-    * @assertion_ids: JAXRS:JAVADOC:630;
-    * @test_Strategy: Check if the asynchronous response instance is in a 
-    * 					suspended state. Method returns true if this 
-    * 					asynchronous response is still suspended and has not 
-    * 					finished processing yet (either by resuming or 
-    * 					canceling the response).
-    */
    @Test
    public void isSuspendedWhenSuspendedTest()throws Exception {
       invokeClear();
@@ -422,15 +251,6 @@ public class ComprehensiveJaxrsTest
       assertString(is, Resource.TRUE);
    }
 
-   /*
-    * @testName: isSuspendedWhenCanceledTest
-    * @assertion_ids: JAXRS:JAVADOC:630;
-    * @test_Strategy: Check if the asynchronous response instance is in a 
-    * 					suspended state. Method returns true if this 
-    * 					asynchronous response is still suspended and has not 
-    * 					finished processing yet (either by resuming or 
-    * 					canceling the response).
-    */
    @Test
    public void isSuspendedWhenCanceledTest()throws Exception {
       cancelVoidTest();
@@ -438,15 +258,6 @@ public class ComprehensiveJaxrsTest
       assertString(is, Resource.FALSE);
    }
 
-   /*
-    * @testName: isSuspendedWhenResumedTest
-    * @assertion_ids: JAXRS:JAVADOC:630;
-    * @test_Strategy: Check if the asynchronous response instance is in a 
-    * 					suspended state. Method returns true if this 
-    * 					asynchronous response is still suspended and has not 
-    * 					finished processing yet (either by resuming or 
-    * 					canceling the response).
-    */
    @Test
    public void isSuspendedWhenResumedTest()throws Exception {
       suspendResumeTest();
@@ -454,12 +265,6 @@ public class ComprehensiveJaxrsTest
       assertString(is, Resource.FALSE);
    }
 
-   /*
-    * @testName: suspendResumeTest
-    * @assertion_ids: JAXRS:JAVADOC:983;
-    * @test_Strategy: Resume the suspended request processing using the 
-    * 					provided response data.
-    */
    @Test
    public void suspendResumeTest()throws Exception {
       invokeClear();
@@ -471,14 +276,6 @@ public class ComprehensiveJaxrsTest
       assertString(suspend, expectedResponse);
    }
 
-   /*
-    * @testName: resumeAnyJavaObjectInputStreamTest
-    * @assertion_ids: JAXRS:JAVADOC:983;
-    * @test_Strategy: Resume the suspended request processing using the 
-    * 					provided response data. The provided response data can 
-    * 					be of any Java type that can be returned from a JAX-RS 
-    * 					resource method.
-    */
    @Test
    public void resumeAnyJavaObjectInputStreamTest()throws Exception {
       invokeClear();
@@ -490,12 +287,6 @@ public class ComprehensiveJaxrsTest
       assertString(suspend, expectedResponse);
    }
 
-   /*
-    * @testName: resumeResumedTest
-    * @assertion_ids: JAXRS:JAVADOC:983;
-    * @test_Strategy: returns false in case the request processing is not 
-    * 					suspended and could not be resumed.
-    */
    @Test
    public void resumeResumedTest()throws Exception {
       suspendResumeTest(); // resume & store
@@ -503,14 +294,6 @@ public class ComprehensiveJaxrsTest
       assertString(resumeResumed, Resource.FALSE);
    }
 
-   /*
-    * @testName: resumeWithCheckedExceptionTest
-    * @assertion_ids: JAXRS:JAVADOC:641;
-    * @test_Strategy: Resume the suspended request processing using the 
-    * 					provided throwable. For the provided throwable same 
-    * 					rules apply as for an exception thrown by a JAX-RS 
-    * 					resource method.
-    */
    @Test
    public void resumeWithCheckedExceptionTest()throws Exception {
       invokeClear();
@@ -520,14 +303,6 @@ public class ComprehensiveJaxrsTest
       assertException(suspend, IOException.class);
    }
 
-   /*
-    * @testName: resumeWithRuntimeExceptionTest
-    * @assertion_ids: JAXRS:JAVADOC:984;
-    * @test_Strategy: Resume the suspended request processing using the 
-    * 					provided throwable. For the provided throwable same 
-    * 					rules apply as for an exception thrown by a JAX-RS 
-    * 					resource method.
-    */
    @Test
    public void resumeWithRuntimeExceptionTest()throws Exception {
       invokeClear();
@@ -537,12 +312,6 @@ public class ComprehensiveJaxrsTest
       assertException(suspend, RuntimeException.class);
    }
 
-   /*
-    * @testName: resumeWithExceptionReturnsFalseWhenResumedTest
-    * @assertion_ids: JAXRS:JAVADOC:984;
-    * @test_Strategy:  returns false in case the request processing is not 
-    * 					suspended and could not be resumed.
-    */
    @Test
    public void resumeWithExceptionReturnsFalseWhenResumedTest()throws Exception {
       suspendResumeTest();
@@ -550,21 +319,6 @@ public class ComprehensiveJaxrsTest
       assertString(resume, Resource.FALSE);
    }
 
-   /*
-    * @testName: setTimeoutTest
-    * @assertion_ids: JAXRS:JAVADOC:1034;
-    * 					JAXRS:SPEC:103; JAXRS:SPEC:104;
-    * @test_Strategy: The new suspend timeout values override any timeout 
-    * 					value previously specified.
-    * 
-    * 					JAX-RS implementations are REQUIRED to generate a 
-    * 					ServiceUnavailableException, a subclass of 
-    * 					WebApplicationException with its status set to 503, if 
-    * 					the timeout value is reached and no timeout handler is 
-    * 					registered.
-    * 
-    * 					The exception MUST be processed as described in section 3.3.4.
-    */
    @Test
    public void setTimeoutTest()throws Exception {
       invokeClear();
@@ -584,20 +338,6 @@ public class ComprehensiveJaxrsTest
       logMsg("Found expected status 503");
    }
 
-   /*
-    * @testName: updateTimeoutTest
-    * @assertion_ids: JAXRS:JAVADOC:1034;
-    * 					JAXRS:SPEC:103; JAXRS:SPEC:104;
-    * @test_Strategy: Set/update the suspend timeout.
-    * 
-    * 					JAX-RS implementations are REQUIRED to generate a 
-    * 					ServiceUnavailableException, a subclass of 
-    * 					WebApplicationException with its status set to 503, if 
-    * 					the timeout value is reached and no timeout handler is 
-    * 					registered.
-    * 
-    * 					The exception MUST be processed as described in section 3.3.4.
-    */
    @Test
    public void updateTimeoutTest()throws Exception {
       invokeClear();
@@ -617,21 +357,6 @@ public class ComprehensiveJaxrsTest
       logMsg("Found expected status 503");
    }
 
-   /*
-    * @testName: handleTimeOutWaitsForeverTest
-    * @assertion_ids: JAXRS:JAVADOC:725;
-    * 					JAXRS:JAVADOC:645;
-    * 					JAXRS:SPEC:105;
-    * @test_Strategy:  Invoked when the suspended asynchronous response is 
-    * 					about to time out.
-    * 
-    * 					Set/replace a time-out handler for the suspended 
-    * 					asynchronous response.
-    * 
-    * 					If a registered timeout handler resets the timeout 
-    * 					value or resumes the connection and returns a response, 
-    * 					JAX-RS implementations MUST NOT generate an exception.
-    */
    @Test
    public void handleTimeOutWaitsForeverTest()throws Exception {
       String responseMsg = "handleTimeOutWaitsForeverTest";
@@ -644,16 +369,6 @@ public class ComprehensiveJaxrsTest
       assertString(suspend, responseMsg);
    }
 
-   /*
-    * @testName: handleTimeoutCancelsTest
-    * @assertion_ids: JAXRS:JAVADOC:725;
-    * 					JAXRS:JAVADOC:645; 					
-    * @test_Strategy:  Invoked when the suspended asynchronous response is 
-    * 					about to time out.
-    * 
-    * 					Set/replace a time-out handler for the suspended 
-    * 					asynchronous response.
-    */
    @Test
    public void handleTimeoutCancelsTest()throws Exception {
       invokeClear();
@@ -666,21 +381,6 @@ public class ComprehensiveJaxrsTest
 
    }
 
-   /*
-    * @testName: handleTimeoutResumesTest
-    * @assertion_ids: JAXRS:JAVADOC:725;
-    * 					JAXRS:JAVADOC:645;
-    * 					JAXRS:SPEC:105;
-    * @test_Strategy:  Invoked when the suspended asynchronous response is 
-    * 					about to time out.
-    * 
-    * 					Set/replace a time-out handler for the suspended 
-    * 					asynchronous response.
-    * 
-    * 					If a registered timeout handler resets the timeout 
-    * 					value or resumes the connection and returns a response, 
-    * 					JAX-RS implementations MUST NOT generate an exception.
-    */
    @Test
    public void handleTimeoutResumesTest()throws Exception {
       invokeClear();
@@ -697,7 +397,6 @@ public class ComprehensiveJaxrsTest
       return "http://localhost:8080/resource";
    }
 
-   // ////////////////////////////////////////////////////////////////////////////
 
    private void invokeClear()throws Exception {
       Response response = client.target(getAbsoluteUrl()).path("clear").request().get();
@@ -766,27 +465,9 @@ public class ComprehensiveJaxrsTest
       assertTrue(string.contains(substring), message);
    }
 
-   public static void assertContainsIgnoreCase(String string,
-                                               String substring, Object... message)throws Exception {
-      assertTrue(string.toLowerCase().contains(substring.toLowerCase()),
-              message);
-   }
-
    public static <T> void assertContains(T text, T subtext, Object... message)
           throws Exception {
       assertContains(text.toString(), subtext.toString(), message);
-   }
-
-   public static <T> void assertContainsIgnoreCase(T text, T subtext,
-                                                   Object... message)throws Exception {
-      assertContainsIgnoreCase(text.toString(), subtext.toString(), message);
-   }
-
-   protected static <T extends Throwable> T assertCause(Throwable parent,
-                                                        Class<T> wrapped, Object... msg)throws Exception {
-      T t = hasCause(parent, wrapped);
-      Assert.assertNotNull(objectsToString(msg), t);
-      return t;
    }
 
    public static void assertTrue(boolean condition, Object... message)  {
@@ -798,17 +479,5 @@ public class ComprehensiveJaxrsTest
    assertFalse(boolean condition, Object... message)throws Exception {
       assertTrue(!condition, message);
    }
-
-   @SuppressWarnings("unchecked")
-   private static <T extends Throwable> T //
-   hasCause(Throwable parent, Class<? extends Throwable> cause) {
-      while (parent != null) {
-         if (cause.isInstance(parent))
-            return (T) parent;
-         parent = parent.getCause();
-      }
-      return null;
-   }
-
 
 }

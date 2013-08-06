@@ -25,6 +25,31 @@ public class JaxrsResource
    protected boolean cancelled;
 
    @GET
+   @Path("resume/object")
+   @Produces("application/xml")
+   public void resumeObject(@Suspended final AsyncResponse response) {
+      response.resume(new XmlData("bill"));
+   }
+
+   @GET
+   @Path("resume/object/thread")
+   @Produces("application/xml")
+   public void resumeObjectThread(@Suspended final AsyncResponse response) throws Exception
+   {
+      Thread t = new Thread()
+      {
+         @Override
+         public void run()
+         {
+            response.resume(new XmlData("bill"));
+         }
+      };
+      t.start();
+   }
+
+
+
+   @GET
    @Path("injection-failure/{param}")
    public void injectionFailure(@Suspended final AsyncResponse response, @PathParam("param") int id) {
       throw new ForbiddenException("Should be unreachable");
