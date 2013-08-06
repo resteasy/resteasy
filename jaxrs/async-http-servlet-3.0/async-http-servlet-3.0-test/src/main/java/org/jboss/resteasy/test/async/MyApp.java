@@ -11,10 +11,11 @@ import java.util.Set;
 public class MyApp extends Application
 {
    private Set<Object> singletons = new HashSet<Object>();
-   private Set<Class<?>> empty = new HashSet<Class<?>>();
+   private Set<Class<?>> classes = new HashSet<Class<?>>();
 
    public MyApp()
    {
+      classes.add(Resource.class);
       singletons.add(new MyResource());
       singletons.add(new JaxrsResource());
    }
@@ -22,7 +23,7 @@ public class MyApp extends Application
    @Override
    public Set<Class<?>> getClasses()
    {
-      return empty;
+      return classes;
    }
 
    @Override

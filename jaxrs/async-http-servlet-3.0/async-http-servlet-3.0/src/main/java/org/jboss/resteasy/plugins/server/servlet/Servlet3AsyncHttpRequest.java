@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.server.servlet;
 import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.AbstractExecutionContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
@@ -20,6 +21,7 @@ import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -29,6 +31,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
 {
+   private final static Logger logger = Logger.getLogger(Servlet3AsyncHttpRequest.class);
    protected HttpServletResponse response;
    protected ResteasyAsynchronousContext asynchronousContext;
 
@@ -48,10 +51,10 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
    private class Servlet3ExecutionContext extends AbstractExecutionContext
    {
       protected final ServletRequest servletRequest;
-      protected boolean done;
-      protected boolean cancelled;
-      protected boolean timeout;
-      protected boolean wasSuspended;
+      protected volatile boolean done;
+      protected volatile boolean cancelled;
+      protected volatile boolean timeout;
+      protected volatile boolean wasSuspended;
       protected Servle3AsychronousResponse asynchronousResponse;
 
       public Servlet3ExecutionContext(ServletRequest servletRequest)
@@ -63,6 +66,7 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
       private class Servle3AsychronousResponse extends AbstractAsynchronousResponse implements AsyncListener
       {
          private Object responseLock = new Object();
+         protected WeakReference<Thread> creatingThread = new WeakReference<Thread>(Thread.currentThread());
 
          private Servle3AsychronousResponse()
          {
@@ -124,7 +128,10 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                if (done || cancelled) return false;
             }
             AsyncContext asyncContext = getAsyncContext();
-            asyncContext.setTimeout(unit.toMillis(time));
+            long l = unit.toMillis(time);
+            logger.info("AsyncContext.setTimeout(" + l + ");");
+            asyncContext.setTimeout(l);
+            logger.info("completed successfully");
             return true;
          }
 
@@ -133,7 +140,8 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          {
             synchronized (responseLock)
             {
-               if (done || cancelled) return false;
+               if (cancelled) return true;
+               if (done) return false;
                done = true;
                cancelled = true;
                AsyncContext asyncContext = getAsyncContext();
@@ -153,7 +161,8 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          {
             synchronized (responseLock)
             {
-               if (done || cancelled) return false;
+               if (cancelled) return true;
+               if (done) return false;
                done = true;
                cancelled = true;
                AsyncContext asyncContext = getAsyncContext();
@@ -173,7 +182,8 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          {
             synchronized (responseLock)
             {
-               if (done || cancelled) return false;
+               if (cancelled) return true;
+               if (done) return false;
                done = true;
                cancelled = true;
                AsyncContext asyncContext = getAsyncContext();
@@ -258,7 +268,8 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
       @Override
       public ResteasyAsynchronousResponse suspend() throws IllegalStateException
       {
-         return suspend(-1);
+         AsyncContext asyncContext = setupAsyncContext();
+         return asynchronousResponse;
       }
 
       @Override
@@ -270,16 +281,22 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
       @Override
       public ResteasyAsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException
       {
+         AsyncContext asyncContext = setupAsyncContext();
+         asyncContext.setTimeout(unit.toMillis(time));
+         return asynchronousResponse;
+      }
+
+      protected AsyncContext setupAsyncContext()
+      {
          if (servletRequest.isAsyncStarted())
          {
             throw new IllegalStateException("Already suspended");
          }
          asynchronousResponse = new Servle3AsychronousResponse();
          AsyncContext asyncContext = servletRequest.startAsync();
-         asyncContext.setTimeout(unit.toMillis(time));
          asyncContext.addListener(asynchronousResponse);
          wasSuspended = true;
-         return asynchronousResponse;
+         return asyncContext;
       }
 
 

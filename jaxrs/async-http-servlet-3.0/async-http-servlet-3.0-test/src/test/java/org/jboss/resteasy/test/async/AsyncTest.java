@@ -11,7 +11,7 @@ import org.junit.Test;
  */
 public class AsyncTest
 {
-   @Test
+   //@Test
    public void testAsync() throws Exception
    {
       ClientRequest request = new ClientRequest("http://localhost:8080/");
@@ -20,7 +20,7 @@ public class AsyncTest
       Assert.assertEquals("hello", response.getEntity());
    }
 
-   @Test
+   //@Test
    public void testTimeout() throws Exception
    {
       ClientRequest request = new ClientRequest("http://localhost:8080/timeout");
