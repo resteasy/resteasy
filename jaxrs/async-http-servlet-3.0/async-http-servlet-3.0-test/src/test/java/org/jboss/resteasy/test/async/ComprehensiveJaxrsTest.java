@@ -63,7 +63,7 @@ public class ComprehensiveJaxrsTest
     * 					request processing has been cancelled by sending back 
     * 					a HTTP 503 (Service unavailable) error response.
     */
-   //@Test
+   @Test
    public void cancelVoidTest()throws Exception {
       invokeClear();
       Future<Response> suspend = invokeRequest("suspend");
@@ -80,7 +80,7 @@ public class ComprehensiveJaxrsTest
     * 					that has already been resumed has no effect and the 
     * 					method call is ignored while returning false when resumed.
     */
-   //@Test
+   @Test
    public void cancelVoidOnResumedTest()throws Exception {
       suspendResumeTest();
       Future<Response> cancel = invokeRequest("cancelvoid?stage=1");
@@ -95,7 +95,7 @@ public class ComprehensiveJaxrsTest
     * 					that has already been resumed has no effect and the 
     * 					method call is ignored while returning true when canceled.
     */
-   //@Test
+   @Test
    public void cancelVoidOnCanceledTest()throws Exception {
       cancelVoidTest();
       Future<Response> cancel = invokeRequest("cancelvoid?stage=1");
@@ -108,7 +108,7 @@ public class ComprehensiveJaxrsTest
     * @test_Strategy: returns false in case the request processing is not 
     * 							suspended and could not be resumed.
     */
-   //@Test
+   @Test
    public void resumeCanceledTest()throws Exception {
       cancelVoidTest();
       Future<Response> resumeCanceled = invokeRequest("resume?stage=1", "");
@@ -126,7 +126,7 @@ public class ComprehensiveJaxrsTest
     * 					Retry-After header set to the value provided by the 
     * 					method parameter.
     */
-   //@Test
+   @Test
    public void cancelIntTest()throws Exception {
       String seconds = "20";
       invokeClear();
@@ -154,7 +154,7 @@ public class ComprehensiveJaxrsTest
     * 					that has already been resumed has no effect and the 
     * 					method call is ignored while returning false when resumed
     */
-  //@Test
+   @Test
    public void cancelIntOnResumedTest()throws Exception {
       suspendResumeTest();
       Future<Response> cancel = invokeRequest("cancelretry?stage=1", "20");
@@ -169,7 +169,7 @@ public class ComprehensiveJaxrsTest
     * 					that has already been resumed has no effect and the 
     * 					method call is ignored while returning true when canceled
     */
-   //@Test
+   @Test
    public void cancelIntOnCanceledTest()throws Exception {
       cancelVoidTest();
       Future<Response> cancel = invokeRequest("cancelretry?stage=1", "20");
@@ -182,7 +182,7 @@ public class ComprehensiveJaxrsTest
     * @test_Strategy: returns false in case the request processing is not 
     * 							suspended and could not be resumed.
     */
-   //@Test
+   @Test
    public void resumeCanceledIntTest()throws Exception {
       cancelIntTest();
       Future<Response> resume = invokeRequest("resume?stage=1", "");
@@ -200,7 +200,7 @@ public class ComprehensiveJaxrsTest
     * 					Retry-After header set to the value provided by the 
     * 					method parameter.
     */
-   //@Test
+   @Test
    public void cancelDateTest()throws Exception {
       long milis = (System.currentTimeMillis() / 1000) * 1000 + 20000;
       invokeClear();
@@ -252,7 +252,7 @@ public class ComprehensiveJaxrsTest
     * 					that has already been resumed has no effect and the 
     * 					method call is ignored while returning false when resumed
     */
-   //@Test
+   @Test
    public void cancelDateOnResumedTest()throws Exception {
       suspendResumeTest();
       Future<Response> cancel = invokeRequest("canceldate?stage=1",
@@ -268,7 +268,7 @@ public class ComprehensiveJaxrsTest
     * 					that has already been resumed has no effect and the 
     * 					method call is ignored while returning true when canceled
     */
-   //@Test
+   @Test
    public void cancelDateOnCanceledTest()throws Exception {
       cancelVoidTest();
       Future<Response> cancel = invokeRequest("canceldate?stage=1",
@@ -282,7 +282,7 @@ public class ComprehensiveJaxrsTest
     * @test_Strategy:  returns false in case the request processing is not 
     * 							suspended and could not be resumed.
     */
-   //@Test
+   @Test
    public void resumeCanceledDateTest()throws Exception {
       cancelDateTest();
       Future<Response> resumeResumed = invokeRequest("resume?stage=1", "");
@@ -296,7 +296,7 @@ public class ComprehensiveJaxrsTest
     * 					cancelled. Method returns true if this asynchronous 
     * 					response has been canceled before completion.
     */
-   //@Test
+   @Test
    public void isCanceledWhenCanceledTest()throws Exception {
       cancelVoidTest();
       Future<Response> is = invokeRequest("iscanceled?stage=1");
@@ -310,7 +310,7 @@ public class ComprehensiveJaxrsTest
     * 					cancelled. Method returns true if this asynchronous 
     * 					response has been canceled before completion.
     */
-   //@Test
+   @Test
    public void isCanceledWhenSuspendedTest()throws Exception {
       invokeClear();
       invokeRequest("suspend");
@@ -325,7 +325,7 @@ public class ComprehensiveJaxrsTest
     * 					cancelled. Method returns true if this asynchronous 
     * 					response has been canceled before completion.
     */
-   //@Test
+   @Test
    public void isCanceledWhenResumedTest()throws Exception {
       suspendResumeTest();
       Future<Response> is = invokeRequest("iscanceled?stage=1");
@@ -343,7 +343,7 @@ public class ComprehensiveJaxrsTest
     * 					termination, a suspend timeout, or cancellation -- in 
     * 					all of these cases, this method will return true.
     */
-   //@Test
+   @Test
    public void isDoneWhenResumedTest()throws Exception {
       suspendResumeTest();
       Future<Response> is = invokeRequest("isdone?stage=1");
@@ -361,7 +361,7 @@ public class ComprehensiveJaxrsTest
     * 					termination, a suspend timeout, or cancellation -- in 
     * 					all of these cases, this method will return true.
     */
-   //@Test
+   @Test
    public void isDoneWhenSuspendedTest()throws Exception {
       invokeClear();
       invokeRequest("suspend");
@@ -380,7 +380,7 @@ public class ComprehensiveJaxrsTest
     * 					termination, a suspend timeout, or cancellation -- in 
     * 					all of these cases, this method will return true.
     */
-   //@Test
+   @Test
    public void isDoneWhenCanceledTest()throws Exception {
       cancelVoidTest();
       Future<Response> is = invokeRequest("isdone?stage=1");
@@ -398,7 +398,7 @@ public class ComprehensiveJaxrsTest
     * 					termination, a suspend timeout, or cancellation -- in 
     * 					all of these cases, this method will return true.
     */
-   //@Test
+   @Test
    public void isDoneWhenTimedOutTest()throws Exception {
       setTimeoutTest();
       Future<Response> is = invokeRequest("isdone?stage=1");
@@ -414,7 +414,7 @@ public class ComprehensiveJaxrsTest
     * 					finished processing yet (either by resuming or 
     * 					canceling the response).
     */
-   //@Test
+   @Test
    public void isSuspendedWhenSuspendedTest()throws Exception {
       invokeClear();
       invokeRequest("suspend");
@@ -431,7 +431,7 @@ public class ComprehensiveJaxrsTest
     * 					finished processing yet (either by resuming or 
     * 					canceling the response).
     */
-   //@Test
+   @Test
    public void isSuspendedWhenCanceledTest()throws Exception {
       cancelVoidTest();
       Future<Response> is = invokeRequest("issuspended?stage=1");
@@ -447,7 +447,7 @@ public class ComprehensiveJaxrsTest
     * 					finished processing yet (either by resuming or 
     * 					canceling the response).
     */
-   //@Test
+   @Test
    public void isSuspendedWhenResumedTest()throws Exception {
       suspendResumeTest();
       Future<Response> is = invokeRequest("issuspended?stage=1");
@@ -460,7 +460,7 @@ public class ComprehensiveJaxrsTest
     * @test_Strategy: Resume the suspended request processing using the 
     * 					provided response data.
     */
-   //@Test
+   @Test
    public void suspendResumeTest()throws Exception {
       invokeClear();
       String expectedResponse = "Expected response";
@@ -479,7 +479,7 @@ public class ComprehensiveJaxrsTest
     * 					be of any Java type that can be returned from a JAX-RS 
     * 					resource method.
     */
-   //@Test
+   @Test
    public void resumeAnyJavaObjectInputStreamTest()throws Exception {
       invokeClear();
       String expectedResponse = "Expected response";
@@ -496,7 +496,7 @@ public class ComprehensiveJaxrsTest
     * @test_Strategy: returns false in case the request processing is not 
     * 					suspended and could not be resumed.
     */
-   //@Test
+   @Test
    public void resumeResumedTest()throws Exception {
       suspendResumeTest(); // resume & store
       Future<Response> resumeResumed = invokeRequest("resume?stage=1", "");
@@ -511,7 +511,7 @@ public class ComprehensiveJaxrsTest
     * 					rules apply as for an exception thrown by a JAX-RS 
     * 					resource method.
     */
-   //@Test
+   @Test
    public void resumeWithCheckedExceptionTest()throws Exception {
       invokeClear();
       Future<Response> suspend = invokeRequest("suspend");
@@ -528,7 +528,7 @@ public class ComprehensiveJaxrsTest
     * 					rules apply as for an exception thrown by a JAX-RS 
     * 					resource method.
     */
-   //@Test
+   @Test
    public void resumeWithRuntimeExceptionTest()throws Exception {
       invokeClear();
       Future<Response> suspend = invokeRequest("suspend");
@@ -543,7 +543,7 @@ public class ComprehensiveJaxrsTest
     * @test_Strategy:  returns false in case the request processing is not 
     * 					suspended and could not be resumed.
     */
-   //@Test
+   @Test
    public void resumeWithExceptionReturnsFalseWhenResumedTest()throws Exception {
       suspendResumeTest();
       Future<Response> resume = invokeRequest("resumechecked?stage=1");
@@ -565,7 +565,7 @@ public class ComprehensiveJaxrsTest
     * 
     * 					The exception MUST be processed as described in section 3.3.4.
     */
-   //@Test
+   @Test
    public void setTimeoutTest()throws Exception {
       invokeClear();
       logMsg("here 1");
@@ -598,7 +598,7 @@ public class ComprehensiveJaxrsTest
     * 
     * 					The exception MUST be processed as described in section 3.3.4.
     */
-   //@Test
+   @Test
    public void updateTimeoutTest()throws Exception {
       invokeClear();
       Future<Response> suspend = invokeRequest("suspend");
@@ -632,7 +632,7 @@ public class ComprehensiveJaxrsTest
     * 					value or resumes the connection and returns a response, 
     * 					JAX-RS implementations MUST NOT generate an exception.
     */
-   //@Test
+   @Test
    public void handleTimeOutWaitsForeverTest()throws Exception {
       String responseMsg = "handleTimeOutWaitsForeverTest";
       invokeClear();
@@ -654,7 +654,7 @@ public class ComprehensiveJaxrsTest
     * 					Set/replace a time-out handler for the suspended 
     * 					asynchronous response.
     */
-   //@Test
+   @Test
    public void handleTimeoutCancelsTest()throws Exception {
       invokeClear();
       Future<Response> suspend = invokeRequest("suspend");
@@ -681,7 +681,7 @@ public class ComprehensiveJaxrsTest
     * 					value or resumes the connection and returns a response, 
     * 					JAX-RS implementations MUST NOT generate an exception.
     */
-   //@Test
+   @Test
    public void handleTimeoutResumesTest()throws Exception {
       invokeClear();
       Future<Response> suspend = invokeRequest("suspend");

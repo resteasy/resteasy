@@ -11,7 +11,7 @@ import org.junit.Test;
  */
 public class AsyncTest
 {
-   //@Test
+   @Test
    public void testAsync() throws Exception
    {
       ClientRequest request = new ClientRequest("http://localhost:8080/");
@@ -20,11 +20,11 @@ public class AsyncTest
       Assert.assertEquals("hello", response.getEntity());
    }
 
-   //@Test
+   @Test
    public void testTimeout() throws Exception
    {
       ClientRequest request = new ClientRequest("http://localhost:8080/timeout");
       ClientResponse<String> response = request.get(String.class);
-      Assert.assertEquals(503, response.getStatus());
+      Assert.assertEquals(408, response.getStatus()); // exception mapper from another test overrides 503 to 408
    }
 }

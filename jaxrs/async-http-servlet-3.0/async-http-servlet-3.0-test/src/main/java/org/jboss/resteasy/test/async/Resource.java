@@ -137,8 +137,10 @@ public class Resource
    public String resumeWithCheckedException(@QueryParam("stage") String stage)
    {
       AsyncResponse async = takeAsyncResponse(stage);
+      System.out.println("Before resourceWithCheckedException.resume()");
       boolean b = async.resume(new IOException(RESUMED));
       addResponse(async, stage);
+      System.out.println("returning resourceWithCheckedException()");
       return b ? TRUE : FALSE;
    }
 
