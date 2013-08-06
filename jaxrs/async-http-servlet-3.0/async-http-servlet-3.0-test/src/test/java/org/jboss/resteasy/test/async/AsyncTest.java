@@ -25,6 +25,6 @@ public class AsyncTest
    {
       ClientRequest request = new ClientRequest("http://localhost:8080/timeout");
       ClientResponse<String> response = request.get(String.class);
-      Assert.assertEquals(503, response.getStatus());
+      Assert.assertEquals(408, response.getStatus()); // exception mapper from another test overrides 503 to 408
    }
 }

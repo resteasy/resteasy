@@ -3,6 +3,8 @@ package org.jboss.resteasy.test.async;
 import org.junit.Assert;
 import org.junit.Test;
 
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
@@ -20,7 +22,9 @@ public class JaxrsAsyncTest
       long start = System.currentTimeMillis();
       Client client = ClientBuilder.newClient();
       Response response = client.target("http://localhost:8080/jaxrs/injection-failure/abcd").request().get();
-      Assert.assertEquals(404, response.getStatus());
+// exception mapper from another test overrides 503
+      Assert.assertEquals(Response.Status.NOT_ACCEPTABLE.getStatusCode(), response.getStatus());
+      Assert.assertTrue(response.readEntity(String.class).contains(NotFoundException.class.getName()));
       long end = System.currentTimeMillis() - start;
       Assert.assertTrue(end < 1000);  // should take less than 1 second
       response.close();
@@ -34,7 +38,9 @@ public class JaxrsAsyncTest
       long start = System.currentTimeMillis();
       Client client = ClientBuilder.newClient();
       Response response = client.target("http://localhost:8080/jaxrs/method-failure").request().get();
-      Assert.assertEquals(403, response.getStatus());
+// exception mapper from another test overrides 503
+      Assert.assertEquals(Response.Status.NOT_ACCEPTABLE.getStatusCode(), response.getStatus());
+      Assert.assertTrue(response.readEntity(String.class).contains(ForbiddenException.class.getName()));
       long end = System.currentTimeMillis() - start;
       Assert.assertTrue(end < 1000);  // should take less than 1 second
       response.close();
@@ -62,7 +68,7 @@ public class JaxrsAsyncTest
    {
       Client client = ClientBuilder.newClient();
       Response response = client.target("http://localhost:8080/jaxrs/timeout").request().get();
-      Assert.assertEquals(503, response.getStatus());
+      Assert.assertEquals(408, response.getStatus()); // exception mapper from another test overrides 503 to 408
       response.close();
       client.close();
    }
