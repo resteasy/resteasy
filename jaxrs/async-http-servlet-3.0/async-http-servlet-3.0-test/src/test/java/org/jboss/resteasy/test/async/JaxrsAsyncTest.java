@@ -85,4 +85,34 @@ public class JaxrsAsyncTest
       response.close();
       client.close();
    }
+
+   @Test
+   public void testResumeObject() throws Exception
+   {
+      Client client = ClientBuilder.newClient();
+      long start = System.currentTimeMillis();
+      Response response = client.target("http://localhost:8080/jaxrs/resume/object").request().get();
+      long end = System.currentTimeMillis() - start;
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("bill", response.readEntity(XmlData.class).getName());
+      Assert.assertTrue(end < 1000);  // should take less than 1 second
+      response.close();
+      client.close();
+   }
+
+   @Test
+   public void testResumeObjectThread() throws Exception
+   {
+      Client client = ClientBuilder.newClient();
+      long start = System.currentTimeMillis();
+      Response response = client.target("http://localhost:8080/jaxrs/resume/object/thread").request().get();
+      long end = System.currentTimeMillis() - start;
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("bill", response.readEntity(XmlData.class).getName());
+      Assert.assertTrue(end < 1000);  // should take less than 1 second
+      response.close();
+      client.close();
+   }
+
+
 }
