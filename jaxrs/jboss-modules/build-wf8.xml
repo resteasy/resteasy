@@ -91,6 +91,8 @@
 
         <module-def name="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider">
             <maven-resource group="com.fasterxml.jackson.jaxrs" artifact="jackson-jaxrs-json-provider"/>
+            <maven-resource group="com.fasterxml.jackson.jaxrs" artifact="jackson-jaxrs-base"/>
+            <maven-resource group="com.fasterxml.jackson.jaxrs" artifact="jackson-module-jaxb-annotations"/>
         </module-def>
 
         <module-def name="javax.ws.rs.api">
