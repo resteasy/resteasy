@@ -25,6 +25,7 @@
         <dep.guice.version>3.0</dep.guice.version>
         <dep.jboss-el.version>1.0_02.CR4</dep.jboss-el.version>
         <dep.netty.version>3.6.4.Final</dep.netty.version>
+        <dep.netty4.version>4.0.6.Final</dep.netty4.version>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -156,9 +157,9 @@
             </dependency>
 
             <dependency>
-                <groupId>javax.annotation</groupId>
-                <artifactId>jsr250-api</artifactId>
-                <version>1.0</version>
+                <groupId>org.jboss.spec.javax.annotation</groupId>
+                <artifactId>jboss-annotations-api_1.1_spec</artifactId>
+                <version>1.0.1.Final</version>
             </dependency>
 
             <dependency>
@@ -278,6 +279,17 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.jaxrs</groupId>
                 <artifactId>jackson-jaxrs-json-provider</artifactId>
+                <version>2.2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.jaxrs</groupId>
+                <artifactId>jackson-jaxrs-base</artifactId>
+                <version>2.2.1</version>
+            </dependency>
+            <!-- also need JAXB annotation support -->
+            <dependency> 
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-jaxb-annotations</artifactId>
                 <version>2.2.1</version>
             </dependency>
             <dependency>

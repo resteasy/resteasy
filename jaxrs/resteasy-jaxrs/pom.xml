@@ -65,9 +65,9 @@
            detected runtime?
         -->
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
-        </dependency>
+               <groupId>org.jboss.spec.javax.annotation</groupId>
+               <artifactId>jboss-annotations-api_1.1_spec</artifactId>
+           </dependency>
 
         <!-- javax.activation.DataSource provider is required by spec -->
         <dependency>
