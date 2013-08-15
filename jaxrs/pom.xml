@@ -18,6 +18,7 @@
         <dep.commons-io.version>2.1</dep.commons-io.version>
         <dep.hibernate-validator.version>5.0.1.Final</dep.hibernate-validator.version>
         <dep.javax.el.version>2.2.4</dep.javax.el.version>
+        <dep.javax.persistence.version>1.0.1.Final</dep.javax.persistence.version>
         <dep.spring-webmvc.version>3.0.3.RELEASE</dep.spring-webmvc.version>
         <dep.snakeyaml.version>1.8</dep.snakeyaml.version>
         <dep.cdi-api.version>1.0-SP1</dep.cdi-api.version>
@@ -187,12 +188,13 @@
                 <artifactId>FastInfoset</artifactId>
                 <version>1.2.7</version>
             </dependency>
-
+            
             <dependency>
-                <groupId>javax.persistence</groupId>
-                <artifactId>persistence-api</artifactId>
-                <version>1.0</version>
+        		<groupId>org.hibernate.javax.persistence</groupId>
+            	<artifactId>hibernate-jpa-2.0-api</artifactId>
+            	<version>${dep.javax.persistence.version}</version>
             </dependency>
+
 
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
