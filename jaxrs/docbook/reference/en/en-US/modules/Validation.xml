@@ -103,48 +103,62 @@ public class TestClassValidator implements ConstraintValidator<TestClassConstrai
    <listitem>If no violations have been detected, call the resource method and validate the return value</listitem>
    </orderedlist>
    
+   <section>
+   <title>Violation reporting</title>
+   
    <para>
-   If any constraint violations are detected, an instance of
-   <classname>org.jboss.resteasy.api.validation.RESTEasyViolationException</classname>
-   will be returned:
+   If a validation problem occurs, either a problem with the validation definitions or a constraint violation,
+   Resteasy will set the return header <classname>org.jboss.resteasy.api.validation.Validation.VALIDATION_HEADER</classname>
+   ("validation-exception") to "true".
+   </para>
+   
+   <para>
+   If Resteasy detects a structural validation problem, such as a validation annotation with a 
+   missing validator class, it will return a String representation of a 
+   <classname>javax.validation.ValidationException</classname>.  For example
+   </para>
+   
+<programlisting><![CDATA[
+javax.validation.ValidationException: HV000028: Unexpected exception during isValid call.[org.jboss.resteasy.test.validation.TestValidationExceptions$OtherValidationException]
+]]></programlisting>
+   
+   <para>
+   If any constraint violations are detected, Resteasy will create an instance of
+   <classname>org.jboss.resteasy.api.validation.ResteasyViolationException</classname>,
+   which will be transformed and returned in String form:
    </para>
  
 <programlisting><![CDATA[
 public class RESTEasyViolationException extends ValidationException
 {  
    ...
-      
-   public Exception getException()
-   {
-      return exception;
-   }
 
-   public List<RESTEasyConstraintViolation> getViolations()
+   public List<ResteasyConstraintViolation> getViolations()
    {
       ...
    }
    
-   public List<RESTEasyConstraintViolation> getFieldViolations()
+   public List<ResteasyConstraintViolation> getFieldViolations()
    {
       return fieldViolations;
    }
    
-   public List<RESTEasyConstraintViolation> getPropertyViolations()
+   public List<ResteasyConstraintViolation> getPropertyViolations()
    {
       return propertyViolations;
    }
    
-   public List<RESTEasyConstraintViolation> getClassViolations()
+   public List<ResteasyConstraintViolation> getClassViolations()
    {
       return classViolations;
    }
    
-   public List<RESTEasyConstraintViolation> getParameterViolations()
+   public List<ResteasyConstraintViolation> getParameterViolations()
    {
       return parameterViolations;
    }
    
-   public List<RESTEasyConstraintViolation> getReturnValueViolations()
+   public List<ResteasyConstraintViolation> getReturnValueViolations()
    {
       return returnValueViolations;
    }
@@ -154,7 +168,7 @@ public class RESTEasyViolationException extends ValidationException
       return getViolations().size();
    }
    
-   public List<List<RESTEasyConstraintViolation>> getViolationLists()
+   public List<List<ResteasyConstraintViolation>> getViolationLists()
    {
       return violationLists;
    }
@@ -162,10 +176,10 @@ public class RESTEasyViolationException extends ValidationException
    public String toString()
    {
       StringBuffer sb = new StringBuffer();
-      for (Iterator<List<RESTEasyConstraintViolation>> it = violationLists.iterator(); it.hasNext(); )
+      for (Iterator<List<ResteasyConstraintViolation>> it = violationLists.iterator(); it.hasNext(); )
       {
-         List<RESTEasyConstraintViolation> violations = it.next();
-         for (Iterator<RESTEasyConstraintViolation> it2 = violations.iterator(); it2.hasNext(); )
+         List<ResteasyConstraintViolation> violations = it.next();
+         for (Iterator<ResteasyConstraintViolation> it2 = violations.iterator(); it2.hasNext(); )
          {
             sb.append(it2.next().toString()).append('\r');
          }
@@ -175,11 +189,11 @@ public class RESTEasyViolationException extends ValidationException
 ]]></programlisting>
 
    <para>
-   where <classname>org.jboss.resteasy.api.validation.RESTEasyConstraintViolation</classname> is defined:
+   where <classname>org.jboss.resteasy.api.validation.ResteasyConstraintViolation</classname> is defined:
    </para>
    
 <programlisting><![CDATA[
-public class RESTEasyConstraintViolation implements Serializable
+public class ResteasyConstraintViolation implements Serializable
 {
    ...
    
@@ -220,7 +234,7 @@ public class RESTEasyConstraintViolation implements Serializable
     */
    public String toString()
    {
-      return type() + "| " + path + "| " + message + "| " + value;
+      return "[" + type() + "]\r[" + path + "]\r[" + message + "]\r[" + value + "]\r";
    }
    
    /**
@@ -245,25 +259,75 @@ public class ConstraintType
 ]]></programlisting>
 
    <para>
-   For example, <classname>RESTEasyViolationException.toString()</classname> might return something like
+   Resteasy transforms a <classname>RESTEasyViolationException</classname> into a String in which
+   each field is delimited by '[' and ']', followed by a '\r', with a final '\r' at the end.
+   For example,
    </para>
    
 <programlisting><![CDATA[
-FIELD| s| size must be between 2 and 4| a
-PROPERTY| t| size must be between 3 and 5| z
-CLASS| | Concatenation of s and t must have length > 5| org.jboss.resteasy.validation.TestResource@68467a6f
+[FIELD]
+[s]
+[size must be between 2 and 4]
+[a]
+
+[PROPERTY]
+[t]
+[size must be between 3 and 5]
+[z]
+
+[CLASS]
+[]
+[Concatenation of s and t must have length > 5]
+[org.jboss.resteasy.validation.TestResource@68467a6f]
+
+[PARAMETER]
+[test.<cross-parameter>]
+[Parameters must total <= 7]
+[[5, 7]]
+
+[RETURN_VALUE]
+[g.<return value>]
+[size must be between 2 and 4]
+[abcde]
 ]]></programlisting>
 
    <para>
-   where the fourth field is the violating value.
+   where the four fields are
    </para>
    
+   <orderedlist>
+      <listitem>type of constraint</listitem>
+      <listitem>path to violating element (e.g., field name, class name, method name and parameter name)</listitem>
+      <listitem>message</listitem>
+      <listitem>violating element</listitem>
+   </orderedlist>
+   
    <para>
-   If the validation process throws a 
-   <classname>javax.validation.ValidationException</classname>, due to, for example, an improperly
-   defined constraint annotation, <methodname>RESTEasyViolationException.getException()</methodname>
-   will return it.
+   A Java client can reconstitute a <classname>RESTEasyViolationException</classname> using the
+   constructor
    </para>
+   
+<programlisting><![CDATA[
+public ResteasyViolationException(String stringRep);
+]]></programlisting>
+
+   <para>
+   and thereby retrieve instances of <classname>ResteasyConstraintViolation</classname>. For example,
+   </para>
+   
+<programlisting><![CDATA[
+ClientResponse<?> response = request.get();
+String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
+if (header != null)
+{
+   String entity = response.getEntity(String.class);
+   ResteasyViolationException e = new ResteasyViolationException(entity);
+   ResteasyConstraintViolation violation = e.getParameterViolations().iterator().next();
+   System.out.println("violation message: " + violation.getMessage());
+}
+]]></programlisting>
+   
+   </section>
 
    <section>
    <title>Bean Validation 1.1</title>
@@ -271,7 +335,8 @@ CLASS| | Concatenation of s and t must have length > 5| org.jboss.resteasy.valid
    <para>
    The form of validation mandated by the JAX-RS 2.0 specification, based on Bean Validation 1.1,
    is supported by the RESTEasy module resteasy-validator-provider-11, which produces the artifact
-   resteasy-validator-provider-11-&lt;version&gt;.jar.  Validation is turned on by default, though
+   resteasy-validator-provider-11-&lt;version&gt;.jar.  Validation is turned on by default (assuming
+   resteasy-validator-provider-11-&lt;version&gt;.jar is available), though
    parameter and return value validation can be turned off or modified in the validation.xml
    configuration file. See the
    <ulink url="http://docs.jboss.org/hibernate/validator/5.0/reference/en-US/html/">Hibernate Validator</ulink>
@@ -384,77 +449,7 @@ public interface GeneralValidator
     * @throws ValidationException if a non recoverable error happens
     *         during the validation process
     */
-   public abstract <T> Set<RESTEasyConstraintViolation> validate(T object, Class<?>... groups);
-
-    /**
-    * Validates all constraints placed on the property of {@code object}
-    * named {@code propertyName}.
-    *
-    * @param object object to validate
-    * @param propertyName property to validate (i.e. field and getter constraints)
-    * @param groups the group or list of groups targeted for validation (defaults to
-    *        {@link Default})
-    * @return constraint violations or an empty set if none
-    * @throws IllegalArgumentException if {@code object} is {@code null},
-    *         if {@code propertyName} is {@code null}, empty or not a valid object property
-    *         or if {@code null} is passed to the varargs groups
-    * @throws ValidationException if a non recoverable error happens
-    *         during the validation process
-    */
-   public abstract <T> Set<RESTEasyConstraintViolation> validateProperty(T object,
-         String propertyName, Class<?>... groups);
-
-     /**
-    * Validates all constraints placed on the property named {@code propertyName}
-    * of the class {@code beanType} would the property value be {@code value}.
-    * <p/>
-    * {@link ConstraintViolation} objects return {@code null} for
-    * {@link ConstraintViolation#getRootBean()} and {@link ConstraintViolation#getLeafBean()}.
-    *
-    * @param beanType the bean type
-    * @param propertyName property to validate
-    * @param value property value to validate
-    * @param groups the group or list of groups targeted for validation (defaults to
-    *        {@link Default}).
-    * @return constraint violations or an empty set if none
-    * @throws IllegalArgumentException if {@code beanType} is {@code null},
-    *         if {@code propertyName} is {@code null}, empty or not a valid object property
-    *         or if {@code null} is passed to the varargs groups
-    * @throws ValidationException if a non recoverable error happens
-    *         during the validation process
-    */
-   public abstract <T> Set<RESTEasyConstraintViolation> validateValue(
-         Class<T> beanType, String propertyName, Object value,
-         Class<?>... groups);
-
-    /**
-    * Returns the descriptor object describing bean constraints.
-    * <p/>
-    * The returned object (and associated objects including
-    * {@link ConstraintDescriptor}s) are immutable.
-    *
-    * @param clazz class or interface type evaluated
-    * @return the bean descriptor for the specified class
-    * @throws IllegalArgumentException if clazz is {@code null}
-    * @throws ValidationException if a non recoverable error happens
-    *         during the metadata discovery or if some
-    *         constraints are invalid.
-    */
-   public abstract BeanDescriptor getConstraintsForClass(Class<?> clazz);
-
-    /**
-    * Returns an instance of the specified type allowing access to
-    * provider-specific APIs.
-    * <p/>
-    * If the Bean Validation provider implementation does not support
-    * the specified class, {@link ValidationException} is thrown.
-    *
-    * @param type the class of the object to be returned
-    * @return an instance of the specified class
-    * @throws ValidationException if the provider does not support the call
-    */
-   public abstract <T> T unwrap(Class<T> type);
-
+   public abstract void validate(HttpRequest request, Object object, Class<?>... groups);
    /**
     * Validates all constraints placed on the parameters of the given method.
     *
@@ -472,9 +467,7 @@ public interface GeneralValidator
     * @throws ValidationException if a non recoverable error happens during the
     *         validation process
     */
-   public abstract <T> Set<RESTEasyConstraintViolation> validateAllParameters(
-         T object, Method method, Object[] parameterValues,
-         Class<?>... groups);
+   public abstract void validateAllParameters(HttpRequest request, Object object, Method method, Object[] parameterValues, Class<?>... groups);
 
    /**
     * Validates all return value constraints of the given method.
@@ -492,8 +485,8 @@ public interface GeneralValidator
     * @throws ValidationException if a non recoverable error happens during the
     *         validation process
     */
-   public abstract <T> Set<RESTEasyConstraintViolation> validateReturnValue(
-         T object, Method method, Object returnValue, Class<?>... groups);
+   public abstract void validateReturnValue(
+         HttpRequest request, Object object, Method method, Object returnValue, Class<?>... groups);
 
    /**
     * Indicates if validation is turned on for a class.
@@ -510,6 +503,8 @@ public interface GeneralValidator
     * @return true if and only if validation is turned on for method
     */   
    public abstract boolean isMethodValidatable(Method method);
+
+   void checkViolations(HttpRequest request);
 }
 ]]></programlisting>
 

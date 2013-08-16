@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0.3.Final</version>
+        <version>3.0.4.Final</version>
     </parent>
     <artifactId>resteasy-jaxrs</artifactId>
     <name>RESTEasy JAX-RS Implementation</name>
@@ -65,9 +65,9 @@
            detected runtime?
         -->
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
-        </dependency>
+               <groupId>org.jboss.spec.javax.annotation</groupId>
+               <artifactId>jboss-annotations-api_1.1_spec</artifactId>
+           </dependency>
 
         <!-- javax.activation.DataSource provider is required by spec -->
         <dependency>
