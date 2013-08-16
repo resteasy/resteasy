@@ -4,7 +4,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.TooLongFrameException;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpResponse;
@@ -16,7 +16,7 @@ import static io.netty.handler.codec.http.HttpResponseStatus.REQUEST_ENTITY_TOO_
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
- * {@link ChannelInboundHandlerAdapter} which handles the requests and dispatch them.
+ * {@link SimpleChannelInboundHandler} which handles the requests and dispatch them.
  *
  * This class is {@link Sharable}.
  *
@@ -27,7 +27,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  * @version $Rev: 2368 $, $Date: 2010-10-18 17:19:03 +0900 (Mon, 18 Oct 2010) $
  */
 @Sharable
-public class RequestHandler extends ChannelInboundHandlerAdapter
+public class RequestHandler extends SimpleChannelInboundHandler
 {
    protected final RequestDispatcher dispatcher;
    private final static Logger logger = Logger.getLogger(RequestHandler.class);
@@ -38,7 +38,7 @@ public class RequestHandler extends ChannelInboundHandlerAdapter
    }
 
    @Override
-   public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception
+   protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception
    {
       if (msg instanceof NettyHttpRequest) {
           NettyHttpRequest request = (NettyHttpRequest) msg;
