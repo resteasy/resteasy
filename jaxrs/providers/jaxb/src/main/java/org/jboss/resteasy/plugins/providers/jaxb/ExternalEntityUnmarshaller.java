@@ -1,13 +1,10 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
-import org.jboss.resteasy.logging.Logger;
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
+import java.io.File;
+import java.io.InputStream;
+import java.io.Reader;
+import java.net.URL;
 
-import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.PropertyException;
@@ -24,10 +21,12 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.validation.Schema;
-import java.io.File;
-import java.io.InputStream;
-import java.io.Reader;
-import java.net.URL;
+
+import org.jboss.resteasy.logging.Logger;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 /**
  * 
