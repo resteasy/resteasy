@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0.3.Final</version>
+        <version>3.0.4.Final</version>
     </parent>
 
     <artifactId>resteasy-jaxrs-dist</artifactId>
@@ -145,6 +145,16 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-netty</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-netty4</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-undertow</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

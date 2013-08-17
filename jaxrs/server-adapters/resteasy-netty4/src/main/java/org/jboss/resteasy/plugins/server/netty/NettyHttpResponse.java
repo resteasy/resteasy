@@ -2,7 +2,6 @@ package org.jboss.resteasy.plugins.server.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders.Names;
@@ -35,7 +34,7 @@ public class NettyHttpResponse implements HttpResponse
    public NettyHttpResponse(ChannelHandlerContext ctx, boolean keepAlive)
    {
       outputHeaders = new MultivaluedMapImpl<String, Object>();
-      byteBuf = Unpooled.buffer();
+      byteBuf = ctx.alloc().buffer();
       os = new ByteBufOutputStream(byteBuf);
       this.ctx = ctx;
       this.keepAlive = keepAlive;

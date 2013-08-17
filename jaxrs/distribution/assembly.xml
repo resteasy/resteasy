@@ -204,9 +204,11 @@
                 <include>org.jboss.resteasy:resteasy-validator-provider-11</include>
             </includes>
             <excludes>
+                <exclude>org.jboss.resteasy:resteasy-undertow</exclude>
                 <exclude>org.jboss.resteasy:tjws</exclude>
                 <exclude>org.jboss.resteasy:resteasy-jdk-http</exclude>
                 <exclude>org.jboss.resteasy:resteasy-netty</exclude>
+                <exclude>org.jboss.resteasy:resteasy-netty4</exclude>
                 <!-- <include>tjws:webserver</include> -->
                 <exclude>javax.servlet:servlet-api</exclude>
             </excludes>
@@ -216,7 +218,9 @@
             <unpack>false</unpack>
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <includes>
+                <include>org.jboss.resteasy:resteasy-undertow</include>
                 <include>org.jboss.resteasy:resteasy-netty</include>
+                <include>org.jboss.resteasy:resteasy-netty4</include>
                 <include>org.jboss.resteasy:tjws</include>
                 <include>org.jboss.resteasy:resteasy-jdk-http</include>
                 <include>javax.servlet:servlet-api</include>

@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0.3.Final</version>
+        <version>3.0.4.Final</version>
     </parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-spring</artifactId>
@@ -71,10 +71,9 @@
             <version>3.0.3.RELEASE</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>1.0.2</version>
+         <dependency>
+        	<groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.0-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
