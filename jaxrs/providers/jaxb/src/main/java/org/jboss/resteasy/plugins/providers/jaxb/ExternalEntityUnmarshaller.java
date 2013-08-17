@@ -7,6 +7,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.PropertyException;
@@ -15,6 +16,9 @@ import javax.xml.bind.UnmarshallerHandler;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.attachment.AttachmentUnmarshaller;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
@@ -146,16 +150,22 @@ public class ExternalEntityUnmarshaller implements Unmarshaller {
    {
        try
        {
-          XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+          SAXParserFactory spf = SAXParserFactory.newInstance();
+          SAXParser sp = spf.newSAXParser();
+          XMLReader xmlReader = sp.getXMLReader();
           xmlReader.setFeature("http://xml.org/sax/features/validation", false);
           xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
           SAXSource saxSource = new SAXSource(xmlReader, source);
           return delegate.unmarshal(saxSource);
       }
-       catch (SAXException e)
-       {
-          throw new JAXBException(e);
-       }
+      catch (SAXException e)
+      {
+         throw new JAXBException(e);
+      }
+      catch (ParserConfigurationException e)
+      {
+         throw new JAXBException(e);
+      }
    }
 
    public Object unmarshal(Node node) throws JAXBException {
@@ -184,13 +194,19 @@ public class ExternalEntityUnmarshaller implements Unmarshaller {
       {
          try
          {
-            XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            SAXParser sp = spf.newSAXParser();
+            XMLReader xmlReader = sp.getXMLReader();
             xmlReader.setFeature("http://xml.org/sax/features/validation", false);
             xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
             ((SAXSource) source).setXMLReader(xmlReader);
             return delegate.unmarshal(source, declaredType);
          }
          catch (SAXException e)
+         {
+            throw new JAXBException(e);
+         }
+         catch (ParserConfigurationException e)
          {
             throw new JAXBException(e);
          }
