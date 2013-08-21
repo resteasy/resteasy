@@ -20,8 +20,9 @@ import org.jboss.resteasy.skeleton.key.RealmConfiguration;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyPrincipal;
 import org.jboss.resteasy.skeleton.key.SkeletonKeySession;
-import org.jboss.resteasy.skeleton.key.as7.config.ManagedResourceConfig;
-import org.jboss.resteasy.skeleton.key.as7.config.ManagedResourceConfigLoader;
+import org.jboss.resteasy.skeleton.key.as7.config.CatalinaManagedResourceConfigLoader;
+import org.jboss.resteasy.skeleton.key.config.ManagedResourceConfig;
+import org.jboss.resteasy.skeleton.key.config.ManagedResourceConfigLoader;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -67,7 +68,7 @@ public class OAuthManagedResourceValve extends FormAuthenticator implements Life
 
    protected void init()
    {
-      ManagedResourceConfigLoader managedResourceConfigLoader = new ManagedResourceConfigLoader(context);
+      ManagedResourceConfigLoader managedResourceConfigLoader = new CatalinaManagedResourceConfigLoader(context);
       resourceMetadata = managedResourceConfigLoader.getResourceMetadata();
       remoteSkeletonKeyConfig = managedResourceConfigLoader.getRemoteSkeletonKeyConfig();
       String client_id = remoteSkeletonKeyConfig.getClientId();
