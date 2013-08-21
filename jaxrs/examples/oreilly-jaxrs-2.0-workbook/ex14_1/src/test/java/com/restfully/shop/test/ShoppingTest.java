@@ -1,23 +1,26 @@
 package com.restfully.shop.test;
 
+import com.restfully.shop.domain.AtomLink;
 import com.restfully.shop.domain.Customer;
 import com.restfully.shop.domain.Customers;
 import com.restfully.shop.domain.LineItem;
-import com.restfully.shop.domain.Link;
 import com.restfully.shop.domain.Order;
 import com.restfully.shop.domain.Product;
 import com.restfully.shop.domain.Products;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Link;
+import javax.ws.rs.core.Response;
+import java.net.URI;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,79 +29,73 @@ import java.util.Map;
  */
 public class ShoppingTest
 {
+   private static Client client;
+
    @BeforeClass
-   public static void init()
+   public static void initClient()
    {
-      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
+      client = ClientBuilder.newClient();
    }
 
-   protected Map<String, Link> processLinkHeaders(ClientResponse response)
+   @AfterClass
+   public static void closeClient()
    {
-      List<String> linkHeaders = (List<String>) response.getHeaders().get("Link");
-      Map<String, Link> links = new HashMap<String, Link>();
-      for (String header : linkHeaders)
-      {
-         Link link = Link.valueOf(header);
-         links.put(link.getRelationship(), link);
-      }
-      return links;
+      client.close();
    }
 
-
-   @Test
-   public void testPopulateDB() throws Exception
+   public void populateDB() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:8080/ex11_1/services/shop");
-      ClientResponse response = request.head();
-      Map<String, Link> shoppingLinks = processLinkHeaders(response);
-      response.releaseConnection();
+      Response response = client.target("http://localhost:8080/ex14_1/services/shop").request().head();
+      Link products = response.getLink("products");
+      response.close();
 
       System.out.println("** Populate Products");
-      request = new ClientRequest(shoppingLinks.get("products").getHref());
 
       Product product = new Product();
       product.setName("iPhone");
       product.setCost(199.99);
-      request.body("application/xml", product);
-      response = request.post();
+      response = client.target(products).request().post(Entity.xml(product));
       Assert.assertEquals(201, response.getStatus());
-      response.releaseConnection();
+      response.close();
 
       product = new Product();
       product.setName("MacBook Pro");
       product.setCost(3299.99);
-      request.body("application/xml", product);
-      response = request.post();
+      response = client.target(products).request().post(Entity.xml(product));
       Assert.assertEquals(201, response.getStatus());
-      response.releaseConnection();
+      response.close();
 
       product = new Product();
       product.setName("iPod");
       product.setCost(49.99);
-      request.body("application/xml", product);
-      response = request.post();
+      response = client.target(products).request().post(Entity.xml(product));
       Assert.assertEquals(201, response.getStatus());
-      response.releaseConnection();
+      response.close();
    }
 
    @Test
    public void testCreateOrder() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:8080/ex11_1/services/shop");
-      ClientResponse response = request.head();
-      Map<String, Link> shoppingLinks = processLinkHeaders(response);
-      response.releaseConnection();
+      populateDB();
+
+      Response response = client.target("http://localhost:8080/ex14_1/services/shop").request().head();
+      Link customers = response.getLink("customers");
+      Link products = response.getLink("products");
+      Link orders = response.getLink("orders");
+      response.close();
 
       System.out.println("** Buy an iPhone for Bill Burke");
       System.out.println();
       System.out.println("** First see if Bill Burke exists as a customer");
-      request = new ClientRequest(shoppingLinks.get("customers").getHref() + "?firstName=Bill&lastName=Burke");
-      Customers customers = request.getTarget(Customers.class);
+      Customers custs = client.target(customers)
+                                  .queryParam("firstName", "Bill")
+                                  .queryParam("lastName", "Burke")
+                                  .request().get(Customers.class);
       Customer customer = null;
-      if (customers.getCustomers().size() > 0)
+      if (custs.getCustomers().size() > 0)
       {
          System.out.println("- Found a Bill Burke in the database, using that");
-         customer = customers.getCustomers().iterator().next();
+         customer = custs.getCustomers().iterator().next();
       }
       else
       {
@@ -111,26 +108,25 @@ public class ShoppingTest
          customer.setState("MA");
          customer.setZip("02115");
          customer.setCountry("USA");
-         request = new ClientRequest(shoppingLinks.get("customers").getHref());
-         request.body("application/xml", customer);
-         response = request.post();
+         response = client.target(customers).request().post(Entity.xml(customer));
          Assert.assertEquals(201, response.getStatus());
-         String uri = (String) response.getHeaders().getFirst("Location");
-         response.releaseConnection();
+         URI uri = response.getLocation();
+         response.close();
          
-         request = new ClientRequest(uri);
-         customer = request.getTarget(Customer.class);
+         customer = client.target(uri).request().get(Customer.class);
       }
 
       System.out.println();
       System.out.println("Search for iPhone in the Product database");
-      request = new ClientRequest(shoppingLinks.get("products").getHref() + "?name=iPhone");
-      Products products = request.getTarget(Products.class);
+      Products prods = client.target(products)
+                             .queryParam("name", "iPhone")
+                             .request()
+                             .get(Products.class);
       Product product = null;
-      if (products.getProducts().size() > 0)
+      if (prods.getProducts().size() > 0)
       {
          System.out.println("- Found iPhone in the database.");
-         product = products.getProducts().iterator().next();
+         product = prods.getProducts().iterator().next();
       }
       else
       {
@@ -147,16 +143,13 @@ public class ShoppingTest
       order.setCustomer(customer);
       order.setDate(new Date().toString());
       order.getLineItems().add(item);
-      request = new ClientRequest(shoppingLinks.get("orders").getHref());
-      request.body("application/xml", order);
-      response = request.post();
+      response = client.target(orders).request().post(Entity.xml(order));
       Assert.assertEquals(201, response.getStatus());
-      response.releaseConnection();
+      response.close();
 
       System.out.println();
       System.out.println("** Show all orders.");
-      request = new ClientRequest(shoppingLinks.get("orders").getHref());
-      String xml = request.getTarget(String.class);
+      String xml = client.target(orders).request().get(String.class);
       System.out.println(xml);
 
 

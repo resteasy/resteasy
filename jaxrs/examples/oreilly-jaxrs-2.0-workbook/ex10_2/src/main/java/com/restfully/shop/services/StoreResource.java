@@ -1,13 +1,16 @@
 package com.restfully.shop.services;
 
-import com.restfully.shop.domain.Link;
+import com.restfully.shop.domain.AtomLink;
+import com.restfully.shop.domain.AtomLink;
 
 import javax.ws.rs.HEAD;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import java.net.URI;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -20,12 +23,13 @@ public class StoreResource
    public Response head(@Context UriInfo uriInfo)
    {
       UriBuilder absolute = uriInfo.getBaseUriBuilder();
-      String customerUrl = absolute.clone().path("customers").build().toString();
-      String orderUrl = absolute.clone().path("orders").build().toString();
+      URI customerUrl = absolute.clone().path(CustomerResource.class).build();
+      URI orderUrl = absolute.clone().path(OrderResource.class).build();
 
       Response.ResponseBuilder builder = Response.ok();
-      builder.header("Link", new Link("customers", customerUrl, "application/xml"));
-      builder.header("Link", new Link("orders", orderUrl, "application/xml"));
+      Link customers = Link.fromUri(customerUrl).rel("customers").title("application/xml").build();
+      Link orders = Link.fromUri(orderUrl).rel("orders").title("application/xml").build();
+      builder.links(customers, orders);
       return builder.build();
    }
 }

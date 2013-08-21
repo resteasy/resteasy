@@ -1,14 +1,22 @@
 package com.restfully.shop.test;
 
+import com.restfully.shop.domain.AtomLink;
 import com.restfully.shop.domain.Customer;
 import com.restfully.shop.domain.LineItem;
-import com.restfully.shop.domain.Link;
 import com.restfully.shop.domain.Order;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Link;
+import javax.ws.rs.core.Response;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,29 +30,31 @@ import java.util.Map;
  */
 public class OrderResourceTest
 {
-   protected Map<String, Link> processLinkHeaders(ClientResponse response)
+   private static Client client;
+
+   @BeforeClass
+   public static void initClient()
    {
-      List<String> linkHeaders = (List<String>) response.getHeaders().get("Link");
-      Map<String, Link> links = new HashMap<String, Link>();
-      for (String header : linkHeaders)
-      {
-         Link link = Link.valueOf(header);
-         links.put(link.getRelationship(), link);
-      }
-      return links;
+      client = ClientBuilder.newClient();
+   }
+
+   @AfterClass
+   public static void closeClient()
+   {
+      client.close();
    }
 
    @Test
    public void testCreateCancelPurge() throws Exception
    {
-      //RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
-      String url = "http://localhost:8080/ex09_2/services/shop";
-      ClientRequest request = new ClientRequest(url);
-      ClientResponse response = request.head();
-      Map<String, Link> shoppingLinks = processLinkHeaders(response);
+      String base = "http://localhost:8080/services/shop";
+      Response response = client.target(base).request().head();
 
-      Link customers = shoppingLinks.get("customers");
-      System.out.println("** Create a customer through this URL: " + customers.getHref());
+      Link customers = response.getLink("customers");
+      Link orders = response.getLink("orders");
+      response.close();
+
+      System.out.println("** Create a customer through this URL: " + customers.getUri().toString());
 
       Customer customer = new Customer();
       customer.setFirstName("Bill");
@@ -55,12 +65,10 @@ public class OrderResourceTest
       customer.setZip("01711");
       customer.setCountry("USA");
 
-      request = new ClientRequest(customers.getHref());
-      request.body("application/xml", customer);
-      response = request.post();
+      response = client.target(customers).request().post(Entity.xml(customer));
       Assert.assertEquals(201, response.getStatus());
+      response.close();
 
-      Link orders = shoppingLinks.get("orders");
 
       Order order = new Order();
       order.setTotal("$199.99");
@@ -73,50 +81,45 @@ public class OrderResourceTest
       order.getLineItems().add(item);
 
       System.out.println();
-      System.out.println("** Create an order through this URL: " + orders.getHref());
-      request = new ClientRequest(orders.getHref());
-      request.body("application/xml", order);
-      response = request.post();
+      System.out.println("** Create an order through this URL: " + orders.getUri().toString());
+      response = client.target(orders).request().post(Entity.xml(order));
       Assert.assertEquals(201, response.getStatus());
-      String createdOrderUrl = (String) response.getHeaders().getFirst("Location");
+      URI createdOrderUrl = response.getLocation();
+      response.close();
 
       System.out.println();
       System.out.println("** New list of orders");
-      request = new ClientRequest(orders.getHref());
-      response = request.get();
-      System.out.println(response.getEntity(String.class));
-      Map<String, Link> ordersLinks = processLinkHeaders(response);
+      response = client.target(orders).request().get();
+      String orderList = response.readEntity(String.class);
+      System.out.println(orderList);
+      Link purge = response.getLink("purge");
+      response.close();
 
-      request = new ClientRequest(createdOrderUrl);
-      response = request.head();
-      Map<String, Link> orderLinks = processLinkHeaders(response);
-
-      Link cancel = orderLinks.get("cancel");
+      response = client.target(createdOrderUrl).request().head();
+      Link cancel = response.getLink("cancel");
+      response.close();
       if (cancel != null)
       {
-         System.out.println("** Canceling the order at URL: " + cancel.getHref());
-         request = new ClientRequest(cancel.getHref());
-         response = request.post();
+         System.out.println("** Canceling the order at URL: " + cancel.getUri().toString());
+         response = client.target(cancel).request().post(null);
          Assert.assertEquals(204, response.getStatus());
+         response.close();
       }
 
       System.out.println();
       System.out.println("** New list of orders after cancel: ");
-      request = new ClientRequest(orders.getHref());
-      response = request.get();
-      System.out.println(response.getEntity(String.class));
+      orderList = client.target(orders).request().get(String.class);
+      System.out.println(orderList);
 
       System.out.println();
-      Link purge = ordersLinks.get("purge");
-      System.out.println("** Purge cancelled orders at URL: " + purge.getHref());
-      request = new ClientRequest(purge.getHref());
-      response = request.post();
+      System.out.println("** Purge cancelled orders at URL: " + purge.getUri().toString());
+      response = client.target(purge).request().post(null);
       Assert.assertEquals(204, response.getStatus());
+      response.close();
 
       System.out.println();
       System.out.println("** New list of orders after purge: ");
-      request = new ClientRequest(orders.getHref());
-      response = request.get();
-      System.out.println(response.getEntity(String.class));
+      orderList = client.target(orders).request().get(String.class);
+      System.out.println(orderList);
    }
 }

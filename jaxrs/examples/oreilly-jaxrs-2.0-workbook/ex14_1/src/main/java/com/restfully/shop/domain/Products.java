@@ -15,7 +15,7 @@ import java.util.List;
 public class Products
 {
    protected Collection<Product> products = new ArrayList<Product>();
-   protected List<Link> links;
+   protected List<AtomLink> links;
 
    @XmlElementRef
    public Collection<Product> getProducts()
@@ -29,12 +29,12 @@ public class Products
    }
 
    @XmlElementRef
-   public List<Link> getLinks()
+   public List<AtomLink> getLinks()
    {
       return links;
    }
 
-   public void setLinks(List<Link> links)
+   public void setLinks(List<AtomLink> links)
    {
       this.links = links;
    }
@@ -43,7 +43,7 @@ public class Products
    public String getNext()
    {
       if (links == null) return null;
-      for (Link link : links)
+      for (AtomLink link : links)
       {
          if ("next".equals(link.getRelationship())) return link.getHref();
       }
@@ -54,7 +54,7 @@ public class Products
    public String getPrevious()
    {
       if (links == null) return null;
-      for (Link link : links)
+      for (AtomLink link : links)
       {
          if ("previous".equals(link.getRelationship())) return link.getHref();
       }

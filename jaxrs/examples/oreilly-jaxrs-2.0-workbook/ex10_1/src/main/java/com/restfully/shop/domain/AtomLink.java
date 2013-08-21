@@ -8,17 +8,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @version $Revision: 1 $
  */
 @XmlRootElement(name = "link")
-public class Link
+public class AtomLink
 {
    protected String relationship;
    protected String href;
    protected String type;
 
-   public Link()
+   public AtomLink()
    {
    }
 
-   public Link(String relationship, String href, String type)
+   public AtomLink(String relationship, String href, String type)
    {
       this.relationship = relationship;
       this.href = href;

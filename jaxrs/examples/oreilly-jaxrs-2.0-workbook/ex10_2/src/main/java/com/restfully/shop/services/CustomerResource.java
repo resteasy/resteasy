@@ -1,8 +1,9 @@
 package com.restfully.shop.services;
 
+import com.restfully.shop.domain.AtomLink;
 import com.restfully.shop.domain.Customer;
 import com.restfully.shop.domain.Customers;
-import com.restfully.shop.domain.Link;
+import com.restfully.shop.domain.AtomLink;
 import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
 
 import javax.ws.rs.Consumes;
@@ -55,7 +56,7 @@ public class CustomerResource
       builder.queryParam("size", "{size}");
 
       ArrayList<Customer> list = new ArrayList<Customer>();
-      ArrayList<Link> links = new ArrayList<Link>();
+      ArrayList<AtomLink> links = new ArrayList<AtomLink>();
       synchronized (customerDB)
       {
          int i = 0;
@@ -69,7 +70,7 @@ public class CustomerResource
          {
             int next = start + size;
             URI nextUri = builder.clone().build(next, size);
-            Link nextLink = new Link("next", nextUri.toString(), "application/xml");
+            AtomLink nextLink = new AtomLink("next", nextUri.toString(), "application/xml");
             links.add(nextLink);
          }
          // previous link
@@ -78,7 +79,7 @@ public class CustomerResource
             int previous = start - size;
             if (previous < 0) previous = 0;
             URI previousUri = builder.clone().build(previous, size);
-            Link previousLink = new Link("previous", previousUri.toString(), "application/xml");
+            AtomLink previousLink = new AtomLink("previous", previousUri.toString(), "application/xml");
             links.add(previousLink);
          }
       }

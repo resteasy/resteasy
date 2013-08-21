@@ -14,7 +14,7 @@ import java.util.List;
 public class Customers
 {
    protected Collection<Customer> customers;
-   protected List<Link> links;
+   protected List<AtomLink> links;
 
    @XmlElementRef
    public Collection<Customer> getCustomers()
@@ -28,12 +28,12 @@ public class Customers
    }
 
    @XmlElementRef
-   public List<Link> getLinks()
+   public List<AtomLink> getLinks()
    {
       return links;
    }
 
-   public void setLinks(List<Link> links)
+   public void setLinks(List<AtomLink> links)
    {
       this.links = links;
    }
@@ -42,7 +42,7 @@ public class Customers
    public String getNext()
    {
       if (links == null) return null;
-      for (Link link : links)
+      for (AtomLink link : links)
       {
          if ("next".equals(link.getRelationship())) return link.getHref();
       }
@@ -53,7 +53,7 @@ public class Customers
    public String getPrevious()
    {
       if (links == null) return null;
-      for (Link link : links)
+      for (AtomLink link : links)
       {
          if ("previous".equals(link.getRelationship())) return link.getHref();
       }

@@ -32,10 +32,6 @@ public class CustomerResource
    private Map<Integer, Customer> customerDB = new ConcurrentHashMap<Integer, Customer>();
    private AtomicInteger idCounter = new AtomicInteger();
 
-   public CustomerResource(String database)
-   {
-   }
-
    @POST
    @Consumes("application/xml")
    public Response createCustomer(InputStream is)

@@ -3,8 +3,17 @@ package com.restfully.shop.test;
 import com.restfully.shop.domain.Customer;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.Response;
 
 
 /**
@@ -13,28 +22,42 @@ import org.junit.Test;
  */
 public class CustomerResourceTest
 {
+   private static Client client;
+
+   @BeforeClass
+   public static void initClient()
+   {
+      client = ClientBuilder.newClient();
+   }
+
+   @AfterClass
+   public static void closeClient()
+   {
+      client.close();
+   }
+
    @Test
    public void testCustomerResource() throws Exception
    {
-      //RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
-      ClientRequest request = new ClientRequest("http://localhost:8080/ex10_1/services/customers/1");
-      ClientResponse<Customer> response = request.get(Customer.class);
+      WebTarget customerTarget = client.target("http://localhost:8080/services/customers/1");
+      Response response = customerTarget.request().get();
       Assert.assertEquals(200, response.getStatus());
-      Customer cust = response.getEntity();
+      Customer cust = response.readEntity(Customer.class);
 
-      String etag = response.getHeaders().getFirst("ETag");
-      System.out.println("Doing a conditional GET with ETag: " + etag);
-      request.clear();
-      request.header("If-None-Match", etag);
-      response = request.get(Customer.class);
+      EntityTag etag = response.getEntityTag();
+      System.out.println("Doing a conditional GET with ETag: " + etag.toString());
+      response.close();
+      response = customerTarget.request()
+                               .header("If-None-Match", etag).get();
       Assert.assertEquals(304, response.getStatus());
+      response.close();
 
       // Update and send a bad etag with conditional PUT
       cust.setCity("Bedford");
-      request.clear();
-      request.header("If-Match", "JUNK");
-      request.body("application/xml", cust);
-      ClientResponse response2 = request.put();
-      Assert.assertEquals(412, response2.getStatus());
+      response = customerTarget.request()
+              .header("If-Match", "JUNK")
+              .put(Entity.xml(cust));
+      Assert.assertEquals(412, response.getStatus());
+      response.close();
    }
 }

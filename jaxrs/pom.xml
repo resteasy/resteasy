@@ -113,8 +113,8 @@
         <module>war-tests</module>
         <!-- <module>as8-integration-testing</module> -->
         <!-- <module>as8-integration-testing/ejb-singleton-test</module> -->
-        <module>examples</module>
         <module>async-http-servlet-3.0</module>
+        <module>examples</module>
         <module>jboss-modules</module>
         <module>profiling-tests</module>
         <!-- <module>arquillian</module> -->
@@ -396,7 +396,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.3.1</version>
+                    <version>3.1</version>
                     <configuration>
                         <source>1.6</source>
                         <target>1.6</target>
@@ -449,7 +449,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.1</version>
+                <version>3.1</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>

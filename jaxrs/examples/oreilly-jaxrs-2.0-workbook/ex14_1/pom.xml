@@ -1,16 +1,16 @@
 <project>
     <parent>
         <groupId>com.oreilly.rest.workbook</groupId>
-        <artifactId>workbook-pom-as7</artifactId>
+        <artifactId>jaxrs-2.0-workbook-pom</artifactId>
         <version>1.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.oreilly.rest.workbook</groupId>
-    <artifactId>workbook-ex11_1-as7</artifactId>
+    <artifactId>jaxrs-2.0-workbook-ex14_1</artifactId>
     <version>1.0</version>
     <packaging>war</packaging>
-    <name>ex11_1</name>
+    <name>ex14_1</name>
     <description/>
 
     <dependencies>
@@ -19,6 +19,12 @@
             <artifactId>resteasy-jaxrs</artifactId>
             <version>3.0.4.Final</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-client</artifactId>
+            <version>3.0.4.Final</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
@@ -47,7 +53,7 @@
     </dependencies>
 
     <build>
-        <finalName>ex11_1</finalName>
+        <finalName>ex14_1</finalName>
         <plugins>
             <plugin>
                 <groupId>org.jboss.as.plugins</groupId>
@@ -105,4 +111,5 @@
                 </configuration>
             </plugin>
         </plugins>
-    </build></project>
+    </build>
+</project>

@@ -1,11 +1,13 @@
 package com.restfully.shop.services;
 
-import com.restfully.shop.domain.Link;
+import com.restfully.shop.domain.AtomLink;
 
 import javax.ejb.Stateless;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import java.net.URI;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -17,14 +19,14 @@ public class StoreResourceBean implements StoreResource
    public Response head(UriInfo uriInfo)
    {
       UriBuilder absolute = uriInfo.getBaseUriBuilder();
-      String customerUrl = absolute.clone().path("customers").build().toString();
-      String orderUrl = absolute.clone().path("orders").build().toString();
-      String productUrl = absolute.clone().path("products").build().toString();
+      URI customerUrl = absolute.clone().path("customers").build();
+      URI orderUrl = absolute.clone().path("orders").build();
+      URI productUrl = absolute.clone().path("products").build();
+      Link customers = Link.fromUri(customerUrl).rel("customers").type("application/xml").build();
+      Link orders = Link.fromUri(orderUrl).rel("orders").type("application/xml").build();
+      Link products = Link.fromUri(productUrl).rel("products").type("application/xml").build();
 
-      Response.ResponseBuilder builder = Response.ok();
-      builder.header("Link", new Link("customers", customerUrl, "application/xml"));
-      builder.header("Link", new Link("orders", orderUrl, "application/xml"));
-      builder.header("Link", new Link("products", productUrl, "application/xml"));
+      Response.ResponseBuilder builder = Response.ok().links(customers, orders, products);
       return builder.build();
    }
 }

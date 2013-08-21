@@ -1,6 +1,7 @@
 package com.restfully.shop.services;
 
-import com.restfully.shop.domain.Link;
+import com.restfully.shop.domain.AtomLink;
+import com.restfully.shop.domain.AtomLink;
 import com.restfully.shop.domain.Order;
 import com.restfully.shop.domain.Orders;
 import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
@@ -16,6 +17,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -63,8 +65,8 @@ public class OrderResource
    protected void addCancelHeader(UriInfo uriInfo, Response.ResponseBuilder builder)
    {
       UriBuilder absolute = uriInfo.getAbsolutePathBuilder();
-      String cancelUrl = absolute.clone().path("cancel").build().toString();
-      builder.header("Link", new Link("cancel", cancelUrl, null));
+      URI cancelUrl = absolute.clone().path("cancel").build();
+      builder.links(Link.fromUri(cancelUrl).rel("cancel").build());
    }
 
    @POST
@@ -108,7 +110,7 @@ public class OrderResource
       builder.queryParam("size", "{size}");
 
       ArrayList<Order> list = new ArrayList<Order>();
-      ArrayList<Link> links = new ArrayList<Link>();
+      ArrayList<AtomLink> links = new ArrayList<AtomLink>();
       synchronized (orderDB)
       {
          int i = 0;
@@ -122,7 +124,7 @@ public class OrderResource
          {
             int next = start + size;
             URI nextUri = builder.clone().build(next, size);
-            Link nextLink = new Link("next", nextUri.toString(), "application/xml");
+            AtomLink nextLink = new AtomLink("next", nextUri.toString(), "application/xml");
             links.add(nextLink);
          }
          // previous link
@@ -131,7 +133,7 @@ public class OrderResource
             int previous = start - size;
             if (previous < 0) previous = 0;
             URI previousUri = builder.clone().build(previous, size);
-            Link previousLink = new Link("previous", previousUri.toString(), "application/xml");
+            AtomLink previousLink = new AtomLink("previous", previousUri.toString(), "application/xml");
             links.add(previousLink);
          }
       }
@@ -146,8 +148,8 @@ public class OrderResource
    protected void addPurgeLinkHeader(UriInfo uriInfo, Response.ResponseBuilder builder)
    {
       UriBuilder absolute = uriInfo.getAbsolutePathBuilder();
-      String purgeUrl = absolute.clone().path("purge").build().toString();
-      builder.header("Link", new Link("purge", purgeUrl, null));
+      URI purgeUri = absolute.clone().path("purge").build();
+      builder.links(Link.fromUri(purgeUri).rel("purge").build());
    }
 
    @POST

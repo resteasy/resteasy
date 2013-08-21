@@ -22,7 +22,7 @@ public class Order
    protected double total;
    protected String date;
    protected Customer customer;
-   protected List<Link> links;
+   protected List<AtomLink> links;
 
    @XmlAttribute
    public int getId()
@@ -88,19 +88,19 @@ public class Order
    }
 
    @XmlElementRef
-   public List<Link> getLinks()
+   public List<AtomLink> getLinks()
    {
       return links;
    }
 
-   public void setLinks(List<Link> links)
+   public void setLinks(List<AtomLink> links)
    {
       this.links = links;
    }
 
-   public void addLink(Link link)
+   public void addLink(AtomLink link)
    {
-      if (links == null) links = new ArrayList<Link>();
+      if (links == null) links = new ArrayList<AtomLink>();
       links.add(link);
    }
 

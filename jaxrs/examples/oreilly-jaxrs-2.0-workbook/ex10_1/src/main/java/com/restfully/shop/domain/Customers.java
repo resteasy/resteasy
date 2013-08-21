@@ -1,8 +1,11 @@
 package com.restfully.shop.domain;
 
+import javax.ws.rs.core.Link;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Collection;
 import java.util.List;
 
@@ -14,7 +17,7 @@ import java.util.List;
 public class Customers
 {
    protected Collection<Customer> customers;
-   protected List<Link> links;
+   protected List<AtomLink> links;
 
    @XmlElementRef
    public Collection<Customer> getCustomers()
@@ -27,13 +30,13 @@ public class Customers
       this.customers = customers;
    }
 
-   @XmlElementRef
-   public List<Link> getLinks()
+   @XmlElement
+   public List<AtomLink> getLinks()
    {
       return links;
    }
 
-   public void setLinks(List<Link> links)
+   public void setLinks(List<AtomLink> links)
    {
       this.links = links;
    }
@@ -42,7 +45,7 @@ public class Customers
    public String getNext()
    {
       if (links == null) return null;
-      for (Link link : links)
+      for (AtomLink link : links)
       {
          if ("next".equals(link.getRelationship())) return link.getHref();
       }
@@ -53,7 +56,7 @@ public class Customers
    public String getPrevious()
    {
       if (links == null) return null;
-      for (Link link : links)
+      for (AtomLink link : links)
       {
          if ("previous".equals(link.getRelationship())) return link.getHref();
       }

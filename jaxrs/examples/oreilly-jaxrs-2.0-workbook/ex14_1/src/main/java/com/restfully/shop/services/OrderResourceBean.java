@@ -1,8 +1,8 @@
 package com.restfully.shop.services;
 
+import com.restfully.shop.domain.AtomLink;
 import com.restfully.shop.domain.Customer;
 import com.restfully.shop.domain.LineItem;
-import com.restfully.shop.domain.Link;
 import com.restfully.shop.domain.Order;
 import com.restfully.shop.domain.Orders;
 import com.restfully.shop.domain.Product;
@@ -85,8 +85,8 @@ public class OrderResourceBean implements OrderResource
    public static void addPurgeLinkHeader(UriInfo uriInfo, Response.ResponseBuilder builder)
    {
       UriBuilder absolute = uriInfo.getAbsolutePathBuilder();
-      String purgeUrl = absolute.clone().path("purge").build().toString();
-      builder.header("Link", new Link("purge", purgeUrl, null));
+      URI purgeUri = absolute.clone().path("purge").build();
+      builder.link(purgeUri, "purge");
    }
 
    public Response createOrder(Order order, UriInfo uriInfo)
@@ -124,7 +124,7 @@ public class OrderResourceBean implements OrderResource
       builder.queryParam("size", "{size}");
 
       ArrayList<Order> list = new ArrayList<Order>();
-      ArrayList<Link> links = new ArrayList<Link>();
+      ArrayList<AtomLink> links = new ArrayList<AtomLink>();
 
       List orderEntities = em.createQuery("select p from PurchaseOrder p")
               .setFirstResult(start)
@@ -136,11 +136,11 @@ public class OrderResourceBean implements OrderResource
          OrderEntity entity = (OrderEntity) obj;
          Order order = entity2domain(entity);
          String self = uriInfo.getAbsolutePathBuilder().path(Integer.toString(order.getId())).build().toString();
-         order.addLink(new Link("self", self, "application/xml"));
+         order.addLink(new AtomLink("self", self, "application/xml"));
          if (!order.isCancelled())
          {
             String cancel = uriInfo.getAbsolutePathBuilder().path(Integer.toString(order.getId())).path("cancel").build().toString();
-            order.addLink(new Link("cancel", cancel, "application/xml"));
+            order.addLink(new AtomLink("cancel", cancel, "application/xml"));
          }
          list.add(order);
       }
@@ -150,7 +150,7 @@ public class OrderResourceBean implements OrderResource
       {
          int next = start + size;
          URI nextUri = builder.clone().build(next, size);
-         Link nextLink = new Link("next", nextUri.toString(), "application/xml");
+         AtomLink nextLink = new AtomLink("next", nextUri.toString(), "application/xml");
          links.add(nextLink);
       }
       // previous link
@@ -159,7 +159,7 @@ public class OrderResourceBean implements OrderResource
          int previous = start - size;
          if (previous < 0) previous = 0;
          URI previousUri = builder.clone().build(previous, size);
-         Link previousLink = new Link("previous", previousUri.toString(), "application/xml");
+         AtomLink previousLink = new AtomLink("previous", previousUri.toString(), "application/xml");
          links.add(previousLink);
       }
       Orders orders = new Orders();
@@ -173,8 +173,8 @@ public class OrderResourceBean implements OrderResource
    public static void addCancelHeader(UriInfo uriInfo, Response.ResponseBuilder builder)
    {
       UriBuilder absolute = uriInfo.getAbsolutePathBuilder();
-      String cancelUrl = absolute.clone().path("cancel").build().toString();
-      builder.header("Link", new Link("cancel", cancelUrl, null));
+      URI cancelUri = absolute.clone().path("cancel").build();
+      builder.link(cancelUri, "cancel");
    }
 
    public void cancelOrder(int id)
@@ -189,11 +189,11 @@ public class OrderResourceBean implements OrderResource
       OrderEntity entity = em.getReference(OrderEntity.class, id);
       Order order = entity2domain(entity);
       String self = uriInfo.getAbsolutePathBuilder().build().toString();
-      order.addLink(new Link("self", self, "application/xml"));
+      order.addLink(new AtomLink("self", self, "application/xml"));
       if (!order.isCancelled())
       {
          String cancel = uriInfo.getAbsolutePathBuilder().path("cancel").build().toString();
-         order.addLink(new Link("cancel", cancel, "application/xml"));
+         order.addLink(new AtomLink("cancel", cancel, "application/xml"));
       }
 
       Response.ResponseBuilder builder = Response.ok(order);
