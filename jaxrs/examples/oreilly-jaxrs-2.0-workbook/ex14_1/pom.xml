@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project>
     <parent>
         <groupId>com.oreilly.rest.workbook</groupId>
         <artifactId>workbook-pom-as7</artifactId>
@@ -10,10 +7,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.oreilly.rest.workbook</groupId>
-    <artifactId>workbook-ex08_1-as7</artifactId>
+    <artifactId>workbook-ex11_1-as7</artifactId>
     <version>1.0</version>
     <packaging>war</packaging>
-    <name>ex08_1</name>
+    <name>ex11_1</name>
     <description/>
 
     <dependencies>
@@ -25,8 +22,20 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jettison-provider</artifactId>
+            <artifactId>resteasy-jaxb-provider</artifactId>
             <version>3.0.4.Final</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.ejb</groupId>
+            <artifactId>ejb-api</artifactId>
+            <version>3.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>persistence-api</artifactId>
+            <version>1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -38,7 +47,7 @@
     </dependencies>
 
     <build>
-        <finalName>ex08_1</finalName>
+        <finalName>ex11_1</finalName>
         <plugins>
             <plugin>
                 <groupId>org.jboss.as.plugins</groupId>
@@ -96,5 +105,4 @@
                 </configuration>
             </plugin>
         </plugins>
-    </build>
-</project>
+    </build></project>

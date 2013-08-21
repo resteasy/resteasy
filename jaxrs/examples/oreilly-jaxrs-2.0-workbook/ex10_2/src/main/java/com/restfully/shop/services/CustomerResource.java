@@ -30,86 +30,16 @@ public class CustomerResource
    private Map<Integer, Customer> customerDB = new ConcurrentHashMap<Integer, Customer>();
    private AtomicInteger idCounter = new AtomicInteger();
 
-   public CustomerResource()
-   {
-      Customer customer;
-      int id = 1;
-
-      customer = new Customer();
-      customer.setId(id);
-      customer.setFirstName("Bill");
-      customer.setLastName("Burke");
-      customer.setStreet("263 Clarendon Street");
-      customer.setCity("Boston");
-      customer.setState("MA");
-      customer.setZip("02115");
-      customer.setCountry("USA");
-      customerDB.put(id++, customer);
-
-      customer = new Customer();
-      customer.setId(id);
-      customer.setFirstName("Joe");
-      customer.setLastName("Burke");
-      customer.setStreet("264 Clarendon Street");
-      customer.setCity("Boston");
-      customer.setState("MA");
-      customer.setZip("02115");
-      customer.setCountry("USA");
-      customerDB.put(id++, customer);
-
-      customer = new Customer();
-      customer.setId(id);
-      customer.setFirstName("Monica");
-      customer.setLastName("Burke");
-      customer.setStreet("265 Clarendon Street");
-      customer.setCity("Boston");
-      customer.setState("MA");
-      customer.setZip("02115");
-      customer.setCountry("USA");
-      customerDB.put(id++, customer);
-
-      customer = new Customer();
-      customer.setId(id);
-      customer.setFirstName("Steve");
-      customer.setLastName("Burke");
-      customer.setStreet("266 Clarendon Street");
-      customer.setCity("Boston");
-      customer.setState("MA");
-      customer.setZip("02115");
-      customer.setCountry("USA");
-      customerDB.put(id++, customer);
-
-      customer = new Customer();
-      customer.setId(id);
-      customer.setFirstName("Rod");
-      customer.setLastName("Burke");
-      customer.setStreet("267 Clarendon Street");
-      customer.setCity("Boston");
-      customer.setState("MA");
-      customer.setZip("02115");
-      customer.setCountry("USA");
-      customerDB.put(id++, customer);
-
-      customer = new Customer();
-      customer.setId(id);
-      customer.setFirstName("Bob");
-      customer.setLastName("Burke");
-      customer.setStreet("268 Clarendon Street");
-      customer.setCity("Boston");
-      customer.setState("MA");
-      customer.setZip("02115");
-      customer.setCountry("USA");
-      customerDB.put(id++, customer);
-   }
-
    @POST
    @Consumes("application/xml")
-   public Response createCustomer(Customer customer)
+   public Response createCustomer(Customer customer, @Context UriInfo uriInfo)
    {
       customer.setId(idCounter.incrementAndGet());
       customerDB.put(customer.getId(), customer);
       System.out.println("Created customer " + customer.getId());
-      return Response.created(URI.create("/customers/" + customer.getId())).build();
+      UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+      builder.path(Integer.toString(customer.getId()));
+      return Response.created(builder.build()).build();
 
    }
 

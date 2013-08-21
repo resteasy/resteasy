@@ -3,10 +3,8 @@ package com.restfully.shop.domain;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "customer")
-@XmlType(propOrder = {"firstName", "lastName", "street", "city", "state", "zip", "country"})
 public class Customer
 {
    private int id;

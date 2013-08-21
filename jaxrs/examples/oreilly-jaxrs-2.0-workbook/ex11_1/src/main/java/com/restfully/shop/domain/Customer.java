@@ -3,10 +3,9 @@ package com.restfully.shop.domain;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import java.util.Date;
 
 @XmlRootElement(name = "customer")
-@XmlType(propOrder = {"firstName", "lastName", "street", "city", "state", "zip", "country"})
 public class Customer
 {
    private int id;
@@ -17,6 +16,7 @@ public class Customer
    private String state;
    private String zip;
    private String country;
+   private String lastViewed = new Date().toString();
 
    @XmlAttribute
    public int getId()
@@ -106,6 +106,16 @@ public class Customer
       this.country = country;
    }
 
+   public String getLastViewed()
+   {
+      return lastViewed;
+   }
+
+   public void setLastViewed(String lastViewed)
+   {
+      this.lastViewed = lastViewed;
+   }
+
    @Override
    public String toString()
    {
@@ -118,6 +128,21 @@ public class Customer
               ", state='" + state + '\'' +
               ", zip='" + zip + '\'' +
               ", country='" + country + '\'' +
+              ", lastViewed='" + lastViewed + '\'' +
               '}';
+   }
+
+   @Override
+   public int hashCode()
+   {
+      int result = id;
+      result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
+      result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+      result = 31 * result + (street != null ? street.hashCode() : 0);
+      result = 31 * result + (city != null ? city.hashCode() : 0);
+      result = 31 * result + (state != null ? state.hashCode() : 0);
+      result = 31 * result + (zip != null ? zip.hashCode() : 0);
+      result = 31 * result + (country != null ? country.hashCode() : 0);
+      return result;
    }
 }

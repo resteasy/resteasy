@@ -10,10 +10,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.oreilly.rest.workbook</groupId>
-    <artifactId>workbook-ex08_1-as7</artifactId>
+    <artifactId>workbook-ex09_2-as7</artifactId>
     <version>1.0</version>
     <packaging>war</packaging>
-    <name>ex08_1</name>
+    <name>ex09_2</name>
     <description/>
 
     <dependencies>
@@ -25,7 +25,7 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jettison-provider</artifactId>
+            <artifactId>resteasy-jaxb-provider</artifactId>
             <version>3.0.4.Final</version>
             <scope>provided</scope>
         </dependency>
@@ -38,7 +38,7 @@
     </dependencies>
 
     <build>
-        <finalName>ex08_1</finalName>
+        <finalName>ex09_2</finalName>
         <plugins>
             <plugin>
                 <groupId>org.jboss.as.plugins</groupId>

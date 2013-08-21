@@ -10,10 +10,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.oreilly.rest.workbook</groupId>
-    <artifactId>workbook-ex10_1-as7</artifactId>
+    <artifactId>workbook-ex09_1-as7</artifactId>
     <version>1.0</version>
     <packaging>war</packaging>
-    <name>ex10_1</name>
+    <name>ex09_1</name>
     <description/>
 
     <dependencies>
@@ -38,7 +38,7 @@
     </dependencies>
 
     <build>
-        <finalName>ex10_1</finalName>
+        <finalName>ex09_1</finalName>
         <plugins>
             <plugin>
                 <groupId>org.jboss.as.plugins</groupId>

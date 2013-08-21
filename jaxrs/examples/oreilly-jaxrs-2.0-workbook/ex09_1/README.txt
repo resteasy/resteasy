@@ -1,5 +1,5 @@
 
-This project is an example of using UriBuilder to enable HATEOAS through Atom links
+This project is an example of using HTTP conneg to pick between XML and JSON.
 
 System Requirements:
 ====================

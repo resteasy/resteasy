@@ -1,5 +1,5 @@
 
-This project is a simple example showing usage CacheControl and Request.evaluatePreconditions().
+This project is an example of using UriBuilder to enable HATEOAS through Link headers
 
 System Requirements:
 ====================
