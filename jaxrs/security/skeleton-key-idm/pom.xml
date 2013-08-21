@@ -18,6 +18,7 @@
         <module>skeleton-key-core</module>
         <module>skeleton-key-idp</module>
         <module>skeleton-key-as7</module>
+        <!-- <module>skeleton-key-undertow</module> -->
         <module>skeleton-key-idp-war</module>
     </modules>
 </project>
