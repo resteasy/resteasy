@@ -39,7 +39,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
       }
       else if (paths.length != 2
             || "".equals(paths[0]) || "".equals(paths[1])
-            || paths[0].contains(" ") || paths[0].contains(" "))
+            || paths[0].contains(" ") || paths[1].contains(" "))
       {
          throw new IllegalArgumentException("Failure parsing MediaType string: " + type);
       }
