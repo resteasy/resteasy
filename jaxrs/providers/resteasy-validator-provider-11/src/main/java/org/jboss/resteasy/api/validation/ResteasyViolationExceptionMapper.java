@@ -1,5 +1,8 @@
 package org.jboss.resteasy.api.validation;
 
+import java.util.Iterator;
+import java.util.List;
+
 import javax.validation.ConstraintDeclarationException;
 import javax.validation.ConstraintDefinitionException;
 import javax.validation.GroupDefinitionException;
@@ -11,10 +14,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.jboss.resteasy.api.validation.ResteasyViolationException;
-import org.jboss.resteasy.api.validation.Validation;
-import org.jboss.resteasy.plugins.providers.SerializableProvider;
-
+import org.jboss.resteasy.logging.Logger;
 
 /**
  * 
@@ -50,11 +50,11 @@ public class ResteasyViolationExceptionMapper implements ExceptionMapper<Validat
          }
          else if (resteasyViolationException.getReturnValueViolations().size() == 0)
          {
-            return buildResponse(resteasyViolationException.toString(), MediaType.TEXT_PLAIN, Status.BAD_REQUEST);
+            return buildViolationReportResponse(resteasyViolationException, Status.BAD_REQUEST);
          }
          else
          {
-            return buildResponse(resteasyViolationException.toString(), MediaType.TEXT_PLAIN, Status.INTERNAL_SERVER_ERROR);
+            return buildViolationReportResponse(resteasyViolationException, Status.INTERNAL_SERVER_ERROR);
          }
       }
       return buildResponse(unwrapException(exception), MediaType.TEXT_PLAIN, Status.INTERNAL_SERVER_ERROR);
@@ -67,6 +67,27 @@ public class ResteasyViolationExceptionMapper implements ExceptionMapper<Validat
       builder.header(Validation.VALIDATION_HEADER, "true");
       return builder.build();
    }
+   
+   protected Response buildViolationReportResponse(ResteasyViolationException exception, Status status)
+   {
+      ResponseBuilder builder = Response.status(status);
+      builder.header(Validation.VALIDATION_HEADER, "true");
+      
+      // Check standard media types.
+      MediaType mediaType = getAcceptMediaType(exception.getAccept());
+      if (mediaType != null)
+      {
+         builder.type(mediaType);
+         builder.entity(new ViolationReport(exception));
+         return builder.build();
+      }
+      
+      // Default media type.
+      builder.type(MediaType.TEXT_PLAIN);
+      builder.entity(exception.toString());
+      return builder.build();
+   }
+   
    
    protected String unwrapException(Throwable t)
    {
@@ -88,5 +109,23 @@ public class ResteasyViolationExceptionMapper implements ExceptionMapper<Validat
          doUnwrapException(sb, t.getCause());
          sb.append(']');
       }
+   }
+   
+   private MediaType getAcceptMediaType (List<MediaType> accept)
+   {
+      Iterator<MediaType> it = accept.iterator();
+      while (it.hasNext())
+      {
+         MediaType mt = it.next();
+         if (MediaType.APPLICATION_XML_TYPE.getType().equals(mt.getType()) && MediaType.APPLICATION_XML_TYPE.getSubtype().equals(mt.getSubtype()))
+         {
+            return MediaType.APPLICATION_XML_TYPE;
+         }
+         if (MediaType.APPLICATION_JSON_TYPE.getType().equals(mt.getType()) && MediaType.APPLICATION_JSON_TYPE.getSubtype().equals(mt.getSubtype()))
+         {
+            return MediaType.APPLICATION_JSON_TYPE;
+         }
+      }
+      return null;
    }
 }

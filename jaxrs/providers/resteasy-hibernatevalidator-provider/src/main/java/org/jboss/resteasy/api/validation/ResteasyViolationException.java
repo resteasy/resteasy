@@ -1,17 +1,20 @@
 package org.jboss.resteasy.api.validation;
 
-import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
-
-import javax.validation.ValidationException;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.validation.ValidationException;
+import javax.ws.rs.core.MediaType;
+
+import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 
 /**
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
@@ -26,6 +29,7 @@ public class ResteasyViolationException extends ValidationException
 {  
    private static final long serialVersionUID = 2623733139912277260L;
    
+   private List<MediaType> accept;
    private Exception exception;
    
    private List<ResteasyConstraintViolation> fieldViolations       = new ArrayList<ResteasyConstraintViolation>();
@@ -36,11 +40,20 @@ public class ResteasyViolationException extends ValidationException
    
    private List<ResteasyConstraintViolation> allViolations; 
    private List<List<ResteasyConstraintViolation>> violationLists;
-   
+
    public ResteasyViolationException(ViolationsContainer<?> container)
    {
       convertToStrings(container);
       exception = container.getException();
+      accept = new ArrayList<MediaType>();
+      accept.add(MediaType.TEXT_PLAIN_TYPE);
+   }
+   
+   public ResteasyViolationException(ViolationsContainer<?> container, List<MediaType> accept)
+   {
+      convertToStrings(container);
+      exception = container.getException();
+      this.accept = accept;
    }
    
    public ResteasyViolationException(String stringRep)
@@ -48,6 +61,16 @@ public class ResteasyViolationException extends ValidationException
       convertFromString(stringRep);
    }
    
+   public List<MediaType> getAccept()
+   {
+      return accept;
+   }
+
+   public void setAccept(List<MediaType> accept)
+   {
+      this.accept = accept;
+   }
+
    public Exception getException()
    {
       return exception;
