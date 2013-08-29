@@ -1,7 +1,5 @@
 package com.restfully.shop.services;
 
-import com.restfully.shop.domain.AtomLink;
-
 import javax.ejb.Stateless;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.Response;

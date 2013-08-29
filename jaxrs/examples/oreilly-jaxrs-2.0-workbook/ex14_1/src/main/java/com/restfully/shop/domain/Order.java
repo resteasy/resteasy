@@ -1,10 +1,13 @@
 package com.restfully.shop.domain;
 
+import javax.ws.rs.core.Link;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +25,7 @@ public class Order
    protected double total;
    protected String date;
    protected Customer customer;
-   protected List<AtomLink> links;
+   protected List<Link> links;
 
    @XmlAttribute
    public int getId()
@@ -87,20 +90,21 @@ public class Order
       this.customer = customer;
    }
 
-   @XmlElementRef
-   public List<AtomLink> getLinks()
+   @XmlElement(name="link")
+   @XmlJavaTypeAdapter(Link.JaxbAdapter.class)
+   public List<Link> getLinks()
    {
       return links;
    }
 
-   public void setLinks(List<AtomLink> links)
+   public void setLinks(List<Link> links)
    {
       this.links = links;
    }
 
-   public void addLink(AtomLink link)
+   public void addLink(Link link)
    {
-      if (links == null) links = new ArrayList<AtomLink>();
+      if (links == null) links = new ArrayList<Link>();
       links.add(link);
    }
 
