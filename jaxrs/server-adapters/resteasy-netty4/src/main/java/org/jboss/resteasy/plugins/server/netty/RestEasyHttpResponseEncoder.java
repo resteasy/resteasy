@@ -4,17 +4,13 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders.Names;
 import io.netty.handler.codec.http.HttpHeaders.Values;
 import io.netty.handler.codec.http.HttpResponse;
-import io.netty.handler.codec.http.HttpResponseStatus;
 
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.List;
 import java.util.Map;
-
-import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 
 /**
@@ -42,10 +38,12 @@ public class RestEasyHttpResponseEncoder extends MessageToMessageEncoder<NettyHt
     @Override
     protected void encode(ChannelHandlerContext ctx, NettyHttpResponse nettyResponse, List<Object> out) throws Exception
     {
-        // Build the response object.
-        HttpResponseStatus status = HttpResponseStatus.valueOf(nettyResponse.getStatus());
         ByteBuf buffer = nettyResponse.getBuffer();
-        HttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, status, buffer);
+        if (buffer.readableBytes() == 0) {
+            // content not written yet by the AsyncResponse
+            return;
+        }
+        HttpResponse response = nettyResponse.getDefaultFullHttpResponse();
 
         for (Map.Entry<String, List<Object>> entry : nettyResponse.getOutputHeaders().entrySet())
         {
