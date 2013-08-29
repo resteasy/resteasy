@@ -1,7 +1,5 @@
 package com.restfully.shop.services;
 
-import com.restfully.shop.domain.Link;
-
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;

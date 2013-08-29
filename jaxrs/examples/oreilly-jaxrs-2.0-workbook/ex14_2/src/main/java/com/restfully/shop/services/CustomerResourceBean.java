@@ -2,13 +2,13 @@ package com.restfully.shop.services;
 
 import com.restfully.shop.domain.Customer;
 import com.restfully.shop.domain.Customers;
-import com.restfully.shop.domain.Link;
 import com.restfully.shop.persistence.CustomerEntity;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -113,7 +113,7 @@ public class CustomerResourceBean implements CustomerResource
       {
          int next = start + size;
          URI nextUri = builder.clone().build(next, size);
-         Link nextLink = new Link("next", nextUri.toString(), "application/xml");
+         Link nextLink = Link.fromUri(nextUri).rel("next").type("application/xml").build();
          links.add(nextLink);
       }
       // previous link
@@ -122,7 +122,7 @@ public class CustomerResourceBean implements CustomerResource
          int previous = start - size;
          if (previous < 0) previous = 0;
          URI previousUri = builder.clone().build(previous, size);
-         Link previousLink = new Link("previous", previousUri.toString(), "application/xml");
+         Link previousLink = Link.fromUri(previousUri).rel("previous").type("application/xml").build();
          links.add(previousLink);
       }
       Customers customers = new Customers();

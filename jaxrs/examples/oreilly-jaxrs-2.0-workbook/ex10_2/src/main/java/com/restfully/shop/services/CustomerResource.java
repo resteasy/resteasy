@@ -1,9 +1,7 @@
 package com.restfully.shop.services;
 
-import com.restfully.shop.domain.AtomLink;
 import com.restfully.shop.domain.Customer;
 import com.restfully.shop.domain.Customers;
-import com.restfully.shop.domain.AtomLink;
 import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
 
 import javax.ws.rs.Consumes;
@@ -16,6 +14,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -56,7 +55,7 @@ public class CustomerResource
       builder.queryParam("size", "{size}");
 
       ArrayList<Customer> list = new ArrayList<Customer>();
-      ArrayList<AtomLink> links = new ArrayList<AtomLink>();
+      ArrayList<Link> links = new ArrayList<Link>();
       synchronized (customerDB)
       {
          int i = 0;
@@ -70,7 +69,7 @@ public class CustomerResource
          {
             int next = start + size;
             URI nextUri = builder.clone().build(next, size);
-            AtomLink nextLink = new AtomLink("next", nextUri.toString(), "application/xml");
+            Link nextLink = Link.fromUri(nextUri).rel("next").type("application/xml").build();
             links.add(nextLink);
          }
          // previous link
@@ -79,7 +78,7 @@ public class CustomerResource
             int previous = start - size;
             if (previous < 0) previous = 0;
             URI previousUri = builder.clone().build(previous, size);
-            AtomLink previousLink = new AtomLink("previous", previousUri.toString(), "application/xml");
+            Link previousLink = Link.fromUri(previousUri).rel("previous").type("application/xml").build();
             links.add(previousLink);
          }
       }

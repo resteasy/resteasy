@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.oreilly.rest.workbook</groupId>
     <artifactId>jaxrs-2.0-workbook-ex14_2</artifactId>
-    <version>1.0</version>
+    <version>2.0</version>
     <packaging>war</packaging>
     <name>ex14_2</name>
     <description/>

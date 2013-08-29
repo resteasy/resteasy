@@ -1,7 +1,5 @@
 package com.restfully.shop.services;
 
-import com.restfully.shop.domain.AtomLink;
-import com.restfully.shop.domain.AtomLink;
 import com.restfully.shop.domain.Order;
 import com.restfully.shop.domain.Orders;
 import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
@@ -110,7 +108,7 @@ public class OrderResource
       builder.queryParam("size", "{size}");
 
       ArrayList<Order> list = new ArrayList<Order>();
-      ArrayList<AtomLink> links = new ArrayList<AtomLink>();
+      ArrayList<Link> links = new ArrayList<Link>();
       synchronized (orderDB)
       {
          int i = 0;
@@ -124,7 +122,7 @@ public class OrderResource
          {
             int next = start + size;
             URI nextUri = builder.clone().build(next, size);
-            AtomLink nextLink = new AtomLink("next", nextUri.toString(), "application/xml");
+            Link nextLink = Link.fromUri(nextUri).rel("next").type("application/xml").build();
             links.add(nextLink);
          }
          // previous link
@@ -133,7 +131,7 @@ public class OrderResource
             int previous = start - size;
             if (previous < 0) previous = 0;
             URI previousUri = builder.clone().build(previous, size);
-            AtomLink previousLink = new AtomLink("previous", previousUri.toString(), "application/xml");
+            Link previousLink = Link.fromUri(previousUri).rel("previous").type("application/xml").build();
             links.add(previousLink);
          }
       }

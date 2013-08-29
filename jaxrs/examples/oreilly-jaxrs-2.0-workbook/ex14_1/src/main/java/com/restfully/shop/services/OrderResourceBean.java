@@ -1,6 +1,5 @@
 package com.restfully.shop.services;
 
-import com.restfully.shop.domain.AtomLink;
 import com.restfully.shop.domain.Customer;
 import com.restfully.shop.domain.LineItem;
 import com.restfully.shop.domain.Order;
@@ -14,6 +13,7 @@ import com.restfully.shop.persistence.ProductEntity;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -124,7 +124,7 @@ public class OrderResourceBean implements OrderResource
       builder.queryParam("size", "{size}");
 
       ArrayList<Order> list = new ArrayList<Order>();
-      ArrayList<AtomLink> links = new ArrayList<AtomLink>();
+      ArrayList<Link> links = new ArrayList<Link>();
 
       List orderEntities = em.createQuery("select p from PurchaseOrder p")
               .setFirstResult(start)
@@ -135,12 +135,14 @@ public class OrderResourceBean implements OrderResource
       {
          OrderEntity entity = (OrderEntity) obj;
          Order order = entity2domain(entity);
-         String self = uriInfo.getAbsolutePathBuilder().path(Integer.toString(order.getId())).build().toString();
-         order.addLink(new AtomLink("self", self, "application/xml"));
+         URI self = uriInfo.getAbsolutePathBuilder().path(Integer.toString(order.getId())).build();
+         Link selfLink = Link.fromUri(self).rel("self").type("application/xml").build();
+         order.addLink(selfLink);
          if (!order.isCancelled())
          {
-            String cancel = uriInfo.getAbsolutePathBuilder().path(Integer.toString(order.getId())).path("cancel").build().toString();
-            order.addLink(new AtomLink("cancel", cancel, "application/xml"));
+            URI cancel = uriInfo.getAbsolutePathBuilder().path(Integer.toString(order.getId())).path("cancel").build();
+            Link cancelLink = Link.fromUri(cancel).rel("cancel").type("application/xml").build();
+            order.addLink(cancelLink);
          }
          list.add(order);
       }
@@ -150,7 +152,7 @@ public class OrderResourceBean implements OrderResource
       {
          int next = start + size;
          URI nextUri = builder.clone().build(next, size);
-         AtomLink nextLink = new AtomLink("next", nextUri.toString(), "application/xml");
+         Link nextLink = Link.fromUri(nextUri).rel("next").type("application/xml").build();
          links.add(nextLink);
       }
       // previous link
@@ -159,7 +161,7 @@ public class OrderResourceBean implements OrderResource
          int previous = start - size;
          if (previous < 0) previous = 0;
          URI previousUri = builder.clone().build(previous, size);
-         AtomLink previousLink = new AtomLink("previous", previousUri.toString(), "application/xml");
+         Link previousLink = Link.fromUri(previousUri).rel("previous").type("application/xml").build();
          links.add(previousLink);
       }
       Orders orders = new Orders();
@@ -188,12 +190,14 @@ public class OrderResourceBean implements OrderResource
    {
       OrderEntity entity = em.getReference(OrderEntity.class, id);
       Order order = entity2domain(entity);
-      String self = uriInfo.getAbsolutePathBuilder().build().toString();
-      order.addLink(new AtomLink("self", self, "application/xml"));
-      if (!order.isCancelled())
+      URI self = uriInfo.getAbsolutePathBuilder().build();
+      Link selfLink = Link.fromUri(self).rel("self").type("application/xml").build();
+      order.addLink(selfLink);
+       if (!order.isCancelled())
       {
-         String cancel = uriInfo.getAbsolutePathBuilder().path("cancel").build().toString();
-         order.addLink(new AtomLink("cancel", cancel, "application/xml"));
+         URI cancel = uriInfo.getAbsolutePathBuilder().path("cancel").build();
+         Link cancelLink = Link.fromUri(cancel).rel("cancel").type("application/xml").build();
+         order.addLink(cancelLink);
       }
 
       Response.ResponseBuilder builder = Response.ok(order);
