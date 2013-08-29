@@ -123,69 +123,46 @@ javax.validation.ValidationException: HV000028: Unexpected exception during isVa
 ]]></programlisting>
    
    <para>
-   If any constraint violations are detected, Resteasy will create an instance of
-   <classname>org.jboss.resteasy.api.validation.ResteasyViolationException</classname>,
-   which will be transformed and returned in String form:
+   If any constraint violations are detected, Resteasy will return a report in one of a variety
+   of formats.  If one of "application/xml" or "application/json" occur in the "Accept" request header,
+   Resteasy will return an appropriately marshalled instance of
+   <classname>org.jboss.resteasy.api.validation.ViolationReport</classname>:
    </para>
- 
+
 <programlisting><![CDATA[
-public class RESTEasyViolationException extends ValidationException
-{  
+@XmlRootElement(name="violationReport")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class ViolationReport
+{
    ...
 
-   public List<ResteasyConstraintViolation> getViolations()
-   {
-      ...
-   }
-   
-   public List<ResteasyConstraintViolation> getFieldViolations()
+   public ArrayList<ResteasyConstraintViolation> getFieldViolations()
    {
       return fieldViolations;
    }
-   
-   public List<ResteasyConstraintViolation> getPropertyViolations()
+
+   public ArrayList<ResteasyConstraintViolation> getPropertyViolations()
    {
       return propertyViolations;
    }
-   
-   public List<ResteasyConstraintViolation> getClassViolations()
+
+   public ArrayList<ResteasyConstraintViolation> getClassViolations()
    {
       return classViolations;
    }
-   
-   public List<ResteasyConstraintViolation> getParameterViolations()
+
+   public ArrayList<ResteasyConstraintViolation> getParameterViolations()
    {
       return parameterViolations;
    }
-   
-   public List<ResteasyConstraintViolation> getReturnValueViolations()
+
+   public ArrayList<ResteasyConstraintViolation> getReturnValueViolations()
    {
       return returnValueViolations;
    }
-   
-   public int size()
-   {
-      return getViolations().size();
-   }
-   
-   public List<List<ResteasyConstraintViolation>> getViolationLists()
-   {
-      return violationLists;
-   }
-   
-   public String toString()
-   {
-      StringBuffer sb = new StringBuffer();
-      for (Iterator<List<ResteasyConstraintViolation>> it = violationLists.iterator(); it.hasNext(); )
-      {
-         List<ResteasyConstraintViolation> violations = it.next();
-         for (Iterator<ResteasyConstraintViolation> it2 = violations.iterator(); it2.hasNext(); )
-         {
-            sb.append(it2.next().toString()).append('\r');
-         }
-      }
-      return sb.toString();
-   }
+
+   ...
+}
 ]]></programlisting>
 
    <para>
@@ -193,6 +170,8 @@ public class RESTEasyViolationException extends ValidationException
    </para>
    
 <programlisting><![CDATA[
+@XmlRootElement(name="resteasyConstraintViolation")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ResteasyConstraintViolation implements Serializable
 {
    ...
@@ -259,7 +238,14 @@ public class ConstraintType
 ]]></programlisting>
 
    <para>
-   Resteasy transforms a <classname>RESTEasyViolationException</classname> into a String in which
+   If both "application/xml" or "application/json" occur in the "Accept" request header, the media type
+   is chosen according to the ranking given by implicit or explicit "q" parameter values.  In the
+   case of a tie, the returned media type is indeterminate.
+   </para>
+   
+   <para>If neither "application/xml" or "application/json" occur in the "Accept" request header,
+   Resteasy returns a report with a String representation of each
+   <classname>ResteasyConstraintViolation</classname>, where
    each field is delimited by '[' and ']', followed by a '\r', with a final '\r' at the end.
    For example,
    </para>
@@ -301,32 +287,7 @@ public class ConstraintType
       <listitem>message</listitem>
       <listitem>violating element</listitem>
    </orderedlist>
-   
-   <para>
-   A Java client can reconstitute a <classname>RESTEasyViolationException</classname> using the
-   constructor
-   </para>
-   
-<programlisting><![CDATA[
-public ResteasyViolationException(String stringRep);
-]]></programlisting>
-
-   <para>
-   and thereby retrieve instances of <classname>ResteasyConstraintViolation</classname>. For example,
-   </para>
-   
-<programlisting><![CDATA[
-ClientResponse<?> response = request.get();
-String header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
-if (header != null)
-{
-   String entity = response.getEntity(String.class);
-   ResteasyViolationException e = new ResteasyViolationException(entity);
-   ResteasyConstraintViolation violation = e.getParameterViolations().iterator().next();
-   System.out.println("violation message: " + violation.getMessage());
-}
-]]></programlisting>
-   
+ 
    </section>
 
    <section>

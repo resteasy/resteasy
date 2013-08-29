@@ -69,7 +69,9 @@ public class GeneralValidatorImpl implements GeneralValidator
          {
             ConstraintViolation<Object> cv = it.next();
             Type ct = util.getConstraintType(cv);
-            rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), cv.getInvalidValue().toString()));
+            Object o = cv.getInvalidValue();
+            String value = (o == null ? "" : o.toString());
+            rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), value));
          }
       }
       catch (Exception e)
@@ -101,7 +103,7 @@ public class GeneralValidatorImpl implements GeneralValidator
       ViolationsContainer<Object> violationsContainer = ViolationsContainer.class.cast(request.getAttribute(ViolationsContainer.class.getName()));
       if (violationsContainer != null && violationsContainer.size() > 0)
       {
-         throw new ResteasyViolationException(violationsContainer);
+         throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }
 
    }
@@ -136,7 +138,7 @@ public class GeneralValidatorImpl implements GeneralValidator
       violationsContainer.addViolations(rcvs);
       if (violationsContainer.size() > 0)
       {
-         throw new ResteasyViolationException(violationsContainer);
+         throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }
    }
 
@@ -153,7 +155,9 @@ public class GeneralValidatorImpl implements GeneralValidator
          {
             ConstraintViolation<Object> cv = it.next();
             Type ct = util.getConstraintType(cv);
-            rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), cv.getInvalidValue().toString()));
+            Object o = cv.getInvalidValue();
+            String value = (o == null ? "" : o.toString());
+            rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), value));
          }
       }
       catch (Exception e)
@@ -164,7 +168,7 @@ public class GeneralValidatorImpl implements GeneralValidator
       violationsContainer.addViolations(rcvs);
       if (violationsContainer.size() > 0)
       {
-         throw new ResteasyViolationException(violationsContainer);
+         throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }
    }
 

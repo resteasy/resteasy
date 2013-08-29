@@ -17,7 +17,6 @@ import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
-
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 
@@ -38,13 +37,13 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    protected ResteasyDeployment deployment = new ResteasyDeployment();
    protected String root = "";
    protected SecurityDomain domain;
-   private EventLoopGroup bossGroup;
-   private EventLoopGroup workerGroup;
+   private EventLoopGroup eventLoopGroup;
    private EventLoopGroup eventExecutor;
    private int ioWorkerCount = Runtime.getRuntime().availableProcessors() * 2;
    private int executorThreadCount = 16;
    private SSLContext sslContext;
    private int maxRequestSize = 1024 * 1024 * 10;
+   private int backlog = 128;
 
    public void setSSLContext(SSLContext sslContext)
    {
@@ -65,7 +64,6 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
     * Set the number of threads to use for the EventExecutor. For more information please see the javadocs of {@link EventExecutor}.
     * If you want to disable the use of the {@link EventExecutor} specify a value <= 0.  This should only be done if you are 100% sure that you don't have any blocking
     * code in there.
-    *
     *
     * @param executorThreadCount
     */
@@ -93,6 +91,11 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    {
       this.port = port;
    }
+
+    public void setBacklog(int backlog)
+    {
+        this.backlog = backlog;
+    }
 
    @Override
    public void setDeployment(ResteasyDeployment deployment)
@@ -122,15 +125,13 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    @Override
    public void start()
    {
-      bossGroup = new NioEventLoopGroup();
-      workerGroup = new NioEventLoopGroup(ioWorkerCount);
+      eventLoopGroup = new NioEventLoopGroup(ioWorkerCount);
       eventExecutor = new NioEventLoopGroup(executorThreadCount);
-
       deployment.start();
       final RequestDispatcher dispatcher = new RequestDispatcher((SynchronousDispatcher)deployment.getDispatcher(), deployment.getProviderFactory(), domain);
        // Configure the server.
        if (sslContext == null) {
-           bootstrap.group(bossGroup, workerGroup)
+           bootstrap.group(eventLoopGroup)
                    .channel(NioServerSocketChannel.class)
                    .childHandler(new ChannelInitializer<SocketChannel>() {
                        @Override
@@ -143,12 +144,12 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
                            ch.pipeline().addLast(eventExecutor, new RequestHandler(dispatcher));
                        }
                    })
-                   .option(ChannelOption.SO_BACKLOG, 128)
+                   .option(ChannelOption.SO_BACKLOG, backlog)
                    .childOption(ChannelOption.SO_KEEPALIVE, true);
        } else {
            final SSLEngine engine = sslContext.createSSLEngine();
            engine.setUseClientMode(false);
-           bootstrap.group(bossGroup, workerGroup)
+           bootstrap.group(eventLoopGroup)
                    .channel(NioServerSocketChannel.class)
                    .childHandler(new ChannelInitializer<SocketChannel>() {
                        @Override
@@ -163,22 +164,17 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
 
                        }
                    })
-                   .option(ChannelOption.SO_BACKLOG, 128)
+                   .option(ChannelOption.SO_BACKLOG, backlog)
                    .childOption(ChannelOption.SO_KEEPALIVE, true);
        }
 
-       try {
-           bootstrap.bind(port).sync();
-       } catch (InterruptedException e) {
-           // ignore
-       }
+        bootstrap.bind(port).syncUninterruptibly();
    }
 
    @Override
    public void stop()
    {
-       workerGroup.shutdownGracefully();
-       bossGroup.shutdownGracefully();
+       eventLoopGroup.shutdownGracefully();
        eventExecutor.shutdownGracefully();
    }
 }

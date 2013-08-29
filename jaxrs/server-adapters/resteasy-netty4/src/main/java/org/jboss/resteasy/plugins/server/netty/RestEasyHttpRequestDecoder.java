@@ -29,7 +29,6 @@ import static io.netty.handler.codec.http.HttpHeaders.is100ContinueExpected;
 public class RestEasyHttpRequestDecoder extends MessageToMessageDecoder<io.netty.handler.codec.http.HttpRequest>
 {
     private final static Logger logger = Logger.getLogger(RestEasyHttpRequestDecoder.class);
-
     private final SynchronousDispatcher dispatcher;
     private final String servletMappingPrefix;
     private final String proto;
@@ -58,19 +57,19 @@ public class RestEasyHttpRequestDecoder extends MessageToMessageDecoder<io.netty
     protected void decode(ChannelHandlerContext ctx, io.netty.handler.codec.http.HttpRequest request, List<Object> out) throws Exception
     {
         boolean keepAlive = HttpHeaders.isKeepAlive(request);
-        NettyHttpResponse response = new NettyHttpResponse(ctx, keepAlive);
-        ResteasyHttpHeaders headers = null;
-        ResteasyUriInfo uriInfo = null;
+        final NettyHttpResponse response = new NettyHttpResponse(ctx, keepAlive);
+        final ResteasyHttpHeaders headers;
+        final ResteasyUriInfo uriInfo;
         try
         {
            headers = NettyUtil.extractHttpHeaders(request);
 
            uriInfo = NettyUtil.extractUriInfo(request, servletMappingPrefix, proto);
-           NettyHttpRequest nettyRequest = new NettyHttpRequest(headers, uriInfo, request.getMethod().name(), dispatcher, response, is100ContinueExpected(request) );
+           NettyHttpRequest nettyRequest = new NettyHttpRequest(ctx, headers, uriInfo, request.getMethod().name(), dispatcher, response, is100ContinueExpected(request) );
            if (request instanceof HttpContent)
            {
                HttpContent content = (HttpContent) request;
-               ByteBuf buf = content.content().copy();
+               ByteBuf buf = content.content().retain();
                ByteBufInputStream in = new ByteBufInputStream(buf);
                nettyRequest.setInputStream(in);
                out.add(nettyRequest);

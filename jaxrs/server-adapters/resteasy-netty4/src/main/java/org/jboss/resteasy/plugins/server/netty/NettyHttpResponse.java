@@ -2,7 +2,6 @@ package org.jboss.resteasy.plugins.server.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders.Names;
@@ -17,6 +16,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -35,7 +36,7 @@ public class NettyHttpResponse implements HttpResponse
    public NettyHttpResponse(ChannelHandlerContext ctx, boolean keepAlive)
    {
       outputHeaders = new MultivaluedMapImpl<String, Object>();
-      byteBuf = Unpooled.buffer();
+      byteBuf = ctx.alloc().buffer();
       os = new ByteBufOutputStream(byteBuf);
       this.ctx = ctx;
       this.keepAlive = keepAlive;
@@ -139,4 +140,13 @@ public class NettyHttpResponse implements HttpResponse
    public boolean isKeepAlive() {
        return keepAlive;
    }
+
+    public void retain() {
+        byteBuf.retain(1);
+    }
+
+    public DefaultFullHttpResponse getDefaultFullHttpResponse() {
+        HttpResponseStatus status = HttpResponseStatus.valueOf(getStatus());
+        return new DefaultFullHttpResponse(HTTP_1_1, status, getBuffer());
+    }
 }

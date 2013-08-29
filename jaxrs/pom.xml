@@ -18,14 +18,15 @@
         <dep.commons-io.version>2.1</dep.commons-io.version>
         <dep.hibernate-validator.version>5.0.1.Final</dep.hibernate-validator.version>
         <dep.javax.el.version>2.2.4</dep.javax.el.version>
+        <dep.javax.persistence.version>1.0.1.Final</dep.javax.persistence.version>
         <dep.spring-webmvc.version>3.0.3.RELEASE</dep.spring-webmvc.version>
         <dep.snakeyaml.version>1.8</dep.snakeyaml.version>
         <dep.cdi-api.version>1.0-SP1</dep.cdi-api.version>
         <dep.jboss-ejb-api_3.1_spec.version>1.0.0.CR2</dep.jboss-ejb-api_3.1_spec.version>
         <dep.guice.version>3.0</dep.guice.version>
-        <dep.jboss-el.version>1.0_02.CR4</dep.jboss-el.version>
+        <dep.jboss-el.version>1.0_02.CR6</dep.jboss-el.version>
         <dep.netty.version>3.6.4.Final</dep.netty.version>
-        <dep.netty4.version>4.0.6.Final</dep.netty4.version>
+        <dep.netty4.version>4.0.7.Final</dep.netty4.version>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -188,12 +189,13 @@
                 <artifactId>FastInfoset</artifactId>
                 <version>1.2.7</version>
             </dependency>
-
+            
             <dependency>
-                <groupId>javax.persistence</groupId>
-                <artifactId>persistence-api</artifactId>
-                <version>1.0</version>
+        		<groupId>org.hibernate.javax.persistence</groupId>
+            	<artifactId>hibernate-jpa-2.0-api</artifactId>
+            	<version>${dep.javax.persistence.version}</version>
             </dependency>
+
 
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
