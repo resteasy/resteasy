@@ -39,7 +39,7 @@ import java.util.Map;
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
- * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
+ * @author Justin Santa Barbara
  * @version $Revision: 1 $
  */
 public class WildcardResourceMatchingTest extends BaseResourceTest
