@@ -66,14 +66,21 @@ public class RequestHandler extends SimpleChannelInboundHandler
              logger.error("Unexpected", ex);
              return;
           }
-
-          // Write the response.
-          ChannelFuture future = ctx.writeAndFlush(response);
-
+          ChannelFuture future = null;
+          if (!request.getAsyncContext().isSuspended()) {
+              // Write and flush the response.
+              future = ctx.writeAndFlush(response);
+          } else {
+              // Write an empty response
+              future = ctx.write(response);
+              // retain buffer since it was automatically
+              // reference counted by the write operation above
+              response.retain();
+          }
           // Close the non-keep-alive connection after the write operation is done.
           if (!request.isKeepAlive())
           {
-             future.addListener(ChannelFutureListener.CLOSE);
+              future.addListener(ChannelFutureListener.CLOSE);
           }
       }
    }
@@ -99,6 +106,5 @@ public class RequestHandler extends SimpleChannelInboundHandler
           e.getCause().printStackTrace();
           ctx.close();
       }
-
    }
 }
