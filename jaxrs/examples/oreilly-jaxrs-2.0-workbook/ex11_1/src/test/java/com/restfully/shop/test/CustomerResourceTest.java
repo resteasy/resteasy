@@ -1,8 +1,6 @@
 package com.restfully.shop.test;
 
 import com.restfully.shop.domain.Customer;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;

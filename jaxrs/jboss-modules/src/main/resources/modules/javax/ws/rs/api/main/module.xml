@@ -28,6 +28,10 @@
     </resources>
 
     <dependencies>
+        <!--  needed because javax.ws.rs.core.Link uses JAXB annotations -->
+        <module name="javax.xml.bind.api"/>
+        <!--  needed because javax.ws.rs.core.Link uses JAXB annotations -->
+        <module name="javax.api"/>
         <module name="org.jboss.resteasy.resteasy-jaxrs" services="export"/>
     </dependencies>
 </module>

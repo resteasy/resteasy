@@ -1,6 +1,5 @@
 package com.restfully.shop.services;
 
-import com.restfully.shop.domain.AtomLink;
 import com.restfully.shop.domain.Product;
 import com.restfully.shop.domain.Products;
 import com.restfully.shop.persistence.ProductEntity;
@@ -9,6 +8,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -62,7 +62,7 @@ public class ProductResourceBean implements ProductResource
       builder.queryParam("size", "{size}");
 
       ArrayList<Product> list = new ArrayList<Product>();
-      ArrayList<AtomLink> links = new ArrayList<AtomLink>();
+      ArrayList<Link> links = new ArrayList<Link>();
 
       Query query = null;
       if (name != null)
@@ -92,7 +92,7 @@ public class ProductResourceBean implements ProductResource
       {
          int next = start + size;
          URI nextUri = builder.clone().build(next, size);
-         AtomLink nextLink = new AtomLink("next", nextUri.toString(), "application/xml");
+         Link nextLink = Link.fromUri(nextUri).rel("next").type("application/xml").build();
          links.add(nextLink);
       }
       // previous link
@@ -101,7 +101,7 @@ public class ProductResourceBean implements ProductResource
          int previous = start - size;
          if (previous < 0) previous = 0;
          URI previousUri = builder.clone().build(previous, size);
-         AtomLink previousLink = new AtomLink("previous", previousUri.toString(), "application/xml");
+         Link previousLink = Link.fromUri(previousUri).rel("previous").type("application/xml").build();
          links.add(previousLink);
       }
       Products products = new Products();

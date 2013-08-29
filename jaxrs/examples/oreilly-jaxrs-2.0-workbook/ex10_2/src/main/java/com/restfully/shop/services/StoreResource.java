@@ -1,8 +1,5 @@
 package com.restfully.shop.services;
 
-import com.restfully.shop.domain.AtomLink;
-import com.restfully.shop.domain.AtomLink;
-
 import javax.ws.rs.HEAD;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
@@ -27,8 +24,8 @@ public class StoreResource
       URI orderUrl = absolute.clone().path(OrderResource.class).build();
 
       Response.ResponseBuilder builder = Response.ok();
-      Link customers = Link.fromUri(customerUrl).rel("customers").title("application/xml").build();
-      Link orders = Link.fromUri(orderUrl).rel("orders").title("application/xml").build();
+      Link customers = Link.fromUri(customerUrl).rel("customers").type("application/xml").build();
+      Link orders = Link.fromUri(orderUrl).rel("orders").type("application/xml").build();
       builder.links(customers, orders);
       return builder.build();
    }

@@ -8,11 +8,6 @@ import org.junit.Test;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 
 /**
@@ -36,6 +31,7 @@ public class CustomerResourceTest
    {
       client.close();
    }
+
    @Test
    public void testCustomerResource() throws Exception
    {

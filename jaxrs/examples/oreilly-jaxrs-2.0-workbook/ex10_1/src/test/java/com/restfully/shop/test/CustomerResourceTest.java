@@ -1,7 +1,6 @@
 package com.restfully.shop.test;
 
 import com.restfully.shop.domain.Customers;
-import org.jboss.resteasy.client.ClientRequest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -9,6 +8,7 @@ import org.junit.Test;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+import java.net.URI;
 
 
 /**
@@ -34,16 +34,16 @@ public class CustomerResourceTest
    @Test
    public void testQueryCustomers() throws Exception
    {
-      String url = "http://localhost:8080/services/customers";
-      while (url != null)
+      URI uri = new URI("http://localhost:8080/services/customers");
+      while (uri != null)
       {
-         WebTarget target = client.target(url);
+         WebTarget target = client.target(uri);
          String output = target.request().get(String.class);
-         System.out.println("** XML from " + url);
+         System.out.println("** XML from " + uri.toString());
          System.out.println(output);
 
          Customers customers = target.request().get(Customers.class);
-         url = customers.getNext();
+         uri = customers.getNext();
       }
    }
 }

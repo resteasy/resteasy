@@ -3,12 +3,9 @@ package com.restfully.shop.test;
 import com.restfully.shop.domain.Customer;
 import com.restfully.shop.domain.Customers;
 import com.restfully.shop.domain.LineItem;
-import com.restfully.shop.domain.Link;
 import com.restfully.shop.domain.Order;
 import com.restfully.shop.domain.Product;
 import com.restfully.shop.domain.Products;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -20,9 +17,6 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
