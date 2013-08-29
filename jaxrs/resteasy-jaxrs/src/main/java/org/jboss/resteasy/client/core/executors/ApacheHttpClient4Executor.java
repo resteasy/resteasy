@@ -114,15 +114,13 @@ public class ApacheHttpClient4Executor implements ClientExecutor
 
    public ApacheHttpClient4Executor()
    {
-      this.httpClient = new DefaultHttpClient();
+      this(new DefaultHttpClient(), null);
       this.createdHttpClient = true;
-      checkClientExceptionMapper();
    }
 
    public ApacheHttpClient4Executor(HttpClient httpClient)
    {
-      this.httpClient = httpClient;
-      checkClientExceptionMapper();
+      this(httpClient, null);
    }
 
    public ApacheHttpClient4Executor(HttpClient httpClient, HttpContext httpContext)
