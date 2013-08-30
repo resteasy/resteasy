@@ -491,7 +491,11 @@ public abstract class Link {
             return uri;
         }
 
-        /**
+        public void setUri(URI uri) {
+            this.uri = uri;
+        }
+
+       /**
          * Get the parameter map for this link.
          *
          * @return parameter map.

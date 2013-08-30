@@ -13,7 +13,7 @@
 
     <properties>
         <jboss.home>/Users/billburke/jboss/jboss-4.2.3.GA</jboss.home>
-        <dep.jaxb-impl.version>2.2.5-2</dep.jaxb-impl.version>
+        <dep.jaxb-impl.version>2.2.7</dep.jaxb-impl.version>
         <dep.jettison.version>1.3.2</dep.jettison.version>
         <dep.commons-io.version>2.1</dep.commons-io.version>
         <dep.hibernate-validator.version>5.0.1.Final</dep.hibernate-validator.version>
@@ -24,7 +24,7 @@
         <dep.cdi-api.version>1.0-SP1</dep.cdi-api.version>
         <dep.jboss-ejb-api_3.1_spec.version>1.0.0.CR2</dep.jboss-ejb-api_3.1_spec.version>
         <dep.guice.version>3.0</dep.guice.version>
-        <dep.jboss-el.version>1.0_02.CR4</dep.jboss-el.version>
+        <dep.jboss-el.version>1.0_02.CR6</dep.jboss-el.version>
         <dep.netty.version>3.6.4.Final</dep.netty.version>
         <dep.netty4.version>4.0.7.Final</dep.netty4.version>
     </properties>
@@ -109,12 +109,13 @@
         <module>resteasy-jsapi</module>
         <!-- <module>resteasy-jsapi-testing</module> -->
         <module>resteasy-cdi</module>
+        <module>resteasy-servlet-initializer</module>
         <module>server-adapters</module>
         <module>war-tests</module>
         <!-- <module>as8-integration-testing</module> -->
         <!-- <module>as8-integration-testing/ejb-singleton-test</module> -->
-        <module>examples</module>
         <module>async-http-servlet-3.0</module>
+        <module>examples</module>
         <module>jboss-modules</module>
         <module>profiling-tests</module>
         <!-- <module>arquillian</module> -->
@@ -397,7 +398,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.3.1</version>
+                    <version>3.1</version>
                     <configuration>
                         <source>1.6</source>
                         <target>1.6</target>
@@ -450,7 +451,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.1</version>
+                <version>3.1</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>

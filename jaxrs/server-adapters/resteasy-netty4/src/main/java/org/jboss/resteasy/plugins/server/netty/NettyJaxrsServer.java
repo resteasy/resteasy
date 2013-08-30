@@ -65,7 +65,6 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
     * If you want to disable the use of the {@link EventExecutor} specify a value <= 0.  This should only be done if you are 100% sure that you don't have any blocking
     * code in there.
     *
-    *
     * @param executorThreadCount
     */
    public void setExecutorThreadCount(int executorThreadCount)
@@ -128,7 +127,6 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    {
       eventLoopGroup = new NioEventLoopGroup(ioWorkerCount);
       eventExecutor = new NioEventLoopGroup(executorThreadCount);
-
       deployment.start();
       final RequestDispatcher dispatcher = new RequestDispatcher((SynchronousDispatcher)deployment.getDispatcher(), deployment.getProviderFactory(), domain);
        // Configure the server.

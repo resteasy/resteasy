@@ -29,10 +29,11 @@ import org.jboss.resteasy.skeleton.key.EnvUtil;
 import org.jboss.resteasy.skeleton.key.PemUtils;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeySession;
-import org.jboss.resteasy.skeleton.key.as7.config.AuthServerConfig;
-import org.jboss.resteasy.skeleton.key.as7.config.ManagedResourceConfig;
+import org.jboss.resteasy.skeleton.key.config.AuthServerConfig;
+import org.jboss.resteasy.skeleton.key.config.ManagedResourceConfig;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
+import org.jboss.resteasy.skeleton.key.servlet.ServletActionURLs;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.BasicAuthHelper;
@@ -368,13 +369,13 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
             if (handleLoginPage(request, response)) return;
          }
          else if (request.getMethod().equalsIgnoreCase("GET")
-                 && requestURI.endsWith(Actions.J_OAUTH_LOGOUT))
+                 && requestURI.endsWith(ServletActionURLs.J_OAUTH_LOGOUT))
          {
             logoutCurrentUser(request, response);
             return;
          }
          else if (request.getMethod().equalsIgnoreCase("POST")
-                 && requestURI.endsWith(Actions.J_OAUTH_ADMIN_FORCED_LOGOUT))
+                 && requestURI.endsWith(ServletActionURLs.J_OAUTH_ADMIN_FORCED_LOGOUT))
          {
             adminLogout(request, response);
             return;
@@ -388,14 +389,14 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
             return;
          }
          else if (request.getMethod().equalsIgnoreCase("POST")
-                 && requestURI.endsWith(Actions.J_OAUTH_TOKEN_GRANT))
+                 && requestURI.endsWith(ServletActionURLs.J_OAUTH_TOKEN_GRANT))
          {
             tokenGrant(request, response);
             return;
          }
          else if (request.getMethod().equalsIgnoreCase("POST")
                  && requestURI.startsWith(contextPath) &&
-                 requestURI.endsWith(Actions.J_OAUTH_RESOLVE_ACCESS_CODE))
+                 requestURI.endsWith(ServletActionURLs.J_OAUTH_RESOLVE_ACCESS_CODE))
          {
             resolveAccessCode(request, response);
             return;
@@ -580,7 +581,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
                try
                {
                   log.debug("logging out: " + resource);
-                  WebTarget target = client.target(resource).path(Actions.J_OAUTH_REMOTE_LOGOUT);
+                  WebTarget target = client.target(resource).path(ServletActionURLs.J_OAUTH_REMOTE_LOGOUT);
                   if (username != null) target = target.queryParam("user", username);
                   javax.ws.rs.core.Response response = target.request()
                           .header("Authorization", "Bearer " + tokenString)
@@ -668,7 +669,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       ManagedResourceConfig rep = new ManagedResourceConfig();
       ResteasyUriInfo uriInfo = ServletUtil.extractUriInfo(request, null);
       UriBuilder authUrl = uriInfo.getBaseUriBuilder().path(context.getLoginConfig().getLoginPage());
-      UriBuilder codeUrl = uriInfo.getBaseUriBuilder().path(Actions.J_OAUTH_RESOLVE_ACCESS_CODE);
+      UriBuilder codeUrl = uriInfo.getBaseUriBuilder().path(ServletActionURLs.J_OAUTH_RESOLVE_ACCESS_CODE);
       rep.setRealm(skeletonKeyConfig.getRealm());
       rep.setRealmKey(realmPublicKeyPem);
       rep.setAuthUrl(authUrl.toTemplate());

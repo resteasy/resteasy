@@ -11,8 +11,9 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.deploy.LoginConfig;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
-import org.jboss.resteasy.skeleton.key.as7.config.ManagedResourceConfig;
-import org.jboss.resteasy.skeleton.key.as7.config.ManagedResourceConfigLoader;
+import org.jboss.resteasy.skeleton.key.as7.config.CatalinaManagedResourceConfigLoader;
+import org.jboss.resteasy.skeleton.key.config.ManagedResourceConfig;
+import org.jboss.resteasy.skeleton.key.config.ManagedResourceConfigLoader;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.security.auth.login.LoginException;
@@ -49,7 +50,7 @@ public class BearerTokenAuthenticatorValve extends AuthenticatorBase implements 
 
    protected void init()
    {
-      ManagedResourceConfigLoader managedResourceConfigLoader = new ManagedResourceConfigLoader(context);
+      ManagedResourceConfigLoader managedResourceConfigLoader = new CatalinaManagedResourceConfigLoader(context);
       resourceMetadata = managedResourceConfigLoader.getResourceMetadata();
       remoteSkeletonKeyConfig = managedResourceConfigLoader.getRemoteSkeletonKeyConfig();
    }
