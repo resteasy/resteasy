@@ -1,10 +1,10 @@
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha1;  boundary="----=_Part_21_1352703798.1377786046696"
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha1;  boundary="----=_Part_17_545435409.1377862065707"
 
-------=_Part_21_1352703798.1377786046696
+------=_Part_17_545435409.1377862065707
 Content-Type: application/xml
 
 <customer name="bill"/>
-------=_Part_21_1352703798.1377786046696
+------=_Part_17_545435409.1377862065707
 Content-Type: application/pkcs7-signature; name=smime.p7s; smime-type=signed-data
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -13,9 +13,9 @@ Content-Description: S/MIME Cryptographic Signature
 MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAMYIBVzCCAVMC
 AQEwUjBFMQswCQYDVQQGEwJBVTETMBEGA1UECBMKU29tZS1TdGF0ZTEhMB8GA1UEChMYSW50ZXJu
 ZXQgV2lkZ2l0cyBQdHkgTHRkAgkA7oW81OriflAwCQYFKw4DAhoFAKBdMBgGCSqGSIb3DQEJAzEL
-BgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTEzMDgyOTE0MjA0NlowIwYJKoZIhvcNAQkEMRYE
-FAJWFGwqddBF/ZGoA7RLuS8va26TMA0GCSqGSIb3DQEBAQUABIGAnxr+RsVVMaB60c6HNVZm7LRX
-gIx6xs3DYF9dZzCIggzXTOPRPW84vuQC3IMREoIsnhZxc/lG+4pfcahrWM5vGzl0Iuc6QW3hvS2s
-tPyrRQmQhUns3+Uqz2PlZXJSVKSnH9ZmWrRxifQH/JX0Rbj77Jbl0IriT+bja5TQ36PJ72kAAAAA
+BgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTEzMDgzMDExMjc0NVowIwYJKoZIhvcNAQkEMRYE
+FAJWFGwqddBF/ZGoA7RLuS8va26TMA0GCSqGSIb3DQEBAQUABIGAlh65xXvQ49HtspoZ5pUa4NdA
+gUlNsUG61NggR5a4AvtzZe7uilrvnv3B1nM6y3NcZERtw32GuulC6+CnQEgHvvVCrrI4bvXosfIr
+JtKnC6+0hcGNkP/COEkV5zRznUahPowg8FqEWWby6qmioeJ3ptrm1a+/ODEo/JeSHQKqOqYAAAAA
 AAA=
-------=_Part_21_1352703798.1377786046696--
+------=_Part_17_545435409.1377862065707--

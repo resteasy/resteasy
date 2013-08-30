@@ -95,7 +95,7 @@ public class LinkTest  extends BaseResourceTest
    @Test
    public void testLinks() throws Exception
    {
-      JAXBContext context = JAXBContext.newInstance(LinksList.class, Link.class, Link.JaxbAdapter.class, Link.JaxbLink.class);
+      JAXBContext context = JAXBContext.newInstance(LinksList.class);
       LinksList list = new LinksList();
       UriBuilder builder = UriBuilder.fromUri("/blah").queryParam("start", "{start}");
       URI uri = builder.build(1);

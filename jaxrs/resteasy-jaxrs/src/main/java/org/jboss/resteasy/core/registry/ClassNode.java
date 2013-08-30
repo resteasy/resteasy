@@ -46,6 +46,7 @@ public class ClassNode
       if (start < path.length() && path.charAt(start) == '/') start++;
       List<ClassExpression> potentials = new ArrayList<ClassExpression>();
       potentials(path, start, potentials);
+      Collections.sort(potentials);
 
       for (ClassExpression expression : potentials)
       {

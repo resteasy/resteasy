@@ -43,8 +43,9 @@ public class CustomerResourceTest
       Customer cust = response.readEntity(Customer.class);
 
       EntityTag etag = response.getEntityTag();
-      System.out.println("Doing a conditional GET with ETag: " + etag.toString());
       response.close();
+
+      System.out.println("Doing a conditional GET with ETag: " + etag.toString());
       response = customerTarget.request()
                                .header("If-None-Match", etag).get();
       Assert.assertEquals(304, response.getStatus());

@@ -66,6 +66,7 @@ public class SegmentNode
       if (start < path.length() && path.charAt(start) == '/') start++;
       List<MethodExpression> potentials = new ArrayList<MethodExpression>();
       potentials(path, start, potentials);
+      Collections.sort(potentials);
 
       boolean expressionMatched = false;
       List<Match> matches = new ArrayList<Match>();
