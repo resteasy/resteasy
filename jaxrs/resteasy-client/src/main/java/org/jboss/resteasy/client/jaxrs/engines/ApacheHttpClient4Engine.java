@@ -6,12 +6,14 @@ import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.params.HttpClientParams;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
@@ -209,6 +211,15 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       this.hostnameVerifier = hostnameVerifier;
    }
 
+   public HttpHost getDefaultProxy()
+   {
+	   return (HttpHost) httpClient.getParams().getParameter(ConnRoutePNames.DEFAULT_PROXY);
+   }
+   
+   public void setDefaultProxy(HttpHost defaultProxy)
+   {
+	   httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, defaultProxy);
+   }
    public static CaseInsensitiveMap<String> extractHeaders(
            HttpResponse response)
    {
