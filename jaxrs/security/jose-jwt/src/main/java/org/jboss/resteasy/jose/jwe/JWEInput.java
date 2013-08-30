@@ -5,6 +5,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jboss.resteasy.jose.Base64Url;
 import org.jboss.resteasy.jose.jwe.crypto.DirectDecrypter;
 import org.jboss.resteasy.jose.jwe.crypto.RSADecrypter;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -147,7 +148,9 @@ public class JWEInput
 
       public Object readContent(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
       {
-         MessageBodyReader reader = providers.getMessageBodyReader(type, genericType, annotations, mediaType);
+         Providers tmp = providers;
+         if (tmp == null) tmp = ResteasyProviderFactory.getInstance();
+         MessageBodyReader reader = tmp.getMessageBodyReader(type, genericType, annotations, mediaType);
          if (reader == null) throw new RuntimeException("Unable to find reader for content type");
 
          try
