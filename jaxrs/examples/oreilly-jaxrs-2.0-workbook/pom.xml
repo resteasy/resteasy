@@ -57,7 +57,12 @@ pom.xml as a template -->
         <module>ex10_1</module>
         <module>ex10_2</module>
         <module>ex11_1</module>
+        <module>ex12_1</module>
+        <module>ex12_2</module>
+        <module>ex13_1</module>
         <!-- <module>ex14_1</module> -->
         <module>ex14_2</module>
+        <module>ex15_1</module>
+        <module>ex15_2</module>
     </modules>
 </project>
