@@ -9,6 +9,7 @@ import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.ssl.StrictHostnameVerifier;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
+import org.apache.http.HttpHost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
@@ -78,6 +79,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    protected long connectionTTL = -1;
    protected TimeUnit connectionTTLUnit = TimeUnit.MILLISECONDS;
    protected HostnameVerifier verifier = null;
+   protected HttpHost defaultProxy;
 
    /**
     * Changing the providerFactory will wipe clean any registered components or properties.
@@ -192,6 +194,12 @@ public class ResteasyClientBuilder extends ClientBuilder
    {
       getProviderFactory().property(name, value);
       return this;
+   }
+   
+   public ResteasyClientBuilder defaultProxy(HttpHost defaultProxy)
+   {
+	   this.defaultProxy = defaultProxy;
+	   return this;
    }
 
    protected ResteasyProviderFactory getProviderFactory()
@@ -334,6 +342,7 @@ public class ResteasyClientBuilder extends ClientBuilder
          engine.setHostnameVerifier(verifier);
          // this may be null.  We can't really support this with Apache Client.
          engine.setSslContext(theContext);
+         engine.setDefaultProxy(defaultProxy);
          return engine;
       }
       catch (Exception e)
