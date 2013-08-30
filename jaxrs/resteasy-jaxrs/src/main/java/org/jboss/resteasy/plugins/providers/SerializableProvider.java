@@ -36,7 +36,9 @@ public class SerializableProvider implements MessageBodyReader<Serializable>, Me
    
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return Serializable.class.isAssignableFrom(type) && "application/x-java-serialized-object".equals(mediaType.toString());
+      return Serializable.class.isAssignableFrom(type)
+            && APPLICATION_SERIALIZABLE_TYPE.getType().equals(mediaType.getType())
+            && APPLICATION_SERIALIZABLE_TYPE.getSubtype().equals(mediaType.getSubtype());
    }
 
    public long getSize(Serializable t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
@@ -57,7 +59,9 @@ public class SerializableProvider implements MessageBodyReader<Serializable>, Me
 
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return Serializable.class.isAssignableFrom(type) && "application/x-java-serialized-object".equals(mediaType.toString());
+      return Serializable.class.isAssignableFrom(type)
+            && APPLICATION_SERIALIZABLE_TYPE.getType().equals(mediaType.getType())
+            && APPLICATION_SERIALIZABLE_TYPE.getSubtype().equals(mediaType.getSubtype());
    }
 
    public Serializable readFrom(Class<Serializable> type, Type genericType,
