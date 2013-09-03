@@ -35,10 +35,9 @@ public class CustomerChat
       Message next;
    }
 
-   protected AtomicLong counter = new AtomicLong(0);
-   protected int maxMessages = 100;
    protected Message first;
    protected Message last;
+   protected int maxMessages = 10;
    protected LinkedHashMap<String, Message> messages = new LinkedHashMap<String, Message>()
    {
       @Override
@@ -49,6 +48,8 @@ public class CustomerChat
          return remove;
       }
    };
+
+   protected AtomicLong counter = new AtomicLong(0);
 
    LinkedList<AsyncResponse> listeners = new LinkedList<AsyncResponse>();
 
@@ -102,7 +103,7 @@ public class CustomerChat
    }
 
    @GET
-   public void get(@QueryParam("current") String next, @Suspended AsyncResponse async)
+   public void receive(@QueryParam("current") String next, @Suspended AsyncResponse async)
    {
       final UriBuilder base = uriInfo.getBaseUriBuilder();
       Message message = null;
