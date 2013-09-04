@@ -10,31 +10,31 @@
 
     </para>
 
-    <sect1 id="upgrading-as7">
+    <section id="upgrading-as7">
         <title>Upgrading Resteasy Within JBoss AS 7</title>
         <para>
             Resteasy is bundled with JBoss AS 7.  You will likely have the need to upgrade Resteasy in AS7.  The Resteasy
             distribution comes with a zip file called resteasy-jboss-modules-3.0.4.Final.zip.  Unzip this file while
             with the modules/ directory of the JBoss AS7 distribution.  This will overwrite some of the existing files there.
         </para>
-    </sect1>
-    <sect1 id="upgrading-eap61">
+    </section>
+    <section id="upgrading-eap61">
         <title>Upgrading Resteasy Within JBoss EAP 6.1</title>
         <para>
             Resteasy is bundled with JBoss EAP 6.1.  You will likely have the need to upgrade Resteasy in JBoss EAP 6.1.  The Resteasy
             distribution comes with a zip file called resteasy-jboss-modules-3.0.4.Final.zip.  Unzip this file while
             with the modules/system/layers/base/ directory of the JBoss EAP 6.1 distribution.  This will overwrite some of the existing files there.
         </para>
-    </sect1>
-    <sect1 id="upgrading-wildfly">
+    </section>
+    <section id="upgrading-wildfly">
         <title>Upgrading Resteasy Within Wildfly</title>
         <para>
             Resteasy is bundled with Wildfly.  You will likely have the need to upgrade Resteasy in Wildfly.  The Resteasy
             distribution comes with a zip file called resteasy-jboss-modules-wf8-3.0.4.Final.zip.  Unzip this file while
             with the modules/system/layers/base/ directory of the Wildfly distribution.  This will overwrite some of the existing files there.
         </para>
-    </sect1>
-    <sect1>
+    </section>
+    <section>
         <title>Configuring in JBoss AS 7, EAP, and Wildfly</title>
         <para>
             RESTEasy is bundled with JBoss/Wildfly and completely integrated as per the requirements of Java EE 6.
@@ -71,7 +71,6 @@
             The Resteasy distribution has ported the "Restful Java" O'Reilly workbook examples to AS7.  You can
             find these under the directory examples/oreilly-workbook-as7.
         </para>
-    </sect1>
     <section>
         <title>Resteasy Modules in AS7, EAP6.1, Wildfly</title>
         <para>
@@ -252,26 +251,43 @@
             </table>
         </para>
     </section>
-    <sect1>
-        <title>Standalone Resteasy</title>
+</section>
+    <section>
+        <title>Standalone Resteasy in Servlet 3.0 Containers</title>
         <para>
-            If you are using resteasy outside of JBoss/Wildfly, you will need to do a few manual steps to install and
-            configure resteasy.
-            RESTeasy is deployed as a WAR archive and thus depends on a Servlet container. We strongly suggest that you
+            If you are using resteasy outside of JBoss/Wildfly, in a standalone servlet container like Tomcat or Jetty
+            you will need to include the core Resteasy jars in your WAR file.  Resteasy provides integration with standalone
+            Servlet 3.0 containers via the <literal>ServletContainerInitializer</literal> integration interface.  To
+            use this, you must also include the <literal>resteasy-servlet-initializer</literal> artifact in your WAR
+            file as well.
+        </para>
+<programlisting>
+        <![CDATA[
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-servlet-initializer</artifactId>
+            <version>3.0.4.Final</version>
+        </dependency>
+]]>
+</programlisting>
+        <para>
+            We strongly suggest that you
             use Maven to build your WAR files as RESTEasy is split into
             a bunch of different modules. You can see an example Maven project in one of the examples in the examples/
-            directory
-        </para>
-        <para>
-            Also, when you download RESTeasy and unzip it you will see a lib/ directory that contains the libraries
+            directory.
+            If you are not using Maven,when you download RESTeasy and unzip it you will see a lib/ directory that contains the libraries
             needed by resteasy.
             Copy these into your /WEB-INF/lib directory. Place your JAX-RS annotated class resources and providers
             within
             one or more jars within /WEB-INF/lib or your raw class files within /WEB-INF/classes.
         </para>
+    </section>
+    <section>
+        <title>Standalone Resteasy in Older Servlet Containers</title>
         <para>
-            RESTeasy is implemented as a Servlet and deployed within a WAR file. If you open up the WEB-INF/web.xml in
-            one of the example projects of your RESTeasy download you will see this:
+            The <literal>resteasy-servlet-initializer</literal> artifact will not work in Servlet versions older than
+            3.0.  You'll then have to manually declare the Resteasy servlet in your WEB-INF/web.xml file of your WAR project.
+            For example:
         </para>
         <para>
 
@@ -303,8 +319,8 @@
         <para>
             The Resteasy servlet is responsible for initializing some basic components of RESTeasy.
         </para>
-    </sect1>
-    <sect1>
+    </section>
+    <section>
         <title>Configuration Switches</title>
         <para>Resteasy receives configuration options from &lt;context-param&gt; elements.</para>
         <para>
@@ -525,8 +541,8 @@
                 &lt;/context-param&gt;
             </programlisting>
         </para>
-    </sect1>
-    <sect1 id="javax.ws.rs.core.Application">
+    </section>
+    <section id="javax.ws.rs.core.Application">
         <title>javax.ws.rs.core.Application</title>
 
         <para>
@@ -618,12 +634,14 @@
 
 
         </para>
-    </sect1>
+    </section>
 
-    <sect1 id="listener">
+    <section id="listener">
         <title>RESTEasy as a ServletContextListener</title>
 
         <para>
+            This section is pretty much deprecated if you are using a Servlet 3.0 container or higher.  Skip it if
+            you are and read the configuration section above on installing in Servlet 3.0.
             The initialization of RESTEasy can be performed within a ServletContextListener instead of within the
             Servlet. You may need this if you are writing custom Listeners that need to interact with RESTEasy at boot
             time. An example of this is the RESTEasy Spring integration that requires a Spring ServletContextListener.
@@ -660,11 +678,13 @@
 </web-app>
 ]]>
         </programlisting>
-    </sect1>
-    <sect1 id="filter">
+    </section>
+    <section id="filter">
         <title>RESTEasy as a servlet Filter</title>
 
         <para>
+            This section is pretty much deprecated if you are using a Servlet 3.0 container or higher.  Skip it if
+            you are and read the configuration section above on installing in Servlet 3.0.
             The downside of running Resteasy as a Servlet is that you cannot have static resources like .html and .jpeg
             files in the
             same path as your JAX-RS services. Resteasy allows you to run as a Filter instead. If a JAX-RS resource is
@@ -693,9 +713,9 @@
 
 </web-app>]]>
         </programlisting>
-    </sect1>
+    </section>
 
-    <sect1 id="RESTEasyLogging">
+    <section id="RESTEasyLogging">
         <title>RESTEasyLogging</title>
 
         <para>
@@ -781,5 +801,5 @@
             </table>
 
         </para>
-    </sect1>
+    </section>
 </chapter>

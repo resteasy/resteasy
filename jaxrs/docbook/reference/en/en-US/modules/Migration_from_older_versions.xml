@@ -9,6 +9,16 @@
 <chapter id="Migration_from_older_versions">
 <title>Migration from older versions</title>
 <sect1>
+    <title>Migrating from 3.0 to 3.0.4</title>
+    <itemizedlist>
+        <listitem>
+            Servlet 3.0 deployments within standalone Tomcat or Jetty can now use the Resteasy <literal>ServletContainerInitializer</literal>.
+            This allows tighter integration with Resteasy much like you have within JBoss/Wildfly.  Check out the
+            installation/configuration section of this document for more information.
+        </listitem>
+    </itemizedlist>
+</sect1>
+<sect1>
     <title>Migrating from 3.0-beta-6 and 3.0-rc-1</title>
     <itemizedlist>
         <listitem>
