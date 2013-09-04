@@ -51,6 +51,7 @@
                 <!ENTITY Authentication SYSTEM "modules/Authentication.xml">
                 <!ENTITY CDI SYSTEM "modules/CDI.xml">
                 <!ENTITY Signature SYSTEM "modules/signature.xml">
+                <!ENTITY JOSEJWT SYSTEM "modules/jwt.xml">
                 <!ENTITY SMIME SYSTEM "modules/smime.xml">
                 <!ENTITY Validation SYSTEM "modules/Validation.xml">
                 ]>
@@ -131,8 +132,9 @@
    &Securing_JAX-RS_and_RESTeasy;
    &OAuth2;
    &Authentication;
+    &JOSEJWT;
    &Signature;
-   &SMIME;
+    &SMIME;
    &RESTEasy_EJB_Integration;
    &RESTEasy_Spring_Integration;
    &CDI;
