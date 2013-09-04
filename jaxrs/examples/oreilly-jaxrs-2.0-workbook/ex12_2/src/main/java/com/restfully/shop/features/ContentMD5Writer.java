@@ -21,8 +21,6 @@ public class ContentMD5Writer implements WriterInterceptor
    @Override
    public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException
    {
-      OutputStream old = context.getOutputStream();
-      ByteArrayOutputStream buffer = new ByteArrayOutputStream();
       MessageDigest digest = null;
       try
       {
@@ -32,17 +30,25 @@ public class ContentMD5Writer implements WriterInterceptor
       {
          throw new IllegalArgumentException(e);
       }
+      ByteArrayOutputStream buffer = new ByteArrayOutputStream();
       DigestOutputStream digestStream = new DigestOutputStream(buffer, digest);
+      OutputStream old = context.getOutputStream();
       context.setOutputStream(digestStream);
 
-      context.proceed();
+      try
+      {
+         context.proceed();
 
-      byte[] hash = digest.digest();
-      String encodedHash = Base64.encodeBytes(hash);
-      context.getHeaders().putSingle("Content-MD5", encodedHash);
+         byte[] hash = digest.digest();
+         String encodedHash = Base64.encodeBytes(hash);
+         context.getHeaders().putSingle("Content-MD5", encodedHash);
 
-      context.setOutputStream(old);
-      byte[] content = buffer.toByteArray();
-      old.write(content);
+         byte[] content = buffer.toByteArray();
+         old.write(content);
+      }
+      finally
+      {
+         context.setOutputStream(old);
+      }
    }
 }

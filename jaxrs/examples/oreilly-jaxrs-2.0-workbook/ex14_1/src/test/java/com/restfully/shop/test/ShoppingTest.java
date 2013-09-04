@@ -39,7 +39,7 @@ public class ShoppingTest
       client.close();
    }
 
-   public void populateDB() throws Exception
+   protected void populateDB() throws Exception
    {
       Response response = client.target("http://localhost:8080/ex14_1/services/shop").request().head();
       Link products = response.getLink("products");
