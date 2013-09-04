@@ -22,12 +22,6 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-client</artifactId>
-            <version>3.0.4.Final</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
             <version>3.0.4.Final</version>
             <scope>provided</scope>
@@ -43,6 +37,12 @@
             <artifactId>persistence-api</artifactId>
             <version>1.0</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-client</artifactId>
+            <version>3.0.4.Final</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

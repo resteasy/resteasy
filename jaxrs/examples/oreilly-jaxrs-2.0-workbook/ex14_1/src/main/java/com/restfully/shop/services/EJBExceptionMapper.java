@@ -11,7 +11,7 @@ import javax.ws.rs.ext.Providers;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Provider
+//@Provider
 public class EJBExceptionMapper implements ExceptionMapper<EJBException>
 {
    @Context
