@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
@@ -164,7 +165,10 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
       {
          if (method == null) throw new IllegalStateException("Unknown media type for response entity");
          MediaType type = method.resolveContentType(request, entity);
-         response = Response.ok(entity, type).build();
+         BuiltResponse jaxrsResponse = (BuiltResponse)Response.ok(entity, type).build();
+         jaxrsResponse.setGenericType(method.getGenericReturnType());
+         jaxrsResponse.addMethodAnnotations(method.getMethod());
+         response = jaxrsResponse;
       }
       try
       {
