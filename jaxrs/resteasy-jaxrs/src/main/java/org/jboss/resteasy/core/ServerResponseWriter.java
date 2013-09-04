@@ -39,7 +39,7 @@ public class ServerResponseWriter
 
    public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, final ResteasyProviderFactory providerFactory) throws IOException
    {
-      ResourceMethodInvoker method = (ResourceMethodInvoker) request.getAttribute(ResourceMethodInvoker.class.getName());
+      ResourceMethodInvoker method =(ResourceMethodInvoker) request.getAttribute(ResourceMethodInvoker.class.getName());
 
       if (jaxrsResponse.getEntity() != null && jaxrsResponse.getMediaType() == null)
       {
@@ -58,16 +58,7 @@ public class ServerResponseWriter
       Class type = jaxrsResponse.getEntityClass();
       Object ent = jaxrsResponse.getEntity();
       Type generic = jaxrsResponse.getGenericType();
-      if (generic == null)
-      {
-         if (method != null && !Response.class.isAssignableFrom(method.getMethod().getReturnType())) generic = method.getGenericReturnType();
-         else generic = type;
-      }
       Annotation[] annotations = jaxrsResponse.getAnnotations();
-      if (annotations == null && method != null)
-      {
-         annotations = method.getMethodAnnotations();
-      }
       MessageBodyWriter writer = providerFactory.getMessageBodyWriter(
               type, generic, annotations, jaxrsResponse.getMediaType());
 
