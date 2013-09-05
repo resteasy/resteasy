@@ -152,6 +152,15 @@
             </excludes>
         </fileSet>
         <fileSet>
+            <directory>../examples/oreilly-jaxrs-2.0-workbook</directory>
+            <outputDirectory>examples/oreilly-jaxrs-2.0-workbook</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
             <directory>../examples/oreilly-workbook</directory>
             <outputDirectory>examples/oreilly-workbook</outputDirectory>
             <excludes>
