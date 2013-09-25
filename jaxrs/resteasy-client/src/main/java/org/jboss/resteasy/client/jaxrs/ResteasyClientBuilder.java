@@ -11,14 +11,13 @@ import org.apache.http.conn.ssl.StrictHostnameVerifier;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.HttpHost;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.SingleClientConnManager;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.impl.conn.BasicClientConnectionManager;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.params.BasicHttpParams;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.client.jaxrs.engines.PassthroughTrustManager;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.net.ssl.HostnameVerifier;
@@ -305,8 +304,7 @@ public class ResteasyClientBuilder extends ClientBuilder
          }
          else if (clientKeyStore != null || truststore != null)
          {
-            sslsf = new SSLSocketFactory(clientKeyStore, clientPrivateKeyPassword, truststore);
-            sslsf.setHostnameVerifier(verifier);
+            sslsf = new SSLSocketFactory(SSLSocketFactory.TLS, clientKeyStore, clientPrivateKeyPassword, truststore, null, verifier);
          }
          else if (connectionPoolSize <= 0)
          {
@@ -315,18 +313,17 @@ public class ResteasyClientBuilder extends ClientBuilder
          }
          else
          {
-            sslsf = SSLSocketFactory.getSocketFactory();
-            sslsf.setHostnameVerifier(verifier);
+            sslsf = new SSLSocketFactory(SSLContext.getInstance(SSLSocketFactory.TLS), verifier);
          }
          SchemeRegistry registry = new SchemeRegistry();
          registry.register(
                  new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
-         Scheme httpsScheme = new Scheme("https", sslsf, 443);
+         Scheme httpsScheme = new Scheme("https", 443, sslsf);
          registry.register(httpsScheme);
          ClientConnectionManager cm = null;
          if (connectionPoolSize > 0)
          {
-            ThreadSafeClientConnManager tcm = new ThreadSafeClientConnManager(registry, connectionTTL, connectionTTLUnit);
+            PoolingClientConnectionManager tcm = new PoolingClientConnectionManager(registry, connectionTTL, connectionTTLUnit);
             tcm.setMaxTotal(connectionPoolSize);
             if (maxPooledPerRoute == 0) maxPooledPerRoute = connectionPoolSize;
             tcm.setDefaultMaxPerRoute(maxPooledPerRoute);
@@ -335,7 +332,7 @@ public class ResteasyClientBuilder extends ClientBuilder
          }
          else
          {
-            cm = new SingleClientConnManager(registry);
+            cm = new BasicClientConnectionManager(registry);
          }
          httpClient = new DefaultHttpClient(cm, new BasicHttpParams());
          ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient, true);
