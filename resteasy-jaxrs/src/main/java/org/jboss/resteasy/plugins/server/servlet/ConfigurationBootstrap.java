@@ -113,26 +113,26 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
       String sProviders = getParameter(ResteasyContextParameters.RESTEASY_SCAN_PROVIDERS);
       if (sProviders != null)
       {
-         scanProviders = Boolean.valueOf(sProviders.trim());
+         scanProviders = parseBooleanParam(ResteasyContextParameters.RESTEASY_SCAN_PROVIDERS, sProviders);
       }
       String scanAll = getParameter(ResteasyContextParameters.RESTEASY_SCAN);
       if (scanAll != null)
       {
-         boolean tmp = Boolean.valueOf(scanAll.trim());
+         boolean tmp = parseBooleanParam(ResteasyContextParameters.RESTEASY_SCAN, scanAll);
          scanProviders = tmp || scanProviders;
          scanResources = tmp || scanResources;
       }
       String sResources = getParameter(ResteasyContextParameters.RESTEASY_SCAN_RESOURCES);
       if (sResources != null)
       {
-         scanResources = Boolean.valueOf(sResources.trim());
+         scanResources = parseBooleanParam(ResteasyContextParameters.RESTEASY_SCAN_RESOURCES, sResources);
       }
 
       // Check to see if scanning is being done by deployer (i.e. JBoss App Server)
       String sScannedByDeployer = getParameter(ResteasyContextParameters.RESTEASY_SCANNED_BY_DEPLOYER);
       if (sScannedByDeployer != null)
       {
-         boolean tmp = Boolean.valueOf(sScannedByDeployer);
+         boolean tmp = parseBooleanParam(ResteasyContextParameters.RESTEASY_SCANNED_BY_DEPLOYER, sScannedByDeployer);
          if (tmp)
          {
             scanProviders = false;
@@ -298,7 +298,19 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
       return deployment;
    }
 
-   protected Map<String, String> parseMap(String map)
+    private boolean parseBooleanParam(String key, String value) {
+        value = value.trim().toLowerCase();
+        if (value.equals("true") || value.equals("1")) {
+            return true;
+        } else if (value.equals("false") || value.equals("0")) {
+            return false;
+        } else {
+            throw new RuntimeException("The " + key + " config in web.xml could not be parsed, accepted values are true,false or 1,0");
+
+        }
+    }
+
+    protected Map<String, String> parseMap(String map)
    {
       Map<String, String> parsed = new HashMap<String, String>();
       String[] entries = map.trim().split(",");
