@@ -1,4 +1,4 @@
-package org.jboss.resteasy.resteasy802;
+package org.jboss.resteasy.resteasy801;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;

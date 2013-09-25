@@ -14,6 +14,7 @@
    <container qualifier="jbossas-managed" default="true">
    <!--container qualifier="jbossas-remote" default="true"-->
      <configuration>
+       <!--property name="jbossHome">target/jboss-eap-6.1</property-->
        <property name="jbossHome">target/jboss-as-7.2.0.Final</property>
        <property name="serverConfig">standalone-full.xml</property>
        <!-- Uncomment next line to run server in debug mode.  -->
