@@ -18,6 +18,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -27,6 +28,7 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
    private final static Logger logger = Logger.getLogger(GuiceResteasyBootstrapServletContextListener.class);
 
    private List<Module> modules;
+   @Inject private Injector parentInjector = null;
 
    @Override
    public void contextInitialized(final ServletContextEvent event)
@@ -38,17 +40,28 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
       final ModuleProcessor processor = new ModuleProcessor(registry, providerFactory);
       final List<Module> modules = getModules(context);
       final Stage stage = getStage(context);
-      final Injector injector;
-      if (stage == null)
-      {
-         injector = Guice.createInjector(modules);
-      }
-      else
-      {
-         injector = Guice.createInjector(stage, modules);
+      Injector injector;
+
+      if (parentInjector != null) {
+         injector = parentInjector.createChildInjector(modules);
+      } else {
+         if (stage == null)
+         {
+            injector = Guice.createInjector(modules);
+         }
+         else
+         {
+            injector = Guice.createInjector(stage, modules);
+         }
       }
       withInjector(injector);
       processor.processInjector(injector);
+      
+      //load parent injectors
+      while (injector.getParent() != null) {
+         injector = injector.getParent();
+         processor.processInjector(injector);
+      }      
       this.modules = modules;
       triggerAnnotatedMethods(PostConstruct.class);
    }
