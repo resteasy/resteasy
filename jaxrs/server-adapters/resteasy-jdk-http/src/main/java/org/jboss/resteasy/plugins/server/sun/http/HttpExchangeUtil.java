@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpsServer;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.util.CookieParser;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.PathHelper;
@@ -84,10 +85,12 @@ public class HttpExchangeUtil
       List<String> cookieHeaders = headers.get("Cookie");
       if (cookieHeaders == null) return cookies;
 
-      for (String cookieVal : cookieHeaders)
+      for (String cookieHeader : cookieHeaders)
       {
-         Cookie cookie = Cookie.valueOf(cookieVal);
-         cookies.put(cookie.getName(), cookie);
+         for (Cookie cookie : CookieParser.parseCookies(cookieHeader))
+         {
+            cookies.put(cookie.getName(), cookie);
+         }
       }
       return cookies;
    }
