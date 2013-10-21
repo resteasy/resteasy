@@ -30,7 +30,7 @@ public class EntityTagDelegate implements RuntimeDelegate.HeaderDelegate<EntityT
    public String toString(EntityTag value)
    {
       String weak = value.isWeak() ? "W/" : "";
-      return weak + value.getValue();
+      return weak + '"' + value.getValue() + '"';
    }
 
 }

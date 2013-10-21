@@ -360,7 +360,7 @@ public class PreconditionTest
       {
          ClientResponse<?> response = request.get();
          Assert.assertEquals(304, response.getStatus());
-         Assert.assertEquals("1", response.getResponseHeaders().getFirst(HttpHeaderNames.ETAG));
+         Assert.assertEquals("\"1\"", response.getResponseHeaders().getFirst(HttpHeaderNames.ETAG));
          shutdownConnections(request);
       }
       catch (Exception e)
@@ -393,7 +393,7 @@ public class PreconditionTest
       {
          ClientResponse<?> response = request.get();
          Assert.assertEquals(304, response.getStatus());
-         Assert.assertEquals("1", response.getResponseHeaders().getFirst(HttpHeaderNames.ETAG));
+         Assert.assertEquals("\"1\"", response.getResponseHeaders().getFirst(HttpHeaderNames.ETAG));
          shutdownConnections(request);
       }
       catch (Exception e)
@@ -411,7 +411,7 @@ public class PreconditionTest
       {
          ClientResponse<?> response = request.get();
          Assert.assertEquals(304, response.getStatus());
-         Assert.assertEquals("1", response.getResponseHeaders().getFirst(HttpHeaderNames.ETAG));
+         Assert.assertEquals("\"1\"", response.getResponseHeaders().getFirst(HttpHeaderNames.ETAG));
          shutdownConnections(request);
       }
       catch (Exception e)
