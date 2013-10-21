@@ -125,6 +125,11 @@
                 <artifactId>resteasy-jsapi</artifactId>
                 <version>3.0.4.Final</version>
             </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-validator-provider-11</artifactId>
+                <version>3.0.4.Final</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
