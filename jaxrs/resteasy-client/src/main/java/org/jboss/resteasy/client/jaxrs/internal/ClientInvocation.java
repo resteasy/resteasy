@@ -128,16 +128,18 @@ public class ClientInvocation implements Invocation
             if (response.getMediaType() == null) response.close();
          }
       }
+      boolean errorStatus = false;
       try
       {
          if (status >= 300 && status < 400) throw new RedirectionException(response);
 
+         errorStatus = true;
          return handleErrorStatus(response);
       }
       finally
       {
          // close if no content
-         if (response.getMediaType() == null) response.close();
+         if (response.getMediaType() == null || errorStatus) response.close();
       }
 
    }

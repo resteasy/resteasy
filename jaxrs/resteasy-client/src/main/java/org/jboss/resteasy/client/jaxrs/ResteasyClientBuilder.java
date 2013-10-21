@@ -313,7 +313,9 @@ public class ResteasyClientBuilder extends ClientBuilder
          }
          else
          {
-            sslsf = new SSLSocketFactory(SSLContext.getInstance(SSLSocketFactory.TLS), verifier);
+            final SSLContext tlsContext = SSLContext.getInstance(SSLSocketFactory.TLS);
+            tlsContext.init(null, null, null);
+            sslsf = new SSLSocketFactory(tlsContext, verifier);
          }
          SchemeRegistry registry = new SchemeRegistry();
          registry.register(
