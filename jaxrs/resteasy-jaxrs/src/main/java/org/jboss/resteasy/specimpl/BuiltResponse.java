@@ -283,7 +283,7 @@ public class BuiltResponse extends Response
    {
       Object obj = metadata.getFirst(HttpHeaders.CONTENT_TYPE);
       if (obj instanceof MediaType) return (MediaType) obj;
-      if (obj == null) return null;
+      if (obj == null) return MediaType.WILDCARD_TYPE;
       return MediaType.valueOf(toHeaderString(obj));
    }
 
