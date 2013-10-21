@@ -488,22 +488,23 @@ public class GeneralValidatorImpl implements GeneralValidator
      	     }
      	     return;
           }
+          if(localeStr.length() > 2) {
+             // if e.g. "en_US" isn't supported, then try "en"
+             localeStr = localeStr.substring(0, 2);
+             validationMessagesURL = classLoader.getResource("/ValidationMessages_" + localeStr + ".properties");
+             if (validationMessagesURL == null)
+             {
+                if (defaultValidator == null)
+                {
+                   defaultValidator = validatorFactory.getValidator();
+                }
+                return;
+             }
 
-          // if e.g. "en_US" isn't supported, then try "en"
-          localeStr = localeStr.substring(0, 2); 
-    	  validationMessagesURL = classLoader.getResource("/ValidationMessages_" + localeStr + ".properties");
-    	  if (validationMessagesURL == null)
-    	  {
-             if (defaultValidator == null)
-    	     {
-                defaultValidator = validatorFactory.getValidator();
-    	     }
-    	     return;
-    	  }
-    	   
-    	  // E.g. /ValidationMessages_en.properties is available, and accept-language=en_US is used
-    	  // Therefore use the locale "en", and not the default locale
-    	  locale = localeBuilder.setLanguage(localeStr).build();
+             // E.g. /ValidationMessages_en.properties is available, and accept-language=en_US is used
+             // Therefore use the locale "en", and not the default locale
+             locale = localeBuilder.setLanguage(localeStr).build();
+          }
        }
  	   MessageInterpolator interpolator = new LocaleSpecificMessageInterpolator(validatorFactory.getMessageInterpolator(), locale);
        Validator validator = validatorFactory.usingContext().messageInterpolator(interpolator).getValidator();
