@@ -1,0 +1,3 @@
+org.jboss.resteasy.plugins.providers.jsonp.JsonArrayProvider
+org.jboss.resteasy.plugins.providers.jsonp.JsonStructureProvider
+org.jboss.resteasy.plugins.providers.jsonp.JsonObjectProvider
