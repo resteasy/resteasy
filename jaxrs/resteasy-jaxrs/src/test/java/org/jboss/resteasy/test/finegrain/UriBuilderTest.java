@@ -74,6 +74,15 @@ public class UriBuilderTest
    }
 
    @Test
+   public void testNullReplaceQuery()
+   {
+      UriBuilder builder = UriBuilder.fromUri("/foo?a=b&bar=foo");
+      builder.replaceQueryParam("bar", null);
+      URI uri = builder.build();
+      System.out.println(uri.toString());
+   }
+
+   @Test
    public void testTemplate() throws Exception
    {
       UriBuilder builder = UriBuilder.fromUri("http://{host}/x/y/{path}?{q}={qval}");
