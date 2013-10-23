@@ -107,6 +107,16 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-netty4</artifactId>
+                <version>3.0.4.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-undertow</artifactId>
+                <version>3.0.4.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-crypto</artifactId>
                 <version>3.0.5.Final</version>
             </dependency>
@@ -129,6 +139,31 @@
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-validator-provider-11</artifactId>
                 <version>3.0.5.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>abdera-atom-provider</artifactId>
+                <version>3.0.4.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-hibernatevalidator-provider</artifactId>
+                <version>3.0.4.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-validator-provider-11</artifactId>
+                <version>3.0.4.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-html</artifactId>
+                <version>3.0.4.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-servlet-initializer</artifactId>
+                <version>3.0.4.Final</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
