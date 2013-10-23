@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0.4.Final</version>
+        <version>3.0.5.Final</version>
     </parent>
     <name>Resteasy Providers</name>
     <description/>
@@ -20,6 +20,7 @@
         <module>test-all-jaxb</module>
         <module>jackson</module>
         <module>jackson2</module>
+        <module>json-p-ee7</module>
         <module>test-jackson-jaxb-coexistence</module>
         <module>resteasy-atom</module>
         <module>multipart</module>

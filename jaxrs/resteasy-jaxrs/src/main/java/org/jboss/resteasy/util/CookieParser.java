@@ -29,6 +29,7 @@ public class CookieParser {
             {
                if (cookieName != null) {
                   cookies.add(new Cookie(cookieName, cookieValue, path, domain, version));
+                  cookieName = cookieValue = path = domain = null;
                }
 
                cookieName = name;
@@ -46,6 +47,10 @@ public class CookieParser {
             {
                domain = value;
             }
+         }
+         if (cookieName != null) {
+            cookies.add(new Cookie(cookieName, cookieValue, path, domain, version));
+
          }
          return cookies;
       }
