@@ -296,8 +296,7 @@ public class ResteasyUriBuilder extends UriBuilder
    @Override
    public UriBuilder host(String host) throws IllegalArgumentException
    {
-      if (host == null) throw new IllegalArgumentException("schemeSpecificPart was null");
-      if (host.equals("")) throw new IllegalArgumentException("invalid host");
+      if (host != null && host.equals("")) throw new IllegalArgumentException("invalid host");
       this.host = host;
       return this;
    }
