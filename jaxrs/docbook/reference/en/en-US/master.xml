@@ -40,6 +40,7 @@
                 <!ENTITY Atom SYSTEM "modules/Atom.xml">
                 <!ENTITY ContentRange SYSTEM "modules/content-range.xml">
                 <!ENTITY Json SYSTEM "modules/Json.xml">
+                <!ENTITY Json-p SYSTEM "modules/Json-p.xml">
                 <!ENTITY Jaxb SYSTEM "modules/Jaxb.xml">
                 <!ENTITY Yaml SYSTEM "modules/Yaml.xml">
                 <!ENTITY Seam SYSTEM "modules/Seam.xml">
@@ -115,6 +116,7 @@
     &Jaxb;
     &Atom;
     &Json;
+    &Json-p;
     &Multipart;
     &Yaml;
    &StringConverter;

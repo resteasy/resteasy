@@ -152,6 +152,15 @@
             </excludes>
         </fileSet>
         <fileSet>
+            <directory>../examples/oreilly-jaxrs-2.0-workbook</directory>
+            <outputDirectory>examples/oreilly-jaxrs-2.0-workbook</outputDirectory>
+            <excludes>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.iml</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
             <directory>../examples/oreilly-workbook</directory>
             <outputDirectory>examples/oreilly-workbook</outputDirectory>
             <excludes>
@@ -187,6 +196,7 @@
                 <include>org.jboss.resteasy:resteasy-fastinfoset-provider</include>
                 <include>org.jboss.resteasy:resteasy-atom-provider</include>
                 <include>org.jboss.resteasy:resteasy-multipart-provider</include>
+                <include>org.jboss.resteasy:resteasy-json-p-provider</include>
                 <include>org.jboss.resteasy:resteasy-jackson-provider</include>
                 <include>org.jboss.resteasy:resteasy-jackson2-provider</include>
                 <include>org.jboss.resteasy:resteasy-yaml-provider</include>
