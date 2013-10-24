@@ -117,10 +117,26 @@ public class ClientInvocation implements Invocation
          }
          catch (WebApplicationException wae)
          {
+            try
+            {
+               response.close();
+            }
+            catch (Exception e)
+            {
+
+            }
             throw wae;
          }
          catch (Throwable throwable)
          {
+            try
+            {
+               response.close();
+            }
+            catch (Exception e)
+            {
+
+            }
             throw new ResponseProcessingException(response, throwable);
          }
          finally
@@ -130,6 +146,9 @@ public class ClientInvocation implements Invocation
       }
       try
       {
+         // Buffer the entity for any exception thrown as the response may have any entity the user wants
+         // We don't want to leave the connection open though.
+         response.bufferEntity();
          if (status >= 300 && status < 400) throw new RedirectionException(response);
 
          return handleErrorStatus(response);
