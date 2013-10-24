@@ -153,7 +153,7 @@
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                  <artifactId>resteasy-servlet-initializer</artifactId>
-                 <version>3.0.4.Final</version>
+                 <version>3.0.5.Final</version>
                 </dependency>
         </dependencies>
     </dependencyManagement>

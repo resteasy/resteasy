@@ -16,5 +16,6 @@
     <modules>
         <module>async-http-servlet-3.0</module>
         <module>async-http-servlet-3.0-test</module>
+        <module>callback-test</module>
     </modules>
 </project>

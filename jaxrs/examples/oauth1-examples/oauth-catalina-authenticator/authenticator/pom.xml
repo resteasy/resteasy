@@ -14,7 +14,7 @@
         <repository>
             <id>jboss</id>
             <name>jboss repo</name>
-            <url>http://repository.jboss.org/maven2</url>
+            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
         </repository>
     </repositories>
 

@@ -1,57 +1,49 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs-all</artifactId>
+        <version>3.0.5.Final</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.jboss.resteasy.test</groupId>
-    <artifactId>test-jsapi-servlet-war</artifactId>
+    <artifactId>callback-tests</artifactId>
     <packaging>war</packaging>
-    <version>3.0.5.Final</version>
-    <name>jsapi-servlet-test</name>
+    <name>Callback Tests</name>
     <description/>
-    <url>http://maven.apache.org</url>
-    <repositories>
-        <repository>
-            <id>jboss</id>
-            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>3.0.5.Final</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jackson2-provider</artifactId>
-            <version>3.0.5.Final</version>
+            <artifactId>resteasy-client</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
-            <version>3.0.5.Final</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jsapi</artifactId>
-            <version>3.0.5.Final</version>
+            <artifactId>async-http-servlet-3.0</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.1</version>
         </dependency>
         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
             <version>3.1</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
-        <finalName>jsapi-servlet-test</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -62,20 +54,15 @@
             </plugin>
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
-                <artifactId>maven-jetty-plugin</artifactId>
-                <version>6.1.15</version>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>8.1.11.v20130520</version>
                 <configuration>
-                    <!-- By default the artifactId is taken, override it with something simple -->
-                    <contextPath>/</contextPath>
-                    <scanIntervalSeconds>2</scanIntervalSeconds>
+                    <webApp>
+                        <contextPath>/</contextPath>
+                    </webApp>
+                    <scanIntervalSeconds>10</scanIntervalSeconds>
                     <stopKey>foo</stopKey>
                     <stopPort>9999</stopPort>
-                    <connectors>
-                        <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-                            <port>9095</port>
-                            <maxIdleTime>60000</maxIdleTime>
-                        </connector>
-                    </connectors>
                 </configuration>
                 <executions>
                     <execution>
@@ -125,31 +112,6 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>tv.bodil</groupId>
-                <artifactId>maven-testlol-plugin</artifactId>
-                <version>1.2.2</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>rhino</groupId>
-                        <artifactId>js</artifactId>
-                        <version>1.7R3-SNAPSHOT</version>
-                    </dependency>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <phase>integration-test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <basePath>src/test/html</basePath>
-                            <testSuite>src/test/js</testSuite>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 </project>
-
