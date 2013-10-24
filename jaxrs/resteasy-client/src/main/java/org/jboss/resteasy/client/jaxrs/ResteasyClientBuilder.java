@@ -14,6 +14,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.BasicClientConnectionManager;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.client.jaxrs.engines.PassthroughTrustManager;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
@@ -77,6 +78,10 @@ public class ResteasyClientBuilder extends ClientBuilder
    protected int maxPooledPerRoute = 0;
    protected long connectionTTL = -1;
    protected TimeUnit connectionTTLUnit = TimeUnit.MILLISECONDS;
+   protected long socketTimeout = -1;
+   protected TimeUnit socketTimeoutUnits = TimeUnit.MILLISECONDS;
+   protected long establishConnectionTimeout = -1;
+   protected TimeUnit establishConnectionTimeoutUnits = TimeUnit.MILLISECONDS;
    protected HostnameVerifier verifier = null;
    protected HttpHost defaultProxy;
 
@@ -104,12 +109,49 @@ public class ResteasyClientBuilder extends ClientBuilder
       return this;
    }
 
+   /**
+    * If there is a connection pool, set the time to live in the pool.
+    *
+    * @param ttl
+    * @param unit
+    * @return
+    */
    public ResteasyClientBuilder connectionTTL(long ttl, TimeUnit unit)
    {
       this.connectionTTL = ttl;
       this.connectionTTLUnit = unit;
       return this;
    }
+
+   /**
+    * Socket inactivity timeout
+    *
+    * @param timeout
+    * @param unit
+    * @return
+    */
+   public ResteasyClientBuilder socketTimeout(long timeout, TimeUnit unit)
+   {
+      this.socketTimeout = timeout;
+      this.socketTimeoutUnits = unit;
+      return this;
+   }
+
+   /**
+    *
+    *
+    * @param timeout
+    * @param unit
+    * @return
+    */
+   public ResteasyClientBuilder establishConnectionTimeout(long timeout, TimeUnit unit)
+   {
+      this.establishConnectionTimeout = timeout;
+      this.establishConnectionTimeoutUnits = unit;
+      return this;
+   }
+
+
 
    public ResteasyClientBuilder maxPooledPerRoute(int maxPooledPerRoute)
    {
@@ -306,11 +348,6 @@ public class ResteasyClientBuilder extends ClientBuilder
          {
             sslsf = new SSLSocketFactory(SSLSocketFactory.TLS, clientKeyStore, clientPrivateKeyPassword, truststore, null, verifier);
          }
-         else if (connectionPoolSize <= 0)
-         {
-            // no special settings, just return the default
-            return new ApacheHttpClient4Engine();
-         }
          else
          {
             //sslsf = new SSLSocketFactory(SSLContext.getInstance(SSLSocketFactory.TLS), verifier);
@@ -337,7 +374,17 @@ public class ResteasyClientBuilder extends ClientBuilder
          {
             cm = new BasicClientConnectionManager(registry);
          }
-         httpClient = new DefaultHttpClient(cm, new BasicHttpParams());
+         BasicHttpParams params = new BasicHttpParams();
+         if (socketTimeout > -1)
+         {
+            HttpConnectionParams.setSoTimeout(params, (int) socketTimeoutUnits.toMillis(socketTimeout));
+
+         }
+         if (establishConnectionTimeout > -1)
+         {
+            HttpConnectionParams.setConnectionTimeout(params, (int)establishConnectionTimeoutUnits.toMillis(establishConnectionTimeout));
+         }
+         httpClient = new DefaultHttpClient(cm, params);
          ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient, true);
          engine.setHostnameVerifier(verifier);
          // this may be null.  We can't really support this with Apache Client.
