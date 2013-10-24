@@ -58,6 +58,17 @@ public class ResponseBuilderTest
    }
 
    @Test
+   public void testAllowed()
+   {
+      Response response = Response.status(Response.Status.OK).allow("GET", "POST", "DELETE").build();
+      Set<String> allowedMethods = response.getAllowedMethods();
+      Assert.assertEquals(allowedMethods.size(), 3);
+      Assert.assertTrue(allowedMethods.contains("GET"));
+      Assert.assertTrue(allowedMethods.contains("POST"));
+      Assert.assertTrue(allowedMethods.contains("DELETE"));
+   }
+
+   @Test
    public void testLocationPath()
    {
       Response r = builder.location(URI.create("/a/res")).build();

@@ -345,7 +345,21 @@ public class BuiltResponse extends Response
       if (allowed == null) return allowedMethods;
       for (Object header : allowed)
       {
-         allowedMethods.add(toHeaderString(header).toUpperCase());
+         if (header != null && header instanceof String)
+         {
+            String[] list = ((String)header).split(",");
+            for (String str : list)
+            {
+               if (!"".equals(str.trim()))
+               {
+                  allowedMethods.add(str.trim().toUpperCase());
+               }
+            }
+         }
+         else
+         {
+            allowedMethods.add(toHeaderString(header).toUpperCase());
+         }
       }
 
       return allowedMethods;
