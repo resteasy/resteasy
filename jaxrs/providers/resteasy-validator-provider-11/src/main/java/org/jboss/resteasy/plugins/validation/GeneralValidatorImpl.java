@@ -36,11 +36,10 @@ import com.fasterxml.classmate.members.RawMethod;
 import com.fasterxml.classmate.members.ResolvedMethod;
 
 /**
- * 
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
- *
- * Copyright May 23, 2013
+ *          <p/>
+ *          Copyright May 23, 2013
  */
 public class GeneralValidatorImpl implements GeneralValidator
 {
@@ -48,7 +47,7 @@ public class GeneralValidatorImpl implements GeneralValidator
     * Used for resolving type parameters. Thread-safe.
     */
    private TypeResolver typeResolver = new TypeResolver();
-   
+
    private ValidatorFactory validatorFactory;
    private Validator defaultValidator;
    private Map<Locale, Validator> validators = new HashMap<Locale, Validator>();
@@ -184,45 +183,45 @@ public class GeneralValidatorImpl implements GeneralValidator
    {
       return true;
    }
-   
+
    @Override
    public boolean isMethodValidatable(Method m)
    {
-   	if (!isExecutableValidationEnabled)
-   	{
-   		return false;
-   	}
-   	
-   	ExecutableType[] types = null;
+      if (!isExecutableValidationEnabled)
+      {
+         return false;
+      }
+
+      ExecutableType[] types = null;
       List<ExecutableType[]> typesList = getExecutableTypesOnMethodInHierarchy(m);
       if (typesList.size() > 1)
       {
-      	throw new ValidationException("@ValidateOnExecution found on multiple overridden methods");
+         throw new ValidationException("@ValidateOnExecution found on multiple overridden methods");
       }
       if (typesList.size() == 1)
       {
-      	types = typesList.get(0);
+         types = typesList.get(0);
       }
       else
       {
-      	ValidateOnExecution voe = m.getDeclaringClass().getAnnotation(ValidateOnExecution.class);
-      	if (voe == null)
-      	{
-      		types = defaultValidatedExecutableTypes;
-      	}
-      	else
-      	{
-      		if (voe.type().length > 0)
-      		{
-      			types = voe.type();
-      		}
-      		else
-      		{
-      			types = defaultValidatedExecutableTypes;
-      		}
-      	}
+         ValidateOnExecution voe = m.getDeclaringClass().getAnnotation(ValidateOnExecution.class);
+         if (voe == null)
+         {
+            types = defaultValidatedExecutableTypes;
+         }
+         else
+         {
+            if (voe.type().length > 0)
+            {
+               types = voe.type();
+            }
+            else
+            {
+               types = defaultValidatedExecutableTypes;
+            }
+         }
       }
-      
+
       boolean isGetterMethod = isGetter(m);
       for (int i = 0; i < types.length; i++)
       {
@@ -231,36 +230,36 @@ public class GeneralValidatorImpl implements GeneralValidator
             case IMPLICIT:
             case ALL:
                return true;
-               
+
             case NONE:
                continue;
-               
+
             case NON_GETTER_METHODS:
                if (!isGetterMethod)
                {
                   return true;
                }
                continue;
-               
+
             case GETTER_METHODS:
                if (isGetterMethod)
                {
                   return true;
                }
                continue;
-               
-            default: 
+
+            default:
                continue;
          }
       }
       return false;
    }
-   
+
    protected List<ExecutableType[]> getExecutableTypesOnMethodInHierarchy(Method method)
    {
       Class<?> clazz = method.getDeclaringClass();
       List<ExecutableType[]> typesList = new ArrayList<ExecutableType[]>();
-      
+
       while (clazz != null)
       {
          // We start by examining the method itself.
@@ -279,46 +278,46 @@ public class GeneralValidatorImpl implements GeneralValidator
       }
       return typesList;
    }
-   
+
    protected List<ExecutableType[]> getExecutableTypesOnMethodInInterfaces(Class<?> clazz, Method method)
    {
-   	List<ExecutableType[]> typesList = new ArrayList<ExecutableType[]>();
-   	Class<?>[] interfaces = clazz.getInterfaces();
-   	for (int i = 0; i < interfaces.length; i++)
-   	{
-   	   Method interfaceMethod = getSuperMethod(method, interfaces[i]);
-   	   if (interfaceMethod != null)
-   	   {
-   	      ExecutableType[] types = getExecutableTypesOnMethod(interfaceMethod);
-   	      if (types != null)
-   	      {
-   	         typesList.add(types);
-   	      }
-   	   }
-   	   List<ExecutableType[]> superList = getExecutableTypesOnMethodInInterfaces(interfaces[i], method);
-   	   if (superList.size() > 0)
-   	   {
-   	      typesList.addAll(superList);
-   	   }
-   	}
-   	return typesList;
+      List<ExecutableType[]> typesList = new ArrayList<ExecutableType[]>();
+      Class<?>[] interfaces = clazz.getInterfaces();
+      for (int i = 0; i < interfaces.length; i++)
+      {
+         Method interfaceMethod = getSuperMethod(method, interfaces[i]);
+         if (interfaceMethod != null)
+         {
+            ExecutableType[] types = getExecutableTypesOnMethod(interfaceMethod);
+            if (types != null)
+            {
+               typesList.add(types);
+            }
+         }
+         List<ExecutableType[]> superList = getExecutableTypesOnMethodInInterfaces(interfaces[i], method);
+         if (superList.size() > 0)
+         {
+            typesList.addAll(superList);
+         }
+      }
+      return typesList;
    }
-   
+
    static protected ExecutableType[] getExecutableTypesOnMethod(Method method)
    {
-   	ValidateOnExecution voe = method.getAnnotation(ValidateOnExecution.class);
-   	if (voe == null || voe.type().length == 0)
-   	{
-   		return null;
-   	}
-   	ExecutableType[] types = voe.type();
-   	if (types == null || types.length == 0)
-   	{
-   		return null;
-   	}
-   	return types;
+      ValidateOnExecution voe = method.getAnnotation(ValidateOnExecution.class);
+      if (voe == null || voe.type().length == 0)
+      {
+         return null;
+      }
+      ExecutableType[] types = voe.type();
+      if (types == null || types.length == 0)
+      {
+         return null;
+      }
+      return types;
    }
-   
+
    static protected boolean isGetter(Method m)
    {
       String name = m.getName();
@@ -341,7 +340,7 @@ public class GeneralValidatorImpl implements GeneralValidator
       }
       return false;
    }
-   
+
    static protected String convertArrayToString(Object o)
    {
       String result = null;
@@ -362,7 +361,7 @@ public class GeneralValidatorImpl implements GeneralValidator
       }
       return result;
    }
-   
+
    /**
     * Returns a super method, if any, of a method in a class.
     * Here, the "super" relationship is reflexive.  That is, a method
@@ -380,19 +379,18 @@ public class GeneralValidatorImpl implements GeneralValidator
       }
       return null;
    }
-   
-	/**
-	 * Checks, whether {@code subTypeMethod} overrides {@code superTypeMethod}.
-	 * 
-	 * N.B. "Override" here is reflexive. I.e., a method overrides itself.
-	 * 
-	 * @param subTypeMethod   The sub type method (cannot be {@code null}).
-	 * @param superTypeMethod The super type method (cannot be {@code null}).
-	 * 
-	 * @return Returns {@code true} if {@code subTypeMethod} overrides {@code superTypeMethod}, {@code false} otherwise.
-	 *         
-	 * Taken from Hibernate Validator
-	 */
+
+   /**
+    * Checks, whether {@code subTypeMethod} overrides {@code superTypeMethod}.
+    * <p/>
+    * N.B. "Override" here is reflexive. I.e., a method overrides itself.
+    *
+    * @param subTypeMethod   The sub type method (cannot be {@code null}).
+    * @param superTypeMethod The super type method (cannot be {@code null}).
+    * @return Returns {@code true} if {@code subTypeMethod} overrides {@code superTypeMethod}, {@code false} otherwise.
+    *         <p/>
+    *         Taken from Hibernate Validator
+    */
    protected boolean overrides(Method subTypeMethod, Method superTypeMethod)
    {
       if (subTypeMethod == null || superTypeMethod == null)
@@ -455,82 +453,93 @@ public class GeneralValidatorImpl implements GeneralValidator
 
       return true;
    }
-   
+
    protected void installValidator(HttpRequest request)
    {
-	   Locale locale = getLocale(request);
-       if (locale == null)
-       {
-          if (defaultValidator == null)
-          {
-             defaultValidator = validatorFactory.getValidator();
-          }
-          return;
-       }
+      Locale locale = getLocale(request);
+      if (locale == null || locale.toString().equals("*"))
+      {
+         if (defaultValidator == null)
+         {
+            defaultValidator = validatorFactory.getValidator();
+         }
+         return;
+      }
 
-       if (validators.get(locale) != null)
-       {
-          return;
-       }   
-	   
-       // Check for /ValidationMessages_XX.properties
-       ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-       String localeStr = locale.toString();
-       URL validationMessagesURL = classLoader.getResource("/ValidationMessages_" + localeStr + ".properties");
-       if (validationMessagesURL == null)
-       {
-          if (localeStr.length() == 2)
-          {
-             // a locale like "de" isn't supported: use default locale
-             if (defaultValidator == null)
-     	     {
-                defaultValidator = validatorFactory.getValidator();
-     	     }
-     	     return;
-          }
+      if (validators.get(locale) != null)
+      {
+         return;
+      }
 
-          // if e.g. "en_US" isn't supported, then try "en"
-          localeStr = localeStr.substring(0, 2); 
-    	  validationMessagesURL = classLoader.getResource("/ValidationMessages_" + localeStr + ".properties");
-    	  if (validationMessagesURL == null)
-    	  {
-             if (defaultValidator == null)
-    	     {
-                defaultValidator = validatorFactory.getValidator();
-    	     }
-    	     return;
-    	  }
-    	   
-    	  // E.g. /ValidationMessages_en.properties is available, and accept-language=en_US is used
-    	  // Therefore use the locale "en", and not the default locale
-    	  locale = localeBuilder.setLanguage(localeStr).build();
-       }
- 	   MessageInterpolator interpolator = new LocaleSpecificMessageInterpolator(validatorFactory.getMessageInterpolator(), locale);
-       Validator validator = validatorFactory.usingContext().messageInterpolator(interpolator).getValidator();
-       validators.put(locale, validator);
+      // Check for /ValidationMessages_XX.properties
+      ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+      String localeStr = locale.toString();
+      URL validationMessagesURL = classLoader.getResource("/ValidationMessages_" + localeStr + ".properties");
+      if (validationMessagesURL == null)
+      {
+         if (localeStr.length() == 2)
+         {
+            // a locale like "de" isn't supported: use default locale
+            if (defaultValidator == null)
+            {
+               defaultValidator = validatorFactory.getValidator();
+            }
+            return;
+         }
+
+         if (localeStr.length() < 2)
+         {
+            if (defaultValidator == null)
+            {
+               defaultValidator = validatorFactory.getValidator();
+            }
+            return;
+         }
+
+         // if e.g. "en_US" isn't supported, then try "en"
+         localeStr = localeStr.substring(0, 2);
+         validationMessagesURL = classLoader.getResource("/ValidationMessages_" + localeStr + ".properties");
+         if (validationMessagesURL == null)
+         {
+            if (defaultValidator == null)
+            {
+               defaultValidator = validatorFactory.getValidator();
+            }
+            return;
+         }
+
+         // E.g. /ValidationMessages_en.properties is available, and accept-language=en_US is used
+         // Therefore use the locale "en", and not the default locale
+         locale = localeBuilder.setLanguage(localeStr).build();
+      }
+      MessageInterpolator interpolator = new LocaleSpecificMessageInterpolator(validatorFactory.getMessageInterpolator(), locale);
+      Validator validator = validatorFactory.usingContext().messageInterpolator(interpolator).getValidator();
+      validators.put(locale, validator);
    }
-   
-   private Validator getValidator(HttpRequest request) {
+
+   private Validator getValidator(HttpRequest request)
+   {
       Locale locale = getLocale(request);
       if (locale == null)
       {
          return defaultValidator;
       }
       Validator validator = validators.get(locale);
-	  if (validator == null)
+      if (validator == null)
       {
          // if e.g. "en_US" isn't supported, then try "en"
-		 String localeStr = locale.toString();
-		 if (localeStr.length() > 2)
-		 {
-			localeStr = localeStr.substring(0, 2);
-			validator = validators.get(localeBuilder.setLanguage(localeStr).build());
-		 }
+         String localeStr = locale.toString();
+         if (localeStr.length() > 2)
+         {
+            localeStr = localeStr.substring(0, 2);
+            validator = validators.get(localeBuilder.setLanguage(localeStr).build());
+         }
       }
       return validator == null ? defaultValidator : validator;
    }
 
-   private Locale getLocale(HttpRequest request) {
+   private Locale getLocale(HttpRequest request)
+   {
       List<Locale> locales = request.getHttpHeaders().getAcceptableLanguages();
       Locale locale = locales == null || locales.isEmpty() ? null : locales.get(0);
       return locale;
@@ -538,10 +547,10 @@ public class GeneralValidatorImpl implements GeneralValidator
 
    /**
     * A filter implementation filtering methods matching given methods.
-    * 
+    *
     * @author Gunnar Morling
-    * 
-    * Taken from Hibernate Validator
+    *         <p/>
+    *         Taken from Hibernate Validator
     */
    static protected class SimpleMethodFilter implements Filter<RawMethod>
    {
@@ -561,7 +570,8 @@ public class GeneralValidatorImpl implements GeneralValidator
       }
    }
 
-   static protected class LocaleSpecificMessageInterpolator implements MessageInterpolator {
+   static protected class LocaleSpecificMessageInterpolator implements MessageInterpolator
+   {
       private final MessageInterpolator interpolator;
       private final Locale locale;
 
