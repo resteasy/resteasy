@@ -397,6 +397,22 @@ public class SynchronousDispatcher implements Dispatcher
          pushContextObjects(request, response);
          writeException(request, response, exception);
       }
+      catch (Throwable ex)
+      {
+         logger.error("Unhandled asynchronous exception, sending back 500", ex);
+         // unhandled exceptions need to be processed as they can't be thrown back to the servlet container
+         if (!response.isCommitted()) {
+            try
+            {
+               response.reset();
+               response.sendError(500);
+            }
+            catch (IOException e)
+            {
+
+            }
+         }
+      }
       finally
       {
          clearContextData();
