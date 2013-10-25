@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.servlet;
 
+import org.jboss.resteasy.core.AsynchronousDispatcher;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.NotImplementedYetException;
@@ -23,6 +25,15 @@ import java.util.Set;
 @HandlesTypes({Application.class, Path.class, Provider.class})
 public class ResteasyServletInitializer implements ServletContainerInitializer
 {
+   final static Logger logger = Logger.getLogger(ResteasyServletInitializer.class);
+
+   final static Set<String> ignoredPackages = new HashSet<String>();
+
+   static
+   {
+      ignoredPackages.add(AsynchronousDispatcher.class.getPackage().getName());
+   }
+
    @Override
    public void onStartup(Set<Class<?>> classes, ServletContext servletContext) throws ServletException
    {
@@ -41,6 +52,7 @@ public class ResteasyServletInitializer implements ServletContainerInitializer
 
       for (Class<?> clazz : classes)
       {
+         if (ignoredPackages.contains(clazz.getPackage().getName())) continue;
          if (clazz.isAnnotationPresent(Path.class))
          {
             resources.add(clazz);
@@ -125,6 +137,7 @@ public class ResteasyServletInitializer implements ServletContainerInitializer
             {
                builder.append(",");
             }
+
             builder.append(resource.getName());
          }
          reg.setInitParameter(ResteasyContextParameters.RESTEASY_SCANNED_RESOURCES, builder.toString());
