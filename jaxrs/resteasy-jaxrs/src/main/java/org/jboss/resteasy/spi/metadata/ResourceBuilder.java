@@ -678,6 +678,10 @@ public class ResourceBuilder
    public static ResourceConstructor constructor(Class<?> annotatedResourceClass)
    {
       Constructor constructor = PickConstructor.pickPerRequestConstructor(annotatedResourceClass);
+      if (constructor == null)
+      {
+         throw new RuntimeException("Could not find constructor for class: " + annotatedResourceClass.getName());
+      }
       ResourceConstructorBuilder builder = rootResource(annotatedResourceClass).constructor(constructor);
       if (constructor.getParameterTypes() != null)
       {

@@ -7,6 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -37,6 +38,13 @@ public class PrimitiveTest extends BaseResourceTest
       @Path("boolean")
       public boolean postInt(boolean val) {
          return val;
+      }
+
+      @GET
+      @Path("nothing")
+      public Response nothing()
+      {
+         return Response.ok().build();
       }
    }
 
@@ -75,6 +83,14 @@ public class PrimitiveTest extends BaseResourceTest
       Assert.assertEquals(response.getStatus(), 200);
       Assert.assertEquals(response.readEntity(String.class), "true");
       response.close();
+   }
+
+   @Test
+   public void testNothing()
+   {
+      Response response = client.target(generateURL("/nothing")).request().get();
+      String str = response.readEntity(String.class);
+
    }
 
 

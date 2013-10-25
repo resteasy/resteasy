@@ -27,7 +27,8 @@
     </build>
 
     <modules>
+        <module>managedbean-test</module>
+        <module>ejb-stateless-test</module>
         <module>application-test</module>
-        <module>null-test</module>
     </modules>
 </project>

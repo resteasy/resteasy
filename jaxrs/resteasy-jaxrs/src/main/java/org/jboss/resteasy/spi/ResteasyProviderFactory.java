@@ -1343,7 +1343,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (getClasses().contains(provider))
       {
-         logger.warn("Provider class " + provider.getName() + " is already registered.  2nd registration is being ignored.");
+         //logger.warn("Provider class " + provider.getName() + " is already registered.  2nd registration is being ignored.");
          return;
       }
       Map<Class<?>, Integer> newContracts = new HashMap<Class<?>, Integer>();
