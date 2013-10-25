@@ -9,6 +9,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.FilterInputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
@@ -102,7 +103,7 @@ public abstract class MessageBodyReaderContextImpl implements MessageBodyReaderC
    public Object proceed() throws IOException, WebApplicationException
    {
       if (interceptors == null || index >= interceptors.length)
-         return reader.readFrom(type, genericType, annotations, mediaType, headers, inputStream);
+         return reader.readFrom(type, genericType, annotations, mediaType, headers, new InputStreamWrapper(inputStream));
       try
       {
          return interceptors[index++].read(this);
@@ -112,4 +113,17 @@ public abstract class MessageBodyReaderContextImpl implements MessageBodyReaderC
          index--;
       }
    }
+
+    private static class InputStreamWrapper extends FilterInputStream {
+
+        protected InputStreamWrapper(InputStream in) {
+            super(in);
+        }
+
+        @Override
+        public void close() throws IOException {
+        }
+
+    }
+
 }
