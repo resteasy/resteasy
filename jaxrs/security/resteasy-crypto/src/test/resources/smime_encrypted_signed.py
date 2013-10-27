@@ -6,7 +6,7 @@ s = SMIME.SMIME()
 s.load_key('mycert-private.pem', 'mycert.pem')
 
 # Load the signed/encrypted data.
-p7, data = SMIME.smime_load_pkcs7('python_encrypted_signed.txt')
+p7, data = SMIME.smime_load_pkcs7('target/python_encrypted_signed.txt')
 
 # After the above step, 'data' == None.
 # Decrypt p7. 'out' now contains a PKCS #7 signed blob.

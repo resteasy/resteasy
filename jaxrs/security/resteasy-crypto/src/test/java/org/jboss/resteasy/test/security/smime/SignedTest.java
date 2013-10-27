@@ -194,7 +194,7 @@ public class SignedTest
       builder.append("Content-Type: ").append(contentType).append("\r\n\r\n").append(s);
       String output = builder.toString();
 
-      FileOutputStream fp = new FileOutputStream("smime_signed.txt");
+      FileOutputStream fp = new FileOutputStream("target/smime_signed.txt");
       fp.write(output.getBytes());
       fp.close();
 
@@ -219,7 +219,7 @@ public class SignedTest
       builder.append("Content-Type: ").append(contentType).append("\r\n\r\n").append(s);
       String output = builder.toString();
 
-      FileOutputStream fp = new FileOutputStream("smime_signed_bad.txt");
+      FileOutputStream fp = new FileOutputStream("target/smime_signed_bad.txt");
       fp.write(output.getBytes());
       fp.close();
 

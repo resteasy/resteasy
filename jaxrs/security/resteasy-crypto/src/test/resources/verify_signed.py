@@ -16,7 +16,7 @@ st.load_info('mycert.pem')
 s.set_x509_store(st)
 
 # Load the data, verify it.
-p7, data = SMIME.smime_load_pkcs7('smime_signed.txt')
+p7, data = SMIME.smime_load_pkcs7('target/smime_signed.txt')
 v = s.verify(p7, data)
 print v
 print data
