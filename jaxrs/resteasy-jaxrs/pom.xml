@@ -44,6 +44,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <!--
            Scans classes on cp for annotations and builds quick lookup database
