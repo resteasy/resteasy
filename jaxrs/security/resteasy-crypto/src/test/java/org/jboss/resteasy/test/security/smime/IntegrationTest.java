@@ -243,7 +243,7 @@ public class IntegrationTest extends BaseResourceTest
       System.out.println();
       System.out.println(res.getEntity());
 
-      FileOutputStream os = new FileOutputStream("python_encrypted_signed.txt");
+      FileOutputStream os = new FileOutputStream("target/python_encrypted_signed.txt");
       os.write("Content-Type: ".getBytes());
       os.write(contentType.toString().getBytes());
       os.write("\r\n".getBytes());
