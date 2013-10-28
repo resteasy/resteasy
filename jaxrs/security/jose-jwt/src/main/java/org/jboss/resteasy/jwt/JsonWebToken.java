@@ -3,11 +3,13 @@ package org.jboss.resteasy.jwt;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import java.io.Serializable;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class JsonWebToken
+public class JsonWebToken implements Serializable
 {
    @JsonProperty("jti")
    protected String id;
