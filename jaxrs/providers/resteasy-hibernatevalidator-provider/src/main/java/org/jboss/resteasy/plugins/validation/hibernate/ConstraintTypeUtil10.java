@@ -46,7 +46,8 @@ public class ConstraintTypeUtil10 implements ConstraintTypeUtil
       String getterName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
       try
       {
-         getMethod(v.getLeafBean().getClass(), getterName);
+//         getMethod(v.getLeafBean().getClass(), getterName);
+         getMethod(v.getRootBeanClass(), getterName);
          return Type.PROPERTY;
       }
       catch (NoSuchMethodException e)
