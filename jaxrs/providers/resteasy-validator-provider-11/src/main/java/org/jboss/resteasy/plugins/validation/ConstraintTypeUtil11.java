@@ -54,11 +54,11 @@ public class ConstraintTypeUtil11 implements ConstraintTypeUtil
       
       if (firstNode.getKind() == ElementKind.PROPERTY)
       {
-         String fieldName = getLeafNode(v).getName();
+         String fieldName = firstNode.getName();
          try
          {
             String getterName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-            getMethod(v.getLeafBean().getClass(), getterName);
+            getMethod(v.getRootBeanClass(), getterName);
             return ConstraintType.Type.PROPERTY;
          }
          catch (NoSuchMethodException e)
@@ -118,18 +118,5 @@ public class ConstraintTypeUtil11 implements ConstraintTypeUtil
          throw new NoSuchMethodException(methodName);
       }
       return method;
-   }
-   
-   private Node getLeafNode(ConstraintViolation<?> violation) 
-   {
-      Iterator<Node> nodes = violation.getPropertyPath().iterator();
-      Node leafNode = null;
-
-      while(nodes.hasNext())
-      {
-         leafNode = nodes.next();
-      }
-
-      return leafNode;
    }
 }
