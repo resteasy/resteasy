@@ -1070,7 +1070,7 @@ public class TestValidation
       after();
    }
 
-//   @Test
+   @Test
 //   @Ignore
    public void testGraph() throws Exception
    {
