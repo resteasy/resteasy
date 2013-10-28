@@ -40,10 +40,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs</connection>
-        <developerConnection>scm:svn:https://resteasy.svn.sourceforge.net/svnroot/resteasy/trunk/jaxrs
-        </developerConnection>
-        <url>http://resteasy.svn.sourceforge.net/viewvc/resteasy/trunk/jaxrs</url>
+        <connection>scm:git:git://github.com/resteasy/Resteasy.git</connection>
+        <developerConnection>scm:git:git@github.com:resteasy/Resteasy.git</developerConnection>
+        <url>http://github.com/resteasy/Resteasy/tree/master/</url>
     </scm>
 
     <distributionManagement>
