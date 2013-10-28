@@ -239,17 +239,17 @@ ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
 AuthCache authCache = new BasicAuthCache();
  
 // 2. Generate BASIC scheme object and add it to the local auth cache
-BasicScheme basicAuth = new BasicScheme();
-authCache.put("com.bluemonkeydiamond.sippycups", basicAuth);
+AuthScheme basicAuth = new BasicScheme();
+authCache.put(new HttpHost("sippycups.bluemonkeydiamond.com"), basicAuth);
  
 // 3. Add AuthCache to the execution context
 BasicHttpContext localContext = new BasicHttpContext();
 localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
  
 // 4. Create client executor and proxy
-httpClient = new DefaultHttpClient();
+DefaultHttpClient httpClient = new DefaultHttpClient();
 ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient, localContext);
-ResteasyClient client = new RestasyClientBuilder().httpEngine(engine).build();
+ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
      </programlisting>
 
      <para>

@@ -875,7 +875,7 @@ public class TestValidation
       after();
    }
 
-   @Test
+  @Test
 //   @Ignore
    public void testGraph() throws Exception
    {
@@ -893,13 +893,20 @@ public class TestValidation
       Assert.assertEquals(400, response.getStatus());
       String entity = response.getEntity(String.class);
       ResteasyViolationException e = new ResteasyViolationException(entity);
-      countViolations(e, 2, 1, 1, 0, 0, 0);
-      ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
-      Assert.assertTrue(cv.getMessage().startsWith("size must be between 4 and"));
-      Assert.assertEquals("abc", cv.getValue());
-      cv = e.getPropertyViolations().iterator().next();
-      Assert.assertTrue(cv.getMessage().startsWith("size must be between 5 and"));
-      Assert.assertEquals("xyz", cv.getValue());
+      countViolations(e, 2, 2, 0, 0, 0, 0);
+      Iterator<ResteasyConstraintViolation> it = e.getFieldViolations().iterator();
+      ResteasyConstraintViolation cv1 = it.next();
+      ResteasyConstraintViolation cv2 = it.next();
+      if (cv1.getValue().equals("xyz"))
+      {
+         ResteasyConstraintViolation tmp = cv1;
+         cv1 = cv2;
+         cv2 = tmp;
+      }
+      Assert.assertTrue(cv1.getMessage().startsWith("size must be between 4 and"));
+      Assert.assertEquals("abc", cv1.getValue());
+      Assert.assertTrue(cv2.getMessage().startsWith("size must be between 5 and"));
+      Assert.assertEquals("xyz", cv2.getValue());
       after();
    }
 
@@ -922,8 +929,8 @@ public class TestValidation
       String entity = response.getEntity(String.class);
       ResteasyViolationException e = new ResteasyViolationException(entity);
       System.out.println("exception: " + e);
-      countViolations(e, 1, 0, 1, 0, 0, 0);
-      ResteasyConstraintViolation cv = e.getPropertyViolations().iterator().next();
+      countViolations(e, 1, 1, 0, 0, 0, 0);
+      ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().startsWith("size must be between 5 and"));
       Assert.assertEquals("abc", cv.getValue());
       after();
@@ -947,8 +954,8 @@ public class TestValidation
       Assert.assertEquals(400, response.getStatus());
       String entity = response.getEntity(String.class);
       ResteasyViolationException e = new ResteasyViolationException(entity);
-      countViolations(e, 1, 0, 1, 0, 0, 0);
-      ResteasyConstraintViolation cv = e.getPropertyViolations().iterator().next();
+      countViolations(e, 1, 1, 0, 0, 0, 0);
+      ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().startsWith("size must be between 5 and"));
       Assert.assertEquals("abc", cv.getValue());
       after();
@@ -972,8 +979,8 @@ public class TestValidation
       Assert.assertEquals(400, response.getStatus());
       String entity = response.getEntity(String.class);
       ResteasyViolationException e = new ResteasyViolationException(entity);
-      countViolations(e, 1, 0, 1, 0, 0, 0);
-      ResteasyConstraintViolation cv = e.getPropertyViolations().iterator().next();
+      countViolations(e, 1, 1, 0, 0, 0, 0);
+      ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().startsWith("size must be between 5 and"));
       Assert.assertEquals("abc", cv.getValue());
       after();
@@ -998,8 +1005,8 @@ public class TestValidation
       String entity = response.getEntity(String.class);
       ResteasyViolationException e = new ResteasyViolationException(entity);
       System.out.println("exception: " + e);
-      countViolations(e, 1, 0, 1, 0, 0, 0);
-      ResteasyConstraintViolation cv = e.getPropertyViolations().iterator().next();
+      countViolations(e, 1, 1, 0, 0, 0, 0);
+      ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().startsWith("size must be between 5 and"));
       Assert.assertEquals("abc", cv.getValue());
       after();
