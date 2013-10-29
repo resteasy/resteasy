@@ -705,11 +705,32 @@ public class ResourceBuilder
       return fromAnnotations(true, clazz);
    }
 
+   private static final String WELD_PROXY_INTERFACE_NAME = "org.jboss.weld.bean.proxy.ProxyObject";
+
+   /**
+    * Whether the given class is a proxy created by Weld or not. This is
+    * the case if the given class implements the interface
+    * {@code org.jboss.weld.bean.proxy.ProxyObject}.
+    *
+    * @param clazz the class of interest
+    *
+    * @return {@code true} if the given class is a Weld proxy,
+    * {@code false} otherwise
+    */
+   private static boolean isWeldProxy(Class<?> clazz) {
+      for ( Class<?> implementedInterface : clazz.getInterfaces() ) {
+         if ( implementedInterface.getName().equals( WELD_PROXY_INTERFACE_NAME ) ) {
+            return true;
+         }
+      }
+
+      return false;
+   }
 
    private static ResourceClass fromAnnotations(boolean isLocator, Class<?> clazz)
    {
       // stupid hack for Weld as it loses generic type information, but retains annotations.
-      if (!clazz.isInterface() && clazz.getName().contains("WeldClientProxy") && clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Object.class))
+      if (!clazz.isInterface() && clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Object.class) && isWeldProxy(clazz))
       {
          clazz = clazz.getSuperclass();
       }
