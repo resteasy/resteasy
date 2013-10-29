@@ -708,6 +708,13 @@ public class ResourceBuilder
 
    private static ResourceClass fromAnnotations(boolean isLocator, Class<?> clazz)
    {
+      // stupid hack for Weld as it loses generic type information, but retains annotations.
+      if (!clazz.isInterface() && clazz.getName().contains("WeldClientProxy") && clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Object.class))
+      {
+         clazz = clazz.getSuperclass();
+      }
+
+
       ResourceClassBuilder builder = null;
       if (isLocator) builder = locator(clazz);
       else

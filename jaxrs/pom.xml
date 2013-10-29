@@ -113,7 +113,6 @@
         <module>resteasy-servlet-initializer</module>
         <module>server-adapters</module>
         <module>war-tests</module>
-        <!-- <module>as8-integration-testing</module> -->
         <!-- <module>as8-integration-testing/ejb-singleton-test</module> -->
         <module>async-http-servlet-3.0</module>
         <module>examples</module>
