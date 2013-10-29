@@ -27,6 +27,7 @@
     </build>
 
     <modules>
+        <module>cdilocator-test</module>
         <module>managedbean-test</module>
         <module>ejb-stateless-test</module>
         <module>application-test</module>
