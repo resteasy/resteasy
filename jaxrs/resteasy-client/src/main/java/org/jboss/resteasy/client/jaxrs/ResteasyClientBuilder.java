@@ -138,7 +138,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    }
 
    /**
-    *
+    * When trying to make an initial socket connection, what is the timeout?
     *
     * @param timeout
     * @param unit
@@ -152,13 +152,24 @@ public class ResteasyClientBuilder extends ClientBuilder
    }
 
 
-
+   /**
+    * If connection pooling enabled, how many connections to pool per url?
+    *
+    * @param maxPooledPerRoute
+    * @return
+    */
    public ResteasyClientBuilder maxPooledPerRoute(int maxPooledPerRoute)
    {
       this.maxPooledPerRoute = maxPooledPerRoute;
       return this;
    }
 
+   /**
+    * Number of connections allowed to pool
+    *
+    * @param connectionPoolSize
+    * @return
+    */
    public ResteasyClientBuilder connectionPoolSize(int connectionPoolSize)
    {
       this.connectionPoolSize = connectionPoolSize;
@@ -236,10 +247,41 @@ public class ResteasyClientBuilder extends ClientBuilder
       getProviderFactory().property(name, value);
       return this;
    }
-   
-   public ResteasyClientBuilder defaultProxy(HttpHost defaultProxy)
+
+   /**
+    * Specify a default proxy.  Default port and schema will be used
+    *
+    * @param hostname
+    * @return
+    */
+   public ResteasyClientBuilder defaultProxy(String hostname)
    {
-	   this.defaultProxy = defaultProxy;
+      return defaultProxy(hostname, -1, null);
+   }
+
+   /**
+    * Specify a default proxy host and port.  Default schema will be used
+    *
+    * @param hostname
+    * @param port
+    * @return
+    */
+   public ResteasyClientBuilder defaultProxy(String hostname, int port)
+   {
+      return defaultProxy(hostname, port, null);
+   }
+
+   /**
+    * Specify default proxy.
+    *
+    * @param hostname
+    * @param port
+    * @param scheme
+    * @return
+    */
+   public ResteasyClientBuilder defaultProxy(String hostname, int port, final String scheme)
+   {
+      this.defaultProxy = new HttpHost(hostname, port, scheme);
 	   return this;
    }
 
@@ -262,14 +304,19 @@ public class ResteasyClientBuilder extends ClientBuilder
       {
          config.property(entry.getKey(), entry.getValue());
       }
-      if (asyncExecutor == null)
+
+      ExecutorService executor = asyncExecutor;
+
+      boolean cleanupExecutor = false;
+      if (executor == null)
       {
-         asyncExecutor = Executors.newFixedThreadPool(10);
+         cleanupExecutor = true;
+         executor = Executors.newFixedThreadPool(10);
       }
 
-      if (httpEngine == null) httpEngine = initDefaultEngine();
-      return new ResteasyClient(httpEngine, asyncExecutor, config);
-
+      ClientHttpEngine engine = httpEngine;
+      if (engine == null) engine = initDefaultEngine();
+      return new ResteasyClient(engine, executor, cleanupExecutor, config);
 
    }
 

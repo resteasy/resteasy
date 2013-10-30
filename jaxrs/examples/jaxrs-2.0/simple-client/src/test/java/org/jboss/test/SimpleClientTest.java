@@ -155,6 +155,7 @@ public class SimpleClientTest
       CustomerProxy proxy = client.target("http://localhost:9095").proxy(CustomerProxy.class);
       Customer cust = proxy.getCustomer("Monica");
       Assert.assertEquals("Monica", cust.getName());
+      client.close();
    }
 
 

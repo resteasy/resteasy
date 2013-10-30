@@ -170,6 +170,7 @@ public class AsyncInvokeTest extends BaseResourceTest
          Assert.assertEquals("patch hello", entity);
 
       }
+      client.close();
    }
 
    static boolean ok;
@@ -396,6 +397,7 @@ public class AsyncInvokeTest extends BaseResourceTest
          Assert.assertTrue(ok);
 
       }
+      client.close();
    }
 
 
@@ -479,5 +481,6 @@ public class AsyncInvokeTest extends BaseResourceTest
          Assert.assertEquals("patch hello", entity);
 
       }
+      client.close();
    }
 }

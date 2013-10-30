@@ -84,6 +84,7 @@ public class SerializableWithParametersTest
       Foo foo = request.get(Foo.class);
       System.out.println("foo: " + foo);
       Assert.assertEquals(new Foo("abc"), foo);
+      client.close();
       after();
    }
 }

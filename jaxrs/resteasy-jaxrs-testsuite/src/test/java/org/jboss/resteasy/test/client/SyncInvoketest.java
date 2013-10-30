@@ -153,6 +153,7 @@ public class SyncInvoketest extends BaseResourceTest
          Assert.assertEquals("patch hello", entity);
 
       }
+      client.close();
    }
 
    @Test
@@ -225,5 +226,6 @@ public class SyncInvoketest extends BaseResourceTest
          Assert.assertEquals("patch hello", entity);
 
       }
+      client.close();
    }
 }

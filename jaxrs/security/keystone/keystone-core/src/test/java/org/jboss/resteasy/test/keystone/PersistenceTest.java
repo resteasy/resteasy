@@ -150,6 +150,7 @@ public class PersistenceTest
       admin = new SkeletonKeyClientBuilder().username("jsmith").password("foobar").idp(target).admin();
       response = admin.roles().create("error");
       Assert.assertEquals(403, response.getStatus());
+      client.close();
       stopDeployment();
    }
 
@@ -197,6 +198,7 @@ public class PersistenceTest
       admin = new SkeletonKeyClientBuilder().username("jsmith").password("foobar").idp(target).admin();
       response = admin.roles().create("error");
       Assert.assertEquals(403, response.getStatus());
+      client.close();
       stopDeployment();
    }
 

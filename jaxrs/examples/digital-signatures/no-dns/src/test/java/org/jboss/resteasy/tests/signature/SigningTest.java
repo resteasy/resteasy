@@ -66,7 +66,7 @@ public class SigningTest
    @AfterClass
    public static void shutdown() throws Exception
    {
-
+      client.close();
    }
 
    @Test

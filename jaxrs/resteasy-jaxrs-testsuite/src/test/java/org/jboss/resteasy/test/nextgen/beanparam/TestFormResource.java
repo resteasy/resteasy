@@ -153,6 +153,7 @@ public class TestFormResource extends BaseResourceTest
       }
       Assert.assertTrue(sv1);
       Assert.assertTrue(sv2);
+      client.close();
    }
 
    /**
@@ -167,6 +168,7 @@ public class TestFormResource extends BaseResourceTest
       ResteasyWebTarget target = client.target(generateBaseUrl());
       MyFormProxy proxy = target.proxy(MyFormProxy.class);
       proxy.post(null);
+      client.close();
    }
 
    @Test
@@ -209,15 +211,16 @@ public class TestFormResource extends BaseResourceTest
       Assert.assertEquals(map.get(LONG_VALUE_FIELD), "566780");
       Assert.assertEquals(map.get(INTEGER_VALUE_FIELD), "3");
       Assert.assertEquals(map.get(SHORT_VALUE_FIELD), "12345");
+      client.close();
    }
 
    @Test
    public void testFormResource() throws Exception
    {      
       InputStream in = null;
+      ResteasyClient client = new ResteasyClientBuilder().build();
       try
       {
-         ResteasyClient client = new ResteasyClientBuilder().build();
          ResteasyWebTarget target = client.target(TEST_URI);
          Invocation.Builder request = target.request();
          request.header("custom-header", "42");
@@ -261,6 +264,7 @@ public class TestFormResource extends BaseResourceTest
          {
             in.close();
          }
+         client.close();
       }
    }
 }
