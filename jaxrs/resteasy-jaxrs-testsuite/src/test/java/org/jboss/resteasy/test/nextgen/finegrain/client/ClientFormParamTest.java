@@ -54,10 +54,10 @@ public class ClientFormParamTest
    public void test() throws Exception
    {
       final Dispatcher dispatcher = EmbeddedContainer.start().getDispatcher();
+      ResteasyClient client = new ResteasyClientBuilder().build();
       try
       {
          dispatcher.getRegistry().addPerRequestResource(FormResourceImpl.class);
-         ResteasyClient client = new ResteasyClientBuilder().build();
          final FormResource proxy = ProxyBuilder.builder(FormResource.class, client.target(generateBaseUrl())).build();
          final String result = proxy.put("value");
          Assert.assertEquals(result, "value");
@@ -73,6 +73,7 @@ public class ClientFormParamTest
       }
       finally
       {
+         client.close();
          EmbeddedContainer.stop();
       }
    }

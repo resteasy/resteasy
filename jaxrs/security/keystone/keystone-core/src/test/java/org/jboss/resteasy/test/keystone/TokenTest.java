@@ -172,6 +172,7 @@ public class TokenTest
       admin = new SkeletonKeyClientBuilder().username("jsmith").password("foobar").idp(target).admin();
       response = admin.roles().create("error");
       Assert.assertEquals(403, response.getStatus());
+      client.close();
    }
 
    @Test
@@ -204,6 +205,7 @@ public class TokenTest
       PKCS7SignatureInput input = new PKCS7SignatureInput(signed);
       input.setCertificate(certificate);
       Assert.assertTrue(input.verify());
+      client.close();
    }
 
 
@@ -217,6 +219,7 @@ public class TokenTest
          Response response = client.target(generateURL("/users")).request().post(Entity.json(newUser));
          Assert.assertEquals(response.getStatus(), 403);
          response.close();
+         client.close();
       }
       {
          String newRole = "{ \"role\" : { \"name\" : \"admin\"} }";
@@ -224,6 +227,7 @@ public class TokenTest
          Response response = client.target(generateURL("/roles")).request().post(Entity.json(newRole));
          Assert.assertEquals(response.getStatus(), 403);
          response.close();
+         client.close();
 
       }
       {
@@ -232,6 +236,7 @@ public class TokenTest
          Response response = client.target(generateURL("/projects")).request().post(Entity.json(newProject));
          Assert.assertEquals(response.getStatus(), 403);
          response.close();
+         client.close();
       }
    }
 
@@ -263,6 +268,7 @@ public class TokenTest
 
       SignerInformation signer = (SignerInformation)data.getSignerInfos().getSigners().iterator().next();
       System.out.println("valid: " + signer.verify(cert, "BC"));
+      client.close();
 
 
    }

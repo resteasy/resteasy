@@ -82,7 +82,7 @@ public class InvalidMediaTypeTest
       doTest(request, "text/plain ");
       doTest(request, " text/plain ");
       doTest(request, " text / plain ");
-      
+      client.close();
       after();
    }
    

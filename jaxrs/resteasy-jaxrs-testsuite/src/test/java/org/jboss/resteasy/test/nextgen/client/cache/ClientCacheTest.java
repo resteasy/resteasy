@@ -211,6 +211,7 @@ public class ClientCacheTest extends BaseResourceTest
       rtn = proxy.getValidateEtagged();
       Assert.assertEquals("hello1", rtn);
       Assert.assertEquals(4, count);
+      client.close();
    }
 
    @Test
@@ -246,6 +247,7 @@ public class ClientCacheTest extends BaseResourceTest
       rtn = proxy.getCacheit("1");
       Assert.assertEquals("cachecache" + 3, rtn);
       Assert.assertEquals(3, count);
+      client.close();
 
 
    }

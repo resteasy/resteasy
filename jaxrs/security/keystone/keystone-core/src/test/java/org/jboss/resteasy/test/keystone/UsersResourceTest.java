@@ -87,6 +87,7 @@ public class UsersResourceTest
       Assert.assertEquals(target.request().delete().getStatus(), 204);
       response = target.request().get();
       Assert.assertEquals(404, response.getStatus());
+      client.close();
    }
    @Test
    public void testUserId()
@@ -113,5 +114,6 @@ public class UsersResourceTest
       Assert.assertEquals(target.request().delete().getStatus(), 204);
       response = target.request().get();
       Assert.assertEquals(404, response.getStatus());
+      client.close();
    }
 }

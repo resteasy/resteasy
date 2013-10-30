@@ -193,6 +193,10 @@ public class GzipTest extends BaseResourceTest
          String txt = (String) failure.getResponse().readEntity(String.class);
          Assert.assertEquals("Hello", txt);
       }
+      finally
+      {
+         client.close();
+      }
    }
 
    /**
@@ -230,6 +234,7 @@ public class GzipTest extends BaseResourceTest
          }
          Assert.assertEquals("HELLO WORLD", response.readEntity(String.class));
       }
+      client.close();
    }
 
    @Test
@@ -239,6 +244,7 @@ public class GzipTest extends BaseResourceTest
       WebTarget target = client.target(TestPortProvider.generateURL("/error"));
       Response response = target.request().get();
       Assert.assertEquals(405, response.getStatus());
+      client.close();
 
    }
 
@@ -249,6 +255,7 @@ public class GzipTest extends BaseResourceTest
       WebTarget target = client.target(TestPortProvider.generateURL("/stream"));
       Response res = target.request().header("Content-Encoding", "gzip").put(Entity.text("hello world"));
       Assert.assertEquals(204, res.getStatus());
+      client.close();
    }
 
    @Test
@@ -258,6 +265,7 @@ public class GzipTest extends BaseResourceTest
       WebTarget target = client.target(TestPortProvider.generateURL("/text"));
       Response res = target.request().header("Content-Encoding", "gzip").put(Entity.text("hello world"));
       Assert.assertEquals(204, res.getStatus());
+      client.close();
    }
 
    @Test
@@ -267,6 +275,7 @@ public class GzipTest extends BaseResourceTest
       WebTarget target = client.target(TestPortProvider.generateURL("/text"));
       String val = target.request().get(String.class);
       Assert.assertEquals("HELLO WORLD", val);
+      client.close();
 
    }
 
@@ -277,6 +286,7 @@ public class GzipTest extends BaseResourceTest
       WebTarget target = client.target(TestPortProvider.generateURL("/encoded/text"));
       Response response = target.request().get();
       Assert.assertEquals("HELLO WORLD", response.readEntity(String.class));
+      client.close();
 
    }
 
@@ -311,6 +321,7 @@ public class GzipTest extends BaseResourceTest
          String entity = EntityUtils.toString(response.getEntity());
          Assert.assertNotSame(entity, "HELLO WORLD");
       }
+      client.getConnectionManager().shutdown();
    }
 
    @Test
@@ -327,6 +338,7 @@ public class GzipTest extends BaseResourceTest
       // test that it is actually zipped
       String entity = EntityUtils.toString(response.getEntity());
       Assert.assertEquals(entity, "HELLO WORLD");
+      client.getConnectionManager().shutdown();
 
    }
 

@@ -86,14 +86,7 @@ public class TimeoutTest extends BaseResourceTest
       {
          Assert.assertEquals(e.getCause().getClass(), SocketTimeoutException.class);
       }
+      client1.close();
 
    }
-
-   @Test
-   public void testEngine() throws Exception
-   {
-
-   }
-
-
 }

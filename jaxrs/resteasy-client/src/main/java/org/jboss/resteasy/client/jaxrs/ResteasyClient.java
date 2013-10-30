@@ -29,10 +29,12 @@ public class ResteasyClient implements Client
    protected volatile ExecutorService asyncInvocationExecutor;
    protected ClientConfiguration configuration;
    protected boolean closed;
+   protected boolean cleanupExecutor;
 
 
-   ResteasyClient(ClientHttpEngine httpEngine, ExecutorService asyncInvocationExecutor, ClientConfiguration configuration)
+   ResteasyClient(ClientHttpEngine httpEngine, ExecutorService asyncInvocationExecutor, boolean cleanupExecutor, ClientConfiguration configuration)
    {
+      this.cleanupExecutor = cleanupExecutor;
       this.httpEngine = httpEngine;
       this.asyncInvocationExecutor = asyncInvocationExecutor;
       this.configuration = configuration;
@@ -67,6 +69,10 @@ public class ResteasyClient implements Client
       try
       {
          httpEngine.close();
+         if (cleanupExecutor)
+         {
+            asyncInvocationExecutor.shutdown();
+         }
       }
       catch (Exception e)
       {

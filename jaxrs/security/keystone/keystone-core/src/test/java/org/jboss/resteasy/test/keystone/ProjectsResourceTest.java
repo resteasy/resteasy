@@ -92,6 +92,7 @@ public class ProjectsResourceTest
       projectsTarget = client.target(generateURL("/projects"));
       Mappers.registerContextResolver(projectsTarget);
       Projects projects = projectsTarget.request().get(Projects.class);
+      client.close();
    }
    @Test
    public void testProjectsId()
@@ -117,5 +118,6 @@ public class ProjectsResourceTest
       Assert.assertEquals(target.request().delete().getStatus(), 204);
       response = target.request().get();
       Assert.assertEquals(404, response.getStatus());
+      client.close();
    }
 }
