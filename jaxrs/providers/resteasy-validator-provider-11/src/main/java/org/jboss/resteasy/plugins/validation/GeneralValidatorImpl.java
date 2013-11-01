@@ -1,14 +1,11 @@
 package org.jboss.resteasy.plugins.validation;
 
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -19,8 +16,8 @@ import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableType;
 import javax.validation.executable.ValidateOnExecution;
 
-import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ConstraintType.Type;
+import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
@@ -50,9 +47,6 @@ public class GeneralValidatorImpl implements GeneralValidator
    private TypeResolver typeResolver = new TypeResolver();
    
    private ValidatorFactory validatorFactory;
-   private Validator defaultValidator;
-   private Map<Locale, Validator> validators = new HashMap<Locale, Validator>();
-   private Locale.Builder localeBuilder = new Locale.Builder();
    private ConstraintTypeUtil util = new ConstraintTypeUtil11();
    private boolean isExecutableValidationEnabled;
    private ExecutableType[] defaultValidatedExecutableTypes;
@@ -67,11 +61,11 @@ public class GeneralValidatorImpl implements GeneralValidator
    @Override
    public void validate(HttpRequest request, Object object, Class<?>... groups)
    {
-      installValidator(request);
+      Validator validator = getValidator(request);
       Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
       try
       {
-         Set<ConstraintViolation<Object>> cvs = getValidator(request).validate(object, groups);
+         Set<ConstraintViolation<Object>> cvs = validator.validate(object, groups);
          for (Iterator<ConstraintViolation<Object>> it = cvs.iterator(); it.hasNext(); )
          {
             ConstraintViolation<Object> cv = it.next();
@@ -124,12 +118,12 @@ public class GeneralValidatorImpl implements GeneralValidator
          return;
       }
 
-      installValidator(request);
+      Validator validator = getValidator(request);
       ViolationsContainer<Object> violationsContainer = getViolationsContainer(request);
       Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
       try
       {
-         Set<ConstraintViolation<Object>> cvs = getValidator(request).forExecutables().validateParameters(object, method, parameterValues, groups);
+         Set<ConstraintViolation<Object>> cvs = validator.forExecutables().validateParameters(object, method, parameterValues, groups);
          for (Iterator<ConstraintViolation<Object>> it = cvs.iterator(); it.hasNext(); )
          {
             ConstraintViolation<Object> cv = it.next();
@@ -152,12 +146,12 @@ public class GeneralValidatorImpl implements GeneralValidator
    @Override
    public void validateReturnValue(HttpRequest request, Object object, Method method, Object returnValue, Class<?>... groups)
    {
-      installValidator(request);
+      Validator validator = getValidator(request);
       Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
       ViolationsContainer<Object> violationsContainer = getViolationsContainer(request);
       try
       {
-         Set<ConstraintViolation<Object>> cvs = getValidator(request).forExecutables().validateReturnValue(object, method, returnValue, groups);
+         Set<ConstraintViolation<Object>> cvs = validator.forExecutables().validateReturnValue(object, method, returnValue, groups);
          for (Iterator<ConstraintViolation<Object>> it = cvs.iterator(); it.hasNext(); )
          {
             ConstraintViolation<Object> cv = it.next();
@@ -456,79 +450,16 @@ public class GeneralValidatorImpl implements GeneralValidator
       return true;
    }
    
-   protected void installValidator(HttpRequest request)
+   protected Validator getValidator(HttpRequest request)
    {
-	   Locale locale = getLocale(request);
-       if (locale == null)
-       {
-          if (defaultValidator == null)
-          {
-             defaultValidator = validatorFactory.getValidator();
-          }
-          return;
-       }
-
-       if (validators.get(locale) != null)
-       {
-          return;
-       }   
-	   
-       // Check for /ValidationMessages_XX.properties
-       ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-       String localeStr = locale.toString();
-       URL validationMessagesURL = classLoader.getResource("/ValidationMessages_" + localeStr + ".properties");
-       if (validationMessagesURL == null)
-       {
-          if (localeStr.length() == 2)
-          {
-             // a locale like "de" isn't supported: use default locale
-             if (defaultValidator == null)
-     	     {
-                defaultValidator = validatorFactory.getValidator();
-     	     }
-     	     return;
-          }
-          if(localeStr.length() > 2) {
-             // if e.g. "en_US" isn't supported, then try "en"
-             localeStr = localeStr.substring(0, 2);
-             validationMessagesURL = classLoader.getResource("/ValidationMessages_" + localeStr + ".properties");
-             if (validationMessagesURL == null)
-             {
-                if (defaultValidator == null)
-                {
-                   defaultValidator = validatorFactory.getValidator();
-                }
-                return;
-             }
-
-             // E.g. /ValidationMessages_en.properties is available, and accept-language=en_US is used
-             // Therefore use the locale "en", and not the default locale
-             locale = localeBuilder.setLanguage(localeStr).build();
-          }
-       }
- 	   MessageInterpolator interpolator = new LocaleSpecificMessageInterpolator(validatorFactory.getMessageInterpolator(), locale);
-       Validator validator = validatorFactory.usingContext().messageInterpolator(interpolator).getValidator();
-       validators.put(locale, validator);
-   }
-   
-   private Validator getValidator(HttpRequest request) {
       Locale locale = getLocale(request);
       if (locale == null)
       {
-         return defaultValidator;
-      }
-      Validator validator = validators.get(locale);
-	  if (validator == null)
-      {
-         // if e.g. "en_US" isn't supported, then try "en"
-		 String localeStr = locale.toString();
-		 if (localeStr.length() > 2)
-		 {
-			localeStr = localeStr.substring(0, 2);
-			validator = validators.get(localeBuilder.setLanguage(localeStr).build());
-		 }
-      }
-      return validator == null ? defaultValidator : validator;
+         return validatorFactory.getValidator();
+      } 
+
+      MessageInterpolator interpolator = new LocaleSpecificMessageInterpolator(validatorFactory.getMessageInterpolator(), locale);
+      return validatorFactory.usingContext().messageInterpolator(interpolator).getValidator();
    }
 
    private Locale getLocale(HttpRequest request) {
