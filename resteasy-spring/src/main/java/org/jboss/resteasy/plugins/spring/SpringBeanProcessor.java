@@ -19,8 +19,8 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.util.ClassUtils;
 
 import javax.ws.rs.ext.MessageBodyReader;
@@ -63,7 +63,7 @@ import java.util.Set;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartApplicationListener
+public class SpringBeanProcessor implements BeanFactoryPostProcessor, ApplicationListener
 {
    protected Registry registry;
    protected ResteasyProviderFactory providerFactory;
@@ -440,11 +440,13 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
    @Override
    public void onApplicationEvent(ApplicationEvent event)
    {
+      if (event.getClass() != ContextRefreshedEvent.class)
+         return;
       for (SpringResourceFactory resourceFactory : resourceFactories.values())
       {
          getRegistry().removeRegistrations(resourceFactory.getScannableClass());
       }
-      
+
 //  The following code would reprocess the bean factory, in case the configuration changed.
 //  However, it needs work.
 //      if (event.getSource() instanceof XmlWebApplicationContext)
@@ -458,7 +460,6 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
       }
    }
 
-   @Override
    public int getOrder()
    {
       return this.order;
@@ -468,7 +469,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
    {
       this.order = order;
    }
-
+/*
    @Override
    public boolean supportsEventType(Class<? extends ApplicationEvent> eventType)
    {
@@ -480,4 +481,5 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
    {
       return ApplicationContext.class.isAssignableFrom(sourceType);
    }
+   */
 }
