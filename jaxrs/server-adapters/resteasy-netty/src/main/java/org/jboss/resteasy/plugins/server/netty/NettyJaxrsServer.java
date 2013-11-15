@@ -39,6 +39,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    private int executorThreadCount = 16;
    private SSLContext sslContext;
    private int maxRequestSize = 1024 * 1024 * 10;
+   private boolean isKeepAlive = true;
 
    static final ChannelGroup allChannels = new DefaultChannelGroup("NettyJaxrsServer");
 
@@ -78,6 +79,11 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    public void setMaxRequestSize(int maxRequestSize) 
    {
        this.maxRequestSize  = maxRequestSize;
+   }
+   
+   public void setKeepAlive(boolean isKeepAlive) 
+   {
+       this.isKeepAlive = isKeepAlive;
    }
    
    public int getPort()
@@ -130,9 +136,9 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
 
       ChannelPipelineFactory factory;
       if (sslContext == null) {
-          factory = new HttpServerPipelineFactory(dispatcher, root, executorThreadCount, maxRequestSize);
+          factory = new HttpServerPipelineFactory(dispatcher, root, executorThreadCount, maxRequestSize, isKeepAlive);
       } else {
-          factory = new HttpsServerPipelineFactory(dispatcher, root, executorThreadCount, maxRequestSize, sslContext);
+          factory = new HttpsServerPipelineFactory(dispatcher, root, executorThreadCount, maxRequestSize, isKeepAlive, sslContext);
       }
       // Set up the event pipeline factory.
       bootstrap.setPipelineFactory(factory);

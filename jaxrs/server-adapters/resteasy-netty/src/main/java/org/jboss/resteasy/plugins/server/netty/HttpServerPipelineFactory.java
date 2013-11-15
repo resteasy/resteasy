@@ -30,9 +30,9 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
    private final ChannelHandler executionHandler;
    private final int maxRequestSize;
    
-   public HttpServerPipelineFactory(RequestDispatcher dispatcher, String root, int executorThreadCount, int maxRequestSize)
+   public HttpServerPipelineFactory(RequestDispatcher dispatcher, String root, int executorThreadCount, int maxRequestSize, boolean isKeepAlive)
    {
-      this.resteasyDecoder = new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, getProtocol());
+      this.resteasyDecoder = new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, getProtocol(), isKeepAlive);
       this.resteasyEncoder = new RestEasyHttpResponseEncoder(dispatcher);
       this.resteasyRequestHandler = new RequestHandler(dispatcher);
       if (executorThreadCount > 0) 
@@ -44,7 +44,6 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
           this.executionHandler = null;
       }
       this.maxRequestSize = maxRequestSize;
-      
    }
 
    @Override
