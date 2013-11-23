@@ -848,7 +848,8 @@ public class ResourceBuilder
       {
          processDeclaredFields(resourceClassBuilder, root);
          root = root.getSuperclass();
-      } while (root.getSuperclass() != null && !root.getSuperclass().equals(Object.class));
+//      } while (root.getSuperclass() != null && !root.getSuperclass().equals(Object.class));
+      } while (root != null && !root.equals(Object.class));
    }
 
    protected static void processSetters(ResourceClassBuilder resourceClassBuilder, Class<?> root)
