@@ -1,7 +1,9 @@
 package org.jboss.resteasy.cdi;
 
-import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.util.GetRestful;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.decorator.Decorator;
 import javax.enterprise.context.ApplicationScoped;
@@ -16,13 +18,14 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.inject.spi.ProcessSessionBean;
+import javax.enterprise.inject.spi.WithAnnotations;
 import javax.enterprise.util.AnnotationLiteral;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.util.GetRestful;
 
 /**
  * This Extension handles default scopes for discovered JAX-RS components. It
@@ -64,51 +67,69 @@ public class ResteasyCdiExtension implements Extension
    }
 
    /**
-    * Set a default scope for each CDI bean which is a JAX-RS Resource, Provider
-    * or Application subclass.
+    * Set a default scope for each CDI bean which is a JAX-RS Resource.
     *
+    * @param event
+    * @param beanManager
     */
-   public <T> void observeResources(@Observes ProcessAnnotatedType<T> event, BeanManager beanManager)
+   public <T> void observeResources(@WithAnnotations({Path.class}) @Observes ProcessAnnotatedType<T> event, BeanManager beanManager)
    {
-       if (this.beanManager == null) {
-           // this may happen if Solder Config receives BBD first
-           this.beanManager = beanManager;
+       setBeanManager(beanManager);
+       AnnotatedType<T> annotatedType = event.getAnnotatedType();
+
+       if(!annotatedType.getJavaClass().isInterface()
+               && !isSessionBean(annotatedType)
+               // This check is redundant for CDI 1.1 containers but required for CDI 1.0
+               && GetRestful.isRootResource(annotatedType.getJavaClass())
+               && !annotatedType.isAnnotationPresent(Decorator.class))
+       {
+           log.debug("Discovered CDI bean which is a JAX-RS resource {0}.", annotatedType.getJavaClass().getCanonicalName());
+           event.setAnnotatedType(wrapAnnotatedType(annotatedType, requestScopedLiteral));
        }
+   }
 
-      AnnotatedType<T> type = event.getAnnotatedType();
+   /**
+    * Set a default scope for each CDI bean which is a JAX-RS Provider.
+    *
+    * @param event
+    * @param beanManager
+    */
+   public <T> void observeProviders(@WithAnnotations({Provider.class}) @Observes ProcessAnnotatedType<T> event, BeanManager beanManager)
+   {
+       setBeanManager(beanManager);
+       AnnotatedType<T> annotatedType = event.getAnnotatedType();
 
-      if (!type.getJavaClass().isInterface())
-      {
-         for (Annotation annotation : type.getAnnotations())
-         {
-            Class<?> annotationType = annotation.annotationType();
-            if (annotationType.getName().equals(JAVAX_EJB_STATELESS) || annotationType.getName().equals(JAVAX_EJB_SINGLETON))
-            {
-               log.debug("Bean {0} is a SLSB or Singleton. Leaving scope unmodified.", type.getJavaClass());
-               return; // Do not modify scopes of SLSBs and Singletons
-            }
-         }
-         if (type.isAnnotationPresent(Provider.class))
-         {
-            log.debug("Discovered CDI bean which is a JAX-RS provider {0}.", type.getJavaClass().getCanonicalName());
-            event.setAnnotatedType(wrapAnnotatedType(type, applicationScopedLiteral));
-         }
-         else if (GetRestful.isRootResource(type.getJavaClass()) && !type.isAnnotationPresent(Decorator.class))
-         {
-            log.debug("Discovered CDI bean which is a JAX-RS resource {0}.", type.getJavaClass().getCanonicalName());
-            event.setAnnotatedType(wrapAnnotatedType(type, requestScopedLiteral));
-         }
-         else if (Application.class.isAssignableFrom(type.getJavaClass()))
-         {
-            log.debug("Discovered CDI bean which is javax.ws.rs.core.Application subclass {0}.", type.getJavaClass().getCanonicalName());
-            event.setAnnotatedType(wrapAnnotatedType(type, applicationScopedLiteral));
-         }
-      }
+       if(!annotatedType.getJavaClass().isInterface()
+               && !isSessionBean(annotatedType)
+               // This check is redundant for CDI 1.1 containers but required for CDI 1.0
+               && annotatedType.isAnnotationPresent(Provider.class))
+       {
+           log.debug("Discovered CDI bean which is a JAX-RS provider {0}.", annotatedType.getJavaClass().getCanonicalName());
+           event.setAnnotatedType(wrapAnnotatedType(annotatedType, applicationScopedLiteral));
+       }
+   }
+
+   /**
+    * Set a default scope for each CDI bean which is a JAX-RS Application subclass.
+    *
+    * @param event
+    * @param beanManager
+    */
+   public <T extends Application> void observeApplications(@Observes ProcessAnnotatedType<T> event, BeanManager beanManager)
+   {
+       setBeanManager(beanManager);
+       AnnotatedType<T> annotatedType = event.getAnnotatedType();
+
+       if(!isSessionBean(annotatedType))
+       {
+           log.debug("Discovered CDI bean which is javax.ws.rs.core.Application subclass {0}.", annotatedType.getJavaClass().getCanonicalName());
+           event.setAnnotatedType(wrapAnnotatedType(annotatedType, applicationScopedLiteral));
+       }
    }
 
    protected <T> AnnotatedType<T> wrapAnnotatedType(AnnotatedType<T> type, Annotation scope)
    {
-      if (Utils.isScopeDefined(type.getJavaClass(), beanManager))
+      if (Utils.isScopeDefined(type, beanManager))
       {
          log.debug("Bean {0} has a scope defined.", type.getJavaClass());
          return type; // leave it as it is
@@ -180,5 +201,27 @@ public class ResteasyCdiExtension implements Extension
    public Map<Class<?>, Type> getSessionBeanInterface()
    {
       return sessionBeanInterface;
+   }
+
+   private boolean isSessionBean(AnnotatedType<?> annotatedType)
+   {
+       for (Annotation annotation : annotatedType.getAnnotations())
+       {
+          Class<?> annotationType = annotation.annotationType();
+          if (annotationType.getName().equals(JAVAX_EJB_STATELESS) || annotationType.getName().equals(JAVAX_EJB_SINGLETON))
+          {
+             log.debug("Bean {0} is a SLSB or Singleton. Leaving scope unmodified.", annotatedType.getJavaClass());
+             return true; // Do not modify scopes of SLSBs and Singletons
+          }
+       }
+       return false;
+   }
+
+   private void setBeanManager(BeanManager beanManager)
+   {
+       if (this.beanManager == null) {
+           // this may happen if Solder Config receives BBD first
+           this.beanManager = beanManager;
+       }
    }
 }
