@@ -10,6 +10,9 @@
     <name>RESTEasy CDI integration module</name>
     <description/>
     <packaging>jar</packaging>
+    <properties>
+        <weld21.version>2.1.0.Final</weld21.version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
@@ -46,9 +49,25 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>4.10</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-core</artifactId>
+            <version>${weld21.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld.se</groupId>
+            <artifactId>weld-se</artifactId>
+            <version>${weld21.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
+
 
 </project>
 

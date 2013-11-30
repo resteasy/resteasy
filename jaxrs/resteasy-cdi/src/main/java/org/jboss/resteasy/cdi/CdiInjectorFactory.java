@@ -20,10 +20,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.Map;
 import java.util.Set;
 
@@ -166,7 +163,14 @@ public class CdiInjectorFactory implements InjectorFactory
          log.debug("Found BeanManager in ServletContext");
          return beanManager;
       }
-      
+
+       beanManager = lookupBeanManagerCDIUtil();
+       if(beanManager != null)
+       {
+           log.debug("Found BeanManager via CDI Util");
+           return beanManager;
+       }
+
       throw new RuntimeException("Unable to lookup BeanManager.");
    }
 
@@ -188,6 +192,27 @@ public class CdiInjectorFactory implements InjectorFactory
          log.debug("Unable to perform JNDI lookups. You are probably running on GAE.");
          return null;
       }
+   }
+
+   public static BeanManager lookupBeanManagerCDIUtil()
+   {
+       BeanManager bm = null;
+       try {
+           Class<?> cdiClass = Class.forName("javax.enterprise.inject.spi.CDI");
+           Object cdiObj = cdiClass.getMethod("current").invoke(null);
+           if(cdiObj != null) {
+               bm = (BeanManager)cdiClass.getMethod("getBeanManager").invoke(cdiObj);
+           }
+       } catch (ClassNotFoundException e) {
+           log.debug("Not able to access CDI Object, class not found.",e);
+       } catch (InvocationTargetException e) {
+           log.debug("Not able to access CDI Object.",e);
+       } catch (NoSuchMethodException e) {
+           log.debug("Not able to access CDI Object.",e);
+       } catch (IllegalAccessException e) {
+           log.debug("Not able to access CDI Object.",e);
+       }
+       return bm;
    }
 
    /**
