@@ -103,7 +103,9 @@ public class GeneralValidatorImpl implements GeneralValidator
          {
             ConstraintViolation<Object> cv = it.next();
             Type ct = util.getConstraintType(cv);
-            rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), cv.getInvalidValue().toString()));
+            Object o = cv.getInvalidValue();
+            String value = (o == null ? "" : o.toString());
+            rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), value));
          }
       }
       catch (Exception e)
@@ -130,7 +132,9 @@ public class GeneralValidatorImpl implements GeneralValidator
          {
             ConstraintViolation<Object> cv = it.next();
             Type ct = util.getConstraintType(cv);
-            rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), cv.getInvalidValue().toString()));
+            Object o = cv.getInvalidValue();
+            String value = (o == null ? "" : o.toString());
+            rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), value));
          }
       }
       catch (Exception e)
