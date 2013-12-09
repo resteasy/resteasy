@@ -12,8 +12,16 @@ import org.jboss.resteasy.test.EmbeddedContainer;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ParamConverter;
+import javax.ws.rs.ext.ParamConverterProvider;
+import javax.ws.rs.ext.Provider;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Arrays;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -70,6 +78,23 @@ public class GuiceContextTest
       final TestResource resource = ProxyFactory.create(TestResource.class, generateBaseUrl());
       Assert.assertEquals("field", resource.getName());
       dispatcher.getRegistry().removeRegistrations(FieldTestResource.class);
+   }
+
+   @Test
+   public void testArbitraryInjection()
+   {
+      final Module module = new Module()
+      {
+         public void configure(final Binder binder)
+         {
+            // currently the order is important, this test does not fail, if we bind the classes in revers order
+            binder.bind(ConversionTestResource.class);
+            binder.bind(IntarrayConverterProvider.class);
+         }
+      };
+      final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
+      processor.processInjector(Guice.createInjector(module));
+      ProxyFactory.create(TestResource.class, generateBaseUrl());
    }
 
    //@Test // not (yet) supprted
@@ -140,4 +165,90 @@ public class GuiceContextTest
          return "field";
       }
    }
+
+   @Path("test")
+   public static class ConversionTestResource
+   {
+      @QueryParam("values") Intarray intarray;
+
+      @GET
+      public String getName()
+      {
+         return intarray == null ? "[]" : String.valueOf(intarray.sum());
+      }
+   }
+
+   public static class Intarray
+   {
+      private int[] values;
+
+      public Intarray() {}
+
+      public Intarray(int[] values)
+      {
+         this.values = values;
+      }
+
+      @Override
+      public String toString()
+      {
+         return values == null ? "[]" : Arrays.asList(values).toString();
+      }
+
+      public int[] getValues()
+      {
+         return values;
+      }
+
+      public void setValues(int[] values)
+      {
+         this.values = values;
+      }
+
+      public int sum()
+      {
+         if (values == null)
+         {
+            return 0;
+         }
+         int sum = 0;
+         for (int value : values)
+         {
+            sum += value;
+         }
+         return sum;
+      }
+   }
+
+   @Provider
+   public static class IntarrayConverterProvider implements ParamConverterProvider
+   {
+      @Override
+      public <T> ParamConverter<T> getConverter(final Class<T> tClass, Type type, Annotation[] annotations)
+      {
+         return  tClass == Intarray.class ?
+            new ParamConverter<T>()
+            {
+               @Override
+               // for simplicity, does not take "[" and "]" into account
+               public T fromString(String s)
+               {
+                  String[] strings = s.split("\\s*,\\s*");
+                  int[] values = new int[strings.length];
+                  for (int i = 0; i < strings.length; i++)
+                  {
+                     values[i] = Integer.valueOf(strings[i]);
+                  }
+                  return tClass.cast(new Intarray(values));
+               }
+
+               @Override
+               public String toString(T t)
+               {
+                  return t.toString();
+               }
+            } : null;
+      }
+   }
+
 }

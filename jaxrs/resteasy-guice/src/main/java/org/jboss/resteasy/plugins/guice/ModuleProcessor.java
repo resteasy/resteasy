@@ -10,6 +10,8 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.ext.Provider;
 
@@ -28,6 +30,7 @@ public class ModuleProcessor
 
    public void processInjector(final Injector injector)
    {
+      List<Binding<?>> rootResourceBindings = new ArrayList<Binding<?>>();
       for (final Binding<?> binding : injector.getBindings().values())
       {
          final Type type = binding.getKey().getTypeLiteral().getType();
@@ -36,9 +39,8 @@ public class ModuleProcessor
             final Class<?> beanClass = (Class) type;
             if (GetRestful.isRootResource(beanClass))
             {
-               final ResourceFactory resourceFactory = new GuiceResourceFactory(binding.getProvider(), beanClass);
-               logger.info("registering factory for {0}", beanClass.getName());
-               registry.addResourceFactory(resourceFactory);
+               // deferred registration
+               rootResourceBindings.add(binding);
             }
             if (beanClass.isAnnotationPresent(Provider.class))
             {
@@ -46,6 +48,13 @@ public class ModuleProcessor
                providerFactory.registerProviderInstance(binding.getProvider().get());
             }
          }
+      }
+      for (Binding<?> binding : rootResourceBindings)
+      {
+         Class<?> beanClass = (Class) binding.getKey().getTypeLiteral().getType();
+         final ResourceFactory resourceFactory = new GuiceResourceFactory(binding.getProvider(), beanClass);
+         logger.info("registering factory for {0}", beanClass.getName());
+         registry.addResourceFactory(resourceFactory);
       }
    }
 }
