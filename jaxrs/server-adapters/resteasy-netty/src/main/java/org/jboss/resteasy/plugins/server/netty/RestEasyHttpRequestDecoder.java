@@ -28,6 +28,7 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder
     private final SynchronousDispatcher dispatcher;
     private final String servletMappingPrefix;
     private final String proto;
+    private final boolean isKeepAlive;
     
     public enum Protocol 
     {
@@ -35,7 +36,7 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder
         HTTP
     }
     
-    public RestEasyHttpRequestDecoder(SynchronousDispatcher dispatcher, String servletMappingPrefix, Protocol protocol) 
+    public RestEasyHttpRequestDecoder(SynchronousDispatcher dispatcher, String servletMappingPrefix, Protocol protocol, boolean isKeepAlive) 
     {
         this.dispatcher = dispatcher;
         this.servletMappingPrefix = servletMappingPrefix;
@@ -47,6 +48,7 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder
         {
             proto = "https";
         }
+        this.isKeepAlive = isKeepAlive;
     }
     
     @Override
@@ -58,7 +60,7 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder
         }
         
         org.jboss.netty.handler.codec.http.HttpRequest request = (org.jboss.netty.handler.codec.http.HttpRequest) msg;
-        boolean keepAlive = org.jboss.netty.handler.codec.http.HttpHeaders.isKeepAlive(request);
+        boolean keepAlive = org.jboss.netty.handler.codec.http.HttpHeaders.isKeepAlive(request) & isKeepAlive;
 
         NettyHttpResponse response = new NettyHttpResponse(channel, keepAlive);
 
