@@ -83,9 +83,9 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.mortbay.jetty</groupId>
+                <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>8.1.13.v20130916</version>
+                <version>9.0.6.v20130930</version>
                 <configuration>
                     <webApp>
                         <contextPath>/</contextPath>
@@ -93,6 +93,7 @@
                     <scanIntervalSeconds>10</scanIntervalSeconds>
                     <stopKey>foo</stopKey>
                     <stopPort>9999</stopPort>
+                    <stopWait>1</stopWait>
                 </configuration>
                 <executions>
                     <execution>
