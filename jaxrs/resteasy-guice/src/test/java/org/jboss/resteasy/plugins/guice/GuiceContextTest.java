@@ -23,23 +23,25 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class GuiceContextTest
 {
-   private static Dispatcher dispatcher;
+   private Dispatcher dispatcher;
 
-   @BeforeClass
-   public static void beforeClass() throws Exception
+   @Before
+   public void beforeClass() throws Exception
    {
       dispatcher = EmbeddedContainer.start().getDispatcher();
    }
 
-   @AfterClass
-   public static void afterClass() throws Exception
+   @After
+   public void afterClass() throws Exception
    {
       EmbeddedContainer.stop();
    }
