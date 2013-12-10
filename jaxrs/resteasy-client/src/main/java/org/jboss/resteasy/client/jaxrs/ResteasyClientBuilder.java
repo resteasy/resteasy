@@ -40,8 +40,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Abstraction for creating Clients.  Allows SSL configuration.  Currently defaults to using Apache Http Client under
- * the covers.
+ * Abstraction for creating Clients.  Allows SSL configuration.  Uses Apache Http Client under
+ * the covers.  If used with other ClientHttpEngines though, all configuration options are ignored.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -84,6 +84,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    protected TimeUnit establishConnectionTimeoutUnits = TimeUnit.MILLISECONDS;
    protected HostnameVerifier verifier = null;
    protected HttpHost defaultProxy;
+   protected int responseBufferSize;
 
    /**
     * Changing the providerFactory will wipe clean any registered components or properties.
@@ -175,6 +176,20 @@ public class ResteasyClientBuilder extends ClientBuilder
       this.connectionPoolSize = connectionPoolSize;
       return this;
    }
+
+   /**
+    * Response stream is wrapped in a BufferedInputStream.  Default is 8192.  Value of 0 will not wrap it.
+    * Value of -1 will use a SelfExpandingBufferedInputStream
+    *
+    * @param size
+    * @return
+    */
+   public ResteasyClientBuilder responseBufferSize(int size)
+   {
+      this.responseBufferSize = responseBufferSize;
+      return this;
+   }
+
 
    /**
     * Disable trust management and hostname verification.  <i>NOTE</i> this is a security
@@ -433,6 +448,7 @@ public class ResteasyClientBuilder extends ClientBuilder
          }
          httpClient = new DefaultHttpClient(cm, params);
          ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient, true);
+         engine.setResponseBufferSize(responseBufferSize);
          engine.setHostnameVerifier(verifier);
          // this may be null.  We can't really support this with Apache Client.
          engine.setSslContext(theContext);
