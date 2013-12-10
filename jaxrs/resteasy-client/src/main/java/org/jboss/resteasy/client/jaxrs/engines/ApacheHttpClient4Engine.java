@@ -30,6 +30,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.MultivaluedMap;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -63,6 +64,8 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
    protected boolean closed;
    protected SSLContext sslContext;
    protected HostnameVerifier hostnameVerifier;
+   protected int responseBufferSize = 8192;
+
    /**
     * For uploading File's over JAX-RS framework, this property, together with {@link #fileUploadMemoryUnit},
     * defines the maximum File size allowed in memory. If fileSize exceeds this size, it will be stored to
@@ -138,6 +141,28 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
    {
       this.httpClient = httpClient;
       this.httpContext = httpContext;
+   }
+
+   /**
+    * Response stream is wrapped in a BufferedInputStream.  Default is 8192.  Value of 0 will not wrap it.
+    * Value of -1 will use a SelfExpandingBufferedInputStream
+    *
+    * @return
+    */
+   public int getResponseBufferSize()
+   {
+      return responseBufferSize;
+   }
+
+   /**
+    * Response stream is wrapped in a BufferedInputStream.  Default is 8192.  Value of 0 will not wrap it.
+    * Value of -1 will use a SelfExpandingBufferedInputStream
+    *
+    * @param responseBufferSize
+    */
+   public void setResponseBufferSize(int responseBufferSize)
+   {
+      this.responseBufferSize = responseBufferSize;
    }
 
    /**
@@ -232,6 +257,19 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       return headers;
    }
 
+   protected InputStream createBufferedStream(InputStream is)
+   {
+      if (responseBufferSize == 0)
+      {
+         return is;
+      }
+      if (responseBufferSize < 0)
+      {
+         return new SelfExpandingBufferredInputStream(is);
+      }
+      return new BufferedInputStream(is, responseBufferSize);
+   }
+
    @SuppressWarnings("unchecked")
    public ClientResponse invoke(ClientInvocation request)
    {
@@ -273,7 +311,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
                try
                {
                   hc4Stream = entity.getContent();
-                  stream = new SelfExpandingBufferredInputStream(hc4Stream);
+                  stream = createBufferedStream(hc4Stream);
                }
                catch (IOException e)
                {

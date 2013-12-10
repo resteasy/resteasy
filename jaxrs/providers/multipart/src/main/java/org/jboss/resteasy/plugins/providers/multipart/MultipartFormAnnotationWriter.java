@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
+import org.jboss.resteasy.annotations.providers.multipart.PartFilename;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
 import org.jboss.resteasy.spi.WriterException;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -15,6 +16,7 @@ import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -70,13 +72,20 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
                throw new WriterException(e.getCause());
             }
             PartType partType = method.getAnnotation(PartType.class);
+            String filename = getFilename(method);
 
-            multipart.addFormData(param.value(), value, method.getReturnType(), method.getGenericReturnType(), MediaType.valueOf(partType.value()));
+            multipart.addFormData(param.value(), value, method.getReturnType(), method.getGenericReturnType(), MediaType.valueOf(partType.value()), filename);
          }
       }
 
       write(multipart, mediaType, httpHeaders, entityStream);
 
+   }
+
+   protected String getFilename(AccessibleObject method)
+   {
+      PartFilename fname = method.getAnnotation(PartFilename.class);
+      return fname == null ? null : fname.value();
    }
 
    protected void getFields(Class<?> type, MultipartFormDataOutput output, Object obj)
@@ -98,8 +107,9 @@ public class MultipartFormAnnotationWriter extends AbstractMultipartFormDataWrit
                throw new WriterException(e);
             }
             PartType partType = field.getAnnotation(PartType.class);
+            String filename = getFilename(field);
 
-            output.addFormData(param.value(), value, field.getType(), field.getGenericType(), MediaType.valueOf(partType.value()));
+            output.addFormData(param.value(), value, field.getType(), field.getGenericType(), MediaType.valueOf(partType.value()), filename);
          }
       }
    }
