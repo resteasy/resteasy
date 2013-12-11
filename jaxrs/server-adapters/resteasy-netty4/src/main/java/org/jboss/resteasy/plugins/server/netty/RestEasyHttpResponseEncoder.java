@@ -7,6 +7,7 @@ import io.netty.handler.codec.MessageToMessageEncoder;
 import io.netty.handler.codec.http.HttpHeaders.Names;
 import io.netty.handler.codec.http.HttpHeaders.Values;
 import io.netty.handler.codec.http.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.List;
@@ -39,36 +40,38 @@ public class RestEasyHttpResponseEncoder extends MessageToMessageEncoder<NettyHt
     protected void encode(ChannelHandlerContext ctx, NettyHttpResponse nettyResponse, List<Object> out) throws Exception
     {
         ByteBuf buffer = nettyResponse.getBuffer();
-        if (buffer.readableBytes() == 0) {
-            // content not written yet by the AsyncResponse
-            return;
-        }
         HttpResponse response = nettyResponse.getDefaultFullHttpResponse();
 
-        for (Map.Entry<String, List<Object>> entry : nettyResponse.getOutputHeaders().entrySet())
-        {
-           String key = entry.getKey();
-           for (Object value : entry.getValue())
-           {
-              RuntimeDelegate.HeaderDelegate delegate = dispatcher.providerFactory.getHeaderDelegate(value.getClass());
-              if (delegate != null)
-              {
-                  response.headers().add(key, delegate.toString(value));
-              }
-              else
-              {
-                 response.headers().set(key, value.toString());
-              }
-           }
-        }
+        transformHeaders(nettyResponse, response, dispatcher.providerFactory);
 
-        if (nettyResponse.isKeepAlive())
-        {
-            // Add content length and connection header if needed
-            response.headers().set(Names.CONTENT_LENGTH, buffer.readableBytes());
-            response.headers().set(Names.CONNECTION, Values.KEEP_ALIVE);
-        }
         out.add(response);
     }
+
+   public static void transformHeaders(NettyHttpResponse nettyResponse, HttpResponse response, ResteasyProviderFactory factory)
+   {
+      ByteBuf buffer = nettyResponse.getBuffer();
+      if (nettyResponse.isKeepAlive())
+      {
+         // Add content length and connection header if needed
+         response.headers().set(Names.CONTENT_LENGTH, buffer.readableBytes());
+         response.headers().set(Names.CONNECTION, Values.KEEP_ALIVE);
+      }
+      for (Map.Entry<String, List<Object>> entry : nettyResponse.getOutputHeaders().entrySet())
+      {
+         String key = entry.getKey();
+         for (Object value : entry.getValue())
+         {
+            RuntimeDelegate.HeaderDelegate delegate = factory.getHeaderDelegate(value.getClass());
+            if (delegate != null)
+            {
+                response.headers().add(key, delegate.toString(value));
+            }
+            else
+            {
+               response.headers().set(key, value.toString());
+            }
+         }
+      }
+   }
 
 }

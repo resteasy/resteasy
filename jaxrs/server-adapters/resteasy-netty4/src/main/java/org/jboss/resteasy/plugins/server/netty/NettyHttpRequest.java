@@ -54,6 +54,7 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
    private final boolean is100ContinueExpected;
    private NettyExecutionContext executionContext;
    private final ChannelHandlerContext ctx;
+   private volatile boolean flushed;
 
    public NettyHttpRequest(ChannelHandlerContext ctx, ResteasyHttpHeaders httpHeaders, ResteasyUriInfo uri, String httpMethod, SynchronousDispatcher dispatcher, NettyHttpResponse response, boolean is100ContinueExpected)
    {
@@ -104,6 +105,11 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
    public ResteasyAsynchronousContext getAsyncContext()
    {
       return executionContext;
+   }
+
+   public boolean isFlushed()
+   {
+      return flushed;
    }
 
    @Override
@@ -332,8 +338,7 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
                     finally
                     {
                         done = true;
-                        ctx.writeAndFlush(nettyResponse.getDefaultFullHttpResponse());
-                        ctx.close();
+                        nettyFlush();
                     }
                 }
             }
@@ -350,7 +355,14 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
                     }
                     done = true;
                     cancelled = true;
-                    return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).build());
+                   try
+                   {
+                      return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).build());
+                   }
+                   finally
+                   {
+                      nettyFlush();
+                   }
                 }
             }
 
@@ -362,11 +374,25 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
                     if (done) return false;
                     done = true;
                     cancelled = true;
-                    return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
+                   try
+                   {
+                      return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
+                   }
+                   finally
+                   {
+                      nettyFlush();
+                   }
                 }
             }
 
-            @Override
+           protected synchronized void nettyFlush()
+           {
+              flushed = true;
+              ctx.writeAndFlush(nettyResponse.getDefaultFullHttpResponse());
+              ctx.close();
+           }
+
+           @Override
             public boolean cancel(Date retryAfter) {
                 synchronized (responseLock)
                 {
@@ -374,7 +400,14 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
                     if (done) return false;
                     done = true;
                     cancelled = true;
-                    return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
+                   try
+                   {
+                      return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
+                   }
+                   finally
+                   {
+                      nettyFlush();
+                   }
                 }
             }
 

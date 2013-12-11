@@ -10,6 +10,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
@@ -32,14 +33,16 @@ public class NettyHttpResponse implements HttpResponse
    private final ChannelHandlerContext ctx;
    private boolean committed;
    private boolean keepAlive;
+   private ResteasyProviderFactory providerFactory;
 
-   public NettyHttpResponse(ChannelHandlerContext ctx, boolean keepAlive)
+   public NettyHttpResponse(ChannelHandlerContext ctx, boolean keepAlive, ResteasyProviderFactory providerFactory)
    {
       outputHeaders = new MultivaluedMapImpl<String, Object>();
       byteBuf = ctx.alloc().buffer();
       os = new ByteBufOutputStream(byteBuf);
       this.ctx = ctx;
       this.keepAlive = keepAlive;
+      this.providerFactory = providerFactory;
    }
 
    @Override
@@ -145,8 +148,11 @@ public class NettyHttpResponse implements HttpResponse
         byteBuf.retain(1);
     }
 
-    public DefaultFullHttpResponse getDefaultFullHttpResponse() {
+    public DefaultFullHttpResponse getDefaultFullHttpResponse()
+    {
         HttpResponseStatus status = HttpResponseStatus.valueOf(getStatus());
-        return new DefaultFullHttpResponse(HTTP_1_1, status, getBuffer());
+        DefaultFullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, status, getBuffer());
+        RestEasyHttpResponseEncoder.transformHeaders(this, res, providerFactory);
+        return res;
     }
 }

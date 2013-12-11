@@ -72,10 +72,10 @@ public class RequestHandler extends SimpleChannelInboundHandler
               future = ctx.writeAndFlush(response);
           } else {
               // Write an empty response
-              future = ctx.write(response);
+              //future = ctx.write(response);
               // retain buffer since it was automatically
               // reference counted by the write operation above
-              response.retain();
+              //response.retain();
           }
           // Close the non-keep-alive connection after the write operation is done.
           if (!request.isKeepAlive())
