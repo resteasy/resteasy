@@ -22,7 +22,7 @@ public class ServerDrivenNegotiation
    private Map<String, QualityValue> requestedCharacterSets = null;
    private Map<String, QualityValue> requestedEncodings = null;
    private Map<Locale, QualityValue> requestedLanguages = null;
-   private int mediaRadix;
+   private int mediaRadix = 1;
 
 
    public ServerDrivenNegotiation()
