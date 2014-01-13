@@ -22,8 +22,8 @@ import java.util.Map;
 @PreMatching
 public class AcceptHeaderByFileSuffixFilter implements ContainerRequestFilter
 {
-   public Map<String, String> mediaTypeMappings = new HashMap<String, String>();
-   public Map<String, String> languageMappings = new HashMap<String, String>();
+   private final Map<String, String> mediaTypeMappings = new HashMap<String, String>();
+   private final Map<String, String> languageMappings = new HashMap<String, String>();
 
    public void setMediaTypeMappings(Map<String, MediaType> mediaTypeMappings)
    {
