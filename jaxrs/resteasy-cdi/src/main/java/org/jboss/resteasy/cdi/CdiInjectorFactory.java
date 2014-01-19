@@ -149,19 +149,23 @@ public class CdiInjectorFactory implements InjectorFactory
 
       // Look for BeanManager in ServletContext
       ServletContext servletContext = ResteasyProviderFactory.getContextData(ServletContext.class);
-      beanManager = (BeanManager) servletContext.getAttribute(BEAN_MANAGER_ATTRIBUTE_PREFIX + BeanManager.class.getName());
-      if (beanManager != null)
+      // null check for RESTEASY-1009
+      if (servletContext != null)
       {
-         log.debug("Found BeanManager in ServletContext");
-         return beanManager;
-      }
+          beanManager = (BeanManager) servletContext.getAttribute(BEAN_MANAGER_ATTRIBUTE_PREFIX + BeanManager.class.getName());
+          if (beanManager != null)
+          {
+             log.debug("Found BeanManager in ServletContext");
+             return beanManager;
+          }
 
-      // Look for BeanManager in ServletContext (the old attribute name for backwards compatibility)
-      beanManager = (BeanManager) servletContext.getAttribute(BeanManager.class.getName());
-      if (beanManager != null)
-      {
-         log.debug("Found BeanManager in ServletContext");
-         return beanManager;
+          // Look for BeanManager in ServletContext (the old attribute name for backwards compatibility)
+          beanManager = (BeanManager) servletContext.getAttribute(BeanManager.class.getName());
+          if (beanManager != null)
+          {
+             log.debug("Found BeanManager in ServletContext");
+             return beanManager;
+          }
       }
 
        beanManager = lookupBeanManagerCDIUtil();
