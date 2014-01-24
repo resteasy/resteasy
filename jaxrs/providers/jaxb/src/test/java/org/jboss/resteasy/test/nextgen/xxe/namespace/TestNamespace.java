@@ -169,12 +169,12 @@ public class TestNamespace
       before();
       ResteasyWebTarget target = client.target(generateURL("/xmlRootElement"));
       FavoriteMovieXmlRootElement movie = new FavoriteMovieXmlRootElement();
-      movie.setTitle("La Règle du Jeu");
+      movie.setTitle("La Regle du Jeu");
       Response response = target.request().post(Entity.entity(movie,"application/xml"));
       Assert.assertEquals(200, response.getStatus());
       String entity = response.readEntity(String.class);
       System.out.println("Result: " + entity);
-      Assert.assertEquals("La Règle du Jeu", entity);
+      Assert.assertEquals("La Regle du Jeu", entity);
       after();
    }
    
@@ -242,20 +242,20 @@ public class TestNamespace
       String str = "<?xml version=\"1.0\"?>\r" +
                    "<collection xmlns=\"http://abc.com\">" +
                    "<favoriteMovieXmlRootElement><title>La Cage Aux Folles</title></favoriteMovieXmlRootElement>" +
-                   "<favoriteMovieXmlRootElement><title>La Règle du Jeu</title></favoriteMovieXmlRootElement>" +
+                   "<favoriteMovieXmlRootElement><title>La Regle du Jeu</title></favoriteMovieXmlRootElement>" +
                    "</collection>";
       System.out.println(str);
       Response response = target.request().post(Entity.entity(str,"application/xml"));
       Assert.assertEquals(200, response.getStatus());
       String entity = response.readEntity(String.class);
       System.out.println("Result: " + entity);
-      if (entity.indexOf("Cage") < entity.indexOf("Règle"))
+      if (entity.indexOf("Cage") < entity.indexOf("Regle"))
       {
-         Assert.assertEquals("/La Cage Aux Folles/La Règle du Jeu", entity);
+         Assert.assertEquals("/La Cage Aux Folles/La Regle du Jeu", entity);
       }
       else
       {
-         Assert.assertEquals("/La Règle du Jeu/La Cage Aux Folles", entity); 
+         Assert.assertEquals("/La Regle du Jeu/La Cage Aux Folles", entity);
       }
       after();
    }
@@ -271,7 +271,7 @@ public class TestNamespace
                        "<favoriteMovieXmlRootElement><title>La Cage Aux Folles</title></favoriteMovieXmlRootElement>" +
                      "</entry>" +
                      "<entry key=\"old\">" +
-                       "<favoriteMovieXmlRootElement><title>La Règle du Jeu</title></favoriteMovieXmlRootElement>" +
+                       "<favoriteMovieXmlRootElement><title>La Regle du Jeu</title></favoriteMovieXmlRootElement>" +
                      "</entry>" +
                    "</map>";
       System.out.println(str);
@@ -281,11 +281,11 @@ public class TestNamespace
       System.out.println("Result: " + entity);
       if (entity.indexOf("Cage") < entity.indexOf("Règle"))
       {
-         Assert.assertEquals("/La Cage Aux Folles/La Règle du Jeu", entity);
+         Assert.assertEquals("/La Cage Aux Folles/La Regle du Jeu", entity);
       }
       else
       {
-         Assert.assertEquals("/La Règle du Jeu/La Cage Aux Folles", entity); 
+         Assert.assertEquals("/La Regle du Jeu/La Cage Aux Folles", entity);
       }
       after();
    }
