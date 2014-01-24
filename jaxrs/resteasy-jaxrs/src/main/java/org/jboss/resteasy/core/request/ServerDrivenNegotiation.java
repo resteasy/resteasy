@@ -2,7 +2,7 @@ package org.jboss.resteasy.core.request;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Variant;
-import java.math.BigDecimal;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -22,6 +22,7 @@ public class ServerDrivenNegotiation
    private Map<String, QualityValue> requestedCharacterSets = null;
    private Map<String, QualityValue> requestedEncodings = null;
    private Map<Locale, QualityValue> requestedLanguages = null;
+   private int mediaRadix = 1;
 
 
    public ServerDrivenNegotiation()
@@ -46,6 +47,10 @@ public class ServerDrivenNegotiation
             requested.putAll(mapping);
       }
       requestedMediaTypes = requested;
+      for (Iterator<MediaType> it = requested.keySet().iterator(); it.hasNext(); )
+      {
+         mediaRadix = Math.max(mediaRadix, it.next().getParameters().size());
+      }
    }
 
 
@@ -111,7 +116,8 @@ public class ServerDrivenNegotiation
 
    public Variant getBestMatch(List<Variant> available)
    {
-      BigDecimal bestQuality = BigDecimal.ZERO;
+//      BigDecimal bestQuality = BigDecimal.ZERO;
+      VariantQuality bestQuality = null;
       Variant bestOption = null;
       for (Variant option : available)
       {
@@ -125,10 +131,12 @@ public class ServerDrivenNegotiation
          if (!applyLanguage(option, quality))
             continue;
 
-         BigDecimal optionQuality = quality.getOverallQuality();
-         if (isBetterOption(bestQuality, bestOption, optionQuality, option))
+//         BigDecimal optionQuality = quality.getOverallQuality();
+//         if (isBetterOption(bestQuality, bestOption, optionQuality, option))
+         if (isBetterOption(bestQuality, bestOption, quality, option))
          {
-            bestQuality = optionQuality;
+//            bestQuality = optionQuality;
+            bestQuality = quality;
             bestOption = option;
          }
       }
@@ -139,11 +147,63 @@ public class ServerDrivenNegotiation
    /**
     * Tests whether {@code option} is preferable over the current {@code bestOption}.
     */
-   private static boolean isBetterOption(BigDecimal bestQuality, Variant best,
-                                         BigDecimal optionQuality, Variant option)
+//   private static boolean isBetterOption(BigDecimal bestQuality, Variant best,
+//                                         BigDecimal optionQuality, Variant option)
+   private static boolean isBetterOption(VariantQuality bestQuality, Variant best,
+                                         VariantQuality optionQuality, Variant option)
    {
       if (best == null)
          return true;
+      
+      // Compare overall quality.
+      int signum = bestQuality.getOverallQuality().compareTo(optionQuality.getOverallQuality());
+      if (signum != 0)
+         return signum < 0;
+      
+      // Overall quality is the same.
+      // Assuming the request has an Accept header, a VariantQuality has a non-null
+      // requestMediaType if and only if it the corresponding Variant has a non-null mediaType.
+      // If bestQuality and optionQuality both have a non-null requestMediaType, we compare them
+      // for specificity.
+      MediaType bestRequestMediaType = bestQuality.getRequestMediaType();
+      MediaType optionRequestMediaType = optionQuality.getRequestMediaType();
+      if (bestRequestMediaType != null && optionRequestMediaType != null)
+      {
+         if (bestRequestMediaType.getType().equals(optionRequestMediaType.getType()))
+         {
+            if (bestRequestMediaType.getSubtype().equals(optionRequestMediaType.getSubtype()))
+            {
+               int bestCount = bestRequestMediaType.getParameters().size();
+               int optionCount = optionRequestMediaType.getParameters().size();
+               if (optionCount > bestCount)
+               {
+                  return true;   // more matching parameters
+               }
+               else if (optionCount < bestCount)
+               {
+                  return false;   // less matching parameters
+               }
+            }
+            else if (bestRequestMediaType.getSubtype().equals("*"))
+            {
+               return true;
+            }
+            else if (optionRequestMediaType.getSubtype().equals("*"))
+            {
+               return false;
+            }
+         }
+         else if (bestRequestMediaType.getType().equals("*"))
+         {
+            return true;
+         }
+         else if (optionRequestMediaType.getType().equals("*"))
+         {
+            return false;
+         }
+      }
+      
+      // Compare variant media types for specificity.
       MediaType bestType = best.getMediaType();
       MediaType optionType = option.getMediaType();
       if (bestType != null && optionType != null)
@@ -180,9 +240,7 @@ public class ServerDrivenNegotiation
          }
       }
 
-      int signum = bestQuality.compareTo(optionQuality);
-      if (signum != 0)
-         return signum < 0;
+      // Finally, compare specificity of the variants.
       return getExplicitness(best) < getExplicitness(option);
    }
 
@@ -220,6 +278,7 @@ public class ServerDrivenNegotiation
 
       QualityValue bestQuality = QualityValue.NOT_ACCEPTABLE;
       int bestMatchCount = -1;
+      MediaType bestRequestMediaType = null;
 
       for (MediaType requested : requestedMediaTypes.keySet())
       {
@@ -228,7 +287,7 @@ public class ServerDrivenNegotiation
          {
             String requestedType = requested.getType();
             if (requestedType.equals(type))
-               ++matchCount;
+               matchCount += mediaRadix * 100;
             else if (!"*".equals(requestedType))
                continue;
          }
@@ -236,13 +295,13 @@ public class ServerDrivenNegotiation
          {
             String requestedSubtype = requested.getSubtype();
             if (requestedSubtype.equals(subtype))
-               ++matchCount;
+               matchCount += mediaRadix * 10;
             else if (!"*".equals(requestedSubtype))
                continue;
          }
-         if (parameters != null)
+         Map<String, String> requestedParameters = requested.getParameters();
+         if (requestedParameters != null && requestedParameters.size() > 0)
          {
-            Map<String, String> requestedParameters = requested.getParameters();
             if (!hasRequiredParameters(requestedParameters, parameters))
                continue;
             matchCount += requestedParameters.size();
@@ -252,12 +311,16 @@ public class ServerDrivenNegotiation
          {
             bestMatchCount = matchCount;
             bestQuality = requestedMediaTypes.get(requested);
+            bestRequestMediaType = requested;
          }
          else if (matchCount == bestMatchCount)
          {
             QualityValue qualityValue = requestedMediaTypes.get(requested);
             if (bestQuality.compareTo(qualityValue) < 0)
+            {
                bestQuality = qualityValue;
+               bestRequestMediaType = requested;
+            }
          }
       }
 
@@ -265,12 +328,17 @@ public class ServerDrivenNegotiation
          return false;
 
       quality.setMediaTypeQualityValue(bestQuality);
+      quality.setRequestMediaType(bestRequestMediaType);
       return true;
    }
 
 
    private boolean hasRequiredParameters(Map<String, String> required, Map<String, String> available)
    {
+      if (available == null)
+      {
+         return false;
+      }
       for (Entry<String, String> requiredEntry : required.entrySet())
       {
          String name = requiredEntry.getKey();

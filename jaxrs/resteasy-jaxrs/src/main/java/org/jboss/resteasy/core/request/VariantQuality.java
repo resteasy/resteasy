@@ -3,6 +3,8 @@ package org.jboss.resteasy.core.request;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
+import javax.ws.rs.core.MediaType;
+
 
 /**
  * A individual variant quality bean for the <span title="Remote Variant Selection Algorithm">RVSA</span>.
@@ -17,6 +19,8 @@ public class VariantQuality
    private QualityValue characterSetQualityValue = QualityValue.DEFAULT;
    private QualityValue encodingQualityValue = QualityValue.DEFAULT;
    private QualityValue languageQualityValue = QualityValue.DEFAULT;
+   
+   private MediaType requestMediaType;
 
 
    public VariantQuality()
@@ -57,6 +61,18 @@ public class VariantQuality
          languageQualityValue = QualityValue.DEFAULT;
       else
          languageQualityValue = value;
+   }
+
+
+   public MediaType getRequestMediaType()
+   {
+      return requestMediaType;
+   }
+
+
+   public void setRequestMediaType(MediaType requestMediaType)
+   {
+      this.requestMediaType = requestMediaType;
    }
 
 
