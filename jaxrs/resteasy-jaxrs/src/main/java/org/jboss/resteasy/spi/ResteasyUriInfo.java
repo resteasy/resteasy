@@ -13,6 +13,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -40,7 +41,7 @@ public class ResteasyUriInfo implements UriInfo
    private URI baseURI;
    private List<String> matchedUris;
    private List<String> encodedMatchedUris;
-   private List<String> encodedMatchedPaths = new ArrayList<String>();
+   private List<String> encodedMatchedPaths = new LinkedList<String>();
    private List<Object> ancestors;
 
 
@@ -312,12 +313,12 @@ public class ResteasyUriInfo implements UriInfo
    {
       if (decode)
       {
-         if (matchedUris == null) matchedUris = new ArrayList<String>();
+         if (matchedUris == null) matchedUris = new LinkedList<String>();
          return matchedUris;
       }
       else
       {
-         if (encodedMatchedUris == null) encodedMatchedUris = new ArrayList<String>();
+         if (encodedMatchedUris == null) encodedMatchedUris = new LinkedList<String>();
          return encodedMatchedUris;
       }
    }
@@ -329,14 +330,14 @@ public class ResteasyUriInfo implements UriInfo
 
    public List<Object> getMatchedResources()
    {
-      if (ancestors == null) ancestors = new ArrayList<Object>();
+      if (ancestors == null) ancestors = new LinkedList<Object>();
       return ancestors;
    }
 
 
    public void pushCurrentResource(Object resource)
    {
-      if (ancestors == null) ancestors = new ArrayList<Object>();
+      if (ancestors == null) ancestors = new LinkedList<Object>();
       ancestors.add(0, resource);
    }
 
@@ -362,10 +363,10 @@ public class ResteasyUriInfo implements UriInfo
       if (encoded.endsWith("/")) encoded = encoded.substring(0, encoded.length() - 1);
       if (encoded.startsWith("/")) encoded = encoded.substring(1);
       String decoded = Encode.decode(encoded);
-      if (encodedMatchedUris == null) encodedMatchedUris = new ArrayList<String>();
+      if (encodedMatchedUris == null) encodedMatchedUris = new LinkedList<String>();
       encodedMatchedUris.add(0, encoded);
 
-      if (matchedUris == null) matchedUris = new ArrayList<String>();
+      if (matchedUris == null) matchedUris = new LinkedList<String>();
       matchedUris.add(0, decoded);
    }
 
