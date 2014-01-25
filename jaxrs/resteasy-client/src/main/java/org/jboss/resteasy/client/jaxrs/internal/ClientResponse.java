@@ -27,6 +27,7 @@ import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -51,7 +52,7 @@ public abstract class ClientResponse extends BuiltResponse
    public void setHeaders(MultivaluedMap<String, String> headers)
    {
       this.metadata = new Headers<Object>();
-      this.metadata.putAll(headers);
+      this.metadata.putAll((Map)headers);
    }
 
    public void setProperties(Map<String, Object> properties)

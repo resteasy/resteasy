@@ -93,13 +93,25 @@ public class PathSegmentImpl implements PathSegment
    public static List<PathSegment> parseSegments(String path, boolean decode)
    {
       List<PathSegment> pathSegments = new ArrayList<PathSegment>();
-
-      if (path.startsWith("/")) path = path.substring(1);
-      String[] paths = path.split("/");
-      for (String p : paths)
+      int start = 0;
+      if (path.startsWith("/")) start++;
+      int length = path.length();
+      do
       {
+         String p;
+         int slash = path.indexOf('/', start);
+         if (slash < 0)
+         {
+            p = path.substring(start);
+            start = length;
+         }
+         else
+         {
+            p = path.substring(start, slash);
+            start = slash + 1;
+         }
          pathSegments.add(new PathSegmentImpl(p, decode));
-      }
+      } while (start < length);
       return pathSegments;
    }
 

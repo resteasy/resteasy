@@ -12,6 +12,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import java.io.ByteArrayInputStream;
 
@@ -37,13 +38,14 @@ public class MockedProfilingTest
 
    }
 
+
    @Test
    public void testCleartext() throws Exception
    {
-      final int WARMUP = 10;
-      final int INTERATIONS = 100;
-      //final int WARMUP = 1000;
-      //final int INTERATIONS = 100000;
+      //final int WARMUP = 10;
+      //final int INTERATIONS = 100;
+      final int WARMUP = 1000;
+      final int INTERATIONS = 1000000;
 
       ResteasyDeployment deployment = new ResteasyDeployment();
       deployment.start();
@@ -51,7 +53,14 @@ public class MockedProfilingTest
       registry.addPerRequestResource(CleartextResource.class);
 
       MockHttpResponse response = new MockHttpResponse();
-      MockHttpRequest request = MockHttpRequest.post("/test/create").contentType(MediaType.TEXT_PLAIN);
+      MockHttpRequest request = MockHttpRequest.post("/test/create")
+              .header(HttpHeaders.CONTENT_LANGUAGE, "en")
+              .header(HttpHeaders.USER_AGENT, "mozilla")
+              .header("Custom-Header1", "mozilla")
+              .header("Custom-Header2", "mozilla")
+              .header("Custom-Header3", "mozilla")
+              .header("Custom-Header4", "mozilla")
+              .contentType(MediaType.TEXT_PLAIN);
       ByteArrayInputStream stream = new ByteArrayInputStream("hello".getBytes());
       request.setInputStream(stream);
 

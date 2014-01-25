@@ -18,7 +18,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
       return parse(type);
    }
 
-
+   /*
    public static MediaType parse(String type)
    {
       String params = null;
@@ -48,6 +48,62 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
          major = paths[0];
          subtype = paths[1];
       }
+      if (params != null && !params.equals(""))
+      {
+         HashMap<String, String> typeParams = new HashMap<String, String>();
+
+         int start = 0;
+
+         while (start < params.length())
+         {
+            start = HeaderParameterParser.setParam(typeParams, params, start);
+         }
+         return new MediaType(major, subtype, typeParams);
+      }
+      else
+      {
+         return new MediaType(major, subtype);
+      }
+   }
+   */
+
+   public static MediaType parse(String type)
+   {
+      int typeIndex = type.indexOf('/');
+      int paramIndex = type.indexOf(';');
+      String major = null;
+      String subtype = null;
+      if (typeIndex < 0) // possible "*"
+      {
+         major = type;
+         if (paramIndex > -1)
+         {
+            major = major.substring(0, paramIndex);
+         }
+         if (!MediaType.MEDIA_TYPE_WILDCARD.equals(major))
+         {
+            throw new IllegalArgumentException("Failure parsing MediaType string: " + type);
+         }
+         subtype = MediaType.MEDIA_TYPE_WILDCARD;
+      }
+      else
+      {
+         major = type.substring(0, typeIndex);
+         if (paramIndex > -1)
+         {
+            subtype = type.substring(typeIndex + 1, paramIndex);
+         }
+         else
+         {
+            subtype = type.substring(typeIndex + 1);
+         }
+      }
+      if (major.length() < 1 || subtype.length() < 1)
+      {
+         throw new IllegalArgumentException("Failure parsing MediaType string: " + type);
+      }
+      String params = null;
+      if (paramIndex > -1) params = type.substring(paramIndex + 1);
       if (params != null && !params.equals(""))
       {
          HashMap<String, String> typeParams = new HashMap<String, String>();
