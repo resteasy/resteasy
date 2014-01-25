@@ -1,12 +1,13 @@
 package org.jboss.resteasy.util;
 
-import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.specimpl.MultivaluedTreeMap;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -18,8 +19,42 @@ import java.util.Set;
  * @version $Revision: 1 $
  */
 @SuppressWarnings("unchecked")
-public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>, Serializable
+//public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>, Serializable
+public class CaseInsensitiveMap<V> extends MultivaluedTreeMap<String, V>
 {
+   public static final Comparator<String> CASE_INSENSITIVE_ORDER
+           = new CaseInsensitiveComparator();
+   private static class CaseInsensitiveComparator
+           implements Comparator<String>, java.io.Serializable {
+
+      public int compare(String s1, String s2) {
+         if (s1 == s2) return 0;
+         int n1 = 0;
+         if (s1 != null) n1 = s1.length();
+         int n2 = 0;
+         if (s2 != null) n2 = s2.length();
+         int min = Math.min(n1, n2);
+         for (int i = 0; i < min; i++) {
+            char c1 = s1.charAt(i);
+            char c2 = s2.charAt(i);
+            if (c1 != c2) {
+               c1 = Character.toLowerCase(c1);
+               c2 = Character.toLowerCase(c2);
+               if (c1 != c2) {
+                  // No overflow because of numeric promotion
+                  return c1 - c2;
+               }
+            }
+         }
+         return n1 - n2;
+      }
+   }
+
+   public CaseInsensitiveMap()
+   {
+      super(CASE_INSENSITIVE_ORDER);
+   }
+   /*
 
    private static class KeySetWrapper implements Set<String>
    {
@@ -160,20 +195,7 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>, Seriali
          return keys.hashCode();
       }
 
-      /*
-
-      public boolean equals(Object o)
-      {
-         if (o == null)
-         return keys.equals(o);
-      }
-
-      public int hashCode()
-      {
-         return keys.hashCode();
-      }
-      */
-   }
+    }
 
    private static class EntrySetWrapper<V> implements Set<Entry<String, V>>
    {
@@ -358,9 +380,11 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>, Seriali
    {
       private static final long serialVersionUID = 6249456709345532524L;
       private String key;
-      private String tlc;
       private int hashCode = 0;
 
+
+
+      private String tlc;
       private CaseInsensitiveKey(String key)
       {
          this.key = key;
@@ -381,6 +405,7 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>, Seriali
          if (tlc == null || that.tlc == null) return false;
          return tlc.equals(that.tlc);
       }
+
 
       public final int hashCode()
       {
@@ -551,4 +576,6 @@ public class CaseInsensitiveMap<V> implements MultivaluedMap<String, V>, Seriali
       }
       return true;
    }
+   */
+
 }

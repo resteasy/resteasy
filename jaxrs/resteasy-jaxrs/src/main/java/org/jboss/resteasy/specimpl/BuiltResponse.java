@@ -396,6 +396,7 @@ public class BuiltResponse extends Response
       {
          if (first) first = false;
          else builder.append(",");
+         if (val == null) val = "";
          val = toHeaderString(val);
          if (val == null) val = "";
          builder.append(val);
