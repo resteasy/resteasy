@@ -53,6 +53,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    protected ResteasyProviderFactory parentProviderFactory;
    protected ResteasyProviderFactory resourceMethodProviderFactory;
    protected ResourceMethod method;
+   protected Annotation[] methodAnnotations;
    protected ContainerRequestFilter[] requestFilters;
    protected ContainerResponseFilter[] responseFilters;
    protected WriterInterceptor[] writerInterceptors;
@@ -72,6 +73,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       this.resource = resource;
       this.parentProviderFactory = providerFactory;
       this.method = method;
+      this.methodAnnotations = this.method.getAnnotatedMethod().getAnnotations();
 
        resourceInfo = new ResourceInfo()
       {
@@ -179,6 +181,8 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       return stats;
    }
 
+
+
    public ContainerRequestFilter[] getRequestFilters()
    {
       return requestFilters;
@@ -206,14 +210,18 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
    public Annotation[] getMethodAnnotations()
    {
-      return method.getAnnotatedMethod().getAnnotations();
+      return methodAnnotations;
    }
+
+
 
    @Override
    public Method getMethod()
    {
       return method.getMethod();
    }
+
+
 
    public BuiltResponse invoke(HttpRequest request, HttpResponse response)
    {
@@ -308,7 +316,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       if (rtn == null || method.getReturnType().equals(void.class))
       {
          BuiltResponse build = (BuiltResponse) Response.noContent().build();
-         build.addMethodAnnotations(method.getAnnotatedMethod());
+         build.addMethodAnnotations(getMethodAnnotations());
          return build;
       }
       if (Response.class.isAssignableFrom(method.getReturnType()) || rtn instanceof Response)
@@ -321,7 +329,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
             rtn = new BuiltResponse(r.getStatus(), metadata, r.getEntity(), null);
          }
          BuiltResponse rtn1 = (BuiltResponse) rtn;
-         rtn1.addMethodAnnotations(method.getAnnotatedMethod());
+         rtn1.addMethodAnnotations(getMethodAnnotations());
          if (rtn1.getGenericType() == null)
          {
             if (getMethod().getReturnType().equals(Response.class))
@@ -349,7 +357,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
             jaxrsResponse.setGenericType(method.getGenericReturnType());
          }
       }
-      jaxrsResponse.addMethodAnnotations(method.getAnnotatedMethod());
+      jaxrsResponse.addMethodAnnotations(getMethodAnnotations());
       return jaxrsResponse;
    }
 

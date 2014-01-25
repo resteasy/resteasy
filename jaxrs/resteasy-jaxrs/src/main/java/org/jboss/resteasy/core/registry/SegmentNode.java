@@ -149,37 +149,54 @@ public class SegmentNode
       }
    }
 
-   public static MediaType createSortFactor(MediaType client, MediaType server)
+   public static class SortFactor
    {
-      int d = 0;
-      String type;
-      String subtype;
+      public float q = 1.0f;
+      public float qs = 1.0f;
+      public int d;
+      public int dm;
+      public String type;
+      public String subtype;
+      public Map<String, String> params;
+
+      public boolean isWildcardType()
+      {
+         return type.equals(MediaType.MEDIA_TYPE_WILDCARD);
+      }
+      public boolean isWildcardSubtype()
+      {
+         return subtype.equals(MediaType.MEDIA_TYPE_WILDCARD);
+      }
+
+   }
+
+   public static SortFactor createSortFactor(MediaType client, MediaType server)
+   {
+      SortFactor sortFactor = new SortFactor();
       if (client.isWildcardType() != server.isWildcardType())
       {
-         type = (client.isWildcardType()) ? server.getType() : client.getType();
-         d++;
+         sortFactor.type = (client.isWildcardType()) ? server.getType() : client.getType();
+         sortFactor.d++;
       }
       else
       {
-         type = client.getType();
+         sortFactor.type = client.getType();
       }
       if (client.isWildcardSubtype() != server.isWildcardSubtype())
       {
-         subtype = (client.isWildcardSubtype()) ? server.getSubtype() : client.getSubtype();
-         d++;
+         sortFactor.subtype = (client.isWildcardSubtype()) ? server.getSubtype() : client.getSubtype();
+         sortFactor.d++;
       }
       else
       {
-         subtype = client.getSubtype();
+         sortFactor.subtype = client.getSubtype();
       }
-      Map<String, String> params = new HashMap<String, String>();
       String q = client.getParameters().get("q");
-      if (q != null) params.put("q", q);
+      if (q != null) sortFactor.q = Float.parseFloat(q);
       String qs = server.getParameters().get("qs");
-      if (qs != null) params.put("qs", qs);
-      params.put("d", Integer.toString(d));
+      if (qs != null) sortFactor.qs = Float.parseFloat(qs);
 
-      int dm = 0;
+      sortFactor.dm = 0;
       for (Map.Entry<String, String> entry : client.getParameters().entrySet())
       {
          String name = entry.getKey();
@@ -188,12 +205,12 @@ public class SegmentNode
          String val = server.getParameters().get(name);
          if (val == null)
          {
-            dm++;
+            sortFactor.dm++;
             continue;
          }
          if (!val.equals(entry.getValue()))
          {
-            dm++;
+            sortFactor.dm++;
             continue;
          }
       }
@@ -206,59 +223,46 @@ public class SegmentNode
          String val = client.getParameters().get(name);
          if (val == null)
          {
-            dm++;
+            sortFactor.dm++;
             continue;
          }
          if (!val.equals(entry.getValue()))
          {
-            dm++;
+            sortFactor.dm++;
             continue;
          }
       }
-      params.put("dm", Integer.toString(dm));
-      return new MediaType(type, subtype, params);
-
+      return sortFactor;
    }
 
    protected class SortEntry implements Comparable<SortEntry>
    {
       Match match;
-      MediaType accept;
-      MediaType consumes;
-      float qConsumes = 1.0f;
-      float qsConsumes = 1.0f;
-      int dConsumes = 0;
-      int dmConsumes = 0;
-      MediaType produces;
-      float qProduces = 1.0f;
-      float qsProduces = 1.0f;
-      int dProduces = 0;
-      int dmProduces = 0;
+      MediaType serverProduce;
+      SortFactor consumes;
+      SortFactor produces;
 
-      public SortEntry(Match match, MediaType consumes, MediaType produces, MediaType accept)
+      public SortEntry(Match match, SortFactor consumes, SortFactor produces, MediaType serverProduce)
       {
-         this.accept = accept;
+         this.serverProduce = serverProduce;
          this.match = match;
          this.consumes = consumes;
-         String q = consumes.getParameters().get("q");
-         if (q != null) qConsumes = Float.parseFloat(q);
-         String qs = consumes.getParameters().get("qs");
-         if (qs != null) qsConsumes = Float.parseFloat(qs);
-         String d = consumes.getParameters().get("d");
-         if (d != null) dConsumes = Integer.parseInt(d);
-         String dm = consumes.getParameters().get("dm");
-         if (dm != null) dmConsumes = Integer.parseInt(dm);
-
-
          this.produces = produces;
-         q = produces.getParameters().get("q");
-         if (q != null) qProduces = Float.parseFloat(q);
-         qs = produces.getParameters().get("qs");
-         if (qs != null) qsProduces = Float.parseFloat(qs);
-         d = produces.getParameters().get("d");
-         if (d != null) dProduces = Integer.parseInt(d);
-         dm = produces.getParameters().get("dm");
-         if (dm != null) dmProduces = Integer.parseInt(dm);
+      }
+
+      public MediaType getAcceptType()
+      {
+         // take params from produce and type and subtype from sort factor
+         // to define the returned media type
+         Map<String, String> params = new HashMap<String, String>();
+         for (Map.Entry<String, String> entry : serverProduce.getParameters().entrySet())
+         {
+            String name = entry.getKey();
+            if ("q".equals(name)
+                    || "qs".equals(name)) continue;
+            params.put(name, entry.getValue());
+         }
+         return new MediaType(produces.type, produces.subtype, params);
       }
 
 
@@ -270,34 +274,34 @@ public class SegmentNode
          if (consumes.isWildcardSubtype() && !o.consumes.isWildcardSubtype()) return 1;
          if (!consumes.isWildcardSubtype() && o.consumes.isWildcardSubtype()) return -1;
 
-         if (qConsumes > o.qConsumes) return -1;
-         if (qConsumes < o.qConsumes) return 1;
+         if (consumes.q > o.consumes.q) return -1;
+         if (consumes.q < o.consumes.q) return 1;
 
-         if (qsConsumes > o.qsConsumes) return -1;
-         if (qsConsumes < o.qsConsumes) return 1;
+         if (consumes.qs > o.consumes.qs) return -1;
+         if (consumes.qs < o.consumes.qs) return 1;
 
-         if (dConsumes < o.dConsumes) return -1;
-         if (dConsumes > o.dConsumes) return 1;
+         if (consumes.d < o.consumes.d) return -1;
+         if (consumes.d > o.consumes.d) return 1;
 
-         if (dmConsumes < o.dmConsumes) return -1;
-         if (dmConsumes > o.dmConsumes) return 1;
+         if (consumes.dm < o.consumes.dm) return -1;
+         if (consumes.dm > o.consumes.dm) return 1;
 
          if (produces.isWildcardType() && !o.produces.isWildcardType()) return 1;
          if (!produces.isWildcardType() && o.produces.isWildcardType()) return -1;
          if (produces.isWildcardSubtype() && !o.produces.isWildcardSubtype()) return 1;
          if (!produces.isWildcardSubtype() && o.produces.isWildcardSubtype()) return -1;
 
-         if (qProduces > o.qProduces) return -1;
-         if (qProduces < o.qProduces) return 1;
+         if (produces.q > o.produces.q) return -1;
+         if (produces.q < o.produces.q) return 1;
 
-         if (qsProduces > o.qsProduces) return -1;
-         if (qsProduces < o.qsProduces) return 1;
+         if (produces.qs > o.produces.qs) return -1;
+         if (produces.qs < o.produces.qs) return 1;
 
-         if (dProduces < o.dProduces) return -1;
-         if (dProduces > o.dProduces) return 1;
+         if (produces.d < o.produces.d) return -1;
+         if (produces.d > o.produces.d) return 1;
 
-         if (dmProduces < o.dmProduces) return -1;
-         if (dmProduces > o.dmProduces) return 1;
+         if (produces.dm < o.produces.dm) return -1;
+         if (produces.dm > o.produces.dm) return 1;
 
          return match.expression.compareTo(o.match.expression);
       }
@@ -307,9 +311,9 @@ public class SegmentNode
    {
       MediaType contentType = request.getHttpHeaders().getMediaType();
 
-      List<MediaType> oldaccepts = request.getHttpHeaders().getAcceptableMediaTypes();
-      List<WeightedMediaType> accepts = new ArrayList<WeightedMediaType>();
-      for (MediaType accept : oldaccepts) accepts.add(WeightedMediaType.parse(accept));
+      List<MediaType> requestAccepts = request.getHttpHeaders().getAcceptableMediaTypes();
+      List<WeightedMediaType> weightedAccepts = new ArrayList<WeightedMediaType>();
+      for (MediaType accept : requestAccepts) weightedAccepts.add(WeightedMediaType.parse(accept));
 
       List<Match> list = new ArrayList<Match>();
 
@@ -327,7 +331,7 @@ public class SegmentNode
             if (invoker.doesConsume(contentType))
             {
                consumeMatch = true;
-               if (invoker.doesProduce(accepts))
+               if (invoker.doesProduce(weightedAccepts))
                {
                   list.add(match);
                }
@@ -377,7 +381,7 @@ public class SegmentNode
          }
          throw new NotAcceptableException("No match for accept header");
       }
-      //if (list.size() == 1) return list.get(0); don't do this optimization so that was can set chosen accept
+      //if (list.size() == 1) return list.get(0); //don't do this optimization as we need to set chosen accept
       List<SortEntry> sortList = new ArrayList<SortEntry>();
       for (Match match : list)
       {
@@ -394,14 +398,14 @@ public class SegmentNode
          {
             produces = WILDCARD_ARRAY;
          }
-         List<MediaType> consumeCombo = new ArrayList<MediaType>();
+         List<SortFactor> consumeCombo = new ArrayList<SortFactor>();
          for (MediaType consume : consumes)
          {
             consumeCombo.add(createSortFactor(contentType, consume));
          }
          for (MediaType produce : produces)
          {
-            List<MediaType> acceptableMediaTypes = request.getHttpHeaders().getAcceptableMediaTypes();
+            List<MediaType> acceptableMediaTypes = requestAccepts;
             if (acceptableMediaTypes.size() == 0)
             {
                acceptableMediaTypes = DEFAULT_ACCEPTS;
@@ -410,22 +414,11 @@ public class SegmentNode
             {
                if (accept.isCompatible(produce))
                {
-                  MediaType sortFactor = createSortFactor(accept, produce);
-                  // take params from produce and type and subtype from sort factor
-                  // to define the returned media type
-                  Map<String, String> params = new HashMap<String, String>();
-                  for (Map.Entry<String, String> entry : produce.getParameters().entrySet())
-                  {
-                     String name = entry.getKey();
-                     if ("q".equals(name)
-                             || "qs".equals(name)) continue;
-                     params.put(name, entry.getValue());
-                  }
-                  MediaType chosen = new MediaType(sortFactor.getType(), sortFactor.getSubtype(), params);
+                  SortFactor sortFactor = createSortFactor(accept, produce);
 
-                  for (MediaType consume : consumeCombo)
+                  for (SortFactor consume : consumeCombo)
                   {
-                     sortList.add(new SortEntry(match, consume, sortFactor, chosen));
+                     sortList.add(new SortEntry(match, consume, sortFactor, produce));
                   }
                }
 
@@ -434,7 +427,7 @@ public class SegmentNode
       }
       Collections.sort(sortList);
       SortEntry sortEntry = sortList.get(0);
-      request.setAttribute(RESTEASY_CHOSEN_ACCEPT, sortEntry.accept);
+      request.setAttribute(RESTEASY_CHOSEN_ACCEPT, sortEntry.getAcceptType());
       return sortEntry.match;
    }
 
