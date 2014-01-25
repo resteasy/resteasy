@@ -167,7 +167,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
          MediaType type = method.resolveContentType(request, entity);
          BuiltResponse jaxrsResponse = (BuiltResponse)Response.ok(entity, type).build();
          jaxrsResponse.setGenericType(method.getGenericReturnType());
-         jaxrsResponse.addMethodAnnotations(method.getMethod());
+         jaxrsResponse.addMethodAnnotations(method.getMethodAnnotations());
          response = jaxrsResponse;
       }
       try

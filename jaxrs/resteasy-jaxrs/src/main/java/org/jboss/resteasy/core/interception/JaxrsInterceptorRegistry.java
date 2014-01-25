@@ -329,6 +329,7 @@ public class JaxrsInterceptorRegistry<T>
    protected List<JaxrsInterceptorRegistryListener> listeners = new CopyOnWriteArrayList<JaxrsInterceptorRegistryListener>();
    protected ResteasyProviderFactory providerFactory;
    protected Class<T> intf;
+   protected volatile T[] cachedPreMatch;
 
    public JaxrsInterceptorRegistry(ResteasyProviderFactory providerFactory, Class<T> intf)
    {
@@ -372,16 +373,20 @@ public class JaxrsInterceptorRegistry<T>
 
    public T[] preMatch()
    {
-      List<Match> matches = new ArrayList<Match>();
-      for (InterceptorFactory factory : interceptors)
+      if (cachedPreMatch == null)
       {
-         Match match = factory.preMatch();
-         if (match != null)
+         List<Match> matches = new ArrayList<Match>();
+         for (InterceptorFactory factory : interceptors)
          {
-            matches.add(match);
+            Match match = factory.preMatch();
+            if (match != null)
+            {
+               matches.add(match);
+            }
          }
+         cachedPreMatch = createArray(matches);
       }
-      return createArray(matches);
+      return cachedPreMatch;
    }
 
 
@@ -418,6 +423,7 @@ public class JaxrsInterceptorRegistry<T>
    public void register(InterceptorFactory factory)
    {
       interceptors.add(factory);
+      cachedPreMatch = null;
       for (JaxrsInterceptorRegistryListener listener : listeners)
       {
          listener.registryUpdated(this);

@@ -42,6 +42,8 @@ public class MockedProfilingTest
    {
       final int WARMUP = 10;
       final int INTERATIONS = 100;
+      //final int WARMUP = 1000;
+      //final int INTERATIONS = 100000;
 
       ResteasyDeployment deployment = new ResteasyDeployment();
       deployment.start();
@@ -49,7 +51,7 @@ public class MockedProfilingTest
       registry.addPerRequestResource(CleartextResource.class);
 
       MockHttpResponse response = new MockHttpResponse();
-      MockHttpRequest request = MockHttpRequest.post("/test/create").accept(MediaType.TEXT_PLAIN).contentType(MediaType.TEXT_PLAIN);
+      MockHttpRequest request = MockHttpRequest.post("/test/create").contentType(MediaType.TEXT_PLAIN);
       ByteArrayInputStream stream = new ByteArrayInputStream("hello".getBytes());
       request.setInputStream(stream);
 
