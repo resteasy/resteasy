@@ -15,7 +15,8 @@ public class PathSegmentImpl implements PathSegment
 {
    private String path;
    private String original;
-   private MultivaluedMap<String, String> matrixParameters = new MultivaluedMapImpl<String, String>();
+   private MultivaluedMap<String, String> matrixParameters;
+   private boolean hasMatrixParams;
 
    /**
     * @param segment encoded path segment
@@ -28,6 +29,8 @@ public class PathSegmentImpl implements PathSegment
       int semicolon = segment.indexOf(';');
       if (semicolon >= 0)
       {
+         matrixParameters = new MultivaluedMapImpl<String, String>();
+         hasMatrixParams = true;
          if (semicolon > 0) this.path = segment.substring(0, semicolon);
          else this.path = "";
          String matrixParams = segment.substring(semicolon + 1);
@@ -52,6 +55,15 @@ public class PathSegmentImpl implements PathSegment
       if (decode) this.path = Encode.decodePath(this.path);
    }
 
+   /**
+    * NOTE: Used for optimization in ResteasyUriInfo
+    * @return
+    */
+   public boolean hasMatrixParams()
+   {
+      return hasMatrixParams;
+   }
+
    public String getOriginal()
    {
       return original;
@@ -64,6 +76,10 @@ public class PathSegmentImpl implements PathSegment
 
    public MultivaluedMap<String, String> getMatrixParameters()
    {
+      if (matrixParameters == null)
+      {
+         matrixParameters = new MultivaluedMapImpl<String, String>();
+      }
       return matrixParameters;
    }
 
@@ -84,15 +100,34 @@ public class PathSegmentImpl implements PathSegment
       return buf.toString();
    }
 
+   public static List<PathSegment> parseSegments(String path, boolean decode)
+   {
+      return parseSegmentsOptimization(path, decode).segments;
+   }
+
+   /**
+    * Used when creating the matching path in ResteasyUriInfo
+    *
+    */
+   public static class SegmentParse
+   {
+      public List<PathSegment> segments;
+      public boolean hasMatrixParams;
+
+
+   }
+
    /**
     *
     * @param path encoded full path
     * @param decode whether or not to decode each segment
     * @return
     */
-   public static List<PathSegment> parseSegments(String path, boolean decode)
+   public static SegmentParse parseSegmentsOptimization(String path, boolean decode)
    {
+      SegmentParse parse = new SegmentParse();
       List<PathSegment> pathSegments = new ArrayList<PathSegment>();
+      parse.segments = pathSegments;
       int start = 0;
       if (path.startsWith("/")) start++;
       int length = path.length();
@@ -110,9 +145,11 @@ public class PathSegmentImpl implements PathSegment
             p = path.substring(start, slash);
             start = slash + 1;
          }
-         pathSegments.add(new PathSegmentImpl(p, decode));
+         PathSegmentImpl pathSegment = new PathSegmentImpl(p, decode);
+         parse.hasMatrixParams |= pathSegment.hasMatrixParams();
+         pathSegments.add(pathSegment);
       } while (start < length);
-      return pathSegments;
+      return parse;
    }
 
 }

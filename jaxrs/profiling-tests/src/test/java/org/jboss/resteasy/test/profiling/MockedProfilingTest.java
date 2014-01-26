@@ -15,6 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import java.io.ByteArrayInputStream;
+import java.net.URI;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -38,6 +39,17 @@ public class MockedProfilingTest
 
    }
 
+   @Test
+   public void testUri() throws Exception
+   {
+      URI uri = URI.create("/foo");
+      System.out.println(uri);
+      System.out.println(uri.getRawPath());
+      System.out.println("---");
+      uri = URI.create("foo");
+      System.out.println(uri);
+      System.out.println(uri.getRawPath());
+   }
 
    @Test
    public void testCleartext() throws Exception
