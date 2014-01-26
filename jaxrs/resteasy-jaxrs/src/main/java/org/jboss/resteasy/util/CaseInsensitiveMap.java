@@ -30,6 +30,7 @@ public class CaseInsensitiveMap<V> extends MultivaluedTreeMap<String, V>
       public int compare(String s1, String s2) {
          if (s1 == s2) return 0;
          int n1 = 0;
+         // null check is different than JDK version of this method
          if (s1 != null) n1 = s1.length();
          int n2 = 0;
          if (s2 != null) n2 = s2.length();
