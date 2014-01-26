@@ -113,12 +113,19 @@ public class ResteasyHttpHeaders implements HttpHeaders
       return Integer.parseInt(obj);
    }
 
+   // because header string map is mutable, we only cache the parsed media type
+   // and still do hash lookup
+   private String cachedMediaTypeString;
+   private MediaType cachedMediaType;
    @Override
    public MediaType getMediaType()
    {
       String obj = requestHeaders.getFirst(HttpHeaders.CONTENT_TYPE);
       if (obj == null) return null;
-      return MediaType.valueOf(obj);
+      if (obj == cachedMediaTypeString) return cachedMediaType;
+      cachedMediaTypeString = obj;
+      cachedMediaType = MediaType.valueOf(obj);
+      return cachedMediaType;
    }
 
    @Override
