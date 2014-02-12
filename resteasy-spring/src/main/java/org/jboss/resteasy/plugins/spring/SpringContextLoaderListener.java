@@ -46,7 +46,12 @@ public class SpringContextLoaderListener extends ContextLoaderListener
       super.contextInitialized(event);
    }
 
+   // for Spring 2.5.x
+   protected ContextLoader createContextLoader() {
+      return new SpringContextLoader();
+   }
 
+   // for Spring 3.x and later
    private SpringContextLoaderSupport springContextLoaderSupport = new SpringContextLoaderSupport();
 
    protected void customizeContext(ServletContext servletContext, ConfigurableWebApplicationContext configurableWebApplicationContext)
