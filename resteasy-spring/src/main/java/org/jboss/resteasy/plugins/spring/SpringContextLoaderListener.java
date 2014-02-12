@@ -1,8 +1,10 @@
 package org.jboss.resteasy.plugins.spring;
 
 import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
 /**
@@ -44,8 +46,12 @@ public class SpringContextLoaderListener extends ContextLoaderListener
       super.contextInitialized(event);
    }
 
-   protected ContextLoader createContextLoader()
+
+   private SpringContextLoaderSupport springContextLoaderSupport = new SpringContextLoaderSupport();
+
+   protected void customizeContext(ServletContext servletContext, ConfigurableWebApplicationContext configurableWebApplicationContext)
    {
-      return new SpringContextLoader();
+      super.customizeContext(servletContext, configurableWebApplicationContext);
+      this.springContextLoaderSupport.customizeContext(servletContext, configurableWebApplicationContext);
    }
 }
