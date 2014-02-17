@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <version>2.3.7.Final</version>
     </parent>
-    <name>Arquillian</name>
-    <description/>
-    <modelVersion>4.0.0</modelVersion>
+    <artifactId>arquillian</artifactId>
     <packaging>pom</packaging>
+    <name>Arquillian</name>
 
     <modules>
         <module>RESTEASY-736-jetty</module>
@@ -20,6 +20,5 @@
         <module>RESTEASY-802-AS71</module>
         <!--module>RESTEASY-802-AS72</module-->
     </modules>
-    
-    <artifactId>arquillian</artifactId>
+
 </project>

@@ -42,7 +42,7 @@ public class AsyncPostProcessingTest
    public void testSync() throws Exception
    {
       reset();
-      ClientRequest request = new ClientRequest("http://localhost:9090/RESTEASY-767/sync");
+      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-767/sync");
       ClientResponse<?> response = request.get();
       System.out.println("Status: " + response.getStatus());
       assertEquals(200, response.getStatus());
@@ -58,7 +58,7 @@ public class AsyncPostProcessingTest
    public void testAsyncWithDelay() throws Exception
    {
       reset();
-      ClientRequest request = new ClientRequest("http://localhost:9090/RESTEASY-767/async/delay");
+      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-767/async/delay");
       ClientResponse<?> response = request.get();
       System.out.println("Status: " + response.getStatus());
       assertEquals(200, response.getStatus());
@@ -74,7 +74,7 @@ public class AsyncPostProcessingTest
    public void testAsyncWithNoDelay() throws Exception
    {
       reset();
-      ClientRequest request = new ClientRequest("http://localhost:9090/RESTEASY-767/async/nodelay");
+      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-767/async/nodelay");
       ClientResponse<?> response = request.get();
       System.out.println("Status: " + response.getStatus());
       assertEquals(200, response.getStatus());

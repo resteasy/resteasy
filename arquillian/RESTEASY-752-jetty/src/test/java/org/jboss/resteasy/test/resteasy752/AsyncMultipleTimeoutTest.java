@@ -47,7 +47,7 @@ public class AsyncMultipleTimeoutTest
    @Test
    public void testAsynchTimeout() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9090/RESTEASY-752/timeoutStacks/");
+      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-752/timeoutStacks/");
       ClientResponse<String> response = null;
       long start = System.currentTimeMillis();
       

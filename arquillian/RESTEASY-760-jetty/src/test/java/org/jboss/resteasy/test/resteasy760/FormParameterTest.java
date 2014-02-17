@@ -40,7 +40,7 @@ public class FormParameterTest
    @Test
    public void testFormParamWithNoQueryParamPut() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9090/RESTEASY-760/put/noquery/");
+      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-760/put/noquery/");
       request.formParameter("formParam", "abc xyz");
       request.header("Content-Type", "application/x-www-form-urlencoded");
       ClientResponse<String> response = request.put(String.class);
@@ -52,7 +52,7 @@ public class FormParameterTest
    @Test
    public void testFormParamWithNoQueryParamPutEncoded() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9090/RESTEASY-760/put/noquery/encoded");
+      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-760/put/noquery/encoded");
       request.formParameter("formParam", "abc xyz");
       request.header("Content-Type", "application/x-www-form-urlencoded");
       ClientResponse<String> response = request.put(String.class);
@@ -64,7 +64,7 @@ public class FormParameterTest
    @Test
    public void testFormParamWithNoQueryParamPost() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9090/RESTEASY-760/post/noquery/");
+      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-760/post/noquery/");
       request.formParameter("formParam", "abc xyz");
       request.header("Content-Type", "application/x-www-form-urlencoded");
       ClientResponse<String> response = request.post(String.class);
@@ -76,7 +76,7 @@ public class FormParameterTest
    @Test
    public void testFormParamWithNoQueryParamPostEncoded() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9090/RESTEASY-760/post/noquery/encoded");
+      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-760/post/noquery/encoded");
       request.formParameter("formParam", "abc xyz");
       request.header("Content-Type", "application/x-www-form-urlencoded");
       ClientResponse<String> response = request.post(String.class);
@@ -88,7 +88,7 @@ public class FormParameterTest
    @Test
    public void testFormParamWithQueryParamPut() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9090/RESTEASY-760/put/query?query=xyz");
+      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-760/put/query?query=xyz");
       request.formParameter("formParam", "abc xyz");
       request.header("Content-Type", "application/x-www-form-urlencoded");
       ClientResponse<String> response = request.put(String.class);
@@ -100,7 +100,7 @@ public class FormParameterTest
    @Test
    public void testFormParamWithQueryParamPutEncoded() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9090/RESTEASY-760/put/query/encoded?query=xyz");
+      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-760/put/query/encoded?query=xyz");
       request.formParameter("formParam", "abc xyz");
       request.header("Content-Type", "application/x-www-form-urlencoded");
       ClientResponse<String> response = request.put(String.class);
@@ -112,7 +112,7 @@ public class FormParameterTest
    @Test
    public void testFormParamWithQueryParamPost() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9090/RESTEASY-760/post/query?query=xyz");
+      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-760/post/query?query=xyz");
       request.formParameter("formParam", "abc xyz");
       request.header("Content-Type", "application/x-www-form-urlencoded");
       ClientResponse<String> response = request.post(String.class);
@@ -124,7 +124,7 @@ public class FormParameterTest
    @Test
    public void testFormParamWithQueryParamPostEncoded() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9090/RESTEASY-760/post/query/encoded?query=xyz");
+      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-760/post/query/encoded?query=xyz");
       request.formParameter("formParam", "abc xyz");
       request.header("Content-Type", "application/x-www-form-urlencoded");
       ClientResponse<String> response = request.post(String.class);

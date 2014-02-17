@@ -38,7 +38,7 @@ public class AsyncTimeoutTest
    @Test
    public void testAsynchTimeout() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9090/RESTEASY-736/test/");
+      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-736/test/");
       long start = System.currentTimeMillis();
       System.out.println("start:   " + start);
       ClientResponse<String> response = null;
@@ -66,7 +66,7 @@ public class AsyncTimeoutTest
    @Test
    public void testDefaultAsynchTimeout() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9090/RESTEASY-736/default/");
+      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-736/default/");
       long start = System.currentTimeMillis();
       System.out.println("start:   " + start);
       ClientResponse<String> response = null;
