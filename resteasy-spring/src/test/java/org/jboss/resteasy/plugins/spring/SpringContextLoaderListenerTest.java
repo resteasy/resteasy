@@ -21,19 +21,19 @@ import org.springframework.web.context.support.StaticWebApplicationContext;
  * test SpringContextLoaderSupport and replace this test with a test that simply asserts
  * that SpringContextLoaderSupport was callled.
  */
-public class TestSpringContextLoader
+public class SpringContextLoaderListenerTest
 {
 
-   private SpringContextLoader contextLoader;
+   private SpringContextLoaderListener contextLoader;
 
    @Before
    public void setupEditor()
    {
-      contextLoader = new SpringContextLoader();
+      contextLoader = new SpringContextLoaderListener();
    }
 
    @Test(expected=RuntimeException.class)
-   public void testThatProviderFactoryIsRequired() 
+   public void testThatProviderFactoryIsRequired()
    {
       contextLoader.customizeContext(
             mockServletContext(null,someRegistry(),someDispatcher()),
@@ -41,7 +41,7 @@ public class TestSpringContextLoader
    }
 
    @Test(expected=RuntimeException.class)
-   public void testThatRegistryIsRequired() 
+   public void testThatRegistryIsRequired()
    {
       contextLoader.customizeContext(
             mockServletContext(someProviderFactory(),null,someDispatcher()),
@@ -49,7 +49,7 @@ public class TestSpringContextLoader
    }
 
    @Test(expected=RuntimeException.class)
-   public void testThatDispatcherIsRequired() 
+   public void testThatDispatcherIsRequired()
    {
       contextLoader.customizeContext(
             mockServletContext(someProviderFactory(),someRegistry(),null),
@@ -57,7 +57,7 @@ public class TestSpringContextLoader
    }
 
    @Test
-   public void testThatWeAddedAnApplicationListener() 
+   public void testThatWeAddedAnApplicationListener()
    {
       StaticWebApplicationContext context = mockWebApplicationContext();
       int numListeners = context.getApplicationListeners().size();
@@ -69,7 +69,7 @@ public class TestSpringContextLoader
          numListeners + 1,numListenersNow);
    }
 
-   private StaticWebApplicationContext mockWebApplicationContext() 
+   private StaticWebApplicationContext mockWebApplicationContext()
    {
       return new StaticWebApplicationContext();
    }
@@ -77,14 +77,14 @@ public class TestSpringContextLoader
    private ServletContext mockServletContext(
            ResteasyProviderFactory providerFactory,
            Registry registry,
-           Dispatcher dispatcher) 
+           Dispatcher dispatcher)
    {
       MockServletContext context = new MockServletContext();
 
       if (providerFactory != null)
          context.setAttribute(ResteasyProviderFactory.class.getName(),providerFactory);
 
-      if (registry != null) 
+      if (registry != null)
          context.setAttribute(Registry.class.getName(),registry);
 
       if (dispatcher != null)
@@ -93,17 +93,17 @@ public class TestSpringContextLoader
       return context;
    }
 
-   private Registry someRegistry() 
+   private Registry someRegistry()
    {
       return new ResourceMethodRegistry(someProviderFactory());
    }
 
-   private ResteasyProviderFactory someProviderFactory() 
+   private ResteasyProviderFactory someProviderFactory()
    {
       return new ResteasyProviderFactory();
    }
 
-   private Dispatcher someDispatcher() 
+   private Dispatcher someDispatcher()
    {
       return MockDispatcherFactory.createDispatcher();
    }
