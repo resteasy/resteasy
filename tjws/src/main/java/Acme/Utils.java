@@ -89,17 +89,19 @@ public class Utils
 
    public final static String ISO_8859_1 = "ISO-8859-1";
 
-   public static final Class[] EMPTY_CLASSES = {};
+   public static final Class<?>[] EMPTY_CLASSES = {};
 
    public static final Object[] EMPTY_OBJECTS = {};
 
-   public static final Enumeration EMPTY_ENUMERATION = new Enumeration()
+   public static final Enumeration<?> EMPTY_ENUMERATION = new Enumeration<Object>()
    {
+      @Override
       public boolean hasMoreElements()
       {
          return false;
       }
 
+      @Override
       public Object nextElement()
       {
          return null;
@@ -114,9 +116,9 @@ public class Utils
          return longfmt.format(date);
    }
 
-   public static Hashtable parseQueryString(String query, String encoding)
+   public static Hashtable<String, Object> parseQueryString(String query, String encoding)
    {
-      Hashtable result = new Hashtable();
+      Hashtable<String, Object> result = new Hashtable<String, Object>();
       if (encoding == null)
          encoding = "UTF-8";
       StringTokenizer st = new StringTokenizer(query, "&");
@@ -153,7 +155,7 @@ public class Utils
       return result;
    }
 
-   public static Map parsePostData(long len, InputStream is, String encoding, String[] cachedStream)
+   public static Map<String, Object> parsePostData(long len, InputStream is, String encoding, String[] cachedStream)
            throws IOException
    {
       // TODO: handle parsing data over 2 GB
@@ -662,7 +664,7 @@ public class Utils
    {
       if (path == null || path.length() == 0)
          return path;
-      List pathElems = new ArrayList(6);
+      List<String> pathElems = new ArrayList<String>(6);
       char[] pa = path.toCharArray();
       int n = pa.length;
       int s = -1;
@@ -1095,7 +1097,7 @@ public class Utils
       if (bytes != null && bytes.length >= 4)
       {
 
-         int head = ((int) bytes[0] & 0xff) | ((bytes[1] << 8) & 0xff00);
+         int head = (bytes[0] & 0xff) | ((bytes[1] << 8) & 0xff00);
          if (java.util.zip.GZIPInputStream.GZIP_MAGIC == head)
          {
             java.io.ByteArrayInputStream bais = null;
@@ -1202,7 +1204,8 @@ public class Utils
       return System.getProperty("java.class.path");
    }
 
-   public static final String toFile(URL url)
+   @SuppressWarnings("deprecation")
+  public static final String toFile(URL url)
    {
       if (url.getProtocol().indexOf("file") < 0)
          return null;
@@ -1231,9 +1234,9 @@ public class Utils
 
       protected static int counter;
 
-      protected ArrayList freeThreads;
+      protected List<PooledThread> freeThreads;
 
-      protected HashMap busyThreads;
+      protected HashMap<PooledThread, PooledThread> busyThreads;
 
       protected int maxThreads;
 
@@ -1256,8 +1259,8 @@ public class Utils
          {
             maxThreads = DEF_MAX_POOLED_THREAD;
          }
-         freeThreads = new ArrayList(maxThreads);
-         busyThreads = new HashMap(maxThreads);
+         freeThreads = new ArrayList<PooledThread>(maxThreads);
+         busyThreads = new HashMap<PooledThread, PooledThread>(maxThreads);
          this.threadFactory = threadfactory;
       }
 
@@ -1296,7 +1299,7 @@ public class Utils
             synchronized (freeThreads)
             {
                if (freeThreads.size() > 0)
-                  pt = (PooledThread) freeThreads.remove(0);
+                  pt = freeThreads.remove(0);
             }
             if (pt != null && pt.isAlive() == false)
                pt = null;
@@ -1326,23 +1329,25 @@ public class Utils
          }
       }
 
+      @Override
       protected void finalize() throws Throwable
       {
          synchronized (freeThreads)
          {
-            Iterator i = freeThreads.iterator();
+            Iterator<PooledThread> i = freeThreads.iterator();
             while (i.hasNext())
-               ((PooledThread) i.next()).interrupt();
+               i.next().interrupt();
          }
          synchronized (busyThreads)
          {
-            Iterator i = freeThreads.iterator();
+            Iterator<PooledThread> i = freeThreads.iterator();
             while (i.hasNext())
-               ((PooledThread) i.next()).interrupt();
+               i.next().interrupt();
          }
          super.finalize();
       }
 
+      @Override
       public String toString()
       {
          if (freeThreads != null && busyThreads != null)
@@ -1382,7 +1387,8 @@ public class Utils
             return delegateThread.isAlive();
          }
 
-         synchronized public void run()
+         @Override
+        synchronized public void run()
          {
             do
             {
@@ -1452,6 +1458,7 @@ public class Utils
       {
          super(new OutputStream()
          {
+            @Override
             public void write(int i)
             {
             }
