@@ -16,23 +16,18 @@
             <artifactId>jaxrs-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+<!--
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>tjws</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+ -->
 
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -85,7 +80,6 @@
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>1.1.1</version>
             <scope>test</scope>
         </dependency>
 
@@ -93,16 +87,6 @@
             <groupId>net.jcip</groupId>
             <artifactId>jcip-annotations</artifactId>
         </dependency>
-
-        <!-- Used by org.jboss.resteasy.plugins.server.tjws.* -->
-        <!--
-        <dependency>
-            <groupId>tjws</groupId>
-            <artifactId>webserver</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        -->
-
     </dependencies>
 
     <build>
@@ -114,30 +98,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <!-- exclude integrations tests which are known to fail -->
-            <id>exclude-known-tests-failures</id>
-            <activation>
-                <property>
-                    <name>exclude-known-tests-failures</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <excludes combine.children="append">
-                                <exclude>org/jboss/resteasy/test/providers/iioimage/TestIIOImageProvider.java</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
 </project>
