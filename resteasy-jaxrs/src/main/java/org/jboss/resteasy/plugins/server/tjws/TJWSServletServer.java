@@ -1,13 +1,15 @@
 package org.jboss.resteasy.plugins.server.tjws;
 
-import Acme.Serve.SSLAcceptor;
-import Acme.Serve.Serve;
-import org.jboss.resteasy.logging.Logger;
-
-import javax.servlet.http.HttpServlet;
 import java.io.File;
 import java.util.Hashtable;
 import java.util.Properties;
+
+import javax.servlet.http.HttpServlet;
+
+import org.jboss.resteasy.logging.Logger;
+
+import Acme.Serve.SSLAcceptor;
+import Acme.Serve.Serve;
 
 /**
  * This cannot be restarted once stopped.
@@ -47,7 +49,8 @@ public class TJWSServletServer
          }
          mappingTable.put(context, directory);
       }
-      
+
+      @Override
       public String getInitParameter(String param)
       {
          if (initParams == null)
@@ -77,17 +80,17 @@ public class TJWSServletServer
       server.addServlet(bindPath, servlet);
    }
 
-   public void addServlet(String bindPath, HttpServlet servlet, Hashtable initParams)
+   public void addServlet(String bindPath, HttpServlet servlet, Hashtable<?, ?> initParams)
    {
       server.addServlet(bindPath, servlet, initParams);
    }
-   
+
    public void addServlet(String bindPath, HttpServlet servlet, Hashtable<String,String> initParams, Hashtable<String,String> contextParams)
    {
       server.setInitParams(contextParams);
       server.addServlet(bindPath, servlet, initParams);
    }
-   
+
    public void setProps(Properties props)
    {
       this.props.putAll(props);
@@ -167,15 +170,22 @@ public class TJWSServletServer
    public void start()
    {
       if (this.props == null) this.props = new Properties();
-      if (!props.containsKey(Serve.ARG_PORT) && !props.containsKey(SSLAcceptor.ARG_PORT))
+      boolean isPortDefined = props.containsKey(Serve.ARG_PORT);
+      boolean isSslPortDefined = props.containsKey(SSLAcceptor.ARG_PORT);
+      if (!isPortDefined && !isSslPortDefined)
          throw new RuntimeException("You must set the port or ssl port");
-      if (props.containsKey(Serve.ARG_PORT) && props.containsKey(SSLAcceptor.ARG_PORT))
+      if (isPortDefined && isSslPortDefined)
          throw new RuntimeException("You must set either the port or ssl port, not both");
-      if (props.containsKey(SSLAcceptor.ARG_PORT)) props.put(Serve.ARG_ACCEPTOR_CLASS, SSLAcceptor.class.getName());
+      if (isSslPortDefined) props.put(Serve.ARG_ACCEPTOR_CLASS, SSLAcceptor.class.getName());
       props.setProperty(Serve.ARG_NOHUP, "nohup");
       server.arguments = props;
       server.initFileMappings();
-      server.runInBackground();
+      try {
+        server.runInBackground();
+      } catch (RuntimeException e) {
+        logger.error("Can not start server listening on " + (isSslPortDefined ? "ssl " : "") + "port " + (isSslPortDefined ? props.getProperty(SSLAcceptor.ARG_PORT) : props.getProperty(Serve.ARG_PORT)) );
+        throw e;
+      }
    }
 
    public void stop()
