@@ -33,7 +33,7 @@
           <groupId>org.openid4java</groupId>
           <artifactId>openid4java-server</artifactId>
           <version>0.9.5</version>
-          <exclusions> 
+          <exclusions>
              <exclusion>
                  <groupId>org.openid4java</groupId>
                  <artifactId>openid4java-server-JdbcServerAssociationStore</artifactId>
@@ -109,15 +109,6 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-
-            <plugin>
   	          <groupId>org.apache.maven.plugins</groupId>
 	          <artifactId>maven-war-plugin</artifactId>
   	          <configuration>
@@ -129,7 +120,7 @@
 	            </webResources>
 	          </configuration>
 	        </plugin>
-	 
+
 	        <plugin>
 	          <artifactId>maven-antrun-plugin</artifactId>
 	          <executions>

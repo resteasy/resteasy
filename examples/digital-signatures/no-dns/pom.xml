@@ -5,7 +5,7 @@
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <version>2.3.7.Final</version>
-		<relativePath>../../../pom.xml</relativePath>	    
+		<relativePath>../../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.test</groupId>
@@ -104,14 +104,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -71,7 +71,7 @@
           <groupId>org.openid4java</groupId>
           <artifactId>openid4java-consumer</artifactId>
           <version>0.9.5</version>
-          <exclusions> 
+          <exclusions>
              <exclusion>
                  <groupId>net.sourceforge.nekohtml</groupId>
                  <artifactId>nekohtml</artifactId>
@@ -79,7 +79,7 @@
           </exclusions>
         </dependency>
 
-        
+
     </dependencies>
 
     <!-- this distributionManagement is only here for RESTEasy automated testing of examples build.  You can remove if you are copying this
@@ -125,14 +125,6 @@
                             </value>
                         </systemProperty>
                     </systemProperties>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
                 </configuration>
             </plugin>
         </plugins>
