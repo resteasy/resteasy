@@ -1,10 +1,10 @@
 package org.jboss.resteasy.test.core.request;
 
+import static org.junit.Assert.*;
+
 import org.jboss.resteasy.core.request.QualityValue;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 
 /**
@@ -111,8 +111,8 @@ public class QualityValueTest
       QualityValue x = QualityValue.valueOf("0.08");
       assertEquals(80, x.intValue());
       assertEquals(80L, x.longValue());
-      assertEquals(0.08f, x.floatValue());
-      assertEquals(0.08d, x.doubleValue());
+      assertEquals(0.08f, x.floatValue(), 0.0);
+      assertEquals(0.08d, x.doubleValue(), 0.0);
    }
 
 }

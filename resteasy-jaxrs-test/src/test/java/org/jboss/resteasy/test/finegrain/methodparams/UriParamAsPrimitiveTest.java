@@ -1,6 +1,13 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.util.HttpClient4xUtils.*;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
@@ -11,12 +18,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import static org.jboss.resteasy.test.TestPortProvider.*;
-import static org.jboss.resteasy.util.HttpClient4xUtils.updateQuery;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -133,7 +134,7 @@ public class UriParamAsPrimitiveTest
       @GET
       public String doGet(@PathParam("arg") float v)
       {
-         Assert.assertEquals(3.14159265f, v);
+         Assert.assertEquals(3.14159265f, v, 0.0);
          return "content";
       }
    }
@@ -144,7 +145,7 @@ public class UriParamAsPrimitiveTest
       @GET
       public String doGet(@PathParam("arg") double v)
       {
-         Assert.assertEquals(3.14159265358979d, v);
+         Assert.assertEquals(3.14159265358979d, v, 0.0);
          return "content";
       }
    }
@@ -210,7 +211,7 @@ public class UriParamAsPrimitiveTest
       @GET
       public String doGet(@PathParam("arg") Float v)
       {
-         Assert.assertEquals(3.14159265f, v.floatValue());
+         Assert.assertEquals(3.14159265f, v.floatValue(), 0.0);
          return "content";
       }
    }
@@ -221,7 +222,7 @@ public class UriParamAsPrimitiveTest
       @GET
       public String doGet(@PathParam("arg") Double v)
       {
-         Assert.assertEquals(3.14159265358979d, v.doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.doubleValue(), 0.0);
          return "content";
       }
    }
@@ -240,7 +241,7 @@ public class UriParamAsPrimitiveTest
             throw new RuntimeException(e);
          }
       }
-      
+
       {
          ClientRequest request = new ClientRequest(generateURL("/" + type + "/wrapper/" + value));
          try

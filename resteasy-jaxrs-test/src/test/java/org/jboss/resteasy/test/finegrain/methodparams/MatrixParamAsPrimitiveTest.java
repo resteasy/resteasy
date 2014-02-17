@@ -1,5 +1,15 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.util.List;
+
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
@@ -11,15 +21,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import java.util.List;
-
-import static org.jboss.resteasy.test.TestPortProvider.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -107,7 +108,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/float")
       public String doGet(@MatrixParam("float") float v)
       {
-         Assert.assertEquals(3.14159265f, v);
+         Assert.assertEquals(3.14159265f, v, 0.0);
          return "content";
       }
 
@@ -115,7 +116,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/double")
       public String doGet(@MatrixParam("double") double v)
       {
-         Assert.assertEquals(3.14159265358979d, v);
+         Assert.assertEquals(3.14159265358979d, v, 0.0);
          return "content";
       }
    }
@@ -167,7 +168,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/float")
       public String doGet(@MatrixParam("float") float v)
       {
-         Assert.assertEquals(0.0f, v);
+         Assert.assertEquals(0.0f, v, 0.0);
          return "content";
       }
 
@@ -175,7 +176,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/double")
       public String doGet(@MatrixParam("double") double v)
       {
-         Assert.assertEquals(0.0d, v);
+         Assert.assertEquals(0.0d, v, 0.0);
          return "content";
       }
    }
@@ -227,7 +228,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/float")
       public String doGet(@MatrixParam("float") @DefaultValue("3.14159265") float v)
       {
-         Assert.assertEquals(3.14159265f, v);
+         Assert.assertEquals(3.14159265f, v, 0.0);
          return "content";
       }
 
@@ -235,7 +236,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/double")
       public String doGet(@MatrixParam("double") @DefaultValue("3.14159265358979") double v)
       {
-         Assert.assertEquals(3.14159265358979d, v);
+         Assert.assertEquals(3.14159265358979d, v, 0.0);
          return "content";
       }
    }
@@ -287,7 +288,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/float")
       public String doGet(@MatrixParam("float") @DefaultValue("0.0") float v)
       {
-         Assert.assertEquals(3.14159265f, v);
+         Assert.assertEquals(3.14159265f, v, 0.0);
          return "content";
       }
 
@@ -295,7 +296,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/double")
       public String doGet(@MatrixParam("double") @DefaultValue("0.0") double v)
       {
-         Assert.assertEquals(3.14159265358979d, v);
+         Assert.assertEquals(3.14159265358979d, v, 0.0);
          return "content";
       }
    }
@@ -347,7 +348,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/float")
       public String doGet(@MatrixParam("float") Float v)
       {
-         Assert.assertEquals(3.14159265f, v.floatValue());
+         Assert.assertEquals(3.14159265f, v.floatValue(), 0.0);
          return "content";
       }
 
@@ -355,7 +356,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/double")
       public String doGet(@MatrixParam("double") Double v)
       {
-         Assert.assertEquals(3.14159265358979d, v.doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.doubleValue(), 0.0);
          return "content";
       }
    }
@@ -467,7 +468,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/float")
       public String doGet(@MatrixParam("float") @DefaultValue("3.14159265") Float v)
       {
-         Assert.assertEquals(3.14159265f, v.floatValue());
+         Assert.assertEquals(3.14159265f, v.floatValue(), 0.0);
          return "content";
       }
 
@@ -475,7 +476,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/double")
       public String doGet(@MatrixParam("double") @DefaultValue("3.14159265358979") Double v)
       {
-         Assert.assertEquals(3.14159265358979d, v.doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.doubleValue(), 0.0);
          return "content";
       }
    }
@@ -527,7 +528,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/float")
       public String doGet(@MatrixParam("float") @DefaultValue("0.0") Float v)
       {
-         Assert.assertEquals(3.14159265f, v.floatValue());
+         Assert.assertEquals(3.14159265f, v.floatValue(), 0.0);
          return "content";
       }
 
@@ -535,7 +536,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/double")
       public String doGet(@MatrixParam("double") @DefaultValue("0.0") Double v)
       {
-         Assert.assertEquals(3.14159265358979d, v.doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.doubleValue(), 0.0);
          return "content";
       }
    }
@@ -597,9 +598,9 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/float")
       public String doGetFloat(@MatrixParam("float") List<Float> v)
       {
-         Assert.assertEquals(3.14159265f, v.get(0).floatValue());
-         Assert.assertEquals(3.14159265f, v.get(1).floatValue());
-         Assert.assertEquals(3.14159265f, v.get(2).floatValue());
+         Assert.assertEquals(3.14159265f, v.get(0).floatValue(), 0.0);
+         Assert.assertEquals(3.14159265f, v.get(1).floatValue(), 0.0);
+         Assert.assertEquals(3.14159265f, v.get(2).floatValue(), 0.0);
          return "content";
       }
 
@@ -607,9 +608,9 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/double")
       public String doGetDouble(@MatrixParam("double") List<Double> v)
       {
-         Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
-         Assert.assertEquals(3.14159265358979d, v.get(1).doubleValue());
-         Assert.assertEquals(3.14159265358979d, v.get(2).doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue(), 0.0);
+         Assert.assertEquals(3.14159265358979d, v.get(1).doubleValue(), 0.0);
+         Assert.assertEquals(3.14159265358979d, v.get(2).doubleValue(), 0.0);
          return "content";
       }
    }
@@ -728,7 +729,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/float")
       public String doGetFloat(@MatrixParam("float") @DefaultValue("3.14159265") List<Float> v)
       {
-         Assert.assertEquals(3.14159265f, v.get(0).floatValue());
+         Assert.assertEquals(3.14159265f, v.get(0).floatValue(), 0.0);
          return "content";
       }
 
@@ -736,7 +737,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/double")
       public String doGetDouble(@MatrixParam("double") @DefaultValue("3.14159265358979") List<Double> v)
       {
-         Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue(), 0.0);
          return "content";
       }
    }
@@ -788,7 +789,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/float")
       public String doGetFloat(@MatrixParam("float") @DefaultValue("0.0") List<Float> v)
       {
-         Assert.assertEquals(3.14159265f, v.get(0).floatValue());
+         Assert.assertEquals(3.14159265f, v.get(0).floatValue(), 0.0);
          return "content";
       }
 
@@ -796,7 +797,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/double")
       public String doGetDouble(@MatrixParam("double") @DefaultValue("0.0") List<Double> v)
       {
-         Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue(), 0.0);
          return "content";
       }
    }
@@ -858,9 +859,9 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/float")
       public String doGetFloat(@MatrixParam("float") float[] v)
       {
-         Assert.assertEquals(3.14159265f, v[0]);
-         Assert.assertEquals(3.14159265f, v[1]);
-         Assert.assertEquals(3.14159265f, v[2]);
+         Assert.assertEquals(3.14159265f, v[0], 0.0);
+         Assert.assertEquals(3.14159265f, v[1], 0.0);
+         Assert.assertEquals(3.14159265f, v[2], 0.0);
          return "content";
       }
 
@@ -868,9 +869,9 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/double")
       public String doGetDouble(@MatrixParam("double") double[] v)
       {
-         Assert.assertEquals(3.14159265358979d, v[0]);
-         Assert.assertEquals(3.14159265358979d, v[1]);
-         Assert.assertEquals(3.14159265358979d, v[2]);
+         Assert.assertEquals(3.14159265358979d, v[0], 0.0);
+         Assert.assertEquals(3.14159265358979d, v[1], 0.0);
+         Assert.assertEquals(3.14159265358979d, v[2], 0.0);
          return "content";
       }
    }
@@ -989,7 +990,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/float")
       public String doGetFloat(@MatrixParam("float") @DefaultValue("3.14159265") float[] v)
       {
-         Assert.assertEquals(3.14159265f, v[0]);
+         Assert.assertEquals(3.14159265f, v[0], 0.0);
          return "content";
       }
 
@@ -997,7 +998,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/double")
       public String doGetDouble(@MatrixParam("double") @DefaultValue("3.14159265358979") double[] v)
       {
-         Assert.assertEquals(3.14159265358979d, v[0]);
+         Assert.assertEquals(3.14159265358979d, v[0], 0.0);
          return "content";
       }
    }
@@ -1049,7 +1050,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/float")
       public String doGetFloat(@MatrixParam("float") @DefaultValue("0.0") float[] v)
       {
-         Assert.assertEquals(3.14159265f, v[0]);
+         Assert.assertEquals(3.14159265f, v[0], 0.0);
          return "content";
       }
 
@@ -1057,7 +1058,7 @@ public class MatrixParamAsPrimitiveTest
       @Produces("application/double")
       public String doGetDouble(@MatrixParam("double") @DefaultValue("0.0") double[] v)
       {
-         Assert.assertEquals(3.14159265358979d, v[0]);
+         Assert.assertEquals(3.14159265358979d, v[0], 0.0);
          return "content";
       }
    }
@@ -1080,7 +1081,7 @@ public class MatrixParamAsPrimitiveTest
             throw new RuntimeException(e);
          }
       }
-      
+
       {
          ClientRequest request = new ClientRequest(generateURL("/wrappers" + param));
          request.header(HttpHeaderNames.ACCEPT, "application/" + type);
@@ -1127,7 +1128,7 @@ public class MatrixParamAsPrimitiveTest
          {
             throw new RuntimeException(e);
          }
-      }      
+      }
    }
 
    public void _testDefault(String base, String type, String value)
@@ -1146,8 +1147,8 @@ public class MatrixParamAsPrimitiveTest
          {
             throw new RuntimeException(e);
          }
-      }  
-      
+      }
+
       {
          ClientRequest request = new ClientRequest(generateURL("" + base + "default"));
          request.header(HttpHeaderNames.ACCEPT, "application/" + type);
@@ -1162,7 +1163,7 @@ public class MatrixParamAsPrimitiveTest
          {
             throw new RuntimeException(e);
          }
-      }  
+      }
 
       String param = ";" + type + "=" + value;
       {
@@ -1179,7 +1180,7 @@ public class MatrixParamAsPrimitiveTest
          {
             throw new RuntimeException(e);
          }
-      }  
+      }
    }
 
    public void _testDefault(String type, String value)
@@ -1436,8 +1437,8 @@ public class MatrixParamAsPrimitiveTest
          }
       }
    }
-   
-   
+
+
    static private void shutdown(ClientRequest request) throws Exception
    {
       ApacheHttpClient4Executor executor = (ApacheHttpClient4Executor) request.getExecutor();

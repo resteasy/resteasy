@@ -1,5 +1,17 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.util.HttpClient4xUtils.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
@@ -12,17 +24,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.jboss.resteasy.test.TestPortProvider.*;
-import static org.jboss.resteasy.util.HttpClient4xUtils.updateQuery;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -93,6 +94,7 @@ public class QueryParamAsPrimitiveTest
    @Path("/")
    public static class ResourceQueryPrimitives implements IResourceQueryPrimitives
    {
+      @Override
       @GET
       @Produces("application/boolean")
       public String doGet(@QueryParam("boolean") boolean v)
@@ -101,6 +103,7 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/byte")
       public String doGet(@QueryParam("byte") byte v)
@@ -109,6 +112,7 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/short")
       public String doGet(@QueryParam("short") short v)
@@ -117,6 +121,7 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/int")
       public String doGet(@QueryParam("int") int v)
@@ -125,6 +130,7 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/long")
       public String doGet(@QueryParam("long") long v)
@@ -133,19 +139,21 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/float")
       public String doGet(@QueryParam("float") float v)
       {
-         Assert.assertEquals(3.14159265f, v);
+         Assert.assertEquals(3.14159265f, v, 0.0);
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/double")
       public String doGet(@QueryParam("double") double v)
       {
-         Assert.assertEquals(3.14159265358979d, v);
+         Assert.assertEquals(3.14159265358979d, v, 0.0);
          return "content";
       }
    }
@@ -197,7 +205,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/float")
       public String doGet(@QueryParam("float") float v)
       {
-         Assert.assertEquals(0.0f, v);
+         Assert.assertEquals(0.0f, v, 0.0);
          return "content";
       }
 
@@ -205,7 +213,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/double")
       public String doGet(@QueryParam("double") double v)
       {
-         Assert.assertEquals(0.0d, v);
+         Assert.assertEquals(0.0d, v, 0.0);
          return "content";
       }
    }
@@ -257,7 +265,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/float")
       public String doGet(@QueryParam("float") @DefaultValue("3.14159265") float v)
       {
-         Assert.assertEquals(3.14159265f, v);
+         Assert.assertEquals(3.14159265f, v, 0.0);
          return "content";
       }
 
@@ -265,7 +273,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/double")
       public String doGet(@QueryParam("double") @DefaultValue("3.14159265358979") double v)
       {
-         Assert.assertEquals(3.14159265358979d, v);
+         Assert.assertEquals(3.14159265358979d, v, 0.0);
          return "content";
       }
    }
@@ -317,7 +325,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/float")
       public String doGet(@QueryParam("float") @DefaultValue("0.0") float v)
       {
-         Assert.assertEquals(3.14159265f, v);
+         Assert.assertEquals(3.14159265f, v, 0.0);
          return "content";
       }
 
@@ -325,7 +333,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/double")
       public String doGet(@QueryParam("double") @DefaultValue("0.0") double v)
       {
-         Assert.assertEquals(3.14159265358979d, v);
+         Assert.assertEquals(3.14159265358979d, v, 0.0);
          return "content";
       }
    }
@@ -333,6 +341,7 @@ public class QueryParamAsPrimitiveTest
    @Path("/wrappers")
    public static class ResourceQueryPrimitiveWrappers implements IResourceQueryPrimitiveWrappers
    {
+      @Override
       @GET
       @Produces("application/boolean")
       public String doGet(@QueryParam("boolean") Boolean v)
@@ -341,6 +350,7 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/byte")
       public String doGet(@QueryParam("byte") Byte v)
@@ -349,6 +359,7 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/short")
       public String doGet(@QueryParam("short") Short v)
@@ -357,6 +368,7 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/int")
       public String doGet(@QueryParam("int") Integer v)
@@ -365,6 +377,7 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/long")
       public String doGet(@QueryParam("long") Long v)
@@ -373,19 +386,21 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/float")
       public String doGet(@QueryParam("float") Float v)
       {
-         Assert.assertEquals(3.14159265f, v.floatValue());
+         Assert.assertEquals(3.14159265f, v.floatValue(), 0.0);
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/double")
       public String doGet(@QueryParam("double") Double v)
       {
-         Assert.assertEquals(3.14159265358979d, v.doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.doubleValue(), 0.0);
          return "content";
       }
    }
@@ -497,7 +512,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/float")
       public String doGet(@QueryParam("float") @DefaultValue("3.14159265") Float v)
       {
-         Assert.assertEquals(3.14159265f, v.floatValue());
+         Assert.assertEquals(3.14159265f, v.floatValue(), 0.0);
          return "content";
       }
 
@@ -505,7 +520,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/double")
       public String doGet(@QueryParam("double") @DefaultValue("3.14159265358979") Double v)
       {
-         Assert.assertEquals(3.14159265358979d, v.doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.doubleValue(), 0.0);
          return "content";
       }
    }
@@ -557,7 +572,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/float")
       public String doGet(@QueryParam("float") @DefaultValue("0.0") Float v)
       {
-         Assert.assertEquals(3.14159265f, v.floatValue());
+         Assert.assertEquals(3.14159265f, v.floatValue(), 0.0);
          return "content";
       }
 
@@ -565,7 +580,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/double")
       public String doGet(@QueryParam("double") @DefaultValue("0.0") Double v)
       {
-         Assert.assertEquals(3.14159265358979d, v.doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.doubleValue(), 0.0);
          return "content";
       }
    }
@@ -573,6 +588,7 @@ public class QueryParamAsPrimitiveTest
    @Path("/list")
    public static class ResourceQueryPrimitiveList implements IResourceQueryPrimitiveList
    {
+      @Override
       @GET
       @Produces("application/boolean")
       public String doGetBoolean(@QueryParam("boolean") List<Boolean> v)
@@ -583,6 +599,7 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/byte")
       public String doGetByte(@QueryParam("byte") List<Byte> v)
@@ -593,6 +610,7 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/short")
       public String doGetShort(@QueryParam("short") List<Short> v)
@@ -603,6 +621,7 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/int")
       public String doGetInteger(@QueryParam("int") List<Integer> v)
@@ -613,6 +632,7 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/long")
       public String doGetLong(@QueryParam("long") List<Long> v)
@@ -623,23 +643,25 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/float")
       public String doGetFloat(@QueryParam("float") List<Float> v)
       {
-         Assert.assertEquals(3.14159265f, v.get(0).floatValue());
-         Assert.assertEquals(3.14159265f, v.get(1).floatValue());
-         Assert.assertEquals(3.14159265f, v.get(2).floatValue());
+         Assert.assertEquals(3.14159265f, v.get(0).floatValue(), 0.0);
+         Assert.assertEquals(3.14159265f, v.get(1).floatValue(), 0.0);
+         Assert.assertEquals(3.14159265f, v.get(2).floatValue(), 0.0);
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/double")
       public String doGetDouble(@QueryParam("double") List<Double> v)
       {
-         Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
-         Assert.assertEquals(3.14159265358979d, v.get(1).doubleValue());
-         Assert.assertEquals(3.14159265358979d, v.get(2).doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue(), 0.0);
+         Assert.assertEquals(3.14159265358979d, v.get(1).doubleValue(), 0.0);
+         Assert.assertEquals(3.14159265358979d, v.get(2).doubleValue(), 0.0);
          return "content";
       }
    }
@@ -751,7 +773,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/float")
       public String doGetFloat(@QueryParam("float") @DefaultValue("3.14159265") List<Float> v)
       {
-         Assert.assertEquals(3.14159265f, v.get(0).floatValue());
+         Assert.assertEquals(3.14159265f, v.get(0).floatValue(), 0.0);
          return "content";
       }
 
@@ -759,7 +781,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/double")
       public String doGetDouble(@QueryParam("double") @DefaultValue("3.14159265358979") List<Double> v)
       {
-         Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue(), 0.0);
          return "content";
       }
    }
@@ -811,7 +833,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/float")
       public String doGetFloat(@QueryParam("float") @DefaultValue("0.0") List<Float> v)
       {
-         Assert.assertEquals(3.14159265f, v.get(0).floatValue());
+         Assert.assertEquals(3.14159265f, v.get(0).floatValue(), 0.0);
          return "content";
       }
 
@@ -819,7 +841,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/double")
       public String doGetDouble(@QueryParam("double") @DefaultValue("0.0") List<Double> v)
       {
-         Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue(), 0.0);
          return "content";
       }
    }
@@ -827,6 +849,7 @@ public class QueryParamAsPrimitiveTest
    @Path("/array")
    public static class ResourceQueryPrimitiveArray implements IResourceQueryPrimitiveArray
    {
+      @Override
       @GET
       @Produces("application/boolean")
       public String doGetBoolean(@QueryParam("boolean") boolean[] v)
@@ -837,6 +860,7 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/byte")
       public String doGetByte(@QueryParam("byte") byte[] v)
@@ -847,6 +871,7 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/short")
       public String doGetShort(@QueryParam("short") short[] v)
@@ -857,6 +882,7 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/int")
       public String doGetInteger(@QueryParam("int") int[] v)
@@ -867,6 +893,7 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/long")
       public String doGetLong(@QueryParam("long") long[] v)
@@ -877,23 +904,25 @@ public class QueryParamAsPrimitiveTest
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/float")
       public String doGetFloat(@QueryParam("float") float[] v)
       {
-         Assert.assertEquals(3.14159265f, v[0]);
-         Assert.assertEquals(3.14159265f, v[1]);
-         Assert.assertEquals(3.14159265f, v[2]);
+         Assert.assertEquals(3.14159265f, v[0], 0.0);
+         Assert.assertEquals(3.14159265f, v[1], 0.0);
+         Assert.assertEquals(3.14159265f, v[2], 0.0);
          return "content";
       }
 
+      @Override
       @GET
       @Produces("application/double")
       public String doGetDouble(@QueryParam("double") double[] v)
       {
-         Assert.assertEquals(3.14159265358979d, v[0]);
-         Assert.assertEquals(3.14159265358979d, v[1]);
-         Assert.assertEquals(3.14159265358979d, v[2]);
+         Assert.assertEquals(3.14159265358979d, v[0], 0.0);
+         Assert.assertEquals(3.14159265358979d, v[1], 0.0);
+         Assert.assertEquals(3.14159265358979d, v[2], 0.0);
          return "content";
       }
    }
@@ -1005,7 +1034,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/float")
       public String doGetFloat(@QueryParam("float") @DefaultValue("3.14159265") float[] v)
       {
-         Assert.assertEquals(3.14159265f, v[0]);
+         Assert.assertEquals(3.14159265f, v[0], 0.0);
          return "content";
       }
 
@@ -1013,7 +1042,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/double")
       public String doGetDouble(@QueryParam("double") @DefaultValue("3.14159265358979") double[] v)
       {
-         Assert.assertEquals(3.14159265358979d, v[0]);
+         Assert.assertEquals(3.14159265358979d, v[0], 0.0);
          return "content";
       }
    }
@@ -1065,7 +1094,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/float")
       public String doGetFloat(@QueryParam("float") @DefaultValue("0.0") float[] v)
       {
-         Assert.assertEquals(3.14159265f, v[0]);
+         Assert.assertEquals(3.14159265f, v[0], 0.0);
          return "content";
       }
 
@@ -1073,7 +1102,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/double")
       public String doGetDouble(@QueryParam("double") @DefaultValue("0.0") double[] v)
       {
-         Assert.assertEquals(3.14159265358979d, v[0]);
+         Assert.assertEquals(3.14159265358979d, v[0], 0.0);
          return "content";
       }
    }
@@ -1604,7 +1633,7 @@ public class QueryParamAsPrimitiveTest
       @Produces("application/double")
       String doGetDouble(@QueryParam("double") double[] v);
    }
-   
+
    static private void shutdown(ClientRequest request) throws Exception
    {
 //      request.getExecutor().close();
