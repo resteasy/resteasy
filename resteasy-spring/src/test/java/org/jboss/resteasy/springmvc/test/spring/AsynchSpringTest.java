@@ -18,6 +18,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -27,8 +28,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations =
-{ "classpath:/spring-test-async.xml" })
+@ContextConfiguration(locations = { "classpath:/spring-test-async.xml" })
+@DirtiesContext
 public class AsynchSpringTest
 {
    private static CountDownLatch latch;
@@ -80,7 +81,7 @@ public class AsynchSpringTest
       Assert.assertTrue(latch.await(2, TimeUnit.SECONDS));
       response.releaseConnection();
    }
-   
+
    @Test
    public void testAsynch() throws Exception
    {
@@ -98,7 +99,7 @@ public class AsynchSpringTest
          String jobUrl = response.getHeaders().getFirst(HttpHeaders.LOCATION);
          System.out.println("JOB: " + jobUrl);
          response.releaseConnection();
-         
+
          request = new ClientRequest(jobUrl);
          response = request.get();
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
@@ -114,7 +115,7 @@ public class AsynchSpringTest
          response = request.get();
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
          Assert.assertEquals("content", response.getEntity(String.class));
-         
+
          // test its still there
          response = request.get();
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -123,8 +124,8 @@ public class AsynchSpringTest
          // delete and test delete
          request = new ClientRequest(jobUrl);
          response = request.delete();
-         Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());      
-         
+         Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
+
          response = request.get();
          Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
          response.releaseConnection();
@@ -148,7 +149,7 @@ public class AsynchSpringTest
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
          Assert.assertTrue(!jobUrl1.equals(jobUrl2));
          response.releaseConnection();
-         
+
          request = new ClientRequest(jobUrl1);
          response = request.get();
          Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
@@ -159,16 +160,16 @@ public class AsynchSpringTest
          response = request.get();
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
          Assert.assertEquals("content", response.getEntity(String.class));
-         
+
          // delete and test delete
          response = request.delete();
-         Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());         
+         Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
 
          response = request.get();
          Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
          response.releaseConnection();
       }
-      
+
       // test readAndRemove
       {
          dispatcher.setMaxCacheSize(10);
@@ -179,14 +180,14 @@ public class AsynchSpringTest
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
          String jobUrl2 = response.getHeaders().getFirst(HttpHeaders.LOCATION);
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
-         response.releaseConnection();         
-         
+         response.releaseConnection();
+
          // test its still there
          request = new ClientRequest(jobUrl2);
          response = request.post();
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
          Assert.assertEquals("content", response.getEntity(String.class));
-         
+
          response = request.get();
          Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
          response.releaseConnection();

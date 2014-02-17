@@ -8,6 +8,7 @@ import org.jboss.resteasy.plugins.spring.SpringBeanProcessor;
 import org.jboss.resteasy.spring.beanprocessor.MyInterceptor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -15,15 +16,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * This class tests a gamut of Spring related functionality including @Configuration
  * beans, @Autowired, scanned beans, interceptors and overall integration
  * between RESTEasy and the Spring ApplicationContext.
- * 
+ *
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * 
+ *
  * @see SpringBeanProcessor
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/spring-bean-processor-test.xml" })
+@DirtiesContext
 public class TestSpringBeanProcessor
 {
 

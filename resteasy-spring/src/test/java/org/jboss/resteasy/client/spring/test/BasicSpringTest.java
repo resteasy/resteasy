@@ -7,6 +7,7 @@ import org.jboss.resteasy.springmvc.test.client.BasicResource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -16,12 +17,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * {@link org.jboss.resteasy.springmvc.test.client.BasicSpringTest}.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations =
-{ "classpath:spring-test-client2.xml" })
+@ContextConfiguration(locations = { "classpath:spring-test-client2.xml" })
+@DirtiesContext
 public class BasicSpringTest
 {
 	   @Autowired
-	   BasicResource br;
+	   private BasicResource br;
 
 	   @Test
 	   public void testBasic() throws HttpException, IOException
@@ -45,7 +46,7 @@ public class BasicSpringTest
 
 	      Integer interceptorCount = br
 	            .getSpringInterceptorCount("afterCompletion");
-	      
+
 	      Assert.assertEquals(new Integer(9), interceptorCount);
 	      Assert.assertEquals("text/plain", br.getContentTypeHeader());
 	      Assert.assertEquals("springSomething", br.testSpringXml().getSomething());
