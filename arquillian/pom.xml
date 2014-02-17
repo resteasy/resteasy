@@ -11,14 +11,12 @@
     <name>Arquillian</name>
 
     <modules>
-        <module>RESTEASY-736-jetty</module>
-        <!--module>RESTEASY-736-as71</module-->
-        <module>RESTEASY-752-jetty</module>
-        <module>RESTEASY-760-jetty</module>
-        <module>RESTEASY-767-jetty</module>
-        <module>RESTEASY-800-AS71</module>
-        <module>RESTEASY-802-AS71</module>
-        <!--module>RESTEASY-802-AS72</module-->
+        <module>RESTEASY-736</module>
+        <module>RESTEASY-752</module>
+        <module>RESTEASY-760</module>
+        <module>RESTEASY-767</module>
+        <module>RESTEASY-800</module>
+        <module>RESTEASY-802</module>
     </modules>
 
 </project>

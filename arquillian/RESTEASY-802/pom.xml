@@ -7,6 +7,15 @@
     <version>2.3.7.Final</version>
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
-  <artifactId>RESTEASY-736-jetty</artifactId>
+  <artifactId>RESTEASY-802</artifactId>
 
+  <dependencies>
+    <dependency>
+        <groupId>org.jboss.spec</groupId>
+        <artifactId>jboss-javaee-6.0</artifactId>
+        <version>1.0.0.Final</version>
+        <type>pom</type>
+        <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>
