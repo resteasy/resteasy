@@ -3,7 +3,6 @@ package org.jboss.resteasy.resteasy760;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Encoded;
 import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -28,7 +27,7 @@ public class TestResource
    {
       return formParam;
    }
-   
+
    @PUT
    @Path("put/noquery/encoded")
    @Consumes("application/x-www-form-urlencoded")
@@ -36,7 +35,7 @@ public class TestResource
    {
       return formParam;
    }
-   
+
    @POST
    @Path("post/noquery")
    @Consumes("application/x-www-form-urlencoded")
@@ -44,7 +43,7 @@ public class TestResource
    {
       return formParam;
    }
-   
+
    @POST
    @Path("post/noquery/encoded")
    @Consumes("application/x-www-form-urlencoded")
@@ -52,7 +51,7 @@ public class TestResource
    {
       return formParam;
    }
-   
+
    @PUT
    @Path("put/query")
    @Consumes("application/x-www-form-urlencoded")
@@ -60,7 +59,7 @@ public class TestResource
    {
       return formParam;
    }
-   
+
    @PUT
    @Path("put/query/encoded")
    @Consumes("application/x-www-form-urlencoded")
@@ -68,7 +67,7 @@ public class TestResource
    {
       return formParam;
    }
-   
+
    @POST
    @Path("post/query")
    @Consumes("application/x-www-form-urlencoded")
@@ -76,7 +75,7 @@ public class TestResource
    {
       return formParam;
    }
-   
+
    @POST
    @Path("post/query/encoded")
    @Consumes("application/x-www-form-urlencoded")

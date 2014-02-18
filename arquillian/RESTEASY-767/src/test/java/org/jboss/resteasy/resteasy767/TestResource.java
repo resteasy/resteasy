@@ -2,7 +2,6 @@ package org.jboss.resteasy.resteasy767;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.annotations.Suspend;
@@ -10,7 +9,7 @@ import org.jboss.resteasy.spi.AsynchronousResponse;
 
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -25,7 +24,7 @@ public class TestResource
    {
       return Response.ok().entity("sync").build();
    }
-   
+
    @GET
    @Path("async/delay")
    public void asyncDelay(final @Suspend(10000) AsynchronousResponse response) throws Exception
@@ -49,7 +48,7 @@ public class TestResource
       };
       t.start();
    }
-   
+
    @GET
    @Path("async/nodelay")
    public void asyncNoDelay(final @Suspend(10000) AsynchronousResponse response) throws Exception
@@ -57,5 +56,5 @@ public class TestResource
       Response jaxrs = Response.ok("async/nodelay").build();
       response.setResponse(jaxrs);
    }
-   
+
 }

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
@@ -16,7 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @author Achim Bitzer
  * @version $Revision: 1.1 $
@@ -24,6 +25,7 @@ import org.junit.runner.RunWith;
  * Copyright Aug 3, 2012
  */
 @RunWith(Arquillian.class)
+@RunAsClient
 public class FormParameterTest
 {
    @Deployment
@@ -96,7 +98,7 @@ public class FormParameterTest
       System.out.println("response: " + response.getEntity());
       assertEquals("abc xyz", response.getEntity());
    }
-   
+
    @Test
    public void testFormParamWithQueryParamPutEncoded() throws Exception
    {
@@ -120,7 +122,7 @@ public class FormParameterTest
       System.out.println("response: " + response.getEntity());
       assertEquals("abc xyz", response.getEntity());
    }
-   
+
    @Test
    public void testFormParamWithQueryParamPostEncoded() throws Exception
    {

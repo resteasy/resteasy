@@ -3,6 +3,7 @@ package org.jboss.resteasy.resteasy800;
 import static org.junit.Assert.assertEquals;
 
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
@@ -17,13 +18,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
  * Copyright Mar 5, 2013
  */
 @RunWith(Arquillian.class)
+@RunAsClient
 public class ModulesTest
 {
    private static final Logger log = LoggerFactory.getLogger(ModulesTest.class);
