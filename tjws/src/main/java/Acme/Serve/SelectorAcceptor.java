@@ -19,16 +19,14 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  *  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  *  SUCH DAMAGE.
- *  
+ *
  *  Visit http://tjws.sourceforge.net to get the latest information
- *  about Rogatkin's products.                                                        
- *  $Id: SelectorAcceptor.java,v 1.8 2008/01/18 10:05:23 dmitriy Exp $                
+ *  about Rogatkin's products.
+ *  $Id: SelectorAcceptor.java,v 1.8 2008/01/18 10:05:23 dmitriy Exp $
  *  Created on Feb 21, 2007
  *  @author dmitriy
  */
 package Acme.Serve;
-
-import Acme.Serve.Serve.Acceptor;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -41,14 +39,17 @@ import java.nio.channels.ServerSocketChannel;
 import java.util.Iterator;
 import java.util.Map;
 
+import Acme.Serve.Serve.Acceptor;
+
 public class SelectorAcceptor implements Acceptor
 {
    private ServerSocketChannel channel;
 
    private Selector selector;
 
-   private Iterator readyItor;
+   private Iterator<?> readyItor;
 
+   @Override
    public Socket accept() throws IOException
    {
       do
@@ -87,6 +88,7 @@ public class SelectorAcceptor implements Acceptor
       } while (true);
    }
 
+   @Override
    public void destroy() throws IOException
    {
       String exceptions = "";
@@ -110,7 +112,8 @@ public class SelectorAcceptor implements Acceptor
          throw new IOException(exceptions);
    }
 
-   public void init(Map inProperties, Map outProperties) throws IOException
+   @Override
+   public void init(Map<Object, Object> inProperties, Map<Object, Object> outProperties) throws IOException
    {
       selector = Selector.open();
 
@@ -143,6 +146,7 @@ public class SelectorAcceptor implements Acceptor
       }
    }
 
+   @Override
    public String toString()
    {
       return "SelectorAcceptor - " + (channel == null ? "unset" : "" + channel.socket());

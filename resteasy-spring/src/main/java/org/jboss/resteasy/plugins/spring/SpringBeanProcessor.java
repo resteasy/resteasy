@@ -1,5 +1,17 @@
 package org.jboss.resteasy.plugins.spring;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
+
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -17,22 +29,10 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.util.ClassUtils;
-
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * <p>
@@ -75,14 +75,15 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, Applicatio
 
    protected class ResteasyBeanPostProcessor implements BeanPostProcessor
    {
-      private ConfigurableListableBeanFactory beanFactory;
+      private final ConfigurableListableBeanFactory beanFactory;
 
       protected ResteasyBeanPostProcessor(ConfigurableListableBeanFactory beanFactory)
       {
          this.beanFactory = beanFactory;
       }
 
-      public Object postProcessBeforeInitialization(Object bean, String beanName)
+      @Override
+    public Object postProcessBeforeInitialization(Object bean, String beanName)
               throws BeansException
       {
          return bean;
@@ -108,7 +109,8 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, Applicatio
        *
        * @see SpringBeanProcessor.postProcessBeanFactory
        */
-      public Object postProcessAfterInitialization(Object bean, String beanName)
+      @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName)
               throws BeansException
       {
          if (providerNames.contains(beanName))
@@ -122,7 +124,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, Applicatio
          SpringResourceFactory resourceFactory = resourceFactories.get(beanName);
          if (resourceFactory != null)
          {
-            inject(beanName, bean, getInjector((Class<?>) resourceFactory.getScannableClass()));
+            inject(beanName, bean, getInjector(resourceFactory.getScannableClass()));
          }
 
          return bean;
@@ -228,7 +230,8 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, Applicatio
     * "depends-on" the @Providers.
     * </p>
     */
-   public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
+   @Override
+public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
            throws BeansException
    {
       beanFactory.registerResolvableDependency(Registry.class, getRegistry());

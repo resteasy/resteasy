@@ -19,10 +19,10 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  *  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  *  SUCH DAMAGE.
- *  
+ *
  *  Visit http://tjws.sourceforge.net to get the latest information
- *  about Rogatkin's products.                                                        
- *  $Id: SimpleAcceptor.java,v 1.6 2008/03/06 08:57:15 dmitriy Exp $                
+ *  about Rogatkin's products.
+ *  $Id: SimpleAcceptor.java,v 1.6 2008/03/06 08:57:15 dmitriy Exp $
  *  Created on Jun 12, 2007
  *  @author dmitriy
  */
@@ -37,17 +37,20 @@ import java.util.Map;
 
 public class SimpleAcceptor implements Serve.Acceptor
 {
+   @Override
    public Socket accept() throws IOException
    {
       return socket.accept();
    }
 
+   @Override
    public void destroy() throws IOException
    {
       socket.close();
    }
 
-   public void init(Map inProperties, Map outProperties) throws IOException
+   @Override
+   public void init(Map<Object, Object> inProperties, Map<Object, Object> outProperties) throws IOException
    {
       int port = inProperties.get(Serve.ARG_PORT) != null ? ((Integer) inProperties.get(Serve.ARG_PORT)).intValue()
               : Serve.DEF_PORT;
@@ -77,6 +80,7 @@ public class SimpleAcceptor implements Serve.Acceptor
             outProperties.put(Serve.ARG_BINDADDRESS, InetAddress.getLocalHost().getHostName());
    }
 
+   @Override
    public String toString()
    {
       return "SimpleAcceptor " + socket;

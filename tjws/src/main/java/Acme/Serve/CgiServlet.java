@@ -28,10 +28,6 @@
 
 package Acme.Serve;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -41,6 +37,11 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /// Runs CGI programs.
 // <P>
@@ -58,8 +59,11 @@ import java.util.Vector;
 public class CgiServlet extends HttpServlet
 {
 
+   private static final long serialVersionUID = -8543321610906736344L;
+
    // / Returns a string containing information about the author, version, and
    // copyright of the servlet.
+   @Override
    public String getServletInfo()
    {
       return "runs CGI programs";
@@ -69,6 +73,7 @@ public class CgiServlet extends HttpServlet
    // @param req the servlet request
    // @param req the servlet response
    // @exception ServletException when an exception has occurred
+   @Override
    public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
    {
       if (!(req.getMethod().equalsIgnoreCase("get") || req.getMethod().equalsIgnoreCase("post")))
@@ -100,7 +105,7 @@ public class CgiServlet extends HttpServlet
               .split("\\+"); /* 1.4 */
 
       // Make environment list.
-      Vector envVec = new Vector();
+      Vector<String> envVec = new Vector<String>();
       envVec.addElement(makeEnv("PATH", "/usr/local/bin:/usr/ucb:/bin:/usr/bin"));
       envVec.addElement(makeEnv("GATEWAY_INTERFACE", "CGI/1.1"));
       envVec.addElement(makeEnv("SERVER_SOFTWARE", getServletContext().getServerInfo()));
@@ -125,7 +130,7 @@ public class CgiServlet extends HttpServlet
          envVec.addElement(makeEnv("REMOTE_USER", req.getRemoteUser()));
       if (req.getAuthType() != null)
          envVec.addElement(makeEnv("AUTH_TYPE", req.getAuthType()));
-      Enumeration hnEnum = req.getHeaderNames();
+      Enumeration<?> hnEnum = req.getHeaderNames();
       while (hnEnum.hasMoreElements())
       {
          String name = (String) hnEnum.nextElement();
@@ -186,7 +191,9 @@ public class CgiServlet extends HttpServlet
                            break;
                         case 3:
                            tok.nextToken();
-                           res.setStatus(Integer.parseInt(tok.nextToken()), tok.nextToken());
+                           int status = Integer.parseInt(tok.nextToken());
+                           res.setStatus(status);
+                           res.sendError(status, tok.nextToken());
                            break;
                      }
                   }
@@ -215,7 +222,9 @@ public class CgiServlet extends HttpServlet
                            res.setStatus(Integer.parseInt(tok.nextToken()));
                            break;
                         case 2:
-                           res.setStatus(Integer.parseInt(tok.nextToken()), tok.nextToken());
+                           int status = Integer.parseInt(tok.nextToken());
+                           res.setStatus(status);
+                           res.sendError(status, tok.nextToken());
                            break;
                      }
                   }
@@ -267,11 +276,11 @@ public class CgiServlet extends HttpServlet
       return name + "=" + value;
    }
 
-   private static String[] makeList(Vector vec)
+   private static String[] makeList(Vector<String> vec)
    {
       String list[] = new String[vec.size()];
       for (int i = 0; i < vec.size(); ++i)
-         list[i] = (String) vec.elementAt(i);
+         list[i] = vec.elementAt(i);
       return list;
    }
 

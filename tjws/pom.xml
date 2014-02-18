@@ -7,11 +7,9 @@
         <version>2.3.7.Final</version>
     </parent>
 
-    <groupId>org.jboss.resteasy</groupId>
     <artifactId>tjws</artifactId>
     <packaging>jar</packaging>
     <name>Embedded Servlet Container</name>
-    <description/>
 
     <dependencies>
         <dependency>

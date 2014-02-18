@@ -25,18 +25,12 @@
 //
 // Visit the ACME Labs Java page for up-to-date versions of this and other
 // fine Java utilities: http://www.acme.com/java/
-// 
+//
 // All enhancements Copyright (C)1998-2005 by Dmitriy Rogatkin
 // http://tjws.sourceforge.net
 
 package Acme.Serve;
 
-import Acme.Utils;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,6 +47,13 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.zip.GZIPOutputStream;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import Acme.Utils;
+
 /// Servlet similar to a standard httpd.
 // <P>
 // Implements the "GET" and "HEAD" methods for files and directories.
@@ -67,6 +68,8 @@ import java.util.zip.GZIPOutputStream;
 
 public class FileServlet extends HttpServlet
 {
+
+   private static final long serialVersionUID = 6884430700772554008L;
 
    // We keep a single throttle table for all instances of the servlet.
    // Normally there is only one instance; the exception is subclasses.
@@ -84,9 +87,9 @@ public class FileServlet extends HttpServlet
 
 //	 true;
 
-   private Method canExecute, getFreeSpace;
+   private Method canExecute;
 
-   private boolean useCompression;
+   private final boolean useCompression;
 
    // / Constructor.
    public FileServlet()
@@ -94,16 +97,6 @@ public class FileServlet extends HttpServlet
       try
       {
          canExecute = File.class.getMethod("canExecute", Utils.EMPTY_CLASSES);
-      }
-      catch (SecurityException e)
-      {
-      }
-      catch (NoSuchMethodException e)
-      {
-      }
-      try
-      {
-         getFreeSpace = File.class.getMethod("getFreeSpace", Utils.EMPTY_CLASSES);
       }
       catch (SecurityException e)
       {
@@ -134,8 +127,8 @@ public class FileServlet extends HttpServlet
       else
       {
          // Merge the new one into the old one.
-         Enumeration keys = newThrottleTab.keys();
-         Enumeration elements = newThrottleTab.elements();
+         Enumeration<?> keys = newThrottleTab.keys();
+         Enumeration<?> elements = newThrottleTab.elements();
          while (keys.hasMoreElements())
          {
             Object key = keys.nextElement();
@@ -147,6 +140,7 @@ public class FileServlet extends HttpServlet
 
    // / Returns a string containing information about the author, version, and
    // copyright of the servlet.
+   @Override
    public String getServletInfo()
    {
       return "File servlet similar to httpd";
@@ -156,6 +150,7 @@ public class FileServlet extends HttpServlet
    // @param req the servlet request
    // @param req the servlet response
    // @exception ServletException when an exception has occurred
+   @Override
    public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
    {
       boolean headOnly;
@@ -221,7 +216,7 @@ public class FileServlet extends HttpServlet
       log("getting " + file);
       if (logenabled)
       {
-         Enumeration enh = req.getHeaderNames();
+         Enumeration<?> enh = req.getHeaderNames();
          while (enh.hasMoreElements())
          {
             String hn = (String) enh.nextElement();
@@ -501,6 +496,7 @@ public class FileServlet extends HttpServlet
       return false;
    }
 
+   @Override
    public void log(String msg)
    {
       if (logenabled)
