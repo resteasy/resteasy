@@ -16,7 +16,7 @@
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
                 <artifactId>arquillian-bom</artifactId>
-                <version>1.0.0.Final</version>
+                <version>1.0.2.Final</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -106,6 +106,7 @@
             </plugin>
         </plugins>
     </build>
+
 
     <profiles>
         <profile>
@@ -204,7 +205,7 @@
                 </property>
             </activation>
             <properties>
-                <version.org.jboss.as.jboss-as-arquillian-container-managed>7.3.0.Final-redhat-14</version.org.jboss.as.jboss-as-arquillian-container-managed>
+                <version.org.jboss.as.jboss-as-arquillian-container-managed>7.2.0.Final</version.org.jboss.as.jboss-as-arquillian-container-managed>
             </properties>
             <dependencies>
                 <dependency>
