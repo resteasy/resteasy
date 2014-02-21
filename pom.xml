@@ -118,6 +118,7 @@
         <module>jboss-modules</module>
         <!-- <module>as7-integration-testing</module> -->
         <module>arquillian</module>
+        <module>arquillian-deployment-scenario-provider</module>
     </modules>
 
     <dependencyManagement>
@@ -448,6 +449,18 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+
+        <profile>
+            <id>resteasy-spring-jboss</id>
+            <activation>
+                <property>
+                    <name>resteasy-spring-jboss</name>
+                </property>
+            </activation>
+            <modules>
+                <module>resteasy-spring-jboss</module>
+            </modules>
         </profile>
     </profiles>
 </project>
