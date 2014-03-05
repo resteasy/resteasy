@@ -7,7 +7,6 @@
         <version>3.0.7.Final</version>
     </parent>
 
-    <groupId>org.jboss.resteasy</groupId>
     <artifactId>tjws</artifactId>
     <packaging>jar</packaging>
     <name>Embedded Servlet Container</name>
@@ -17,6 +16,7 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
         </dependency>
     </dependencies>
     <build>
