@@ -23,6 +23,7 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.plugins.spring.SpringContextLoaderListener;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
@@ -30,11 +31,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.context.ApplicationContext;
 
 @RunWith(Arquillian.class)
 @RunAsClient
 public class AddSpringResteasyAsResourceRootIT {
-    private static final String DEPLOYMENT = "resteasy-spring-jboss-test";
 
     @ArquillianResource
     private Deployer deployer;
@@ -56,13 +57,12 @@ public class AddSpringResteasyAsResourceRootIT {
     @After
     public void after() {
         deployer.undeploy(deploymentName);
-
     }
 
 
     @Test
     public void testDeploymentWithSpringMvcDispatcherAddsResourceRoot() throws Exception {
-        deploymentName = DEPLOYMENT + "1";
+        deploymentName = "deploymentWithSpringMvcDispatcher" + (springDependenciesInDeployment() ? "SpringIncluded" : "SpringInModule");
         DeploymentDescription deploymentDescription = new DeploymentDescription(deploymentName, createDeploymentWithSpringMvcDispatcher(deploymentName));
         deploymentDescription.shouldBeManaged(false);
 
@@ -70,14 +70,14 @@ public class AddSpringResteasyAsResourceRootIT {
         deployer.deploy(deploymentDescription.getName());
 
         assertResponse(deploymentName);
-        assertTrue(isResteasySpringClassIsLoaded(deploymentName));
+
+        assertTrue(springClassesAreAvailableToDeployment(deploymentName));
+        assertTrue(resteasySpringClassesAreAvailableToDeployment(deploymentName));
     }
 
-    // FIXME currently fails because of bug in implementation which is looking for org.resteasy.plugins.spring.SpringContextLoaderListener in web.xml, but it should be org.jboss.resteasy.plugins.spring.SpringContextLoaderListener
-    // https://issues.jboss.org/browse/EAP6-46
     @Test
     public void testDeploymentWithSpringContextLoaderListenerAddsResourceRoot() throws Exception {
-        deploymentName = DEPLOYMENT + "2";
+        deploymentName = "deploymentWithSpringContextLoaderListener" + (springDependenciesInDeployment() ? "SpringIncluded" : "SpringInModule");
         DeploymentDescription deploymentDescription = new DeploymentDescription(deploymentName, createDeploymentWithSpringContextLoaderListener(deploymentName));
         deploymentDescription.shouldBeManaged(false);
 
@@ -85,12 +85,14 @@ public class AddSpringResteasyAsResourceRootIT {
         deployer.deploy(deploymentDescription.getName());
 
         assertResponse(deploymentName);
-        assertTrue(isResteasySpringClassIsLoaded(deploymentName));
+
+        assertTrue(springClassesAreAvailableToDeployment(deploymentName));
+        assertTrue(resteasySpringClassesAreAvailableToDeployment(deploymentName));
     }
 
     @Test
     public void testDeploymentWithoutSpringMvcDispatcherOrListenerDoesNotAddResourceRoot() throws Exception {
-        deploymentName = DEPLOYMENT + "3";
+        deploymentName = "deploymentWithoutSpringMvcDispatcherOrListener" + (springDependenciesInDeployment() ? "SpringIncluded" : "SpringInModule");
         DeploymentDescription deploymentDescription = new DeploymentDescription(deploymentName, createDeploymentWithoutSpringMvcDispatcherOrListener(deploymentName));
         deploymentDescription.shouldBeManaged(false);
 
@@ -98,7 +100,8 @@ public class AddSpringResteasyAsResourceRootIT {
         deployer.deploy(deploymentDescription.getName());
 
         assertResponse(deploymentName);
-        assertFalse(isResteasySpringClassIsLoaded(deploymentName));
+        assertTrue(springClassesAreAvailableToDeployment(deploymentName));
+        assertFalse(resteasySpringClassesAreAvailableToDeployment(deploymentName));
     }
 
 
@@ -107,18 +110,22 @@ public class AddSpringResteasyAsResourceRootIT {
         WebArchive archive = ShrinkWrap.create(WebArchive.class, name + ".war")
                 .addClass(TestResource.class)
                 .addClass(TestApplication.class)
-                .addAsLibraries(resolveSpringDependencies())
                 .addAsWebInfResource("web-no-mvc-no-listener.xml", "web.xml")
                 .addAsWebInfResource("applicationContext.xml");
+        addSpringLibraries(archive);
         archive.as(ZipExporter.class).exportTo(new File("target", name + ".war"), true);
         return archive;
     }
 
-    private boolean isResteasySpringClassIsLoaded(String deploymentName) throws IOException, HttpException {
+    private boolean resteasySpringClassesAreAvailableToDeployment(String deploymentName) throws IOException, HttpException {
 
+        return isClassAvailableToDeployment(deploymentName, SpringContextLoaderListener.class);
+    }
+
+    private boolean isClassAvailableToDeployment(String deploymentName, Class<?> clazz) throws IOException,
+            HttpException {
+        String className = clazz.getName();
         String CONTEXT_URL = "http://localhost:8080/" + deploymentName;
-
-        String className = SpringContextLoaderListener.class.getName();
         HttpMethod httpMethod = new GetMethod(CONTEXT_URL + "/" + TestResource.LOAD_CLASS_PATH + "?" + CLASSNAME_PARAM + "=" + className);
         try {
             return (SC_OK == client.executeMethod(httpMethod))
@@ -126,6 +133,10 @@ public class AddSpringResteasyAsResourceRootIT {
         } finally {
             httpMethod.releaseConnection();
         }
+    }
+
+    private boolean springClassesAreAvailableToDeployment(String deploymentName) throws IOException, HttpException {
+        return isClassAvailableToDeployment(deploymentName, ApplicationContext.class);
     }
 
     private void assertResponse(String deploymentName) throws IOException, HttpException {
@@ -143,10 +154,11 @@ public class AddSpringResteasyAsResourceRootIT {
 
         WebArchive archive = ShrinkWrap.create(WebArchive.class, name + ".war")
                 .addClass(TestResource.class)
-                .addAsLibraries(resolveSpringDependencies())
                 .addAsWebInfResource("mvc-dispatcher-servlet/web.xml")
                 .addAsWebInfResource("mvc-dispatcher-servlet/mvc-dispatcher-servlet.xml")
                 .addAsWebInfResource("mvc-dispatcher-servlet/applicationContext.xml");
+
+        addSpringLibraries(archive);
         archive.as(ZipExporter.class).exportTo(new File("target", name + ".war"), true);
         return archive;
     }
@@ -154,11 +166,23 @@ public class AddSpringResteasyAsResourceRootIT {
     private Archive<?> createDeploymentWithSpringContextLoaderListener(String name) {
         WebArchive archive = ShrinkWrap.create(WebArchive.class, name + ".war")
                 .addClass(TestResource.class)
-                .addAsLibraries(resolveSpringDependencies())
                 .addAsWebInfResource("web.xml")
                 .addAsWebInfResource("applicationContext.xml");
+        addSpringLibraries(archive);
         archive.as(ZipExporter.class).exportTo(new File("target", name + ".war"), true);
         return archive;
+    }
+
+    private void addSpringLibraries(WebArchive archive) {
+        if (springDependenciesInDeployment()) {
+            archive.addAsLibraries(resolveSpringDependencies());
+        } else {
+            // you need to use the 'meta-inf' attribute to import the contents of meta-inf so spring can find the correct namespace handlers
+            if (isDefinedSystemProperty("use-jboss-deployment-structure"))
+                archive.addAsManifestResource("jboss-deployment-structure.xml");
+            else
+                archive.addAsManifestResource(new StringAsset("Dependencies: org.springframework.spring meta-inf\n"), "MANIFEST.MF");
+        }
     }
 
     private File[] resolveSpringDependencies() {
@@ -168,6 +192,10 @@ public class AddSpringResteasyAsResourceRootIT {
         runtimeDependencies.addAll(Arrays.asList(Maven.resolver().resolve("org.springframework:spring-webmvc:" + springVersion).withTransitivity().asFile()));
         File[] dependencies = runtimeDependencies.toArray(new File []{});
         return dependencies;
+    }
+
+    private boolean springDependenciesInDeployment() {
+        return ! isDefinedSystemProperty("spring-in-module");
     }
 
 
@@ -181,5 +209,9 @@ public class AddSpringResteasyAsResourceRootIT {
         return (value == null) ? defaultValue : value;
     }
 
+    private boolean isDefinedSystemProperty(String name) {
+        String value = System.getProperty(name);
+        return (value != null);
+    }
 
 }
