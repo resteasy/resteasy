@@ -12,22 +12,26 @@
     <packaging>pom</packaging>
 
     <properties>
-        <jboss.home>/Users/billburke/jboss/jboss-4.2.3.GA</jboss.home>
+        <jboss.home>/Users/billburke/jboss/WildFly-8.0.0.Final</jboss.home>
         <dep.jaxb-impl.version>2.2.7</dep.jaxb-impl.version>
         <dep.jettison.version>1.3.2</dep.jettison.version>
         <dep.commons-io.version>2.1</dep.commons-io.version>
-        <dep.hibernate-validator.version>5.0.1.Final</dep.hibernate-validator.version>
-        <dep.javax.el.version>2.2.4</dep.javax.el.version>
+        <dep.hibernate-validator.version>5.1.0.Final</dep.hibernate-validator.version>
         <dep.javax.persistence.version>1.0.1.Final</dep.javax.persistence.version>
         <dep.spring-webmvc.version>3.0.6.RELEASE</dep.spring-webmvc.version>
         <dep.snakeyaml.version>1.8</dep.snakeyaml.version>
         <dep.cdi-api.version>1.1</dep.cdi-api.version>
-        <dep.jboss-ejb-api_3.1_spec.version>1.0.0.CR2</dep.jboss-ejb-api_3.1_spec.version>
+        <dep.jboss-ejb-api_3.1_spec.version>1.0.0.Final</dep.jboss-ejb-api_3.1_spec.version>
         <dep.guice.version>3.0</dep.guice.version>
-        <dep.jboss-el.version>1.0_02.CR6</dep.jboss-el.version>
         <dep.netty.version>3.6.4.Final</dep.netty.version>
         <dep.netty4.version>4.0.7.Final</dep.netty4.version>
         <dep.slf4j.version>1.7.5</dep.slf4j.version>
+        <version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>1.0.0.Final</version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>
+        <version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>1.0.0.Final</version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>
+        <version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>1.0.0.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>
+        <version.org.glassfish.javax.el>3.0.0</version.org.glassfish.javax.el>
+        <version.io.undertow>1.0.1.Final</version.io.undertow>
+        <version.com.fasterxml.jackson>2.3.2</version.com.fasterxml.jackson>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -231,7 +235,7 @@
             <dependency>
                 <groupId>javax.mail</groupId>
                 <artifactId>mail</artifactId>
-                <version>1.4.4</version>
+                <version>1.5.0-b01</version>
             </dependency>
 
             <!--
@@ -246,12 +250,12 @@
             <dependency>
                 <groupId>io.undertow</groupId>
                 <artifactId>undertow-servlet</artifactId>
-                <version>1.0.0.Beta7</version>
+                <version>${version.io.undertow}</version>
             </dependency>
             <dependency>
                 <groupId>io.undertow</groupId>
                 <artifactId>undertow-core</artifactId>
-                <version>1.0.0.Beta7</version>
+                <version>${version.io.undertow}</version>
             </dependency>
             <dependency>
                 <groupId>org.jyaml</groupId>
@@ -270,9 +274,9 @@
             </dependency>
 
             <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>servlet-api</artifactId>
-                <version>2.5</version>
+                <groupId>org.jboss.spec.javax.servlet</groupId>
+                <artifactId>jboss-servlet-api_3.1_spec</artifactId>
+                <version>${version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -283,39 +287,39 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.1</version>
+                <version>4.3</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
-                <version>2.2.1</version>
+                <version>${version.com.fasterxml.jackson}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.2.1</version>
+                <version>${version.com.fasterxml.jackson}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>2.2.1</version>
+                <version>${version.com.fasterxml.jackson}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.jaxrs</groupId>
                 <artifactId>jackson-jaxrs-json-provider</artifactId>
-                <version>2.2.1</version>
+                <version>${version.com.fasterxml.jackson}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.jaxrs</groupId>
                 <artifactId>jackson-jaxrs-base</artifactId>
-                <version>2.2.1</version>
+                <version>${version.com.fasterxml.jackson}</version>
             </dependency>
             <!-- also need JAXB annotation support -->
             <dependency>
                 <groupId>com.fasterxml.jackson.module</groupId>
                 <artifactId>jackson-module-jaxb-annotations</artifactId>
-                <version>2.2.1</version>
+                <version>${version.com.fasterxml.jackson}</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.jackson</groupId>
@@ -376,14 +380,15 @@
 
             <!-- Required by Hibernate Validator 5.x for testing -->
             <dependency>
-                <groupId>javax.el</groupId>
-                <artifactId>javax.el-api</artifactId>
-                <version>${dep.javax.el.version}</version>
+                <groupId>org.jboss.spec.javax.el</groupId>
+                <artifactId>jboss-el-api_3.0_spec</artifactId>
+                <version>${version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec}</version>
             </dependency>
+
             <dependency>
-                <groupId>org.glassfish.web</groupId>
+                <groupId>org.glassfish</groupId>
                 <artifactId>javax.el</artifactId>
-                <version>${dep.javax.el.version}</version>
+                <version>${version.org.glassfish.javax.el}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

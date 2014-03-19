@@ -1,7 +1,5 @@
 package org.jboss.resteasy.links.test;
 
-import org.jboss.el.lang.ExtendedFunctionMapper;
-
 import javax.el.FunctionMapper;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -15,7 +13,7 @@ import java.util.Map;
  *  
  * @author Shane Bryzak
  */
-public class SeamFunctionMapper extends ExtendedFunctionMapper
+public class SeamFunctionMapper extends FunctionMapper
 {
    private static Map<String,List<Method>> methodCache = new HashMap<String,List<Method>>();
    
@@ -50,9 +48,14 @@ public class SeamFunctionMapper extends ExtendedFunctionMapper
       {
          return null;
       }
-   }  
-   
-   @Override 
+   }
+
+    @Override
+    public void mapFunction(String prefix, String localName, Method meth) {
+        super.mapFunction(prefix, localName, meth);
+    }
+
+   /* @Override
    public Method resolveFunction(String prefix, String localName, int paramCount) 
    {
       if ( "s".equals(prefix) )
@@ -65,7 +68,7 @@ public class SeamFunctionMapper extends ExtendedFunctionMapper
                if (m.getParameterTypes().length == paramCount) return m;
             }
          }
-         
+
          return null;
       }
       else if (functionMapper != null)
@@ -76,7 +79,7 @@ public class SeamFunctionMapper extends ExtendedFunctionMapper
       {
          return null;
       }
-   }    
+   }    */
    
    private static void cacheMethod(String localName, Class<?> cls, String name, Class<?>[] params)
    {
