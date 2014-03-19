@@ -28,6 +28,17 @@ To run multiple tests at once append list of artifact ids of modules to test -pl
     eg. mvn verify -fn -Djboss730 -Djboss.home=/home/development/JBEAP-6.2.0.GA/jboss-eap-6.2 -pl :RESTEASY-736,:RESTEASY-752,:RESTEASY-760
 
 
+Debugging JBoss AS in IDE
+run test with following VM arguments to be able to start remote debugging on port 8787:
+
+    -Djboss.home=YOUR_PATH_TO_JBOSS
+    -Djboss.options="-Xmx512m -XX:MaxPermSize=128m -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y"
+
+Another handy options:
+
+    -Djboss.socket.binding.port-offset=1000
+    -DallowConnectingToRunningServer=true
+
 Known failures
 RESTEASY-736 fails for Jboss AS 7.1, EAP 6.0, 6.1.x, 6.2.x
 RESTEASY-752 fails for Jboss AS 7.1, EAP 6.0
