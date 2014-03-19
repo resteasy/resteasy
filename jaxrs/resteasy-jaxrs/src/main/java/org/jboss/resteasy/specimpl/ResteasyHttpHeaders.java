@@ -13,6 +13,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -25,12 +26,18 @@ import java.util.StringTokenizer;
 public class ResteasyHttpHeaders implements HttpHeaders
 {
 
-   private MultivaluedMap<String, String> requestHeaders = new CaseInsensitiveMap<String>();
-   private Map<String, Cookie> cookies = Collections.emptyMap();
+   private MultivaluedMap<String, String> requestHeaders;
+   private Map<String, Cookie> cookies;
 
    public ResteasyHttpHeaders(MultivaluedMap<String, String> requestHeaders)
    {
+      this(requestHeaders, new HashMap<String, Cookie>());
+   }
+
+   public ResteasyHttpHeaders(MultivaluedMap<String, String> requestHeaders, Map<String, Cookie> cookies)
+   {
       this.requestHeaders = requestHeaders;
+      this.cookies = cookies;
    }
 
    @Override
@@ -65,12 +72,17 @@ public class ResteasyHttpHeaders implements HttpHeaders
    @Override
    public Map<String, Cookie> getCookies()
    {
+      return Collections.unmodifiableMap(cookies);
+   }
+
+   public Map<String, Cookie> getMutableCookies()
+   {
       return cookies;
    }
 
    public void setCookies(Map<String, Cookie> cookies)
    {
-      this.cookies = Collections.unmodifiableMap(cookies);
+      this.cookies = cookies;
    }
 
    @Override

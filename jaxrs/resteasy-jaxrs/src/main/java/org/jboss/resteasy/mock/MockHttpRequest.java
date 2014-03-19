@@ -68,13 +68,13 @@ public class MockHttpRequest implements HttpRequest
       MockHttpRequest request = new MockHttpRequest();
       request.httpHeaders = new ResteasyHttpHeaders(new CaseInsensitiveMap<String>());
       //request.uri = new UriInfoImpl(absoluteUri, absoluteUri, absoluteUri.getPath(), absoluteUri.getQuery(), PathSegmentImpl.parseSegments(absoluteUri.getPath()));
-      
+
       // remove query part
       URI absolutePath = UriBuilder.fromUri(absoluteUri).replaceQuery(null).build();
       // path must be relative to the application's base uri
-	   URI relativeUri = baseUri.relativize(absoluteUri);
+      URI relativeUri = baseUri.relativize(absoluteUri);
       relativeUri = UriBuilder.fromUri(relativeUri.getRawPath()).replaceQuery(absoluteUri.getRawQuery()).build();
-		
+
       request.uri = new ResteasyUriInfo(baseUri, relativeUri);
       return request;
    }
@@ -200,7 +200,7 @@ public class MockHttpRequest implements HttpRequest
    public MockHttpRequest cookie(String name, String value)
    {
       Cookie cookie = new Cookie(name, value);
-      httpHeaders.getCookies().put(name, cookie);
+      httpHeaders.getMutableCookies().put(name, cookie);
       return this;
    }
 
