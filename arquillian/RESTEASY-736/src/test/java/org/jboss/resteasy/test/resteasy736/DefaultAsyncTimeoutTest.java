@@ -4,15 +4,16 @@ import static org.junit.Assert.*;
 
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.resteasy736.TestResource;
 import org.junit.Test;
 
-public class AsyncTimeoutTest extends AsyncTimeoutTestCase
+public class DefaultAsyncTimeoutTest extends AsyncTimeoutTestCase
 {
 
    @Test
-   public void testAsynchTimeout() throws Exception
+   public void testDefaultAsynchTimeout() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-736/test/");
+      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-736/default/");
       long start = System.currentTimeMillis();
       System.out.println("start:   " + start);
       ClientResponse<String> response = null;
@@ -34,8 +35,8 @@ public class AsyncTimeoutTest extends AsyncTimeoutTestCase
          assertTrue(response != null);
          System.out.println("response: " + response.getEntity());
          assertEquals(503, response.getStatus());
-         assertTrue("Expected response time < 10000, actual " + elapsed, elapsed < 10000 + 500);
+         int max = TestResource.getDefaultTimeout() + 5000;
+         assertTrue("Expected response time < " + max + ", actual " + elapsed, elapsed < max);
       }
    }
-
 }
