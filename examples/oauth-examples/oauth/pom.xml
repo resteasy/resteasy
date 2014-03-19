@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>examples-oauth</artifactId>
     <version>2.3.7.Final</version>
     <packaging>war</packaging>
     <name>Example: OAuth</name>
-    <description/>
+    <description />
 
     <properties>
         <webapp.port>9095</webapp.port>
@@ -115,8 +113,7 @@
                     <contextPath>/examples-oauth</contextPath>
                     <scanIntervalSeconds>2</scanIntervalSeconds>
                     <connectors>
-                        <connector
-                                implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+                        <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
                             <port>9095</port>
                             <maxIdleTime>60000</maxIdleTime>
                         </connector>
