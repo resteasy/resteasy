@@ -11,6 +11,8 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.ext.Provider;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -19,63 +21,64 @@ import java.util.Set;
 /**
  * This ConstructorInjector implementation uses CDI's BeanManager to obtain
  * a contextual instance of a bean.
- * 
- * @author Jozef Hartinger
  *
+ * @author Jozef Hartinger
  */
-public class CdiConstructorInjector implements ConstructorInjector
-{
-   private BeanManager manager;
-   private Type type;
+public class CdiConstructorInjector implements ConstructorInjector {
+   private final BeanManager manager;
+   private final Type type;
+   private final Bean<?> bean;
+   private final boolean applicationScoped;
+
    private static final Logger log = Logger.getLogger(CdiConstructorInjector.class);
 
-   public CdiConstructorInjector(Type type, BeanManager manager)
-   {
+   public CdiConstructorInjector(Type type, BeanManager manager) {
       this.type = type;
       this.manager = manager;
-   }
-
-   public Object construct()
-   {
       Set<Bean<?>> beans = manager.getBeans(type);
-      
-      if (beans.size() > 1)
-      {
+
+      if (beans.size() > 1) {
          Set<Bean<?>> modifiableBeans = new HashSet<Bean<?>>();
          modifiableBeans.addAll(beans);
          // Ambiguous dependency may occur if a resource has subclasses
          // Therefore we remove those beans
-         for (Iterator<Bean<?>> iterator = modifiableBeans.iterator(); iterator.hasNext();)
-         {
+         for (Iterator<Bean<?>> iterator = modifiableBeans.iterator(); iterator.hasNext(); ) {
             Bean<?> bean = iterator.next();
-            if (!bean.getBeanClass().equals(type) && !bean.isAlternative())
-            {
+            if (!bean.getBeanClass().equals(type) && !bean.isAlternative()) {
                // remove Beans that have clazz in their type closure but not as a base class
-               iterator.remove(); 
+               iterator.remove();
             }
          }
          beans = modifiableBeans;
       }
-      
+
       log.debug("Beans found for {0} : {1}", type, beans);
-      
-      Bean<?> bean = manager.resolve(beans);
-      CreationalContext<?> context = manager.createCreationalContext(bean);
-      return manager.getReference(bean, type, context);
+
+      bean = manager.resolve(beans);
+      applicationScoped = Application.class.isAssignableFrom(bean.getBeanClass()) || bean.getBeanClass().isAnnotationPresent(Provider.class);
    }
 
-   public Object construct(HttpRequest request, HttpResponse response) throws Failure, WebApplicationException, ApplicationException
-   {
+   public Object construct() {
+
+      CreationalContext<?> context = manager.createCreationalContext(bean);
+      Object reference =  manager.getReference(bean, type, context);
+      if(applicationScoped) {
+         JaxrsCdiLifecycleListener.addApplicationScopedObject(context);
+      } else {
+         JaxrsCdiLifecycleListener.addObject(context);
+      }
+      return reference;
+   }
+
+   public Object construct(HttpRequest request, HttpResponse response) throws Failure, WebApplicationException, ApplicationException {
       return construct();
    }
 
-   public Object[] injectableArguments()
-   {
+   public Object[] injectableArguments() {
       return new Object[0];
    }
 
-   public Object[] injectableArguments(HttpRequest request, HttpResponse response) throws Failure
-   {
+   public Object[] injectableArguments(HttpRequest request, HttpResponse response) throws Failure {
       return injectableArguments();
    }
 }

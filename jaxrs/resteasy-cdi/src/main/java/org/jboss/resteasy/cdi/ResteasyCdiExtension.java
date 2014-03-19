@@ -51,21 +51,11 @@ public class ResteasyCdiExtension implements Extension
    private final List<Class> providers = new ArrayList<Class>();
    private final List<Class> resources = new ArrayList<Class>();
 
-   // Scope literals
-   public static final Annotation requestScopedLiteral = new AnnotationLiteral<RequestScoped>()
-   {
-      private static final long serialVersionUID = 3381824686081435817L;
-   };
-   public static final Annotation applicationScopedLiteral = new AnnotationLiteral<ApplicationScoped>()
-   {
-      private static final long serialVersionUID = -8211157243671012820L;
-   };
-
    public static boolean isCDIActive()
    {
       return active;
    }
-   
+
    private Map<Class<?>, Type> sessionBeanInterface = new HashMap<Class<?>, Type>();
 
    /**
@@ -76,84 +66,7 @@ public class ResteasyCdiExtension implements Extension
       this.beanManager = beanManager;
       active = true;
    }
-
-   /**
-    * Set a default scope for each CDI bean which is a JAX-RS Resource.
-    *
-    * @param event
-    * @param beanManager
-    */
-   public <T> void observeResources(@WithAnnotations({Path.class}) @Observes ProcessAnnotatedType<T> event, BeanManager beanManager)
-   {
-       setBeanManager(beanManager);
-       AnnotatedType<T> annotatedType = event.getAnnotatedType();
-
-       if(!annotatedType.getJavaClass().isInterface()
-               && !isSessionBean(annotatedType)
-               // This check is redundant for CDI 1.1 containers but required for CDI 1.0
-               && GetRestful.isRootResource(annotatedType.getJavaClass())
-               && !annotatedType.isAnnotationPresent(Decorator.class))
-       {
-           log.debug("Discovered CDI bean which is a JAX-RS resource {0}.", annotatedType.getJavaClass().getCanonicalName());
-           event.setAnnotatedType(wrapAnnotatedType(annotatedType, requestScopedLiteral));
-           this.resources.add(annotatedType.getJavaClass());
-       }
-   }
-
-   /**
-    * Set a default scope for each CDI bean which is a JAX-RS Provider.
-    *
-    * @param event
-    * @param beanManager
-    */
-   public <T> void observeProviders(@WithAnnotations({Provider.class}) @Observes ProcessAnnotatedType<T> event, BeanManager beanManager)
-   {
-       setBeanManager(beanManager);
-       AnnotatedType<T> annotatedType = event.getAnnotatedType();
-
-       if(!annotatedType.getJavaClass().isInterface()
-               && !isSessionBean(annotatedType)
-               // This check is redundant for CDI 1.1 containers but required for CDI 1.0
-               && annotatedType.isAnnotationPresent(Provider.class))
-       {
-           log.debug("Discovered CDI bean which is a JAX-RS provider {0}.", annotatedType.getJavaClass().getCanonicalName());
-           event.setAnnotatedType(wrapAnnotatedType(annotatedType, applicationScopedLiteral));
-           this.providers.add(annotatedType.getJavaClass());
-       }
-   }
-
-   /**
-    * Set a default scope for each CDI bean which is a JAX-RS Application subclass.
-    *
-    * @param event
-    * @param beanManager
-    */
-   public <T extends Application> void observeApplications(@Observes ProcessAnnotatedType<T> event, BeanManager beanManager)
-   {
-       setBeanManager(beanManager);
-       AnnotatedType<T> annotatedType = event.getAnnotatedType();
-
-       if(!isSessionBean(annotatedType))
-       {
-           log.debug("Discovered CDI bean which is javax.ws.rs.core.Application subclass {0}.", annotatedType.getJavaClass().getCanonicalName());
-           event.setAnnotatedType(wrapAnnotatedType(annotatedType, applicationScopedLiteral));
-       }
-   }
-
-   protected <T> AnnotatedType<T> wrapAnnotatedType(AnnotatedType<T> type, Annotation scope)
-   {
-      if (Utils.isScopeDefined(type, beanManager))
-      {
-         log.debug("Bean {0} has a scope defined.", type.getJavaClass());
-         return type; // leave it as it is
-      }
-      else
-      {
-         log.debug("Bean {0} does not have the scope defined. Binding to {1}.", type.getJavaClass(), scope);
-         return new JaxrsAnnotatedType<T>(type, scope);
-      }
-   }
-
+    
    /**
     * Wrap InjectionTarget of JAX-RS components within JaxrsInjectionTarget
     * which takes care of JAX-RS property injection.
