@@ -229,6 +229,16 @@ public class PreconditionTest
          return Response.ok("foo", "text/plain").build();
       }
 
+       @GET
+       @Path("/weak")
+       public Response GetWeak() {
+           Response.ResponseBuilder rb = myRequest.evaluatePreconditions(new EntityTag("1", true));
+           if (rb != null)
+               return rb.build();
+
+           return Response.ok("foo", "text/plain").build();
+       }
+
    }
 
    @Test
@@ -300,6 +310,40 @@ public class PreconditionTest
    {
       testIfMatchWithoutMatchingETag_IfNonMatchWithoutMatchingETag("");
       testIfMatchWithoutMatchingETag_IfNonMatchWithoutMatchingETag("/fromField");
+   }
+
+   @Test
+   public void testIfMatchWithMatchingWeakETag()
+   {
+      ClientRequest request = new ClientRequest(generateURL("/etag/weak"));
+      request.header(HttpHeaderNames.IF_MATCH, "W/\"1\"");
+      try
+      {
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         shutdownConnections(request);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
+   @Test
+   public void testIfMatchWithNonMatchingWeakEtag()
+   {
+      ClientRequest request = new ClientRequest(generateURL("/etag/weak"));
+      request.header(HttpHeaderNames.IF_MATCH, "W/\"2\"");
+      try
+      {
+          ClientResponse<?> response = request.get();
+          Assert.assertEquals(HttpResponseCodes.SC_PRECONDITION_FAILED, response.getStatus());
+          shutdownConnections(request);
+      }
+      catch (Exception e)
+      {
+          throw new RuntimeException(e);
+      }
    }
 
    ////////////
