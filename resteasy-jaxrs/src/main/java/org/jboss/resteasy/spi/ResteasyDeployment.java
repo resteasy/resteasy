@@ -1,5 +1,16 @@
 package org.jboss.resteasy.spi;
 
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.Providers;
+
 import org.jboss.resteasy.core.AcceptParameterHttpPreprocessor;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.core.Dispatcher;
@@ -9,19 +20,8 @@ import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.interceptors.SecurityInterceptor;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
-import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.PickConstructor;
-
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.Providers;
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class is used to configure and initialize the core components of RESTEasy.
@@ -72,7 +72,7 @@ public class ResteasyDeployment
    public void start()
    {
       // it is very important that each deployment create their own provider factory
-      // this allows each WAR to have their own set of providers 
+      // this allows each WAR to have their own set of providers
       if (providerFactory == null) providerFactory = new ResteasyProviderFactory();
       providerFactory.setRegisterBuiltins(registerBuiltin);
 
@@ -126,7 +126,7 @@ public class ResteasyDeployment
       // push context data so we can inject it
       Map contextDataMap = ResteasyProviderFactory.getContextDataMap();
       contextDataMap.putAll(dispatcher.getDefaultContextObjects());
-      
+
       try
       {
          if (injectorFactoryClass != null)
@@ -157,7 +157,7 @@ public class ResteasyDeployment
             providerFactory.setInjectorFactory(injectorFactory);
          }
 
-         // feed context data map with constructed objects 
+         // feed context data map with constructed objects
          // see ResteasyContextParameters.RESTEASY_CONTEXT_OBJECTS
          if (constructedDefaultContextObjects != null && constructedDefaultContextObjects.size() > 0)
          {
@@ -264,7 +264,10 @@ public class ResteasyDeployment
 
    public static Application createApplication(String applicationClass, ResteasyProviderFactory providerFactory)
    {
-      return (Application) createFromInjectorFactory(applicationClass, providerFactory);
+     if (applicationClass == null || applicationClass.trim().equals("")) {
+        throw new ApplicationException("The implementation of javax.ws.rs.core.Application must be specified.", null);
+     }
+     return (Application) createFromInjectorFactory(applicationClass, providerFactory);
    }
 
    public static Object createFromInjectorFactory(String classname, ResteasyProviderFactory providerFactory)
