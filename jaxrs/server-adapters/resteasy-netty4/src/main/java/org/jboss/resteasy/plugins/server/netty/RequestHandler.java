@@ -57,14 +57,12 @@ public class RequestHandler extends SimpleChannelInboundHandler
           {
              response.reset();
              response.setStatus(e1.getErrorCode());
-             return;
           }
           catch (Exception ex)
           {
              response.reset();
              response.setStatus(500);
              logger.error("Unexpected", ex);
-             return;
           }
           ChannelFuture future = null;
           if (!request.getAsyncContext().isSuspended()) {
