@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.xxe;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 import java.util.Hashtable;
 
@@ -16,19 +16,20 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import org.junit.After;
 import org.junit.Test;
 
 /**
  * Unit tests for RESTEASY-869.
- * 
+ *
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
  * @date August 16, 2013
  */
 public class TestXXESecureProcessing
 {
-   protected static ResteasyDeployment deployment;
-   protected static Dispatcher dispatcher;
-   
+   protected ResteasyDeployment deployment;
+   protected Dispatcher dispatcher;
+
    String doctype =
          "<!DOCTYPE foodocument [" +
                "<!ENTITY foo 'foo'>" +
@@ -46,7 +47,7 @@ public class TestXXESecureProcessing
    String small = doctype + "<favoriteMovieXmlRootElement><title>&foo4;</title></favoriteMovieXmlRootElement>";
    String big   = doctype + "<favoriteMovieXmlRootElement><title>&foo5;</title></favoriteMovieXmlRootElement>";
 
-   
+
    @Path("/")
    public static class MovieResource
    {
@@ -71,7 +72,7 @@ public class TestXXESecureProcessing
      }
    }
 
-   public static void before(String expandEntityReferences) throws Exception
+   public void before(String expandEntityReferences) throws Exception
    {
       Hashtable<String,String> initParams = new Hashtable<String,String>();
       Hashtable<String,String> contextParams = new Hashtable<String,String>();
@@ -81,14 +82,15 @@ public class TestXXESecureProcessing
       deployment.getRegistry().addPerRequestResource(MovieResource.class);
    }
 
-   public static void before() throws Exception
+   public void before() throws Exception
    {
       deployment = EmbeddedContainer.start();
       dispatcher = deployment.getDispatcher();
       deployment.getRegistry().addPerRequestResource(MovieResource.class);
    }
-   
-   public static void after() throws Exception
+
+   @After
+   public void after() throws Exception
    {
       EmbeddedContainer.stop();
       dispatcher = null;
@@ -108,9 +110,8 @@ public class TestXXESecureProcessing
       System.out.println("Result: " + entity.substring(0, 30));
       System.out.println("foos: " + countFoos(entity));
       Assert.assertEquals(10000, countFoos(entity));
-      after();
    }
-   
+
    @Test
    public void testXmlRootElementDefaultBig() throws Exception
    {
@@ -123,9 +124,8 @@ public class TestXXESecureProcessing
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException"));
-      after();
    }
-   
+
    @Test
    public void testXmlRootElementWithoutExternalExpansionSmall() throws Exception
    {
@@ -139,9 +139,8 @@ public class TestXXESecureProcessing
       System.out.println("Result: " + entity.substring(0, 30));
       System.out.println("foos: " + countFoos(entity));
       Assert.assertEquals(10000, countFoos(entity));
-      after();
    }
-   
+
    @Test
    public void testXmlRootElementWithoutExternalExpansionBig() throws Exception
    {
@@ -154,7 +153,6 @@ public class TestXXESecureProcessing
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException"));
-      after();
    }
 
    @Test
@@ -170,9 +168,8 @@ public class TestXXESecureProcessing
       System.out.println("Result: " + entity.substring(0, 30));
       System.out.println("foos: " + countFoos(entity));
       Assert.assertEquals(10000, countFoos(entity));
-      after();
    }
-   
+
    @Test
    public void testXmlRootElementWithExternalExpansionBig() throws Exception
    {
@@ -185,14 +182,13 @@ public class TestXXESecureProcessing
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException"));
-      after();
    }
-   
+
    private int countFoos(String s)
    {
       int count = 0;
       int pos = 0;
-      
+
       while (pos >= 0)
       {
          pos = s.indexOf("foo", pos);
