@@ -4,15 +4,20 @@ import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.PathSegmentImpl;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.util.Encode;
+import org.jboss.resteasy.util.PathHelper;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -40,9 +45,34 @@ public class ResteasyUriInfo implements UriInfo
    private URI baseURI;
    private List<String> matchedUris;
    private List<String> encodedMatchedUris;
-   private List<String> encodedMatchedPaths = new ArrayList<String>();
+   private List<String> encodedMatchedPaths = new LinkedList<String>();
    private List<Object> ancestors;
 
+
+   public ResteasyUriInfo(String absoluteUri, String queryString, String contextPath)
+   {
+      ResteasyUriBuilder absoluteBuilder = (ResteasyUriBuilder)UriBuilder.fromUri(absoluteUri).replaceQuery(queryString);
+      requestURI = absoluteBuilder.build();
+      absolutePath = URI.create(absoluteUri);
+      encodedPath = PathHelper.getEncodedPathInfo(absolutePath.getRawPath(), contextPath);
+      baseURI = absolutePath;
+      if (!encodedPath.trim().equals(""))
+      {
+         String tmpContextPath = contextPath;
+         if (!tmpContextPath.endsWith("/")) tmpContextPath += "/";
+         baseURI = absoluteBuilder.clone().replacePath(tmpContextPath).replaceQuery(null).build();
+      }
+      // make sure there is no trailing '/'
+      if (encodedPath.length() > 1 && encodedPath.endsWith("/")) encodedPath = encodedPath.substring(0, encodedPath.length() - 1);
+
+      // make sure path starts with '/'
+      if (encodedPath.length() == 0 || encodedPath.charAt(0) != '/')
+      {
+         encodedPath = "/" + encodedPath;
+      }
+      path = UriBuilder.fromPath(encodedPath).build().getPath();
+      processPath();
+   }
 
    public ResteasyUriInfo(URI base, URI relative)
    {
@@ -59,18 +89,26 @@ public class ResteasyUriInfo implements UriInfo
          encodedPath = "/" + r;
          path = "/" + relative.getPath();
       }
-      requestURI = UriBuilder.fromUri(base).path(relative.getRawPath()).replaceQuery(relative.getRawQuery()).build();
+      UriBuilder requestUriBuilder = UriBuilder.fromUri(base).path(relative.getRawPath()).replaceQuery(relative.getRawQuery());
+      requestURI = requestUriBuilder.build();
+      absolutePath = requestUriBuilder.replaceQuery(null).build();
       baseURI = base;
-      encodedPathSegments = PathSegmentImpl.parseSegments(encodedPath, false);
+      processPath();
+   }
+
+   protected void processPath()
+   {
+      PathSegmentImpl.SegmentParse parse = PathSegmentImpl.parseSegmentsOptimization(encodedPath, false);
+      encodedPathSegments = parse.segments;
       this.pathSegments = new ArrayList<PathSegment>(encodedPathSegments.size());
       for (PathSegment segment : encodedPathSegments)
       {
          pathSegments.add(new PathSegmentImpl(((PathSegmentImpl) segment).getOriginal(), true));
       }
       extractParameters(requestURI.getRawQuery());
-      extractMatchingPath(encodedPathSegments);
+      if (parse.hasMatrixParams) extractMatchingPath(encodedPathSegments);
+      else matchingPath = encodedPath;
 
-      absolutePath = UriBuilder.fromUri(requestURI).replaceQuery(null).build();
    }
 
    public ResteasyUriInfo(URI requestURI)
@@ -88,16 +126,8 @@ public class ResteasyUriInfo implements UriInfo
       }
       this.requestURI = requestURI;
       baseURI = UriBuilder.fromUri(requestURI).replacePath("").build();
-      encodedPathSegments = PathSegmentImpl.parseSegments(encodedPath, false);
-      this.pathSegments = new ArrayList<PathSegment>(encodedPathSegments.size());
-      for (PathSegment segment : encodedPathSegments)
-      {
-         pathSegments.add(new PathSegmentImpl(((PathSegmentImpl) segment).getOriginal(), true));
-      }
-      extractParameters(requestURI.getRawQuery());
-      extractMatchingPath(encodedPathSegments);
-
       absolutePath = UriBuilder.fromUri(requestURI).replaceQuery(null).build();
+      processPath();
 
    }
 
@@ -312,12 +342,12 @@ public class ResteasyUriInfo implements UriInfo
    {
       if (decode)
       {
-         if (matchedUris == null) matchedUris = new ArrayList<String>();
+         if (matchedUris == null) matchedUris = new LinkedList<String>();
          return matchedUris;
       }
       else
       {
-         if (encodedMatchedUris == null) encodedMatchedUris = new ArrayList<String>();
+         if (encodedMatchedUris == null) encodedMatchedUris = new LinkedList<String>();
          return encodedMatchedUris;
       }
    }
@@ -329,14 +359,14 @@ public class ResteasyUriInfo implements UriInfo
 
    public List<Object> getMatchedResources()
    {
-      if (ancestors == null) ancestors = new ArrayList<Object>();
+      if (ancestors == null) ancestors = new LinkedList<Object>();
       return ancestors;
    }
 
 
    public void pushCurrentResource(Object resource)
    {
-      if (ancestors == null) ancestors = new ArrayList<Object>();
+      if (ancestors == null) ancestors = new LinkedList<Object>();
       ancestors.add(0, resource);
    }
 
@@ -362,10 +392,10 @@ public class ResteasyUriInfo implements UriInfo
       if (encoded.endsWith("/")) encoded = encoded.substring(0, encoded.length() - 1);
       if (encoded.startsWith("/")) encoded = encoded.substring(1);
       String decoded = Encode.decode(encoded);
-      if (encodedMatchedUris == null) encodedMatchedUris = new ArrayList<String>();
+      if (encodedMatchedUris == null) encodedMatchedUris = new LinkedList<String>();
       encodedMatchedUris.add(0, encoded);
 
-      if (matchedUris == null) matchedUris = new ArrayList<String>();
+      if (matchedUris == null) matchedUris = new LinkedList<String>();
       matchedUris.add(0, decoded);
    }
 

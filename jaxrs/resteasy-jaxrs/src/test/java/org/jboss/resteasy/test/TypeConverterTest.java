@@ -47,8 +47,8 @@ public class TypeConverterTest
    @Test
    public void testIntegerTypes()
    {
-      assertEquals(11, TypeConverter.getType(int.class, "11"));
-      assertEquals(11, TypeConverter.getType(Integer.class, "11"));
+      assertEquals(11, (int)TypeConverter.getType(int.class, "11"));
+      assertEquals(11, (int)TypeConverter.getType(Integer.class, "11"));
    }
 
    /**
@@ -57,8 +57,8 @@ public class TypeConverterTest
    @Test
    public void testDoubleTypes()
    {
-      assertEquals(20.15d, TypeConverter.getType(double.class, "20.15"));
-      assertEquals(20.15d, TypeConverter.getType(Double.class, "20.15"));
+      assertEquals(20.15d, (double)TypeConverter.getType(double.class, "20.15"));
+      assertEquals(20.15d, (double)TypeConverter.getType(Double.class, "20.15"));
    }
 
    /**
@@ -67,8 +67,8 @@ public class TypeConverterTest
    @Test
    public void testFloatTypes()
    {
-      assertEquals(23.44f, TypeConverter.getType(float.class, "23.44"));
-      assertEquals(23.44f, TypeConverter.getType(Float.class, "23.44"));
+      assertEquals(23.44f, (float)TypeConverter.getType(float.class, "23.44"));
+      assertEquals(23.44f, (float)TypeConverter.getType(Float.class, "23.44"));
    }
 
    /**
@@ -77,8 +77,8 @@ public class TypeConverterTest
    @Test
    public void testLongTypes()
    {
-      assertEquals(23L, TypeConverter.getType(long.class, "23"));
-      assertEquals(23L, TypeConverter.getType(Long.class, "23"));
+      assertEquals(23L, (long)TypeConverter.getType(long.class, "23"));
+      assertEquals(23L, (long)TypeConverter.getType(Long.class, "23"));
    }
 
    /**

@@ -138,7 +138,7 @@ context-param variables within your web.xml
 
    <context-param>
         <param-name>resteasy.language.mappings</param-name>
-        <param-value> en : en-US, es : es, fr : fr</param-name>
+        <param-value>en : en-US, es : es, fr : fr</param-value>
    </context-param>
 
     <servlet>

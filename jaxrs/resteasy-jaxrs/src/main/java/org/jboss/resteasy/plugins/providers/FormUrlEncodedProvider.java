@@ -58,7 +58,7 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>
 
    public MultivaluedMap readFrom(Class<MultivaluedMap> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
-      if (NoContent.isContentLengthZero(httpHeaders)) return null;
+      if (NoContent.isContentLengthZero(httpHeaders)) return new MultivaluedMapImpl<String, String>();
       boolean encoded = FindAnnotation.findAnnotation(annotations, Encoded.class) != null;
       if (encoded) return parseForm(entityStream);
       else return Encode.decode(parseForm(entityStream));

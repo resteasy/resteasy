@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0.6.Final</version>
+        <version>3.0.7.Final</version>
     </parent>
     <artifactId>resteasy-jaxrs</artifactId>
     <name>RESTEasy JAX-RS Implementation</name>
@@ -25,9 +25,8 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <scope>provided</scope>
+            <groupId>org.jboss.spec.javax.servlet</groupId>
+            <artifactId>jboss-servlet-api_3.1_spec</artifactId>
         </dependency>
 
         <dependency>
@@ -98,12 +97,12 @@
 
         <!-- Required by Hibernate Validator 5.x for testing -->
         <dependency>
-            <groupId>javax.el</groupId>
-            <artifactId>javax.el-api</artifactId>
+            <groupId>org.jboss.spec.javax.el</groupId>
+            <artifactId>jboss-el-api_3.0_spec</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.web</groupId>
+            <groupId>org.glassfish</groupId>
             <artifactId>javax.el</artifactId>
             <scope>test</scope>
         </dependency>
@@ -118,5 +117,29 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <!-- exclude integrations tests which are known to fail -->
+            <id>exclude-known-tests-failures</id>
+            <activation>
+                <property>
+                    <name>exclude-known-tests-failures</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <excludes combine.children="append">
+                                <exclude>org/jboss/resteasy/test/providers/iioimage/TestIIOImageProvider.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     
 </project>

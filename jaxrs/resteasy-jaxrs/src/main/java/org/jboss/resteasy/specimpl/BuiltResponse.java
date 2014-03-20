@@ -166,7 +166,7 @@ public class BuiltResponse extends Response
       return annotations;
    }
 
-   public void addMethodAnnotations(Method method)
+   public void addMethodAnnotations(Annotation[] methodAnnotations)
    {
       List<Annotation> ann = new ArrayList<Annotation>();
       if (annotations != null)
@@ -176,7 +176,7 @@ public class BuiltResponse extends Response
             ann.add(annotation);
          }
       }
-      for (Annotation annotation : method.getAnnotations())
+      for (Annotation annotation : methodAnnotations)
       {
          ann.add(annotation);
       }
@@ -396,6 +396,7 @@ public class BuiltResponse extends Response
       {
          if (first) first = false;
          else builder.append(",");
+         if (val == null) val = "";
          val = toHeaderString(val);
          if (val == null) val = "";
          builder.append(val);

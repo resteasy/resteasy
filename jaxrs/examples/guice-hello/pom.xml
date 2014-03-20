@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.examples</groupId>
     <artifactId>examples-guice-hello</artifactId>
-    <version>3.0.6.Final</version>
+    <version>3.0.7.Final</version>
     <packaging>war</packaging>
     <name>guice hello example</name>
     <description>guice hello world example</description>
@@ -22,12 +22,12 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-guice</artifactId>
-            <version>3.0.6.Final</version>
+            <version>3.0.7.Final</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.1</version>
+            <version>4.11</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -27,7 +27,7 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
 {
    private final static Logger logger = Logger.getLogger(GuiceResteasyBootstrapServletContextListener.class);
 
-   private List<Module> modules;
+   private List<? extends Module> modules;
    @Inject private Injector parentInjector = null;
 
    @Override
@@ -38,7 +38,7 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
       final Registry registry = (Registry) context.getAttribute(Registry.class.getName());
       final ResteasyProviderFactory providerFactory = (ResteasyProviderFactory) context.getAttribute(ResteasyProviderFactory.class.getName());
       final ModuleProcessor processor = new ModuleProcessor(registry, providerFactory);
-      final List<Module> modules = getModules(context);
+      final List<? extends Module> modules = getModules(context);
       final Stage stage = getStage(context);
       Injector injector;
 
@@ -105,7 +105,7 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
     * @param context
     * @return
     */
-   protected List<Module> getModules(final ServletContext context)
+   protected List<? extends Module> getModules(final ServletContext context)
    {
       final List<Module> result = new ArrayList<Module>();
       final String modulesString = context.getInitParameter("resteasy.guice.modules");
@@ -117,7 +117,7 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
             try
             {
                logger.info("found module: {0}", moduleString);
-               final Class clazz = Thread.currentThread().getContextClassLoader().loadClass(moduleString.trim());
+               final Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(moduleString.trim());
                final Module module = (Module) clazz.newInstance();
                result.add(module);
             }

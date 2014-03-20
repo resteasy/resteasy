@@ -38,6 +38,8 @@ public class ServletUtil
             contextPath += "/";
          contextPath += servletPrefix;
       }
+      return new ResteasyUriInfo(request.getRequestURL().toString(), request.getQueryString(), contextPath);
+      /*
       URI absolutePath = null;
       try
       {
@@ -70,6 +72,7 @@ public class ServletUtil
       //System.out.println("query string: " + request.getQueryString());
       ResteasyUriInfo uriInfo = new ResteasyUriInfo(baseURI, relativeURI);
       return uriInfo;
+      */
    }
 
    public static ResteasyHttpHeaders extractHttpHeaders(HttpServletRequest request)
