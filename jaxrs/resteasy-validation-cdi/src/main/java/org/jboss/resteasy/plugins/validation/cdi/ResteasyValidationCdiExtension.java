@@ -57,7 +57,7 @@ public class ResteasyValidationCdiExtension implements Extension
            for (Iterator<Annotation> it = as.iterator(); it.hasNext(); )
            {
               Annotation a = it.next();
-              log.info(a.annotationType().getName());
+              log.debug(a.annotationType().getName());
            }
        }
    }
