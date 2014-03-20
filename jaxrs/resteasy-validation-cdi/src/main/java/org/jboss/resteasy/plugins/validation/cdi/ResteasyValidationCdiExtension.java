@@ -12,7 +12,9 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
+import javax.enterprise.inject.spi.WithAnnotations;
 import javax.enterprise.util.AnnotationLiteral;
+import javax.ws.rs.Path;
 
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.util.GetRestful;
@@ -33,15 +35,6 @@ public class ResteasyValidationCdiExtension implements Extension
    };
    
    private final Logger log = Logger.getLogger(ResteasyValidationCdiExtension.class);
-   private BeanManager beanManager;
-
-   /**
-    * Obtain BeanManager reference for future use.
-    */
-   public void observeBeforeBeanDiscovery(@Observes BeforeBeanDiscovery event, BeanManager beanManager)
-   {
-      this.beanManager = beanManager;
-   }
    
    /**
     * Set a default scope for each CDI bean which is a JAX-RS Resource.
@@ -49,7 +42,7 @@ public class ResteasyValidationCdiExtension implements Extension
     * @param event
     * @param beanManager
     */
-   public <T> void observeResources(@Observes ProcessAnnotatedType<T> event, BeanManager beanManager)
+   public <T> void observeResources(@WithAnnotations({Path.class}) @Observes ProcessAnnotatedType<T> event, BeanManager beanManager)
    {
        AnnotatedType<T> annotatedType = event.getAnnotatedType();
        if(!annotatedType.getJavaClass().isInterface()
