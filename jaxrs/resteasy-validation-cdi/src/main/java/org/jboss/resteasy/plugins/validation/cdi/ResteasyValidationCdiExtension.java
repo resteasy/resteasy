@@ -14,8 +14,6 @@ import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.util.AnnotationLiteral;
 
-import org.jboss.resteasy.cdi.JaxrsAnnotatedType;
-import org.jboss.resteasy.cdi.Utils;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.util.GetRestful;
 
@@ -75,19 +73,5 @@ public class ResteasyValidationCdiExtension implements Extension
    {
       log.debug("Adding @ResteasyCdiValidationAnnotation to bean {0}.", type.getJavaClass());
       return new ResteasyValidationCdiAnnotatedType<T>(type);
-   }
-   
-   protected <T> AnnotatedType<T> wrapAnnotatedType(AnnotatedType<T> type, Annotation scope)
-   {
-      if (Utils.isScopeDefined(type, beanManager))
-      {
-         log.debug("Bean {0} has a scope defined.", type.getJavaClass());
-         return type; // leave it as it is
-      }
-      else
-      {
-         log.debug("Bean {0} does not have the scope defined. Binding to {1}.", type.getJavaClass(), scope);
-         return new JaxrsAnnotatedType<T>(type, scope);
-      }
    }
 }

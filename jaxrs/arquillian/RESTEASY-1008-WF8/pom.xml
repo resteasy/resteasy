@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>3.0.6.Final</version>
+    <version>3.0.7.Final</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
@@ -71,6 +71,7 @@
                                 <type>jar</type>
                                 <overWrite>false</overWrite>
                                 <outputDirectory>target</outputDirectory>
+                                <destFileName>resteasy-validation-cdi.jar</destFileName>
                             </artifactItem>
                         </artifactItems>
                     </configuration>

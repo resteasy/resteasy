@@ -89,6 +89,7 @@
                         <type>jar</type>
                         <overWrite>true</overWrite>
                         <outputDirectory>target</outputDirectory>
+                        <destFileName>resteasy-validation-cdi-as7.jar</destFileName>
                     </artifactItem>
                 </artifactItems>
             </configuration>

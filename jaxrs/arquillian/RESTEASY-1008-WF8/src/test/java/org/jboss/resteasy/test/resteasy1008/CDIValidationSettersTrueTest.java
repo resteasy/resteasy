@@ -54,7 +54,7 @@ public class CDIValidationSettersTrueTest extends CDIValidationTestParent
             .addClasses(SumConstraint.class, SumValidator.class)
             .addAsWebInfResource("context/true/web.xml")
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-            .addAsLibrary(new File("target/resteasy-validation-cdi-3.0.6.Final.jar")) // Search
+            .addAsLibrary(new File("target/resteasy-validation-cdi.jar")) // Search
             ;
       System.out.println(war.toString(true));
       return war;

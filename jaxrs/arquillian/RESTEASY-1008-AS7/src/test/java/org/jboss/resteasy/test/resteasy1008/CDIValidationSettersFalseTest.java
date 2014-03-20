@@ -38,7 +38,7 @@ public class CDIValidationSettersFalseTest extends CDIValidationTestParent
             .addClass(ResteasyValidationCdiInterceptor.class)
             .addAsWebInfResource("context/false/web.xml")
             .addAsWebInfResource("beans.xml", "beans.xml")
-            .addAsLibrary(new File("target/resteasy-validation-cdi-as7-3.0.6.Final.jar")) // Search
+            .addAsLibrary(new File("target/resteasy-validation-cdi-as7.jar")) // Search
             ;
       System.out.println(war.toString(true));
       return war;

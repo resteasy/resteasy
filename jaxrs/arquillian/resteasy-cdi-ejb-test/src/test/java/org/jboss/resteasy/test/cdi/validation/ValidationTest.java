@@ -63,7 +63,7 @@ public class ValidationTest
             .addClasses(InputErrorResource.class, InputErrorResourceImpl.class)
             .addClasses(ReturnValueErrorResource.class, ReturnValueErrorResourceImpl.class)
             .addClass(ResteasyValidationCdiInterceptor.class)
-            .addAsLibrary(new File("target/resteasy-validation-cdi-as7-3.0.6.Final.jar")) // Search
+            .addAsLibrary(new File("target/resteasy-validation-cdi-as7.jar")) // Search
             .addAsWebInfResource("validation/beans.xml", "beans.xml")
             ;
       System.out.println(war.toString(true));
