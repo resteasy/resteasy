@@ -74,6 +74,44 @@
               </artifactItems>
             </configuration>
           </execution>
+          <execution>
+            <id>copy validation cdi jar</id>
+            <phase>process-test-classes</phase>
+            <goals>
+                <goal>copy</goal>
+            </goals>
+            <configuration>
+                <artifactItems>
+                    <artifactItem>
+                        <groupId>org.jboss.resteasy</groupId>
+                        <artifactId>resteasy-validation-cdi-as7</artifactId>
+                        <version>${project.version}</version>
+                        <type>jar</type>
+                        <overWrite>true</overWrite>
+                        <outputDirectory>target</outputDirectory>
+                    </artifactItem>
+                </artifactItems>
+            </configuration>
+        </execution>
+        <execution>
+            <id>unpack cdi validation jar</id>
+            <phase>process-test-classes</phase>
+                <goals>
+                    <goal>unpack</goal>
+                </goals>
+            <configuration>
+                <artifactItems>
+                    <artifactItem>
+                        <groupId>org.jboss.resteasy</groupId>
+                        <artifactId>resteasy-validation-cdi-as7</artifactId>
+                        <version>${project.version}</version>
+                        <type>jar</type>
+                        <overWrite>true</overWrite>
+                        <outputDirectory>target/classes</outputDirectory>
+                    </artifactItem>
+                </artifactItems>
+            </configuration>
+        </execution>
           <!--execution>
             <id>update weld-core</id>
             <phase>process-test-classes</phase>
@@ -289,6 +327,16 @@
     </dependency>
     <dependency>
         <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-hibernatevalidator-provider</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-validation-cdi-as7</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxb-provider</artifactId>
         <version>${project.version}</version>
     </dependency>
@@ -324,6 +372,11 @@
     <dependency>
 	   <groupId>org.jboss.resteasy</groupId>
 	   <artifactId>resteasy-cdi</artifactId>
+	   <version>${project.version}</version>
+    </dependency>
+    <dependency>
+	   <groupId>org.jboss.resteasy</groupId>
+	   <artifactId>resteasy-hibernatevalidator-provider</artifactId>
 	   <version>${project.version}</version>
     </dependency>
     <dependency>

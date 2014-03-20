@@ -11,6 +11,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
+import org.jboss.resteasy.plugins.validation.hibernate.ValidateRequest;
+
 /**
  * 
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
@@ -18,10 +20,10 @@ import javax.ws.rs.core.Response;
  *
  * Copyright Dec 25, 2012
  */
-@Path("/")
+@Path("incorrect")
 @Stateless
-@SumConstraint(min=3, max=17)
-public class ErroneousResourceImpl implements ErroneousResource
+@ValidateRequest
+public class InputErrorResourceImpl implements InputErrorResource
 {
    @Inject
    private Logger log;
@@ -34,8 +36,8 @@ public class ErroneousResourceImpl implements ErroneousResource
    private int numberTwo;
    
    @GET
-   @Path("incorrect/test/{num}")
-   public Response test(@Min(5) @Max(10) @PathParam("num") int num)
+   @Path("test/{num}")
+   public Response test(@PathParam("num") int num)
    {
       log.info("entering ErroneousResourceImpl.test()");
       System.out.println("entering testClassValidator(): numberOne: " + numberOne + ", numberTwo: " + numberTwo);
@@ -47,8 +49,7 @@ public class ErroneousResourceImpl implements ErroneousResource
    {
       return numberOne;
    }
-
-   @Max(13) 
+ 
    @Override
    public int getNumberTwo()
    {

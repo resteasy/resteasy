@@ -19,10 +19,12 @@ import javax.validation.executable.ValidateOnExecution;
 import org.jboss.resteasy.api.validation.ConstraintType.Type;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
+import org.jboss.resteasy.cdi.ResteasyCdiExtension;
 import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.validation.GeneralValidator;
+import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
+import org.jboss.resteasy.util.GetRestful;
 
 import com.fasterxml.classmate.Filter;
 import com.fasterxml.classmate.MemberResolver;
@@ -39,7 +41,7 @@ import com.fasterxml.classmate.members.ResolvedMethod;
  *
  * Copyright May 23, 2013
  */
-public class GeneralValidatorImpl implements GeneralValidator
+public class GeneralValidatorImpl implements GeneralValidatorCDI
 {
    /**
     * Used for resolving type parameters. Thread-safe.
@@ -50,12 +52,22 @@ public class GeneralValidatorImpl implements GeneralValidator
    private ConstraintTypeUtil util = new ConstraintTypeUtil11();
    private boolean isExecutableValidationEnabled;
    private ExecutableType[] defaultValidatedExecutableTypes;
+   private boolean cdiActive;
 
    public GeneralValidatorImpl(ValidatorFactory validatorFactory, boolean isExecutableValidationEnabled, Set<ExecutableType> defaultValidatedExecutableTypes)
    {
       this.validatorFactory = validatorFactory;
       this.isExecutableValidationEnabled = isExecutableValidationEnabled;
       this.defaultValidatedExecutableTypes = defaultValidatedExecutableTypes.toArray(new ExecutableType[]{});
+      
+      try
+      {
+         cdiActive = ResteasyCdiExtension.isCDIActive();
+      }
+      catch (Exception e)
+      {
+         // Intentionally empty. In case ResteasyCdiExtension is not on the classpath.
+      }
    }
 
    @Override
@@ -172,49 +184,83 @@ public class GeneralValidatorImpl implements GeneralValidator
          throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }
    }
-
+   
    @Override
    public boolean isValidatable(Class<?> clazz)
    {
+      // Called from resteasy-jaxrs. Only validate subresources.
+      if (cdiActive)
+      {
+         return !GetRestful.isRootResource(clazz) && GetRestful.isSubResourceClass(clazz);
+      }
+      return true;
+   }
+
+   @Override
+   public boolean isValidatableFromCDI(Class<?> clazz)
+   {
+      assert(cdiActive);
       return true;
    }
    
    @Override
    public boolean isMethodValidatable(Method m)
    {
-   	if (!isExecutableValidationEnabled)
-   	{
-   		return false;
-   	}
-   	
-   	ExecutableType[] types = null;
+      // Called from resteasy-jaxrs. Only validate subresources.
+      if (cdiActive)
+      {
+         if (GetRestful.isRootResource(m.getDeclaringClass()) || !GetRestful.isSubResourceClass(m.getDeclaringClass()))
+         {
+            return false;
+         }
+      }
+      
+   	return checkIsMethodValidatable(m);
+   }
+   
+   
+   @Override
+   public boolean isMethodValidatableFromCDI(Method m)
+   {
+      assert(cdiActive);
+      return checkIsMethodValidatable(m);
+   }
+   
+   protected boolean checkIsMethodValidatable(Method m)
+   {
+      if (!isExecutableValidationEnabled)
+      {
+         return false;
+      }
+      
+      ExecutableType[] types = null;
       List<ExecutableType[]> typesList = getExecutableTypesOnMethodInHierarchy(m);
       if (typesList.size() > 1)
       {
-      	throw new ValidationException("@ValidateOnExecution found on multiple overridden methods");
+         throw new ValidationException("@ValidateOnExecution found on multiple overridden methods");
       }
       if (typesList.size() == 1)
       {
-      	types = typesList.get(0);
+         types = typesList.get(0);
       }
       else
       {
-      	ValidateOnExecution voe = m.getDeclaringClass().getAnnotation(ValidateOnExecution.class);
-      	if (voe == null)
-      	{
-      		types = defaultValidatedExecutableTypes;
-      	}
-      	else
-      	{
-      		if (voe.type().length > 0)
-      		{
-      			types = voe.type();
-      		}
-      		else
-      		{
-      			types = defaultValidatedExecutableTypes;
-      		}
-      	}
+         ValidateOnExecution voe = m.getDeclaringClass().getAnnotation(ValidateOnExecution.class);
+         if (voe == null)
+         {
+            types = defaultValidatedExecutableTypes;
+         }
+         else
+         {
+            if (voe.type().length > 0)
+            {
+               types = voe.type();
+            }
+            else
+            {
+               types = defaultValidatedExecutableTypes;
+            }
+         }
       }
       
       boolean isGetterMethod = isGetter(m);

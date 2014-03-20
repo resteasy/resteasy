@@ -14,11 +14,14 @@ import org.hibernate.validator.method.MethodValidator;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ConstraintType.Type;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
+import org.jboss.resteasy.cdi.ResteasyCdiExtension;
 import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
+import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.util.GetRestful;
 
 /**
  * 
@@ -27,16 +30,25 @@ import org.jboss.resteasy.util.FindAnnotation;
  *
  * Copyright May 23, 2013
  */
-public class GeneralValidatorImpl implements GeneralValidator
+public class GeneralValidatorImpl implements GeneralValidatorCDI
 {
    private Validator validator;
    private MethodValidator methodValidator;
    private ConstraintTypeUtil util = new ConstraintTypeUtil10();
+   private boolean cdiActive;
 
    public GeneralValidatorImpl(Validator validator, MethodValidator methodValidator)
    {
       this.validator = validator;
       this.methodValidator = methodValidator;
+      try
+      {
+         cdiActive = ResteasyCdiExtension.isCDIActive();
+      }
+      catch (Exception e)
+      {
+         // Intentionally empty. In case ResteasyCdiExtension is not on the classpath.
+      }
    }
 
    protected ViolationsContainer<Object> getViolationsContainer(HttpRequest request)
@@ -151,13 +163,49 @@ public class GeneralValidatorImpl implements GeneralValidator
    @Override
    public boolean isValidatable(Class<?> clazz)
    {
+      if (cdiActive)
+      {
+         return !GetRestful.isRootResource(clazz) && GetRestful.isSubResourceClass(clazz);
+      }
+      return checkIsValidatable(clazz);
+   }
+   
+   @Override
+   public boolean isValidatableFromCDI(Class<?> clazz)
+   {
+      assert(cdiActive);
+      return checkIsValidatable(clazz);
+   }
+   
+   protected boolean checkIsValidatable(Class<?> clazz)
+   {
       ValidateRequest resourceValidateRequest = FindAnnotation.findAnnotation(clazz.getAnnotations(), ValidateRequest.class);
       DoNotValidateRequest doNotValidateRequest = FindAnnotation.findAnnotation(clazz.getAnnotations(), DoNotValidateRequest.class);
-      return resourceValidateRequest != null && doNotValidateRequest == null;
+      return resourceValidateRequest != null && doNotValidateRequest == null; 
    }
    
    @Override
    public boolean isMethodValidatable(Method m)
+   {
+      // Called from resteasy-jaxrs. Only validate subresources.
+      if (cdiActive)
+      {
+         if (GetRestful.isRootResource(m.getDeclaringClass()) || !GetRestful.isSubResourceClass(m.getDeclaringClass()))
+         {
+            return false;
+         }
+      }
+      return checkIsMethodValidatable(m);
+   }
+   
+   @Override
+   public boolean isMethodValidatableFromCDI(Method m)
+   {
+      assert(cdiActive);
+      return checkIsMethodValidatable(m);
+   }
+   
+   protected boolean checkIsMethodValidatable(Method m)
    {
       ValidateRequest resourceValidateRequest = FindAnnotation.findAnnotation(m.getDeclaringClass().getAnnotations(), ValidateRequest.class);
       ValidateRequest methodValidateRequest = FindAnnotation.findAnnotation(m.getAnnotations(), ValidateRequest.class);
