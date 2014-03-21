@@ -58,8 +58,8 @@ REST.Request.prototype = {
 				url += "=" + REST.Encoding.encodeQueryParamNameOrValue(this.queryParameters[i][1]);
 			}
 			for(var i=0;i<this.cookies.length;i++){
-				document.cookie = escape(this.cookies[i][0]) 
-					+ "=" + escape(this.cookies[i][1]);
+				document.cookie = encodeURI(this.cookies[i][0]) 
+					+ "=" + encodeURI(this.cookies[i][1]);
 			}
 			request.open(this.method, url, this.async, this.username, this.password);
 			var acceptSet = false;

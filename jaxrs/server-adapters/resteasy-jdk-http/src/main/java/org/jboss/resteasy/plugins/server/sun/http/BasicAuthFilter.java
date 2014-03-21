@@ -63,7 +63,7 @@ public class BasicAuthFilter extends Filter
                @Override
                public boolean isUserInRole(String role)
                {
-                  return domain.isUserInRoll(getUserPrincipal(), role);
+                  return domain.isUserInRole(getUserPrincipal(), role);
                }
 
                @Override
