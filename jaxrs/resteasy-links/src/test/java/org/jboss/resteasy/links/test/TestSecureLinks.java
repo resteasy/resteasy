@@ -51,7 +51,7 @@ public class TestSecureLinks
 				return new SimplePrincipal(username);
 			}
 
-			public boolean isUserInRoll(Principal username, String role) {
+			public boolean isUserInRole(Principal username, String role) {
 				return username.getName().equals(role);
 			}
 			

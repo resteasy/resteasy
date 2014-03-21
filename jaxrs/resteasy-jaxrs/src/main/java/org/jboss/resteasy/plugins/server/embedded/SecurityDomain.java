@@ -12,5 +12,5 @@ public interface SecurityDomain
 {
    Principal authenticate(String username, String password) throws SecurityException;
 
-   boolean isUserInRoll(Principal username, String role);
+   boolean isUserInRole(Principal username, String role);
 }

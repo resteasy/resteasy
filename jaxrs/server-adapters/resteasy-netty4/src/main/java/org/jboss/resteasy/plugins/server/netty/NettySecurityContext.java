@@ -37,7 +37,7 @@ public class NettySecurityContext implements SecurityContext
    public boolean isUserInRole(String role)
    {
       if (domain == null) return false;
-      return domain.isUserInRoll(principal, role);
+      return domain.isUserInRole(principal, role);
    }
 
    @Override
