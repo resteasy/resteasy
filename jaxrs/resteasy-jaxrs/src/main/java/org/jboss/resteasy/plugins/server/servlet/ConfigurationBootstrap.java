@@ -4,7 +4,6 @@ import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.util.HttpHeaderNames;
-import org.scannotation.AnnotationDB;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
@@ -27,10 +26,8 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
    private static Logger logger = null;
    private ResteasyDeployment deployment = new ResteasyDeployment();
 
-   public abstract URL[] getScanningUrls();
 
-
-   public ResteasyDeployment createDeployment()
+    public ResteasyDeployment createDeployment()
    {
       String loggerTypeString = getParameter("resteasy.logger.type");
       if (loggerTypeString != null)
@@ -107,80 +104,29 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
       String builtin = getParameter(ResteasyContextParameters.RESTEASY_USE_BUILTIN_PROVIDERS);
       if (builtin != null) deployment.setRegisterBuiltin(Boolean.valueOf(builtin.trim()));
 
-      boolean scanProviders = false;
-      boolean scanResources = false;
 
       String sProviders = getParameter(ResteasyContextParameters.RESTEASY_SCAN_PROVIDERS);
       if (sProviders != null)
       {
-         scanProviders = parseBooleanParam(ResteasyContextParameters.RESTEASY_SCAN_PROVIDERS, sProviders);
+         logger.warn(ResteasyContextParameters.RESTEASY_SCAN_PROVIDERS + " is no longer supported.  Use a servlet 3.0 container and the ResteasyServletInitializer");
       }
       String scanAll = getParameter(ResteasyContextParameters.RESTEASY_SCAN);
       if (scanAll != null)
       {
-         boolean tmp = parseBooleanParam(ResteasyContextParameters.RESTEASY_SCAN, scanAll);
-         scanProviders = tmp || scanProviders;
-         scanResources = tmp || scanResources;
+         logger.warn(ResteasyContextParameters.RESTEASY_SCAN + " is no longer supported.  Use a servlet 3.0 container and the ResteasyServletInitializer");
       }
       String sResources = getParameter(ResteasyContextParameters.RESTEASY_SCAN_RESOURCES);
       if (sResources != null)
       {
-         scanResources = parseBooleanParam(ResteasyContextParameters.RESTEASY_SCAN_RESOURCES, sResources);
+         logger.warn(ResteasyContextParameters.RESTEASY_SCAN_RESOURCES + " is no longer supported.  Use a servlet 3.0 container and the ResteasyServletInitializer");
       }
 
       // Check to see if scanning is being done by deployer (i.e. JBoss App Server)
       String sScannedByDeployer = getParameter(ResteasyContextParameters.RESTEASY_SCANNED_BY_DEPLOYER);
       if (sScannedByDeployer != null)
       {
-         boolean tmp = parseBooleanParam(ResteasyContextParameters.RESTEASY_SCANNED_BY_DEPLOYER, sScannedByDeployer);
-         if (tmp)
-         {
-            scanProviders = false;
-            scanResources = false;
-         }
+
       }
-
-      if (scanProviders || scanResources)
-      {
-         logger.debug("Scanning...");
-
-         URL[] urls = getScanningUrls();
-         for (URL u : urls)
-         {
-            logger.debug("Scanning archive: " + u);
-         }
-         AnnotationDB db = new AnnotationDB();
-         String[] ignoredPackages = {"org.jboss.resteasy.plugins", "org.jboss.resteasy.annotations", "org.jboss.resteasy.client", "org.jboss.resteasy.specimpl", "org.jboss.resteasy.core", "org.jboss.resteasy.spi", "org.jboss.resteasy.util", "org.jboss.resteasy.mock", "javax.ws.rs"};
-         db.setIgnoredPackages(ignoredPackages);
-
-         // only index class annotations as we don't want sub-resources being picked up in the scan
-         db.setScanClassAnnotations(true);
-         db.setScanFieldAnnotations(false);
-         db.setScanMethodAnnotations(false);
-         db.setScanParameterAnnotations(false);
-         try
-         {
-            db.scanArchives(urls);
-            try
-            {
-               db.crossReferenceImplementedInterfaces();
-               db.crossReferenceMetaAnnotations();
-            }
-            catch (AnnotationDB.CrossReferenceException ignored)
-            {
-
-            }
-
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException("Unable to scan WEB-INF for JAX-RS annotations, you must manually register your classes/resources", e);
-         }
-
-         if (scanProviders) processScannedProviders(db);
-         if (scanResources) processScannedResources(db);
-      }
-
 
       String scannedProviders = getParameter(ResteasyContextParameters.RESTEASY_SCANNED_PROVIDERS);
 
@@ -384,41 +330,4 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
       }
    }
 
-   protected void processScannedProviders(AnnotationDB db)
-   {
-      Set<String> classes = db.getAnnotationIndex().get(Provider.class.getName());
-      if (classes == null) return;
-      for (String clazz : classes)
-      {
-         logger.info("Adding scanned @Provider: " + clazz);
-         deployment.getScannedProviderClasses().add(clazz);
-      }
-   }
-
-   protected void processScannedResources(AnnotationDB db)
-   {
-      Set<String> classes = new HashSet<String>();
-      Set<String> paths = db.getAnnotationIndex().get(Path.class.getName());
-      if (paths != null) classes.addAll(paths);
-      for (String clazz : classes)
-      {
-         Class cls = null;
-         try
-         {
-            // Ignore interfaces and subresource classes
-            // Scanning is different than other deployment methods
-            // in other deployment methods we don't want to ignore interfaces and subresources as they are
-            // application errors
-            cls = Thread.currentThread().getContextClassLoader().loadClass(clazz.trim());
-            if (cls.isInterface()) continue;
-         }
-         catch (ClassNotFoundException e)
-         {
-            throw new RuntimeException(e);
-         }
-
-         logger.info("Adding scanned resource: " + clazz);
-         deployment.getScannedResourceClasses().add(clazz);
-      }
-   }
 }

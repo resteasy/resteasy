@@ -391,7 +391,7 @@ public class ResteasyUriBuilder extends UriBuilder
             if (m.isAnnotationPresent(Path.class)) theMethod = m;
          }
       }
-      if (theMethod == null) throw new IllegalArgumentException("No @Path annotated method for " + resource.getName()+ "." +method);
+      if (theMethod == null) throw new IllegalArgumentException("No public @Path annotated method for " + resource.getName()+ "." +method);
       return path(theMethod);
    }
 

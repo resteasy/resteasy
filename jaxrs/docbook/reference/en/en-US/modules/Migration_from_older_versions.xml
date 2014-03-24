@@ -9,6 +9,15 @@
 <chapter id="Migration_from_older_versions">
 <title>Migration from older versions</title>
 <sect1>
+    <title>Migrating from 3.0.6 to 3.0.7</title>
+    <itemizedlist>
+        <listitem>
+            Scannotation has been removed.  If you are not running within an application server you must use the
+            ResteasyServletInitializer.  See docs for more detail.
+        </listitem>
+    </itemizedlist>
+</sect1>
+<sect1>
     <title>Migrating from 3.0 to 3.0.4</title>
     <itemizedlist>
         <listitem>

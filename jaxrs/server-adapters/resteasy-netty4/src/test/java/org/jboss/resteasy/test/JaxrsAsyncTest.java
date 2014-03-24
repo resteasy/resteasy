@@ -71,8 +71,8 @@ public class JaxrsAsyncTest
    {
       Client client = ClientBuilder.newClient();
       callAsync(client);
-      callAsync(client);
-      callAsync(client);
+      //callAsync(client);
+      //callAsync(client);
       client.close();
    }
 

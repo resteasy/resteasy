@@ -1,18 +1,19 @@
 package org.jboss.resteasy.plugins.server.netty;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufOutputStream;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.DefaultHttpResponse;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpHeaders.Names;
 import io.netty.handler.codec.http.HttpHeaders.Values;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.LastHttpContent;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import java.io.IOException;
@@ -27,7 +28,6 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 public class NettyHttpResponse implements HttpResponse
 {
    private int status = 200;
-   private ByteBuf byteBuf;
    private OutputStream os;
    private MultivaluedMap<String, Object> outputHeaders;
    private final ChannelHandlerContext ctx;
@@ -38,8 +38,7 @@ public class NettyHttpResponse implements HttpResponse
    public NettyHttpResponse(ChannelHandlerContext ctx, boolean keepAlive, ResteasyProviderFactory providerFactory)
    {
       outputHeaders = new MultivaluedMapImpl<String, Object>();
-      byteBuf = ctx.alloc().buffer();
-      os = new ByteBufOutputStream(byteBuf);
+      os = new ChunkOutputStream(this, ctx, 1000);
       this.ctx = ctx;
       this.keepAlive = keepAlive;
       this.providerFactory = providerFactory;
@@ -49,11 +48,6 @@ public class NettyHttpResponse implements HttpResponse
    public void setOutputStream(OutputStream os)
    {
       this.os = os;
-   }
-
-   public ByteBuf getBuffer()
-   {
-      return byteBuf;
    }
 
    @Override
@@ -83,7 +77,7 @@ public class NettyHttpResponse implements HttpResponse
    @Override
    public void addNewCookie(NewCookie cookie)
    {
-      outputHeaders.add(HttpHeaders.SET_COOKIE, cookie);
+      outputHeaders.add(javax.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
    }
 
    @Override
@@ -95,31 +89,44 @@ public class NettyHttpResponse implements HttpResponse
    @Override
    public void sendError(int status, String message) throws IOException
    {
-       if (committed)
-       {
-           throw new IllegalStateException();
-       }
+      if (committed)
+      {
+         throw new IllegalStateException();
+      }
 
-       final HttpResponseStatus responseStatus;
-       if (message != null)
-       {
-           responseStatus = new HttpResponseStatus(status, message);
-           setStatus(status);
-       }
-       else
-       {
-           responseStatus = HttpResponseStatus.valueOf(status);
-           setStatus(status);
-       }
-       final io.netty.handler.codec.http.HttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, responseStatus);
-       if (keepAlive)
-       {
-           // Add keep alive and content length if needed
-           response.headers().add(Names.CONNECTION, Values.KEEP_ALIVE);
-           response.headers().add(Names.CONTENT_LENGTH, 0);
-       }
-       ctx.writeAndFlush(response);
-       committed = true;
+      final HttpResponseStatus responseStatus;
+      if (message != null)
+      {
+         responseStatus = new HttpResponseStatus(status, message);
+         setStatus(status);
+      }
+      else
+      {
+         responseStatus = HttpResponseStatus.valueOf(status);
+         setStatus(status);
+      }
+      io.netty.handler.codec.http.HttpResponse response = null;
+      if (message != null)
+      {
+         ByteBuf byteBuf = ctx.alloc().buffer();
+         byteBuf.writeBytes(message.getBytes());
+
+         response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, responseStatus, byteBuf);
+      }
+      else
+      {
+         response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, responseStatus);
+
+      }
+      if (keepAlive)
+      {
+         // Add keep alive and content length if needed
+         response.headers().add(Names.CONNECTION, Values.KEEP_ALIVE);
+         if (message == null) response.headers().add(Names.CONTENT_LENGTH, 0);
+         else response.headers().add(Names.CONTENT_LENGTH, message.getBytes().length);
+      }
+      ctx.writeAndFlush(response);
+      committed = true;
    }
 
    @Override
@@ -133,26 +140,43 @@ public class NettyHttpResponse implements HttpResponse
    {
       if (committed)
       {
-          throw new IllegalStateException("Already committed");
+         throw new IllegalStateException("Already committed");
       }
       outputHeaders.clear();
-      byteBuf.clear();
       outputHeaders.clear();
    }
 
-   public boolean isKeepAlive() {
-       return keepAlive;
+   public boolean isKeepAlive()
+   {
+      return keepAlive;
    }
 
-    public void retain() {
-        byteBuf.retain(1);
-    }
+   public DefaultHttpResponse getDefaultHttpResponse()
+   {
+      HttpResponseStatus status = HttpResponseStatus.valueOf(getStatus());
+      DefaultHttpResponse res = new DefaultHttpResponse(HTTP_1_1, status);
+      RestEasyHttpResponseEncoder.transformHeaders(this, res, providerFactory);
+      return res;
+   }
 
-    public DefaultFullHttpResponse getDefaultFullHttpResponse()
-    {
-        HttpResponseStatus status = HttpResponseStatus.valueOf(getStatus());
-        DefaultFullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, status, getBuffer());
-        RestEasyHttpResponseEncoder.transformHeaders(this, res, providerFactory);
-        return res;
-    }
+   public void prepareChunkStream() {
+      committed = true;
+      DefaultHttpResponse response = getDefaultHttpResponse();
+      HttpHeaders.setTransferEncodingChunked(response);
+      ctx.write(response);
+   }
+
+   public void finish() throws IOException {
+      os.flush();
+      if (isCommitted()) {
+         // if committed this means the output stream was used.
+         ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
+      } else {
+         io.netty.handler.codec.http.HttpResponse response = getDefaultHttpResponse();
+         ctx.writeAndFlush(response);
+      }
+
+   }
+
+
 }

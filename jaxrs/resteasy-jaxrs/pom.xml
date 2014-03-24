@@ -45,13 +45,10 @@
             <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!--
-           Scans classes on cp for annotations and builds quick lookup database
-           of them.
-        -->
         <dependency>
-            <groupId>org.scannotation</groupId>
-            <artifactId>scannotation</artifactId>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <scope>test</scope>
         </dependency>
         <!--
            Needed for javax.annotation.security.* which is part of javaee 6 XXX
