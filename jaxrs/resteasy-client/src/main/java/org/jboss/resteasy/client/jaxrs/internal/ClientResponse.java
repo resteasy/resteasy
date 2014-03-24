@@ -313,4 +313,10 @@ public abstract class ClientResponse extends BuiltResponse
       return true;
    }
 
+   @Override
+   public void abortIfClosed()
+   {
+       if (bufferedEntity == null) super.abortIfClosed();
+   }
+
 }
