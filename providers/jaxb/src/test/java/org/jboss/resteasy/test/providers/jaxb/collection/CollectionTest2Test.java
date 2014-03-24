@@ -1,14 +1,8 @@
 package org.jboss.resteasy.test.providers.jaxb.collection;
 
-import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
-import org.jboss.resteasy.util.GenericType;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -18,7 +12,15 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
+
+import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.jboss.resteasy.util.GenericType;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -89,8 +91,8 @@ public class CollectionTest2Test extends BaseResourceTest
       @POST
       public Foo[] naked(Foo[] foo)
       {
-         Assert.assertEquals(1, foo.length);
-         Assert.assertEquals(foo[0].getTest(), "hello");
+         assert 1 == foo.length;
+         assert "hello".equals(foo[0].getTest());
          return foo;
       }
 
@@ -101,8 +103,8 @@ public class CollectionTest2Test extends BaseResourceTest
       @Wrapped(element = "list", namespace = "", prefix = "")
       public List<Foo> wrapped(@Wrapped(element = "list", namespace = "", prefix = "") List<Foo> list)
       {
-         Assert.assertEquals(1, list.size());
-         Assert.assertEquals(list.get(0).getTest(), "hello");
+         assert 1 == list.size();
+         assert "hello".equals(list.get(0).getTest());
          return list;
       }
 
@@ -118,8 +120,8 @@ public class CollectionTest2Test extends BaseResourceTest
       @POST
       public NamespacedFoo[] naked(NamespacedFoo[] foo)
       {
-         Assert.assertEquals(1, foo.length);
-         Assert.assertEquals(foo[0].getTest(), "hello");
+         assert 1 == foo.length;
+         assert "hello".equals(foo[0].getTest());
          return foo;
       }
 
@@ -130,8 +132,8 @@ public class CollectionTest2Test extends BaseResourceTest
       @Wrapped(element = "list", namespace = "", prefix = "")
       public List<NamespacedFoo> wrapped(@Wrapped(element = "list", namespace = "", prefix = "") List<NamespacedFoo> list)
       {
-         Assert.assertEquals(1, list.size());
-         Assert.assertEquals(list.get(0).getTest(), "hello");
+         assert 1 == list.size();
+         assert "hello".equals(list.get(0).getTest());
          return list;
       }
 
@@ -139,10 +141,13 @@ public class CollectionTest2Test extends BaseResourceTest
    }
 
    @Before
-   public void setup()
+   public void setup () throws Exception
    {
-      addPerRequestResource(MyResource.class);
-      addPerRequestResource(MyNamespacedResource.class);
+     stopContainer();
+     createContainer(initParams, contextParams);
+      addPerRequestResource(MyResource.class, Foo.class, NamespacedFoo.class, CollectionTest2Test.class, BaseResourceTest.class);
+      addPerRequestResource(MyNamespacedResource.class, Foo.class, NamespacedFoo.class, CollectionTest2Test.class, BaseResourceTest.class);
+      startContainer();
    }
 
    @Test

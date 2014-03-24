@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.client.core;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
 import java.net.URI;
 
 import javax.ws.rs.Consumes;
@@ -21,20 +23,21 @@ import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.BaseResourceTest;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
-
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 public class ClientErrorInterceptorTest extends BaseResourceTest {
 
 	public static class MyResourceImpl implements MyResource {
-		public String get() {
+		@Override
+        public String get() {
 			return "hello world";
 		}
 
-		public String error() {
+		@Override
+        public String error() {
 			Response r = Response.status(404).type("text/plain").entity("there was an error").build();
 			throw new NoLogWebApplicationException(r);
 		}
@@ -63,9 +66,11 @@ public class ClientErrorInterceptorTest extends BaseResourceTest {
       void update(@PathParam("id") String id, String obj);
 	}
 
-	@BeforeClass
-	public static void setUp() throws Exception {
+	@Override
+    @Before
+	public void before() throws Exception {
 		addPerRequestResource(MyResourceImpl.class);
+		super.before();
 	}
 
 	public static class MyClienteErrorInterceptor implements ClientErrorInterceptor {
@@ -92,7 +97,7 @@ public class ClientErrorInterceptorTest extends BaseResourceTest {
 		ResteasyProviderFactory pf = ResteasyProviderFactory.getInstance();
 		pf.addClientErrorInterceptor(new MyClienteErrorInterceptor());
 
-		MyResource proxy = ProxyFactory.create(MyResource.class, new URI("http://localhost:8081"), clientExecutor, pf);
+		MyResource proxy = ProxyFactory.create(MyResource.class, new URI(TestPortProvider.generateBaseUrl()), clientExecutor, pf);
 
 		try {
 			proxy.error();

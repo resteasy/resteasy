@@ -1,13 +1,5 @@
 package org.jboss.resteasy.test.regression;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.test.BaseResourceTest;
-import org.jboss.resteasy.test.TestPortProvider;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -16,6 +8,14 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.jboss.resteasy.test.TestPortProvider;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -128,9 +128,10 @@ public class OptionsTest extends BaseResourceTest
 
    }
 
-   @BeforeClass
-   public static void init() throws Exception
-   {
+   @Override
+   @Before
+   public void before() throws Exception {
+      super.before();
       addPerRequestResource(ParamsResource.class);
       addPerRequestResource(Users.class);
 
@@ -140,8 +141,7 @@ public class OptionsTest extends BaseResourceTest
    public void testOptions() throws Exception
    {
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/params/customers/333/phonenumbers"));
-      ClientResponse response = request.options();
-      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals(200, request.options().getStatus());
 
    }
 
@@ -149,7 +149,7 @@ public class OptionsTest extends BaseResourceTest
    public void testMethodNotAllowed() throws Exception
    {
       ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/params/customers/333/phonenumbers"));
-      ClientResponse response = request.post();
+      ClientResponse<?> response = request.post();
       Assert.assertEquals(405, response.getStatus());
 
       // RESTEasy-363

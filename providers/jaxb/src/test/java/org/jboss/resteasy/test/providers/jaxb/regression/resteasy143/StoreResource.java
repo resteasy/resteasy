@@ -1,5 +1,9 @@
 package org.jboss.resteasy.test.providers.jaxb.regression.resteasy143;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.GregorianCalendar;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -8,10 +12,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.sql.Timestamp;
-import java.util.GregorianCalendar;
 
 /**
  * @author todd yocum
@@ -36,8 +36,8 @@ public class StoreResource
    @Path("storeXML")
    public Response storeXML(DataCollectionPackage dataCollectionPackage)
    {
-      String sourceID = dataCollectionPackage.getSourceID();
-      String eventID = dataCollectionPackage.getEventID();
+      dataCollectionPackage.getSourceID();
+      dataCollectionPackage.getEventID();
 
       if (dataCollectionPackage.getDataRecords() == null ||
               dataCollectionPackage.getDataRecords().getDataCollectionRecord() == null)
@@ -55,7 +55,6 @@ public class StoreResource
          XMLGregorianCalendar cal = dr.getTimestamp();
          GregorianCalendar gregorianCalendar = cal.toGregorianCalendar();
          long timeAsMillis = gregorianCalendar.getTimeInMillis();
-         Timestamp timestamp = new Timestamp(timeAsMillis);
 
          // persist data here
       }

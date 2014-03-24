@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.jboss.resteasy</groupId>
@@ -76,7 +75,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>arquillian-deployment-scenario-provider</artifactId>
-            <version>1.0.0.Final</version>
+            <version>${version.org.jboss.resteasy.arquillian-deployment-scenario-provider}</version>
             <scope>test</scope>
         </dependency>
 
@@ -165,7 +164,7 @@
                 <dependency>
                     <groupId>org.jboss.arquillian.container</groupId>
                     <artifactId>arquillian-jetty-embedded-7</artifactId>
-                    <version>1.0.0.CR1</version>
+                    <version>1.0.0.CR2</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
@@ -179,27 +178,6 @@
                     <groupId>org.eclipse.jetty</groupId>
                     <artifactId>jetty-plus</artifactId>
                     <version>${version.jetty}</version>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-
-
-        <profile>
-            <id>jboss710</id>
-            <activation>
-                <property>
-                    <name>jboss710</name>
-                </property>
-            </activation>
-            <properties>
-                <version.org.jboss.as.jboss-as-arquillian-container-managed>7.1.1.Final</version.org.jboss.as.jboss-as-arquillian-container-managed>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>org.jboss.as</groupId>
-                    <artifactId>jboss-as-arquillian-container-managed</artifactId>
-                    <version>${version.org.jboss.as.jboss-as-arquillian-container-managed}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -229,7 +207,7 @@
             <id>install-jboss730</id>
             <activation>
                 <property>
-                    <name>as.version</name>
+                    <name>!jboss.home</name>
                 </property>
             </activation>
             <properties>
@@ -252,7 +230,7 @@
                                         <artifactItem>
                                             <groupId>org.jboss.as</groupId>
                                             <artifactId>jboss-as-dist</artifactId>
-                                            <version>${as.version}</version>
+                                            <version>${version.org.jboss.as}</version>
                                             <type>zip</type>
                                             <overWrite>false</overWrite>
                                             <outputDirectory>${project.build.directory}</outputDirectory>

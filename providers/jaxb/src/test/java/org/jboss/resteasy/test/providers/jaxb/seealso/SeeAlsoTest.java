@@ -1,12 +1,9 @@
 package org.jboss.resteasy.test.providers.jaxb.seealso;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+
+import java.io.InputStream;
+import java.io.StringWriter;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -14,10 +11,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
+
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -34,8 +34,8 @@ public class SeeAlsoTest extends BaseResourceTest
       @Consumes(MediaType.APPLICATION_XML)
       public BaseFoo post(BaseFoo foo)
       {
-         Assert.assertTrue(foo instanceof RealFoo);
-         Assert.assertEquals(((RealFoo) foo).getName(), "bill");
+         assert foo instanceof RealFoo;
+         assert "bill".equals(((RealFoo) foo).getName());
          return foo;
       }
 
@@ -46,8 +46,8 @@ public class SeeAlsoTest extends BaseResourceTest
       @Consumes(MediaType.APPLICATION_XML)
       public IFoo post(IFoo foo)
       {
-         Assert.assertTrue(foo instanceof RealFoo);
-         Assert.assertEquals(((RealFoo) foo).getName(), "bill");
+        assert foo instanceof RealFoo;
+        assert "bill".equals(((RealFoo) foo).getName());
          return foo;
       }
    }
@@ -56,7 +56,10 @@ public class SeeAlsoTest extends BaseResourceTest
    @Before
    public void setUp() throws Exception
    {
-      dispatcher.getRegistry().addPerRequestResource(SeeAlso.class);
+      stopContainer();
+      createContainer(initParams, contextParams);
+      addPerRequestResource(SeeAlso.class, RealFoo.class, IFoo.class, BaseFoo.class, SeeAlsoTest.class, BaseResourceTest.class);
+      startContainer();
    }
 
 
@@ -94,7 +97,7 @@ public class SeeAlsoTest extends BaseResourceTest
       ClientResponse<InputStream> response = request.post(InputStream.class);
       Assert.assertEquals(200, response.getStatus());
       foo = (RealFoo) ctx.createUnmarshaller().unmarshal(response.getEntity());
-      Assert.assertEquals(((RealFoo) foo).getName(), "bill"); 
+      Assert.assertEquals(foo.getName(), "bill");
       response.releaseConnection();
    }
 

@@ -1,41 +1,35 @@
 package org.jboss.resteasy.test.providers.jaxb.regression;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextWrapper;
-import org.jboss.resteasy.test.EmbeddedContainer;
 import static org.jboss.resteasy.test.TestPortProvider.*;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.xml.bind.JAXBContext;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextWrapper;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class AbstractJAXBClassTest
+public class AbstractJAXBClassTest extends BaseResourceTest
 {
-   private static Dispatcher dispatcher;
 
-   @BeforeClass
-   public static void before() throws Exception
+   @Override
+   @Before
+   public void before() throws Exception
    {
-      dispatcher = EmbeddedContainer.start().getDispatcher();
-      dispatcher.getRegistry().addPerRequestResource(SimpleResource.class);
-   }
-
-   @AfterClass
-   public static void after() throws Exception
-   {
-      EmbeddedContainer.stop();
+      addPerRequestResource(SimpleResource.class, Adresse.class, Firmenkunde.class, Kunde.class, Person.class, Privatkunde.class, AbstractJAXBClassTest.class, BaseResourceTest.class);
+      super.before();
    }
 
    @Path("/")
@@ -97,7 +91,7 @@ public class AbstractJAXBClassTest
          {
             throw new RuntimeException(e);
          }
-         
+
          {
             try
             {

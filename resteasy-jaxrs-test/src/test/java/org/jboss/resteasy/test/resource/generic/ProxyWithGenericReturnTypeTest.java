@@ -27,6 +27,7 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -53,7 +54,7 @@ public class ProxyWithGenericReturnTypeTest
    public interface TestSubResourceSubIntf extends TestSubResourceIntf<String>
    {
    }
-   
+
    static class TestInvocationHandler implements InvocationHandler
    {
       @Override
@@ -66,7 +67,7 @@ public class ProxyWithGenericReturnTypeTest
          return result;
       }
    }
-   
+
    @Provider
    static class TestMessageBodyWriter implements MessageBodyWriter<List<String>>
    {
@@ -92,15 +93,17 @@ public class ProxyWithGenericReturnTypeTest
          entityStream.write(genericType.getClass().toString().getBytes());
       }
    }
-   
+
    static public class TestApplication extends Application
    {
+      @Override
       public Set<Class<?>> getClasses()
       {
          Set<Class<?>> classes = new HashSet<Class<?>>();
          classes.add(TestResource.class);
          return classes;
       }
+      @Override
       public Set<Object> getSingletons()
       {
          Set<Object> singletons = new HashSet<Object>();
@@ -111,13 +114,13 @@ public class ProxyWithGenericReturnTypeTest
 
    @Path("/")
    static public class TestResource
-   {  
+   {
       @Produces("text/plain")
       @Path("test")
       public TestSubResourceSubIntf resourceLocator()
       {
          Object proxy = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
-                                               new Class[]{TestSubResourceSubIntf.class}, 
+                                               new Class[]{TestSubResourceSubIntf.class},
                                                new TestInvocationHandler());
 
          return TestSubResourceSubIntf.class.cast(proxy);
@@ -143,11 +146,11 @@ public class ProxyWithGenericReturnTypeTest
    @Test
    public void test() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:8081/test/list/");
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/test/list/"));
       System.out.println("Sending request");
       ClientResponse<String>response = request.get(String.class);
       System.out.println("Received response: " + response.getEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertTrue(response.getEntity(String.class).indexOf("ParameterizedTypeImpl") >= 0);
-   }   
+   }
 }

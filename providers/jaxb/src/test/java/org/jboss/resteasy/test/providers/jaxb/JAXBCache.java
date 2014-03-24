@@ -1,11 +1,12 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
-import org.jboss.resteasy.core.ExceptionAdapter;
-import org.jboss.resteasy.logging.Logger;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.util.concurrent.ConcurrentHashMap;
+
+import org.jboss.resteasy.core.ExceptionAdapter;
+import org.jboss.resteasy.logging.Logger;
 
 /**
  * A JAXBCache.
@@ -26,7 +27,7 @@ public final class JAXBCache
    /**
     *
     */
-   private ConcurrentHashMap<Object, JAXBContext> contextCache = new ConcurrentHashMap<Object, JAXBContext>();
+   private final ConcurrentHashMap<Object, JAXBContext> contextCache = new ConcurrentHashMap<Object, JAXBContext>();
 
    /**
     * Create a new JAXBCache.
@@ -67,7 +68,7 @@ public final class JAXBCache
          }
          contextCache.putIfAbsent(classes, context);
       }
-      logger.debug("Locating JAXBContext for package: {0}", classes);
+      logger.debug("Locating JAXBContext for package: {0}", (Object [])classes);
       return context;
    }
 

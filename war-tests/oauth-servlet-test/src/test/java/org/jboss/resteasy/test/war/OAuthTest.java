@@ -8,13 +8,13 @@ import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
 
-import org.junit.Assert;
-import org.junit.Test;
 import org.jboss.resteasy.auth.oauth.OAuthUtils;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.smoke.MyProvider;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.Assert;
+import org.junit.Test;
 
 
 /**
@@ -23,11 +23,11 @@ import org.jboss.resteasy.util.HttpResponseCodes;
  */
 public class OAuthTest
 {
-    
-   static final String RequestURL = "http://localhost:9095/oauth-servlet-test/oauth/requestToken";
-   static final String AccessURL = "http://localhost:9095/oauth-servlet-test/oauth/accessToken";
-   static final String ProtectedURL = "http://localhost:9095/oauth-servlet-test/rest/security";
-   
+
+   static final String RequestURL = "http://localhost:9095/oauth/requestToken";
+   static final String AccessURL = "http://localhost:9095/oauth/accessToken";
+   static final String ProtectedURL = "http://localhost:9095/rest/security";
+
    @Test
    public void testRequestNoParams() throws Exception
    {
@@ -167,7 +167,7 @@ public class OAuthTest
    }
 
    private String getRequestURL(String consumerKey, String consumerSecret) throws Exception {
-	   OAuthMessage message = new OAuthMessage("GET", RequestURL, Collections.<Map.Entry>emptyList());
+	   OAuthMessage message = new OAuthMessage("GET", RequestURL, Collections.<Map.Entry<?, ?>>emptyList());
 	   OAuthConsumer consumer = new OAuthConsumer("http://callback.net", consumerKey, consumerSecret, null);
 	   OAuthAccessor accessor = new OAuthAccessor(consumer);
 	   message.addParameter(OAuth.OAUTH_CALLBACK, consumer.callbackURL);
@@ -176,7 +176,7 @@ public class OAuthTest
    }
 
    private String getAccessURL(String consumerKey, String consumerSecret, String requestKey, String requestSecret, String verifier) throws Exception {
-	   OAuthMessage message = new OAuthMessage("GET", AccessURL, Collections.<Map.Entry>emptyList());
+	   OAuthMessage message = new OAuthMessage("GET", AccessURL, Collections.<Map.Entry<?, ?>>emptyList());
 	   OAuthConsumer consumer = new OAuthConsumer("http://callback.net", consumerKey, consumerSecret, null);
 	   OAuthAccessor accessor = new OAuthAccessor(consumer);
 	   accessor.requestToken = requestKey;
@@ -188,7 +188,7 @@ public class OAuthTest
    }
 
    private String getProtectedURL(String url, String consumerKey, String consumerSecret, String accessKey, String accessSecret) throws Exception {
-	   OAuthMessage message = new OAuthMessage("GET", ProtectedURL+url, Collections.<Map.Entry>emptyList());
+	   OAuthMessage message = new OAuthMessage("GET", ProtectedURL+url, Collections.<Map.Entry<?, ?>>emptyList());
 	   OAuthConsumer consumer = new OAuthConsumer("http://callback.net", consumerKey, consumerSecret, null);
 	   OAuthAccessor accessor = new OAuthAccessor(consumer);
 	   accessor.accessToken = accessKey;

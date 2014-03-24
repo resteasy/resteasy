@@ -1,13 +1,11 @@
 package org.jboss.resteasy.test.providers.jaxb.collection;
 
-import junit.framework.Assert;
-import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
-import org.junit.Before;
-import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -16,10 +14,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
+import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -45,8 +47,8 @@ public class TestCollection extends BaseResourceTest
       @Consumes("application/xml")
       public void putCustomers(@Wrapped Customer[] customers)
       {
-         Assert.assertEquals("bill", customers[0].getName());
-         Assert.assertEquals("monica", customers[1].getName());
+         assert "bill".equals(customers[0].getName());
+         assert "monica".equals(customers[1].getName());
       }
 
       @GET
@@ -67,8 +69,8 @@ public class TestCollection extends BaseResourceTest
       @Consumes("application/xml")
       public void putCustomers(@Wrapped List<Customer> customers)
       {
-         Assert.assertEquals("bill", customers.get(0).getName());
-         Assert.assertEquals("monica", customers.get(1).getName());
+        assert "bill".equals(customers.get(0).getName());
+        assert "monica".equals(customers.get(1).getName());
       }
 
       @GET
@@ -118,8 +120,8 @@ public class TestCollection extends BaseResourceTest
       @Consumes("application/xml")
       public void putCustomers(@Wrapped NamespacedCustomer[] customers)
       {
-         Assert.assertEquals("bill", customers[0].getName());
-         Assert.assertEquals("monica", customers[1].getName());
+        assert "bill".equals(customers[0].getName());
+        assert "monica".equals(customers[1].getName());
       }
 
       @GET
@@ -140,8 +142,8 @@ public class TestCollection extends BaseResourceTest
       @Consumes("application/xml")
       public void putCustomers(@Wrapped List<NamespacedCustomer> customers)
       {
-         Assert.assertEquals("bill", customers.get(0).getName());
-         Assert.assertEquals("monica", customers.get(1).getName());
+        assert "bill".equals(customers.get(0).getName());
+        assert "monica".equals(customers.get(1).getName());
       }
 
       @GET
@@ -176,8 +178,11 @@ public class TestCollection extends BaseResourceTest
    @Before
    public void setUp() throws Exception
    {
-      dispatcher.getRegistry().addPerRequestResource(MyResource.class);
-      dispatcher.getRegistry().addPerRequestResource(MyNamespacedResource.class);
+      stopContainer();
+      createContainer(initParams, contextParams);
+      addPerRequestResource(MyResource.class, Customer.class, NamespacedCustomer.class, TestCollection.class, BaseResourceTest.class);
+      addPerRequestResource(MyNamespacedResource.class, Customer.class, NamespacedCustomer.class, TestCollection.class, BaseResourceTest.class);
+      startContainer();
    }
 
    @Test
@@ -190,7 +195,7 @@ public class TestCollection extends BaseResourceTest
       System.out.println(str);
       request.body("application/xml", str);
       response = request.put();
-      Assert.assertEquals(204, response.getStatus());  
+      Assert.assertEquals(204, response.getStatus());
       response.releaseConnection();
    }
 
@@ -227,7 +232,7 @@ public class TestCollection extends BaseResourceTest
       System.out.println(str);
       request.body("application/xml", str);
       response = request.put();
-      Assert.assertEquals(204, response.getStatus());      
+      Assert.assertEquals(204, response.getStatus());
       response.releaseConnection();
    }
 
@@ -241,7 +246,7 @@ public class TestCollection extends BaseResourceTest
       System.out.println(str);
       request.body("application/xml", str);
       response = request.put();
-      Assert.assertEquals(204, response.getStatus());      
+      Assert.assertEquals(204, response.getStatus());
       response.releaseConnection();
    }
 

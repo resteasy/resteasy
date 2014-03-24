@@ -7,6 +7,7 @@
         <version>2.3.7.Final</version>
 	    <relativePath>../pom.xml</relativePath>
     </parent>
+
     <artifactId>resteasy-jaxb-provider</artifactId>
     <name>Resteasy JAXB Provider</name>
 
@@ -16,6 +17,49 @@
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
         </dependency>
+        <!-- uncomment to see failures in TestXXESecureProcessing
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>${version.xerces.xercesImpl}</version>
+            <scope>test</scope>
+        </dependency>
+         -->
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>tjws</id>
+            <activation>
+                <property>
+                    <name>!arquillian</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-test-tjws</artifactId>
+                    <version>${project.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>arquillian</id>
+            <activation>
+                <property>
+                    <name>arquillian</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-test-arquillian</artifactId>
+                    <version>${project.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
 </project>

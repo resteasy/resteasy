@@ -1,21 +1,23 @@
 package org.jboss.resteasy.plugins.guice;
 
-import com.google.inject.Binder;
-import com.google.inject.Module;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.test.EmbeddedContainer;
 import static org.jboss.resteasy.test.TestPortProvider.*;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.test.EmbeddedContainer;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import com.google.inject.Binder;
+import com.google.inject.Module;
 
 public class GuiceProviderTest
 {
@@ -38,6 +40,7 @@ public class GuiceProviderTest
    {
       final Module module = new Module()
       {
+         @Override
          public void configure(final Binder binder)
          {
             binder.bind(TestExceptionProvider.class);
@@ -60,6 +63,7 @@ public class GuiceProviderTest
 
    public static class TestResourceException implements TestResource
    {
+      @Override
       public String getName()
       {
          throw new TestException();
@@ -68,11 +72,13 @@ public class GuiceProviderTest
 
    public static class TestException extends RuntimeException
    {
+      private static final long serialVersionUID = 8477747403642014317L;
    }
 
    @Provider
    public static class TestExceptionProvider implements ExceptionMapper<TestException>
    {
+      @Override
       public Response toResponse(final TestException exception)
       {
          return Response.ok("exception").build();

@@ -1,20 +1,10 @@
 package org.jboss.resteasy.test.namespace;
 
-import org.codehaus.jettison.json.JSONObject;
-import org.codehaus.jettison.mapped.Configuration;
-import org.codehaus.jettison.mapped.MappedNamespaceConvention;
-import org.codehaus.jettison.mapped.MappedXMLStreamReader;
-import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
-import org.example.a.testcanonical.TestBase;
-import org.example.b.test.TestExtends;
-import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
-import org.jboss.resteasy.annotations.providers.jaxb.json.XmlNsMap;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider;
-import org.jboss.resteasy.test.BaseResourceTest;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -28,14 +18,22 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-import java.io.OutputStreamWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import org.codehaus.jettison.json.JSONObject;
+import org.codehaus.jettison.mapped.Configuration;
+import org.codehaus.jettison.mapped.MappedNamespaceConvention;
+import org.codehaus.jettison.mapped.MappedXMLStreamReader;
+import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
+import org.example.a.testcanonical.TestBase;
+import org.example.b.test.TestExtends;
+import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
+import org.jboss.resteasy.annotations.providers.jaxb.json.XmlNsMap;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -93,23 +91,22 @@ public class NamespaceMappingTest extends BaseResourceTest
    static Unmarshaller unmarshaller = null;
    static Marshaller marshaller = null;
 
-   @BeforeClass
-   public static void setup() throws Exception
-   {
+   @Override
+   @Before
+   public void before() throws Exception {
+      super.before();
       addPerRequestResource(TestResourceImpl.class);
       ctx = JAXBContext.newInstance("org.example.a.testcanonical:org.example.b.test");
       unmarshaller = ctx.createUnmarshaller();
       marshaller = ctx.createMarshaller();
    }
 
-   private static final String BASE_URL = "http://localhost:8080/JsonTest/";
-
-   @Test public void testManual() throws Exception
+   @Test
+   public void testManual() throws Exception
    {
       String output = marshall();
       System.out.println(output);
-      TestExtends val = unmarshall(output);
-
+      unmarshall(output);
    }
 
    private String marshall() throws JAXBException
@@ -149,6 +146,7 @@ public class NamespaceMappingTest extends BaseResourceTest
       XMLStreamReader xmlStreamReader = new MappedXMLStreamReader(new JSONObject(output), con);
 
       Unmarshaller unmarshaller = jc.createUnmarshaller();
+      @SuppressWarnings("unchecked")
       JAXBElement<TestExtends> val = (JAXBElement<TestExtends>)unmarshaller.unmarshal(xmlStreamReader);
       return val.getValue();
 
@@ -167,7 +165,6 @@ public class NamespaceMappingTest extends BaseResourceTest
 
    private String postDataToUrl(String data, String contentType) throws Exception
    {
-      String result = null;
       ClientRequest request = new ClientRequest(generateURL("/test/v1"));
       request.body(contentType, data);
       return request.postTarget(String.class);

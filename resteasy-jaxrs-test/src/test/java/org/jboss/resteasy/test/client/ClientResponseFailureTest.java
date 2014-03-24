@@ -1,17 +1,18 @@
 package org.jboss.resteasy.test.client;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
 
 /**
  * Test connection cleanup
@@ -24,11 +25,13 @@ public class ClientResponseFailureTest extends BaseResourceTest
 
    public static class MyResourceImpl implements MyResource
    {
+      @Override
       public String get()
       {
          return "hello world";
       }
 
+      @Override
       public String error()
       {
          Response r = Response.status(404).type("text/plain").entity("there was an error").build();
@@ -49,10 +52,12 @@ public class ClientResponseFailureTest extends BaseResourceTest
       String error();
    }
 
-   @BeforeClass
-   public static void setUp() throws Exception
+   @Override
+   @Before
+   public void before() throws Exception
    {
       addPerRequestResource(MyResourceImpl.class);
+      super.before();
    }
 
 
@@ -63,13 +68,13 @@ public class ClientResponseFailureTest extends BaseResourceTest
       boolean failed = true;
       try
       {
-         String str = proxy.error();
+         proxy.error();
          failed = false;
       }
       catch (ClientResponseFailure e)
       {
          Assert.assertEquals(e.getResponse().getStatus(), 404);
-         Assert.assertEquals(e.getResponse().getEntity(String.class), "there was an error");
+         Assert.assertEquals(((ClientResponse<?>)e.getResponse()).getEntity(String.class), "there was an error");
          e.getResponse().releaseConnection();
       }
 
@@ -79,7 +84,7 @@ public class ClientResponseFailureTest extends BaseResourceTest
    public static class Background extends Thread
    {
 
-      private MyResource proxy;
+      private final MyResource proxy;
 
       boolean finished = false;
 
@@ -88,18 +93,20 @@ public class ClientResponseFailureTest extends BaseResourceTest
          this.proxy = proxy;
       }
 
+      @Override
       public void run()
       {
          boolean failed = true;
          try
          {
-            String str = proxy.error();
+            proxy.error();
             failed = false;
          }
          catch (ClientResponseFailure e)
          {
             Assert.assertEquals(e.getResponse()
                     .getStatus(), 404);
+            @SuppressWarnings("unchecked")
             String str = (String) e.getResponse().getEntity(String.class);
             Assert.assertEquals("there was an error", str);
 

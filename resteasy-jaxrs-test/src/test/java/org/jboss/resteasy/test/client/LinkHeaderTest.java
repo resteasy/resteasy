@@ -1,14 +1,6 @@
 package org.jboss.resteasy.test.client;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
-import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.spi.LinkHeader;
-import org.jboss.resteasy.test.BaseResourceTest;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 import javax.ws.rs.HEAD;
 import javax.ws.rs.HeaderParam;
@@ -19,7 +11,16 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
+import org.jboss.resteasy.spi.Link;
+import org.jboss.resteasy.spi.LinkHeader;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.jboss.resteasy.test.TestPortProvider;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -76,24 +77,26 @@ public class LinkHeaderTest extends BaseResourceTest
 
    }
 
-   @BeforeClass
-   public static void init() throws Exception
+   @Override
+@Before
+   public void before() throws Exception
    {
       addPerRequestResource(LinkHeaderService.class);
+      super.before();
    }
 
    @Test
    public void testTopic() throws Exception
    {
       LinkHeaderDelegate delegate = new LinkHeaderDelegate();
-      LinkHeader header = delegate.fromString("<http://localhost:8081/linkheader/topic/sender>; rel=\"sender\"; title=\"sender\", <http://localhost:8081/linkheader/topic/poller>; rel=\"top-message\"; title=\"top-message\"");
+      LinkHeader header = delegate.fromString("<" + TestPortProvider.generateURL("/linkheader/topic/sender") + ">; rel=\"sender\"; title=\"sender\", <" + TestPortProvider.generateURL("/linkheader/topic/poller") + ">; rel=\"top-message\"; title=\"top-message\"");
       Link sender = header.getLinkByTitle("sender");
       Assert.assertNotNull(sender);
-      Assert.assertEquals("http://localhost:8081/linkheader/topic/sender", sender.getHref());
+      Assert.assertEquals(TestPortProvider.generateURL("/linkheader/topic/sender"), sender.getHref());
       Assert.assertEquals("sender", sender.getRelationship());
       Link top = header.getLinkByTitle("top-message");
       Assert.assertNotNull(top);
-      Assert.assertEquals("http://localhost:8081/linkheader/topic/poller", top.getHref());
+      Assert.assertEquals(TestPortProvider.generateURL("/linkheader/topic/poller"), top.getHref());
       Assert.assertEquals("top-message", top.getRelationship());
 
    }
@@ -102,14 +105,14 @@ public class LinkHeaderTest extends BaseResourceTest
    public void testTopic2() throws Exception
    {
       LinkHeaderDelegate delegate = new LinkHeaderDelegate();
-      LinkHeader header = delegate.fromString("<http://localhost:8081/topics/test/poller/next?index=0>; rel=\"next-message\"; title=\"next-message\",<http://localhost:8081/topics/test/poller>; rel=\"generator\"; title=\"generator\"");
+      LinkHeader header = delegate.fromString("<" + TestPortProvider.generateURL("/topics/test/poller/next?index=0") + ">; rel=\"next-message\"; title=\"next-message\",<" + TestPortProvider.generateURL("/topics/test/poller") + ">; rel=\"generator\"; title=\"generator\"");
       Link next = header.getLinkByTitle("next-message");
       Assert.assertNotNull(next);
-      Assert.assertEquals("http://localhost:8081/topics/test/poller/next?index=0", next.getHref());
+      Assert.assertEquals(TestPortProvider.generateURL("/topics/test/poller/next?index=0"), next.getHref());
       Assert.assertEquals("next-message", next.getRelationship());
       Link generator = header.getLinkByTitle("generator");
       Assert.assertNotNull(generator);
-      Assert.assertEquals("http://localhost:8081/topics/test/poller", generator.getHref());
+      Assert.assertEquals(TestPortProvider.generateURL("/topics/test/poller"), generator.getHref());
       Assert.assertEquals("generator", generator.getRelationship());
 
 

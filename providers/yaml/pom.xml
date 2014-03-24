@@ -22,6 +22,14 @@
 			<artifactId>snakeyaml</artifactId>
 			<version>1.8</version>
 		</dependency>
+
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-test-tjws</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 </project>

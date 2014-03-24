@@ -1,23 +1,20 @@
 package org.jboss.resteasy.test.providers.jaxb.regression;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
-import org.jboss.resteasy.test.BaseResourceTest;
-import org.junit.After;
-
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 import static org.junit.Assert.*;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.annotation.XmlRootElement;
+
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * Test case for RESTEASY-169
@@ -25,6 +22,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author edelsonj
  */
 
+@Ignore
 public class TestBadContentType extends BaseResourceTest
 {
 
@@ -48,28 +46,13 @@ public class TestBadContentType extends BaseResourceTest
 
    }
 
-   @XmlRootElement
-   public static class TestBean
-   {
-      private String name;
-
-      public String getName()
-      {
-         return name;
-      }
-
-      public void setName(String name)
-      {
-         this.name = name;
-      }
-
-   }
-
-
    @Before
    public void setUp() throws Exception
    {
-      addPerRequestResource(TestResource.class);
+      stopContainer();
+      createContainer(initParams, contextParams);
+      addPerRequestResource(TestResource.class, TestBean.class);
+      startContainer();
    }
 
    /**
@@ -82,8 +65,10 @@ public class TestBadContentType extends BaseResourceTest
    {
       ClientRequest request = new ClientRequest(generateURL("/test"));
       request.body("application/xml", "<junk");
-      ClientResponse res = request.post();
-      Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), res.getStatus());
+      ClientResponse<?> res = request.post();
+      int status = res.getStatus();
+      res.releaseConnection();
+      Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), status);
    }
 
    /**
@@ -97,9 +82,32 @@ public class TestBadContentType extends BaseResourceTest
       ClientRequest request = new ClientRequest(generateURL("/test"));
       request.header("Accept", "text/html");
       ClientResponse<String> response = request.get(String.class);
+      int status = response.getStatus();
       String entity = response.getEntity();
+      response.releaseConnection();
       System.out.println("response: " + entity);
-      assertEquals(500, response.getStatus());
+      assertEquals(500, status);
+      assertTrue(entity.contains("media type: text/html"));
+   }
+
+   @Test
+   public void testBadRequestAfterHtmlError() throws Exception
+   {
+      ClientRequest request = new ClientRequest(generateURL("/test"));
+      request.body("application/xml", "<junk");
+      ClientResponse<?> res = request.post();
+      int status = res.getStatus();
+      res.releaseConnection();
+      Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), status);
+
+      request = new ClientRequest(generateURL("/test"));
+      request.header("Accept", "text/html");
+      ClientResponse<String> response = request.get(String.class);
+      status = response.getStatus();
+      String entity = response.getEntity();
+      response.releaseConnection();
+      System.out.println("response: " + entity);
+      assertEquals(500, status);
       assertTrue(entity.contains("media type: text/html"));
    }
 

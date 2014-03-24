@@ -18,7 +18,7 @@ public class BasicSpringTest
 {
 
    @Autowired
-   private BasicResource br;
+   BasicResource br;
 
    @Test
    public void testBasic() throws HttpException, IOException

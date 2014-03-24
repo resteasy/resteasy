@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.providers.jaxb.regression;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -115,7 +114,8 @@ public class Item {
 		this.price = price;
 	}
 
-	public String toString(){
+	@Override
+  public String toString(){
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("Price " + this.price);
 		buffer.append(" Description " + this.description);

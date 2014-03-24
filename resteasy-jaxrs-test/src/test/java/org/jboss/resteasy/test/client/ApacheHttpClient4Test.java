@@ -1,14 +1,21 @@
 package org.jboss.resteasy.test.client;
 
+import static org.apache.http.params.CoreConnectionPNames.*;
+
+import java.util.concurrent.atomic.AtomicLong;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+
 import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
@@ -17,14 +24,10 @@ import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.resteasy.test.BaseResourceTest;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Test connection cleanup
@@ -37,11 +40,13 @@ public class ApacheHttpClient4Test extends BaseResourceTest
 
    public static class MyResourceImpl implements MyResource
    {
+      @Override
       public String get()
       {
          return "hello world";
       }
 
+      @Override
       public String error()
       {
          throw new NoLogWebApplicationException(404);
@@ -61,13 +66,14 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       String error();
    }
 
-   @BeforeClass
-   public static void setUp() throws Exception
+   @Override
+   @Before
+   public void before() throws Exception
    {
       addPerRequestResource(MyResourceImpl.class);
    }
 
-   private AtomicLong counter = new AtomicLong();
+   private final AtomicLong counter = new AtomicLong();
 
    @Test
    public void testConnectionCleanupGC() throws Exception
@@ -134,7 +140,7 @@ public class ApacheHttpClient4Test extends BaseResourceTest
    public void testConnectionCleanupProxy() throws Exception
    {
       final ApacheHttpClient4Executor executor = createClient();
-      final MyResource proxy = ProxyFactory.create(MyResource.class, "http://localhost:8081", executor);
+      final MyResource proxy = ProxyFactory.create(MyResource.class, TestPortProvider.generateBaseUrl(), executor);
       counter.set(0);
 
 
@@ -170,7 +176,7 @@ public class ApacheHttpClient4Test extends BaseResourceTest
    public void testConnectionCleanupErrorGC() throws Exception
    {
       final ApacheHttpClient4Executor executor = createClient();
-      final MyResource proxy = ProxyFactory.create(MyResource.class, "http://localhost:8081", executor);
+      final MyResource proxy = ProxyFactory.create(MyResource.class, TestPortProvider.generateBaseUrl(), executor);
       counter.set(0);
 
 
@@ -205,7 +211,7 @@ public class ApacheHttpClient4Test extends BaseResourceTest
    public void testConnectionCleanupErrorNoGC() throws Exception
    {
       final ApacheHttpClient4Executor executor = createClient();
-      final MyResource proxy = ProxyFactory.create(MyResource.class, "http://localhost:8081", executor);
+      final MyResource proxy = ProxyFactory.create(MyResource.class, TestPortProvider.generateBaseUrl(), executor);
       counter.set(0);
 
 
@@ -222,10 +228,9 @@ public class ApacheHttpClient4Test extends BaseResourceTest
                for (int j = 0; j < 10; j++)
                {
                   System.out.println("calling proxy");
-                  String str = null;
                   try
                   {
-                     str = proxy.error();
+                     proxy.error();
                   }
                   catch (ClientResponseFailure e)
                   {
@@ -247,10 +252,9 @@ public class ApacheHttpClient4Test extends BaseResourceTest
 
    private void callProxy(MyResource proxy)
    {
-      String str = null;
       try
       {
-         str = proxy.error();
+         proxy.error();
       }
       catch (ClientResponseFailure e)
       {
@@ -263,18 +267,19 @@ public class ApacheHttpClient4Test extends BaseResourceTest
    private ApacheHttpClient4Executor createClient()
    {
       HttpParams params = new BasicHttpParams();
-      ConnManagerParams.setMaxTotalConnections(params, 3);
-      ConnManagerParams.setTimeout(params, 1000);
+      params.setLongParameter(CONNECTION_TIMEOUT, 1000);
+      HttpConnectionParams.setConnectionTimeout(params, 1000);
+
 
       // Create and initialize scheme registry
       SchemeRegistry schemeRegistry = new SchemeRegistry();
-      schemeRegistry.register(
-              new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+      schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
 
       // Create an HttpClient with the ThreadSafeClientConnManager.
       // This connection manager must be used if more than one thread will
       // be using the HttpClient.
-      ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
+      ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(schemeRegistry);
+      cm.setMaxTotal(3);
       HttpClient httpClient = new DefaultHttpClient(cm, params);
 
       final ApacheHttpClient4Executor executor = new ApacheHttpClient4Executor(httpClient);
@@ -283,8 +288,8 @@ public class ApacheHttpClient4Test extends BaseResourceTest
 
    private void runit(ApacheHttpClient4Executor executor, boolean release)
    {
-      ClientRequest request = executor.createRequest("http://localhost:8081/test");
-      ClientResponse response = null;
+      ClientRequest request = executor.createRequest(TestPortProvider.generateURL("/test"));
+      ClientResponse<?> response = null;
       try
       {
          System.out.println("get");

@@ -1,21 +1,23 @@
 package org.jboss.resteasy.test.client;
 
-import junit.framework.Assert;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.test.BaseResourceTest;
-import org.junit.Before;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.math.BigDecimal;
+import java.net.URI;
+import java.util.Date;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.math.BigDecimal;
-import java.net.URI;
-import java.util.Date;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import junit.framework.Assert;
+
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -23,10 +25,12 @@ import static org.jboss.resteasy.test.TestPortProvider.*;
  */
 public class RegressionTest extends BaseResourceTest
 {
+   @Override
    @Before
-   public void setUp() throws Exception
+   public void before() throws Exception
    {
-      addPerRequestResource(MessageResource.class);
+      addPerRequestResource(MessageResource.class, MessageTFM.class, IMessageTFMResource.class, RegressionTest.class, BaseResourceTest.class);
+      super.before();
    }
 
    @XmlRootElement

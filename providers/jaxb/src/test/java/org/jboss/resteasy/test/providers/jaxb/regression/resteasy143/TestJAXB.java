@@ -1,47 +1,25 @@
 package org.jboss.resteasy.test.providers.jaxb.regression.resteasy143;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import static org.jboss.resteasy.test.TestPortProvider.*;
-import org.junit.AfterClass;
+import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
-/**
- * Simple smoke test
- *
- * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
- * @version $Revision: 1 $
- */
-public class TestJAXB
+public class TestJAXB extends BaseResourceTest
 {
 
-   private static Dispatcher dispatcher;
-
-   @BeforeClass
-   public static void before() throws Exception
+   @Override
+   @Before
+   public void before() throws Exception
    {
-      dispatcher = EmbeddedContainer.start().getDispatcher();
-      dispatcher.getRegistry().addPerRequestResource(StoreResource.class);
+      addPerRequestResource(StoreResource.class, AbstractData.class, DataCollectionPackage.class, DataCollectionRecord.class, ObjectFactory.class);
+      super.before();
    }
 
-   @AfterClass
-   public static void after() throws Exception
-   {
-      EmbeddedContainer.stop();
-   }
-
-   private static final String XML_CONTENT_DEFAULT_NS = "<DataCollectionPackage xmlns=\"http://www.example.org/DataCollectionPackage\">\n"
-           + "  <sourceID>System A</sourceID>\n"
-           + "  <eventID>Exercise B</eventID>\n"
-           + "  <dataRecords>\n"
-           + "     <DataCollectionRecord>\n"
-           + "        <timestamp>2008-08-13T12:24:00</timestamp>\n"
-           + "        <collectedData>Operator pushed easy button</collectedData>\n"
-           + "     </DataCollectionRecord>\n" + "  </dataRecords>\n" + "</DataCollectionPackage>";
    private static final String XML_CONTENT = "<ns:DataCollectionPackage xmlns:ns=\"http://www.example.org/DataCollectionPackage\">\n"
            + "  <sourceID>System A</sourceID>\n"
            + "  <eventID>Exercise B</eventID>\n"
@@ -105,7 +83,7 @@ public class TestJAXB
          Assert.assertEquals(201, response.getStatus());
          response.releaseConnection();
       }
-      
+
       {
          ClientRequest request = new ClientRequest(generateURL("/storeXML/abstract"));
          request.body("application/xml", XML_CONTENT);

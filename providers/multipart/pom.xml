@@ -29,6 +29,14 @@
             <groupId>org.apache.james</groupId>
             <artifactId>apache-mime4j</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-test-tjws</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 

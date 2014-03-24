@@ -25,10 +25,10 @@
     <profiles>
         <profile>
             <!-- exclude integrations tests which are known to fail -->
-            <id>exclude-known-tests-failures</id>
+            <id>exclude-known-test-failures</id>
             <activation>
                 <property>
-                    <name>exclude-known-tests-failures</name>
+                    <name>exclude-known-test-failures</name>
                 </property>
             </activation>
             <build>

@@ -2,29 +2,24 @@ package org.jboss.resteasy.spring.test.javaconfig;
 
 import static org.junit.Assert.*;
 
-import java.io.InputStream;
-
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
-
-import com.meterware.servletunit.ServletRunner;
 
 /**
  * This test will verify that the resource invoked by RESTEasy has been
  * initialized by spring when defined using spring's JavaConfig.
  */
 public class JavaConfigTest {
-   private static final String CONTEXT_PATH = "/";
-   private static final String BASE_URL = "http://localhost:9092";
-   private static final String PATH = "/rest/invoke";
-
-   private Server server;
-   private WebAppContext context;
+    private final String CONTEXT_PATH = "/";
+    private final String BASE_URL = "http://localhost:9092";
+    private final String PATH = "/rest/invoke";
+    private WebAppContext context;
+    private Server server;
 
    @Before
    public void before() throws Exception {
@@ -38,10 +33,9 @@ public class JavaConfigTest {
    }
 
    @After
-   public void after() throws Exception
-   {
-       server.stop();
-       context.stop();
+   public void after() throws Exception {
+     server.stop();
+     context.stop();
    }
 
    @Test

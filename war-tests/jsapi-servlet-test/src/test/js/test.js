@@ -150,14 +150,31 @@ function testPercentByte(){
 
 function testEncoder(){
 	assertEquals("abc", REST.Encoding.encodeFormNameOrValue("abc"));
-	assertEquals("%c3%a9", REST.Encoding.encodeFormNameOrValue("é"));
-	assertEquals("%f0%9f%82%84", REST.Encoding.encodeFormNameOrValue("🂄"));
+	assertEquals("%c3%a9", REST.Encoding.encodeFormNameOrValue(String.fromCharCode(233))); //"é"
+	assertEquals("%f0%9f%82%84", REST.Encoding.encodeFormNameOrValue(utf16Encode([0x1F084])));//"🂄"
+}
+
+function utf16Encode(input) {
+    var output = [], i=0, len=input.length, value;
+    while (i < len) {
+        value = input[i++];
+        if ( (value & 0xF800) === 0xD800 ) {
+            throw new RangeError("UTF-16(encode): Illegal UTF-16 value");
+        }
+        if (value > 0xFFFF) {
+            value -= 0x10000;
+            output.push(String.fromCharCode(((value >>>10) & 0x3FF) | 0xD800));
+            value = 0xDC00 | (value & 0x3FF);
+        }
+        output.push(String.fromCharCode(value));
+    }
+    return output.join("");
 }
 
 function testEncoders(){
 	assertEquals("abc%24%2d%5f%2e%2b%21%2a%27%28%29%2c%2f%3f%26%3d%23+%0D%0A", REST.Encoding.encodeFormNameOrValue("abc$-_.+!*'(),/?&=# \n"));
-	assertEquals("azAZ09-._~!$&'()*+,%3b=:@%c3%a9%2f%3f%23%5b%5d", REST.Encoding.encodePathParamValue("azAZ09-._~!$&'()*+,;=:@é/?#[]"));
-	assertEquals("azAZ09-._~!$&'()*+,%3b=:@%c3%a9%2f%3f%23%5b%5d", REST.Encoding.encodePathSegment("azAZ09-._~!$&'()*+,;=:@é/?#[]"));
-	assertEquals("azAZ09-._~!$&'()*+,%3b%3d:@%c3%a9%2f%3f%23%5b%5d", REST.Encoding.encodePathParamName("azAZ09-._~!$&'()*+,;=:@é/?#[]"));
-	assertEquals("azAZ09-._~!$%26'()*%2b,;%3d:@%c3%a9/?%23%5b%5d", REST.Encoding.encodeQueryParamNameOrValue("azAZ09-._~!$&'()*+,;=:@é/?#[]"));
+	assertEquals("azAZ09-._~!$&'()*+,%3b=:@%c3%a9%2f%3f%23%5b%5d", REST.Encoding.encodePathParamValue("azAZ09-._~!$&'()*+,;=:@" + String.fromCharCode(233) +"/?#[]"));//"é"
+	assertEquals("azAZ09-._~!$&'()*+,%3b=:@%c3%a9%2f%3f%23%5b%5d", REST.Encoding.encodePathSegment("azAZ09-._~!$&'()*+,;=:@" + String.fromCharCode(233) +"/?#[]"));//"é"
+	assertEquals("azAZ09-._~!$&'()*+,%3b%3d:@%c3%a9%2f%3f%23%5b%5d", REST.Encoding.encodePathParamName("azAZ09-._~!$&'()*+,;=:@" + String.fromCharCode(233) +"/?#[]"));//"é"
+	assertEquals("azAZ09-._~!$%26'()*%2b,;%3d:@%c3%a9/?%23%5b%5d", REST.Encoding.encodeQueryParamNameOrValue("azAZ09-._~!$&'()*+,;=:@" + String.fromCharCode(233) +"/?#[]"));//"é"
 }

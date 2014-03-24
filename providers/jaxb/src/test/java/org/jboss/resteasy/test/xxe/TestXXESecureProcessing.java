@@ -7,16 +7,12 @@ import java.util.Hashtable;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import junit.framework.Assert;
 
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.After;
+import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Test;
 
 /**
@@ -25,11 +21,8 @@ import org.junit.Test;
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
  * @date August 16, 2013
  */
-public class TestXXESecureProcessing
+public class TestXXESecureProcessing extends BaseResourceTest
 {
-   protected ResteasyDeployment deployment;
-   protected Dispatcher dispatcher;
-
    String doctype =
          "<!DOCTYPE foodocument [" +
                "<!ENTITY foo 'foo'>" +
@@ -61,46 +54,29 @@ public class TestXXESecureProcessing
      }
    }
 
-   @XmlRootElement
-   public static class FavoriteMovieXmlRootElement {
-     private String _title;
-     public String getTitle() {
-       return _title;
-     }
-     public void setTitle(String title) {
-       _title = title;
-     }
-   }
-
    public void before(String expandEntityReferences) throws Exception
    {
       Hashtable<String,String> initParams = new Hashtable<String,String>();
       Hashtable<String,String> contextParams = new Hashtable<String,String>();
-      contextParams.put("resteasy.document.expand.entity.references", expandEntityReferences);
-      deployment = EmbeddedContainer.start(initParams, contextParams);
-      dispatcher = deployment.getDispatcher();
-      deployment.getRegistry().addPerRequestResource(MovieResource.class);
+      if (expandEntityReferences != null)
+          contextParams.put("resteasy.document.expand.entity.references", expandEntityReferences);
+
+      createContainer(initParams, contextParams);
+      addPerRequestResource(MovieResource.class, FavoriteMovieXmlRootElement.class, MovieResource.class, FavoriteMovieXmlRootElement.class);
+      startContainer();
    }
 
+   @Override
    public void before() throws Exception
    {
-      deployment = EmbeddedContainer.start();
-      dispatcher = deployment.getDispatcher();
-      deployment.getRegistry().addPerRequestResource(MovieResource.class);
-   }
-
-   @After
-   public void after() throws Exception
-   {
-      EmbeddedContainer.stop();
-      dispatcher = null;
-      deployment = null;
+      manualStart = true;
+      super.before();
    }
 
    @Test
    public void testXmlRootElementDefaultSmall() throws Exception
    {
-      before();
+      before(null);
       ClientRequest request = new ClientRequest(generateURL("/xmlRootElement"));
       request.body("application/xml", small);
       ClientResponse<?> response = request.post();
@@ -115,7 +91,7 @@ public class TestXXESecureProcessing
    @Test
    public void testXmlRootElementDefaultBig() throws Exception
    {
-      before();
+      before(null);
       ClientRequest request = new ClientRequest(generateURL("/xmlRootElement"));
       request.body("application/xml", big);
       ClientResponse<?> response = request.post();

@@ -15,6 +15,7 @@ import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -124,7 +125,7 @@ public class EntityBufferingInFileTest
          sb.append("0");
       }
       String body = sb.toString();
-      ClientRequest request = new ClientRequest("http://localhost:8081/hello/", executor);
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/hello/"), executor);
       request.body("text/plain", body);
       System.out.println("Sending request");
       ClientResponse<String> response = request.post(String.class);

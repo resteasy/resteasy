@@ -22,6 +22,7 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -240,7 +241,7 @@ public class ParameterListTest
    @Test
    public void testMatrix() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:8081/matrix;m1=a/list;m1=b;p2=c");
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/matrix;m1=a/list;m1=b;p2=c"));
       request.matrixParameter("m1", "d");
       System.out.println("Sending request");
       ClientResponse<String> response = request.get(String.class);
@@ -252,7 +253,7 @@ public class ParameterListTest
    @Test
    public void testQuery() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:8081/query/list?q1=a&q2=b&q1=c");
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/query/list?q1=a&q2=b&q1=c"));
       request.queryParameter("q1", "d");
       System.out.println("Sending request");
       ClientResponse<String> response = request.get(String.class);
