@@ -1,16 +1,16 @@
 package org.jboss.resteasy.test;
 
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.util.ReadFromStream;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.io.InputStream;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import java.io.InputStream;
-import java.util.concurrent.atomic.AtomicLong;
+
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.util.ReadFromStream;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * <a href="https://jira.jboss.org/jira/browse/RESTEASY-351">RESTEASY-351</a>
@@ -41,18 +41,17 @@ public class ProxyInputStreamTest extends BaseResourceTest
 
    }
 
-   @BeforeClass
-   public static void setUp() throws Exception
-   {
+   @Override
+   @Before
+   public void before() throws Exception {
+      super.before();
       addPerRequestResource(MyResourceImpl.class);
    }
-
-   private AtomicLong counter = new AtomicLong();
 
    @Test
    public void testInputStream() throws Exception
    {
-      MyResource proxy = ProxyFactory.create(MyResource.class, "http://localhost:8081");
+      MyResource proxy = ProxyFactory.create(MyResource.class, TestPortProvider.generateBaseUrl());
       InputStream is = proxy.get();
       byte[] bytes = ReadFromStream.readFromStream(100, is);
       is.close();

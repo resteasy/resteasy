@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.xxe.namespace;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -12,28 +12,24 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import junit.framework.Assert;
 
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
  * Unit tests for RESTEASY-996.
- * 
+ *
  *
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
  * @date Dec 25, 2013
  */
-public class TestNamespace
+public class TestNamespace extends BaseResourceTest
 {
-   protected static ResteasyDeployment deployment;
-   protected static Dispatcher dispatcher;
 
    @Path("/")
    public static class MovieResource
@@ -46,7 +42,7 @@ public class TestNamespace
         System.out.println("MovieResource(xmlRootElment): title = " + movie.getTitle());
         return movie.getTitle();
      }
-     
+
      @POST
      @Path("xmlType")
      @Consumes({"application/xml"})
@@ -55,7 +51,7 @@ public class TestNamespace
         System.out.println("MovieResource(xmlType): title = " + movie.getTitle());
         return movie.getTitle();
      }
-     
+
      @POST
      @Path("JAXBElement")
      @Consumes("application/xml")
@@ -64,7 +60,7 @@ public class TestNamespace
         System.out.println("MovieResource(JAXBElement): title = " + value.getValue().getTitle());
         return value.getValue().getTitle();
      }
-     
+
      @POST
      @Path("list")
      @Consumes("application/xml")
@@ -80,7 +76,7 @@ public class TestNamespace
         }
         return titles;
      }
-     
+
      @POST
      @Path("set")
      @Consumes("application/xml")
@@ -96,7 +92,7 @@ public class TestNamespace
         }
         return titles;
      }
-     
+
      @POST
      @Path("array")
      @Consumes("application/xml")
@@ -111,7 +107,7 @@ public class TestNamespace
         }
         return titles;
      }
-     
+
      @POST
      @Path("map")
      @Consumes("application/xml")
@@ -128,39 +124,23 @@ public class TestNamespace
         return titles;
      }
    }
-   
-   @XmlRootElement
-   public static class FavoriteMovieXmlRootElement {
-     private String _title;
-     public String getTitle() {
-       return _title;
-     }
-     public void setTitle(String title) {
-       _title = title;
-     }
-   }
 
-   public static void before() throws Exception
+   @Override
+   @Before
+   public void before() throws Exception
    {
       Hashtable<String,String> initParams = new Hashtable<String,String>();
       Hashtable<String,String> contextParams = new Hashtable<String,String>();
       contextParams.put("resteasy.document.expand.entity.references", "false");
-      deployment = EmbeddedContainer.start(initParams, contextParams);
-      dispatcher = deployment.getDispatcher();
-      deployment.getRegistry().addPerRequestResource(MovieResource.class);
-   }
-   
-   public static void after() throws Exception
-   {
-      EmbeddedContainer.stop();
-      dispatcher = null;
-      deployment = null;
+      createContainer(initParams, contextParams);
+      addPerRequestResource(MovieResource.class, FavoriteMovieXmlRootElement.class, FavoriteMovie.class, FavoriteMovieXmlType.class, ObjectFactory.class);
+      addPackageInfo(getClass());
+      super.before();
    }
 
    @Test
    public void testXmlRootElement() throws Exception
    {
-      before();
       ClientRequest request = new ClientRequest(generateURL("/xmlRootElement"));
       FavoriteMovieXmlRootElement movie = new FavoriteMovieXmlRootElement();
       movie.setTitle("La Règle du Jeu");
@@ -170,13 +150,11 @@ public class TestNamespace
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertEquals("La Règle du Jeu", entity);
-      after();
    }
-   
+
    @Test
    public void testXmlType() throws Exception
    {
-      before();
       ClientRequest request = new ClientRequest(generateURL("/xmlType"));
       FavoriteMovieXmlType movie = new FavoriteMovieXmlType();
       movie.setTitle("La Cage Aux Folles");
@@ -186,13 +164,11 @@ public class TestNamespace
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertEquals("La Cage Aux Folles", entity);
-      after();
    }
-   
+
    @Test
    public void testJAXBElement() throws Exception
    {
-      before(); 
       ClientRequest request = new ClientRequest(generateURL("/JAXBElement"));
       String str = "<?xml version=\"1.0\"?>\r" +
                    "<favoriteMovieXmlType xmlns=\"http://abc.com\"><title>La Cage Aux Folles</title></favoriteMovieXmlType>";
@@ -203,21 +179,20 @@ public class TestNamespace
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertEquals("La Cage Aux Folles", entity);
-      after();
    }
-   
+
    @Test
    public void testList() throws Exception
    {
       doCollectionTest("list");
    }
-   
+
    @Test
    public void testSet() throws Exception
    {
       doCollectionTest("set");
    }
-   
+
    @Test
    public void testArray() throws Exception
    {
@@ -229,10 +204,9 @@ public class TestNamespace
    {
       doMapTest();
    }
-   
+
    void doCollectionTest(String path) throws Exception
    {
-      before();
       ClientRequest request = new ClientRequest(generateURL("/" + path));
       String str = "<?xml version=\"1.0\"?>\r" +
                    "<collection xmlns=\"http://abc.com\">" +
@@ -251,15 +225,13 @@ public class TestNamespace
       }
       else
       {
-         Assert.assertEquals("/La Règle du Jeu/La Cage Aux Folles", entity); 
+         Assert.assertEquals("/La Règle du Jeu/La Cage Aux Folles", entity);
       }
-      after();
    }
-   
+
    void doMapTest() throws Exception
    {
-      before();
-      
+
       ClientRequest request = new ClientRequest(generateURL("/map"));
       String str = "<?xml version=\"1.0\"?>\r" +
                    "<map xmlns=\"http://abc.com\">" +
@@ -282,8 +254,7 @@ public class TestNamespace
       }
       else
       {
-         Assert.assertEquals("/La Règle du Jeu/La Cage Aux Folles", entity); 
+         Assert.assertEquals("/La Règle du Jeu/La Cage Aux Folles", entity);
       }
-      after();
    }
 }

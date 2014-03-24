@@ -1,7 +1,6 @@
 package org.jboss.resteasy.spring.test.contextrefresh;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Enumeration;
 
@@ -23,8 +22,8 @@ import org.springframework.web.context.WebApplicationContext;
 public class ContextRefreshTest
 {
 
-   private Server server;
    private WebAppContext context;
+   private Server server;
 
    @Before
    public void before() throws Exception
@@ -40,10 +39,9 @@ public class ContextRefreshTest
    }
 
    @After
-   public void after() throws Exception
-   {
-       server.stop();
-       context.stop();
+   public void after() throws Exception {
+      server.stop();
+      context.stop();
    }
 
 

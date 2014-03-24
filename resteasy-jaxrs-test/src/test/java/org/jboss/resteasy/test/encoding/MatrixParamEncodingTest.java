@@ -12,6 +12,7 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,7 +20,7 @@ import org.junit.Test;
 
 /**
  * RESTEASY-729
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -28,7 +29,7 @@ import org.junit.Test;
 public class MatrixParamEncodingTest
 {
    protected ResteasyDeployment deployment;
-   
+
    @Path("/")
    static public class TestResource
    {
@@ -40,7 +41,7 @@ public class MatrixParamEncodingTest
          System.out.println("matrixParamDecoded() received: " + param);
          return param;
       }
-      
+
       @GET
       @Path("encoded")
       @Produces("text/plain")
@@ -50,14 +51,14 @@ public class MatrixParamEncodingTest
          return param;
       }
    }
-   
+
    @Before
    public void before() throws Exception
    {
       deployment = EmbeddedContainer.start();
       deployment.getRegistry().addPerRequestResource(TestResource.class);
    }
-   
+
 
    @After
    public void after() throws Exception
@@ -69,7 +70,7 @@ public class MatrixParamEncodingTest
    @Test
    public void testMatrixParamRequestDecoded() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:8081/decoded");
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/decoded"));
       request.matrixParameter("param", "ac/dc");
       System.out.println("Sending request: " + request.getUri());
       ClientResponse<String> response = request.get(String.class);
@@ -77,11 +78,11 @@ public class MatrixParamEncodingTest
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("ac/dc", response.getEntity());
    }
-   
+
    @Test
    public void testMatrixParamRequestEncoded() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:8081/encoded");
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/encoded"));
       request.matrixParameter("param", "ac/dc");
       System.out.println("Sending request: " + request.getUri());
       ClientResponse<String> response = request.get(String.class);
@@ -89,11 +90,11 @@ public class MatrixParamEncodingTest
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("ac%2Fdc", response.getEntity());
    }
-   
+
    @Test
    public void testMatrixParamUriBuilderDecoded() throws Exception
    {
-      UriBuilder uriBuilder = UriBuilderImpl.fromUri("http://localhost:8081/decoded");
+      UriBuilder uriBuilder = UriBuilderImpl.fromUri(TestPortProvider.generateURL("/decoded"));
       uriBuilder.matrixParam("param", "ac/dc");
       ClientRequest request = new ClientRequest(uriBuilder.build().toString());
       System.out.println("Sending request to " + uriBuilder.build().toString());
@@ -102,11 +103,11 @@ public class MatrixParamEncodingTest
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("ac/dc", response.getEntity());
    }
-   
+
    @Test
    public void testMatrixParamUriBuilderEncoded() throws Exception
    {
-      UriBuilder uriBuilder = UriBuilderImpl.fromUri("http://localhost:8081/encoded");
+      UriBuilder uriBuilder = UriBuilderImpl.fromUri(TestPortProvider.generateURL("/encoded"));
       uriBuilder.matrixParam("param", "ac/dc");
       ClientRequest request = new ClientRequest(uriBuilder.build().toString());
       System.out.println("Sending request to " + uriBuilder.build().toString());

@@ -1,10 +1,8 @@
 package org.jboss.resteasy.test.regression;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.test.BaseResourceTest;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -17,9 +15,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -35,7 +36,7 @@ public class Regression657 extends BaseResourceTest
    }
 
    @Path("blah")
-   public static class ImpFoo implements Foo
+   public static class ImpFoo implements Foo<Object>
    {
       @Override
       public Object getFoo(String val)
@@ -47,7 +48,7 @@ public class Regression657 extends BaseResourceTest
 
    public static class OhaUserModel
    {
-      private String username;
+      private final String username;
 
       public OhaUserModel(String username)
       {
@@ -116,31 +117,36 @@ public class Regression657 extends BaseResourceTest
    public interface UserRestService extends BaseUserService
    {
 
-      @GET
+      @Override
+    @GET
       @Path("/content/{id}")
       @Produces(MediaType.APPLICATION_JSON)
       public OhaUserModel getContent(
               @PathParam("id")
               String id);
 
-      @POST
+      @Override
+    @POST
       @Path("/add")
       @Produces(MediaType.APPLICATION_JSON)
       @Consumes(MediaType.APPLICATION_JSON)
       public OhaUserModel add(OhaUserModel object);
 
-      @GET
+      @Override
+    @GET
       @Path("/all")
       @Produces(MediaType.APPLICATION_JSON)
       public List<OhaUserModel> get();
 
-      @PUT
+      @Override
+    @PUT
       @Path("/update")
       @Produces(MediaType.APPLICATION_JSON)
       @Consumes(MediaType.APPLICATION_JSON)
       public OhaUserModel update(OhaUserModel object);
 
-      @DELETE
+      @Override
+    @DELETE
       @Path("/delete/{id}")
       @Produces(MediaType.TEXT_PLAIN)
       public Boolean delete(
@@ -346,9 +352,10 @@ public class Regression657 extends BaseResourceTest
       }
    }
 
-   @BeforeClass
-   public static void setup() throws Exception
-   {
+   @Override
+   @Before
+   public void before() throws Exception {
+      super.before();
       addPerRequestResource(ImpFoo.class); /* this is the actual reproduction of the problem */
       addPerRequestResource(PlatformServiceLocatorImpl.class);
    }

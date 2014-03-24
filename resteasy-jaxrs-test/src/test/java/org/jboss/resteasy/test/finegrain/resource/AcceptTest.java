@@ -1,15 +1,8 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import org.jboss.resteasy.core.ResourceMethod;
-import org.jboss.resteasy.core.ResourceMethodRegistry;
-import org.jboss.resteasy.mock.MockHttpRequest;
-import org.jboss.resteasy.specimpl.PathSegmentImpl;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.Registry;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -19,9 +12,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.ResourceMethodRegistry;
+import org.jboss.resteasy.mock.MockHttpRequest;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

@@ -7,9 +7,11 @@
         <version>2.3.7.Final</version>
     </parent>
     <artifactId>profiling-tests</artifactId>
-    <packaging>jar</packaging>
     <name>Heaving Profiling Tests</name>
-    <description/>
+
+    <properties>
+        <skip.deploy>true</skip.deploy>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -61,41 +63,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>tjws</artifactId>
+            <artifactId>resteasy-test-tjws</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-        <!--
-        <dependency>
-           <groupId>tjws</groupId>
-           <artifactId>webserver</artifactId>
-           <scope>test</scope>
-        </dependency>
-        -->
     </dependencies>
-
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

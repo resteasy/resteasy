@@ -19,12 +19,13 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
@@ -33,7 +34,7 @@ import org.junit.Test;
 public class FileExtensionMappingTest
 {
    protected ResteasyDeployment deployment;
-   
+
    @Path("/test")
    static public class TestResource
    {
@@ -44,7 +45,7 @@ public class FileExtensionMappingTest
          System.out.println(uriInfo.getRequestUri());
          return "plain: " + query;
       }
-      
+
       @GET
       @Produces("text/html")
       public String testHtml(@Context UriInfo uriInfo, @QueryParam("query") String query)
@@ -53,7 +54,7 @@ public class FileExtensionMappingTest
          return "html: " + query;
       }
    }
-   
+
    @Provider
    static public class TestApplication extends Application
    {
@@ -64,7 +65,7 @@ public class FileExtensionMappingTest
          return classes;
       }
    }
-   
+
    @Before
    public void before() throws Exception
    {
@@ -81,23 +82,23 @@ public class FileExtensionMappingTest
       EmbeddedContainer.stop();
       deployment = null;
    }
-   
+
    @Test
    public void testFileExtensionMappingPlain() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:8081/test.txt?query=whosOnFirst");
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/test.txt?query=whosOnFirst"));
       ClientResponse<String> response = request.get(String.class);
       System.out.println("status: " + response.getStatus());
       System.out.println("response: " + response.getEntity());
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("plain: whosOnFirst", response.getEntity());
    }
-   
+
 
    @Test
    public void testFileExtensionMappingHtml() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:8081/test.html?query=whosOnFirst");
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/test.html?query=whosOnFirst"));
       ClientResponse<String> response = request.get(String.class);
       System.out.println("status: " + response.getStatus());
       System.out.println("response: " + response.getEntity());

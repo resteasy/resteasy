@@ -1,20 +1,21 @@
 package org.jboss.resteasy.test.finegrain;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.test.BaseResourceTest;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.util.List;
+import java.util.Locale;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
-import java.util.List;
-import java.util.Locale;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -44,10 +45,11 @@ public class AcceptLanguagesTest extends BaseResourceTest
       }
    }
 
-   @BeforeClass
-   public static void setUp() throws Exception
-   {
-      deployment.getRegistry().addPerRequestResource(Accept.class);
+   @Override
+   @Before
+   public void before() throws Exception {
+      super.before();
+      addPerRequestResource(Accept.class);
    }
 
    @Test

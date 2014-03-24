@@ -1,17 +1,17 @@
 package org.jboss.resteasy.test.client;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
+
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -29,16 +29,18 @@ public class Regression435Test extends BaseResourceTest
 
    public static class MyTestResource implements MyTest
    {
-      public void postIt(String msg)
+      @Override
+    public void postIt(String msg)
       {
          System.out.println("HERE: " + msg);
          throw new WebApplicationException(401);
       }
    }
 
-   @BeforeClass
-   public static void setup() throws Exception
-   {
+   @Override
+   @Before
+   public void before() throws Exception {
+      super.before();
       addPerRequestResource(MyTestResource.class);
    }
 

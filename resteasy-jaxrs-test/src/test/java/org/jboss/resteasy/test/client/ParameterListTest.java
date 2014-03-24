@@ -22,6 +22,7 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,7 +30,7 @@ import org.junit.Test;
 
 /**
  * RESTEASY-756
- * 
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @author Achim Bitzer
  * @version $Revision: 1.1 $
@@ -39,7 +40,7 @@ import org.junit.Test;
 public class ParameterListTest
 {
    protected ResteasyDeployment deployment;
-   
+
    public interface TestInterface
    {
       @GET
@@ -49,11 +50,11 @@ public class ParameterListTest
       @GET
       @Path("matrix/set")
       public abstract Response matrixSet(@MatrixParam("m1") Set<String> set);
-      
+
       @GET
       @Path("matrix/sortedset")
       public abstract Response matrixSortedSet(@MatrixParam("m1") SortedSet<String> set);
-      
+
       @PUT
       @Consumes("text/plain")
       @Path("matrix/entity")
@@ -62,26 +63,26 @@ public class ParameterListTest
       @GET
       @Path("query/list")
       public abstract Response queryList(@QueryParam("q1") List<String> list);
-      
+
       @GET
       @Path("query/set")
       public abstract Response querySet(@QueryParam("q1") Set<String> set);
-      
+
       @GET
       @Path("query/sortedset")
       public abstract Response querySortedSet(@QueryParam("q1") SortedSet<String> set);
-      
+
       @PUT
       @Consumes("text/plain")
       @Path("query/entity")
       public abstract Response queryWithEntity(@QueryParam("q1") List<String> list, String entity);
-      
+
       @PUT
       @Consumes("text/plain")
       @Path("matrix/query/entity")
       public abstract Response matrixQueryWithEntity(@MatrixParam("m1") List<String> matrixParams, @QueryParam("q1") List<String> queryParams, String entity);
    }
-   
+
    @Path("/")
    static public class TestResource implements TestInterface
    {
@@ -98,7 +99,7 @@ public class ParameterListTest
          }
          return Response.ok().entity(sb.toString()).build();
       }
-      
+
       @Override
       @GET
       @Path("matrix/set")
@@ -114,7 +115,7 @@ public class ParameterListTest
          }
          return Response.ok().entity(sb.toString()).build();
       }
-      
+
       @Override
       @GET
       @Path("matrix/sortedset")
@@ -128,7 +129,7 @@ public class ParameterListTest
          }
          return Response.ok().entity(sb.toString()).build();
       }
-      
+
       @Override
       @PUT
       @Consumes("text/plain")
@@ -143,7 +144,7 @@ public class ParameterListTest
          }
          return Response.ok().entity(sb.toString()).build();
       }
-      
+
       @Override
       @GET
       @Path("query/list")
@@ -157,7 +158,7 @@ public class ParameterListTest
          }
          return Response.ok().entity(sb.toString()).build();
       }
-      
+
       @Override
       @GET
       @Path("query/set")
@@ -173,7 +174,7 @@ public class ParameterListTest
          }
          return Response.ok().entity(sb.toString()).build();
       }
-      
+
       @Override
       @GET
       @Path("query/sortedset")
@@ -187,7 +188,7 @@ public class ParameterListTest
          }
          return Response.ok().entity(sb.toString()).build();
       }
-      
+
       @Override
       @PUT
       @Consumes("text/plain")
@@ -202,7 +203,7 @@ public class ParameterListTest
          }
          return Response.ok().entity(sb.toString()).build();
       }
-      
+
       @Override
       @PUT
       @Consumes("text/plain")
@@ -222,7 +223,7 @@ public class ParameterListTest
          return Response.ok().entity(sb.toString()).build();
       }
    }
-   
+
    @Before
    public void before() throws Exception
    {
@@ -240,7 +241,7 @@ public class ParameterListTest
    @Test
    public void testMatrix() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:8081/matrix;m1=a/list;m1=b;p2=c");
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/matrix;m1=a/list;m1=b;p2=c"));
       request.matrixParameter("m1", "d");
       System.out.println("Sending request");
       ClientResponse<String> response = request.get(String.class);
@@ -248,11 +249,11 @@ public class ParameterListTest
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("a:b:d:", response.getEntity());
    }
-   
+
    @Test
    public void testQuery() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:8081/query/list?q1=a&q2=b&q1=c");
+      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/query/list?q1=a&q2=b&q1=c"));
       request.queryParameter("q1", "d");
       System.out.println("Sending request");
       ClientResponse<String> response = request.get(String.class);
@@ -260,12 +261,12 @@ public class ParameterListTest
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("a:c:d:", response.getEntity());
    }
-   
+
    @SuppressWarnings("unchecked")
    @Test
    public void testMatrixProxyList() throws Exception
-   {  
-      TestInterface client = ProxyFactory.create(TestInterface.class, "http://localhost:8081");
+   {
+      TestInterface client = ProxyFactory.create(TestInterface.class, TestPortProvider.generateBaseUrl());
       ArrayList<String> list = new ArrayList<String>();
       list.add("a");
       list.add("b");
@@ -277,12 +278,12 @@ public class ParameterListTest
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("a:b:c:", response.getEntity(String.class));
    }
-   
+
    @SuppressWarnings("unchecked")
    @Test
    public void testMatrixProxySet() throws Exception
-   {  
-      TestInterface client = ProxyFactory.create(TestInterface.class, "http://localhost:8081");
+   {
+      TestInterface client = ProxyFactory.create(TestInterface.class, TestPortProvider.generateBaseUrl());
       HashSet<String> set = new HashSet<String>();
       set.add("a");
       set.add("b");
@@ -294,12 +295,12 @@ public class ParameterListTest
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("a:b:c:", response.getEntity(String.class));
    }
-   
+
    @SuppressWarnings("unchecked")
    @Test
    public void testMatrixProxySortedSet() throws Exception
-   {  
-      TestInterface client = ProxyFactory.create(TestInterface.class, "http://localhost:8081");
+   {
+      TestInterface client = ProxyFactory.create(TestInterface.class, TestPortProvider.generateBaseUrl());
       TreeSet<String> set = new TreeSet<String>();
       set.add("a");
       set.add("b");
@@ -311,12 +312,12 @@ public class ParameterListTest
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("a:b:c:", response.getEntity(String.class));
    }
-   
+
    @SuppressWarnings("unchecked")
    @Test
    public void testMatrixWithEntityProxy() throws Exception
-   {  
-      TestInterface client = ProxyFactory.create(TestInterface.class, "http://localhost:8081");
+   {
+      TestInterface client = ProxyFactory.create(TestInterface.class, TestPortProvider.generateBaseUrl());
       ArrayList<String> list = new ArrayList<String>();
       list.add("a");
       list.add("b");
@@ -328,12 +329,12 @@ public class ParameterListTest
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("entity:a:b:c:", response.getEntity(String.class));
    }
-   
+
    @SuppressWarnings("unchecked")
    @Test
    public void testQueryProxyList() throws Exception
-   {  
-      TestInterface client = ProxyFactory.create(TestInterface.class, "http://localhost:8081");
+   {
+      TestInterface client = ProxyFactory.create(TestInterface.class, TestPortProvider.generateBaseUrl());
       ArrayList<String> list = new ArrayList<String>();
       list.add("a");
       list.add("b");
@@ -345,12 +346,12 @@ public class ParameterListTest
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("a:b:c:", response.getEntity(String.class));
    }
-   
+
    @SuppressWarnings("unchecked")
    @Test
    public void testQueryProxySet() throws Exception
-   {  
-      TestInterface client = ProxyFactory.create(TestInterface.class, "http://localhost:8081");
+   {
+      TestInterface client = ProxyFactory.create(TestInterface.class, TestPortProvider.generateBaseUrl());
       HashSet<String> set = new HashSet<String>();
       set.add("a");
       set.add("b");
@@ -362,12 +363,12 @@ public class ParameterListTest
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("a:b:c:", response.getEntity(String.class));
    }
-   
+
    @SuppressWarnings("unchecked")
    @Test
    public void testQueryProxySortedSet() throws Exception
-   {  
-      TestInterface client = ProxyFactory.create(TestInterface.class, "http://localhost:8081");
+   {
+      TestInterface client = ProxyFactory.create(TestInterface.class, TestPortProvider.generateBaseUrl());
       TreeSet<String> set = new TreeSet<String>();
       set.add("a");
       set.add("b");
@@ -379,12 +380,12 @@ public class ParameterListTest
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("a:b:c:", response.getEntity(String.class));
    }
-   
+
    @SuppressWarnings("unchecked")
    @Test
    public void testQueryWithEntityProxy() throws Exception
-   {  
-      TestInterface client = ProxyFactory.create(TestInterface.class, "http://localhost:8081");
+   {
+      TestInterface client = ProxyFactory.create(TestInterface.class, TestPortProvider.generateBaseUrl());
       ArrayList<String> list = new ArrayList<String>();
       list.add("a");
       list.add("b");
@@ -396,12 +397,12 @@ public class ParameterListTest
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("entity:a:b:c:", response.getEntity(String.class));
    }
-   
+
    @SuppressWarnings("unchecked")
    @Test
    public void testMatrixQueryWithEntityProxy() throws Exception
-   {  
-      TestInterface client = ProxyFactory.create(TestInterface.class, "http://localhost:8081");
+   {
+      TestInterface client = ProxyFactory.create(TestInterface.class, TestPortProvider.generateBaseUrl());
       ArrayList<String> matrixParams = new ArrayList<String>();
       matrixParams.add("a");
       matrixParams.add("b");

@@ -1,13 +1,14 @@
 package org.jboss.resteasy.plugins.server.tjws;
 
-import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
-import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import java.io.IOException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+
+import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
+import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -15,7 +16,8 @@ import java.io.IOException;
  */
 public class TJWSServletDispatcher extends HttpServletDispatcher
 {
-   private TJWSRequestPreProcessor requestPreProcessor;
+   private static final long serialVersionUID = 757574911067175185L;
+   private final TJWSRequestPreProcessor requestPreProcessor;
 
    public TJWSServletDispatcher()
    {

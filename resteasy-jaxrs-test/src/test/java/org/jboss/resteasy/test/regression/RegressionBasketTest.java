@@ -1,22 +1,10 @@
 package org.jboss.resteasy.test.regression;
 
-import org.w3c.dom.Document;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.core.MediaTypeMap;
-import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.test.BaseResourceTest;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.*;
+import static org.jboss.resteasy.util.HttpClient4xUtils.*;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -30,11 +18,22 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyReader;
-import java.io.IOException;
-import java.io.InputStream;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
-import static org.jboss.resteasy.util.HttpClient4xUtils.consumeEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.w3c.dom.Document;
 
 /**
  * A basket of JIRA regression tests
@@ -87,9 +86,10 @@ public class RegressionBasketTest extends BaseResourceTest
       }
    }
 
-   @BeforeClass
-   public static void setup() throws Exception
-   {
+   @Override
+   @Before
+   public void before() throws Exception {
+      super.before();
       addPerRequestResource(MyTest.class);
       addPerRequestResource(Api.class);
       addPerRequestResource(DeleteTest.class);

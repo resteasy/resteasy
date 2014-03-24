@@ -7,7 +7,6 @@ import javax.ws.rs.Produces;
 import junit.framework.Assert;
 
 import org.jboss.resteasy.client.ProxyFactory;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestAnnotationInheritance extends BaseResourceTest
@@ -49,7 +48,8 @@ public class TestAnnotationInheritance extends BaseResourceTest
 	@Path("/somewhere")
 	public static class SomeOtherResource implements SomeOtherInterface
 	{
-		public SuperInt getSuperInt()
+		@Override
+        public SuperInt getSuperInt()
 		{
 			return new SuperIntAbstract()
 			{
@@ -61,7 +61,8 @@ public class TestAnnotationInheritance extends BaseResourceTest
 			};
 		}
 
-		public NotAResource getFailure()
+		@Override
+        public NotAResource getFailure()
 		{
 			return new NotAResource()
 			{

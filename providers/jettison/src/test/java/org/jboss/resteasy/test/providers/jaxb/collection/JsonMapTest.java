@@ -1,12 +1,9 @@
 package org.jboss.resteasy.test.providers.jaxb.collection;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -15,8 +12,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -82,13 +84,14 @@ public class JsonMapTest extends BaseResourceTest
       }
    }
 
-   @BeforeClass
-   public static void setup()
-   {
+   @Override
+   @Before
+   public void before() throws Exception {
+      super.before();
       addPerRequestResource(MyResource.class);
-
    }
 
+   @SuppressWarnings("unchecked")
    @Test
    public void testProvider() throws Exception
    {

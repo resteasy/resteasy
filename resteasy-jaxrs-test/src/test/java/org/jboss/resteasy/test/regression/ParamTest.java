@@ -1,11 +1,6 @@
 package org.jboss.resteasy.test.regression;
 
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.core.ClientProxy;
-import org.jboss.resteasy.test.BaseResourceTest;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
@@ -14,7 +9,11 @@ import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -44,30 +43,34 @@ public class ParamTest extends BaseResourceTest
 
    public static class MyTestResource implements MyTest
    {
-      public String getMatrix(String matrix)
+      @Override
+    public String getMatrix(String matrix)
       {
          if (matrix == null) return "null";
          return matrix;
       }
 
-      public String getCookie(@CookieParam("param") String cookie)
+      @Override
+    public String getCookie(@CookieParam("param") String cookie)
       {
          if (cookie == null) return "null";
          return cookie;
       }
 
-      public String getHeader(@CookieParam("custom") String header)
+      @Override
+    public String getHeader(@CookieParam("custom") String header)
       {
          if (header == null) return "null";
          return header;
       }
    }
 
-   @BeforeClass
-   public static void setup() throws Exception
-{
-    addPerRequestResource(MyTestResource.class);
-}
+   @Override
+   @Before
+   public void before() throws Exception {
+      super.before();
+      addPerRequestResource(MyTestResource.class);
+   }
 
    /**
     * RESTEASY-423

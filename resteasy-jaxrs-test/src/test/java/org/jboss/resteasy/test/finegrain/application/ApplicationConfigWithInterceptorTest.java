@@ -1,15 +1,9 @@
 package org.jboss.resteasy.test.finegrain.application;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.core.ServerResponse;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -21,10 +15,17 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
-import java.util.HashSet;
-import java.util.Set;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.core.ServerResponse;
+import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
+import org.jboss.resteasy.test.EmbeddedContainer;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -62,7 +63,8 @@ public class ApplicationConfigWithInterceptorTest
    @Provider
    public static class AddHeader implements PostProcessInterceptor
    {
-      public void postProcess(ServerResponse response)
+      @Override
+    public void postProcess(ServerResponse response)
       {
          System.out.println("HERE!!!!!");
          response.getMetadata().add("custom-header", "hello");
@@ -71,7 +73,7 @@ public class ApplicationConfigWithInterceptorTest
 
    public static class MyApplicationConfig extends Application
    {
-      private Set<Class<?>> classes = new HashSet<Class<?>>();
+      private final Set<Class<?>> classes = new HashSet<Class<?>>();
 
       public MyApplicationConfig()
       {
@@ -119,7 +121,6 @@ public class ApplicationConfigWithInterceptorTest
       doTest("/my/123", 204, false);
    }
 
-   @SuppressWarnings("unchecked")
    private void doTest(String path, int expectedStatus) throws Exception
    {
       doTest(path, expectedStatus, true);
@@ -129,7 +130,7 @@ public class ApplicationConfigWithInterceptorTest
    private void doTest(String path, int expectedStatus, boolean get) throws Exception
    {
       ClientRequest request = new ClientRequest(generateURL(path));
-      ClientResponse response = get ? request.get() : request.delete();
+      ClientResponse<?> response = get ? request.get() : request.delete();
       Assert.assertEquals(expectedStatus, response.getStatus());
       Assert.assertNotNull(response.getHeaders().getFirst("custom-header"));
 

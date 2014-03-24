@@ -1,18 +1,7 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
-import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.spi.StringParameterUnmarshaller;
-import org.jboss.resteasy.test.BaseResourceTest;
-import org.jboss.resteasy.util.FindAnnotation;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -21,7 +10,19 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+
+import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.spi.StringParameterUnmarshaller;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.jboss.resteasy.util.FindAnnotation;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -40,13 +41,15 @@ public class StringParamUnmarshallerTest extends BaseResourceTest
    {
       private SimpleDateFormat formatter;
 
-      public void setAnnotations(Annotation[] annotations)
+      @Override
+    public void setAnnotations(Annotation[] annotations)
       {
          DateFormat format = FindAnnotation.findAnnotation(annotations, DateFormat.class);
          formatter = new SimpleDateFormat(format.value());
       }
 
-      public Date fromString(String str)
+      @Override
+    public Date fromString(String str)
       {
          try
          {
@@ -107,9 +110,10 @@ public class StringParamUnmarshallerTest extends BaseResourceTest
       }
    }
 
-   @BeforeClass
-   public static void setup() throws Exception
-   {
+   @Override
+   @Before
+   public void before() throws Exception {
+      super.before();
       addPerRequestResource(Service.class);
    }
 

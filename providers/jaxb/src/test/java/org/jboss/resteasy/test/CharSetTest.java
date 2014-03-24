@@ -1,10 +1,5 @@
 package org.jboss.resteasy.test;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -12,6 +7,10 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.jboss.resteasy.client.ClientRequest;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -57,9 +56,11 @@ public class CharSetTest extends BaseResourceTest
       }
    }
 
-   @BeforeClass
-   public static void setup()
+   @Override
+   @Before
+   public void before() throws Exception
    {
+      super.before();
       addPerRequestResource(TestService.class);
    }
 

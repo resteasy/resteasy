@@ -1,5 +1,24 @@
 package org.jboss.resteasy.test.providers;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Type;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.ValueInjector;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -10,24 +29,6 @@ import org.jboss.resteasy.util.FindAnnotation;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Type;
-
-import static org.jboss.resteasy.test.TestPortProvider.*;
 
 public class HttpRequestParameterInjectorTest extends BaseResourceTest
 {
@@ -78,7 +79,6 @@ public class HttpRequestParameterInjectorTest extends BaseResourceTest
          super(factory);
       }
 
-      @SuppressWarnings("unchecked")
       @Override
       public ValueInjector createParameterExtractor(Class injectTargetClass,
                                                     AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations)
@@ -93,13 +93,15 @@ public class HttpRequestParameterInjectorTest extends BaseResourceTest
          {
             return new ValueInjector()
             {
-               public Object inject(HttpRequest request, HttpResponse response)
+               @Override
+              public Object inject(HttpRequest request, HttpResponse response)
                {
                   return ResteasyProviderFactory.getContextData(HttpServletRequest.class)
                           .getParameter(param.value());
                }
 
-               public Object inject()
+               @Override
+              public Object inject()
                {
                   // do nothing.
                   return null;

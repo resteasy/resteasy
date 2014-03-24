@@ -31,7 +31,7 @@
         <module>encoding-test</module>
         <module>context-test</module>
         <module>oauth-servlet-test</module>
-        <!-- <module>jsapi-servlet-test</module> -->
+        <!-- <module>jsapi-servlet-test</module> to run it build and install into your local repo maven-testlol-plugin maven plugin - see https://github.com/psakar/maven-testlol-plugin/commits/1.5-->
         <module>application-test</module>
     </modules>
 </project>

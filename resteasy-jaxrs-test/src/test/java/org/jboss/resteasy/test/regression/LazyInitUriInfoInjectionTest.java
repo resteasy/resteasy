@@ -1,14 +1,6 @@
 package org.jboss.resteasy.test.regression;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.InjectorFactory;
-import org.jboss.resteasy.spi.ResourceFactory;
-import org.jboss.resteasy.test.BaseResourceTest;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -16,7 +8,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
-import static org.jboss.resteasy.test.TestPortProvider.*;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.InjectorFactory;
+import org.jboss.resteasy.spi.ResourceFactory;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * RESTEASY-573
@@ -52,21 +52,23 @@ public class LazyInitUriInfoInjectionTest extends BaseResourceTest
 
    public static class LazySingletonResource implements ResourceFactory
    {
-      private Class clazz;
+      private final Class<?> clazz;
       private InjectorFactory factory;
       private Object obj;
 
-      public LazySingletonResource(Class clazz)
+      public LazySingletonResource(Class<?> clazz)
       {
          this.clazz = clazz;
       }
 
-      public void registered(InjectorFactory factory)
+      @Override
+    public void registered(InjectorFactory factory)
       {
          this.factory = factory;
       }
 
-      public Object createResource(HttpRequest request, HttpResponse response, InjectorFactory factory)
+      @Override
+    public Object createResource(HttpRequest request, HttpResponse response, InjectorFactory factory)
       {
          if (obj == null)
          {
@@ -87,24 +89,28 @@ public class LazyInitUriInfoInjectionTest extends BaseResourceTest
          return obj;
       }
 
-      public void unregistered()
+      @Override
+    public void unregistered()
       {
       }
 
-      public Class<?> getScannableClass()
+      @Override
+    public Class<?> getScannableClass()
       {
          return clazz;
       }
 
-      public void requestFinished(HttpRequest request, HttpResponse response, Object resource)
+      @Override
+    public void requestFinished(HttpRequest request, HttpResponse response, Object resource)
       {
       }
    }
 
 
-   @BeforeClass
-   public static void setup() throws Exception
-   {
+   @Override
+   @Before
+   public void before() throws Exception {
+      super.before();
       dispatcher.getRegistry().addResourceFactory(new LazySingletonResource(MyTest.class));
    }
 

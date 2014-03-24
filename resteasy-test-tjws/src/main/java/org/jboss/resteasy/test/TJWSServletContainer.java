@@ -35,7 +35,7 @@ public class TJWSServletContainer
    {
       return start(bindPath, null, initParams, contextParams);
    }
-   
+
    public static void start(ResteasyDeployment deployment) throws Exception
    {
       System.out.println("[Embedded Container Start]");
@@ -51,7 +51,7 @@ public class TJWSServletContainer
    {
       return start(bindPath, domain, null, null);
    }
-   
+
    public static ResteasyDeployment start(String bindPath, SecurityDomain domain, Hashtable<String,String> initParams, Hashtable<String,String> contextParams) throws Exception
    {
       ResteasyDeployment deployment = new ResteasyDeployment();
@@ -75,11 +75,15 @@ public class TJWSServletContainer
       }
       if (applicationClass == null && initParams != null)
       {
-         applicationClass = initParams.get("javax.ws.rs.Application"); 
+         applicationClass = initParams.get("javax.ws.rs.Application");
       }
       if (applicationClass != null)
       {
          deployment.setApplicationClass(applicationClass);
+      }
+      if (contextParams != null && contextParams.containsKey(TestPortProvider.ASYNC_JOB_SERVICE_CONTEXT_KEY) && contextParams.get(TestPortProvider.ASYNC_JOB_SERVICE_CONTEXT_KEY) != null && (Boolean.valueOf(contextParams.get(TestPortProvider.ASYNC_JOB_SERVICE_CONTEXT_KEY)) == true))
+      {
+         deployment.setAsyncJobServiceEnabled(true);
       }
       return start(bindPath, domain, deployment, initParams, contextParams);
    }

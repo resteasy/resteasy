@@ -62,7 +62,7 @@ public class AsynchSpringTest
    @Autowired
    public void setServer(TJWSEmbeddedSpringMVCServerBean server)
    {
-      dispatcher = (AsynchronousDispatcher) server.getServer()
+      dispatcher = server.getServer()
             .getApplicationContext().getBeansOfType(
                   AsynchronousDispatcher.class).values().iterator().next();
    }
