@@ -11,6 +11,8 @@ import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -32,10 +34,21 @@ public class ExceptionHandlingTest extends BaseResourceTest
       public void post() throws Exception;
    }
 
+   @Provider
+   public static class ServerExceptionHandler implements ExceptionMapper<Exception>
+   {
+      public Response toResponse(Exception exception) {
+         return Response.serverError().entity("Blah blah blah").build();
+      }
+   }
+
    @BeforeClass
    public static void setup() throws Exception
    {
       addPerRequestResource(ThrowsExceptionResource.class);
+      deployment.getProviderFactory().register(ServerExceptionHandler.class);
+
+
    }
 
    @Test
@@ -49,6 +62,7 @@ public class ExceptionHandlingTest extends BaseResourceTest
       } catch (InternalServerErrorException e) {
           Response response = e.getResponse();
           String errorText = response.readEntity(String.class);
+         System.out.println(errorText);
           Assert.assertNotNull(errorText);
       }
 
