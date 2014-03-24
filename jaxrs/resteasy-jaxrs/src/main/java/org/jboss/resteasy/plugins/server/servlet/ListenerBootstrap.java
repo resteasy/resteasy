@@ -2,14 +2,12 @@ package org.jboss.resteasy.plugins.server.servlet;
 
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.scannotation.WarUrlFinder;
 
 import javax.servlet.ServletContext;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -75,21 +73,6 @@ public class ListenerBootstrap extends ConfigurationBootstrap
          }
       }
       return list.toArray(new URL[list.size()]);
-   }
-
-   public URL[] getScanningUrls()
-   {
-      URL[] urls = findWebInfLibClasspaths(servletContext);
-      URL url = WarUrlFinder.findWebInfClassesPath(servletContext);
-      if (url == null) return urls;
-      URL[] all = new URL[urls.length + 1];
-      int i = 0;
-      for (i = 0; i < urls.length; i++)
-      {
-         all[i] = urls[i];
-      }
-      all[i] = url;
-      return all;
    }
 
    @Override
