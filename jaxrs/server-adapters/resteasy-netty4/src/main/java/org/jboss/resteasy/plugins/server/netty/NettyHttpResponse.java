@@ -169,6 +169,7 @@ public class NettyHttpResponse implements HttpResponse
    public void finish() throws IOException {
       os.flush();
       if (isCommitted()) {
+         // if committed this means the output stream was used.
          ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
       } else {
          io.netty.handler.codec.http.HttpResponse response = getDefaultHttpResponse();
