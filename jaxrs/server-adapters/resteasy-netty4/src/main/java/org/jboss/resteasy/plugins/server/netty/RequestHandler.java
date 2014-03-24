@@ -8,6 +8,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.TooLongFrameException;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.LastHttpContent;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.Failure;
 
@@ -66,8 +67,7 @@ public class RequestHandler extends SimpleChannelInboundHandler
           }
           ChannelFuture future = null;
           if (!request.getAsyncContext().isSuspended()) {
-              // Write and flush the response.
-              future = ctx.writeAndFlush(response);
+             response.finish();
           } else {
               // Write an empty response
               //future = ctx.write(response);

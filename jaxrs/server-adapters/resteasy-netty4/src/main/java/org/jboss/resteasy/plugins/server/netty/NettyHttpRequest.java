@@ -315,8 +315,8 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
                     }
                     finally
                     {
-                        done = true;
-                        ctx.writeAndFlush(nettyResponse.getDefaultFullHttpResponse());
+                       done = true;
+                       nettyFlush();
                     }
                 }
             }
@@ -388,8 +388,18 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
            protected synchronized void nettyFlush()
            {
               flushed = true;
-              ctx.writeAndFlush(nettyResponse.getDefaultFullHttpResponse());
-              ctx.close();
+              try
+              {
+                 nettyResponse.finish();
+              }
+              catch (IOException e)
+              {
+                 throw new RuntimeException(e);
+              }
+              finally
+              {
+                 ctx.close();
+              }
            }
 
            @Override

@@ -7,6 +7,7 @@ import io.netty.handler.codec.MessageToMessageEncoder;
 import io.netty.handler.codec.http.HttpHeaders.Names;
 import io.netty.handler.codec.http.HttpHeaders.Values;
 import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.LastHttpContent;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.ext.RuntimeDelegate;
@@ -39,21 +40,19 @@ public class RestEasyHttpResponseEncoder extends MessageToMessageEncoder<NettyHt
     @Override
     protected void encode(ChannelHandlerContext ctx, NettyHttpResponse nettyResponse, List<Object> out) throws Exception
     {
-        ByteBuf buffer = nettyResponse.getBuffer();
-        HttpResponse response = nettyResponse.getDefaultFullHttpResponse();
-
-        transformHeaders(nettyResponse, response, dispatcher.providerFactory);
-
-        out.add(response);
+       nettyResponse.getOutputStream().flush();
+       if (nettyResponse.isCommitted()) {
+          out.add(LastHttpContent.EMPTY_LAST_CONTENT);
+       } else {
+          HttpResponse response = nettyResponse.getDefaultHttpResponse();
+          out.add(response);
+       }
     }
 
    public static void transformHeaders(NettyHttpResponse nettyResponse, HttpResponse response, ResteasyProviderFactory factory)
    {
-      ByteBuf buffer = nettyResponse.getBuffer();
       if (nettyResponse.isKeepAlive())
       {
-         // Add content length and connection header if needed
-         response.headers().set(Names.CONTENT_LENGTH, buffer.readableBytes());
          response.headers().set(Names.CONNECTION, Values.KEEP_ALIVE);
       }
       for (Map.Entry<String, List<Object>> entry : nettyResponse.getOutputHeaders().entrySet())
