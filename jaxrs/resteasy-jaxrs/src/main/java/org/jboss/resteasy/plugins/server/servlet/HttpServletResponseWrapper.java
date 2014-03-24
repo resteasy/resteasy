@@ -16,11 +16,11 @@ import java.io.OutputStream;
  */
 public class HttpServletResponseWrapper implements HttpResponse
 {
-   private HttpServletResponse response;
-   private int status = 200;
-   private MultivaluedMap<String, Object> outputHeaders;
-   private ResteasyProviderFactory factory;
-   private OutputStream outputStream = new DeferredOutputStream();
+   protected HttpServletResponse response;
+   protected int status = 200;
+   protected MultivaluedMap<String, Object> outputHeaders;
+   protected ResteasyProviderFactory factory;
+   protected OutputStream outputStream = new DeferredOutputStream();
 
    /**
     * RESTEASY-684 wants to defer access to outputstream until a write/flush/close happens
