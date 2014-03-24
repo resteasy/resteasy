@@ -26,6 +26,7 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -331,11 +332,14 @@ public class CookieTest
       NewCookie nck26 = javax.ws.rs.core.NewCookie.valueOf(NewCookie_toParse);
 
       pass = verifyNewCookie(nck26, name, value, path, domain, version,
-              "", -1, false);
+              "", -1, null, false, false);
+
+     // check round-tripping
+     Assert.assertEquals(nck26, NewCookie.valueOf(nck26.toString()));
    }
 
    /*
-   * Create a version 0 NewCookie instance by Parsing a String
+   * Create a version 1 NewCookie instance by Parsing a String
    */
    @Test
    public void testNewCookie2() throws Exception
@@ -353,7 +357,10 @@ public class CookieTest
       NewCookie nck27 = javax.ws.rs.core.NewCookie.valueOf(NewCookie_toParse);
 
       pass = verifyNewCookie(nck27, name, value, path, domain, version,
-              "", -1, false);
+              "", -1, null, false, false);
+
+     // check round-tripping
+     Assert.assertEquals(nck27, NewCookie.valueOf(nck27.toString()));
    }
 
    /*
@@ -374,15 +381,47 @@ public class CookieTest
       }
    }
 
+
+   /*
+    * Create a version 0 NewCookie instance by Parsing a String
+    */
+   @Test
+   public void testNewCookie4() throws Exception
+   {
+      boolean pass = true;
+      String NewCookie_toParse =
+              "Customer=WILE_E_COYOTE; Path=/acme; Domain=acme.com; Max-Age=150000000; " +
+              "Expires=Thu, 03-May-2018 10:36:34 GMT; Secure; HttpOnly";
+
+      String name = "customer";
+      String value = "wile_e_coyote";
+      String path = "/acme";
+      String domain = "acme.com";
+      int version = 1;
+      String comment = "";
+      int maxAge = 150000000;
+      Date expiry = new Date(Date.UTC(118, 4, 3, 10, 36, 34));
+      boolean secure = true;
+      boolean httpOnly = true;
+
+      NewCookie nck28 = javax.ws.rs.core.NewCookie.valueOf(NewCookie_toParse);
+
+      pass = verifyNewCookie(nck28, name, value, path, domain, version,
+              comment, maxAge, expiry, secure, httpOnly);
+
+      // check round-tripping
+      Assert.assertEquals(nck28, NewCookie.valueOf(nck28.toString()));
+   }
+
    private boolean verifyNewCookie(NewCookie nck, String name, String value,
                                    String path, String domain, int version, String comment, int maxage,
-                                   boolean secure) throws Exception
+                                   Date expiry, boolean secure, boolean httpOnly) throws Exception
    {
 
       StringBuffer sb = new StringBuffer();
       boolean pass = true;
 
-      if (name == "" || name == null)
+      if (name == null || name.isEmpty())
       {
          pass = false;
          sb.append("NewCookie's name is empty");
@@ -394,7 +433,7 @@ public class CookieTest
                  nck.getName());
       }
 
-      if (value == "" || value == null)
+      if (value == null || value.isEmpty())
       {
          pass = false;
          sb.append("NewCookie's value is empty");
@@ -413,7 +452,7 @@ public class CookieTest
                  nck.getVersion());
       }
 
-      if (comment == "" || comment == null)
+      if (comment == null || comment.isEmpty())
       {
          if (nck.getComment() != "" && nck.getComment() != null)
          {
@@ -429,7 +468,7 @@ public class CookieTest
                  nck.getComment());
       }
 
-      if (path == "" || path == null)
+      if (path == null || path.isEmpty())
       {
          if (nck.getPath() != "" && nck.getPath() != null)
          {
@@ -438,7 +477,7 @@ public class CookieTest
                     nck.getPath());
          }
       }
-      else if (nck.getPath() == null || nck.getPath() == "")
+      else if (nck.getPath() == null || nck.getPath().isEmpty())
       {
          pass = false;
          sb.append("Failed path test.  Got null, expecting " + path);
@@ -450,12 +489,12 @@ public class CookieTest
                  nck.getPath());
       }
 
-      if (domain == "" || domain == null)
+      if (domain == null || domain.isEmpty())
       {
-         if (nck.getDomain() != "" && nck.getDomain() != null)
+         if (nck.getDomain() != null && !nck.getDomain().isEmpty())
          {
             pass = false;
-            sb.append("Failed path test.  Expect " + domain + " got " +
+            sb.append("Failed domain test.  Expect " + domain + " got " +
                     nck.getDomain());
          }
       }
@@ -473,6 +512,26 @@ public class CookieTest
                  nck.getMaxAge());
       }
 
+      if (expiry == null)
+      {
+         if (nck.getExpiry() != null)
+         {
+            pass = false;
+            sb.append("Failed expiry test.  Expect " + expiry + " got " +
+                    nck.getExpiry());
+         }
+      }
+      else if (nck.getExpiry() == null)
+      {
+         pass = false;
+         sb.append("Failed expiry test.  Got null, expecting " + expiry);
+      }
+      else if (!nck.getExpiry().equals(expiry)) {
+         pass = false;
+         sb.append("Failed expirytest.  Expect " + expiry + " got " +
+                 nck.getExpiry());
+      }
+
       if (nck.isSecure() != secure)
       {
          pass = false;
@@ -480,9 +539,16 @@ public class CookieTest
                  nck.isSecure());
       }
 
+      if (nck.isHttpOnly() != httpOnly)
+      {
+         pass = false;
+         sb.append("Failed httpOnly test.  Expect " + httpOnly + " got " +
+                 nck.isHttpOnly());
+      }
+
       if (!pass)
       {
-         throw new Exception("At least one assertion falied: " + sb.toString());
+         throw new Exception("At least one assertion failed: " + sb.toString());
       }
 
       return pass;
