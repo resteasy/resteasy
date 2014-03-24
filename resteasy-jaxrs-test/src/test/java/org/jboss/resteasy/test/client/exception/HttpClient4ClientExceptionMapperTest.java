@@ -76,6 +76,7 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.util.Types;
 import org.junit.Test;
 
@@ -99,7 +100,7 @@ public class HttpClient4ClientExceptionMapperTest
       @PUT
       @Path("foo")
       String setFoo(String value);
-      
+
       @POST
       @Path("error")
       String error();
@@ -136,7 +137,7 @@ public class HttpClient4ClientExceptionMapperTest
       dispatcher = deployment.getDispatcher();
       deployment.getRegistry().addPerRequestResource(TestResource.class);
    }
-   
+
    public void beforeProviderInstance(ClientExceptionMapper<?> mapper) throws Exception
    {
       deployment = new ResteasyDeployment();
@@ -146,7 +147,7 @@ public class HttpClient4ClientExceptionMapperTest
       deployment.start();
       deployment.getRegistry().addPerRequestResource(TestResource.class);
    }
-   
+
    public void beforeApplicationClasses(final Class<?> mapper) throws Exception
    {
       deployment = new ResteasyDeployment();
@@ -163,7 +164,7 @@ public class HttpClient4ClientExceptionMapperTest
       deployment.start();
       deployment.getRegistry().addPerRequestResource(TestResource.class);
    }
-   
+
    public void beforeApplicationSingleton(final ClientExceptionMapper<?> mapper) throws Exception
    {
       deployment = new ResteasyDeployment();
@@ -180,7 +181,7 @@ public class HttpClient4ClientExceptionMapperTest
       deployment.start();
       deployment.getRegistry().addPerRequestResource(TestResource.class);
    }
-   
+
    public void beforeClassNames(final Class<?> mapper) throws Exception
    {
       deployment = new ResteasyDeployment();
@@ -190,17 +191,17 @@ public class HttpClient4ClientExceptionMapperTest
       deployment.start();
       deployment.getRegistry().addPerRequestResource(TestResource.class);
    }
-   
+
    public void beforeContextParams(final Class<?> mapper) throws Exception
-   {      
+   {
       Hashtable<String,String> initParams = new Hashtable<String,String>();
       Hashtable<String,String> contextParams = new Hashtable<String,String>();
       contextParams.put("javax.ws.rs.Application", TestApplication.class.getName());
       deployment = EmbeddedContainer.start(initParams, contextParams);
    }
-   
+
    public void beforeInitParams(final Class<?> mapper) throws Exception
-   {      
+   {
       Hashtable<String,String> initParams = new Hashtable<String,String>();
       Hashtable<String,String> contextParams = new Hashtable<String,String>();
       initParams.put("javax.ws.rs.Application", TestApplication.class.getName());
@@ -225,7 +226,7 @@ public class HttpClient4ClientExceptionMapperTest
       boolean ok = false;
       try
       {
-         Foo foo = ProxyBuilder.build(Foo.class, "http://localhost:8081/foo/").serverMediaType(MediaType.TEXT_PLAIN_TYPE).now();
+         Foo foo = ProxyBuilder.build(Foo.class, TestPortProvider.generateURL("/foo/")).serverMediaType(MediaType.TEXT_PLAIN_TYPE).now();
          String answer = foo.error();
          System.out.println("answer: " + answer);
       }
@@ -244,7 +245,7 @@ public class HttpClient4ClientExceptionMapperTest
       }
       assertTrue("Expected ClientResponseFailure, got no Exception", ok);
    }
-   
+
    @Test
    public void testApacheHttpClient4Executor() throws Exception
    {
@@ -320,7 +321,7 @@ public class HttpClient4ClientExceptionMapperTest
    {
       doTest(new ResteasyConnectTimeoutException(), new ConnectTimeoutException(""));
    }
-   
+
    @Test
    public void testCookieRestrictionViolationException() throws Exception
    {
@@ -338,7 +339,7 @@ public class HttpClient4ClientExceptionMapperTest
    {
       doTest(new ResteasyHttpHostConnectException(), new HttpHostConnectException(null, null));
    }
-   
+
    @Test
    public void testInvalidCredentialsException() throws Exception
    {
@@ -416,7 +417,7 @@ public class HttpClient4ClientExceptionMapperTest
    {
       doTest(new ResteasyUnsupportedHttpVersionException(), new UnsupportedHttpVersionException());
    }
-   
+
    private void doTest(Exception resteasyException, Exception embeddedException) throws Exception
    {
       before();
@@ -438,49 +439,49 @@ public class HttpClient4ClientExceptionMapperTest
          after();
       }
    }
-     
+
    @Test
    public void testAlternativeMapperProviderInstance() throws Exception
    {
       beforeProviderInstance(new TestClientExceptionMapper());
       doTestWithAlternativeMapper(new TestException(null), new UnsupportedHttpVersionException());
    }
-   
+
    @Test
    public void testAlternativeMapperClassName() throws Exception
    {
       beforeClassNames(TestClientExceptionMapper.class);
       doTestWithAlternativeMapper(new TestException(null), new UnsupportedHttpVersionException());
    }
-   
+
    @Test
    public void testAlternativeMapperApplicationClasses() throws Exception
    {
       beforeApplicationClasses(TestClientExceptionMapper.class);
       doTestWithAlternativeMapper(new TestException(null), new UnsupportedHttpVersionException());
    }
-   
+
    @Test
    public void testAlternativeMapperApplicationSingleton() throws Exception
    {
       beforeApplicationSingleton(new TestClientExceptionMapper());
       doTestWithAlternativeMapper(new TestException(null), new UnsupportedHttpVersionException());
    }
-   
+
    @Test
    public void testAlternativeMapperContextParams() throws Exception
    {
       beforeContextParams(TestClientExceptionMapper.class);
       doTestWithAlternativeMapper(new TestException(null), new UnsupportedHttpVersionException());
    }
-   
+
    @Test
    public void testAlternativeMapperInitParams() throws Exception
    {
       beforeInitParams(TestClientExceptionMapper.class);
       doTestWithAlternativeMapper(new TestException(null), new UnsupportedHttpVersionException());
    }
-   
+
    private void doTestWithAlternativeMapper(Exception wrappingException, Exception embeddedException) throws Exception
    {
       try
@@ -512,7 +513,7 @@ public class HttpClient4ClientExceptionMapperTest
          indent += "  ";
       }
    }
-   
+
    static public class TestApplication extends Application
    {
       public Set<Class<?>> getClasses()
@@ -522,7 +523,7 @@ public class HttpClient4ClientExceptionMapperTest
          return classes;
       }
    }
-   
+
 
    @Provider
    static class TestClientExecutor implements ClientExecutor
@@ -558,17 +559,17 @@ public class HttpClient4ClientExceptionMapperTest
       {
       }
    }
-   
+
    static class TestException extends RuntimeException
    {
       private static final long serialVersionUID = -7825447948319726641L;
-      
+
       public TestException(Exception e)
       {
          super(e);
       }
    }
-   
+
    @Provider
    static public class TestClientExceptionMapper implements ClientExceptionMapper<Exception>
    {
@@ -577,6 +578,6 @@ public class HttpClient4ClientExceptionMapperTest
       {
          return new TestException(exception);
       }
-      
+
    }
 }

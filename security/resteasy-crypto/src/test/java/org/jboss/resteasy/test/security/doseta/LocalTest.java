@@ -1,5 +1,17 @@
 package org.jboss.resteasy.test.security.doseta;
 
+import static org.junit.Assert.*;
+
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SignatureException;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.ws.rs.core.MultivaluedMap;
+
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.security.doseta.DKIMSignature;
 import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
@@ -8,15 +20,6 @@ import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.core.MultivaluedMap;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.SignatureException;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -44,6 +47,7 @@ public class LocalTest
       keys = new KeyPair(publicKey, privateKey);
 
       KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
+      assertNotNull(keyPair);
    }
 
    @Test
@@ -82,7 +86,7 @@ public class LocalTest
       Assert.assertEquals(visas.get(1), "v2");
    }
 
-   @Test
+   @Test(expected = SignatureException.class)
    public void testBadAttributes() throws Exception
    {
       DKIMSignature signed = new DKIMSignature();
@@ -108,14 +112,6 @@ public class LocalTest
       Verification verification = new Verification();
       verification.getRequiredAttributes().put("path", "/hello");
 
-      MultivaluedMap<String, String> verifiedHeaders = null;
-      try
-      {
-         verifiedHeaders = verification.verify(verified, headers, null, keys.getPublic());
-         Assert.fail("should fail");
-      }
-      catch (SignatureException e)
-      {
-      }
+      verification.verify(verified, headers, null, keys.getPublic());
    }
 }

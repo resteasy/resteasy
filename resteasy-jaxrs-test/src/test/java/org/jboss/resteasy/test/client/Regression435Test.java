@@ -29,7 +29,8 @@ public class Regression435Test extends BaseResourceTest
 
    public static class MyTestResource implements MyTest
    {
-      public void postIt(String msg)
+      @Override
+    public void postIt(String msg)
       {
          System.out.println("HERE: " + msg);
          throw new WebApplicationException(401);
