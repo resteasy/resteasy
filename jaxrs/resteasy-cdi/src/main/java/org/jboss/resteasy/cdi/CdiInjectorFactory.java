@@ -16,6 +16,7 @@ import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.CDI;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
@@ -147,33 +148,19 @@ public class CdiInjectorFactory implements InjectorFactory
          return beanManager;
       }
 
-      // Look for BeanManager in ServletContext
-      ServletContext servletContext = ResteasyProviderFactory.getContextData(ServletContext.class);
-      // null check for RESTEASY-1009
-      if (servletContext != null)
+      beanManager = lookupBeanManagerCDIUtil();
+      if(beanManager != null)
       {
-          beanManager = (BeanManager) servletContext.getAttribute(BEAN_MANAGER_ATTRIBUTE_PREFIX + BeanManager.class.getName());
-          if (beanManager != null)
-          {
-             log.debug("Found BeanManager in ServletContext");
-             return beanManager;
-          }
-
-          // Look for BeanManager in ServletContext (the old attribute name for backwards compatibility)
-          beanManager = (BeanManager) servletContext.getAttribute(BeanManager.class.getName());
-          if (beanManager != null)
-          {
-             log.debug("Found BeanManager in ServletContext");
-             return beanManager;
-          }
+          log.debug("Found BeanManager via CDI Util");
+          return beanManager;
       }
 
-       beanManager = lookupBeanManagerCDIUtil();
-       if(beanManager != null)
-       {
-           log.debug("Found BeanManager via CDI Util");
-           return beanManager;
-       }
+      beanManager = lookupBeanManagerViaServletContext();
+      if(beanManager != null)
+      {
+          log.debug("Found BeanManager in ServletContext");
+          return beanManager;
+      }
 
       throw new RuntimeException("Unable to lookup BeanManager.");
    }
@@ -198,23 +185,58 @@ public class CdiInjectorFactory implements InjectorFactory
       }
    }
 
+   private static BeanManager lookupBeanManagerViaServletContext()
+   {
+       BeanManager beanManager = null;
+       try
+       {
+           // Look for BeanManager in ServletContext
+           ServletContext servletContext = ResteasyProviderFactory.getContextData(ServletContext.class);
+           // null check for RESTEASY-1009
+           if (servletContext != null)
+           {
+               beanManager = (BeanManager) servletContext.getAttribute(BEAN_MANAGER_ATTRIBUTE_PREFIX + BeanManager.class.getName());
+               if (beanManager != null)
+               {
+                   log.debug("Found BeanManager in ServletContext");
+                   return beanManager;
+               }
+
+               // Look for BeanManager in ServletContext (the old attribute name for backwards compatibility)
+               beanManager = (BeanManager) servletContext.getAttribute(BeanManager.class.getName());
+               if (beanManager != null)
+               {
+                   log.debug("Found BeanManager in ServletContext");
+                   return beanManager;
+               }
+           }
+       }
+       catch (NoClassDefFoundError e)
+       {
+           log.debug("Unable to find ServletContext class ",e);
+       }
+
+       catch (Exception e)
+       {
+           log.debug("Error occurred trying to look up via ServletContext.",e);
+       }
+       return beanManager;
+   }
+
    public static BeanManager lookupBeanManagerCDIUtil()
    {
        BeanManager bm = null;
-       try {
-           Class<?> cdiClass = Class.forName("javax.enterprise.inject.spi.CDI");
-           Object cdiObj = cdiClass.getMethod("current").invoke(null);
-           if(cdiObj != null) {
-               bm = (BeanManager)cdiClass.getMethod("getBeanManager").invoke(cdiObj);
-           }
-       } catch (ClassNotFoundException e) {
-           log.debug("Not able to access CDI Object, class not found.",e);
-       } catch (InvocationTargetException e) {
-           log.debug("Not able to access CDI Object.",e);
-       } catch (NoSuchMethodException e) {
-           log.debug("Not able to access CDI Object.",e);
-       } catch (IllegalAccessException e) {
-           log.debug("Not able to access CDI Object.",e);
+       try
+       {
+           bm = CDI.current().getBeanManager();
+       }
+       catch (NoClassDefFoundError e)
+       {
+           log.debug("Unable to find CDI class ",e);
+       }
+       catch (Exception e)
+       {
+           log.debug("Error occurred trying to look up via CDI util.",e);
        }
        return bm;
    }
