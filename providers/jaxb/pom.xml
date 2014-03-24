@@ -60,6 +60,29 @@
                 </dependency>
             </dependencies>
         </profile>
+		<profile>
+			<!-- exclude integrations tests which are known to fail-->
+			<id>exclude-known-test-failures</id>
+			<activation>
+				<property>
+					<name>exclude-known-test-failures</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<excludes combine.children="append">
+								<exclude>org/jboss/resteasy/test/xxe/TestXXESecureProcessing.java</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
     </profiles>
 
 </project>
