@@ -8,8 +8,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -31,6 +34,7 @@ import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -216,4 +220,15 @@ public abstract class BaseResourceTest
     logger.info(message);
     System.err.println("BaseResourceTest - " + message);
   }
+
+  public void addLibraryWithTransitiveDependencies(String gav) {
+	   war.addAsLibraries(resolveProviderDependencies(gav));
+
+  }
+  private File[] resolveProviderDependencies(String gav) {
+      List<File> runtimeDependencies = new ArrayList<File>();
+      runtimeDependencies.addAll(Arrays.asList(Maven.resolver().resolve(gav).withTransitivity().asFile()));
+      return runtimeDependencies.toArray(new File []{});
+  }
+
 }

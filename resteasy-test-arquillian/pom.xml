@@ -36,6 +36,12 @@
         <!-- IMPORTANT - always specify implicitly scope to override scope possibly defined in dependency management -->
 
         <!-- arquillian general -->
+        <dependency>
+            <groupId>org.jboss.shrinkwrap.resolver</groupId>
+            <artifactId>shrinkwrap-resolver-depchain</artifactId>
+			<scope>compile</scope>
+            <type>pom</type>
+        </dependency>
 		<dependency>
 			<groupId>org.jboss.arquillian.protocol</groupId>
 			<artifactId>arquillian-protocol-servlet</artifactId>
