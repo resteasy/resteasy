@@ -121,4 +121,7 @@ public abstract class BaseResourceTest
 
       return builder.toString();
    }
+
+   public void addLibraryWithTransitiveDependencies(String Gav) {
+   }
 }
