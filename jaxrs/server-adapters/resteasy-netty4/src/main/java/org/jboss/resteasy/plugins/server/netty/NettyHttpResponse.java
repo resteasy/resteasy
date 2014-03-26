@@ -1,6 +1,8 @@
 package org.jboss.resteasy.plugins.server.netty;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.DefaultHttpResponse;
@@ -10,12 +12,15 @@ import io.netty.handler.codec.http.HttpHeaders.Values;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.util.concurrent.Future;
+
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -168,12 +173,17 @@ public class NettyHttpResponse implements HttpResponse
 
    public void finish() throws IOException {
       os.flush();
+      ChannelFuture future;
       if (isCommitted()) {
          // if committed this means the output stream was used.
-         ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
+         future = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
       } else {
          io.netty.handler.codec.http.HttpResponse response = getDefaultHttpResponse();
-         ctx.writeAndFlush(response);
+         future = ctx.writeAndFlush(response);
+      }
+      
+      if(!isKeepAlive()) {
+         future.addListener(ChannelFutureListener.CLOSE);
       }
 
    }
