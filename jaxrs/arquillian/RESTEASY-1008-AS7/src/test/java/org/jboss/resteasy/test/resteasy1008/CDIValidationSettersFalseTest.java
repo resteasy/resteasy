@@ -2,7 +2,6 @@ package org.jboss.resteasy.test.resteasy1008;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.plugins.validation.cdi.ResteasyValidationCdiInterceptor;
 import org.jboss.resteasy.resteasy1008.SumConstraint;
 import org.jboss.resteasy.resteasy1008.SumValidator;
 import org.jboss.resteasy.resteasy1008.TestApplication;

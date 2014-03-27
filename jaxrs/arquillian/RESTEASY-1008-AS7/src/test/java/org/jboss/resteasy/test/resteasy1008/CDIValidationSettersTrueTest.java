@@ -12,7 +12,6 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.plugins.validation.cdi.ResteasyValidationCdiInterceptor;
 import org.jboss.resteasy.resteasy1008.SumConstraint;
 import org.jboss.resteasy.resteasy1008.SumValidator;
 import org.jboss.resteasy.resteasy1008.TestApplication;

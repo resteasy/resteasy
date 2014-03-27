@@ -27,7 +27,6 @@ import org.jboss.resteasy.util.Types;
  *
  * Copyright Feb 7, 2014
  */
-@Interceptor
 public class ResteasyValidationCdiInterceptor implements Serializable
 {
    public static final String VALIDATE_SETTERS = "org.jboss.resteasy.validation.cdi.validateSetters";
