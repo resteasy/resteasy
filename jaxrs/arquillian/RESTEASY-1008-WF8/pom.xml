@@ -176,12 +176,6 @@
         <version>${project.version}</version>
     </dependency>
     <dependency>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-validation-cdi</artifactId>
-        <version>${project.version}</version>
-        <scope>provided</scope>
-    </dependency>
-    <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
         <version>4.1.2</version>

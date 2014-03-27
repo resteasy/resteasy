@@ -306,11 +306,6 @@
         <artifactId>resteasy-hibernatevalidator-provider</artifactId>
         <version>${project.version}</version>
     </dependency>
-    <!--dependency>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-validation-cdi-as7</artifactId>
-        <version>${project.version}</version>
-    </dependency-->
     <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxb-provider</artifactId>

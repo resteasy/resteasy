@@ -114,8 +114,6 @@
         <module>resteasy-jsapi</module>
         <!-- <module>resteasy-jsapi-testing</module> -->
         <module>resteasy-cdi</module>
-        <module>resteasy-validation-cdi</module>
-        <module>resteasy-validation-cdi-as7</module>
         <module>resteasy-servlet-initializer</module>
         <module>server-adapters</module>
         <module>war-tests</module>
