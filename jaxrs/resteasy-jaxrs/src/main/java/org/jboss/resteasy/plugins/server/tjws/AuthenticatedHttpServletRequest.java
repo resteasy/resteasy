@@ -25,7 +25,7 @@ class AuthenticatedHttpServletRequest extends PatchedHttpServletRequest
 
    public boolean isUserInRole(String role)
    {
-      return domain.isUserInRoll(user, role);
+      return domain.isUserInRole(user, role);
    }
 
    public Principal getUserPrincipal()

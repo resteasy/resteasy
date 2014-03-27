@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.delegates;
 
+import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.ParameterParser;
 
 import javax.ws.rs.core.NewCookie;
@@ -7,6 +8,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -53,7 +55,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate {
             else if (name.equalsIgnoreCase("Expires")) {
                 try
                 {
-                    expiry = new SimpleDateFormat(OLD_COOKIE_PATTERN).parse(value);
+                    expiry = new SimpleDateFormat(OLD_COOKIE_PATTERN, Locale.US).parse(value);
                 }
                 catch (ParseException e)
                 {
@@ -65,7 +67,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate {
 
         }
 
-        return new NewCookie(cookieName, cookieValue, path, domain, version, comment, maxAge, null, secure, httpOnly);
+        return new NewCookie(cookieName, cookieValue, path, domain, version, comment, maxAge, expiry, secure, httpOnly);
 
     }
 
@@ -105,6 +107,10 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate {
         if (cookie.getMaxAge() != -1) {
             b.append(";Max-Age=");
             b.append(cookie.getMaxAge());
+        }
+        if (cookie.getExpiry() != null) {
+            b.append(";Expires=");
+            quote(b, DateUtil.formatDate(cookie.getExpiry(), OLD_COOKIE_PATTERN));
         }
         if (cookie.isSecure())
             b.append(";Secure");

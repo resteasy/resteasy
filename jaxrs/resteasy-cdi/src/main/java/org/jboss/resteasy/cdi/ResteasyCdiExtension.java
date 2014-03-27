@@ -2,8 +2,10 @@ package org.jboss.resteasy.cdi;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -50,6 +52,8 @@ public class ResteasyCdiExtension implements Extension
    private static final String JAVAX_EJB_SINGLETON = "javax.ejb.Singleton";
 
    private final Logger log = Logger.getLogger(ResteasyCdiExtension.class);
+   private final List<Class> providers = new ArrayList<Class>();
+   private final List<Class> resources = new ArrayList<Class>();
 
    // Scope literals
    public static final Annotation requestScopedLiteral = new AnnotationLiteral<RequestScoped>()
@@ -96,6 +100,7 @@ public class ResteasyCdiExtension implements Extension
        {
            log.debug("Discovered CDI bean which is a JAX-RS resource {0}.", annotatedType.getJavaClass().getCanonicalName());
            event.setAnnotatedType(wrapAnnotatedType(annotatedType, requestScopedLiteral));
+           this.resources.add(annotatedType.getJavaClass());
        }
        
        if(!annotatedType.getJavaClass().isInterface()
@@ -132,6 +137,7 @@ public class ResteasyCdiExtension implements Extension
        {
            log.debug("Discovered CDI bean which is a JAX-RS provider {0}.", annotatedType.getJavaClass().getCanonicalName());
            event.setAnnotatedType(wrapAnnotatedType(annotatedType, applicationScopedLiteral));
+           this.providers.add(annotatedType.getJavaClass());
        }
    }
 
@@ -255,5 +261,15 @@ public class ResteasyCdiExtension implements Extension
            // this may happen if Solder Config receives BBD first
            this.beanManager = beanManager;
        }
+   }
+
+   public List<Class> getProviders()
+   {
+       return providers;
+   }
+
+   public List<Class> getResources()
+   {
+       return resources;
    }
 }

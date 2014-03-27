@@ -35,7 +35,6 @@
         <module name="org.apache.commons.codec" />
         <module name="org.apache.httpcomponents" />
         <module name="org.apache.log4j"/>
-        <module name="org.scannotation.scannotation" />
         <module name="org.slf4j" />
         <module name="javax.servlet.api"/>
         <module name="javax.validation.api"/>

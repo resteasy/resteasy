@@ -1,6 +1,8 @@
 package org.jboss.resteasy.plugins.server.netty;
 
-import io.netty.channel.ChannelFuture;
+import static io.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
+import static io.netty.handler.codec.http.HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -8,12 +10,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.TooLongFrameException;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpResponse;
+
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.Failure;
-
-import static io.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
-import static io.netty.handler.codec.http.HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE;
-import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * {@link SimpleChannelInboundHandler} which handles the requests and dispatch them.
@@ -64,21 +63,9 @@ public class RequestHandler extends SimpleChannelInboundHandler
              response.setStatus(500);
              logger.error("Unexpected", ex);
           }
-          ChannelFuture future = null;
+
           if (!request.getAsyncContext().isSuspended()) {
-              // Write and flush the response.
-              future = ctx.writeAndFlush(response);
-          } else {
-              // Write an empty response
-              //future = ctx.write(response);
-              // retain buffer since it was automatically
-              // reference counted by the write operation above
-              //response.retain();
-          }
-          // Close the non-keep-alive connection after the write operation is done.
-          if (!request.isKeepAlive())
-          {
-              future.addListener(ChannelFutureListener.CLOSE);
+             response.finish();
           }
       }
    }

@@ -122,13 +122,19 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
       this.domain = sc;
    }
 
+   protected RequestDispatcher createRequestDispatcher()
+   {
+       return new RequestDispatcher((SynchronousDispatcher)deployment.getDispatcher(),
+               deployment.getProviderFactory(), domain);
+   }
+
    @Override
    public void start()
    {
       eventLoopGroup = new NioEventLoopGroup(ioWorkerCount);
       eventExecutor = new NioEventLoopGroup(executorThreadCount);
       deployment.start();
-      final RequestDispatcher dispatcher = new RequestDispatcher((SynchronousDispatcher)deployment.getDispatcher(), deployment.getProviderFactory(), domain);
+      final RequestDispatcher dispatcher = this.createRequestDispatcher();
        // Configure the server.
        if (sslContext == null) {
            bootstrap.group(eventLoopGroup)

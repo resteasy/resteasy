@@ -11,6 +11,9 @@ import org.junit.Test;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
@@ -33,6 +36,12 @@ public class NettyTest
       }
 
       @GET
+      @Path("empty")
+      public void empty() {
+
+      }
+
+      @GET
       @Path("/exception")
       @Produces("text/plain")
       public String exception() {
@@ -40,33 +49,63 @@ public class NettyTest
       }
    }
 
+   static Client client;
    @BeforeClass
    public static void setup() throws Exception
    {
       NettyContainer.start().getRegistry().addPerRequestResource(Resource.class);
+      client = ClientBuilder.newClient();
    }
 
    @AfterClass
    public static void end() throws Exception
    {
+      try
+      {
+         client.close();
+      }
+      catch (Exception e)
+      {
+
+      }
       NettyContainer.stop();
    }
 
    @Test
    public void testBasic() throws Exception
    {
-      ResteasyClient client = new ResteasyClientBuilder().build();
-      ResteasyWebTarget target = client.target(generateURL("/test"));
+      WebTarget target = client.target(generateURL("/test"));
       String val = target.request().get(String.class);
       Assert.assertEquals("hello world", val);
    }
 
    @Test
+   public void testEmpty() throws Exception
+   {
+      WebTarget target = client.target(generateURL("/empty"));
+      Response response = target.request().get();
+      try
+      {
+         Assert.assertEquals(204, response.getStatus());
+      }
+      finally
+      {
+         response.close();
+      }
+   }
+
+   @Test
    public void testUnhandledException() throws Exception
    {
-      ResteasyClient client = new ResteasyClientBuilder().build();
-      ResteasyWebTarget target = client.target(generateURL("/exception"));
+      WebTarget target = client.target(generateURL("/exception"));
       Response resp = target.request().get();
-      Assert.assertEquals(500, resp.getStatus());
+      try
+      {
+         Assert.assertEquals(500, resp.getStatus());
+      }
+      finally
+      {
+         resp.close();
+      }
    }
 }

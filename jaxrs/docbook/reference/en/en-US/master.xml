@@ -55,6 +55,7 @@
                 <!ENTITY JOSEJWT SYSTEM "modules/jwt.xml">
                 <!ENTITY SMIME SYSTEM "modules/smime.xml">
                 <!ENTITY Validation SYSTEM "modules/Validation.xml">
+                <!ENTITY CORS SYSTEM "modules/cors.xml">
                 ]>
 
 <book>
@@ -123,7 +124,8 @@
    &Responses_using_javax.ws.rs.core.Response;
    &ExceptionMappers;
    &Configuring_Individual_JAX-RS_Resource_Beans;
-   &GZIP;
+    &GZIP;
+    &CORS;
    &ContentRange;
    &Cache_NoCache_CacheControl;
    &Interceptors;
