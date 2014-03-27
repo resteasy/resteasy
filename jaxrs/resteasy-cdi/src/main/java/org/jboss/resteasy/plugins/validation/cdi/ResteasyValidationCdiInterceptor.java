@@ -41,7 +41,7 @@ public class ResteasyValidationCdiInterceptor implements Serializable
    
    public ResteasyValidationCdiInterceptor()
    {
-      log.info("creating ResteasyValidationCdiInterceptor");
+      log.debug("creating ResteasyValidationCdiInterceptor");
       ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
       ContextResolver<GeneralValidatorCDI> resolver = providerFactory.getContextResolver(GeneralValidatorCDI.class, MediaType.WILDCARD_TYPE);
       if (resolver != null)
@@ -53,7 +53,7 @@ public class ResteasyValidationCdiInterceptor implements Serializable
    @AroundInvoke
    public Object intercept(InvocationContext ctx) throws Exception
    {
-      log.info("*** Intercepting call in ResteasyValidationCdiInterceptor.intercept()");
+      log.debug("*** Intercepting call in ResteasyValidationCdiInterceptor.intercept()");
       
       // It's not a resource method.
       if (!isResourceMethodOrLocator(ctx.getTarget().getClass(), ctx.getMethod()))
@@ -88,7 +88,7 @@ public class ResteasyValidationCdiInterceptor implements Serializable
       
       Object result = invoke(ctx);
       
-      log.info("*** Back from intercepting call in ResteasyValidationCdiInterceptor.intercept()");
+      log.debug("*** Back from intercepting call in ResteasyValidationCdiInterceptor.intercept()");
       if (validator != null)
       {
          validator.validateReturnValue(mockRequest, ctx.getTarget(), ctx.getMethod(), result);

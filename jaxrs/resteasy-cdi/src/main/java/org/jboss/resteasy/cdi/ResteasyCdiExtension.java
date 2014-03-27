@@ -94,7 +94,7 @@ public class ResteasyCdiExtension implements Extension
                && GetRestful.isRootResource(annotatedType.getJavaClass())
                && !annotatedType.isAnnotationPresent(Decorator.class))
        {
-           log.info("Discovered CDI bean which is a JAX-RS resource {0}.", annotatedType.getJavaClass().getCanonicalName());
+           log.debug("Discovered CDI bean which is a JAX-RS resource {0}.", annotatedType.getJavaClass().getCanonicalName());
            event.setAnnotatedType(wrapAnnotatedType(annotatedType, requestScopedLiteral));
        }
        
@@ -102,14 +102,14 @@ public class ResteasyCdiExtension implements Extension
              && GetRestful.isRootResource(annotatedType.getJavaClass())
              && !annotatedType.isAnnotationPresent(Decorator.class))
      {
-         log.info("Discovered CDI bean which is a JAX-RS resource {0}.", annotatedType.getJavaClass().getCanonicalName());
+         log.debug("Discovered CDI bean which is a JAX-RS resource {0}.", annotatedType.getJavaClass().getCanonicalName());
          event.setAnnotatedType(wrapAnnotatedTypeForValidation(event.getAnnotatedType()));
          AnnotatedType<?> at = event.getAnnotatedType();
          Set<Annotation> as =  at.getAnnotations();
          for (Iterator<Annotation> it = as.iterator(); it.hasNext(); )
          {
             Annotation a = it.next();
-            log.info(a.annotationType().getName());
+            log.debug(a.annotationType().getName());
          }
      }
    }
@@ -169,7 +169,7 @@ public class ResteasyCdiExtension implements Extension
    
    protected <T> AnnotatedType<T> wrapAnnotatedTypeForValidation(AnnotatedType<T> type)
    {
-      log.info("Adding @Interceptors to bean {0}.", type.getJavaClass());
+      log.debug("Adding @Interceptors to bean {0}.", type.getJavaClass());
       return new ResteasyValidationCdiAnnotatedType<T>(type);
    }
 

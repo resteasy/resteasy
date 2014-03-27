@@ -37,19 +37,8 @@ public class ResteasyValidationCdiAnnotatedType<TYPE> implements AnnotatedType<T
    public ResteasyValidationCdiAnnotatedType(AnnotatedType<TYPE> delegate)
    {
       this.delegate = delegate;
-      for (Iterator<Annotation> it = delegate.getAnnotations().iterator(); it.hasNext(); )
-      {
-         Annotation a = it.next();
-         if (!Interceptors.class.equals(a.annotationType()))
-         {
-            annotations.add(a);
-            System.out.println("adding " + a);
-         }
-      }
-System.out.println("annotations: " + annotations.size());
       if (delegate.getAnnotation(Interceptors.class) != null)
       {
-         System.out.println("annotations: " + annotations.size());
          Class<?>[] oldClasses = delegate.getAnnotation(Interceptors.class).value();
          interceptorClasses = new Class[oldClasses.length + 1];
          System.arraycopy(oldClasses, 0, interceptorClasses, 0, oldClasses.length);
@@ -69,11 +58,6 @@ System.out.println("annotations: " + annotations.size());
          }
       };
       this.annotations.add(interceptors);
-      System.out.println("Annotations: ");
-      for (Iterator<Annotation> it = annotations.iterator(); it.hasNext(); )
-      {
-         System.out.println(it.next());
-      }
    }
 
    public Set<AnnotatedConstructor<TYPE>> getConstructors()
