@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.resteasy1008;
 
-import java.io.File;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.resteasy1008.SumConstraint;
@@ -37,7 +35,6 @@ public class CDIValidationTest extends CDIValidationTestParent
             .addClasses(SumConstraint.class, SumValidator.class)
             .addAsWebInfResource("web.xml")
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-            .addAsLibrary(new File("target/resteasy-validation-cdi.jar")) // Search
             ;
       System.out.println(war.toString(true));
       return war;

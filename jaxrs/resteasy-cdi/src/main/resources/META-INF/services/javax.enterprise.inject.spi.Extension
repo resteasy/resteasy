@@ -1,1 +1,2 @@
 org.jboss.resteasy.cdi.ResteasyCdiExtension
+org.jboss.resteasy.plugins.validation.cdi.ResteasyValidationCdiExtension

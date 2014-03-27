@@ -13,7 +13,7 @@
    
    <container qualifier="jbossas-managed" default="true">
      <configuration>
-       <property name="jbossHome">target/wildfly-8.0.0.Alpha2-SNAPSHOT</property>
+       <property name="jbossHome">target/wildfly-8.0.0.Final</property>
        <!--property name="javaHome">/opt/local/java/jdk1.7.0_21</property-->
        <property name="serverConfig">standalone-full.xml</property>
        <!-- Uncomment next line to run server in debug mode.  -->

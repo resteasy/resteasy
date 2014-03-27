@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.resteasy1008;
 
-import java.io.File;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.plugins.validation.cdi.ResteasyValidationCdiInterceptor;
@@ -35,10 +33,8 @@ public class CDIValidationSettersFalseTest extends CDIValidationTestParent
             .addClasses(CDIValidationTestParent.class)
             .addClasses(TestApplication.class, TestResource.class, TestSubResource.class)
             .addClasses(SumConstraint.class, SumValidator.class)
-            .addClass(ResteasyValidationCdiInterceptor.class)
             .addAsWebInfResource("context/false/web.xml")
-            .addAsWebInfResource("beans.xml", "beans.xml")
-            .addAsLibrary(new File("target/resteasy-validation-cdi-as7.jar")) // Search
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
             ;
       System.out.println(war.toString(true));
       return war;

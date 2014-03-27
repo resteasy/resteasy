@@ -74,45 +74,6 @@
               </artifactItems>
             </configuration>
           </execution>
-          <execution>
-            <id>copy validation cdi jar</id>
-            <phase>process-test-classes</phase>
-            <goals>
-                <goal>copy</goal>
-            </goals>
-            <configuration>
-                <artifactItems>
-                    <artifactItem>
-                        <groupId>org.jboss.resteasy</groupId>
-                        <artifactId>resteasy-validation-cdi-as7</artifactId>
-                        <version>${project.version}</version>
-                        <type>jar</type>
-                        <overWrite>true</overWrite>
-                        <outputDirectory>target</outputDirectory>
-                        <destFileName>resteasy-validation-cdi-as7.jar</destFileName>
-                    </artifactItem>
-                </artifactItems>
-            </configuration>
-        </execution>
-        <execution>
-            <id>unpack cdi validation jar</id>
-            <phase>process-test-classes</phase>
-                <goals>
-                    <goal>unpack</goal>
-                </goals>
-            <configuration>
-                <artifactItems>
-                    <artifactItem>
-                        <groupId>org.jboss.resteasy</groupId>
-                        <artifactId>resteasy-validation-cdi-as7</artifactId>
-                        <version>${project.version}</version>
-                        <type>jar</type>
-                        <overWrite>true</overWrite>
-                        <outputDirectory>target/classes</outputDirectory>
-                    </artifactItem>
-                </artifactItems>
-            </configuration>
-        </execution>
           <!--execution>
             <id>update weld-core</id>
             <phase>process-test-classes</phase>
@@ -199,6 +160,20 @@
                 <unzip src="../../jboss-modules/target/resteasy-jboss-modules-${version}.zip"
                        dest="${project.build.directory}/jboss-as-${as-version}/modules"
                        overwrite="false" />
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>unpack update WELD</id>
+            <phase>process-test-classes</phase>
+            <configuration>
+              <target>
+                <unzip src="src/test/resources/weld-1.1.17.jar"
+                       dest="${project.build.directory}/jboss-as-${as-version}/modules"
+                       overwrite="true" />
               </target>
             </configuration>
             <goals>
@@ -331,11 +306,11 @@
         <artifactId>resteasy-hibernatevalidator-provider</artifactId>
         <version>${project.version}</version>
     </dependency>
-    <dependency>
+    <!--dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-validation-cdi-as7</artifactId>
         <version>${project.version}</version>
-    </dependency>
+    </dependency-->
     <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxb-provider</artifactId>
@@ -385,5 +360,11 @@
       <artifactId>hibernate-validator</artifactId>
       <version>4.3.1.Final</version>
     </dependency>
+    
+    <dependency>
+  <groupId>org.jboss.as</groupId>
+  <artifactId>jboss-as-weld</artifactId>
+  <version>7.1.1.Final</version>
+</dependency>
   </dependencies>
 </project>

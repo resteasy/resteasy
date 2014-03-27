@@ -2,7 +2,8 @@ package org.jboss.resteasy.test.resteasy1008;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.Response;
 
 import junit.framework.Assert;
 
@@ -12,12 +13,11 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.plugins.validation.cdi.ResteasyValidationCdiInterceptor;
-import org.jboss.resteasy.resteasy1008.SumConstraint;
-import org.jboss.resteasy.resteasy1008.SumValidator;
-import org.jboss.resteasy.resteasy1008.TestApplication;
-import org.jboss.resteasy.resteasy1008.TestResource;
-import org.jboss.resteasy.resteasy1008.TestSubResource;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.resteasy1008.InterceptedApplication;
+import org.jboss.resteasy.resteasy1008.InterceptedResource;
+import org.jboss.resteasy.resteasy1008.TestInterceptor;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -37,18 +37,16 @@ import org.slf4j.LoggerFactory;
  * Copyright Mar 5, 2013
  */
 @RunWith(Arquillian.class)
-public class CDIValidationSettersTrueTest extends CDIValidationTestParent
+public class CDIValidationInterceptorsTest
 {
-   private static final Logger log = LoggerFactory.getLogger(CDIValidationSettersTrueTest.class);
+   private static final Logger log = LoggerFactory.getLogger(CDIValidationInterceptorsTest.class);
    
    @Deployment
    public static Archive<?> createTestArchive()
    {
       WebArchive war = ShrinkWrap.create(WebArchive.class, "RESTEASY-1008.war")
-            .addClasses(CDIValidationTestParent.class)
-            .addClasses(TestApplication.class, TestResource.class, TestSubResource.class)
-            .addClasses(SumConstraint.class, SumValidator.class)
-            .addAsWebInfResource("context/true/web.xml")
+            .addClasses(InterceptedApplication.class, InterceptedResource.class, TestInterceptor.class)
+            .addAsWebInfResource("interceptors/web.xml", "web.xml")
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
             ;
       System.out.println(war.toString(true));
@@ -56,16 +54,14 @@ public class CDIValidationSettersTrueTest extends CDIValidationTestParent
    }
    
    @Test
-   public void testResourceMethodSetter() throws Exception
+   public void testInterceptors() throws Exception
    {
 //      ResteasyClient client = new ResteasyClientBuilder().build();
-//      Invocation.Builder request = client.target("http://localhost:8080/RESTEASY-1008/setter/11/13/0").request();
-//      Response response = request.post(Entity.entity(1, MediaType.TEXT_PLAIN));
-//      String answer = response.readEntity(String.class);
-//      
-      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-1008/setter/11/13/0");
-      request.body(MediaType.TEXT_PLAIN, 1);
-      ClientResponse<?> response = request.post();
+//      Invocation.Builder request = client.target("http://localhost:8080/RESTEASY-1008/intercept/10").request();
+//      Response response = request.get();
+      
+      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-1008/intercept/10");
+      ClientResponse<?> response = request.get();
       String answer = response.getEntity(String.class);
       log.info("status: " + response.getStatus());
       log.info("entity: " + answer);
@@ -74,5 +70,15 @@ public class CDIValidationSettersTrueTest extends CDIValidationTestParent
       countViolations(e, 1, 0, 0, 0, 1, 0);
       ResteasyConstraintViolation cv = e.getParameterViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 7"));
+   }
+   
+   protected void countViolations(ResteasyViolationException e, int totalCount, int fieldCount, int propertyCount, int classCount, int parameterCount, int returnValueCount)
+   {
+      Assert.assertEquals(totalCount,       e.getViolations().size());
+      Assert.assertEquals(fieldCount,       e.getFieldViolations().size());
+      Assert.assertEquals(propertyCount,    e.getPropertyViolations().size());
+      Assert.assertEquals(classCount,       e.getClassViolations().size());
+      Assert.assertEquals(parameterCount,   e.getParameterViolations().size());
+      Assert.assertEquals(returnValueCount, e.getReturnValueViolations().size());
    }
 }

@@ -2,14 +2,13 @@ package org.jboss.resteasy.cdi.validation;
 
 import java.util.logging.Logger;
 
-import javax.ejb.Stateless;
+import javax.ejb.Stateful;
 import javax.inject.Inject;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+import javax.interceptor.Interceptors;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.plugins.validation.hibernate.ValidateRequest;
 
@@ -21,8 +20,9 @@ import org.jboss.resteasy.plugins.validation.hibernate.ValidateRequest;
  * Copyright Dec 25, 2012
  */
 @Path("return")
-@Stateless
+@Stateful
 @ValidateRequest
+@Interceptors({TestInterceptor.class})
 public class ReturnValueErrorResourceImpl implements ReturnValueErrorResource
 {
    @Inject
@@ -30,9 +30,10 @@ public class ReturnValueErrorResourceImpl implements ReturnValueErrorResource
 
    @GET
    @Path("test")
+   @Produces(MediaType.TEXT_PLAIN)
    public int test()
    {
-      log.info("entering ErroneousResourceImpl.test()");
+      log.info("entering ReturnValueErrorResourceImpl.test()");
       return 13;
    }
 }

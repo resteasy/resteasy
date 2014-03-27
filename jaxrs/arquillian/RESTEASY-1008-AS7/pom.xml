@@ -17,6 +17,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <as-version>7.1.1.Final</as-version>
+    <!--as-version>7.4.0.Final-redhat-6</as-version-->
+    <eap-version>6.3</eap-version>
   </properties>
 
   <build>
@@ -56,45 +58,6 @@
                         </artifactItems>
                     </configuration>
                 </execution>
-                <execution>
-                    <id>copy cdi validation jar</id>
-                    <phase>process-test-classes</phase>
-                    <goals>
-                        <goal>copy</goal>
-                    </goals>
-                    <configuration>
-                        <artifactItems>
-                            <artifactItem>
-                                <groupId>org.jboss.resteasy</groupId>
-                                <artifactId>resteasy-validation-cdi-as7</artifactId>
-                                <version>${project.version}</version>
-                                <type>jar</type>
-                                <overWrite>true</overWrite>
-                                <outputDirectory>target</outputDirectory>
-                                <destFileName>resteasy-validation-cdi-as7.jar</destFileName>
-                            </artifactItem>
-                        </artifactItems>
-                    </configuration>
-                </execution>
-                <execution>
-                    <id>unpack cdi validation jar</id>
-                    <phase>process-test-classes</phase>
-                    <goals>
-                        <goal>unpack</goal>
-                    </goals>
-                    <configuration>
-                        <artifactItems>
-                            <artifactItem>
-                                <groupId>org.jboss.resteasy</groupId>
-                                <artifactId>resteasy-validation-cdi-as7</artifactId>
-                                <version>${project.version}</version>
-                                <type>jar</type>
-                                <overWrite>true</overWrite>
-                                <outputDirectory>target/classes</outputDirectory>
-                            </artifactItem>
-                        </artifactItems>
-                    </configuration>
-                </execution>
             </executions>
         </plugin>
       <plugin>
@@ -107,9 +70,29 @@
             <phase>process-test-classes</phase>
             <configuration>
               <target>
+                <!--unzip src="../../jboss-modules/target/resteasy-jboss-modules-${project.version}.zip"
+                       dest="${project.build.directory}/jboss-eap-${eap-version}/modules"
+                       overwrite="true" /-->
                 <unzip src="../../jboss-modules/target/resteasy-jboss-modules-${project.version}.zip"
                        dest="${project.build.directory}/jboss-as-${as-version}/modules"
-                       overwrite="false" />
+                       overwrite="true" />
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>unpack updated WELD</id>
+            <phase>process-test-classes</phase>
+            <configuration>
+              <target>
+                <!--unzip src="src/test/resources/weld-1.1.17.jar"
+                       dest="${project.build.directory}/jboss-eap-${eap-version}/modules"
+                       overwrite="true" /-->
+                <unzip src="src/test/resources/weld-1.1.17.jar"
+                       dest="${project.build.directory}/jboss-as-${as-version}/modules"
+                       overwrite="true" />
               </target>
             </configuration>
             <goals>

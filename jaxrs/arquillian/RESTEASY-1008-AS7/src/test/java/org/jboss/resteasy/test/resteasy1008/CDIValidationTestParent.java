@@ -2,10 +2,7 @@ package org.jboss.resteasy.test.resteasy1008;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import junit.framework.Assert;
 
@@ -14,8 +11,6 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
