@@ -56,26 +56,6 @@
                         </artifactItems>
                     </configuration>
                 </execution>
-                <execution>
-                    <id>copy validation jar</id>
-                    <phase>process-test-classes</phase>
-                    <goals>
-                        <goal>copy</goal>
-                    </goals>
-                    <configuration>
-                        <artifactItems>
-                            <artifactItem>
-                                <groupId>org.jboss.resteasy</groupId>
-                                <artifactId>resteasy-validation-cdi</artifactId>
-                                <version>${project.version}</version>
-                                <type>jar</type>
-                                <overWrite>false</overWrite>
-                                <outputDirectory>target</outputDirectory>
-                                <destFileName>resteasy-validation-cdi.jar</destFileName>
-                            </artifactItem>
-                        </artifactItems>
-                    </configuration>
-                </execution>
             </executions>
         </plugin>
       <plugin>

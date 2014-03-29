@@ -1,15 +1,7 @@
 package org.jboss.resteasy.spi.validation;
 
 import java.lang.reflect.Method;
-import java.util.Set;
 
-//import javax.validation.ConstraintViolation;
-//import javax.validation.ValidationException;
-//import javax.validation.groups.Default;
-//import javax.validation.metadata.BeanDescriptor;
-//import javax.validation.metadata.ConstraintDescriptor;
-
-import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.spi.HttpRequest;
 
 /**
@@ -92,5 +84,10 @@ public interface GeneralValidator
     */   
    public abstract boolean isMethodValidatable(Method method);
 
-   void checkViolations(HttpRequest request);
+   /**
+    * Throws a ResteasyViolationException if any validation violations have been detected.
+    * 
+    * @param request
+    */
+   public void checkViolations(HttpRequest request);
 }

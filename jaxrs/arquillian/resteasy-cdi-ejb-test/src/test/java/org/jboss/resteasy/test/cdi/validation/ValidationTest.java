@@ -79,7 +79,7 @@ public class ValidationTest
       response.releaseConnection();
    }
    
-//   @Test
+   @Test
    public void testIncorrectInputValues() throws Exception
    {
       log.info("starting testIncorrectInputValues()");
@@ -100,11 +100,12 @@ public class ValidationTest
       Assert.assertTrue(b1 || b2);
       cv1 = e.getClassViolations().iterator().next();
       Assert.assertTrue(cv1.getMessage().indexOf("SumConstraint") > -1);
-      cv1 = e.getParameterViolations().iterator().next();  
-      Assert.assertTrue(cv1.getPath().indexOf("InputErrorResourceImpl#test(arg0)") > -1);
+      cv1 = e.getParameterViolations().iterator().next();
+      log.info("path: " + cv1.getPath());
+      Assert.assertTrue(cv1.getPath().indexOf("InputErrorResource") > -1);
    }
    
-//   @Test
+   @Test
    public void testIncorrectReturnValue() throws Exception
    {
       log.info("starting testIncorrectReturnValue()");

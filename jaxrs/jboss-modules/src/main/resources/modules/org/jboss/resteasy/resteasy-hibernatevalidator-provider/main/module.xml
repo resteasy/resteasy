@@ -29,9 +29,11 @@
 
     <dependencies>
         <module name="javax.ws.rs.api"/>
+        <module name="javax.enterprise.api"/>
         <module name="org.jboss.resteasy.resteasy-jaxrs"/>
         <module name="org.jboss.resteasy.resteasy-cdi"/>
         <module name="org.hibernate.validator"/>
         <module name="javax.validation.api"/>
+        <module name="javax.ejb.api"/>
     </dependencies>
 </module>

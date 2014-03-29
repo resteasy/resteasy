@@ -16,8 +16,8 @@ import org.jboss.resteasy.plugins.validation.hibernate.ValidateRequest;
  * Copyright Mar 26, 2014
  */
 @Local
-@Path("test")
-@ValidateRequest
+//@Path("test")
+//@ValidateRequest
 public interface SessionResource
 {
    @GET

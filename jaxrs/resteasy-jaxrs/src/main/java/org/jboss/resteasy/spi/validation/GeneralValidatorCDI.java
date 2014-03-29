@@ -2,6 +2,7 @@ package org.jboss.resteasy.spi.validation;
 
 import java.lang.reflect.Method;
 
+import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 
 /**
@@ -27,10 +28,26 @@ public interface GeneralValidatorCDI extends GeneralValidator
      
    /**
     * Indicates if validation is turned on for a method.
-    * This method should be called only from a CDI interceptor
+    * This method should be called only CDI is active.
     * 
     * @param method method to be examined
     * @return true if and only if validation is turned on for method
     */   
    public abstract boolean isMethodValidatableFromCDI(Method method);
+   
+   /**
+    * Throws a ResteasyViolationException if any validation violations have been detected.
+    * The method should be called only when CDI is active.
+    * @param request
+    */
+   public void checkViolationsfromCDI(HttpRequest request);
+   
+   /**
+    * Throws a ResteasyViolationException if either a ConstraintViolationException or a
+    * ResteasyConstraintViolationException is embedded in the cause hierarchy of e.
+    * 
+    * @param request
+    * @param e
+    */
+   public void checkForConstraintViolations(HttpRequest request, Exception e);
 }

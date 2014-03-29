@@ -167,20 +167,6 @@
             </goals>
           </execution>
           <execution>
-            <id>unpack update WELD</id>
-            <phase>process-test-classes</phase>
-            <configuration>
-              <target>
-                <unzip src="src/test/resources/weld-1.1.17.jar"
-                       dest="${project.build.directory}/jboss-as-${as-version}/modules"
-                       overwrite="true" />
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-          <execution>
             <id>update AS7 application-roles.properties</id>
             <phase>process-test-classes</phase>
             <configuration>

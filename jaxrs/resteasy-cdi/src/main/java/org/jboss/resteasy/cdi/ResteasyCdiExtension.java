@@ -4,11 +4,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import javax.decorator.Decorator;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
@@ -29,7 +26,6 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.plugins.validation.cdi.ResteasyValidationCdiAnnotatedType;
 import org.jboss.resteasy.util.GetRestful;
 
 /**
@@ -102,21 +98,6 @@ public class ResteasyCdiExtension implements Extension
            event.setAnnotatedType(wrapAnnotatedType(annotatedType, requestScopedLiteral));
            this.resources.add(annotatedType.getJavaClass());
        }
-       
-       if(!annotatedType.getJavaClass().isInterface()
-             && GetRestful.isRootResource(annotatedType.getJavaClass())
-             && !annotatedType.isAnnotationPresent(Decorator.class))
-     {
-         log.debug("Discovered CDI bean which is a JAX-RS resource {0}.", annotatedType.getJavaClass().getCanonicalName());
-         event.setAnnotatedType(wrapAnnotatedTypeForValidation(event.getAnnotatedType()));
-         AnnotatedType<?> at = event.getAnnotatedType();
-         Set<Annotation> as =  at.getAnnotations();
-         for (Iterator<Annotation> it = as.iterator(); it.hasNext(); )
-         {
-            Annotation a = it.next();
-            log.debug(a.annotationType().getName());
-         }
-     }
    }
 
    /**
@@ -171,12 +152,6 @@ public class ResteasyCdiExtension implements Extension
          log.debug("Bean {0} does not have the scope defined. Binding to {1}.", type.getJavaClass(), scope);
          return new JaxrsAnnotatedType<T>(type, scope);
       }
-   }
-   
-   protected <T> AnnotatedType<T> wrapAnnotatedTypeForValidation(AnnotatedType<T> type)
-   {
-      log.debug("Adding @Interceptors to bean {0}.", type.getJavaClass());
-      return new ResteasyValidationCdiAnnotatedType<T>(type);
    }
 
    /**

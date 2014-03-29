@@ -16,7 +16,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -48,14 +47,13 @@ public class CDIValidationSessionBeanTest
       return war;
    }
    
-   @Ignore
    @Test
    public void testInvalidParam() throws Exception
    {
 //      ResteasyClient client = new ResteasyClientBuilder().build();
 //      Invocation.Builder request = client.target("http://localhost:8080/RESTEASY-1008/test/resource/0").request();
       
-      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-1008/test/resource/10");
+      ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-1008/test/resource/0");
       ClientResponse<?> response = request.get();
       String answer = response.getEntity(String.class);
       log.info("status: " + response.getStatus());

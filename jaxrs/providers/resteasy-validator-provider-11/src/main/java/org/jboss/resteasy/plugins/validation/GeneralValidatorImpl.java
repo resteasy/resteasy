@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.validation;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,6 +10,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.MessageInterpolator;
 import javax.validation.ValidationException;
 import javax.validation.Validator;
@@ -112,13 +114,28 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    @Override
    public void checkViolations(HttpRequest request)
    {
+      if (cdiActive)
+      {
+         return;
+      }
+      doCheckViolations(request);
+   }
+   
+   @Override
+   public void checkViolationsfromCDI(HttpRequest request)
+   {
+      assert(cdiActive);
+      doCheckViolations(request);
+   }
+   
+   protected void doCheckViolations(HttpRequest request)
+   {
       @SuppressWarnings("unchecked")
       ViolationsContainer<Object> violationsContainer = ViolationsContainer.class.cast(request.getAttribute(ViolationsContainer.class.getName()));
       if (violationsContainer != null && violationsContainer.size() > 0)
       {
          throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }
-
    }
 
    @Override
@@ -149,7 +166,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          throw new ResteasyViolationException(violationsContainer);
       }
       violationsContainer.addViolations(rcvs);
-      if (violationsContainer.size() > 0)
+      if (!cdiActive && violationsContainer.size() > 0)
       {
          throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }
@@ -206,15 +223,6 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    @Override
    public boolean isMethodValidatable(Method m)
    {
-      // Called from resteasy-jaxrs. Only validate subresources.
-      if (cdiActive)
-      {
-         if (GetRestful.isRootResource(m.getDeclaringClass()) || !GetRestful.isSubResourceClass(m.getDeclaringClass()))
-         {
-            return false;
-         }
-      }
-      
    	return checkIsMethodValidatable(m);
    }
    
@@ -494,6 +502,57 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       }
 
       return true;
+   }
+   
+   @Override
+   public void checkForConstraintViolations(HttpRequest request, Exception e)
+   {
+      if (e instanceof InvocationTargetException)
+      {
+         Throwable t = InvocationTargetException.class.cast(e).getTargetException();
+         if (t instanceof ConstraintViolationException)
+         {
+            e = ConstraintViolationException.class.cast(t);
+         }
+      }
+      
+      if (e instanceof ConstraintViolationException)
+      {
+         ConstraintViolationException cve = ConstraintViolationException.class.cast(e);
+         Set<ConstraintViolation<?>> cvs = cve.getConstraintViolations();
+         Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
+         try
+         {
+            for (Iterator<ConstraintViolation<?>> it = cvs.iterator(); it.hasNext(); )
+            {
+               ConstraintViolation<?> cv = it.next();
+               Type ct = util.getConstraintType(cv);
+               rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), (cv.getInvalidValue() == null ? "null" :cv.getInvalidValue().toString())));
+            }
+         }
+         catch (Exception e1)
+         {
+            ViolationsContainer<Object> violationsContainer = getViolationsContainer(request);
+            violationsContainer.setException(e);
+            throw new ResteasyViolationException(violationsContainer);
+         }
+         if (rcvs.size() > 0)
+         {
+            ViolationsContainer<Object> violationsContainer = getViolationsContainer(request);
+            violationsContainer.addViolations(rcvs);
+            throw new ResteasyViolationException(violationsContainer);
+         }
+      }
+      
+      Throwable t = e.getCause();
+      while (t != null && !(t instanceof ResteasyViolationException))
+      {
+         t = t.getCause();    
+      }
+      if (t instanceof ResteasyViolationException)
+      {
+         throw ResteasyViolationException.class.cast(t);
+      }
    }
    
    protected Validator getValidator(HttpRequest request)

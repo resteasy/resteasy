@@ -27,7 +27,7 @@ public class SessionResourceImpl implements SessionResource
    @GET
    @Path("resource/{param}")
    @Produces(MediaType.TEXT_PLAIN)
-   public int test(@Min(7) @PathParam("param") int param)
+   public int test(@PathParam("param") int param)
    {
       log.info("entering SessionResourceImpl.test()");
       return param;
