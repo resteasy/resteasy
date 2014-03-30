@@ -1,15 +1,20 @@
 package org.jboss.resteasy.cdi;
 
+import java.util.Set;
+
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.InjectionTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.ContextResolver;
+
 import org.jboss.resteasy.core.PropertyInjectorImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.InjectionTarget;
-import java.util.Set;
+import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
+import org.jboss.resteasy.util.GetRestful;
 
 /**
  * This implementation of InjectionTarget is a wrapper that allows JAX-RS
@@ -23,11 +28,19 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
    private InjectionTarget<T> delegate;
    private Class<T> clazz;
    private PropertyInjector propertyInjector;
+   private GeneralValidatorCDI validator;
 
    public JaxrsInjectionTarget(InjectionTarget<T> delegate, Class<T> clazz)
    {
       this.delegate = delegate;
       this.clazz = clazz;
+      
+      ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
+      ContextResolver<GeneralValidatorCDI> resolver = providerFactory.getContextResolver(GeneralValidatorCDI.class, MediaType.WILDCARD_TYPE);
+      if (resolver != null)
+      {
+         validator = providerFactory.getContextResolver(GeneralValidatorCDI.class, MediaType.WILDCARD_TYPE).getContext(null);
+      }
    }
 
    public void inject(T instance, CreationalContext<T> ctx)
@@ -52,6 +65,8 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
       {
          propertyInjector.inject(instance);
       }
+      
+      validate(request, instance);
    }
 
    public void postConstruct(T instance)
@@ -82,5 +97,17 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
    private PropertyInjector getPropertyInjector()
    {
       return new PropertyInjectorImpl(clazz, ResteasyProviderFactory.getInstance());
+   }
+   
+   private void validate(HttpRequest request, T instance)
+   {
+      if (GetRestful.isRootResource(clazz))
+      {
+         if (validator != null && validator.isValidatableFromCDI(clazz))
+         {
+            validator.validate(request, instance);
+            validator.checkViolationsfromCDI(request);
+         }
+      }
    }
 }

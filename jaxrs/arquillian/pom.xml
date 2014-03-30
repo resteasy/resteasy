@@ -21,6 +21,8 @@
         <!-- Disabling until release of wildfly-8.0.0.Alpha2-SNAPSHOT -->
         <!--module>ValidationTest-WF8</module-->
         <module>ValidationTest-AS7</module>
+        <module>RESTEASY-1008-WF8</module>
+        <module>RESTEASY-1008-AS7</module>
     </modules>
     
     <artifactId>arquillian</artifactId>

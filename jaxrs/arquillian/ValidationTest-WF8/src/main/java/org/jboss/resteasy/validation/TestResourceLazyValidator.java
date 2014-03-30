@@ -35,6 +35,7 @@ public class TestResourceLazyValidator
    public boolean testLazyValidator(@Context Providers providers)
    {
       ContextResolver<GeneralValidator> resolver = providers.getContextResolver(GeneralValidator.class, MediaType.WILDCARD_TYPE);
+      System.out.println("resolver: " + resolver);
       if (resolver == null)
       {
          return false;
@@ -42,7 +43,8 @@ public class TestResourceLazyValidator
       Field field = null;
       try
       {
-         field = ValidatorContextResolver.class.getDeclaredField("validatorFactory");
+//         field = ValidatorContextResolver.class.getField("validatorFactory");
+         field = resolver.getClass().getField("validatorFactory");
          field.setAccessible(true);
          Object factory = field.get(resolver);
          System.out.println("ValidatorFactory: " + factory);

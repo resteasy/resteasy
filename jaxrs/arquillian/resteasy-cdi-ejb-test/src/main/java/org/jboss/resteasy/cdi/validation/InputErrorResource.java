@@ -16,8 +16,9 @@ import javax.ws.rs.core.Response;
  * Copyright Dec 25, 2012
  */
 @Local
+@Path("incorrect")
 @SumConstraint(min=3, max=17)
-public interface ErroneousResource extends ResourceParent
+public interface InputErrorResource extends ResourceParent
 {
    public abstract int getNumberOne();
 
@@ -30,6 +31,6 @@ public interface ErroneousResource extends ResourceParent
    public abstract void setNumberTwo(int two);
    
    @GET
-   @Path("correct/test/{num}")
+   @Path("test/{num}")
    public Response test(@Min(5) @Max(10) @PathParam("num") int num);
 }

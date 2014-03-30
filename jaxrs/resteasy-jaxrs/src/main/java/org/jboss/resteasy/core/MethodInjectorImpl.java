@@ -12,6 +12,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.metadata.MethodParameter;
 import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
+import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 
 import javax.ws.rs.WebApplicationException;
 import java.lang.reflect.InvocationTargetException;
@@ -109,7 +110,6 @@ public class MethodInjectorImpl implements MethodInjector
    public Object invoke(HttpRequest request, HttpResponse httpResponse, Object resource) throws Failure, ApplicationException
    {
       Object[] args = injectArguments(request, httpResponse);
-
       GeneralValidator validator = GeneralValidator.class.cast(request.getAttribute(GeneralValidator.class.getName()));
       if (validator != null)
       {
@@ -143,6 +143,10 @@ public class MethodInjectorImpl implements MethodInjector
       catch (InvocationTargetException e)
       {
          Throwable cause = e.getCause();
+         if (validator instanceof GeneralValidatorCDI)
+         {
+            GeneralValidatorCDI.class.cast(validator).checkForConstraintViolations(request, e);
+         }
          throw new ApplicationException(cause);
       }
       catch (IllegalArgumentException e)

@@ -56,7 +56,6 @@ public class GetRestful
     */
    public static Class getSubResourceClass(Class clazz)
    {
-	  new Exception("entering getSubResourceClass()").printStackTrace();
       // check class & superclasses for JAX-RS annotations
       for (Class<?> actualClass = clazz; isTopObject(actualClass); actualClass = actualClass.getSuperclass())
       {

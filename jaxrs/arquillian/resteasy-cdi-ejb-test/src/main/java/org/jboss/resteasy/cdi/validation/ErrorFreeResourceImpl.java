@@ -9,6 +9,9 @@ import javax.validation.constraints.Min;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+
+import org.jboss.resteasy.plugins.validation.hibernate.ValidateRequest;
 
 /**
  * 
@@ -19,7 +22,7 @@ import javax.ws.rs.PathParam;
  */
 @Path("correct")
 @Stateless
-@SumConstraint(min=3, max=17)
+@ValidateRequest
 public class ErrorFreeResourceImpl implements ErrorFreeResource
 {
    @Inject
@@ -36,7 +39,8 @@ public class ErrorFreeResourceImpl implements ErrorFreeResource
    @GET
    @Path("test/{num}")
    @Max(10)
-   public int test(@Min(5) @Max(10) @PathParam("num") int num)
+   @Produces("text/plain")
+   public int test(@PathParam("num") int num)
    {
       log.info("entering ErrorFreeResourceImpl.test()");
       return num + 1;

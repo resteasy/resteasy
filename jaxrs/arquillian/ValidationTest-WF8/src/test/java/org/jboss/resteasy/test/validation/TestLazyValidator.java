@@ -11,6 +11,7 @@ import org.jboss.resteasy.validation.TestResourceLazyValidator;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -36,6 +37,7 @@ public class TestLazyValidator
    }
    
    @Test
+   @Ignore
    public void testLazyValidator() throws Exception
    {
       // Valid native constraint

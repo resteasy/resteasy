@@ -16,7 +16,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <as-version>8.0.0.Alpha2-SNAPSHOT</as-version>
+    <as-version>8.0.0.Final</as-version>
   </properties>
 
   <build>

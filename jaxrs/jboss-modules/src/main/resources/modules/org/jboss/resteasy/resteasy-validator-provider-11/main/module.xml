@@ -30,9 +30,11 @@
     <dependencies>
         <module name="javax.ws.rs.api"/>
         <module name="org.jboss.resteasy.resteasy-jaxrs"/>
+        <module name="org.jboss.resteasy.resteasy-cdi"/>
         <module name="javax.validation.api"/>
         <module name="org.hibernate.validator"/>
         <module name="com.fasterxml.classmate"/>
         <module name="javax.persistence.api"/>
+        <module name="javax.enterprise.api"/>
     </dependencies>
 </module>

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.cdi.validation;
 
-import java.util.List;
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
@@ -9,26 +9,30 @@ import junit.framework.Assert;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
+import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.cdi.util.UtilityProducer;
-import org.jboss.resteasy.cdi.validation.ErroneousResource;
-import org.jboss.resteasy.cdi.validation.ErroneousResourceImpl;
 import org.jboss.resteasy.cdi.validation.ErrorFreeResource;
 import org.jboss.resteasy.cdi.validation.ErrorFreeResourceImpl;
+import org.jboss.resteasy.cdi.validation.InputErrorResource;
+import org.jboss.resteasy.cdi.validation.InputErrorResourceImpl;
 import org.jboss.resteasy.cdi.validation.IntegerProducer;
 import org.jboss.resteasy.cdi.validation.JaxRsActivator;
 import org.jboss.resteasy.cdi.validation.NumberOneBinding;
 import org.jboss.resteasy.cdi.validation.NumberOneErrorBinding;
 import org.jboss.resteasy.cdi.validation.NumberTwoBinding;
 import org.jboss.resteasy.cdi.validation.ResourceParent;
+import org.jboss.resteasy.cdi.validation.ReturnValueErrorResource;
+import org.jboss.resteasy.cdi.validation.ReturnValueErrorResourceImpl;
 import org.jboss.resteasy.cdi.validation.SumConstraint;
 import org.jboss.resteasy.cdi.validation.SumValidator;
+import org.jboss.resteasy.cdi.validation.TestInterceptor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -53,13 +57,15 @@ public class ValidationTest
             .addClasses(SumConstraint.class, SumValidator.class)
             .addClasses(ResourceParent.class)
             .addClasses(ErrorFreeResource.class, ErrorFreeResourceImpl.class)
-            .addClasses(ErroneousResource.class, ErroneousResourceImpl.class)
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+            .addClasses(InputErrorResource.class, InputErrorResourceImpl.class)
+            .addClasses(ReturnValueErrorResource.class, ReturnValueErrorResourceImpl.class)
+            .addClasses(TestInterceptor.class)
+            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+            ;
       System.out.println(war.toString(true));
       return war;
    }
    
-   @Ignore
    @Test
    public void testCorrectValues() throws Exception
    {
@@ -73,8 +79,6 @@ public class ValidationTest
       response.releaseConnection();
    }
    
-   @Ignore
-   @SuppressWarnings("unchecked")
    @Test
    public void testIncorrectInputValues() throws Exception
    {
@@ -82,46 +86,49 @@ public class ValidationTest
       ClientRequest request = new ClientRequest("http://localhost:8080/resteasy-cdi-ejb-test/rest/incorrect/test/17");
       ClientResponse<?> response = request.get();
       log.info("status: " + response.getStatus());
-      List<List<String>> violations = response.getEntity(List.class);
-      log.info("result: " + violations);
+      Object entity = response.getEntity(String.class);
+      System.out.println("entity: " + entity);
       Assert.assertEquals(400, response.getStatus());
-      List<String> fieldViolations = violations.get(0);
-      Assert.assertEquals(0, fieldViolations.size());
-      List<String> propertyViolations = violations.get(1);
-      Assert.assertEquals(1, propertyViolations.size());
-      Assert.assertTrue(propertyViolations.get(0).indexOf("numberTwo") > -1);
-      List<String> classViolations = violations.get(2);
-      Assert.assertEquals(1, classViolations.size());
-      Assert.assertTrue(classViolations.get(0).indexOf("SumConstraint") > -1);
-      List<String> parameterViolations = violations.get(3);
-      Assert.assertEquals(1, parameterViolations.size());
-      Assert.assertTrue(parameterViolations.get(0).indexOf("ErroneousResource#test(arg0)") > -1);
-      List<String> returnValueViolations = violations.get(4);
-      Assert.assertEquals(0, returnValueViolations.size());
+      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
+      log.info("result: " + e.toString());
+      countViolations(e, 4, 0, 2, 1, 1, 0);
+      Iterator<ResteasyConstraintViolation> it = e.getPropertyViolations().iterator();
+      ResteasyConstraintViolation cv1 = it.next();
+      ResteasyConstraintViolation cv2 = it.next();
+      boolean b1 = cv1.getPath().indexOf("numberOne") > -1 && cv2.getPath().indexOf("numberTwo") > -1;
+      boolean b2 = cv2.getPath().indexOf("numberOne") > -1 && cv1.getPath().indexOf("numberTwo") > -1;
+      Assert.assertTrue(b1 || b2);
+      cv1 = e.getClassViolations().iterator().next();
+      Assert.assertTrue(cv1.getMessage().indexOf("SumConstraint") > -1);
+      cv1 = e.getParameterViolations().iterator().next();
+      log.info("path: " + cv1.getPath());
+      Assert.assertTrue(cv1.getPath().indexOf("InputErrorResource") > -1);
    }
    
-   @Ignore
-   @SuppressWarnings("unchecked")
    @Test
    public void testIncorrectReturnValue() throws Exception
    {
       log.info("starting testIncorrectReturnValue()");
-      ClientRequest request = new ClientRequest("http://localhost:8080/resteasy-cdi-ejb-test/rest/correct/test/10");
+      ClientRequest request = new ClientRequest("http://localhost:8080/resteasy-cdi-ejb-test/rest/return/test");
       ClientResponse<?> response = request.get();
       log.info("status: " + response.getStatus());
-      List<List<String>> violations = response.getEntity(List.class);
-      log.info("result: " + violations);
+      Object entity = response.getEntity(String.class);
+      System.out.println("entity: " + entity);
+      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(entity));
+      log.info("result: " + e.toString());
       Assert.assertEquals(500, response.getStatus());
-      List<String> fieldViolations = violations.get(0);
-      Assert.assertEquals(0, fieldViolations.size());
-      List<String> propertyViolations = violations.get(1);
-      Assert.assertEquals(0, propertyViolations.size());
-      List<String> classViolations = violations.get(2);
-      Assert.assertEquals(0, classViolations.size());
-      List<String> parameterViolations = violations.get(3);
-      Assert.assertEquals(0, parameterViolations.size());
-      List<String> returnValueViolations = violations.get(4);
-      Assert.assertEquals(1, returnValueViolations.size());
-      Assert.assertTrue(returnValueViolations.get(0).indexOf("return value") > -1);
+      countViolations(e, 1, 0, 0, 0, 0, 1);
+      ResteasyConstraintViolation cv = e.getReturnValueViolations().iterator().next();
+      Assert.assertTrue(cv.getMessage().indexOf("") > -1);
+   }
+ 
+   private void countViolations(ResteasyViolationException e, int totalCount, int fieldCount, int propertyCount, int classCount, int parameterCount, int returnValueCount)
+   {
+      Assert.assertEquals(totalCount,       e.getViolations().size());
+      Assert.assertEquals(fieldCount,       e.getFieldViolations().size());
+      Assert.assertEquals(propertyCount,    e.getPropertyViolations().size());
+      Assert.assertEquals(classCount,       e.getClassViolations().size());
+      Assert.assertEquals(parameterCount,   e.getParameterViolations().size());
+      Assert.assertEquals(returnValueCount, e.getReturnValueViolations().size());
    }
 }
