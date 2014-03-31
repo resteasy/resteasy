@@ -1205,7 +1205,4 @@ public class UriBuilderTest
       }
    }
 
-
-
-
 }
