@@ -481,6 +481,53 @@ public interface GeneralValidator
    An alternative implementation may be supplied by implementing 
    <classname>ContextResolver&lt;GeneralValidator&gt;</classname> and
    <classname>org.jboss.resteasy.spi.validation.GeneralValidator</classname>.
-   </para>        
+   </para>
+   
+   <para>
+   A validator intended to function in the presence of CDI must all implement the subinterface
+   </para>
+   
+   <programlisting><![CDATA[
+public interface GeneralValidatorCDI extends GeneralValidator
+{
+   /**
+    * Indicates if validation is turned on for a class.
+    * This method should be called only from a CDI interceptor
+    * 
+    * @param clazz Class to be examined
+    * @return true if and only if validation is turned on for clazz
+    */
+   public abstract boolean isValidatableFromCDI(Class<?> clazz);
+     
+   /**
+    * Indicates if validation is turned on for a method.
+    * This method should be called only CDI is active.
+    * 
+    * @param method method to be examined
+    * @return true if and only if validation is turned on for method
+    */   
+   public abstract boolean isMethodValidatableFromCDI(Method method);
+   
+   /**
+    * Throws a ResteasyViolationException if any validation violations have been detected.
+    * The method should be called only when CDI is active.
+    * @param request
+    */
+   public void checkViolationsfromCDI(HttpRequest request);
+   
+   /**
+    * Throws a ResteasyViolationException if either a ConstraintViolationException or a
+    * ResteasyConstraintViolationException is embedded in the cause hierarchy of e.
+    * 
+    * @param request
+    * @param e
+    */
+   public void checkForConstraintViolations(HttpRequest request, Exception e);
+}
+   ]]></programlisting>
+
+   <para>
+   Both supplied validators implement GeneralValidatorCDI.
+   </para>
    </section>
 </chapter>

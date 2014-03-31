@@ -289,6 +289,11 @@
     </dependency>
     <dependency>
         <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-hibernatevalidator-provider</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxb-provider</artifactId>
         <version>${project.version}</version>
     </dependency>
@@ -327,9 +332,20 @@
 	   <version>${project.version}</version>
     </dependency>
     <dependency>
+	   <groupId>org.jboss.resteasy</groupId>
+	   <artifactId>resteasy-hibernatevalidator-provider</artifactId>
+	   <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
       <version>4.3.1.Final</version>
     </dependency>
+    
+    <dependency>
+  <groupId>org.jboss.as</groupId>
+  <artifactId>jboss-as-weld</artifactId>
+  <version>7.1.1.Final</version>
+</dependency>
   </dependencies>
 </project>

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.validation;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,6 +10,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.MessageInterpolator;
 import javax.validation.ValidationException;
 import javax.validation.Validator;
@@ -19,10 +21,12 @@ import javax.validation.executable.ValidateOnExecution;
 import org.jboss.resteasy.api.validation.ConstraintType.Type;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
+import org.jboss.resteasy.cdi.ResteasyCdiExtension;
 import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.validation.GeneralValidator;
+import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
+import org.jboss.resteasy.util.GetRestful;
 
 import com.fasterxml.classmate.Filter;
 import com.fasterxml.classmate.MemberResolver;
@@ -39,7 +43,7 @@ import com.fasterxml.classmate.members.ResolvedMethod;
  *
  * Copyright May 23, 2013
  */
-public class GeneralValidatorImpl implements GeneralValidator
+public class GeneralValidatorImpl implements GeneralValidatorCDI
 {
    /**
     * Used for resolving type parameters. Thread-safe.
@@ -50,12 +54,22 @@ public class GeneralValidatorImpl implements GeneralValidator
    private ConstraintTypeUtil util = new ConstraintTypeUtil11();
    private boolean isExecutableValidationEnabled;
    private ExecutableType[] defaultValidatedExecutableTypes;
+   private boolean cdiActive;
 
    public GeneralValidatorImpl(ValidatorFactory validatorFactory, boolean isExecutableValidationEnabled, Set<ExecutableType> defaultValidatedExecutableTypes)
    {
       this.validatorFactory = validatorFactory;
       this.isExecutableValidationEnabled = isExecutableValidationEnabled;
       this.defaultValidatedExecutableTypes = defaultValidatedExecutableTypes.toArray(new ExecutableType[]{});
+      
+      try
+      {
+         cdiActive = ResteasyCdiExtension.isCDIActive();
+      }
+      catch (Exception e)
+      {
+         // Intentionally empty. In case ResteasyCdiExtension is not on the classpath.
+      }
    }
 
    @Override
@@ -100,13 +114,28 @@ public class GeneralValidatorImpl implements GeneralValidator
    @Override
    public void checkViolations(HttpRequest request)
    {
+      if (cdiActive)
+      {
+         return;
+      }
+      doCheckViolations(request);
+   }
+   
+   @Override
+   public void checkViolationsfromCDI(HttpRequest request)
+   {
+      assert(cdiActive);
+      doCheckViolations(request);
+   }
+   
+   protected void doCheckViolations(HttpRequest request)
+   {
       @SuppressWarnings("unchecked")
       ViolationsContainer<Object> violationsContainer = ViolationsContainer.class.cast(request.getAttribute(ViolationsContainer.class.getName()));
       if (violationsContainer != null && violationsContainer.size() > 0)
       {
          throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }
-
    }
 
    @Override
@@ -137,7 +166,7 @@ public class GeneralValidatorImpl implements GeneralValidator
          throw new ResteasyViolationException(violationsContainer);
       }
       violationsContainer.addViolations(rcvs);
-      if (violationsContainer.size() > 0)
+      if (!cdiActive && violationsContainer.size() > 0)
       {
          throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }
@@ -172,49 +201,74 @@ public class GeneralValidatorImpl implements GeneralValidator
          throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }
    }
-
+   
    @Override
    public boolean isValidatable(Class<?> clazz)
    {
+      // Called from resteasy-jaxrs. Only validate subresources.
+      if (cdiActive)
+      {
+         return !GetRestful.isRootResource(clazz) && GetRestful.isSubResourceClass(clazz);
+      }
+      return true;
+   }
+
+   @Override
+   public boolean isValidatableFromCDI(Class<?> clazz)
+   {
+      assert(cdiActive);
       return true;
    }
    
    @Override
    public boolean isMethodValidatable(Method m)
    {
-   	if (!isExecutableValidationEnabled)
-   	{
-   		return false;
-   	}
-   	
-   	ExecutableType[] types = null;
+   	return checkIsMethodValidatable(m);
+   }
+   
+   
+   @Override
+   public boolean isMethodValidatableFromCDI(Method m)
+   {
+      assert(cdiActive);
+      return checkIsMethodValidatable(m);
+   }
+   
+   protected boolean checkIsMethodValidatable(Method m)
+   {
+      if (!isExecutableValidationEnabled)
+      {
+         return false;
+      }
+      
+      ExecutableType[] types = null;
       List<ExecutableType[]> typesList = getExecutableTypesOnMethodInHierarchy(m);
       if (typesList.size() > 1)
       {
-      	throw new ValidationException("@ValidateOnExecution found on multiple overridden methods");
+         throw new ValidationException("@ValidateOnExecution found on multiple overridden methods");
       }
       if (typesList.size() == 1)
       {
-      	types = typesList.get(0);
+         types = typesList.get(0);
       }
       else
       {
-      	ValidateOnExecution voe = m.getDeclaringClass().getAnnotation(ValidateOnExecution.class);
-      	if (voe == null)
-      	{
-      		types = defaultValidatedExecutableTypes;
-      	}
-      	else
-      	{
-      		if (voe.type().length > 0)
-      		{
-      			types = voe.type();
-      		}
-      		else
-      		{
-      			types = defaultValidatedExecutableTypes;
-      		}
-      	}
+         ValidateOnExecution voe = m.getDeclaringClass().getAnnotation(ValidateOnExecution.class);
+         if (voe == null)
+         {
+            types = defaultValidatedExecutableTypes;
+         }
+         else
+         {
+            if (voe.type().length > 0)
+            {
+               types = voe.type();
+            }
+            else
+            {
+               types = defaultValidatedExecutableTypes;
+            }
+         }
       }
       
       boolean isGetterMethod = isGetter(m);
@@ -448,6 +502,57 @@ public class GeneralValidatorImpl implements GeneralValidator
       }
 
       return true;
+   }
+   
+   @Override
+   public void checkForConstraintViolations(HttpRequest request, Exception e)
+   {
+      if (e instanceof InvocationTargetException)
+      {
+         Throwable t = InvocationTargetException.class.cast(e).getTargetException();
+         if (t instanceof ConstraintViolationException)
+         {
+            e = ConstraintViolationException.class.cast(t);
+         }
+      }
+      
+      if (e instanceof ConstraintViolationException)
+      {
+         ConstraintViolationException cve = ConstraintViolationException.class.cast(e);
+         Set<ConstraintViolation<?>> cvs = cve.getConstraintViolations();
+         Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
+         try
+         {
+            for (Iterator<ConstraintViolation<?>> it = cvs.iterator(); it.hasNext(); )
+            {
+               ConstraintViolation<?> cv = it.next();
+               Type ct = util.getConstraintType(cv);
+               rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), (cv.getInvalidValue() == null ? "null" :cv.getInvalidValue().toString())));
+            }
+         }
+         catch (Exception e1)
+         {
+            ViolationsContainer<Object> violationsContainer = getViolationsContainer(request);
+            violationsContainer.setException(e);
+            throw new ResteasyViolationException(violationsContainer);
+         }
+         if (rcvs.size() > 0)
+         {
+            ViolationsContainer<Object> violationsContainer = getViolationsContainer(request);
+            violationsContainer.addViolations(rcvs);
+            throw new ResteasyViolationException(violationsContainer);
+         }
+      }
+      
+      Throwable t = e.getCause();
+      while (t != null && !(t instanceof ResteasyViolationException))
+      {
+         t = t.getCause();    
+      }
+      if (t instanceof ResteasyViolationException)
+      {
+         throw ResteasyViolationException.class.cast(t);
+      }
    }
    
    protected Validator getValidator(HttpRequest request)

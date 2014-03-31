@@ -27,6 +27,13 @@
         
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-cdi</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
@@ -75,6 +82,12 @@
             <version>0.8.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.jboss.weld.se</groupId>
+            <artifactId>weld-se</artifactId>
+            <version>2.1.0.Final</version>
+        </dependency>
+        
         <!-- Required by Hibernate Validator 5.x for testing -->
         <dependency>
             <groupId>org.jboss.spec.javax.el</groupId>

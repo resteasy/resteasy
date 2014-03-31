@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.decorator.Decorator;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
@@ -42,6 +41,8 @@ import org.jboss.resteasy.util.GetRestful;
  */
 public class ResteasyCdiExtension implements Extension
 {
+   private static boolean active;
+   
    private BeanManager beanManager;
    private static final String JAVAX_EJB_STATELESS = "javax.ejb.Stateless";
    private static final String JAVAX_EJB_SINGLETON = "javax.ejb.Singleton";
@@ -60,6 +61,11 @@ public class ResteasyCdiExtension implements Extension
       private static final long serialVersionUID = -8211157243671012820L;
    };
 
+   public static boolean isCDIActive()
+   {
+      return active;
+   }
+   
    private Map<Class<?>, Type> sessionBeanInterface = new HashMap<Class<?>, Type>();
 
    /**
@@ -68,6 +74,7 @@ public class ResteasyCdiExtension implements Extension
    public void observeBeforeBeanDiscovery(@Observes BeforeBeanDiscovery event, BeanManager beanManager)
    {
       this.beanManager = beanManager;
+      active = true;
    }
 
    /**
