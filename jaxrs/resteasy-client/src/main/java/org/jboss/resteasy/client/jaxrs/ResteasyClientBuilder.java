@@ -186,7 +186,7 @@ public class ResteasyClientBuilder extends ClientBuilder
     */
    public ResteasyClientBuilder responseBufferSize(int size)
    {
-      this.responseBufferSize = responseBufferSize;
+      this.responseBufferSize = size;
       return this;
    }
 
