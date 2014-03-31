@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0.7.Final</version>
+        <version>3.0.8.Final</version>
     </parent>
 
     <artifactId>resteasy-jaxrs-src-dist</artifactId>
