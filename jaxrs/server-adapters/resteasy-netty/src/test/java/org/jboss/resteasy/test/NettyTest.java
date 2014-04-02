@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test;
 
+import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -11,6 +12,7 @@ import org.junit.Test;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
@@ -37,6 +39,13 @@ public class NettyTest
       @Produces("text/plain")
       public String exception() {
          throw new RuntimeException();
+      }
+
+      @GET
+      @Path("/context")
+      @Produces("text/plain")
+      public String context(@Context ChannelHandlerContext context) {
+          return context.getChannel().toString();
       }
    }
 
@@ -69,4 +78,13 @@ public class NettyTest
       Response resp = target.request().get();
       Assert.assertEquals(500, resp.getStatus());
    }
+
+    @Test
+    public void testChannelContext() throws Exception {
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyWebTarget target = client.target(generateURL("/context"));
+      String val = target.request().get(String.class);
+      Assert.assertNotNull(val);
+      Assert.assertFalse(val.isEmpty());
+    }
 }
