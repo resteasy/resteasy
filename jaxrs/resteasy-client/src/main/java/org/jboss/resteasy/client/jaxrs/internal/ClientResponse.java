@@ -109,7 +109,8 @@ public abstract class ClientResponse extends BuiltResponse
    }
 
    @Override
-   protected void finalize() throws Throwable
+   // This method is synchronized to protect against premature calling of finalize by the GC
+   protected synchronized void finalize() throws Throwable
    {
       if (isClosed()) return;
       try {
@@ -144,7 +145,8 @@ public abstract class ClientResponse extends BuiltResponse
    protected abstract void releaseConnection() throws IOException;
 
 
-   public <T> T readEntity(Class<T> type, Type genericType, Annotation[] anns)
+   // this is synchronized in conjunction with finalize to protect against premature finalize called by the GC
+   public synchronized <T> T readEntity(Class<T> type, Type genericType, Annotation[] anns)
    {
       abortIfClosed();
       if (entity != null)
@@ -208,7 +210,8 @@ public abstract class ClientResponse extends BuiltResponse
       return (T) entity;
    }
 
-   protected <T> Object readFrom(Class<T> type, Type genericType,
+   // this is synchronized in conjunction with finalize to protect against premature finalize called by the GC
+   protected synchronized <T> Object readFrom(Class<T> type, Type genericType,
                                   MediaType media, Annotation[] annotations)
    {
       Type useGeneric = genericType == null ? type : genericType;

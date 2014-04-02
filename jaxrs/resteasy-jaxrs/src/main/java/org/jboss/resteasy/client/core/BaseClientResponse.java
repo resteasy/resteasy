@@ -401,7 +401,8 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       return mediaType == null ? MediaType.WILDCARD_TYPE : MediaType.valueOf(mediaType);
    }
 
-   protected <T2> Object readFrom(Class<T2> type, Type genericType,
+   // this is synchronized in conjunction with finalize to protect against premature finalize called by the GC
+   protected synchronized <T2> Object readFrom(Class<T2> type, Type genericType,
                                   MediaType media, Annotation[] annotations)
    {
       Type useGeneric = genericType == null ? type : genericType;
@@ -584,7 +585,8 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    }
 
    @Override
-   protected final void finalize() throws Throwable
+   // this is synchronized to protect against premature finalize called by the GC
+   protected synchronized final void finalize() throws Throwable
    {
       releaseConnection();
    }
