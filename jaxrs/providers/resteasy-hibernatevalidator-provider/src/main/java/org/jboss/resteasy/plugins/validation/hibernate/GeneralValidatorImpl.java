@@ -19,6 +19,7 @@ import org.jboss.resteasy.api.validation.ConstraintType.Type;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.cdi.ResteasyCdiExtension;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -36,6 +37,8 @@ import org.jboss.resteasy.util.GetRestful;
 @SuppressWarnings("serial")
 public class GeneralValidatorImpl implements GeneralValidatorCDI
 {
+   private static final Logger log = Logger.getLogger(GeneralValidatorImpl.class);
+   
    private Validator validator;
    private MethodValidator methodValidator;
    private ConstraintTypeUtil util = new ConstraintTypeUtil10();
@@ -73,9 +76,10 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       {
          cdiActive = ResteasyCdiExtension.isCDIActive();
       }
-      catch (Exception e)
+      catch (Throwable t)
       {
-         // Intentionally empty. In case ResteasyCdiExtension is not on the classpath.
+         // In case ResteasyCdiExtension is not on the classpath.
+         log.debug("ResteasyCdiExtension is not on the classpath. Assuming CDI is not active");
       }
    }
 
