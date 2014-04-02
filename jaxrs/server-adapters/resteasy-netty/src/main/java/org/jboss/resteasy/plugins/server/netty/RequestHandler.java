@@ -53,7 +53,7 @@ public class RequestHandler extends SimpleChannelUpstreamHandler
           NettyHttpResponse response = request.getResponse();
           try
           {
-             dispatcher.service(request, response, true);
+             dispatcher.service(ctx, request, response, true);
           }
           catch (Failure e1)
           {

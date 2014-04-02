@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.server.netty;
 
 import org.apache.commons.codec.binary.Base64;
+import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
@@ -50,7 +51,7 @@ public class RequestDispatcher
       return providerFactory;
    }
 
-   public void service(HttpRequest request, HttpResponse response, boolean handleNotFound) throws IOException 
+   public void service(ChannelHandlerContext ctx, HttpRequest request, HttpResponse response, boolean handleNotFound) throws IOException
    {
 
       try
@@ -76,6 +77,7 @@ public class RequestDispatcher
          {
 
             ResteasyProviderFactory.pushContext(SecurityContext.class, securityContext);
+            ResteasyProviderFactory.pushContext(ChannelHandlerContext.class, ctx);
             if (handleNotFound)
             {
                dispatcher.invoke(request, response);
