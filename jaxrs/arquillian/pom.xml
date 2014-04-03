@@ -23,6 +23,8 @@
         <module>ValidationTest-AS7</module>
         <module>RESTEASY-1008-WF8</module>
         <module>RESTEASY-1008-AS7</module>
+        <module>RESTEASY-1008-jetty-bv11</module>
+        <module>RESTEASY-1008-jetty-bv10</module>
     </modules>
     
     <artifactId>arquillian</artifactId>
