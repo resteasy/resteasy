@@ -18,6 +18,7 @@
         <module>RESTEASY-767</module>
         <module>RESTEASY-800</module>
         <module>RESTEASY-802</module>
+        <module>RESTEASY-1043</module>
     </modules>
 
 </project>
