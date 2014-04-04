@@ -315,7 +315,13 @@ public class MediaTypeMap<T>
       }
    }
 
-   public void add(MediaType type, T obj)
+   /**
+    * Add an object to the media type map.  This is synchronized to serialize adds.
+    *
+    * @param type
+    * @param obj
+    */
+   public synchronized void add(MediaType type, T obj)
    {
       classCache.clear();
       type = new MediaType(type.getType().toLowerCase(), type.getSubtype().toLowerCase(), type.getParameters());

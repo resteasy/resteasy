@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
@@ -16,6 +17,16 @@ import java.lang.reflect.Modifier;
  */
 public class ClientBuilderTest
 {
+
+   @Test
+   public void entityStringThrowsExceptionWhenUnparsableTest() throws Exception {
+      try {
+         Entity.entity("entity", "\\//\\");
+         Assert.fail();
+      } catch (IllegalArgumentException e) {
+      }
+   }
+
    @Test
    public void testBuilder() throws Exception
    {

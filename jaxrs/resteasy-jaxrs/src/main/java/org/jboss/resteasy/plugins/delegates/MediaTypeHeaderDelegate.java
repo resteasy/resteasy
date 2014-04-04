@@ -67,6 +67,34 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
    }
    */
 
+   protected static boolean isValid(String str)
+   {
+      if (str == null || str.length() == 0) return false;
+      for (int i = 0; i < str.length(); i++) {
+         switch (str.charAt(i))
+         {
+            case '/':
+            case '\\':
+            case '?':
+            case ':':
+            case '<':
+            case '>':
+            case ';':
+            case '(':
+            case ')':
+            case '@':
+            case ',':
+            case '[':
+            case ']':
+            case '=':
+               return false;
+            default:
+               break;
+         }
+      }
+      return true;
+   }
+
    public static MediaType parse(String type)
    {
       int typeIndex = type.indexOf('/');
@@ -99,6 +127,10 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
          }
       }
       if (major.length() < 1 || subtype.length() < 1)
+      {
+         throw new IllegalArgumentException("Failure parsing MediaType string: " + type);
+      }
+      if (!isValid(major) || !isValid(subtype))
       {
          throw new IllegalArgumentException("Failure parsing MediaType string: " + type);
       }
