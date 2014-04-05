@@ -18,11 +18,12 @@ import org.hibernate.validator.method.MethodValidator;
 import org.jboss.resteasy.api.validation.ConstraintType.Type;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
-import org.jboss.resteasy.cdi.ResteasyCdiExtension;
+import org.jboss.resteasy.cdi.CdiInjectorFactory;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.GetRestful;
@@ -42,7 +43,6 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    private Validator validator;
    private MethodValidator methodValidator;
    private ConstraintTypeUtil util = new ConstraintTypeUtil10();
-   private boolean cdiActive;
    
    public abstract static class S1 extends AnnotationLiteral<Stateless> implements Stateless { }
    public static final Annotation STATELESS = new S1() 
@@ -72,23 +72,18 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    {
       this.validator = validator;
       this.methodValidator = methodValidator;
-      try
-      {
-         cdiActive = ResteasyCdiExtension.isCDIActive();
-      }
-      catch (Throwable t)
-      {
-         // In case ResteasyCdiExtension is not on the classpath.
-         log.debug("ResteasyCdiExtension is not on the classpath. Assuming CDI is not active");
-      }
    }
 
-   protected ViolationsContainer<Object> getViolationsContainer(HttpRequest request)
+   protected ViolationsContainer<Object> getViolationsContainer(HttpRequest request, Object target)
    {
+      if (request == null)
+      {
+         return new ViolationsContainer<Object>(target);
+      }
       ViolationsContainer<Object> violationsContainer = ViolationsContainer.class.cast(request.getAttribute(ViolationsContainer.class.getName()));
       if (violationsContainer == null)
       {
-         violationsContainer = new ViolationsContainer<Object>();
+         violationsContainer = new ViolationsContainer<Object>(target);
          request.setAttribute(ViolationsContainer.class.getName(), violationsContainer);
       }
       return violationsContainer;
@@ -97,22 +92,25 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
 
    public void checkViolations(HttpRequest request)
    {
-      if (cdiActive)
+      ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, null);
+      Object target = violationsContainer.getTarget();
+      if (target != null && !isWeldProxy(target.getClass()))
       {
-         return;
+         if (violationsContainer != null && violationsContainer.size() > 0)
+         {
+            throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
+         }
       }
-      doCheckViolations(request);
    }
 
    @Override
    public void checkViolationsfromCDI(HttpRequest request)
    {
-      assert(cdiActive);
-      doCheckViolations(request);
-   }
-   
-   protected void doCheckViolations(HttpRequest request)
-   {
+      if (request == null)
+      {
+         return;
+      }
+      
       @SuppressWarnings("unchecked")
       ViolationsContainer<Object> violationsContainer = ViolationsContainer.class.cast(request.getAttribute(ViolationsContainer.class.getName()));
       if (violationsContainer != null && violationsContainer.size() > 0)
@@ -137,11 +135,11 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       }
       catch (Exception e)
       {
-         ViolationsContainer<Object> violationsContainer = getViolationsContainer(request);
+         ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, object);
          violationsContainer.setException(e);
          throw new ResteasyViolationException(violationsContainer);
       }
-      ViolationsContainer<Object> violationsContainer = getViolationsContainer(request);
+      ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, object);
       violationsContainer.addViolations(rcvs);
       /*
       if (rcvs.size() > 0)
@@ -168,7 +166,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       }
       
       Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
-      ViolationsContainer<Object> violationsContainer = getViolationsContainer(request);
+      ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, object);
       try
       {
          Set<MethodConstraintViolation<Object>> cvs = methodValidator.validateAllParameters(object, method, parameterValues, groups);
@@ -187,7 +185,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          throw new ResteasyViolationException(violationsContainer);
       }
       violationsContainer.addViolations(rcvs);
-      if (!cdiActive && violationsContainer.size() > 0)
+      if (!isWeldProxy(object.getClass()) && violationsContainer.size() > 0)
       {
          throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }
@@ -211,7 +209,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       }
       
       Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
-      ViolationsContainer<Object> violationsContainer = getViolationsContainer(request);
+      ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, object);
       try
       {
          Set<MethodConstraintViolation<Object>> cvs = methodValidator.validateReturnValue(object, method, returnValue, groups);
@@ -239,18 +237,25 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    @Override
    public boolean isValidatable(Class<?> clazz)
    {
-      if (cdiActive)
+      return true;
+   }
+   
+   @Override
+   public boolean isValidatable(Class<?> clazz, InjectorFactory injectorFactory)
+   {
+      // Called from resteasy-jaxrs.
+      if (injectorFactory instanceof CdiInjectorFactory)
       {
+         // Only validate subresources.
          return !GetRestful.isRootResource(clazz) && GetRestful.isSubResourceClass(clazz);
       }
-      return checkIsValidatable(clazz);
+      return true;
    }
    
    @Override
    public boolean isValidatableFromCDI(Class<?> clazz)
    {
-      assert(cdiActive);
-      return checkIsValidatable(clazz);
+      return true;
    }
    
    protected boolean checkIsValidatable(Class<?> clazz)
@@ -263,13 +268,6 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    @Override
    public boolean isMethodValidatable(Method m)
    {
-      return checkIsMethodValidatable(m);
-   }
-   
-   @Override
-   public boolean isMethodValidatableFromCDI(Method m)
-   {
-      assert(cdiActive);
       return checkIsMethodValidatable(m);
    }
    
@@ -300,13 +298,13 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          }
          catch (Exception e1)
          {
-            ViolationsContainer<Object> violationsContainer = getViolationsContainer(request);
+            ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, null);
             violationsContainer.setException(e);
             throw new ResteasyViolationException(violationsContainer);
          }
          if (rcvs.size() > 0)
          {
-            ViolationsContainer<Object> violationsContainer = getViolationsContainer(request);
+            ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, null);
             violationsContainer.addViolations(rcvs);
             throw new ResteasyViolationException(violationsContainer);
          }
@@ -340,6 +338,50 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          }
          clazz = clazz.getSuperclass();
       }
+      return false;
+   }
+   
+   private static final String PROXY_OBJECT_INTERFACE_NAME = "javassist.util.proxy.ProxyObject";
+   private static final String TARGET_INSTANCE_INTERFACE_NAME = "org.jboss.interceptor.util.proxy.TargetInstanceProxy";
+
+   /**
+    * Whether the given class is a proxy created by Weld or not. This is
+    * the case if the given class implements the interface
+    * {@code org.jboss.weld.bean.proxy.ProxyObject}.
+    * 
+    * Borrowed from org.jboss.resteasy.spi.metadata.ResourceBuilder.
+    *
+    * @param clazz the class of interest
+    *
+    * @return {@code true} if the given class is a Weld proxy,
+    * {@code false} otherwise
+    */
+   private static boolean isWeldProxy(Class<?> clazz)
+   {
+      boolean foundProxyObject = false;
+      boolean foundTargetInstance = false;
+      
+      for ( Class<?> implementedInterface : clazz.getInterfaces() )
+      {
+         if ( implementedInterface.getName().equals( PROXY_OBJECT_INTERFACE_NAME ) )
+         {
+            foundProxyObject = true;
+         }
+         else if ( implementedInterface.getName().equals( TARGET_INSTANCE_INTERFACE_NAME ) )
+         {
+            foundTargetInstance = true;
+         }
+         if (foundProxyObject && foundTargetInstance)
+         {
+            return true;
+         }
+      }
+      
+      if (clazz.getName().contains("_$$_Weld"))
+      {
+         return true;
+      }
+
       return false;
    }
 }

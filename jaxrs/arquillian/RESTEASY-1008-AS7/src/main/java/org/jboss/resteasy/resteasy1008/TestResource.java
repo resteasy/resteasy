@@ -8,6 +8,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.jboss.resteasy.plugins.validation.hibernate.DoNotValidateRequest;
 import org.jboss.resteasy.plugins.validation.hibernate.ValidateRequest;
 
 /**
@@ -65,5 +66,22 @@ public class TestResource
    {
       System.out.println("TestResource.this: " + this);
       return new TestSubResource();
+   }
+   
+   @GET
+   @Path("none/{field}/{property}/{param}")
+   @Produces(MediaType.TEXT_PLAIN)
+   @DoNotValidateRequest
+   public Object none(@Min(11) @PathParam("param") int param)
+   {
+      return param;
+   }
+   
+   @GET
+   @Path("noParams/{field}/{property}")
+   @Produces(MediaType.TEXT_PLAIN)
+   public Object noParams()
+   {
+      return "noParams";
    }
 }

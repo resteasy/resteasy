@@ -1,6 +1,8 @@
 package org.jboss.resteasy.resteasy1008;
 
 import javax.validation.constraints.Min;
+import javax.validation.executable.ExecutableType;
+import javax.validation.executable.ValidateOnExecution;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -62,5 +64,22 @@ public class TestResource
    {
       System.out.println("TestResource.this: " + this);
       return new TestSubResource();
+   }
+   
+   @GET
+   @Path("none/{field}/{property}/{param}")
+   @Produces(MediaType.TEXT_PLAIN)
+   @ValidateOnExecution(type = { ExecutableType.NONE })
+   public Object none(@Min(11) @PathParam("param") int param)
+   {
+      return param;
+   }
+   
+   @GET
+   @Path("noParams/{field}/{property}")
+   @Produces(MediaType.TEXT_PLAIN)
+   public Object noParams()
+   {
+      return "noParams";
    }
 }
