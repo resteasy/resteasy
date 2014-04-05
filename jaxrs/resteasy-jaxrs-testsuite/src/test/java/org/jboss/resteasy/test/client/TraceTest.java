@@ -1,6 +1,12 @@
 package org.jboss.resteasy.test.client;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.jboss.resteasy.test.BaseResourceTest;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,11 +21,15 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -38,6 +48,9 @@ public class TraceTest extends BaseResourceTest
 
    @Path("resource")
    public static class Resource {
+
+      @Context
+      UriInfo uriInfo;
 
       @GET
       @Path("get")
@@ -119,6 +132,7 @@ public class TraceTest extends BaseResourceTest
       @TRACE
       @Path("trace")
       public String trace() {
+         System.out.println("uriInfo.request: " + uriInfo.getRequestUri().toString());
          return "trace";
       }
 
@@ -145,5 +159,33 @@ public class TraceTest extends BaseResourceTest
       Response response = client.target(generateURL("/resource/trace")).request().trace(Response.class);
       Assert.assertEquals(200, response.getStatus());
    }
+   @Test
+   public void testUrl() throws Exception {
+      System.out.println("**** TEST URL");
+      String uri = generateURL("/resource/trace");
+
+      System.out.println(uri);
+      HttpClient client = new DefaultHttpClient();
+      CustomHttpTrace trace = new CustomHttpTrace(uri);
+      HttpResponse response = client.execute(trace);
+      Assert.assertEquals(200, response.getStatusLine().getStatusCode());
+      client.getConnectionManager().shutdown();
+   }
+
+   private static class CustomHttpTrace extends HttpGet
+   {
+      private CustomHttpTrace(String uri)
+      {
+         super(uri);
+      }
+
+      @Override
+      public String getMethod()
+      {
+         return "TrAcE";
+      }
+   }
+
+
 
 }
