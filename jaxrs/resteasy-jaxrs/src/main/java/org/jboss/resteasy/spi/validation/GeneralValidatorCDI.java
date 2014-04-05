@@ -1,9 +1,7 @@
 package org.jboss.resteasy.spi.validation;
 
-import java.lang.reflect.Method;
-
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.validation.GeneralValidator;
+import org.jboss.resteasy.spi.InjectorFactory;
 
 /**
  * 
@@ -17,6 +15,8 @@ import org.jboss.resteasy.spi.validation.GeneralValidator;
  */
 public interface GeneralValidatorCDI extends GeneralValidator
 {
+   public boolean isValidatable(Class<?> clazz, InjectorFactory injectorFactory);
+   
    /**
     * Indicates if validation is turned on for a class.
     * This method should be called only from a CDI interceptor
@@ -25,16 +25,7 @@ public interface GeneralValidatorCDI extends GeneralValidator
     * @return true if and only if validation is turned on for clazz
     */
    public abstract boolean isValidatableFromCDI(Class<?> clazz);
-     
-   /**
-    * Indicates if validation is turned on for a method.
-    * This method should be called only CDI is active.
-    * 
-    * @param method method to be examined
-    * @return true if and only if validation is turned on for method
-    */   
-   public abstract boolean isMethodValidatableFromCDI(Method method);
-   
+  
    /**
     * Throws a ResteasyViolationException if any validation violations have been detected.
     * The method should be called only when CDI is active.

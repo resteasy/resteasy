@@ -77,6 +77,19 @@
               <goal>run</goal>
             </goals>
           </execution>
+          <!--execution>
+            <id>unpack resteasy</id>
+            <phase>process-test-classes</phase>
+            <configuration>
+              <target>
+                <copydir src="/home/rsigal/git.wildfly/wildfly/build/target/wildfly-8.0.1.Final-SNAPSHOT"
+                       dest="${project.build.directory}/wildfly-8.0.1.Final-SNAPSHOT"/>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution-->
         </executions>
       </plugin>
     </plugins>
@@ -176,6 +189,13 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <version>1.1.0.Final</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>
