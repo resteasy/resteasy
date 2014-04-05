@@ -194,7 +194,6 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    @Override
    public void validateReturnValue(HttpRequest request, Object object, Method method, Object returnValue, Class<?>... groups)
    {
-      System.out.println("declaring class: " + method.getDeclaringClass());
       if (isSessionBean(method.getDeclaringClass()))
       {
          try
@@ -326,10 +325,6 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       while (clazz != null)
       {
          Annotation[] as = clazz.getAnnotations();
-         for (int i = 0; i < as.length; i++)
-         {
-            System.out.println("annotation[" + i + "]: " + as[i]);
-         }
          if (clazz.getAnnotation(STATELESS.annotationType()) != null 
                || clazz.getAnnotation(STATEFUL.annotationType()) != null
                || clazz.getAnnotation(SINGLETON.annotationType()) != null)
