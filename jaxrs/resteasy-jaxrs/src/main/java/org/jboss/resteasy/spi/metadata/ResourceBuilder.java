@@ -512,7 +512,7 @@ public class ResourceBuilder
 
       public ResourceMethodBuilder httpMethod(String httpMethod)
       {
-         method.httpMethods.add(httpMethod);
+         method.httpMethods.add(httpMethod.toUpperCase());
          return this;
       }
 
