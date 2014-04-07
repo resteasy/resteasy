@@ -245,8 +245,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       // Called from resteasy-jaxrs.
       if (injectorFactory instanceof CdiInjectorFactory)
       {
-         // Only validate subresources.
-         return !GetRestful.isRootResource(clazz) && GetRestful.isSubResourceClass(clazz);
+         return false;
       }
       return true;
    }
