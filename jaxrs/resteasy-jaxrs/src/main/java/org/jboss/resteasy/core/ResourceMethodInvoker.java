@@ -18,6 +18,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
+import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -118,7 +119,14 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       if (validator != null)
       {
-         isValidatable = validator.isValidatable(getMethod().getDeclaringClass());
+         if (validator instanceof GeneralValidatorCDI)
+         {
+            isValidatable = GeneralValidatorCDI.class.cast(validator).isValidatable(getMethod().getClass(), injector);
+         }
+         else
+         {
+            isValidatable = validator.isValidatable(getMethod().getDeclaringClass());
+         }
          methodIsValidatable = validator.isMethodValidatable(getMethod());
       }
    }
