@@ -1,5 +1,26 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.util.Arrays;
+import java.util.Stack;
+
+import javax.ws.rs.BeanParam;
+import javax.ws.rs.CookieParam;
+import javax.ws.rs.Encoded;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.MatrixParam;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.MediaType;
+
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.client.ClientURI;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
@@ -13,22 +34,6 @@ import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.webtarget.PathP
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.webtarget.QueryParamProcessor;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.MediaTypeHelper;
-
-import javax.ws.rs.BeanParam;
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.Encoded;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MediaType;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 
 public class ProcessorFactory
 {
@@ -46,6 +51,9 @@ public class ProcessorFactory
          Class<?> type = method.getParameterTypes()[i];
          Annotation[] annotations = method.getParameterAnnotations()[i];
          Type genericType = method.getGenericParameterTypes()[i];
+         if (TypeVariable.class.isInstance(genericType) && declaringClass.isInterface() && !declaringClass.equals(method.getDeclaringClass())) {
+        	 genericType = getTypeArgument((TypeVariable)genericType, declaringClass, method.getDeclaringClass());
+         }
          AccessibleObject target = method;
          params[i] = ProcessorFactory.createProcessor(declaringClass, configuration, type, annotations, genericType, target, defaultConsumes, false);
       }
@@ -145,5 +153,57 @@ public class ProcessorFactory
                  genericType, annotations);
       }
       return processor;
+   }
+   
+   static Type getTypeArgument(TypeVariable<?> var, Class<?> clazz, Class<?> baseInterface) {
+      TypeVariable<?> tv = var;
+      // collect superinterfaces
+      Stack<Type> superinterfaces = new Stack<Type>();
+      Type currentType;
+      Class<?> currentClass = clazz;
+      recursivePush(currentClass, baseInterface, superinterfaces); 
+
+      while (!superinterfaces.isEmpty()) {
+         currentType = superinterfaces.pop();
+
+         if (currentType instanceof ParameterizedType) {
+            ParameterizedType pt = (ParameterizedType) currentType;
+            Class<?> rawType = (Class) pt.getRawType();
+            int argIndex = Arrays.asList(rawType.getTypeParameters()).indexOf(tv);
+            if (argIndex > -1) {
+               Type typeArg = pt.getActualTypeArguments()[argIndex];
+               if (typeArg instanceof TypeVariable) {
+                  // type argument is another type variable - look for the value of that
+                  // variable in subclasses
+                  tv = (TypeVariable<?>) typeArg;
+                  continue;
+               } else {
+                  // found the value - return it
+                  return typeArg;
+               }
+            }
+         }
+
+         // needed type argument not supplied - break and throw exception
+         break;
+      }
+      throw new IllegalArgumentException(var + " does not specify the type parameter T of GenericType<T>");
+   }
+
+   static void recursivePush(Type t, Class<?> baseInterface, Stack<Type> superinterfaces) {
+      Class<?> currentClass = null;
+      if (t instanceof Class) {
+         currentClass = (Class) t;
+      } else if (t instanceof ParameterizedType) {
+         currentClass = (Class) ((ParameterizedType) t).getRawType();
+      }
+      if (baseInterface.isAssignableFrom(currentClass)) {
+         superinterfaces.push(t);
+
+         for (Type otherType : currentClass.getGenericInterfaces()) {
+            recursivePush(otherType, baseInterface, superinterfaces);
+         }
+      }
+
    }
 }

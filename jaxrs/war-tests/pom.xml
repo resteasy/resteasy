@@ -33,5 +33,6 @@
         <module>oauth-servlet-test</module>
         <!-- <module>jsapi-servlet-test</module> -->
         <module>application-test</module>
+        <module>client-typevar-test</module>
     </modules>
 </project>
