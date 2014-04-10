@@ -724,7 +724,43 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (tClass == null) throw new IllegalArgumentException("tClass parameter is null");
       if (headerDelegates == null && parent != null) return parent.createHeaderDelegate(tClass);
-      return headerDelegates.get(tClass);
+      
+      Class<?> clazz = tClass;
+      while (clazz != null)
+      {
+         HeaderDelegate<T> delegate = headerDelegates.get(clazz);
+         if (delegate != null)
+         {
+            return delegate;
+         }
+         delegate = createHeaderDelegateFromInterfaces(clazz.getInterfaces());
+         if (delegate != null)
+         {
+            return delegate;
+         }
+         clazz = clazz.getSuperclass();
+      }
+      
+      return createHeaderDelegateFromInterfaces(tClass.getInterfaces());
+   }
+   
+   protected <T> HeaderDelegate<T> createHeaderDelegateFromInterfaces(Class<?>[] interfaces)
+   {
+      HeaderDelegate<T> delegate = null;
+      for (int i = 0; i < interfaces.length; i++)
+      {
+         delegate = headerDelegates.get(interfaces[i]);
+         if (delegate != null)
+         {
+            return delegate;
+         }
+         delegate = createHeaderDelegateFromInterfaces(interfaces[i].getInterfaces());
+         if (delegate != null)
+         {
+            return delegate;
+         }
+      }
+      return null;
    }
 
    protected Map<Class<?>, HeaderDelegate> getHeaderDelegates()
