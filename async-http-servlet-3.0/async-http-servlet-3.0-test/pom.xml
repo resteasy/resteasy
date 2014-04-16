@@ -7,7 +7,6 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>async-http-servlet-3.0-test</artifactId>
-  <version>2.3.7.Final</version>
     <packaging>war</packaging>
     <name>Async Servlet 3.0 Test</name>
     <description />

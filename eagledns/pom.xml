@@ -8,7 +8,6 @@
     </parent>
 
     <artifactId>eagledns-fork</artifactId>
-  <version>2.3.7.Final</version>
     <name>RESTEasy EagleDNS Fork For Testing Purposes</name>
     <description />
 

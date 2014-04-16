@@ -10,7 +10,6 @@
   </parent>
 
   <artifactId>RESTEASY-800-AS71</artifactId>
-  <version>2.3.7.Final</version>
   <packaging>jar</packaging>
   <name>RESTEASY-800-AS71</name>
   <url>http://maven.apache.org</url>

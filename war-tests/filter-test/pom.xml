@@ -9,7 +9,6 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.test</groupId>
     <artifactId>test-filter-war</artifactId>
-  <version>2.3.7.Final</version>
     <packaging>war</packaging>
     <name>filter-test</name>
     <description />

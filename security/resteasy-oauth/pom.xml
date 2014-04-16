@@ -9,7 +9,6 @@
     </parent>
 
     <artifactId>resteasy-oauth</artifactId>
-  <version>2.3.7.Final</version>
     <name>RESTEasy JAX-RS OAuth</name>
     <description />
 

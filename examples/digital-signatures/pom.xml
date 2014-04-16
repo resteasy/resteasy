@@ -12,7 +12,6 @@
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>signature-examples-pom</artifactId>
-  <version>2.3.7.Final</version>
     <packaging>pom</packaging>
 
     <!-- this is only here for RESTEasy automated testing of examples build.  You can remove if you are copying this

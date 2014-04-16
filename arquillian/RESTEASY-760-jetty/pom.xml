@@ -8,7 +8,7 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
   <artifactId>RESTEASY-760-jetty</artifactId>
-  <version>2.3.7.Final</version>
+  <version>2.3.7.1.Final</version>
   <packaging>jar</packaging>
   <name>RESTEASY-760-jetty</name>
 
@@ -16,7 +16,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <!--jetty.version>7.0.2.v20100331</jetty.version-->
       <jetty.version>8.1.1.v20120215</jetty.version>
-      <resteasy.version>2.3.7.Final</resteasy.version>
+      <resteasy.version>2.3.7.1.Final</resteasy.version>
   </properties>
   
   <dependencyManagement>
