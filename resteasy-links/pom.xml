@@ -9,7 +9,6 @@
     </parent>
 
     <artifactId>resteasy-links</artifactId>
-  <version>2.3.7.Final</version>
     <name>RESTEasy Links</name>
     <description />
 

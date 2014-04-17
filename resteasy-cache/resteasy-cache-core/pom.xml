@@ -8,7 +8,6 @@
     </parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-cache-core</artifactId>
-  <version>2.3.7.Final</version>
     <packaging>jar</packaging>
     <name>RESTEasy Cache Core</name>
 

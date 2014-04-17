@@ -7,7 +7,6 @@
 	    <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>resteasy-yaml-provider</artifactId>
-  <version>2.3.7.Final</version>
     <packaging>jar</packaging>
     <name>Resteasy YAML Provider</name>
     <description />

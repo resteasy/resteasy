@@ -7,7 +7,6 @@
         <version>2.3.7.1.Final</version>
     </parent>
     <artifactId>resteasy-test-data</artifactId>
-  <version>2.3.7.Final</version>
     <name>RESTEasy JAX-RS Test Data</name>
     <description />
     <packaging>jar</packaging>

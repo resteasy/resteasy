@@ -7,7 +7,6 @@
     </parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-spring</artifactId>
-  <version>2.3.7.Final</version>
     <packaging>jar</packaging>
     <name>Resteasy Spring integration</name>
     <description />

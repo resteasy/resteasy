@@ -11,7 +11,6 @@
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>testable-examples-pom</artifactId>
-  <version>2.3.7.Final</version>
     <packaging>pom</packaging>
 
     <!-- this is only here for RESTEasy automated testing of examples build.  You can remove if you are copying this
@@ -33,7 +32,7 @@
         <module>guice-hello</module>
         <module>async-job-service</module>
         <module>resteasy-springMVC</module>
-        <module>oreilly-workbook</module>
+        <!-- <module>oreilly-workbook</module> -->
         <!-- <module>oreilly-workbook-as7</module> -->
         <module>oauth-examples</module>
         <module>examples-jsapi</module>
