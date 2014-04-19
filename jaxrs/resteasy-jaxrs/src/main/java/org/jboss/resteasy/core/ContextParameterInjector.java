@@ -6,6 +6,12 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletRequestWrapper;
+import javax.servlet.ServletResponse;
+import javax.servlet.ServletResponseWrapper;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Providers;
 import java.lang.reflect.InvocationHandler;
@@ -92,7 +98,7 @@ public class ContextParameterInjector implements ValueInjector
       {
          try
          {
-            return proxy.getConstructors()[0].newInstance(new GenericDelegatingProxy());
+            return createWrapper(proxy.getConstructors()[0].newInstance(new GenericDelegatingProxy()));
          }
          catch (Exception e)
          {
@@ -102,7 +108,28 @@ public class ContextParameterInjector implements ValueInjector
       else
       {
          Class[] intfs = {type};
-         return Proxy.newProxyInstance(type.getClassLoader(), intfs, new GenericDelegatingProxy());
+         return createWrapper(Proxy.newProxyInstance(type.getClassLoader(), intfs, new GenericDelegatingProxy()));
       }
+   }
+   
+   protected Object createWrapper(Object o)
+   {
+      if (o instanceof HttpServletRequest)
+      {
+         return new ResteasyHttpServletRequestWrapper(ResteasyProviderFactory.getContextData(HttpServletRequest.class), HttpServletRequest.class.cast(o));
+      }
+      if (o instanceof ServletRequest)
+      {
+         return new ServletRequestWrapper(ServletRequest.class.cast(o));
+      }
+      if (o instanceof HttpServletResponse)
+      {
+         return new ResteasyHttpServletResponseWrapper(ResteasyProviderFactory.getContextData(HttpServletResponse.class), HttpServletResponse.class.cast(o));
+      }
+      if (o instanceof ServletResponse)
+      {
+         return new ServletResponseWrapper(ServletResponse.class.cast(o));
+      }
+      return o;
    }
 }
