@@ -102,7 +102,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate {
         }
         if (cookie.getPath() != null) {
             b.append(";Path=");
-            quote(b, cookie.getPath());
+            b.append(cookie.getPath());
         }
         if (cookie.getMaxAge() != -1) {
             b.append(";Max-Age=");
@@ -110,7 +110,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate {
         }
         if (cookie.getExpiry() != null) {
             b.append(";Expires=");
-            quote(b, DateUtil.formatDate(cookie.getExpiry(), OLD_COOKIE_PATTERN));
+            b.append(DateUtil.formatDate(cookie.getExpiry(), OLD_COOKIE_PATTERN));
         }
         if (cookie.isSecure())
             b.append(";Secure");
