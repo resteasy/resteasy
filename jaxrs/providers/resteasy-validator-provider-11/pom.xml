@@ -87,7 +87,20 @@
             <artifactId>weld-se</artifactId>
             <version>2.1.0.Final</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-undertow</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         
+        <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-servlet</artifactId>
+            <scope>test</scope>
+        </dependency>
+                
         <!-- Required by Hibernate Validator 5.x for testing -->
         <dependency>
             <groupId>org.jboss.spec.javax.el</groupId>

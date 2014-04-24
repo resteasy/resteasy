@@ -24,6 +24,8 @@ import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.InjectorFactory;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.GetRestful;
@@ -37,12 +39,15 @@ import org.jboss.resteasy.util.GetRestful;
  */
 @SuppressWarnings("serial")
 public class GeneralValidatorImpl implements GeneralValidatorCDI
-{
+{  
    private static final Logger log = Logger.getLogger(GeneralValidatorImpl.class);
    
    private Validator validator;
    private MethodValidator methodValidator;
    private ConstraintTypeUtil util = new ConstraintTypeUtil10();
+   private boolean suppressPath;
+   
+   public static final String SUPPRESS_VIOLATION_PATH = "resteasy.validation.suppress.path";
    
    public abstract static class S1 extends AnnotationLiteral<Stateless> implements Stateless { }
    public static final Annotation STATELESS = new S1() 
@@ -72,6 +77,16 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    {
       this.validator = validator;
       this.methodValidator = methodValidator;
+      
+      ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+      if (context != null)
+      {
+         String s = context.getParameter(SUPPRESS_VIOLATION_PATH);
+         if (s != null)
+         {
+            suppressPath = Boolean.parseBoolean(s);
+         }
+      }
    }
 
    protected ViolationsContainer<Object> getViolationsContainer(HttpRequest request, Object target)
@@ -130,7 +145,8 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          {
             ConstraintViolation<Object> cv = it.next();
             Type ct = util.getConstraintType(cv);
-            rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), (cv.getInvalidValue() == null ? "null" :cv.getInvalidValue().toString())));
+            String path = (suppressPath ? "*" : cv.getPropertyPath().toString());
+            rcvs.add(new ResteasyConstraintViolation(ct, path, cv.getMessage(), (cv.getInvalidValue() == null ? "null" :cv.getInvalidValue().toString())));
          }
       }
       catch (Exception e)
@@ -176,7 +192,8 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
             Type ct = util.getConstraintType(cv);
             Object o = cv.getInvalidValue();
             String value = (o == null ? "" : o.toString());
-            rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), value));
+            String path = (suppressPath ? "*" : cv.getPropertyPath().toString());
+            rcvs.add(new ResteasyConstraintViolation(ct, path, cv.getMessage(), value));
          }
       }
       catch (Exception e)
@@ -218,7 +235,8 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
             Type ct = util.getConstraintType(cv);
             Object o = cv.getInvalidValue();
             String value = (o == null ? "" : o.toString());
-            rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), value));
+            String path = (suppressPath ? "*" : cv.getPropertyPath().toString());
+            rcvs.add(new ResteasyConstraintViolation(ct, path, cv.getMessage(), value));
          }
       }
       catch (Exception e)
@@ -291,7 +309,8 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
             {
                ConstraintViolation<?> cv = it.next();
                Type ct = util.getConstraintType(cv);
-               rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), (cv.getInvalidValue() == null ? "null" :cv.getInvalidValue().toString())));
+               String path = (suppressPath ? "*" : cv.getPropertyPath().toString());
+               rcvs.add(new ResteasyConstraintViolation(ct, path, cv.getMessage(), (cv.getInvalidValue() == null ? "null" :cv.getInvalidValue().toString())));
             }
          }
          catch (Exception e1)
