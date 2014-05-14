@@ -1,8 +1,5 @@
 package org.jboss.resteasy.plugins.server.netty;
 
-import static io.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
-import static io.netty.handler.codec.http.HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE;
-import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,9 +7,12 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.TooLongFrameException;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpResponse;
-
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.Failure;
+
+import static io.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
+import static io.netty.handler.codec.http.HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * {@link SimpleChannelInboundHandler} which handles the requests and dispatch them.
@@ -50,7 +50,7 @@ public class RequestHandler extends SimpleChannelInboundHandler
           NettyHttpResponse response = request.getResponse();
           try
           {
-             dispatcher.service(request, response, true);
+             dispatcher.service(ctx, request, response, true);
           }
           catch (Failure e1)
           {

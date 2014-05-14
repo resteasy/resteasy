@@ -420,7 +420,7 @@ public class JaxrsInterceptorRegistry<T>
       Collections.sort(matches, new AscendingPrecedenceComparator());
    }
 
-   public void register(InterceptorFactory factory)
+   public synchronized void register(InterceptorFactory factory)
    {
       interceptors.add(factory);
       cachedPreMatch = null;
@@ -430,24 +430,24 @@ public class JaxrsInterceptorRegistry<T>
       }
    }
 
-   public void registerClass(Class<? extends T> declaring)
+   public synchronized void registerClass(Class<? extends T> declaring)
    {
       register(new OnDemandInterceptorFactory(declaring));
    }
 
-   public void registerClass(Class<? extends T> declaring, int priority)
+   public synchronized void registerClass(Class<? extends T> declaring, int priority)
    {
       OnDemandInterceptorFactory factory = new OnDemandInterceptorFactory(declaring);
       factory.setOrder(priority);
       register(factory);
    }
 
-   public void registerSingleton(T interceptor)
+   public synchronized void registerSingleton(T interceptor)
    {
       register(new SingletonInterceptorFactory(interceptor.getClass(), interceptor));
    }
 
-   public void registerSingleton(T interceptor, int priority)
+   public synchronized void registerSingleton(T interceptor, int priority)
    {
       SingletonInterceptorFactory factory = new SingletonInterceptorFactory(interceptor.getClass(), interceptor);
       factory.setOrder(priority);

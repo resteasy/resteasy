@@ -37,7 +37,7 @@ public class SubResourceInvoker implements MethodInvoker
 				if (a instanceof PathParam)
 				{
 					String name = ((PathParam) a).value();
-					path = path.replace("{" + name + "}", "%" + index + "$s");
+					path = path.replaceFirst("\\{" + name + "(\\s)*(:.*)?\\}", "%" + index + "\\$s");
 					break;
 				}
 			}

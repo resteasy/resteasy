@@ -325,7 +325,7 @@ public class SegmentNode
       {
 
          ResourceMethodInvoker invoker = (ResourceMethodInvoker) match.expression.getInvoker();
-         if (invoker.getHttpMethods().contains(httpMethod))
+         if (invoker.getHttpMethods().contains(httpMethod.toUpperCase()))
          {
             methodMatch = true;
             if (invoker.doesConsume(contentType))
