@@ -20,6 +20,7 @@
         <module>resteasy-cdi-ejb-test</module>
         <module>ValidationTest-WF8</module>
         <module>ValidationTest-AS7</module>
+        <module>RESTEASY-945-WF8</module>
         <module>RESTEASY-1008-WF8</module>
         <module>RESTEASY-1008-AS7</module>
         <module>RESTEASY-1008-jetty-bv11</module>
