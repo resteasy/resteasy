@@ -82,11 +82,11 @@
             <version>0.8.0</version>
         </dependency>
 
-        <dependency>
+        <!--dependency>
             <groupId>org.jboss.weld.se</groupId>
             <artifactId>weld-se</artifactId>
             <version>2.1.0.Final</version>
-        </dependency>
+        </dependency-->
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
