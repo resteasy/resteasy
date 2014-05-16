@@ -39,6 +39,11 @@ public class ViolationReport
       this.returnValueViolations = (ArrayList<ResteasyConstraintViolation>) exception.getReturnValueViolations();
    }
    
+   public ViolationReport(String s)
+   {
+      this(new ResteasyViolationException(s));
+   }
+   
    public ViolationReport()
    {
    }

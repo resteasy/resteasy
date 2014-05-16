@@ -7,6 +7,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
+import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.resteasy945.TestApplication;
@@ -114,19 +115,19 @@ public class TestPathSuppression
       String answer = response.getEntity(String.class);
       System.out.println("entity: " + answer);
       assertEquals(400, response.getStatus());
-      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(answer));
-      countViolations(e, 1, 1, 1, 1, 0);
-      ResteasyConstraintViolation violation = e.getFieldViolations().iterator().next();
+      ViolationReport report = new ViolationReport(String.class.cast(answer));
+      countViolations(report, 1, 1, 1, 1, 0);
+      ResteasyConstraintViolation violation = report.getFieldViolations().iterator().next();
       System.out.println("violation: " + violation);
       System.out.println("field path: " + violation.getPath());
       Assert.assertEquals(fieldPath, violation.getPath());
-      violation = e.getPropertyViolations().iterator().next();
+      violation = report.getPropertyViolations().iterator().next();
       System.out.println("property path: " + violation.getPath());
       Assert.assertEquals(propertyPath, violation.getPath());
-      violation = e.getClassViolations().iterator().next();
+      violation = report.getClassViolations().iterator().next();
       System.out.println("class path: " + violation.getPath());
       Assert.assertEquals(classPath, violation.getPath());;
-      violation = e.getParameterViolations().iterator().next();
+      violation = report.getParameterViolations().iterator().next();
       System.out.println("parameter path: " + violation.getPath());
       Assert.assertEquals(parameterPath, violation.getPath());
    }
@@ -142,19 +143,19 @@ public class TestPathSuppression
       String answer = response.getEntity(String.class);
       System.out.println("entity: " + answer);
       assertEquals(500, response.getStatus());
-      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(answer));
-      countViolations(e, 0, 0, 0, 0, 1);
-      ResteasyConstraintViolation violation = e.getReturnValueViolations().iterator().next();
+      ViolationReport report = new ViolationReport(String.class.cast(answer));
+      countViolations(report, 0, 0, 0, 0, 1);
+      ResteasyConstraintViolation violation = report.getReturnValueViolations().iterator().next();
       System.out.println("return value path: " + violation.getPath());
       Assert.assertEquals(returnValuePath, violation.getPath());
    }
    
-   private void countViolations(ResteasyViolationException e, int fieldCount, int propertyCount, int classCount, int parameterCount, int returnValueCount)
+   private void countViolations(ViolationReport report, int fieldCount, int propertyCount, int classCount, int parameterCount, int returnValueCount)
    {
-      Assert.assertEquals(fieldCount, e.getFieldViolations().size());
-      Assert.assertEquals(propertyCount, e.getPropertyViolations().size());
-      Assert.assertEquals(classCount, e.getClassViolations().size());
-      Assert.assertEquals(parameterCount, e.getParameterViolations().size());
-      Assert.assertEquals(returnValueCount, e.getReturnValueViolations().size());
+      Assert.assertEquals(fieldCount, report.getFieldViolations().size());
+      Assert.assertEquals(propertyCount, report.getPropertyViolations().size());
+      Assert.assertEquals(classCount, report.getClassViolations().size());
+      Assert.assertEquals(parameterCount, report.getParameterViolations().size());
+      Assert.assertEquals(returnValueCount, report.getReturnValueViolations().size());
    }
 }

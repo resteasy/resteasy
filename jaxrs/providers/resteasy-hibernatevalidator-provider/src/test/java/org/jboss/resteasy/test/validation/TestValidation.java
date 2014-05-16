@@ -54,6 +54,7 @@ import junit.framework.Assert;
 
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
+import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
@@ -783,9 +784,9 @@ public class TestValidation
       ClientResponse<?> response = request.post();
       Assert.assertEquals(400, response.getStatus());
       String entity = response.getEntity(String.class);
-      ResteasyViolationException e = new ResteasyViolationException(entity);
-      countViolations(e, 1, 1, 0, 0, 0, 0);
-      ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
+      ViolationReport r = new ViolationReport(entity);
+      countViolations(r, 1, 0, 0, 0, 0);
+      ResteasyConstraintViolation cv = r.getFieldViolations().iterator().next();
       System.out.println("cv: " + cv);
       Assert.assertEquals("size must be between 2 and 4", cv.getMessage());
       Assert.assertEquals("abcde", cv.getValue());
@@ -813,9 +814,9 @@ public class TestValidation
       ClientResponse<?> response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       String entity = response.getEntity(String.class);
-      ResteasyViolationException e = new ResteasyViolationException(entity);
-      countViolations(e, 1, 0, 1, 0, 0, 0);
-      ResteasyConstraintViolation cv = e.getPropertyViolations().iterator().next();
+      ViolationReport r = new ViolationReport(entity);
+      countViolations(r, 0, 1, 0, 0, 0);
+      ResteasyConstraintViolation cv = r.getPropertyViolations().iterator().next();
       Assert.assertEquals("size must be between 2 and 4", cv.getMessage());
       Assert.assertEquals("abcdef", cv.getValue());
       after();
@@ -838,12 +839,12 @@ public class TestValidation
       response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       String entity = response.getEntity(String.class);
-      ResteasyViolationException e = new ResteasyViolationException(entity);
-      countViolations(e, 2, 1, 1, 0, 0, 0);
-      ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
+      ViolationReport r = new ViolationReport(entity);
+      countViolations(r, 1, 1, 0, 0, 0);
+      ResteasyConstraintViolation cv = r.getFieldViolations().iterator().next();
       Assert.assertEquals("size must be between 2 and 4", cv.getMessage());
       Assert.assertEquals("a", cv.getValue());
-      cv = e.getPropertyViolations().iterator().next();
+      cv = r.getPropertyViolations().iterator().next();
       Assert.assertEquals("size must be between 3 and 5", cv.getMessage());
       Assert.assertEquals("uvwxyz", cv.getValue());
       after();
@@ -866,9 +867,9 @@ public class TestValidation
       response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       String entity = response.getEntity(String.class);
-      ResteasyViolationException e = new ResteasyViolationException(entity);
-      countViolations(e, 1, 0, 0, 1, 0, 0);
-      ResteasyConstraintViolation cv = e.getClassViolations().iterator().next();
+      ViolationReport r = new ViolationReport(entity);
+      countViolations(r, 0, 0, 1, 0, 0);
+      ResteasyConstraintViolation cv = r.getClassViolations().iterator().next();
       Assert.assertEquals("Concatenation of s and t must have length > 5", cv.getMessage());
       Assert.assertEquals("TestResourceWithClassConstraint(\"a\", \"b\")", cv.getValue());
       System.out.println(cv.getValue());
@@ -892,9 +893,9 @@ public class TestValidation
       response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       String entity = response.getEntity(String.class);
-      ResteasyViolationException e = new ResteasyViolationException(entity);
-      countViolations(e, 2, 2, 0, 0, 0, 0);
-      Iterator<ResteasyConstraintViolation> it = e.getFieldViolations().iterator();
+      ViolationReport r = new ViolationReport(entity);
+      countViolations(r, 2, 0, 0, 0, 0);
+      Iterator<ResteasyConstraintViolation> it = r.getFieldViolations().iterator();
       ResteasyConstraintViolation cv1 = it.next();
       ResteasyConstraintViolation cv2 = it.next();
       if (cv1.getValue().equals("xyz"))
@@ -927,10 +928,10 @@ public class TestValidation
       response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       String entity = response.getEntity(String.class);
-      ResteasyViolationException e = new ResteasyViolationException(entity);
-      System.out.println("exception: " + e);
-      countViolations(e, 1, 1, 0, 0, 0, 0);
-      ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
+      ViolationReport r = new ViolationReport(entity);
+      System.out.println("exception: " + r);
+      countViolations(r, 1, 0, 0, 0, 0);
+      ResteasyConstraintViolation cv = r.getFieldViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().startsWith("size must be between 5 and"));
       Assert.assertEquals("abc", cv.getValue());
       after();
@@ -953,9 +954,9 @@ public class TestValidation
       response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       String entity = response.getEntity(String.class);
-      ResteasyViolationException e = new ResteasyViolationException(entity);
-      countViolations(e, 1, 1, 0, 0, 0, 0);
-      ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
+      ViolationReport r = new ViolationReport(entity);
+      countViolations(r, 1, 0, 0, 0, 0);
+      ResteasyConstraintViolation cv = r.getFieldViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().startsWith("size must be between 5 and"));
       Assert.assertEquals("abc", cv.getValue());
       after();
@@ -978,9 +979,9 @@ public class TestValidation
       response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       String entity = response.getEntity(String.class);
-      ResteasyViolationException e = new ResteasyViolationException(entity);
-      countViolations(e, 1, 1, 0, 0, 0, 0);
-      ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
+      ViolationReport r = new ViolationReport(entity);
+      countViolations(r, 1, 0, 0, 0, 0);
+      ResteasyConstraintViolation cv = r.getFieldViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().startsWith("size must be between 5 and"));
       Assert.assertEquals("abc", cv.getValue());
       after();
@@ -1003,10 +1004,10 @@ public class TestValidation
       response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       String entity = response.getEntity(String.class);
-      ResteasyViolationException e = new ResteasyViolationException(entity);
-      System.out.println("exception: " + e);
-      countViolations(e, 1, 1, 0, 0, 0, 0);
-      ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
+      ViolationReport r = new ViolationReport(entity);
+      System.out.println("exception: " + r);
+      countViolations(r, 1, 0, 0, 0, 0);
+      ResteasyConstraintViolation cv = r.getFieldViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().startsWith("size must be between 5 and"));
       Assert.assertEquals("abc", cv.getValue());
       after();
@@ -1045,9 +1046,9 @@ public class TestValidation
       response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       String entity = response.getEntity(String.class);
-      ResteasyViolationException e = new ResteasyViolationException(entity);
-      countViolations(e, 1, 0, 0, 0, 1, 0);
-      ResteasyConstraintViolation cv = e.getParameterViolations().iterator().next();
+      ViolationReport r = new ViolationReport(entity);
+      countViolations(r, 0, 0, 0, 1, 0);
+      ResteasyConstraintViolation cv = r.getParameterViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("s must have length: 1 <= length <= 3"));
       Assert.assertEquals("Foo[abcdef]", cv.getValue());
       
@@ -1057,9 +1058,9 @@ public class TestValidation
       response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       entity = response.getEntity(String.class);
-      e = new ResteasyViolationException(entity);
-      countViolations(e, 1, 0, 0, 0, 1, 0);
-      cv = e.getParameterViolations().iterator().next();
+      r = new ViolationReport(entity);
+      countViolations(r, 0, 0, 0, 1, 0);
+      cv = r.getParameterViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("s must have length: 3 <= length <= 5"));
       Assert.assertEquals("Foo[abcdef]", cv.getValue());
 
@@ -1069,9 +1070,9 @@ public class TestValidation
       response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       entity = response.getEntity(String.class);
-      e = new ResteasyViolationException(entity);
-      countViolations(e, 2, 0, 0, 0, 2, 0);
-      Iterator<ResteasyConstraintViolation> it = e.getParameterViolations().iterator(); 
+      r = new ViolationReport(entity);
+      countViolations(r, 0, 0, 0, 2, 0);
+      Iterator<ResteasyConstraintViolation> it = r.getParameterViolations().iterator(); 
       ResteasyConstraintViolation cv1 = it.next();
       ResteasyConstraintViolation cv2 = it.next();
       if (cv1.toString().indexOf('1') < 0)
@@ -1108,9 +1109,9 @@ public class TestValidation
       response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       entity = response.getEntity(String.class);
-      e = new ResteasyViolationException(entity);
-      countViolations(e, 6, 0, 0, 0, 6, 0);
-      List<String> list = getMessages(new ArrayList<ResteasyConstraintViolation>(e.getViolations()));
+      r = new ViolationReport(entity);
+      countViolations(r, 0, 0, 0, 6, 0);
+      List<String> list = getMessages(r);
       Assert.assertTrue(list.contains("size must be between 2 and 3; pppp"));
       Assert.assertTrue(list.contains("size must be between 2 and 3; mmmm"));
       Assert.assertTrue(list.contains("size must be between 2 and 3; qqqq"));
@@ -1156,9 +1157,9 @@ public class TestValidation
       response = request.post(Foo.class);
       Assert.assertEquals(500, response.getStatus());
       String entity = response.getEntity(String.class);
-      ResteasyViolationException e = new ResteasyViolationException(entity);
-      countViolations(e, 1, 0, 0, 0, 0, 1);
-      ResteasyConstraintViolation cv = e.getReturnValueViolations().iterator().next();
+      ViolationReport r = new ViolationReport(entity);
+      countViolations(r, 0, 0, 0, 0, 1);
+      ResteasyConstraintViolation cv = r.getReturnValueViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("s must have length: 1 <= length <= 3"));
       Assert.assertEquals("Foo[abcdef]", cv.getValue());
 
@@ -1168,9 +1169,9 @@ public class TestValidation
       response = request.post(Foo.class);
       Assert.assertEquals(500, response.getStatus());
       entity = response.getEntity(String.class);
-      e = new ResteasyViolationException(entity);
-      countViolations(e, 1, 0, 0, 0, 0, 1);
-      cv = e.getReturnValueViolations().iterator().next();
+      r = new ViolationReport(entity);
+      countViolations(r, 0, 0, 0, 0, 1);
+      cv = r.getReturnValueViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("s must have length: 3 <= length <= 5"));
       Assert.assertEquals("Foo[abcdef]", cv.getValue());
 
@@ -1180,9 +1181,9 @@ public class TestValidation
       response = request.post(Foo.class); 
       Assert.assertEquals(500, response.getStatus());
       entity = response.getEntity(String.class);
-      e = new ResteasyViolationException(entity);
-      countViolations(e, 2, 0, 0, 0, 0, 2);
-      Iterator<ResteasyConstraintViolation> it = e.getReturnValueViolations().iterator(); 
+      r = new ViolationReport(entity);
+      countViolations(r, 0, 0, 0, 0, 2);
+      Iterator<ResteasyConstraintViolation> it = r.getReturnValueViolations().iterator(); 
       ResteasyConstraintViolation cv1 = it.next();
       ResteasyConstraintViolation cv2 = it.next();
       if (cv1.toString().indexOf('1') < 0)
@@ -1220,18 +1221,18 @@ public class TestValidation
       response = request.post(Foo.class);
       Assert.assertEquals(400, response.getStatus());
       String entity = response.getEntity(String.class);
-      ResteasyViolationException e = new ResteasyViolationException(entity);
-      countViolations(e, 4, 1, 1, 1, 1, 0);
-      ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
+      ViolationReport r = new ViolationReport(entity);
+      countViolations(r, 1, 1, 1, 1, 0);
+      ResteasyConstraintViolation cv = r.getFieldViolations().iterator().next();
       Assert.assertEquals("size must be between 2 and 4", cv.getMessage());
       Assert.assertEquals("a", cv.getValue());
-      cv = e.getPropertyViolations().iterator().next();
+      cv = r.getPropertyViolations().iterator().next();
       Assert.assertEquals("size must be between 3 and 5", cv.getMessage());
       Assert.assertEquals("z", cv.getValue());
-      cv = e.getClassViolations().iterator().next();
+      cv = r.getClassViolations().iterator().next();
       Assert.assertEquals("Concatenation of s and t must have length > 5", cv.getMessage());
       Assert.assertTrue(cv.getValue().startsWith("org.jboss.resteasy.test.validation.TestValidation$TestResourceWithAllFivePotentialViolations@"));
-      cv = e.getParameterViolations().iterator().next();
+      cv = r.getParameterViolations().iterator().next();
       Assert.assertEquals("s must have length: 3 <= length <= 5", cv.getMessage());
       Assert.assertEquals("Foo[p]", cv.getValue());
       after();
@@ -1276,9 +1277,9 @@ public class TestValidation
       response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       String entity = response.getEntity(String.class);
-      ResteasyViolationException e = new ResteasyViolationException(entity);
-      countViolations(e, 1, 1, 0, 0, 0, 0);
-      ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
+      ViolationReport r = new ViolationReport(entity);
+      countViolations(r, 1, 0, 0, 0, 0);
+      ResteasyConstraintViolation cv = r.getFieldViolations().iterator().next();
       Assert.assertEquals("size must be between 2 and 4", cv.getMessage());
       Assert.assertEquals("abcde", cv.getValue());
 
@@ -1295,9 +1296,9 @@ public class TestValidation
       response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       entity = response.getEntity(String.class);
-      e = new ResteasyViolationException(entity);
-      countViolations(e, 1, 0, 1, 0, 0, 0);
-      cv = e.getPropertyViolations().iterator().next();
+      r = new ViolationReport(entity);
+      countViolations(r, 0, 1, 0, 0, 0);
+      cv = r.getPropertyViolations().iterator().next();
       Assert.assertEquals("size must be between 2 and 4", cv.getMessage());
       Assert.assertEquals("abcdef", cv.getValue());
 
@@ -1319,14 +1320,14 @@ public class TestValidation
       Assert.assertEquals(400, response.getStatus());
       entity = response.getEntity(String.class);
       System.out.println("entity: " + entity);
-      e = new ResteasyViolationException(entity);
-      countViolations(e, 4, 1, 1, 1, 1, 0);
-      cv = e.getFieldViolations().iterator().next();
+      r = new ViolationReport(entity);
+      countViolations(r, 1, 1, 1, 1, 0);
+      cv = r.getFieldViolations().iterator().next();
       Assert.assertEquals("size must be between 2 and 4", cv.getMessage());
       Assert.assertEquals("a", cv.getValue());
-      cv = e.getPropertyViolations().iterator().next();
+      cv = r.getPropertyViolations().iterator().next();
       Assert.assertEquals("size must be between 3 and 5", cv.getMessage());
-      cv = e.getClassViolations().iterator().next();
+      cv = r.getClassViolations().iterator().next();
       Assert.assertEquals("Concatenation of s and t must have length > 5", cv.getMessage());
       Assert.assertTrue(cv.getValue().startsWith("org.jboss.resteasy.test.validation.TestValidation$TestResourceWithAllFivePotentialViolations@"));
       
@@ -1341,9 +1342,9 @@ public class TestValidation
       response = request.post(String.class);
       Assert.assertEquals(400, response.getStatus());
       entity = response.getEntity(String.class);
-      e = new ResteasyViolationException(entity);
-      countViolations(e, 1, 1, 0, 0, 0, 0);
-      cv = e.getFieldViolations().iterator().next();
+      r = new ViolationReport(entity);
+      countViolations(r, 1, 0, 0, 0, 0);
+      cv = r.getFieldViolations().iterator().next();
       Assert.assertEquals("size must be between 2 and 3", cv.getMessage());
       Assert.assertEquals("abcdef", cv.getValue());
       
@@ -1378,18 +1379,18 @@ public class TestValidation
       }
       Assert.assertEquals(400, response.getStatus());
       String entity = response.getEntity(String.class);
-      ResteasyViolationException e = new ResteasyViolationException(entity);
-      countViolations(e, 4, 1, 1, 1, 1, 0);
-      ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
+      ViolationReport r = new ViolationReport(entity);
+      countViolations(r, 1, 1, 1, 1, 0);
+      ResteasyConstraintViolation cv = r.getFieldViolations().iterator().next();
       Assert.assertEquals("size must be between 2 and 4", cv.getMessage());
       Assert.assertEquals("a", cv.getValue());
-      cv = e.getPropertyViolations().iterator().next();
+      cv = r.getPropertyViolations().iterator().next();
       Assert.assertEquals("size must be between 3 and 5", cv.getMessage());
       Assert.assertEquals("z", cv.getValue());
-      cv = e.getClassViolations().iterator().next();
+      cv = r.getClassViolations().iterator().next();
       Assert.assertEquals("Concatenation of s and t must have length > 5", cv.getMessage());
       Assert.assertTrue(cv.getValue().startsWith("org.jboss.resteasy.test.validation.TestValidation$TestResourceWithAllFivePotentialViolations@"));
-      cv = e.getParameterViolations().iterator().next();
+      cv = r.getParameterViolations().iterator().next();
       Assert.assertEquals("s must have length: 3 <= length <= 5", cv.getMessage());
       Assert.assertEquals("Foo[p]", cv.getValue());
 
@@ -1421,9 +1422,9 @@ public class TestValidation
       }
       Assert.assertEquals(500, response.getStatus());
       entity = response.getEntity(String.class);
-      e = new ResteasyViolationException(entity);
-      countViolations(e, 1, 0, 0, 0, 0, 1);
-      cv = e.getReturnValueViolations().iterator().next();
+      r = new ViolationReport(entity);
+      countViolations(r, 0, 0, 0, 0, 1);
+      cv = r.getReturnValueViolations().iterator().next();
       Assert.assertEquals("s must have length: 4 <= length <= 5", cv.getMessage());
       Assert.assertEquals("Foo[pqr]", cv.getValue());
       
@@ -1436,17 +1437,27 @@ public class TestValidation
       after();
    }
    
-   private void countViolations(ResteasyViolationException e, int totalCount, int fieldCount, int propertyCount, int classCount, int parameterCount, int returnValueCount)
+   private void countViolations(ViolationReport r, int fieldCount, int propertyCount, int classCount, int parameterCount, int returnValueCount)
    {
-      Assert.assertEquals(totalCount,       e.getViolations().size());
-      Assert.assertEquals(fieldCount,       e.getFieldViolations().size());
-      Assert.assertEquals(propertyCount,    e.getPropertyViolations().size());
-      Assert.assertEquals(classCount,       e.getClassViolations().size());
-      Assert.assertEquals(parameterCount,   e.getParameterViolations().size());
-      Assert.assertEquals(returnValueCount, e.getReturnValueViolations().size());
+      Assert.assertEquals(fieldCount,       r.getFieldViolations().size());
+      Assert.assertEquals(propertyCount,    r.getPropertyViolations().size());
+      Assert.assertEquals(classCount,       r.getClassViolations().size());
+      Assert.assertEquals(parameterCount,   r.getParameterViolations().size());
+      Assert.assertEquals(returnValueCount, r.getReturnValueViolations().size());
    }
    
-   private List<String> getMessages(List<ResteasyConstraintViolation> rcvs)
+   private List<String> getMessages(ViolationReport r)
+   {
+      List<String> list = new ArrayList<String>();
+      list.addAll(getMessagesFromList(r.getFieldViolations()));
+      list.addAll(getMessagesFromList(r.getPropertyViolations()));
+      list.addAll(getMessagesFromList(r.getClassViolations()));
+      list.addAll(getMessagesFromList(r.getParameterViolations()));
+      list.addAll(getMessagesFromList(r.getReturnValueViolations()));
+      return list;
+   }
+   
+   private List<String> getMessagesFromList(List<ResteasyConstraintViolation> rcvs)
    {
       List<String> list = new ArrayList<String>();
       for (Iterator<ResteasyConstraintViolation> it = rcvs.iterator(); it.hasNext(); )
