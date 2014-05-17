@@ -21,7 +21,7 @@ import javax.validation.Payload;
 @Constraint(validatedBy = SumValidator.class)
 public @interface SumConstraint
 {
-   String message() default "{org.jboss.resteasy.ejb.validation.SumConstraint}";
+   String message() default "{org.jboss.resteasy.resteasy1058.SumConstraint}";
    Class<?>[] groups() default {};
    Class<? extends Payload>[] payload() default {};
    int min() default 0;

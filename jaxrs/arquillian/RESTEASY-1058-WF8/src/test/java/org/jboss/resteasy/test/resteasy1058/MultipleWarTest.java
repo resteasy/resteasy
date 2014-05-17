@@ -96,7 +96,7 @@ public class MultipleWarTest
          cv = e.getPropertyViolations().iterator().next();
          Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 5"));
          cv = e.getClassViolations().iterator().next();
-         Assert.assertTrue(cv.getMessage().indexOf("org.jboss.resteasy.ejb.validation.SumConstraint") > 0);
+         Assert.assertTrue(cv.getMessage().indexOf("org.jboss.resteasy.resteasy1058.SumConstraint") > 0);
          cv = e.getParameterViolations().iterator().next();
          Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 7"));
          response.close();
@@ -114,7 +114,7 @@ public class MultipleWarTest
          cv = e.getPropertyViolations().iterator().next();
          Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 5"));
          cv = e.getClassViolations().iterator().next();
-         Assert.assertTrue(cv.getMessage().indexOf("org.jboss.resteasy.ejb.validation.SumConstraint") > 0);
+         Assert.assertTrue(cv.getMessage().indexOf("org.jboss.resteasy.resteasy1058.SumConstraint") > 0);
          cv = e.getParameterViolations().iterator().next();
          Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 7"));
          response.close();
