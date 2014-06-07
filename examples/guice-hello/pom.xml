@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-guice</artifactId>
-            <version>2.3.7.1.Final</version>
+            <version>2.3.7.2.Final</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
