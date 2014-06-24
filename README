@@ -1,6 +1,0 @@
-Resteasy is a JBoss.org project aimed at providing productivity frameworks for developing client and server RESTful applications and services in Java.  It is mainly a JAX-RS implementation but you'll find some other experimental code in the repository.
-
-JAX-RS
-------
-
-The JAX-RS code is in the jaxrs directory.  After pulling down a clone of the Resteasy repository, cd to jaxrs/ and just do mvn install to build.
