@@ -6,9 +6,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -32,6 +30,14 @@ public class NettyTest
       public String hello()
       {
          return "hello world";
+      }
+
+      @GET
+      @Path("/echo")
+      @Produces("text/plain")
+      public String echo(@QueryParam("text") String input)
+      {
+         return input+input;
       }
 
       @GET
@@ -155,5 +161,64 @@ public class NettyTest
         String val = target.request().get(String.class);
         Assert.assertNotNull(val);
         Assert.assertFalse(val.isEmpty());
+    }
+
+    /**
+     * https://issues.jboss.org/browse/RESTEASY-1077
+     */
+    @Test
+    public void testTrailingSlash() {
+        WebTarget target = client.target(generateURL("/test/"));
+        Response resp = target.request().get();
+        try {
+            Assert.assertEquals(200, resp.getStatus());
+        } finally {
+            resp.close();
+        }
+    }
+
+   /**
+    * https://issues.jboss.org/browse/RESTEASY-1077
+    */
+   @Test
+   public void testTrailingSlashWithParams() {
+      WebTarget target = client.target(generateURL("/echo/?text=Test"));
+      Response resp = target.request().get();
+      try {
+         Assert.assertEquals(200, resp.getStatus());
+         Assert.assertEquals("TestTest", resp.readEntity(String.class));
+      } finally {
+         resp.close();
+      }
+   }
+
+   /**
+    * https://issues.jboss.org/browse/RESTEASY-1077
+    */
+   @Test
+   public void testNoTrailingSlashWithParams() {
+      WebTarget target = client.target(generateURL("/echo?text=Test"));
+      Response resp = target.request().get();
+      try {
+         Assert.assertEquals(200, resp.getStatus());
+         Assert.assertEquals("TestTest", resp.readEntity(String.class));
+      } finally {
+         resp.close();
+      }
+   }
+
+    /**
+     * https://issues.jboss.org/browse/RESTEASY-1077
+     */
+    @Test
+    public void testNoTrailingSlash() {
+        WebTarget target = client.target(generateURL("/test"));
+        Response resp = target.request().get();
+
+        try {
+            Assert.assertEquals(200, resp.getStatus());
+        } finally {
+            resp.close();
+        }
     }
 }

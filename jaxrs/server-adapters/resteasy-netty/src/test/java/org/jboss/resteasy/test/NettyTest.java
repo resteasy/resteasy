@@ -12,6 +12,8 @@ import org.junit.Test;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
@@ -32,6 +34,14 @@ public class NettyTest
       public String hello()
       {
          return "hello world";
+      }
+
+      @GET
+      @Path("/echo")
+      @Produces("text/plain")
+      public String echo(@QueryParam("text") String input)
+      {
+         return input+input;
       }
 
       @GET
@@ -80,11 +90,61 @@ public class NettyTest
    }
 
     @Test
-    public void testChannelContext() throws Exception {
+    public void testChannelContext() {
       ResteasyClient client = new ResteasyClientBuilder().build();
       ResteasyWebTarget target = client.target(generateURL("/context"));
       String val = target.request().get(String.class);
       Assert.assertNotNull(val);
       Assert.assertFalse(val.isEmpty());
+    }
+
+   /**
+    * https://issues.jboss.org/browse/RESTEASY-1077
+    */
+   @Test
+   public void testTrailingSlash() {
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyWebTarget target = client.target(generateURL("/test/"));
+      Response resp = target.request().get();
+
+      try {
+         Assert.assertEquals(200, resp.getStatus());
+      } finally {
+         resp.close();
+      }
+   }
+
+    /**
+     * https://issues.jboss.org/browse/RESTEASY-1077
+     */
+    @Test
+    public void testTrailingSlashParams() {
+        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyWebTarget target = client.target(generateURL("/echo/?text=Test"));
+        Response resp = target.request().get();
+
+        try {
+            Assert.assertEquals(200, resp.getStatus());
+           Assert.assertEquals("TestTest", resp.readEntity(String.class));
+        } finally {
+            resp.close();
+        }
+    }
+
+    /**
+     * https://issues.jboss.org/browse/RESTEASY-1077
+     */
+    @Test
+    public void testNoTrailingSlashParams() {
+        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyWebTarget target = client.target(generateURL("/echo?text=Test"));
+        Response resp = target.request().get();
+
+        try {
+           Assert.assertEquals(200, resp.getStatus());
+           Assert.assertEquals("TestTest", resp.readEntity(String.class));
+        } finally {
+            resp.close();
+        }
     }
 }

@@ -63,37 +63,43 @@ public class ResteasyUriInfo implements UriInfo
          baseURI = absoluteBuilder.clone().replacePath(tmpContextPath).replaceQuery(null).build();
       }
       // make sure there is no trailing '/'
-      if (encodedPath.length() > 1 && encodedPath.endsWith("/")) encodedPath = encodedPath.substring(0, encodedPath.length() - 1);
+      removeTrailingSlash();
 
       // make sure path starts with '/'
-      if (encodedPath.length() == 0 || encodedPath.charAt(0) != '/')
-      {
-         encodedPath = "/" + encodedPath;
-      }
+      ensureLeadingSlash();
+
       path = UriBuilder.fromPath(encodedPath).build().getPath();
       processPath();
    }
 
    public ResteasyUriInfo(URI base, URI relative)
    {
-      String b = base.toString();
-      if (!b.endsWith("/")) b += "/";
-      String r = relative.getRawPath();
-      if (r.startsWith("/"))
-      {
-         encodedPath =  r;
-         path = relative.getPath();
-      }
-      else
-      {
-         encodedPath = "/" + r;
-         path = "/" + relative.getPath();
-      }
       UriBuilder requestUriBuilder = UriBuilder.fromUri(base).path(relative.getRawPath()).replaceQuery(relative.getRawQuery());
       requestURI = requestUriBuilder.build();
       absolutePath = requestUriBuilder.replaceQuery(null).build();
       baseURI = base;
+
+      encodedPath = relative.getRawPath();
+
+      ensureLeadingSlash();
+      removeTrailingSlash();
+
+      path = UriBuilder.fromPath(encodedPath).build().getPath();
+
       processPath();
+   }
+
+   private void removeTrailingSlash() {
+      if (encodedPath.length() > 1 && encodedPath.endsWith("/")) {
+         encodedPath = encodedPath.substring(0, encodedPath.length() - 1);
+      }
+   }
+
+   private void ensureLeadingSlash() {
+      if (encodedPath.length() == 0 || encodedPath.charAt(0) != '/')
+      {
+         encodedPath = "/" + encodedPath;
+      }
    }
 
    protected void processPath()
@@ -113,22 +119,18 @@ public class ResteasyUriInfo implements UriInfo
 
    public ResteasyUriInfo(URI requestURI)
    {
-      String r = requestURI.getRawPath();
-      if (r.startsWith("/"))
-      {
-         encodedPath =  r;
-         path = requestURI.getPath();
-      }
-      else
-      {
-         encodedPath = "/" + r;
-         path = "/" + requestURI.getPath();
-      }
       this.requestURI = requestURI;
       baseURI = UriBuilder.fromUri(requestURI).replacePath("").build();
       absolutePath = UriBuilder.fromUri(requestURI).replaceQuery(null).build();
-      processPath();
 
+      encodedPath = requestURI.getRawPath();
+
+      ensureLeadingSlash();
+      removeTrailingSlash();
+
+      path = UriBuilder.fromPath(encodedPath).build().getPath();
+
+      processPath();
    }
 
    /**
