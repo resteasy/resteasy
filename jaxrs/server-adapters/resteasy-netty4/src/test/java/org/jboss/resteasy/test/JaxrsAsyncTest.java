@@ -116,14 +116,11 @@ public class JaxrsAsyncTest
    public void testCancelled() throws Exception
    {
       Response response = null;
-      System.out.println("calling cancelled");
       response = client.target(BASE_URI).path("jaxrs/cancelled").request().put(null);
       Assert.assertEquals(204, response.getStatus());
       response.close();
       response = client.target(BASE_URI).path("jaxrs/cancelled").request().get();
-      System.out.println("returned from calling cancelled");
       Assert.assertEquals(500, response.getStatus());
-      System.out.println("done");
       response.close();
    }
 
@@ -131,26 +128,20 @@ public class JaxrsAsyncTest
    public void testCancel() throws Exception
    {
       Response response = null;
-      System.out.println("calling cancelled");
       response = client.target(BASE_URI).path("jaxrs/cancelled").request().put(null);
       Assert.assertEquals(204, response.getStatus());
       response.close();
+
       response = client.target(BASE_URI).path("jaxrs/cancelled").request().get();
-      System.out.println("returned from calling cancelled");
       Assert.assertEquals(500, response.getStatus());
-      System.out.println("done");
       response.close();
 
-      System.out.println("calling cancel");
       response = client.target(BASE_URI).path("jaxrs/cancel").request().get();
-      System.out.println("got response");
       Assert.assertEquals(503, response.getStatus());
       response.close();
-      System.out.println("calling cancelled");
+
       response = client.target(BASE_URI).path("jaxrs/cancelled").request().get();
-      System.out.println("returned from calling cancelled");
       Assert.assertEquals(204, response.getStatus());
-      System.out.println("done");
 
       response.close();
    }

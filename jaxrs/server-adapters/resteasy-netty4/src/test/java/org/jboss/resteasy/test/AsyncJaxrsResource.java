@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test;
 
-
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -46,8 +45,6 @@ public class AsyncJaxrsResource
       t.start();
    }
 
-
-
    @GET
    @Path("injection-failure/{param}")
    public void injectionFailure(@Suspended final AsyncResponse response, @PathParam("param") int id) {
@@ -61,13 +58,10 @@ public class AsyncJaxrsResource
       throw new ForbiddenException("Should be unreachable");
    }
 
-
-
    @GET
    @Path("cancelled")
    public Response getCancelled()
    {
-      System.out.println("getCancelled called!");
       if (cancelled) return Response.noContent().build();
       else return Response.status(500).build();
    }
@@ -77,7 +71,6 @@ public class AsyncJaxrsResource
    public void resetCancelled()
    {
       cancelled = false;
-
    }
 
    @GET
@@ -92,7 +85,6 @@ public class AsyncJaxrsResource
          {
             try
             {
-               System.out.println("STARTED!!!!");
                Thread.sleep(100);
                Response jaxrs = Response.ok("hello").type(MediaType.TEXT_PLAIN).build();
                response.resume(jaxrs);
@@ -119,7 +111,6 @@ public class AsyncJaxrsResource
          {
             try
             {
-               System.out.println("STARTED Empty!!!!");
                Thread.sleep(100);
                response.resume(Response.noContent().build());
             }
@@ -131,7 +122,6 @@ public class AsyncJaxrsResource
       };
       t.start();
    }
-
 
    @GET
    @Path("timeout")
@@ -146,7 +136,6 @@ public class AsyncJaxrsResource
          {
             try
             {
-               System.out.println("STARTED!!!!");
                Thread.sleep(100000);
                Response jaxrs = Response.ok("goodbye").type(MediaType.TEXT_PLAIN).build();
                response.resume(jaxrs);
@@ -159,7 +148,6 @@ public class AsyncJaxrsResource
       };
       t.start();
    }
-
 
    @GET
    @Path("cancel")
@@ -177,9 +165,7 @@ public class AsyncJaxrsResource
             try
             {
                sync.countDown();
-               System.out.println("cancel awaiting thread");
                ready.await();
-               System.out.println("cancel resuming");
                Response jaxrs = Response.ok("hello").type(MediaType.TEXT_PLAIN).build();
                cancelled = !response.resume(jaxrs);
             }
@@ -192,7 +178,6 @@ public class AsyncJaxrsResource
       t.start();
 
       sync.await();
-      System.out.println("Cancelling...");
       response.cancel();
       ready.countDown();
    }
