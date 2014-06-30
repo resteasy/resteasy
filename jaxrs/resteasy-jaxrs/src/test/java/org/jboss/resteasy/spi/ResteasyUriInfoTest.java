@@ -35,7 +35,7 @@ public class ResteasyUriInfoTest {
       ResteasyUriInfo uri = new ResteasyUriInfo(new URI("http://localhost:8081/"), new URI("test/"));
 
       Assert.assertEquals(uri.getBaseUri().toString(), "http://localhost:8081/");
-      Assert.assertEquals("/test", uri.getPath().toString());
+      Assert.assertEquals("/test/", uri.getPath().toString());
    }
 
    @Test
@@ -52,7 +52,7 @@ public class ResteasyUriInfoTest {
       ResteasyUriInfo uri = new ResteasyUriInfo(new URI("http://localhost:8081/"), new URI("/test/?param1=value"));
 
       Assert.assertEquals("http://localhost:8081/", uri.getBaseUri().toString());
-      Assert.assertEquals("/test", uri.getPath().toString());
+      Assert.assertEquals("/test/", uri.getPath().toString());
       Assert.assertEquals("{param1=[value]}", uri.getQueryParameters().toString());
    }
 

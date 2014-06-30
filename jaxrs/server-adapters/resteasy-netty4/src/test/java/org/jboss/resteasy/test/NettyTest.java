@@ -12,6 +12,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -33,11 +34,34 @@ public class NettyTest
       }
 
       @GET
-      @Path("/echo")
+      @Path("/echo/")
       @Produces("text/plain")
-      public String echo(@QueryParam("text") String input)
+      public String hello(@QueryParam("text") String input)
       {
          return input+input;
+      }
+
+      @GET
+      @Path("/ping")
+      public Response pingRoot(@Context UriInfo uriInfo, @QueryParam("text") String input) {
+         if (uriInfo.getPath().endsWith("/")) {
+            return ping();
+         } else {
+            return Response
+                    .status(Response.Status.MOVED_PERMANENTLY)
+                    .build();
+         }
+      }
+
+      @GET
+      @Path("/ping/index.html")
+      @Produces("text/plain")
+      public Response ping()
+      {
+         return Response
+                 .status(Response.Status.OK)
+                 .entity("PONG")
+                 .build();
       }
 
       @GET
@@ -163,29 +187,60 @@ public class NettyTest
         Assert.assertFalse(val.isEmpty());
     }
 
-    /**
-     * https://issues.jboss.org/browse/RESTEASY-1077
-     */
-    @Test
-    public void testTrailingSlash() throws Exception {
-        WebTarget target = client.target(generateURL("/test/"));
-        Response resp = target.request().get();
-        try {
-            Assert.assertEquals(200, resp.getStatus());
-        } finally {
-            resp.close();
-        }
-    }
+   @Test
+   public void testContextPathTrailingSlash() throws Exception {
+      WebTarget target = client.target(generateURL("/ping"));
+      Response resp = target.request().get();
+      try {
+         Assert.assertEquals(Response.Status.MOVED_PERMANENTLY.getStatusCode(), resp.getStatus());
+      } finally {
+         resp.close();
+      }
+   }
+
+   @Test
+   public void testContextPathTrailingSlash2() throws Exception {
+      WebTarget target = client.target(generateURL("/ping/"));
+      Response resp = target.request().get();
+      try {
+         Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+         Assert.assertEquals("PONG", resp.readEntity(String.class));
+      } finally {
+         resp.close();
+      }
+   }
+
+   @Test
+   public void testContextPathTrailingSlash3() throws Exception {
+      WebTarget target = client.target(generateURL("/ping/index.html"));
+      Response resp = target.request().get();
+      try {
+         Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+         Assert.assertEquals("PONG", resp.readEntity(String.class));
+      } finally {
+         resp.close();
+      }
+   }
 
    /**
     * https://issues.jboss.org/browse/RESTEASY-1077
     */
    @Test
+   public void testStuff() throws Exception {
+      WebTarget target = client.target(generateURL("/test/"));
+      Response resp = target.request().get();
+      try {
+         Assert.assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
+      } finally {
+         resp.close();
+      }
+   }
+   @Test
    public void testTrailingSlashWithParams() throws Exception {
       WebTarget target = client.target(generateURL("/echo/?text=Test"));
       Response resp = target.request().get();
       try {
-         Assert.assertEquals(200, resp.getStatus());
+         Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
          Assert.assertEquals("TestTest", resp.readEntity(String.class));
       } finally {
          resp.close();
