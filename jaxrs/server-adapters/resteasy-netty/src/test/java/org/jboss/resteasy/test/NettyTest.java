@@ -90,7 +90,7 @@ public class NettyTest
    }
 
     @Test
-    public void testChannelContext() {
+    public void testChannelContext() throws Exception {
       ResteasyClient client = new ResteasyClientBuilder().build();
       ResteasyWebTarget target = client.target(generateURL("/context"));
       String val = target.request().get(String.class);
@@ -102,7 +102,7 @@ public class NettyTest
     * https://issues.jboss.org/browse/RESTEASY-1077
     */
    @Test
-   public void testTrailingSlash() {
+   public void testTrailingSlash() throws Exception {
       ResteasyClient client = new ResteasyClientBuilder().build();
       ResteasyWebTarget target = client.target(generateURL("/test/"));
       Response resp = target.request().get();
@@ -118,7 +118,7 @@ public class NettyTest
      * https://issues.jboss.org/browse/RESTEASY-1077
      */
     @Test
-    public void testTrailingSlashParams() {
+    public void testTrailingSlashParams() throws Exception {
         ResteasyClient client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = client.target(generateURL("/echo/?text=Test"));
         Response resp = target.request().get();
@@ -135,7 +135,7 @@ public class NettyTest
      * https://issues.jboss.org/browse/RESTEASY-1077
      */
     @Test
-    public void testNoTrailingSlashParams() {
+    public void testNoTrailingSlashParams() throws Exception {
         ResteasyClient client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = client.target(generateURL("/echo?text=Test"));
         Response resp = target.request().get();

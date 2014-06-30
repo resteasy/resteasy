@@ -167,7 +167,7 @@ public class NettyTest
      * https://issues.jboss.org/browse/RESTEASY-1077
      */
     @Test
-    public void testTrailingSlash() {
+    public void testTrailingSlash() throws Exception {
         WebTarget target = client.target(generateURL("/test/"));
         Response resp = target.request().get();
         try {
@@ -181,7 +181,7 @@ public class NettyTest
     * https://issues.jboss.org/browse/RESTEASY-1077
     */
    @Test
-   public void testTrailingSlashWithParams() {
+   public void testTrailingSlashWithParams() throws Exception {
       WebTarget target = client.target(generateURL("/echo/?text=Test"));
       Response resp = target.request().get();
       try {
@@ -196,7 +196,7 @@ public class NettyTest
     * https://issues.jboss.org/browse/RESTEASY-1077
     */
    @Test
-   public void testNoTrailingSlashWithParams() {
+   public void testNoTrailingSlashWithParams() throws Exception {
       WebTarget target = client.target(generateURL("/echo?text=Test"));
       Response resp = target.request().get();
       try {
@@ -211,7 +211,7 @@ public class NettyTest
      * https://issues.jboss.org/browse/RESTEASY-1077
      */
     @Test
-    public void testNoTrailingSlash() {
+    public void testNoTrailingSlash() throws Exception {
         WebTarget target = client.target(generateURL("/test"));
         Response resp = target.request().get();
 
