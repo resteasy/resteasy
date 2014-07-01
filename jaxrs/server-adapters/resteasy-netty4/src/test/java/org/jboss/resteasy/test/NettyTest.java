@@ -188,7 +188,7 @@ public class NettyTest
     }
 
    @Test
-   public void testContextPathTrailingSlash() throws Exception {
+   public void testContextPathNoTrailingSlash() throws Exception {
       WebTarget target = client.target(generateURL("/ping"));
       Response resp = target.request().get();
       try {
@@ -199,7 +199,7 @@ public class NettyTest
    }
 
    @Test
-   public void testContextPathTrailingSlash2() throws Exception {
+   public void testContextPathTrailingSlash() throws Exception {
       WebTarget target = client.target(generateURL("/ping/"));
       Response resp = target.request().get();
       try {
@@ -211,7 +211,7 @@ public class NettyTest
    }
 
    @Test
-   public void testContextPathTrailingSlash3() throws Exception {
+   public void testSpecifyFileInContextPath() throws Exception {
       WebTarget target = client.target(generateURL("/ping/index.html"));
       Response resp = target.request().get();
       try {
@@ -240,8 +240,7 @@ public class NettyTest
       WebTarget target = client.target(generateURL("/echo/?text=Test"));
       Response resp = target.request().get();
       try {
-         Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
-         Assert.assertEquals("TestTest", resp.readEntity(String.class));
+         Assert.assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
       } finally {
          resp.close();
       }
