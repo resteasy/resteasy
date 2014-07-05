@@ -72,6 +72,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       try
       {
          cdiActive = ResteasyCdiExtension.isCDIActive();
+         log.debug("ResteasyCdiExtension is on the classpath.");
       }
       catch (Throwable t)
       {
@@ -121,10 +122,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    @Override
    public void checkViolations(HttpRequest request)
    {
-      if (cdiActive)
-      {
-         return;
-      }
+      // Called from resteasy-jaxrs only if two argument version of isValidatable() returns true.
       ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, null);
       Object target = violationsContainer.getTarget();
       if (target != null && !isWeldProxy(target.getClass()))

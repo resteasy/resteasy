@@ -102,10 +102,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
 
    public void checkViolations(HttpRequest request)
    {
-      if (cdiActive)
-      {
-         return;
-      }
+      // Called from resteasy-jaxrs only if two argument version of isValidatable() returns true.
       ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, null);
       Object target = violationsContainer.getTarget();
       if (target != null && !isWeldProxy(target.getClass()))
