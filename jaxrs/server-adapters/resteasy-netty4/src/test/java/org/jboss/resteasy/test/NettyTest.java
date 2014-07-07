@@ -42,29 +42,6 @@ public class NettyTest
       }
 
       @GET
-      @Path("/ping")
-      public Response pingRoot(@Context UriInfo uriInfo, @QueryParam("text") String input) {
-         if (uriInfo.getPath().endsWith("/")) {
-            return ping();
-         } else {
-            return Response
-                    .status(Response.Status.MOVED_PERMANENTLY)
-                    .build();
-         }
-      }
-
-      @GET
-      @Path("/ping/index.html")
-      @Produces("text/plain")
-      public Response ping()
-      {
-         return Response
-                 .status(Response.Status.OK)
-                 .entity("PONG")
-                 .build();
-      }
-
-      @GET
       @Path("empty")
       public void empty() {
 
@@ -187,43 +164,9 @@ public class NettyTest
         Assert.assertFalse(val.isEmpty());
     }
 
-   @Test
-   public void testContextPathNoTrailingSlash() throws Exception {
-      WebTarget target = client.target(generateURL("/ping"));
-      Response resp = target.request().get();
-      try {
-         Assert.assertEquals(Response.Status.MOVED_PERMANENTLY.getStatusCode(), resp.getStatus());
-      } finally {
-         resp.close();
-      }
-   }
-
-   @Test
-   public void testContextPathTrailingSlash() throws Exception {
-      WebTarget target = client.target(generateURL("/ping/"));
-      Response resp = target.request().get();
-      try {
-         Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
-         Assert.assertEquals("PONG", resp.readEntity(String.class));
-      } finally {
-         resp.close();
-      }
-   }
-
-   @Test
-   public void testSpecifyFileInContextPath() throws Exception {
-      WebTarget target = client.target(generateURL("/ping/index.html"));
-      Response resp = target.request().get();
-      try {
-         Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
-         Assert.assertEquals("PONG", resp.readEntity(String.class));
-      } finally {
-         resp.close();
-      }
-   }
-
    /**
     * https://issues.jboss.org/browse/RESTEASY-1077
+    * If path is "/test" we should get Not Found for "/test/"
     */
    @Test
    public void testStuff() throws Exception {
@@ -235,44 +178,37 @@ public class NettyTest
          resp.close();
       }
    }
+
+   /**
+    * Trailing slash should stil accept paramters
+    * See: https://issues.jboss.org/browse/RESTEASY-1077
+    *
+    */
    @Test
    public void testTrailingSlashWithParams() throws Exception {
       WebTarget target = client.target(generateURL("/echo/?text=Test"));
       Response resp = target.request().get();
       try {
-         Assert.assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
-      } finally {
-         resp.close();
-      }
-   }
-
-   /**
-    * https://issues.jboss.org/browse/RESTEASY-1077
-    */
-   @Test
-   public void testNoTrailingSlashWithParams() throws Exception {
-      WebTarget target = client.target(generateURL("/echo?text=Test"));
-      Response resp = target.request().get();
-      try {
-         Assert.assertEquals(200, resp.getStatus());
+         Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
          Assert.assertEquals("TestTest", resp.readEntity(String.class));
       } finally {
          resp.close();
       }
    }
 
-    /**
-     * https://issues.jboss.org/browse/RESTEASY-1077
-     */
-    @Test
-    public void testNoTrailingSlash() throws Exception {
-        WebTarget target = client.target(generateURL("/test"));
-        Response resp = target.request().get();
-
-        try {
-            Assert.assertEquals(200, resp.getStatus());
-        } finally {
-            resp.close();
-        }
-    }
+   /**
+    * No trailing slash.
+    * See: https://issues.jboss.org/browse/RESTEASY-1077
+    */
+   @Test
+   public void testNoTrailingSlashWithParams() throws Exception {
+      WebTarget target = client.target(generateURL("/echo?text=Test"));
+      Response resp = target.request().get();
+      try {
+         Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+         Assert.assertEquals("TestTest", resp.readEntity(String.class));
+      } finally {
+         resp.close();
+      }
+   }
 }
