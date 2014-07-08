@@ -166,14 +166,24 @@ public class NettyTest
 
    /**
     * https://issues.jboss.org/browse/RESTEASY-1077
-    * If path is "/test" we should get Not Found for "/test/"
     */
    @Test
-   public void testStuff() throws Exception {
+   public void testTrailingSlash() throws Exception {
       WebTarget target = client.target(generateURL("/test/"));
       Response resp = target.request().get();
       try {
-         Assert.assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
+         Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+      } finally {
+         resp.close();
+      }
+   }
+
+   @Test
+   public void testNoTrailingSlash() throws Exception {
+      WebTarget target = client.target(generateURL("/test"));
+      Response resp = target.request().get();
+      try {
+         Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
       } finally {
          resp.close();
       }
@@ -197,7 +207,7 @@ public class NettyTest
    }
 
    /**
-    * No trailing slash.
+    * No trailing slash. Accepts parameters
     * See: https://issues.jboss.org/browse/RESTEASY-1077
     */
    @Test

@@ -51,6 +51,10 @@ public class Jira1077Test {
       }
    }
 
+   /**
+    * Ensure that UriInfo of the method contains the slash
+    * @throws Exception
+    */
    @Test
    public void testNoTrailingSlash() throws Exception {
       Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
@@ -87,6 +91,22 @@ public class Jira1077Test {
 
       {
          MockHttpRequest request = MockHttpRequest.get("/ping/me");
+         MockHttpResponse response = new MockHttpResponse();
+
+         dispatcher.invoke(request, response);
+
+         Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+         Assert.assertEquals("PONG", response.getContentAsString());
+      }
+   }
+
+   @Test
+   public void testSubPathWithSlashShouldBehaveTheSame() throws Exception {
+      Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
+      dispatcher.getRegistry().addResourceFactory(new POJOResourceFactory(TestResource.class));
+
+      {
+         MockHttpRequest request = MockHttpRequest.get("/ping/me/");
          MockHttpResponse response = new MockHttpResponse();
 
          dispatcher.invoke(request, response);
