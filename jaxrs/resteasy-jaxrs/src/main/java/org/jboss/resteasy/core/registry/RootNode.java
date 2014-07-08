@@ -77,7 +77,6 @@ public class RootNode
       boolean pathEndsWithSlash = false;
       if (path.startsWith("/")) path = path.substring(1);
       if (path.endsWith("/")) {
-         pathEndsWithSlash = true;
          path = path.substring(0, path.length() - 1);
       }
 
@@ -88,7 +87,6 @@ public class RootNode
             MethodExpression expression = new MethodExpression(root, "", invoker);
             root.addExpression(expression);
             return expression;
-
          }
          else
          {
@@ -137,7 +135,6 @@ public class RootNode
          else
          {
             exp = new MethodExpression(node, path, invoker, "(/.+)?");
-
          }
          node.addExpression(exp);
       }
@@ -157,12 +154,7 @@ public class RootNode
          }
          if (invoker instanceof ResourceMethodInvoker)
          {
-            if (pathEndsWithSlash) {
-               exp = new MethodExpression(node, path, invoker, "(/)?");
-            } else {
-               exp = new MethodExpression(node, path, invoker);
-            }
-
+            exp = new MethodExpression(node, path, invoker, "(/)?");
             node.addExpression(exp);
          }
          else
