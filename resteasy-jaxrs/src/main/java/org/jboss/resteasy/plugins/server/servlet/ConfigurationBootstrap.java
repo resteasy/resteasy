@@ -102,10 +102,17 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
       }
 
       String resteasySecurity = getParameter(ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY);
-      if (resteasySecurity != null) deployment.setSecurityEnabled(Boolean.valueOf(resteasySecurity.trim()));
+
+      if (resteasySecurity != null) {
+         boolean useResteasySecurity = parseBooleanParam(ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY, resteasySecurity);
+         deployment.setSecurityEnabled(useResteasySecurity);
+      }
 
       String builtin = getParameter(ResteasyContextParameters.RESTEASY_USE_BUILTIN_PROVIDERS);
-      if (builtin != null) deployment.setRegisterBuiltin(Boolean.valueOf(builtin.trim()));
+      if (builtin != null) {
+         boolean useBuiltin = parseBooleanParam(ResteasyContextParameters.RESTEASY_USE_BUILTIN_PROVIDERS, builtin);
+         deployment.setRegisterBuiltin(useBuiltin);
+      }
 
       boolean scanProviders = false;
       boolean scanResources = false;
