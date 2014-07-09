@@ -66,10 +66,18 @@ public class StreamingOutputTest
    @Test
    public void testStreamingOutput() throws Exception
    {
-      String response = client.target(BASE_URI).path("test").request().get(String.class);
-      System.out.println(response);
-
+      Response response = client.target(BASE_URI).path("test").request().get();
+      Assert.assertTrue(response.readEntity(String.class).equals("0\n" +
+              "\n1\n" +
+              "\n2\n" +
+              "\n3\n" +
+              "\n4\n" +
+              "\n5\n" +
+              "\n6\n" +
+              "\n7\n" +
+              "\n8\n" +
+              "\n9\n" +
+              "\n"));
+      Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
    }
-
-
 }
