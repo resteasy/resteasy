@@ -13,6 +13,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
+import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.resteasy1008.SumConstraint;
@@ -81,15 +82,15 @@ public class CDIValidationTest
       log.info("status: " + response.getStatus());
       log.info("entity: " + answer);
       assertEquals(400, response.getStatus());
-      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(answer));
-      countViolations(e, 4, 1, 1, 1, 1, 0);
-      ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
+      ViolationReport r = new ViolationReport(answer);
+      countViolations(r, 1, 1, 1, 1, 0);
+      ResteasyConstraintViolation cv = r.getFieldViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 3"));
-      cv = e.getPropertyViolations().iterator().next();
+      cv = r.getPropertyViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 5"));
-      cv = e.getClassViolations().iterator().next();
+      cv = r.getClassViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().indexOf("org.jboss.resteasy.ejb.validation.SumConstraint") > 0);
-      cv = e.getParameterViolations().iterator().next();
+      cv = r.getParameterViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 7"));
    }
 
@@ -103,9 +104,9 @@ public class CDIValidationTest
       log.info("status: " + response.getStatus());
       log.info("entity: " + answer);
       assertEquals(500, response.getStatus());
-      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(answer));
-      countViolations(e, 1, 0, 0, 0, 0, 1);
-      ResteasyConstraintViolation cv = e.getReturnValueViolations().iterator().next();
+      ViolationReport r = new ViolationReport(answer);
+      countViolations(r, 0, 0, 0, 0, 1);
+      ResteasyConstraintViolation cv = r.getReturnValueViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 11"));
    }
    
@@ -133,9 +134,9 @@ public class CDIValidationTest
       log.info("status: " + response.getStatus());
       log.info("entity: " + answer);
       assertEquals(400, response.getStatus());
-      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(answer));
-      countViolations(e, 1, 0, 0, 0, 1, 0);
-      ResteasyConstraintViolation cv = e.getParameterViolations().iterator().next();
+      ViolationReport r = new ViolationReport(answer);
+      countViolations(r, 0, 0, 0, 1, 0);
+      ResteasyConstraintViolation cv = r.getParameterViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 11"));
    }
    
@@ -150,9 +151,9 @@ public class CDIValidationTest
       log.info("status: " + response.getStatus());
       log.info("entity: " + answer);
       assertEquals(400, response.getStatus());
-      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(answer));
-      countViolations(e, 1, 0, 0, 0, 1, 0);
-      ResteasyConstraintViolation cv = e.getParameterViolations().iterator().next();
+      ViolationReport r = new ViolationReport(answer);
+      countViolations(r, 0, 0, 0, 1, 0);
+      ResteasyConstraintViolation cv = r.getParameterViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 13"));
    }
    
@@ -166,9 +167,9 @@ public class CDIValidationTest
       log.info("status: " + response.getStatus());
       log.info("entity: " + answer);
       assertEquals(500, response.getStatus());
-      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(answer));
-      countViolations(e, 1, 0, 0, 0, 0, 1);
-      ResteasyConstraintViolation cv = e.getReturnValueViolations().iterator().next();
+      ViolationReport r = new ViolationReport(answer);
+      countViolations(r, 0, 0, 0, 0, 1);
+      ResteasyConstraintViolation cv = r.getReturnValueViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 17"));
    }
    
@@ -182,13 +183,13 @@ public class CDIValidationTest
       log.info("status: " + response.getStatus());
       log.info("entity: " + answer);
       assertEquals(400, response.getStatus());
-      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(answer));
-      countViolations(e, 3, 1, 1, 1, 0, 0);
-      ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
+      ViolationReport r = new ViolationReport(answer);
+      countViolations(r, 1, 1, 1, 0, 0);
+      ResteasyConstraintViolation cv = r.getFieldViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 3"));
-      cv = e.getPropertyViolations().iterator().next();
+      cv = r.getPropertyViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 5"));
-      cv = e.getClassViolations().iterator().next();
+      cv = r.getClassViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().indexOf("org.jboss.resteasy.ejb.validation.SumConstraint") > 0);
    }
    
@@ -202,19 +203,18 @@ public class CDIValidationTest
       log.info("status: " + response.getStatus());
       log.info("entity: " + answer);
       assertEquals(400, response.getStatus());
-      ResteasyViolationException e = new ResteasyViolationException(String.class.cast(answer));
-      countViolations(e, 3, 1, 1, 1, 0, 0);
-      ResteasyConstraintViolation cv = e.getFieldViolations().iterator().next();
+      ViolationReport r = new ViolationReport(answer);
+      countViolations(r, 1, 1, 1, 0, 0);
+      ResteasyConstraintViolation cv = r.getFieldViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 3"));
-      cv = e.getPropertyViolations().iterator().next();
+      cv = r.getPropertyViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 5"));
-      cv = e.getClassViolations().iterator().next();
+      cv = r.getClassViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().indexOf("org.jboss.resteasy.ejb.validation.SumConstraint") > 0);
    }
    
-   protected void countViolations(ResteasyViolationException e, int totalCount, int fieldCount, int propertyCount, int classCount, int parameterCount, int returnValueCount)
+   protected void countViolations(ViolationReport e, int fieldCount, int propertyCount, int classCount, int parameterCount, int returnValueCount)
    {
-      Assert.assertEquals(totalCount,       e.getViolations().size());
       Assert.assertEquals(fieldCount,       e.getFieldViolations().size());
       Assert.assertEquals(propertyCount,    e.getPropertyViolations().size());
       Assert.assertEquals(classCount,       e.getClassViolations().size());

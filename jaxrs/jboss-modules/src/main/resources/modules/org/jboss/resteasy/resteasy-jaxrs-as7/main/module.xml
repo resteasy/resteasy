@@ -38,6 +38,7 @@
         <module name="org.slf4j" />
         <module name="javax.servlet.api"/>
         <module name="javax.validation.api"/>
+        <module name="javax.xml.bind.api"/>
         <module name="org.hibernate.validator"/>
         <!--module name="resteasy-validator-provider-10"/-->
 
