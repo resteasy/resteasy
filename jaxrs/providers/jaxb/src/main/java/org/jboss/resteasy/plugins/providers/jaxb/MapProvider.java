@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -85,7 +86,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
       {
          Class keyType = Types.getMapKeyType(genericType);
          if (keyType == null) return false;
-         if (!keyType.equals(String.class)) return false;
+         if (!CharSequence.class.isAssignableFrom(keyType) && !Number.class.isAssignableFrom(keyType)) return false;
 
          Class valueType = Types.getMapValueType(genericType);
          if (valueType == null) return false;
