@@ -48,4 +48,11 @@ public class SpringContextLoaderListener extends ContextLoaderListener
    {
       return new SpringContextLoader();
    }
+   
+   @Override
+	protected void customizeContext(ServletContext servletContext, ConfigurableWebApplicationContext configurableWebApplicationContext) {
+
+		super.customizeContext(servletContext, configurableWebApplicationContext);
+		this.springContextLoaderSupport.customizeContext(servletContext, configurableWebApplicationContext);
+	}
 }
