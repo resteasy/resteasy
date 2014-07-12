@@ -1,5 +1,8 @@
 package org.jboss.resteasy.plugins.validation;
 
+import java.lang.Class;
+import java.lang.ClassLoader;
+import java.lang.ClassNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -227,11 +230,12 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    @Override
    public boolean isValidatable(Class<?> clazz, InjectorFactory injectorFactory)
    {
-      // Called from resteasy-jaxrs.
-      if (injectorFactory instanceof CdiInjectorFactory)
-      {
-         return false;
-      }
+      // assure that CdiInjectorFactory is available
+      try {
+         Class<?> c = getClass().getClassLoader().loadClass("org.jboss.resteasy.cdi.CdiInjectorFactory");
+         // Called from resteasy-jaxrs.
+         return !(injectorFactory instanceof CdiInjectorFactory);
+      } catch (ClassNotFoundException ignored) {}
       return true;
    }
 
