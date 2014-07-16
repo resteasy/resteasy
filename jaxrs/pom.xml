@@ -26,6 +26,7 @@
         <dep.netty.version>3.6.4.Final</dep.netty.version>
         <dep.netty4.version>4.0.7.Final</dep.netty4.version>
         <dep.slf4j.version>1.7.5</dep.slf4j.version>
+        <dep.org.apache.httpcomponents.version>4.2.6</dep.org.apache.httpcomponents.version>
         <version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>1.0.0.Final</version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>
         <version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>1.0.0.Final</version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>
         <version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>1.0.0.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>
@@ -199,7 +200,7 @@
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
-                <version>4.2.1</version>
+                <version>${dep.org.apache.httpcomponents.version}</version>
             </dependency>
             <dependency>
                 <groupId>net.jcip</groupId>
