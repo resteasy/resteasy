@@ -159,5 +159,17 @@
         <artifactId>javax.el</artifactId>
         <version>2.2.4</version>
     </dependency>
+    <!--dependency>
+        <groupId>javax.xml.api.bind</groupId>
+        <artifactId>javax.jaxb-api</artifactId>
+        <version>jboss-jaxb-api_2.2_spec-1.0.4.Final</version>
+        <scope>test</scope>
+    </dependency-->
+    <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxb-provider</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

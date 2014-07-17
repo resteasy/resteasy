@@ -34,13 +34,6 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
    {
       this.delegate = delegate;
       this.clazz = clazz;
-      
-      ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
-      ContextResolver<GeneralValidatorCDI> resolver = providerFactory.getContextResolver(GeneralValidatorCDI.class, MediaType.WILDCARD_TYPE);
-      if (resolver != null)
-      {
-         validator = providerFactory.getContextResolver(GeneralValidatorCDI.class, MediaType.WILDCARD_TYPE).getContext(null);
-      }
    }
 
    public void inject(T instance, CreationalContext<T> ctx)
@@ -103,6 +96,12 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
    {
       if (GetRestful.isRootResource(clazz))
       {
+         ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
+         ContextResolver<GeneralValidatorCDI> resolver = providerFactory.getContextResolver(GeneralValidatorCDI.class, MediaType.WILDCARD_TYPE);
+         if (resolver != null)
+         {
+            validator = providerFactory.getContextResolver(GeneralValidatorCDI.class, MediaType.WILDCARD_TYPE).getContext(null);
+         }
          if (validator != null && validator.isValidatableFromCDI(clazz))
          {
             validator.validate(request, instance);

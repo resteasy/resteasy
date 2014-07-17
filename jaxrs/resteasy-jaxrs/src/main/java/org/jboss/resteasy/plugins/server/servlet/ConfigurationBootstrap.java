@@ -99,10 +99,16 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
       }
 
       String resteasySecurity = getParameter(ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY);
-      if (resteasySecurity != null) deployment.setSecurityEnabled(Boolean.valueOf(resteasySecurity.trim()));
+      if (resteasySecurity != null) {
+          boolean useResteasySecurity = parseBooleanParam(ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY, resteasySecurity);
+          deployment.setSecurityEnabled(Boolean.valueOf(useResteasySecurity));
+      }
 
       String builtin = getParameter(ResteasyContextParameters.RESTEASY_USE_BUILTIN_PROVIDERS);
-      if (builtin != null) deployment.setRegisterBuiltin(Boolean.valueOf(builtin.trim()));
+      if (builtin != null) {
+          boolean useBuiltin = parseBooleanParam(ResteasyContextParameters.RESTEASY_USE_BUILTIN_PROVIDERS, builtin);
+          deployment.setRegisterBuiltin(useBuiltin);
+      }
 
 
       String sProviders = getParameter(ResteasyContextParameters.RESTEASY_SCAN_PROVIDERS);
@@ -243,7 +249,7 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
       String widerMatching = getParameter(ResteasyContextParameters.RESTEASY_WIDER_REQUEST_MATCHING);
       if (widerMatching != null)
       {
-         boolean wider = parseBooleanParam("resteasy.wider.request.matching", widerMatching);
+         boolean wider = parseBooleanParam(ResteasyContextParameters.RESTEASY_WIDER_REQUEST_MATCHING, widerMatching);
          deployment.setWiderRequestMatching(wider);
       }
 

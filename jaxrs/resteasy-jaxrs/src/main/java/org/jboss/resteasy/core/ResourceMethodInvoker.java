@@ -121,7 +121,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       {
          if (validator instanceof GeneralValidatorCDI)
          {
-            isValidatable = GeneralValidatorCDI.class.cast(validator).isValidatable(getMethod().getClass(), injector);
+            isValidatable = GeneralValidatorCDI.class.cast(validator).isValidatable(getMethod().getDeclaringClass(), injector);
          }
          else
          {
