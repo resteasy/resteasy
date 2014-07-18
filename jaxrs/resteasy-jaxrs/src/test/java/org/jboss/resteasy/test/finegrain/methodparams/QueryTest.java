@@ -16,7 +16,7 @@ import javax.ws.rs.core.MediaType;
 /**
  * Created by Simon Ström on 7/11/14.
  */
-public class QueryParamTest {
+public class QueryTest{
    public static class SearchQuery
    {
 
