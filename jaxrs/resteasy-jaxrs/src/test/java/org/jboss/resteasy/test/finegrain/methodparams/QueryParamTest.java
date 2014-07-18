@@ -59,6 +59,6 @@ public class QueryParamTest {
       dispatcher.invoke(request, response);
 
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("term: 't1', order: 'ASC', limit: ''", response.getContentAsString());
+      Assert.assertEquals("term: 't1', order: 'ASC', limit: 'null'", response.getContentAsString());
    }
 }

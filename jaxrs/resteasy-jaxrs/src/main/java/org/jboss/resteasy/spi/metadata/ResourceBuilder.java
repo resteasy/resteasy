@@ -2,6 +2,7 @@ package org.jboss.resteasy.spi.metadata;
 
 import org.jboss.resteasy.annotations.Body;
 import org.jboss.resteasy.annotations.Form;
+import org.jboss.resteasy.annotations.Query;
 import org.jboss.resteasy.annotations.Suspend;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.util.IsHttpMethod;
@@ -243,7 +244,8 @@ public class ResourceBuilder
          DefaultValue defaultValue = findAnnotation(annotations, DefaultValue.class);
          if (defaultValue != null) parameter.defaultValue = defaultValue.value();
 
-         QueryParam query;
+         QueryParam queryParam;
+         Query query;
          HeaderParam header;
          MatrixParam matrix;
          PathParam uriParam;
@@ -254,10 +256,15 @@ public class ResourceBuilder
          Suspended suspended;
 
 
-         if ((query = findAnnotation(annotations, QueryParam.class)) != null)
+         if ((queryParam = findAnnotation(annotations, QueryParam.class)) != null)
          {
             parameter.paramType = Parameter.ParamType.QUERY_PARAM;
-            parameter.paramName = query.value();
+            parameter.paramName = queryParam.value();
+         }
+         else if(( query = findAnnotation(annotations, Query.class))!= null)
+         {
+            parameter.paramType = Parameter.ParamType.QUERY;
+            parameter.paramName = ""; // TODO query.prefix();
          }
          else if ((header = findAnnotation(annotations, HeaderParam.class)) != null)
          {

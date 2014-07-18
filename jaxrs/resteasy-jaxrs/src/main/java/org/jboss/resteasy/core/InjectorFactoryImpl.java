@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.annotations.Form;
+import org.jboss.resteasy.annotations.Query;
 import org.jboss.resteasy.annotations.Suspend;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.InjectorFactory;
@@ -83,6 +84,8 @@ public class InjectorFactoryImpl implements InjectorFactory
       {
          case QUERY_PARAM:
             return new QueryParamInjector(parameter.getType(), parameter.getGenericType(), parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.isEncoded(), parameter.getAnnotations(), providerFactory);
+         case QUERY:
+            return new QueryInjector(parameter.getType(), providerFactory);
          case HEADER_PARAM:
             return new HeaderParamInjector(parameter.getType(), parameter.getGenericType(), parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.getAnnotations(), providerFactory);
          case FORM_PARAM:
@@ -145,7 +148,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       String defaultVal = null;
       if (defaultValue != null) defaultVal = defaultValue.value();
 
-      QueryParam query;
+      QueryParam queryParam;
       HeaderParam header;
       MatrixParam matrix;
       PathParam uriParam;
@@ -154,11 +157,15 @@ public class InjectorFactoryImpl implements InjectorFactory
       Form form;
       Suspend suspend;
       Suspended suspended;
+      Query query;
 
 
-      if ((query = findAnnotation(annotations, QueryParam.class)) != null)
+      if ((queryParam = findAnnotation(annotations, QueryParam.class)) != null)
       {
-         return new QueryParamInjector(type, genericType, injectTarget, query.value(), defaultVal, encode, annotations, providerFactory);
+         return new QueryParamInjector(type, genericType, injectTarget, queryParam.value(), defaultVal, encode, annotations, providerFactory);
+      }
+      else if((query = findAnnotation(annotations, Query.class)) != null) {
+         return new QueryInjector(type, providerFactory);
       }
       else if ((header = findAnnotation(annotations, HeaderParam.class)) != null)
       {
