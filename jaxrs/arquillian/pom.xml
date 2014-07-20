@@ -30,6 +30,7 @@
         <module>RESTEASY-1056-jetty-bv11</module>
         <module>RESTEASY-1056-jetty-bv10</module>
         <module>RESTEASY-1058-WF8</module>
+        <module>RESTEASY-1073-WF8</module>
     </modules>
     
     <artifactId>arquillian</artifactId>
