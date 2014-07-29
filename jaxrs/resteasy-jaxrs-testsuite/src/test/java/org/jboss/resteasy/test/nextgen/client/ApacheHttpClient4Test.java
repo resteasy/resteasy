@@ -167,9 +167,7 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       final MyResource proxy = client.target("http://localhost:8081").proxy(MyResource.class);
       counter.set(0);
 
-
       Thread[] threads = new Thread[3];
-
 
       for (int i = 0; i < 3; i++)
       {
@@ -180,7 +178,6 @@ public class ApacheHttpClient4Test extends BaseResourceTest
             {
                for (int j = 0; j < 10; j++)
                {
-                  System.out.println("calling proxy");
                   String str = proxy.get();
                   System.out.println("returned: " + str);
                   Assert.assertEquals("hello world", str);
@@ -216,10 +213,8 @@ public class ApacheHttpClient4Test extends BaseResourceTest
             {
                for (int j = 0; j < 10; j++)
                {
-                  System.out.println("calling proxy");
                   callProxy(proxy);
                   System.gc();
-                  System.out.println("returned");
                }
             }
          };
@@ -251,7 +246,6 @@ public class ApacheHttpClient4Test extends BaseResourceTest
             {
                for (int j = 0; j < 10; j++)
                {
-                  System.out.println("calling proxy");
                   String str = null;
                   try
                   {
@@ -263,7 +257,6 @@ public class ApacheHttpClient4Test extends BaseResourceTest
                      e.getResponse().close();
                      counter.incrementAndGet();
                   }
-                  System.out.println("returned");
                }
             }
          };
@@ -293,7 +286,6 @@ public class ApacheHttpClient4Test extends BaseResourceTest
                {
                    for (int j = 0; j < 10; j++)
                    {
-                       System.out.println("calling proxy");
                        String res = proxy.getData(String.valueOf(j));
                        Assert.assertNotNull(res);
                        counter.incrementAndGet();
@@ -360,11 +352,9 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       WebTarget target = client.target("http://localhost:8081/test");
       try
       {
-         System.out.println("get");
          Response response = target.request().get();
          Assert.assertEquals(200, response.getStatus());
          //Assert.assertEquals("hello world", response.getEntity(String.class));
-         System.out.println("ok");
          if (release) response.close();
       }
       catch (Exception e)

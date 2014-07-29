@@ -36,7 +36,6 @@ public class LegacySuspendTest extends BaseResourceTest
             {
                try
                {
-                  System.out.println("STARTED!!!!");
                   Thread.sleep(100);
                   Response jaxrs = Response.ok("hello").type(MediaType.TEXT_PLAIN).build();
                   response.setResponse(jaxrs);
@@ -62,7 +61,6 @@ public class LegacySuspendTest extends BaseResourceTest
             {
                try
                {
-                  System.out.println("STARTED!!!!");
                   Thread.sleep(1000);
                   Response jaxrs = Response.ok("hello").type(MediaType.TEXT_PLAIN).build();
                   response.setResponse(jaxrs);

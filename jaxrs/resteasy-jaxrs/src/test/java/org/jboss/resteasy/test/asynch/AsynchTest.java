@@ -47,13 +47,10 @@ public class AsynchTest
       @POST
       public String post(String content) throws Exception
       {
-         System.out.println("in post");
          Assert.assertNotNull(config);
          Assert.assertNotNull(context);
-         System.out.println("Asserts passed");
          config.getServletContext();
          context.getMajorVersion();
-         System.out.println("Called injected passed");
 
          Thread.sleep(1500);
          latch.countDown();
@@ -64,18 +61,13 @@ public class AsynchTest
       @PUT
       public void put(String content) throws Exception
       {
-         System.out.println("IN PUT!!!!");
          Assert.assertNotNull(config);
          Assert.assertNotNull(context);
-         System.out.println("Asserts passed");
          config.getServletContext();
          context.getMajorVersion();
-         System.out.println("Called injected passed");
          Assert.assertEquals("content", content);
          Thread.sleep(500);
-         System.out.println("******* countdown ****");
          latch.countDown();
-         System.out.println("******* countdown complete ****");
       }
    }
 
