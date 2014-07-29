@@ -179,7 +179,6 @@ public class ApacheHttpClient4Test extends BaseResourceTest
                for (int j = 0; j < 10; j++)
                {
                   String str = proxy.get();
-                  System.out.println("returned: " + str);
                   Assert.assertEquals("hello world", str);
                   counter.incrementAndGet();
                }
