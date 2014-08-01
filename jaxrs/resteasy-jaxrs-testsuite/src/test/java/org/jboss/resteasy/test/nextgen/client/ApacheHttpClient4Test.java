@@ -51,7 +51,11 @@ public class ApacheHttpClient4Test extends BaseResourceTest
 
     @Parameters
     public static Collection<Object[]> data() {
-        Object[][] data = new Object[][] { { ApacheHttpClient4Engine.class }, {URLConnectionEngine.class} };
+        Object[][] data = new Object[][] {
+           { ApacheHttpClient4Engine.class },
+           {URLConnectionEngine.class},
+           // only with the right dependencies {ApacheHttpAsyncClient4Engine.class}
+        };
         return Arrays.asList(data);
     }
 
@@ -327,29 +331,42 @@ public class ApacheHttpClient4Test extends BaseResourceTest
 
    private ResteasyClient createEngine()
    {
-      HttpParams params = new BasicHttpParams();
-      ConnManagerParams.setMaxTotalConnections(params, 3);
-      ConnManagerParams.setTimeout(params, 1000);
-
-      // Create and initialize scheme registry
-      SchemeRegistry schemeRegistry = new SchemeRegistry();
-      schemeRegistry.register(
-              new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-
-      // Create an HttpClient with the ThreadSafeClientConnManager.
-      // This connection manager must be used if more than one thread will
-      // be using the HttpClient.
-      ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
-      HttpClient httpClient = new DefaultHttpClient(cm, params);
-
-       final ClientHttpEngine executor;
+      final ClientHttpEngine executor;
 
       if (clazz.isAssignableFrom(ApacheHttpClient4Engine.class)) {
+         HttpParams params = new BasicHttpParams();
+         ConnManagerParams.setMaxTotalConnections(params, 3);
+         ConnManagerParams.setTimeout(params, 1000);
+
+         // Create and initialize scheme registry
+         SchemeRegistry schemeRegistry = new SchemeRegistry();
+         schemeRegistry.register(
+                 new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+
+         // Create an HttpClient with the ThreadSafeClientConnManager.
+         // This connection manager must be used if more than one thread will
+         // be using the HttpClient.
+         ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
+         HttpClient httpClient = new DefaultHttpClient(cm, params);
           executor = new ApacheHttpClient4Engine(httpClient);
-      } else {
+      }
+// only with the right dependencies
+//      else if (clazz.isAssignableFrom(ApacheHttpAsyncClient4Engine.class))
+//      {
+//         CloseableHttpAsyncClient client = HttpAsyncClientBuilder.create()
+//            .setMaxConnTotal(3)
+//            .build();
+//         executor = new ApacheHttpAsyncClient4Engine(client, true);
+//      }
+      else if (clazz.isAssignableFrom(URLConnectionEngine.class))
+      {
           executor = new URLConnectionEngine();
       }
-
+      else
+      {
+         Assert.fail("unknown engine");
+         executor = null;
+      }
 
       ResteasyClient client = new ResteasyClientBuilder().httpEngine(executor).build();
       return client;
