@@ -16,6 +16,31 @@
             <artifactId>resteasy-jaxrs</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!-- OPTIONAL dependency to apache HttpAsyncClient.
+             To use it in own projects one needs to manually add a dependency to httpcomponents-asyncclient,
+             and configure ApacheHttpAsyncClient4Engine -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpasyncclient</artifactId>
+            <version>4.0.1</version>
+            <optional>true</optional>
+            <!-- RESTEASY-1023 keep at httpclient 4.2.1 by excluding any shared dependencies -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpcore</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 
 </project>
