@@ -8,6 +8,7 @@
 package org.jboss.resteasy.client.jaxrs.engines;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -72,8 +73,8 @@ import org.jboss.resteasy.util.CaseInsensitiveMap;
  * <li>Request-Entities are fully buffered in memory, thus this engine is unsuitable for very large uploads.</li>
  * <li>Response-Entities are buffered in memory, except if requesting a Response, InputStream or Reader as Result. Thus
  * for large downloads or COMET one of these three return types must be requested, but there may be a performance penalty
- * because the data is transferred piecewise from the io-threads. When using InvocationCallbacks, the response is always
- * fully buffered in memory.</li>
+ * because the response-body is transferred piecewise from the io-threads. When using InvocationCallbacks, the response is
+ * always fully buffered in memory.</li>
  * <li>InvocationCallbacks are called from within the io-threads and thus must not block or else the application may
  * slow down to a halt. Reading the response is safe (because the response is buffered in memory), as are other async
  * (and in-memory) Client-invocations (the submit-calls returning a future not containing Response, InputStream or Reader).
@@ -87,7 +88,7 @@ import org.jboss.resteasy.util.CaseInsensitiveMap;
  *
  * @author Markus Kull
  */
-public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine
+public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Closeable
 {
    protected final CloseableHttpAsyncClient client;
    protected final boolean closeHttpClient;
@@ -377,7 +378,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine
       public synchronized boolean cancel()
       {
          completed = true;
-         // no need to notify the future because the future itself cancelled
+         if (future != null) future.cancelledResult();
          if (sharedStream != null)
          {
             sharedStream.setException(new IOException("cancelled"));
@@ -403,6 +404,10 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine
             boolean cancelled = super.cancel(mayInterruptIfRunning);
             httpFuture.cancel(mayInterruptIfRunning);
             return cancelled;
+         }
+
+         public void cancelledResult() {
+            super.cancel(true);
          }
 
          public void copyHttpFutureResult()
@@ -491,7 +496,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine
    /**
     * Buffers response fully in memory.
     *
-    * (Buffering is definitaly easier to implement than streaming)
+    * (Buffering is definitely easier to implement than streaming)
     */
    private static class BufferingResponseConsumer<T> extends AbstractAsyncResponseConsumer<T>
    {
@@ -547,7 +552,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine
       @Override
       protected T buildResult(HttpContext context) throws Exception
       {
-         clientResponse.setConnection(new ContentInputStream(buf));
+         if (buf != null) clientResponse.setConnection(new ContentInputStream(buf));
          return responseExtractor.extractResult(clientResponse);
       }
 
