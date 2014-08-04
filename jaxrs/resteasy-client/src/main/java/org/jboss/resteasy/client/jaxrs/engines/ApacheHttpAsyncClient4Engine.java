@@ -1,10 +1,3 @@
-/*
- * ApacheHttpAsyncClient4Engine.java Jul 16, 2014
- *
- * Copyright (c) 2014 1&1 Internet AG. All rights reserved.
- *
- * $Id$
- */
 package org.jboss.resteasy.client.jaxrs.engines;
 
 import java.io.ByteArrayOutputStream;
