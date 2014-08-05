@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.profiling;
 
+import junit.framework.Assert;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
@@ -33,7 +34,6 @@ public class MockedProfilingTest
       @Path("create")
       public String create(String cust)
       {
-         //System.out.println("cust: " + cust);
          return cust;
       }
 
@@ -43,12 +43,10 @@ public class MockedProfilingTest
    public void testUri() throws Exception
    {
       URI uri = URI.create("/foo");
-      System.out.println(uri);
-      System.out.println(uri.getRawPath());
-      System.out.println("---");
+      Assert.assertEquals(uri.toString(), "/foo");
+
       uri = URI.create("foo");
-      System.out.println(uri);
-      System.out.println(uri.getRawPath());
+      Assert.assertEquals(uri.toString(), "foo");
    }
 
    @Test
