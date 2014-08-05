@@ -156,6 +156,7 @@ public class ExternalEntityUnmarshaller implements Unmarshaller {
 //          XMLReader xmlReader = XMLReaderFactory.createXMLReader();
           xmlReader.setFeature("http://xml.org/sax/features/validation", false);
           xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+		  xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
           xmlReader.setFeature("http://xml.org/sax/features/namespaces", true);
           SAXSource saxSource = new SAXSource(xmlReader, source);
           return delegate.unmarshal(saxSource);
@@ -202,6 +203,7 @@ public class ExternalEntityUnmarshaller implements Unmarshaller {
 //            XMLReader xmlReader = XMLReaderFactory.createXMLReader();
             xmlReader.setFeature("http://xml.org/sax/features/validation", false);
             xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+			xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
             xmlReader.setFeature("http://xml.org/sax/features/namespaces", true);
             ((SAXSource) source).setXMLReader(xmlReader);
             return delegate.unmarshal(source, declaredType);
