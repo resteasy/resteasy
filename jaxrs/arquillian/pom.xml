@@ -20,14 +20,17 @@
         <module>resteasy-cdi-ejb-test</module>
         <module>ValidationTest-WF8</module>
         <module>ValidationTest-AS7</module>
+        <module>RESTEASY-903-AS7</module>
+        <module>RESTEASY-903-WF8</module>
         <module>RESTEASY-945-WF8</module>
         <module>RESTEASY-1008-WF8</module>
         <module>RESTEASY-1008-AS7</module>
-        <module>RESTEASY-1008-jetty-bv11</module>
-        <module>RESTEASY-1008-jetty-bv10</module>
         <module>RESTEASY-1054-AS7</module>
         <module>RESTEASY-1054-WF8</module>
+        <module>RESTEASY-1056-jetty-bv11</module>
+        <module>RESTEASY-1056-jetty-bv10</module>
         <module>RESTEASY-1058-WF8</module>
+        <module>RESTEASY-1073-WF8</module>
     </modules>
     
     <artifactId>arquillian</artifactId>
