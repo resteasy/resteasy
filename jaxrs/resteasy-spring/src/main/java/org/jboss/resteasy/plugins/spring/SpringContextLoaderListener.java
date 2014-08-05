@@ -16,7 +16,7 @@ public class SpringContextLoaderListener extends ContextLoaderListener
    private SpringContextLoaderSupport springContextLoaderSupport = new SpringContextLoaderSupport();
 
    @Override
-   public void contextInitialized(git statServletContextEvent event)
+   public void contextInitialized(ServletContextEvent event)
    {
       boolean scanProviders = false;
       boolean scanResources = false;
