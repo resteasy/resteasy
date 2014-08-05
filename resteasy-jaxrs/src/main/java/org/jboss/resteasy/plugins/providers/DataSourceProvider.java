@@ -40,7 +40,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
       private final File tempFile;
       private final String type;
 
-      public SequencedDataSource(byte[] byteBuffer, int byteBufferOffset,
+      protected SequencedDataSource(byte[] byteBuffer, int byteBufferOffset,
                                  int byteBufferLength, File tempFile, String type)
       {
          super();
@@ -64,7 +64,37 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
          if (tempFile == null)
             return bis;
          InputStream fis = new FileInputStream(tempFile);
-         return new SequenceInputStream(bis, fis);
+         return new SequenceInputStream(bis, fis) {
+            @Override
+            public int read(byte[] b, int off, int len) throws IOException 
+            {
+               int r = super.read(b, off, len);
+               if(r == -1)
+               {
+                  deleteTempFile();
+               }
+               return r;
+            }
+
+            @Override
+            public int read() throws IOException 
+            {
+               int r = super.read();
+               if(r == -1)
+               {
+                  deleteTempFile();
+               }
+               return r;
+            }
+         };
+      }
+
+      private void deleteTempFile()
+      {
+         if(tempFile.exists())
+         {
+            tempFile.delete();
+         }
       }
 
       @Override
@@ -100,6 +130,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
          int count = in.read(buffer, 0, buffer.length);
          if (count > -1) {
              tempFile = File.createTempFile("resteasy-provider-datasource", null);
+             tempFile.deleteOnExit();
              FileOutputStream fos = new FileOutputStream(tempFile);
              fos.write(buffer, 0, count);
              try
