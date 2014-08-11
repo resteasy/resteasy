@@ -1,7 +1,7 @@
 language: java
 jdk:
   - oraclejdk7
-script: mvn -q clean install
+script: mvn test
 before_install:
   - "ls /"
   - "env"
