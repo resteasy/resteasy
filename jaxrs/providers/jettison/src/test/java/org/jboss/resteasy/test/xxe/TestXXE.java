@@ -180,6 +180,7 @@ public class TestXXE
       ClientResponse<?> response = request.post();
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
+      System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
       after();
    }
@@ -226,6 +227,7 @@ public class TestXXE
       ClientResponse<?> response = request.post();
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
+      System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
       after();
    }
@@ -384,7 +386,7 @@ public class TestXXE
       if (expand == null)
       {
          before();
-         expand = true;
+         expand = false;
       }
       else
       {
@@ -411,7 +413,7 @@ public class TestXXE
       if (expand == null)
       {
          before();
-         expand = true;
+         expand = false;
       }
       else
       {
@@ -438,7 +440,7 @@ public class TestXXE
       if (expand == null)
       {
          before();
-         expand = true;
+         expand = false;
       }
       else
       {
@@ -465,7 +467,7 @@ public class TestXXE
       if (expand == null)
       {
          before();
-         expand = true;
+         expand = false;
       }
       else
       {

@@ -40,7 +40,7 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
    
    private final TransformerFactory transformerFactory;
    private final DocumentBuilderFactory documentBuilder;
-   private boolean expandEntityReferences = true;
+   private boolean expandEntityReferences = false;
 
    public DocumentProvider(@Context ResteasyConfiguration config)
    {
@@ -49,11 +49,11 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
       try
       {
          String s = config.getParameter(ResteasyContextParameters.RESTEASY_EXPAND_ENTITY_REFERENCES);
-         expandEntityReferences = (s == null ? true : Boolean.parseBoolean(s));
+         expandEntityReferences = (s == null ? false : Boolean.parseBoolean(s));
       }
       catch (Exception e)
       {
-         logger.debug("Unable to retrieve config: expandEntityReferences defaults to true");
+         logger.debug("Unable to retrieve config: expandEntityReferences defaults to false");
       }
    }
 
