@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import javax.xml.bind.annotation.*;
 
+import org.jboss.resteasy.annotations.providers.jackson.Formatted;
 import org.jboss.resteasy.annotations.providers.NoJackson;
 import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -148,7 +149,16 @@ public class JacksonTest extends BaseResourceTest
          return new Product(333, "Iphone");
       }
 
-      @GET
+       @GET
+       @Produces("application/json")
+       @Path("/formatted/{id}")
+       @Formatted
+       public Product getFormattedProduct()
+       {
+           return new Product(333, "Iphone");
+       }
+
+       @GET
       @Produces("application/json")
       public Product[] getProducts()
       {
@@ -232,6 +242,21 @@ public class JacksonTest extends BaseResourceTest
       response2.close();
 
    }
+
+    @Test
+    public void testFormattedJacksonString() throws Exception
+    {
+        WebTarget target = client.target(generateURL("/products/formatted/333"));
+        Response response = target.request().get();
+        String entity = response.readEntity(String.class);
+        System.out.println(entity);
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals(("{\n" +
+                "  \"name\" : \"Iphone\",\n" +
+                "  \"id\" : 333\n" +
+                "}"), entity);
+        response.close();
+    }
 
    @Test
    public void testXmlString() throws Exception
