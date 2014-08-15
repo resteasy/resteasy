@@ -1,11 +1,11 @@
 package org.jboss.resteasy.test.providers.jaxb.inheritance;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
 import junit.framework.Assert;
 
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.test.BaseResourceTest;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,10 +15,12 @@ import org.junit.Test;
  */
 public class InheritanceTest extends BaseResourceTest
 {
+   @Override
    @Before
-   public void setUp() throws Exception
+   public void before() throws Exception
    {
-      dispatcher.getRegistry().addPerRequestResource(ZooWS.class);
+      addPerRequestResource(ZooWS.class, Animal.class, Cat.class, Dog.class, Zoo.class);
+      super.before();
    }
 
    @Test

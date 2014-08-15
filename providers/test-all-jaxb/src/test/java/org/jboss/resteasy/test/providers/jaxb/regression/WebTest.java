@@ -1,14 +1,26 @@
 package org.jboss.resteasy.test.providers.jaxb.regression;
 
+import java.io.ByteArrayInputStream;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+
 import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
@@ -22,18 +34,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import java.io.ByteArrayInputStream;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * JAXB Had a concurrent problem and was not unmarshalling a Map property all the time
@@ -69,18 +69,18 @@ public class WebTest
    private ApacheHttpClient4Executor createClient()
    {
       HttpParams params = new BasicHttpParams();
-      ConnManagerParams.setMaxTotalConnections(params, 500);
-      ConnManagerParams.setTimeout(params, 5000);
+      HttpConnectionParams.setConnectionTimeout(params, 5000);
 
       // Create and initialize scheme registry
       SchemeRegistry schemeRegistry = new SchemeRegistry();
-      schemeRegistry.register(
-              new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+      schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
 
       // Create an HttpClient with the ThreadSafeClientConnManager.
       // This connection manager must be used if more than one thread will
       // be using the HttpClient.
-      ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
+      ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(schemeRegistry);
+      cm.setMaxTotal(500);
+
       HttpClient httpClient = new DefaultHttpClient(cm, params);
 
       final ApacheHttpClient4Executor executor = new ApacheHttpClient4Executor(httpClient);
@@ -133,7 +133,7 @@ public class WebTest
 
          ClientRequest request = new ClientRequest(u, executor);
          request.body("application/xml", itemString);
-         ClientResponse response = request.post();
+         ClientResponse<?> response = request.post();
          response.releaseConnection();
          Assert.assertEquals(202, response.getStatus());
 

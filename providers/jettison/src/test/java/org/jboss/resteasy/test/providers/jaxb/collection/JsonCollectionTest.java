@@ -1,17 +1,9 @@
 package org.jboss.resteasy.test.providers.jaxb.collection;
 
-import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
-import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
-import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
-import org.jboss.resteasy.annotations.providers.jaxb.json.XmlNsMap;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.core.messagebody.WriterUtility;
-import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -23,8 +15,18 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
+import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
+import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
+import org.jboss.resteasy.annotations.providers.jaxb.json.XmlNsMap;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.core.messagebody.WriterUtility;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -208,13 +210,14 @@ public class JsonCollectionTest extends BaseResourceTest
       }
    }
 
-   @BeforeClass
-   public static void setup()
-   {
+   @Override
+   @Before
+   public void before() throws Exception {
+      super.before();
       addPerRequestResource(MyResource.class);
-      dispatcher.getRegistry().addPerRequestResource(MyResource.class);
-      dispatcher.getRegistry().addPerRequestResource(MyNamespacedResource.class);
-      dispatcher.getRegistry().addPerRequestResource(MyResource2.class);
+      addPerRequestResource(MyResource.class);
+      addPerRequestResource(MyNamespacedResource.class);
+      addPerRequestResource(MyResource2.class);
    }
 
    @Test
@@ -318,7 +321,7 @@ public class JsonCollectionTest extends BaseResourceTest
    {
       ClientRequest request = new ClientRequest(generateURL("/array"));
       request.body("application/json", "asdfasdfasdf");
-      ClientResponse response = request.post();
+      ClientResponse<?> response = request.post();
       Assert.assertEquals(400, response.getStatus());
       response.releaseConnection();
 
@@ -346,6 +349,7 @@ public class JsonCollectionTest extends BaseResourceTest
    @Path("/")
    public static class MyResource2 implements Accounts
    {
+      @Override
       public List<Customer> list()
       {
          ArrayList<Customer> set = new ArrayList<Customer>();
@@ -355,6 +359,7 @@ public class JsonCollectionTest extends BaseResourceTest
          return set;
       }
 
+      @Override
       public void put(List<Customer> customers)
       {
          junit.framework.Assert.assertEquals("bill", customers.get(0).getName());

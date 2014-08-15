@@ -1,0 +1,7 @@
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
+    <deployment>
+        <dependencies>
+            <module name="org.springframework.spring" slot="main" meta-inf="import"/>
+        </dependencies>
+    </deployment>
+</jboss-deployment-structure>

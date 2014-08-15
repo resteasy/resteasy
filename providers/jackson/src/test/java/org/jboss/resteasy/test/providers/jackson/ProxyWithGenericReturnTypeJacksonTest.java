@@ -17,7 +17,8 @@ import org.codehaus.jackson.annotate.JsonTypeInfo.Id;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,53 +31,52 @@ import org.junit.Test;
  *
  * Copyright Sep 28, 2012
  */
-public class ProxyWithGenericReturnTypeJacksonTest
+public class ProxyWithGenericReturnTypeJacksonTest extends BaseResourceTest
 {
-   protected ResteasyDeployment deployment;
-   
+
    @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "type")
    @JsonSubTypes({
            @JsonSubTypes.Type(value = Type1.class, name = "type1"),
            @JsonSubTypes.Type(value = Type2.class, name = "type2")})
    public abstract static class AbstractParent {
-       
+
        protected long id;
-   
+
        public long getId() {
            return id;
        }
-   
+
        public void setId(long id) {
            this.id = id;
        }
    }
-   
+
    public static class Type1 extends AbstractParent {
-   
+
        protected String name;
-   
+
        public String getName() {
            return name;
        }
-   
+
        public void setName(String name) {
            this.name = name;
        }
    }
-   
+
    public static class Type2 extends AbstractParent {
-   
+
        protected String note;
-   
+
        public String getNote() {
            return note;
        }
-   
+
        public void setNote(String note) {
            this.note = note;
        }
    }
-   
+
    public interface TestSubResourceIntf
    {
       @GET
@@ -89,11 +89,11 @@ public class ProxyWithGenericReturnTypeJacksonTest
       @Produces("application/*+json")
       public AbstractParent resourceMethodOne();
    }
-   
+
    public interface TestSubResourceSubIntf extends TestSubResourceIntf
    {
    }
-   
+
    static class TestInvocationHandler implements InvocationHandler
    {
       @Override
@@ -109,68 +109,61 @@ public class ProxyWithGenericReturnTypeJacksonTest
              first.setId(1);
              first.setName("MyName");
              l.add(first);
-             
+
              Type2 second = new Type2();
              second.setId(2);
              second.setNote("MyNote");
              l.add(second);
              return l;
          }
-         
+
          if ("resourceMethodOne".equals(method.getName())) {
              Type1 first = new Type1();
              first.setId(1);
              first.setName("MyName");
              return first;
          }
-         
+
          return null;
       }
    }
-   
+
    @Path("/")
    static public class TestResource
-   {  
+   {
       @Produces("text/plain")
       @Path("test")
       public TestSubResourceSubIntf resourceLocator()
       {
          Object proxy = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
-                                               new Class[]{TestSubResourceSubIntf.class}, 
+                                               new Class[]{TestSubResourceSubIntf.class},
                                                new TestInvocationHandler());
-         
+
          return TestSubResourceSubIntf.class.cast(proxy);
       }
    }
-   
+
    @Before
    public void before() throws Exception
    {
-      deployment = EmbeddedContainer.start();
-      deployment.getRegistry().addPerRequestResource(TestResource.class);
-   }
-
-   @After
-   public void after() throws Exception
-   {
-      EmbeddedContainer.stop();
-      deployment = null;
+      addPerRequestResource(TestResource.class, TestSubResourceSubIntf.class, TestSubResourceIntf.class, AbstractParent.class, Type1.class, Type2.class, TestInvocationHandler.class);
+      super.before();
    }
 
     @Test
     public void test() throws Exception {
-        ClientRequest request = new ClientRequest("http://localhost:8081/test/one/");
+        ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/test/one/"));
         System.out.println("Sending request");
         ClientResponse<String> response = request.get(String.class);
         System.out.println("Received response: " + response.getEntity(String.class));
         Assert.assertEquals(200, response.getStatus());
         Assert.assertTrue("Type property is missing.", response.getEntity(String.class).contains("type"));
 
-        request = new ClientRequest("http://localhost:8081/test/list/");
+        request = new ClientRequest(TestPortProvider.generateURL("/test/list/"));
         System.out.println("Sending request");
         response = request.get(String.class);
         System.out.println("Received response: " + response.getEntity(String.class));
         Assert.assertEquals(200, response.getStatus());
         Assert.assertTrue("Type property is missing.", response.getEntity(String.class).contains("type"));
-    }   
+    }
 }

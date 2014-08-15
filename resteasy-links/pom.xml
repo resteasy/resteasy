@@ -1,17 +1,16 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <groupId>org.jboss.resteasy</groupId>
         <version>2.3.7.Final</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>resteasy-links</artifactId>
     <name>RESTEasy Links</name>
-    <description/>
 
     <dependencies>
         <dependency>
@@ -29,24 +28,15 @@
             <artifactId>persistence-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jboss.el</groupId>
             <artifactId>jboss-el</artifactId>
             <version>1.0_02.CR4</version>
         </dependency>
 
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>tjws</artifactId>
+            <artifactId>resteasy-test-tjws</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
@@ -62,24 +52,6 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-<dependency>
-    <groupId>commons-logging</groupId>
-    <artifactId>commons-logging</artifactId>
-    <scope>test</scope>
-</dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

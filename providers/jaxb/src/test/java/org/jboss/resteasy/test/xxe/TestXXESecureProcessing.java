@@ -1,34 +1,28 @@
 package org.jboss.resteasy.test.xxe;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import static org.jboss.resteasy.test.TestPortProvider.*;
 
 import java.util.Hashtable;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import junit.framework.Assert;
 
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Test;
 
 /**
  * Unit tests for RESTEASY-869.
- * 
+ *
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
  * @date August 16, 2013
  */
-public class TestXXESecureProcessing
+public class TestXXESecureProcessing extends BaseResourceTest
 {
-   protected static ResteasyDeployment deployment;
-   protected static Dispatcher dispatcher;
-   
    String doctype =
          "<!DOCTYPE foodocument [" +
                "<!ENTITY foo 'foo'>" +
@@ -46,7 +40,7 @@ public class TestXXESecureProcessing
    String small = doctype + "<favoriteMovieXmlRootElement><title>&foo4;</title></favoriteMovieXmlRootElement>";
    String big   = doctype + "<favoriteMovieXmlRootElement><title>&foo5;</title></favoriteMovieXmlRootElement>";
 
-   
+
    @Path("/")
    public static class MovieResource
    {
@@ -60,45 +54,29 @@ public class TestXXESecureProcessing
      }
    }
 
-   @XmlRootElement
-   public static class FavoriteMovieXmlRootElement {
-     private String _title;
-     public String getTitle() {
-       return _title;
-     }
-     public void setTitle(String title) {
-       _title = title;
-     }
-   }
-
-   public static void before(String expandEntityReferences) throws Exception
+   public void before(String expandEntityReferences) throws Exception
    {
       Hashtable<String,String> initParams = new Hashtable<String,String>();
       Hashtable<String,String> contextParams = new Hashtable<String,String>();
-      contextParams.put("resteasy.document.expand.entity.references", expandEntityReferences);
-      deployment = EmbeddedContainer.start(initParams, contextParams);
-      dispatcher = deployment.getDispatcher();
-      deployment.getRegistry().addPerRequestResource(MovieResource.class);
+      if (expandEntityReferences != null)
+          contextParams.put("resteasy.document.expand.entity.references", expandEntityReferences);
+
+      createContainer(initParams, contextParams);
+      addPerRequestResource(MovieResource.class, FavoriteMovieXmlRootElement.class, MovieResource.class, FavoriteMovieXmlRootElement.class);
+      startContainer();
    }
 
-   public static void before() throws Exception
+   @Override
+   public void before() throws Exception
    {
-      deployment = EmbeddedContainer.start();
-      dispatcher = deployment.getDispatcher();
-      deployment.getRegistry().addPerRequestResource(MovieResource.class);
-   }
-   
-   public static void after() throws Exception
-   {
-      EmbeddedContainer.stop();
-      dispatcher = null;
-      deployment = null;
+      manualStart = true;
+      super.before();
    }
 
    @Test
    public void testXmlRootElementDefaultSmall() throws Exception
    {
-      before();
+      before(null);
       ClientRequest request = new ClientRequest(generateURL("/xmlRootElement"));
       request.body("application/xml", small);
       ClientResponse<?> response = request.post();
@@ -108,13 +86,12 @@ public class TestXXESecureProcessing
       System.out.println("Result: " + entity.substring(0, 30));
       System.out.println("foos: " + countFoos(entity));
       Assert.assertEquals(10000, countFoos(entity));
-      after();
    }
-   
+
    @Test
    public void testXmlRootElementDefaultBig() throws Exception
    {
-      before();
+      before(null);
       ClientRequest request = new ClientRequest(generateURL("/xmlRootElement"));
       request.body("application/xml", big);
       ClientResponse<?> response = request.post();
@@ -123,9 +100,8 @@ public class TestXXESecureProcessing
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException"));
-      after();
    }
-   
+
    @Test
    public void testXmlRootElementWithoutExternalExpansionSmall() throws Exception
    {
@@ -139,9 +115,8 @@ public class TestXXESecureProcessing
       System.out.println("Result: " + entity.substring(0, 30));
       System.out.println("foos: " + countFoos(entity));
       Assert.assertEquals(10000, countFoos(entity));
-      after();
    }
-   
+
    @Test
    public void testXmlRootElementWithoutExternalExpansionBig() throws Exception
    {
@@ -154,7 +129,6 @@ public class TestXXESecureProcessing
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException"));
-      after();
    }
 
    @Test
@@ -170,9 +144,8 @@ public class TestXXESecureProcessing
       System.out.println("Result: " + entity.substring(0, 30));
       System.out.println("foos: " + countFoos(entity));
       Assert.assertEquals(10000, countFoos(entity));
-      after();
    }
-   
+
    @Test
    public void testXmlRootElementWithExternalExpansionBig() throws Exception
    {
@@ -185,14 +158,13 @@ public class TestXXESecureProcessing
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException"));
-      after();
    }
-   
+
    private int countFoos(String s)
    {
       int count = 0;
       int pos = 0;
-      
+
       while (pos >= 0)
       {
          pos = s.indexOf("foo", pos);

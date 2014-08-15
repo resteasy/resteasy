@@ -1,9 +1,10 @@
 package org.jboss.resteasy.test;
 
+import static org.jboss.resteasy.test.TestPortProvider.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import static org.jboss.resteasy.test.TestPortProvider.*;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -76,10 +77,13 @@ public class TestStats extends BaseResourceTest {
         public RegistryData get();
     }
 
+    @Override
     @Before
-    public void setUp() throws Exception {
-        dispatcher.getRegistry().addPerRequestResource(MyResource.class);
-        dispatcher.getRegistry().addPerRequestResource(RegistryStatsResource.class);
+    public void before() throws Exception {
+        createContainer(initParams, contextParams);
+        addPerRequestResource(MyResource.class);
+        addPerRequestResource(RegistryStatsResource.class);
+        startContainer();
     }
 
     @Test
@@ -92,7 +96,7 @@ public class TestStats extends BaseResourceTest {
         for (RegistryEntry entry : data.getEntries()) {
             if (entry.getUriTemplate().equals("/entry/{foo:.*}")) {
                 Assert.assertEquals(2, entry.getMethods().size());
-                List<Class> prepareRequiredTypes = prepareRequiredTypes(PostResourceMethod.class, PutResourceMethod.class);
+                List<Class<?>> prepareRequiredTypes = prepareRequiredTypes(PostResourceMethod.class, PutResourceMethod.class);
                 Assert.assertTrue(testMethodTypes(entry.getMethods().get(0), prepareRequiredTypes));
                 Assert.assertTrue(testMethodTypes(entry.getMethods().get(1), prepareRequiredTypes));
                 found = true;
@@ -104,7 +108,7 @@ public class TestStats extends BaseResourceTest {
         for (RegistryEntry entry : data.getEntries()) {
             if (entry.getUriTemplate().equals("/resource")) {
                 Assert.assertEquals(2, entry.getMethods().size());
-                List<Class> prepareRequiredTypes = prepareRequiredTypes(HeadResourceMethod.class, DeleteResourceMethod.class);
+                List<Class<?>> prepareRequiredTypes = prepareRequiredTypes(HeadResourceMethod.class, DeleteResourceMethod.class);
                 Assert.assertTrue(testMethodTypes(entry.getMethods().get(0), prepareRequiredTypes));
                 Assert.assertTrue(testMethodTypes(entry.getMethods().get(1), prepareRequiredTypes));
                 found = true;
@@ -133,8 +137,8 @@ public class TestStats extends BaseResourceTest {
         Assert.assertTrue(found);
 
     }
-    
-    private boolean testMethodTypes(ResourceMethodEntry entry, List<Class> types) {
+
+    private boolean testMethodTypes(ResourceMethodEntry entry, List<Class<?>> types) {
         if (types.contains(entry.getClass())) {
             types.remove(entry.getClass());
             return true;
@@ -142,8 +146,8 @@ public class TestStats extends BaseResourceTest {
             return false;
         }
     }
-    
-    private List<Class> prepareRequiredTypes(Class... types) {
-        return new ArrayList(Arrays.asList(types));
+
+    private List<Class<?>> prepareRequiredTypes(Class <?> ... types) {
+        return new ArrayList<Class<?>>(Arrays.asList(types));
     }
 }

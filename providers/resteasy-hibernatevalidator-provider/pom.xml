@@ -3,63 +3,33 @@
   <modelVersion>4.0.0</modelVersion>
 	<parent>
         <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-jaxrs-all</artifactId>
+        <artifactId>providers-pom</artifactId>
         <version>2.3.7.Final</version>
-	    <relativePath>../../pom.xml</relativePath>
+	    <relativePath>../pom.xml</relativePath>
     </parent>
-  <groupId>org.jboss.resteasy</groupId>
-  <artifactId>resteasy-hibernatevalidator-provider</artifactId>
-  <packaging>jar</packaging>
-  <name>Resteasy Hibernate Validator Provider</name>
-  <url>http://maven.apache.org</url>
+    <artifactId>resteasy-hibernatevalidator-provider</artifactId>
+    <name>Resteasy Hibernate Validator Provider</name>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    <dependencies>
 
-  <dependencies>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        
 		<dependency>
      		<groupId>org.hibernate</groupId>
      		<artifactId>hibernate-validator</artifactId>
      		<version>4.2.0.Final</version>
  		</dependency>
- 		
- 		<dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
-        
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        
+
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>tjws</artifactId>
+            <artifactId>resteasy-test-tjws</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
-<dependency>
-    <groupId>commons-logging</groupId>
-    <artifactId>commons-logging</artifactId>
-    <scope>test</scope>
-</dependency>
-        
-  </dependencies>
+
+    </dependencies>
 </project>

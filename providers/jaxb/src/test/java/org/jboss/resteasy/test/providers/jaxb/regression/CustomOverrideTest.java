@@ -1,10 +1,9 @@
 package org.jboss.resteasy.test.providers.jaxb.regression;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.test.BaseResourceTest;
-import org.jboss.resteasy.test.TestPortProvider;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -15,11 +14,12 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.jboss.resteasy.test.TestPortProvider;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * RESTEASY-510
@@ -29,22 +29,6 @@ import java.lang.reflect.Type;
  */
 public class CustomOverrideTest extends BaseResourceTest
 {
-   @XmlRootElement
-   public static class Foo
-   {
-      private String name;
-
-      public String getName()
-      {
-         return name;
-      }
-
-      public void setName(String name)
-      {
-         this.name = name;
-      }
-   }
-
    @Provider
    @Produces("text/x-vcard")
    public static class VCardMessageBodyWriter implements MessageBodyWriter<Foo>
@@ -91,11 +75,13 @@ public class CustomOverrideTest extends BaseResourceTest
       }
    }
 
-   @BeforeClass
-   public static void setup() throws Exception
+   @Override
+   @Before
+   public void before() throws Exception
    {
-      deployment.getProviderFactory().registerProvider(VCardMessageBodyWriter.class);
-      addPerRequestResource(VCardResource.class);
+      registerProvider(VCardMessageBodyWriter.class);
+      addPerRequestResource(VCardResource.class, Foo.class);
+      super.before();
    }
 
    @Test

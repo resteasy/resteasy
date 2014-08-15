@@ -1,5 +1,17 @@
 package org.jboss.resteasy.test.security.doseta;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+
 import org.jboss.resteasy.annotations.security.doseta.Signed;
 import org.jboss.resteasy.annotations.security.doseta.Verify;
 import org.jboss.resteasy.client.ClientRequest;
@@ -11,20 +23,11 @@ import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import se.unlogic.eagledns.EagleDNS;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
+import se.unlogic.eagledns.EagleDNS;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -57,7 +60,12 @@ public class SigningDnsTest extends BaseResourceTest
       badKey = keyPair.getPrivate();
 
 
-      dispatcher.getDefaultContextObjects().put(KeyRepository.class, serverRepository);
+      configureDNS();
+   }
+
+   @Override
+   @Before
+   public void before() throws Exception {
       /*
       deployment.getProviderFactory().registerProvider(DigitalSigningInterceptor.class);
       deployment.getProviderFactory().registerProvider(DigitalSigningHeaderDecorator.class);
@@ -65,7 +73,8 @@ public class SigningDnsTest extends BaseResourceTest
       deployment.getProviderFactory().registerProvider(DigitalVerificationHeaderDecorator.class);
       */
       addPerRequestResource(SignedResource.class);
-      configureDNS();
+      super.before();
+      dispatcher.getDefaultContextObjects().put(KeyRepository.class, serverRepository);
    }
 
    private static EagleDNS dns;

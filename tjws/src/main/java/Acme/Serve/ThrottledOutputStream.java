@@ -78,39 +78,43 @@ public class ThrottledOutputStream extends FilterOutputStream
       File thFile = new File(filename);
       if (thFile.isAbsolute() == false)
          thFile = new File(System.getProperty("user.dir", "."), thFile.getName());
-      BufferedReader br = new BufferedReader(new FileReader(thFile));
-      while (true)
-      {
-         String line = br.readLine();
-         if (line == null)
-            break;
-         int i = line.indexOf('#');
-         if (i != -1)
-            line = line.substring(0, i);
-         line = line.trim();
-         if (line.length() == 0)
-            continue;
-         String[] words = Acme.Utils.splitStr(line);
-         if (words.length != 2)
-            throw new IOException("malformed throttle line: " + line);
-         try
-         {
-            wcd.put(words[0], new ThrottleItem(Long.parseLong(words[1])));
-         }
-         catch (NumberFormatException e)
-         {
-            throw new IOException("malformed number in throttle line: " + line);
-         }
+      BufferedReader br = null;
+      try {
+        br = new BufferedReader(new FileReader(thFile));
+        while (true)
+        {
+           String line = br.readLine();
+           if (line == null)
+              break;
+           int i = line.indexOf('#');
+           if (i != -1)
+              line = line.substring(0, i);
+           line = line.trim();
+           if (line.length() == 0)
+              continue;
+           String[] words = Acme.Utils.splitStr(line);
+           if (words.length != 2)
+              throw new IOException("malformed throttle line: " + line);
+           try
+           {
+              wcd.put(words[0], new ThrottleItem(Long.parseLong(words[1])));
+           }
+           catch (NumberFormatException e)
+           {
+              throw new IOException("malformed number in throttle line: " + line);
+           }
+        }
+      } finally {
+        br.close();
       }
-      br.close();
       return wcd;
    }
 
-   private long maxBps;
+   private final long maxBps;
 
    private long bytes;
 
-   private long start;
+   private final long start;
 
    // / Constructor.
    public ThrottledOutputStream(OutputStream out, long maxBps)
@@ -121,12 +125,13 @@ public class ThrottledOutputStream extends FilterOutputStream
       start = System.currentTimeMillis();
    }
 
-   private byte[] oneByte = new byte[1];
+   private final byte[] oneByte = new byte[1];
 
    // / Writes a byte. This method will block until the byte is actually
    // written.
    // @param b the byte to be written
    // @exception IOException if an I/O error has occurred
+   @Override
    public void write(int b) throws IOException
    {
       oneByte[0] = (byte) b;
@@ -138,6 +143,7 @@ public class ThrottledOutputStream extends FilterOutputStream
    // @param off the start offset in the data
    // @param len the number of bytes that are written
    // @exception IOException if an I/O error has occurred
+   @Override
    public void write(byte b[], int off, int len) throws IOException
    {
       // Check the throttle.

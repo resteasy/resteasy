@@ -1,12 +1,10 @@
 package org.jboss.resteasy.test.providers.jaxb.regression;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.test.BaseResourceTest;
 import static org.jboss.resteasy.test.TestPortProvider.*;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -15,11 +13,13 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.test.BaseResourceTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -62,6 +62,7 @@ public class StringCharsetTest extends BaseResourceTest
       {
          return new StreamingOutput()
          {
+            @Override
             public void write(OutputStream outputStream) throws IOException, WebApplicationException
             {
                PrintStream writer = new PrintStream(outputStream, true, "UTF-8");
@@ -100,10 +101,12 @@ public class StringCharsetTest extends BaseResourceTest
       }
    }
 
+   @Override
    @Before
-   public void setUp() throws Exception
+   public void before() throws Exception
    {
-      addPerRequestResource(CharsetService.class);
+      addPerRequestResource(CharsetService.class, RespondTest.class, StringCharsetTest.class, BaseResourceTest.class);
+      super.before();
    }
 
    @Test
