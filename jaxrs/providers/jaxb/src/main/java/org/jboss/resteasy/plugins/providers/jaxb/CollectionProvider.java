@@ -56,7 +56,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
 {
    @Context
    protected Providers providers;
-   private boolean expandEntityReferences = true;
+   private boolean expandEntityReferences = false;
    
    public CollectionProvider()
    {

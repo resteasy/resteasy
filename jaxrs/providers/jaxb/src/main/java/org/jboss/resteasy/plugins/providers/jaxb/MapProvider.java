@@ -53,7 +53,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
 {
    @Context
    protected Providers providers;
-   private boolean expandEntityReferences = true;
+   private boolean expandEntityReferences = false;
    
    public MapProvider()
    {
