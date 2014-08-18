@@ -32,7 +32,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 public class NettyHttpResponse implements HttpResponse
 {
    private static final int EMPTY_CONTENT_LENGTH = 0;
-private int status = 200;
+   private int status = 200;
    private OutputStream os;
    private MultivaluedMap<String, Object> outputHeaders;
    private final ChannelHandlerContext ctx;
