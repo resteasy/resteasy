@@ -1,11 +1,16 @@
 package org.jboss.resteasy.plugins.validation.hibernate;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import javax.ejb.Stateless;
 import javax.enterprise.util.AnnotationLiteral;
@@ -72,6 +77,20 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       @Override public String name() {return null;}
       @Override public String mappedName() {return null;}
       @Override public String description() {return null;}
+   };
+   
+   public abstract static class S4 extends AnnotationLiteral<Local> implements Local { }
+   public static final Annotation LOCAL = new S4() 
+   {
+      @Override
+      public Class<?>[] value() {return null;}
+   };
+
+   public abstract static class S5 extends AnnotationLiteral<Remote> implements Remote { }
+   public static final Annotation REMOTE = new S5() 
+   {
+      @Override
+      public Class<?>[] value() {return null;}
    };
    
    public GeneralValidatorImpl(Validator validator, MethodValidator methodValidator)
@@ -164,7 +183,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    @Override
    public void validateAllParameters(HttpRequest request, Object object, Method method, Object[] parameterValues, Class<?>... groups)
    {
-      if (isSessionBean(method.getDeclaringClass()))
+      if (isSessionBean(method.getDeclaringClass()) || isSessionBean(object.getClass()))
       {
          try
          {
@@ -174,6 +193,16 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          catch (NoSuchMethodException e1)
          {
             // 
+         }
+         
+         if (!isWeldProxy(object.getClass()))
+         {
+            Class<?>[] interfaces = getInterfaces(method.getDeclaringClass());
+            if (interfaces.length > 0)
+            {
+//               object = getProxy(method.getDeclaringClass(), interfaces, object);
+               object = getProxy(object.getClass(), interfaces, object);
+            }
          }
       }
       
@@ -362,18 +391,53 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    
    private boolean isSessionBean(Class<?> clazz)
    {
+      if (clazz.getName().indexOf("$$$view") >= 0)
+      {
+         return true;
+      }
       while (clazz != null)
       {
-         Annotation[] as = clazz.getAnnotations();
          if (clazz.getAnnotation(STATELESS.annotationType()) != null 
                || clazz.getAnnotation(STATEFUL.annotationType()) != null
-               || clazz.getAnnotation(SINGLETON.annotationType()) != null)
+               || clazz.getAnnotation(SINGLETON.annotationType()) != null
+               || clazz.getAnnotation(LOCAL.annotationType()) != null
+               || clazz.getAnnotation(REMOTE.annotationType()) != null)
          {
             return true;
          }
          clazz = clazz.getSuperclass();
       }
       return false;
+   }
+   
+   private Class<?>[] getInterfaces(Class<?> clazz)
+   {
+      ArrayList<Class<?>> list = new ArrayList<Class<?>>();
+      getInterfaces(list, clazz);
+      return list.toArray(new Class<?>[] {});
+   }
+   
+   private void getInterfaces(ArrayList<Class<?>> list, Class<?> clazz)
+   {
+      Class<?>[] interfaces = clazz.getInterfaces();
+      for (int i = 0; i < interfaces.length; i++)
+      {
+         list.add(interfaces[i]);
+         getInterfaces(list, interfaces[i]);
+      }
+   }
+   
+   private Object getProxy(Class<?> clazz, Class<?>[] interfaces, final Object delegate)
+   {
+      InvocationHandler handler = new InvocationHandler()
+      {
+         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
+         {
+            return method.invoke(delegate, args);
+         }
+      };
+      Object proxy = Proxy.newProxyInstance(clazz.getClassLoader(), interfaces, handler);
+      return proxy;
    }
    
    private static final String PROXY_OBJECT_INTERFACE_NAME = "javassist.util.proxy.ProxyObject";
