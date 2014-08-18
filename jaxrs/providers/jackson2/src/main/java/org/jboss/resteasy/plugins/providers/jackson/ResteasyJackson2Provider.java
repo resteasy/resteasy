@@ -8,11 +8,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.util.LRUMap;
 import com.fasterxml.jackson.jaxrs.cfg.AnnotationBundleKey;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.fasterxml.jackson.jaxrs.json.JsonEndpointConfig;
 import com.fasterxml.jackson.jaxrs.util.ClassKey;
+import org.jboss.resteasy.annotations.providers.jackson.Formatted;
 import org.jboss.resteasy.annotations.providers.NoJackson;
 import org.jboss.resteasy.util.FindAnnotation;
 
@@ -131,15 +131,28 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       ClassAnnotationKey key = new ClassAnnotationKey(type, annotations);
       JsonEndpointConfig endpoint;
       endpoint = _writers.get(key);
+
       // not yet resolved (or not cached any more)? Resolve!
       if (endpoint == null) {
-         ObjectMapper mapper = locateMapper(type, mediaType);
-         endpoint = _configForWriting(mapper, annotations);
-         // and cache for future reuse
+          ObjectMapper mapper = locateMapper(type, mediaType);
+          endpoint = _configForWriting(mapper, annotations);
+
+          // and cache for future reuse
          _writers.put(key, endpoint);
       }
 
-      ObjectWriter writer = endpoint.getWriter();
+       ObjectWriter writer = endpoint.getWriter();
+       boolean withIndentOutput = false; // no way to replace _serializationConfig
+
+       // we can't cache this.
+       if (annotations != null) {
+           for (Annotation annotation : annotations) {
+               if (annotation.annotationType().equals(Formatted.class)) {
+                   withIndentOutput = true;
+                   break;
+               }
+           }
+       }
 
       /* 27-Feb-2009, tatu: Where can we find desired encoding? Within
       *   HTTP headers?
@@ -149,7 +162,7 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
 
       try {
          // Want indentation?
-         if (writer.isEnabled(SerializationFeature.INDENT_OUTPUT)) {
+         if (writer.isEnabled(SerializationFeature.INDENT_OUTPUT) || withIndentOutput) {
             jg.useDefaultPrettyPrinter();
          }
          // 04-Mar-2010, tatu: How about type we were given? (if any)
