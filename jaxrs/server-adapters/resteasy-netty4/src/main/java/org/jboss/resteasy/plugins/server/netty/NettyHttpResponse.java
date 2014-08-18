@@ -165,6 +165,7 @@ public class NettyHttpResponse implements HttpResponse
    public DefaultHttpResponse getDefaultFullHttpResponse()
    {
        DefaultFullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(getStatus()));
+       res.headers().add(Names.CONTENT_LENGTH, res.content().readableBytes());
        transformResponseHeaders(res);
        return res;
    }
