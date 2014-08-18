@@ -31,7 +31,8 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  */
 public class NettyHttpResponse implements HttpResponse
 {
-   private int status = 200;
+   private static final int EMPTY_CONTENT_LENGTH = 0;
+private int status = 200;
    private OutputStream os;
    private MultivaluedMap<String, Object> outputHeaders;
    private final ChannelHandlerContext ctx;
@@ -162,10 +163,10 @@ public class NettyHttpResponse implements HttpResponse
        return res;
    }
 
-   public DefaultHttpResponse getDefaultFullHttpResponse()
+   public DefaultHttpResponse getEmptyHttpResponse()
    {
        DefaultFullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(getStatus()));
-       res.headers().add(Names.CONTENT_LENGTH, res.content().readableBytes());
+       res.headers().add(Names.CONTENT_LENGTH, EMPTY_CONTENT_LENGTH);
        transformResponseHeaders(res);
        return res;
    }
@@ -188,7 +189,7 @@ public class NettyHttpResponse implements HttpResponse
          // if committed this means the output stream was used.
          future = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
       } else {
-         future = ctx.writeAndFlush(getDefaultFullHttpResponse());
+         future = ctx.writeAndFlush(getEmptyHttpResponse());
       }
       
       if(!isKeepAlive()) {
