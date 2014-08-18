@@ -5,6 +5,7 @@ import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.TypeConverter;
+import org.xml.sax.InputSource;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -19,9 +20,12 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 
 /**
  * A AbstractJAXBProvider.
@@ -109,10 +113,21 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       
          if (suppressExpandEntityExpansion())
          {
-            return processWithoutEntityExpansion(unmarshaller, entityStream);
+            return processWithoutEntityExpansion(unmarshaller, entityStream, getCharset(mediaType));
          }
          
-         return (T) unmarshaller.unmarshal(new StreamSource(entityStream));
+         if (getCharset(mediaType) == null)
+         {
+            InputSource is = new InputSource(entityStream);
+            is.setEncoding("UTF-8");
+            StreamSource source = new StreamSource(new InputStreamReader(entityStream, "UTF-8"));
+            source.setInputStream(entityStream);
+            return (T) unmarshaller.unmarshal(source);
+         }
+         else
+         {
+            return (T) unmarshaller.unmarshal(new StreamSource(entityStream));  
+         }
       }
       catch (JAXBException e)
       {
@@ -184,6 +199,10 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       {
          marshaller.setProperty(Marshaller.JAXB_ENCODING, charset);
       }
+      else
+      {
+         marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+      }
    }
 
    /**
@@ -244,9 +263,18 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       return !isExpandEntityReferences();
    }
    
-   protected T processWithoutEntityExpansion(Unmarshaller unmarshaller, InputStream entityStream) throws JAXBException
+   protected T processWithoutEntityExpansion(Unmarshaller unmarshaller, InputStream entityStream, String charset) throws JAXBException
    {
       unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);
-      return (T) unmarshaller.unmarshal(entityStream);
+      if (charset == null)
+      {
+         InputSource is = new InputSource(entityStream);
+         is.setEncoding("UTF-8");
+         return (T) unmarshaller.unmarshal(is);
+      }
+      else
+      {
+         return (T) unmarshaller.unmarshal(entityStream); 
+      }
    }
 }
