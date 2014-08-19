@@ -7,6 +7,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.util.ReferenceCountUtil;
+
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
@@ -70,9 +72,15 @@ public class RestEasyHttpRequestDecoder extends MessageToMessageDecoder<io.netty
            {
                HttpContent content = (HttpContent) request;
                ByteBuf buf = content.content().retain();
-               ByteBufInputStream in = new ByteBufInputStream(buf);
-               nettyRequest.setInputStream(in);
-               out.add(nettyRequest);
+               try {
+                   ByteBufInputStream in = new ByteBufInputStream(buf);
+                   nettyRequest.setInputStream(in);
+                   out.add(nettyRequest);
+               } 
+               finally
+               {
+                  ReferenceCountUtil.release(buf); 
+               }
            }
         }
         catch (Exception e)
