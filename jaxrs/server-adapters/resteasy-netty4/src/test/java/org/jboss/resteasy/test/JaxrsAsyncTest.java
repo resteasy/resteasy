@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import io.netty.handler.codec.http.HttpHeaders.Values;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -170,7 +171,7 @@ public class JaxrsAsyncTest
       Builder requestBuilder = client.target(BASE_URI).path("jaxrs/empty").request();
       requestBuilder.header("Connection", "close");
       Response response = requestBuilder.get();
-      Assert.assertNull(response.getHeaderString("Connection"));
+      Assert.assertEquals(Values.CLOSE, response.getHeaderString("Connection"));
       response.close();
    }
 }

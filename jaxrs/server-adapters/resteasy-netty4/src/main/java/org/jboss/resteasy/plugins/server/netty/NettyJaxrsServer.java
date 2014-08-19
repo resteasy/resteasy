@@ -146,7 +146,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
                            ch.pipeline().addLast(new HttpObjectAggregator(maxRequestSize));
                            ch.pipeline().addLast(new HttpResponseEncoder());
                            ch.pipeline().addLast(new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, RestEasyHttpRequestDecoder.Protocol.HTTP));
-                           ch.pipeline().addLast(new RestEasyHttpResponseEncoder(dispatcher));
+                           ch.pipeline().addLast(new RestEasyHttpResponseEncoder());
                            ch.pipeline().addLast(eventExecutor, new RequestHandler(dispatcher));
                        }
                    })
@@ -165,7 +165,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
                            ch.pipeline().addLast(new HttpObjectAggregator(maxRequestSize));
                            ch.pipeline().addLast(new HttpResponseEncoder());
                            ch.pipeline().addLast(new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, RestEasyHttpRequestDecoder.Protocol.HTTPS));
-                           ch.pipeline().addLast(new RestEasyHttpResponseEncoder(dispatcher));
+                           ch.pipeline().addLast(new RestEasyHttpResponseEncoder());
                            ch.pipeline().addLast(eventExecutor, new RequestHandler(dispatcher));
 
                        }
