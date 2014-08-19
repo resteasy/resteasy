@@ -69,8 +69,7 @@ public class RestEasyHttpRequestDecoder extends MessageToMessageDecoder<io.netty
            if (request instanceof HttpContent)
            {
                HttpContent content = (HttpContent) request;
-               ByteBuf buf = content.content().retain();
-               ByteBufInputStream in = new ByteBufInputStream(buf);
+               ByteBufInputStream in = new ByteBufInputStream(content.content());
                nettyRequest.setInputStream(in);
                out.add(nettyRequest);
            }
