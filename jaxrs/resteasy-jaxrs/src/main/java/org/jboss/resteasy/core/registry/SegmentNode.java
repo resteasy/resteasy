@@ -167,7 +167,6 @@ public class SegmentNode
       {
          return subtype.equals(MediaType.MEDIA_TYPE_WILDCARD);
       }
-
    }
 
    public static SortFactor createSortFactor(MediaType client, MediaType server)

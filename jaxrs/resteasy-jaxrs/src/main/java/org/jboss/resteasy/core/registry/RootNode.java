@@ -6,6 +6,7 @@ import org.jboss.resteasy.spi.HttpRequest;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +75,10 @@ public class RootNode
    protected MethodExpression addExpression(String path, ResourceInvoker invoker)
    {
       if (path.startsWith("/")) path = path.substring(1);
-      if (path.endsWith("/")) path = path.substring(0, path.length() - 1);
+      if (path.endsWith("/")) {
+         path = path.substring(0, path.length() - 1);
+      }
+
       if ("".equals(path))
       {
          if (invoker instanceof ResourceMethodInvoker)
@@ -82,7 +86,6 @@ public class RootNode
             MethodExpression expression = new MethodExpression(root, "", invoker);
             root.addExpression(expression);
             return expression;
-
          }
          else
          {
@@ -91,6 +94,7 @@ public class RootNode
             return expression;
          }
       }
+
       String expression = null;
       MethodExpression exp;
       //Matcher param = PathHelper.URI_PARAM_PATTERN.matcher(path);
@@ -130,7 +134,6 @@ public class RootNode
          else
          {
             exp = new MethodExpression(node, path, invoker, "(/.+)?");
-
          }
          node.addExpression(exp);
       }
@@ -150,7 +153,7 @@ public class RootNode
          }
          if (invoker instanceof ResourceMethodInvoker)
          {
-            exp = new MethodExpression(node, path, invoker);
+            exp = new MethodExpression(node, path, invoker, "(/)?");
             node.addExpression(exp);
          }
          else

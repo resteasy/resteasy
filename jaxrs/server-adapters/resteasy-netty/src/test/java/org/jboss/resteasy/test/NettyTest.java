@@ -12,6 +12,8 @@ import org.junit.Test;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
@@ -32,6 +34,14 @@ public class NettyTest
       public String hello()
       {
          return "hello world";
+      }
+
+      @GET
+      @Path("/echo")
+      @Produces("text/plain")
+      public String echo(@QueryParam("text") String input)
+      {
+         return input+input;
       }
 
       @GET

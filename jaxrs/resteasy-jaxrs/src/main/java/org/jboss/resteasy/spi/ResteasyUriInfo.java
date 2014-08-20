@@ -63,13 +63,11 @@ public class ResteasyUriInfo implements UriInfo
          baseURI = absoluteBuilder.clone().replacePath(tmpContextPath).replaceQuery(null).build();
       }
       // make sure there is no trailing '/'
-      if (encodedPath.length() > 1 && encodedPath.endsWith("/")) encodedPath = encodedPath.substring(0, encodedPath.length() - 1);
+      removeTrailingSlash();
 
       // make sure path starts with '/'
-      if (encodedPath.length() == 0 || encodedPath.charAt(0) != '/')
-      {
-         encodedPath = "/" + encodedPath;
-      }
+      ensureLeadingSlash();
+
       path = UriBuilder.fromPath(encodedPath).build().getPath();
       processPath();
    }
@@ -94,6 +92,19 @@ public class ResteasyUriInfo implements UriInfo
       absolutePath = requestUriBuilder.replaceQuery(null).build();
       baseURI = base;
       processPath();
+   }
+
+   private void removeTrailingSlash() {
+      if (encodedPath.length() > 1 && encodedPath.endsWith("/")) {
+         encodedPath = encodedPath.substring(0, encodedPath.length() - 1);
+      }
+   }
+
+   private void ensureLeadingSlash() {
+      if (encodedPath.length() == 0 || encodedPath.charAt(0) != '/')
+      {
+         encodedPath = "/" + encodedPath;
+      }
    }
 
    protected void processPath()

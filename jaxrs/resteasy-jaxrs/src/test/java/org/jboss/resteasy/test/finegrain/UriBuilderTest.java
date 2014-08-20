@@ -1205,4 +1205,23 @@ public class UriBuilderTest
       }
    }
 
+   @Test
+   public void testTrailingSlash() throws Exception
+   {
+      String expected = "http://localhost:8080/test/";
+
+      URI parsedUri = UriBuilder
+         .fromPath("http://localhost:8080/test/").build();
+      Assert.assertEquals(expected, parsedUri.toString());
+   }
+
+   @Test
+   public void testTrailingSlashWithParams() throws Exception
+   {
+      String expected = "http://localhost:8080/test/%3Fparam=value";
+
+      URI uri = UriBuilder
+         .fromPath("http://localhost:8080/test/?param=value").build();
+      Assert.assertEquals(expected, uri.toString());
+   }
 }

@@ -6,14 +6,13 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -32,6 +31,14 @@ public class NettyTest
       public String hello()
       {
          return "hello world";
+      }
+
+      @GET
+      @Path("/echo/")
+      @Produces("text/plain")
+      public String hello(@QueryParam("text") String input)
+      {
+         return input+input;
       }
 
       @GET
@@ -156,4 +163,62 @@ public class NettyTest
         Assert.assertNotNull(val);
         Assert.assertFalse(val.isEmpty());
     }
+
+   /**
+    * https://issues.jboss.org/browse/RESTEASY-1077
+    */
+   @Test
+   public void testTrailingSlash() throws Exception {
+      WebTarget target = client.target(generateURL("/test/"));
+      Response resp = target.request().get();
+      try {
+         Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+      } finally {
+         resp.close();
+      }
+   }
+
+   @Test
+   public void testNoTrailingSlash() throws Exception {
+      WebTarget target = client.target(generateURL("/test"));
+      Response resp = target.request().get();
+      try {
+         Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+      } finally {
+         resp.close();
+      }
+   }
+
+   /**
+    * Trailing slash should stil accept paramters
+    * See: https://issues.jboss.org/browse/RESTEASY-1077
+    *
+    */
+   @Test
+   public void testTrailingSlashWithParams() throws Exception {
+      WebTarget target = client.target(generateURL("/echo/?text=Test"));
+      Response resp = target.request().get();
+      try {
+         Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+         Assert.assertEquals("TestTest", resp.readEntity(String.class));
+      } finally {
+         resp.close();
+      }
+   }
+
+   /**
+    * No trailing slash. Accepts parameters
+    * See: https://issues.jboss.org/browse/RESTEASY-1077
+    */
+   @Test
+   public void testNoTrailingSlashWithParams() throws Exception {
+      WebTarget target = client.target(generateURL("/echo?text=Test"));
+      Response resp = target.request().get();
+      try {
+         Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+         Assert.assertEquals("TestTest", resp.readEntity(String.class));
+      } finally {
+         resp.close();
+      }
+   }
 }
