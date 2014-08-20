@@ -19,19 +19,17 @@ import java.io.IOException;
  */
 public abstract class BaseHttpRequest implements HttpRequest
 {
-   protected SynchronousDispatcher dispatcher;
    protected MultivaluedMap<String, String> formParameters;
    protected MultivaluedMap<String, String> decodedFormParameters;
-   protected HttpResponse httpResponse;
-
-   public BaseHttpRequest(SynchronousDispatcher dispatcher)
-   {
-      this.dispatcher = dispatcher;
-   }
 
    public MultivaluedMap<String, String> getFormParameters()
    {
       if (formParameters != null) return formParameters;
+      if (decodedFormParameters != null)
+      {
+         formParameters = Encode.encode(decodedFormParameters);
+         return formParameters;
+      }
       if (getHttpHeaders().getMediaType().isCompatible(MediaType.valueOf("application/x-www-form-urlencoded")))
       {
          try

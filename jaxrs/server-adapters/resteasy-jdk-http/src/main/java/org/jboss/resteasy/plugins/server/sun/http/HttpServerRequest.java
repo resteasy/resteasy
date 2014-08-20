@@ -25,6 +25,7 @@ import java.util.Map;
  */
 public class HttpServerRequest extends BaseHttpRequest
 {
+  protected SynchronousDispatcher dispatcher;
    protected HttpExchange exchange;
    protected ResteasyHttpHeaders httpHeaders;
    protected ResteasyUriInfo uriInfo;
@@ -35,7 +36,7 @@ public class HttpServerRequest extends BaseHttpRequest
 
    public HttpServerRequest(SynchronousDispatcher dispatcher, HttpResponse httpResponse, HttpExchange exchange)
    {
-      super( dispatcher);
+      this.dispatcher = dispatcher;
       this.httpResponse = httpResponse;
       this.exchange = exchange;
       this.uriInfo = HttpExchangeUtil.extractUriInfo(exchange);
