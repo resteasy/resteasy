@@ -48,32 +48,6 @@ public class ResteasyUriInfo implements UriInfo
    private List<String> encodedMatchedPaths = new LinkedList<String>();
    private List<Object> ancestors;
 
-
-   public ResteasyUriInfo(String absoluteUri, String queryString, String contextPath)
-   {
-      ResteasyUriBuilder absoluteBuilder = (ResteasyUriBuilder)UriBuilder.fromUri(absoluteUri).replaceQuery(queryString);
-      requestURI = absoluteBuilder.build();
-      absolutePath = URI.create(absoluteUri);
-      encodedPath = PathHelper.getEncodedPathInfo(absolutePath.getRawPath(), contextPath);
-      baseURI = absolutePath;
-      if (!encodedPath.trim().equals(""))
-      {
-         String tmpContextPath = contextPath;
-         if (!tmpContextPath.endsWith("/")) tmpContextPath += "/";
-         baseURI = absoluteBuilder.clone().replacePath(tmpContextPath).replaceQuery(null).build();
-      }
-      // make sure there is no trailing '/'
-      if (encodedPath.length() > 1 && encodedPath.endsWith("/")) encodedPath = encodedPath.substring(0, encodedPath.length() - 1);
-
-      // make sure path starts with '/'
-      if (encodedPath.length() == 0 || encodedPath.charAt(0) != '/')
-      {
-         encodedPath = "/" + encodedPath;
-      }
-      path = UriBuilder.fromPath(encodedPath).build().getPath();
-      processPath();
-   }
-
    public ResteasyUriInfo(URI base, URI relative)
    {
      setRequestUri(base, relative);
@@ -91,26 +65,6 @@ public class ResteasyUriInfo implements UriInfo
       extractParameters(requestURI.getRawQuery());
       if (parse.hasMatrixParams) extractMatchingPath(encodedPathSegments);
       else matchingPath = encodedPath;
-
-   }
-
-   public ResteasyUriInfo(URI requestURI)
-   {
-      String r = requestURI.getRawPath();
-      if (r.startsWith("/"))
-      {
-         encodedPath =  r;
-         path = requestURI.getPath();
-      }
-      else
-      {
-         encodedPath = "/" + r;
-         path = "/" + requestURI.getPath();
-      }
-      this.requestURI = requestURI;
-      baseURI = UriBuilder.fromUri(requestURI).replacePath("").build();
-      absolutePath = UriBuilder.fromUri(requestURI).replaceQuery(null).build();
-      processPath();
 
    }
 
