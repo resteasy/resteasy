@@ -9,6 +9,7 @@ import org.jboss.resteasy.util.Encode;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
+import java.net.URI;
 
 /**
  * Helper for creating HttpRequest implementations.  The async code is a fake implementation to work with
@@ -58,6 +59,18 @@ public abstract class BaseHttpRequest implements HttpRequest
    public boolean isInitial()
    {
       return true;
+   }
+
+   @Override
+   public void setRequestUri(URI requestUri) throws IllegalStateException
+   {
+      getUri().setRequestUri(requestUri);
+   }
+
+   @Override
+   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
+   {
+     getUri().setRequestUri(baseUri, baseUri.resolve(requestUri));
    }
 
 }

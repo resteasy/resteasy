@@ -45,7 +45,7 @@ public class NettyHttpRequest extends BaseHttpRequest
 {
    protected ResteasyHttpHeaders httpHeaders;
    protected SynchronousDispatcher dispatcher;
-   protected ResteasyUriInfo uriInfo;
+   protected final ResteasyUriInfo uriInfo;
    protected String httpMethod;
    protected InputStream inputStream;
    protected Map<String, Object> attributes = new HashMap<String, Object>();
@@ -157,18 +157,6 @@ public class NettyHttpRequest extends BaseHttpRequest
    public String getHttpMethod()
    {
       return httpMethod;
-   }
-
-   @Override
-   public void setRequestUri(URI requestUri) throws IllegalStateException
-   {
-      uriInfo = uriInfo.setRequestUri(requestUri);
-   }
-
-   @Override
-   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
-   {
-      uriInfo = new ResteasyUriInfo(baseUri.resolve(requestUri));
    }
 
    public NettyHttpResponse getResponse()

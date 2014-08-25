@@ -45,7 +45,7 @@ public class HttpServletInputMessage extends BaseHttpRequest
    protected SynchronousDispatcher dispatcher;
    protected HttpResponse httpResponse;
 
-   protected ResteasyUriInfo uri;
+   protected final ResteasyUriInfo uri;
    protected String httpMethod;
    protected InputStream overridenStream;
    protected SynchronousExecutionContext executionContext;
@@ -69,18 +69,6 @@ public class HttpServletInputMessage extends BaseHttpRequest
    public MultivaluedMap<String, String> getMutableHeaders()
    {
       return httpHeaders.getMutableHeaders();
-   }
-
-   @Override
-   public void setRequestUri(URI requestUri) throws IllegalStateException
-   {
-      uri = uri.setRequestUri(requestUri);
-   }
-
-   @Override
-   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
-   {
-      uri = new ResteasyUriInfo(baseUri.resolve(requestUri));
    }
 
    public MultivaluedMap<String, String> getPutFormParameters()

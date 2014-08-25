@@ -281,18 +281,6 @@ public class MockHttpRequest extends BaseHttpRequest
       return httpMethod;
    }
 
-   @Override
-   public void setRequestUri(URI requestUri) throws IllegalStateException
-   {
-      uri = uri.setRequestUri(requestUri);
-   }
-
-   @Override
-   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
-   {
-      uri = new ResteasyUriInfo(baseUri.resolve(requestUri));
-   }
-
    public void initialRequestThreadFinished()
    {
    }

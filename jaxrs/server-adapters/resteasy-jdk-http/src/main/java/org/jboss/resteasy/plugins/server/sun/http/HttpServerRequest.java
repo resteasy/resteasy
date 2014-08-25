@@ -25,10 +25,11 @@ import java.util.Map;
  */
 public class HttpServerRequest extends BaseHttpRequest
 {
-  protected SynchronousDispatcher dispatcher;
+   protected SynchronousDispatcher dispatcher;
+   protected HttpResponse httpResponse;
    protected HttpExchange exchange;
    protected ResteasyHttpHeaders httpHeaders;
-   protected ResteasyUriInfo uriInfo;
+   protected final ResteasyUriInfo uriInfo;
    protected String preProcessedPath;
    protected Map<String, Object> attributes = new HashMap<String, Object>();
    protected String httpMethod;
@@ -50,19 +51,6 @@ public class HttpServerRequest extends BaseHttpRequest
    {
       return httpHeaders.getMutableHeaders();
    }
-
-   @Override
-   public void setRequestUri(URI requestUri) throws IllegalStateException
-   {
-      uriInfo = uriInfo.setRequestUri(requestUri);
-   }
-
-   @Override
-   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
-   {
-      uriInfo = new ResteasyUriInfo(baseUri.resolve(requestUri));
-   }
-
 
    @Override
    public HttpHeaders getHttpHeaders()
