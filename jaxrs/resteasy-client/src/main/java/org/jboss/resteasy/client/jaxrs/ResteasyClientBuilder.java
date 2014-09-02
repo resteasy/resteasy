@@ -1,5 +1,6 @@
 package org.jboss.resteasy.client.jaxrs;
 
+import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -82,6 +83,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    protected TimeUnit socketTimeoutUnits = TimeUnit.MILLISECONDS;
    protected long establishConnectionTimeout = -1;
    protected TimeUnit establishConnectionTimeoutUnits = TimeUnit.MILLISECONDS;
+   protected int connectionCheckoutTimeoutMs = -1;
    protected HostnameVerifier verifier = null;
    protected HttpHost defaultProxy;
    protected int responseBufferSize;
@@ -163,6 +165,18 @@ public class ResteasyClientBuilder extends ClientBuilder
    {
       this.maxPooledPerRoute = maxPooledPerRoute;
       return this;
+   }
+
+   /**
+    * If connection pooling is enabled, how long will we wait to get a connection?
+    * @param timeout the timeout
+    * @param unit the units the timeout is in
+    * @return this builder
+    */
+   public ResteasyClientBuilder connectionCheckoutTimeout(long timeout, TimeUnit unit)
+   {
+       this.connectionCheckoutTimeoutMs = (int) TimeUnit.MILLISECONDS.convert(timeout, unit);
+       return this;
    }
 
    /**
@@ -445,6 +459,10 @@ public class ResteasyClientBuilder extends ClientBuilder
          if (establishConnectionTimeout > -1)
          {
             HttpConnectionParams.setConnectionTimeout(params, (int)establishConnectionTimeoutUnits.toMillis(establishConnectionTimeout));
+         }
+         if (connectionCheckoutTimeoutMs > -1)
+         {
+             HttpClientParams.setConnectionManagerTimeout(params, connectionCheckoutTimeoutMs);
          }
          httpClient = new DefaultHttpClient(cm, params);
          ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient, true);
