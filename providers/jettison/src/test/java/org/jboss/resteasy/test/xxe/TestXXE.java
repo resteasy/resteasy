@@ -386,7 +386,7 @@ public class TestXXE
       if (expand == null)
       {
          before();
-         expand = true;
+         expand = false;
       }
       else
       {
@@ -413,7 +413,7 @@ public class TestXXE
       if (expand == null)
       {
          before();
-         expand = true;
+         expand = false;
       }
       else
       {
@@ -467,7 +467,7 @@ public class TestXXE
       if (expand == null)
       {
          before();
-         expand = true;
+         expand = false;
       }
       else
       {
