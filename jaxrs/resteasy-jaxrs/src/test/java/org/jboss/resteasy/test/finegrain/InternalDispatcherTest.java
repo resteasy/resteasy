@@ -109,7 +109,8 @@ public class InternalDispatcherTest
       @Path("/basic")
       public String getBasic()
       {
-         uriStack.push(uriInfo.getAbsolutePath().toString());
+          String item = uriInfo.getAbsolutePath().toString();
+          uriStack.push(item);
          return basic;
       }
 

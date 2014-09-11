@@ -45,7 +45,6 @@ public class NettyHttpRequest extends BaseHttpRequest
 {
    protected ResteasyHttpHeaders httpHeaders;
    protected SynchronousDispatcher dispatcher;
-   protected final ResteasyUriInfo uriInfo;
    protected String httpMethod;
    protected InputStream inputStream;
    protected Map<String, Object> attributes = new HashMap<String, Object>();
@@ -57,12 +56,12 @@ public class NettyHttpRequest extends BaseHttpRequest
 
    public NettyHttpRequest(ChannelHandlerContext ctx, ResteasyHttpHeaders httpHeaders, ResteasyUriInfo uri, String httpMethod, SynchronousDispatcher dispatcher, NettyHttpResponse response, boolean is100ContinueExpected)
    {
+      super(uri);
       this.is100ContinueExpected = is100ContinueExpected;
       this.response = response;
       this.dispatcher = dispatcher;
       this.httpHeaders = httpHeaders;
       this.httpMethod = httpMethod;
-      this.uriInfo = uri;
       this.executionContext = new NettyExecutionContext(this, response, dispatcher);
       this.ctx = ctx;
    }
@@ -145,12 +144,6 @@ public class NettyHttpRequest extends BaseHttpRequest
    public void setInputStream(InputStream stream)
    {
       this.inputStream = stream;
-   }
-
-   @Override
-   public ResteasyUriInfo getUri()
-   {
-      return uriInfo;
    }
 
    @Override
