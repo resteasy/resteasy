@@ -1,6 +1,7 @@
 package org.jboss.resteasy.mock;
 
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
+import org.jboss.resteasy.plugins.server.BaseHttpRequest;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.BadRequestException;
@@ -36,14 +37,12 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class MockHttpRequest implements HttpRequest
+public class MockHttpRequest extends BaseHttpRequest
 {
    protected ResteasyHttpHeaders httpHeaders;
    protected InputStream inputStream;
    protected ResteasyUriInfo uri;
    protected String httpMethod;
-   protected MultivaluedMap<String, String> formParameters;
-   protected MultivaluedMap<String, String> decodedFormParameters;
    protected Map<String, Object> attributes = new HashMap<String, Object>();
    protected ResteasyAsynchronousContext asynchronousContext;
 
@@ -280,57 +279,6 @@ public class MockHttpRequest implements HttpRequest
    public String getHttpMethod()
    {
       return httpMethod;
-   }
-
-   public MultivaluedMap<String, String> getFormParameters()
-   {
-      if (formParameters != null) return formParameters;
-      if (decodedFormParameters != null)
-      {
-         formParameters = Encode.encode(decodedFormParameters);
-         return formParameters;
-      }
-
-      if (getHttpHeaders().getMediaType().isCompatible(MediaType.valueOf("application/x-www-form-urlencoded")))
-      {
-         try
-         {
-            formParameters = FormUrlEncodedProvider.parseForm(getInputStream());
-         }
-         catch (IOException e)
-         {
-            throw new BadRequestException(e);
-         }
-      }
-      else
-      {
-         throw new IllegalArgumentException("Request media type is not application/x-www-form-urlencoded");
-      }
-      return formParameters;
-   }
-
-   public MultivaluedMap<String, String> getDecodedFormParameters()
-   {
-      if (decodedFormParameters != null) return decodedFormParameters;
-      decodedFormParameters = Encode.decode(getFormParameters());
-      return decodedFormParameters;
-   }
-
-   @Override
-   public void setRequestUri(URI requestUri) throws IllegalStateException
-   {
-      uri = uri.setRequestUri(requestUri);
-   }
-
-   @Override
-   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
-   {
-      uri = new ResteasyUriInfo(baseUri.resolve(requestUri));
-   }
-
-   public boolean isInitial()
-   {
-      return true;
    }
 
    public void initialRequestThreadFinished()

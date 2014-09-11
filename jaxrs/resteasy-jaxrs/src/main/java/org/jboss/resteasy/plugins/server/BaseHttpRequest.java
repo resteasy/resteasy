@@ -9,6 +9,7 @@ import org.jboss.resteasy.util.Encode;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
+import java.net.URI;
 
 /**
  * Helper for creating HttpRequest implementations.  The async code is a fake implementation to work with
@@ -19,19 +20,17 @@ import java.io.IOException;
  */
 public abstract class BaseHttpRequest implements HttpRequest
 {
-   protected SynchronousDispatcher dispatcher;
    protected MultivaluedMap<String, String> formParameters;
    protected MultivaluedMap<String, String> decodedFormParameters;
-   protected HttpResponse httpResponse;
-
-   public BaseHttpRequest(SynchronousDispatcher dispatcher)
-   {
-      this.dispatcher = dispatcher;
-   }
 
    public MultivaluedMap<String, String> getFormParameters()
    {
       if (formParameters != null) return formParameters;
+      if (decodedFormParameters != null)
+      {
+         formParameters = Encode.encode(decodedFormParameters);
+         return formParameters;
+      }
       if (getHttpHeaders().getMediaType().isCompatible(MediaType.valueOf("application/x-www-form-urlencoded")))
       {
          try
@@ -60,6 +59,18 @@ public abstract class BaseHttpRequest implements HttpRequest
    public boolean isInitial()
    {
       return true;
+   }
+
+   @Override
+   public void setRequestUri(URI requestUri) throws IllegalStateException
+   {
+      getUri().setRequestUri(requestUri);
+   }
+
+   @Override
+   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
+   {
+     getUri().setRequestUri(baseUri, baseUri.resolve(requestUri));
    }
 
 }

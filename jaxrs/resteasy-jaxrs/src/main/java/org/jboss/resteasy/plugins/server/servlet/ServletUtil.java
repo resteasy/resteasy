@@ -32,47 +32,14 @@ public class ServletUtil
    public static ResteasyUriInfo extractUriInfo(HttpServletRequest request, String servletPrefix)
    {
       String contextPath = request.getContextPath();
+      String requestUrl = request.getRequestURL().toString();
+      UriBuilder baseUriBuilder = UriBuilder.fromUri(requestUrl).replacePath(request.getContextPath());
       if (servletPrefix != null && servletPrefix.length() > 0 && !servletPrefix.equals("/"))
       {
-         if (!contextPath.endsWith("/") && !servletPrefix.startsWith("/"))
-            contextPath += "/";
-         contextPath += servletPrefix;
+         baseUriBuilder.path(servletPrefix);
       }
-      return new ResteasyUriInfo(request.getRequestURL().toString(), request.getQueryString(), contextPath);
-      /*
-      URI absolutePath = null;
-      try
-      {
-         URL absolute = new URL(request.getRequestURL().toString());
-
-         ResteasyUriBuilder builder = new ResteasyUriBuilder();
-         builder.scheme(absolute.getProtocol());
-         builder.host(absolute.getHost());
-         builder.port(absolute.getPort());
-         builder.path(absolute.getPath());
-         builder.replaceQuery(null);
-         absolutePath = builder.build();
-      }
-      catch (MalformedURLException e)
-      {
-         throw new RuntimeException(e);
-      }
-
-      String path = PathHelper.getEncodedPathInfo(absolutePath.getRawPath(), contextPath);
-      URI relativeURI = UriBuilder.fromUri(path).replaceQuery(request.getQueryString()).build();
-
-      URI baseURI = absolutePath;
-      if (!path.trim().equals(""))
-      {
-         String tmpContextPath = contextPath;
-         if (!tmpContextPath.endsWith("/")) tmpContextPath += "/";
-         baseURI = UriBuilder.fromUri(absolutePath).replacePath(tmpContextPath).build();
-      }
-      //System.out.println("path: " + path);
-      //System.out.println("query string: " + request.getQueryString());
-      ResteasyUriInfo uriInfo = new ResteasyUriInfo(baseURI, relativeURI);
-      return uriInfo;
-      */
+      return new ResteasyUriInfo(baseUriBuilder.build(),
+          UriBuilder.fromUri(requestUrl).replaceQuery(request.getQueryString()).build());
    }
 
    public static ResteasyHttpHeaders extractHttpHeaders(HttpServletRequest request)

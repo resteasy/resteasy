@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.server.netty;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.SynchronousExecutionContext;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
+import org.jboss.resteasy.plugins.server.BaseHttpRequest;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
@@ -29,14 +30,12 @@ import java.util.Map;
  * @author Norman Maurer
  * @version $Revision: 1 $
  */
-public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
+public class NettyHttpRequest extends BaseHttpRequest
 {
    protected ResteasyHttpHeaders httpHeaders;
    protected SynchronousDispatcher dispatcher;
-   protected ResteasyUriInfo uriInfo;
+   protected final ResteasyUriInfo uriInfo;
    protected String httpMethod;
-   protected MultivaluedMap<String, String> formParameters;
-   protected MultivaluedMap<String, String> decodedFormParameters;
    protected InputStream inputStream;
    protected Map<String, Object> attributes = new HashMap<String, Object>();
    protected NettyHttpResponse httpResponse;
@@ -94,37 +93,6 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
    }
 
    @Override
-   public MultivaluedMap<String, String> getFormParameters()
-   {
-      if (formParameters != null) return formParameters;
-      if (getHttpHeaders().getMediaType().isCompatible(MediaType.valueOf("application/x-www-form-urlencoded")))
-      {
-         try
-         {
-            formParameters = FormUrlEncodedProvider.parseForm(getInputStream());
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-      }
-      else
-      {
-         throw new IllegalArgumentException("Request media type is not application/x-www-form-urlencoded");
-      }
-      return formParameters;
-   }
-
-   @Override
-   public MultivaluedMap<String, String> getDecodedFormParameters()
-   {
-      if (decodedFormParameters != null) return decodedFormParameters;
-      decodedFormParameters = Encode.decode(getFormParameters());
-      return decodedFormParameters;
-   }
-
-
-   @Override
    public Object getAttribute(String attribute)
    {
       return attributes.get(attribute);
@@ -172,36 +140,17 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
       return httpMethod;
    }
 
-   @Override
-   public void setRequestUri(URI requestUri) throws IllegalStateException
-   {
-      uriInfo = uriInfo.setRequestUri(requestUri);
-   }
-
-   @Override
-   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
-   {
-      uriInfo = new ResteasyUriInfo(baseUri.resolve(requestUri));
-   }
-
-
-   @Override
-   public boolean isInitial()
-   {
-      return true;
-   }
-   
    public NettyHttpResponse getResponse()
    {
        return httpResponse;
    }
-   
-   public boolean isKeepAlive() 
+
+   public boolean isKeepAlive()
    {
        return httpResponse.isKeepAlive();
    }
 
-   public boolean is100ContinueExpected() 
+   public boolean is100ContinueExpected()
    {
        return is100ContinueExpected;
    }

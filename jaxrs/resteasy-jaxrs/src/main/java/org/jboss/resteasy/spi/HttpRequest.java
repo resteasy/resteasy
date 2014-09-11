@@ -28,12 +28,21 @@ public interface HttpRequest
     */
    void setInputStream(InputStream stream);
 
+   /**
+    * This method *MUST* always return the same instance.
+    */
    ResteasyUriInfo getUri();
 
    String getHttpMethod();
    void setHttpMethod(String method);
 
+   /**
+    * Updates the object returned by {@link #getUri()}.
+    */
    void setRequestUri(URI requestUri) throws IllegalStateException;
+   /**
+    * Updates the object returned by {@link #getUri()}.
+    */
    void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException;
    /**
     * application/x-www-form-urlencoded parameters

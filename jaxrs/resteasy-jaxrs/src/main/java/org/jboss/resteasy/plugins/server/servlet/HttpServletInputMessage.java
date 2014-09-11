@@ -4,6 +4,7 @@ import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.SynchronousExecutionContext;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
+import org.jboss.resteasy.plugins.server.BaseHttpRequest;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -34,7 +35,7 @@ import java.util.Map;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class HttpServletInputMessage implements HttpRequest
+public class HttpServletInputMessage extends BaseHttpRequest
 {
    private final static Logger logger = Logger.getLogger(HttpServletInputMessage.class);
    protected ResteasyHttpHeaders httpHeaders;
@@ -44,10 +45,8 @@ public class HttpServletInputMessage implements HttpRequest
    protected SynchronousDispatcher dispatcher;
    protected HttpResponse httpResponse;
 
-   protected ResteasyUriInfo uri;
+   protected final ResteasyUriInfo uri;
    protected String httpMethod;
-   protected MultivaluedMap<String, String> formParameters;
-   protected MultivaluedMap<String, String> decodedFormParameters;
    protected InputStream overridenStream;
    protected SynchronousExecutionContext executionContext;
    protected boolean wasForwarded;
@@ -70,18 +69,6 @@ public class HttpServletInputMessage implements HttpRequest
    public MultivaluedMap<String, String> getMutableHeaders()
    {
       return httpHeaders.getMutableHeaders();
-   }
-
-   @Override
-   public void setRequestUri(URI requestUri) throws IllegalStateException
-   {
-      uri = uri.setRequestUri(requestUri);
-   }
-
-   @Override
-   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
-   {
-      uri = new ResteasyUriInfo(baseUri.resolve(requestUri));
    }
 
    public MultivaluedMap<String, String> getPutFormParameters()
@@ -236,12 +223,6 @@ public class HttpServletInputMessage implements HttpRequest
    public ResteasyAsynchronousContext getAsyncContext()
    {
       return executionContext;
-   }
-
-   @Override
-   public boolean isInitial()
-   {
-      return true;
    }
 
    @Override

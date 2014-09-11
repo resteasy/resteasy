@@ -48,52 +48,9 @@ public class ResteasyUriInfo implements UriInfo
    private List<String> encodedMatchedPaths = new LinkedList<String>();
    private List<Object> ancestors;
 
-
-   public ResteasyUriInfo(String absoluteUri, String queryString, String contextPath)
-   {
-      ResteasyUriBuilder absoluteBuilder = (ResteasyUriBuilder)UriBuilder.fromUri(absoluteUri).replaceQuery(queryString);
-      requestURI = absoluteBuilder.build();
-      absolutePath = URI.create(absoluteUri);
-      encodedPath = PathHelper.getEncodedPathInfo(absolutePath.getRawPath(), contextPath);
-      baseURI = absolutePath;
-      if (!encodedPath.trim().equals(""))
-      {
-         String tmpContextPath = contextPath;
-         if (!tmpContextPath.endsWith("/")) tmpContextPath += "/";
-         baseURI = absoluteBuilder.clone().replacePath(tmpContextPath).replaceQuery(null).build();
-      }
-      // make sure there is no trailing '/'
-      if (encodedPath.length() > 1 && encodedPath.endsWith("/")) encodedPath = encodedPath.substring(0, encodedPath.length() - 1);
-
-      // make sure path starts with '/'
-      if (encodedPath.length() == 0 || encodedPath.charAt(0) != '/')
-      {
-         encodedPath = "/" + encodedPath;
-      }
-      path = UriBuilder.fromPath(encodedPath).build().getPath();
-      processPath();
-   }
-
    public ResteasyUriInfo(URI base, URI relative)
    {
-      String b = base.toString();
-      if (!b.endsWith("/")) b += "/";
-      String r = relative.getRawPath();
-      if (r.startsWith("/"))
-      {
-         encodedPath =  r;
-         path = relative.getPath();
-      }
-      else
-      {
-         encodedPath = "/" + r;
-         path = "/" + relative.getPath();
-      }
-      UriBuilder requestUriBuilder = UriBuilder.fromUri(base).path(relative.getRawPath()).replaceQuery(relative.getRawQuery());
-      requestURI = requestUriBuilder.build();
-      absolutePath = requestUriBuilder.replaceQuery(null).build();
-      baseURI = base;
-      processPath();
+     setRequestUri(base, relative);
    }
 
    protected void processPath()
@@ -108,26 +65,6 @@ public class ResteasyUriInfo implements UriInfo
       extractParameters(requestURI.getRawQuery());
       if (parse.hasMatrixParams) extractMatchingPath(encodedPathSegments);
       else matchingPath = encodedPath;
-
-   }
-
-   public ResteasyUriInfo(URI requestURI)
-   {
-      String r = requestURI.getRawPath();
-      if (r.startsWith("/"))
-      {
-         encodedPath =  r;
-         path = requestURI.getPath();
-      }
-      else
-      {
-         encodedPath = "/" + r;
-         path = "/" + requestURI.getPath();
-      }
-      this.requestURI = requestURI;
-      baseURI = UriBuilder.fromUri(requestURI).replacePath("").build();
-      absolutePath = UriBuilder.fromUri(requestURI).replaceQuery(null).build();
-      processPath();
 
    }
 
@@ -157,20 +94,48 @@ public class ResteasyUriInfo implements UriInfo
    }
 
    /**
-    * Create a UriInfo from the baseURI
-    *
-    * @param relative
-    * @return
+    * Updates the UriInfo with a new requestURI, keeping the same baseURI.
+    * <p>
+    * This can only be called before resource matching.
     */
-   public ResteasyUriInfo setRequestUri(URI relative)
+   public void setRequestUri(URI requestURI) throws IllegalStateException
    {
-      String rel = relative.toString();
-      if (rel.startsWith(baseURI.toString()))
-      {
-         relative = URI.create(rel.substring(baseURI.toString().length()));
+      setRequestUri(this.baseURI, requestURI);
+   }
+
+   /**
+    * Updates the UriInfo with a new baseURI and requestURI.
+    * <p>
+    * This can only be called before resource matching.
+    */
+   public void setRequestUri(URI baseURI, URI requestURI) throws IllegalStateException
+   {
+      if (matchedUris != null || !matchedUris.isEmpty()
+          || encodedMatchedPaths != null || !encodedMatchedPaths.isEmpty()
+          || encodedMatchedUris != null || !encodedMatchedUris.isEmpty()
+          || ancestors != null || !ancestors.isEmpty()) {
+         throw new IllegalStateException("setRequestUri can only be called before resource matching");
       }
 
-      return new ResteasyUriInfo(baseURI, relative);
+      requestURI = baseURI.relativize(requestURI);
+
+      String b = baseURI.toString();
+      if (!b.endsWith("/")) b += "/";
+      String r = requestURI.getRawPath();
+      if (r.startsWith("/"))
+      {
+        encodedPath =  r;
+        path = requestURI.getPath();
+      }
+      else
+      {
+        encodedPath = "/" + r;
+        path = "/" + requestURI.getPath();
+      }
+      this.requestURI = requestURI;
+      absolutePath = UriBuilder.fromUri(requestURI).replaceQuery(null).build();
+      this.baseURI = baseURI;
+      processPath();
    }
 
    public String getPath()
