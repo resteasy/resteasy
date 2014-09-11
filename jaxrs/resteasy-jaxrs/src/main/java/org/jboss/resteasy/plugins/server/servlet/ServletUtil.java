@@ -31,15 +31,14 @@ public class ServletUtil
 {
    public static ResteasyUriInfo extractUriInfo(HttpServletRequest request, String servletPrefix)
    {
-      String contextPath = request.getContextPath();
-      String requestUrl = request.getRequestURL().toString();
-      UriBuilder baseUriBuilder = UriBuilder.fromUri(requestUrl).replacePath(request.getContextPath());
-      if (servletPrefix != null && servletPrefix.length() > 0 && !servletPrefix.equals("/"))
-      {
-         baseUriBuilder.path(servletPrefix);
-      }
-      return new ResteasyUriInfo(baseUriBuilder.build(),
-          UriBuilder.fromUri(requestUrl).replaceQuery(request.getQueryString()).build());
+       String contextPath = request.getContextPath();
+       if (servletPrefix != null && servletPrefix.length() > 0 && !servletPrefix.equals("/"))
+       {
+           if (!contextPath.endsWith("/") && !servletPrefix.startsWith("/"))
+               contextPath += "/";
+           contextPath += servletPrefix;
+       }
+       return new ResteasyUriInfo(request.getRequestURL().toString(), request.getQueryString(), contextPath);
    }
 
    public static ResteasyHttpHeaders extractHttpHeaders(HttpServletRequest request)

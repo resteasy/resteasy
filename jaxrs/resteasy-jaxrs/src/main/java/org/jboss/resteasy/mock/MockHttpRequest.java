@@ -41,7 +41,6 @@ public class MockHttpRequest extends BaseHttpRequest
 {
    protected ResteasyHttpHeaders httpHeaders;
    protected InputStream inputStream;
-   protected ResteasyUriInfo uri;
    protected String httpMethod;
    protected Map<String, Object> attributes = new HashMap<String, Object>();
    protected ResteasyAsynchronousContext asynchronousContext;
@@ -49,6 +48,7 @@ public class MockHttpRequest extends BaseHttpRequest
 
    protected MockHttpRequest()
    {
+      super(null);
    }
 
    protected static final URI EMPTY_URI = URI.create("");

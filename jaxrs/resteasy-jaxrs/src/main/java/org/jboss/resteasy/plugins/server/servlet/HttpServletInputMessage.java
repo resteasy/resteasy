@@ -45,7 +45,6 @@ public class HttpServletInputMessage extends BaseHttpRequest
    protected SynchronousDispatcher dispatcher;
    protected HttpResponse httpResponse;
 
-   protected final ResteasyUriInfo uri;
    protected String httpMethod;
    protected InputStream overridenStream;
    protected SynchronousExecutionContext executionContext;
@@ -54,6 +53,7 @@ public class HttpServletInputMessage extends BaseHttpRequest
 
    public HttpServletInputMessage(HttpServletRequest request, HttpServletResponse servletResponse, ServletContext servletContext, HttpResponse httpResponse, ResteasyHttpHeaders httpHeaders, ResteasyUriInfo uri, String httpMethod, SynchronousDispatcher dispatcher)
    {
+      super(uri);
       this.request = request;
       this.servletResponse = servletResponse;
       this.servletContext = servletContext;
@@ -61,7 +61,6 @@ public class HttpServletInputMessage extends BaseHttpRequest
       this.httpResponse = httpResponse;
       this.httpHeaders = httpHeaders;
       this.httpMethod = httpMethod;
-      this.uri = uri;
       executionContext = new SynchronousExecutionContext(dispatcher, this, httpResponse);
    }
 
@@ -199,12 +198,6 @@ public class HttpServletInputMessage extends BaseHttpRequest
    public void setInputStream(InputStream stream)
    {
       this.overridenStream = stream;
-   }
-
-   @Override
-   public ResteasyUriInfo getUri()
-   {
-      return uri;
    }
 
    @Override

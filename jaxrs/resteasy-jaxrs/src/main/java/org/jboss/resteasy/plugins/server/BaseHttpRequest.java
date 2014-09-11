@@ -4,6 +4,7 @@ import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.Encode;
 
 import javax.ws.rs.core.MediaType;
@@ -22,6 +23,20 @@ public abstract class BaseHttpRequest implements HttpRequest
 {
    protected MultivaluedMap<String, String> formParameters;
    protected MultivaluedMap<String, String> decodedFormParameters;
+   protected ResteasyUriInfo uri;
+
+   protected BaseHttpRequest(ResteasyUriInfo uri)
+   {
+      this.uri = uri;
+   }
+
+   @Override
+   public ResteasyUriInfo getUri()
+   {
+      return uri;
+   }
+
+
 
    public MultivaluedMap<String, String> getFormParameters()
    {
@@ -61,16 +76,18 @@ public abstract class BaseHttpRequest implements HttpRequest
       return true;
    }
 
-   @Override
-   public void setRequestUri(URI requestUri) throws IllegalStateException
-   {
-      getUri().setRequestUri(requestUri);
-   }
+    @Override
+    public void setRequestUri(URI requestUri) throws IllegalStateException
+    {
+        uri = uri.setRequestUri(requestUri);
+    }
 
-   @Override
-   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
-   {
-     getUri().setRequestUri(baseUri, baseUri.resolve(requestUri));
-   }
+    @Override
+    public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
+    {
+        uri = new ResteasyUriInfo(baseUri.resolve(requestUri));
+    }
+
+
 
 }

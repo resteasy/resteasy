@@ -29,7 +29,6 @@ public class HttpServerRequest extends BaseHttpRequest
    protected HttpResponse httpResponse;
    protected HttpExchange exchange;
    protected ResteasyHttpHeaders httpHeaders;
-   protected final ResteasyUriInfo uriInfo;
    protected String preProcessedPath;
    protected Map<String, Object> attributes = new HashMap<String, Object>();
    protected String httpMethod;
@@ -37,12 +36,12 @@ public class HttpServerRequest extends BaseHttpRequest
 
    public HttpServerRequest(SynchronousDispatcher dispatcher, HttpResponse httpResponse, HttpExchange exchange)
    {
+      super(HttpExchangeUtil.extractUriInfo(exchange));
       this.dispatcher = dispatcher;
       this.httpResponse = httpResponse;
       this.exchange = exchange;
-      this.uriInfo = HttpExchangeUtil.extractUriInfo(exchange);
       this.httpHeaders = HttpExchangeUtil.extractHttpHeaders(exchange);
-      this.preProcessedPath = uriInfo.getPath(false);
+      this.preProcessedPath = uri.getPath(false);
       this.httpMethod = exchange.getRequestMethod().toUpperCase();
    }
 
@@ -68,12 +67,6 @@ public class HttpServerRequest extends BaseHttpRequest
    public void setInputStream(InputStream stream)
    {
       exchange.setStreams(stream, exchange.getResponseBody());
-   }
-
-   @Override
-   public ResteasyUriInfo getUri()
-   {
-      return uriInfo;
    }
 
    @Override
