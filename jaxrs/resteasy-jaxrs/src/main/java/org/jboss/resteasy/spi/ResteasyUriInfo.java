@@ -63,9 +63,7 @@ public class ResteasyUriInfo implements UriInfo
          pathSegments.add(new PathSegmentImpl(((PathSegmentImpl) segment).getOriginal(), true));
       }
       extractParameters(requestURI.getRawQuery());
-      if (parse.hasMatrixParams) extractMatchingPath(encodedPathSegments);
-      else matchingPath = encodedPath;
-
+      extractMatchingPath(encodedPathSegments);
    }
 
    /**
