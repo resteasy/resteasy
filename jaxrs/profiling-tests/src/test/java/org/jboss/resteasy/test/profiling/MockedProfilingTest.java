@@ -52,10 +52,10 @@ public class MockedProfilingTest
    @Test
    public void testCleartext() throws Exception
    {
-      //final int WARMUP = 10;
-      //final int INTERATIONS = 100;
-      final int WARMUP = 1000;
-      final int INTERATIONS = 1000000;
+      final int WARMUP = 10;
+      final int INTERATIONS = 100;
+      //final int WARMUP = 1000;
+      //final int INTERATIONS = 1000000;
 
       ResteasyDeployment deployment = new ResteasyDeployment();
       deployment.start();
