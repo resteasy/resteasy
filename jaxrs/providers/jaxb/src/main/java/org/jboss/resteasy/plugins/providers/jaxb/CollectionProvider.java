@@ -33,6 +33,7 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
@@ -116,7 +117,15 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
          
          if (suppressExpandEntityExpansion())
          {
-            SAXSource source = new SAXSource(new InputSource(entityStream));
+            SAXSource source = null;
+            if (getCharset(mediaType) == null)
+            {
+               source = new SAXSource(new InputSource(new InputStreamReader(entityStream, "UTF-8")));
+            }
+            else
+            {
+               source = new SAXSource(new InputSource(entityStream));
+            }
             JAXBContext ctx = finder.findCachedContext(JaxbCollection.class, mediaType, annotations);
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
             unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);
@@ -124,11 +133,19 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
          }
          else
          {  
-            StreamSource source = new StreamSource(entityStream);
+            StreamSource source = null;
+            if (getCharset(mediaType) == null)
+            {
+               source = new StreamSource(new InputStreamReader(entityStream, "UTF-8"));
+            }
+            else
+            {
+               source = new StreamSource(entityStream);
+            }
             JAXBContext ctx = finder.findCachedContext(JaxbCollection.class, mediaType, annotations);
             ele = ctx.createUnmarshaller().unmarshal(source, JaxbCollection.class);
          }
-      
+         
          Wrapped wrapped = FindAnnotation.findAnnotation(annotations, Wrapped.class);
          if (wrapped != null)
          {
@@ -272,5 +289,14 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
    protected boolean suppressExpandEntityExpansion()
    {
       return !isExpandEntityReferences();
+   }
+   
+   public static String getCharset(final MediaType mediaType)
+   {
+      if (mediaType != null)
+      {
+         return mediaType.getParameters().get("charset");
+      }
+      return null;
    }
 }
