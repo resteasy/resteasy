@@ -16,7 +16,7 @@ import javax.ws.rs.ext.Provider;
 public class FastinfoSetXmlSeeAlsoProvider extends JAXBXmlSeeAlsoProvider
 {
    @Override
-   protected boolean suppressExpandEntityExpansion()
+   protected boolean needsSecurity()
    {
       return false;
    }

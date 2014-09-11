@@ -10,6 +10,7 @@ import org.jboss.resteasy.core.messagebody.WriterUtility;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.ws.rs.Consumes;
@@ -218,7 +219,7 @@ public class JsonCollectionTest extends BaseResourceTest
       dispatcher.getRegistry().addPerRequestResource(MyResource2.class);
    }
 
-   @Test
+   @Test @Ignore
    public void testArray() throws Exception
    {
       ClientRequest request = new ClientRequest(generateURL("/array"));
@@ -235,7 +236,7 @@ public class JsonCollectionTest extends BaseResourceTest
 
    }
 
-   @Test
+   @Test @Ignore
    public void testList() throws Exception
    {
       System.out.println("HERE");
@@ -254,7 +255,7 @@ public class JsonCollectionTest extends BaseResourceTest
 
    }
 
-   @Test
+   @Test @Ignore
    public void testNamespacedArray() throws Exception
    {
       System.out.println("Start");
@@ -273,7 +274,7 @@ public class JsonCollectionTest extends BaseResourceTest
 
    }
 
-   @Test
+   @Test @Ignore
    public void testNamespacedList() throws Exception
    {
       ClientRequest request = new ClientRequest(generateURL("/namespaced/array"));
@@ -290,7 +291,7 @@ public class JsonCollectionTest extends BaseResourceTest
 
    }
 
-   @Test
+   @Test @Ignore
    public void testEmptyArray() throws Exception
    {
       ClientRequest request = new ClientRequest(generateURL("/empty/array"));
@@ -302,7 +303,7 @@ public class JsonCollectionTest extends BaseResourceTest
 
    }
 
-   @Test
+   @Test @Ignore
    public void testEmptyList() throws Exception
    {
       ClientRequest request = new ClientRequest(generateURL("/empty/list"));
@@ -314,7 +315,7 @@ public class JsonCollectionTest extends BaseResourceTest
 
    }
 
-   @Test
+   @Test @Ignore
    public void testBadList() throws Exception
    {
       ClientRequest request = new ClientRequest(generateURL("/array"));
@@ -380,7 +381,7 @@ public class JsonCollectionTest extends BaseResourceTest
     *
     * @throws Exception
     */
-   @Test
+   @Test @Ignore
    public void testIntfTempalte() throws Exception
    {
       ClientRequest request = new ClientRequest(generateURL("/intf"));
