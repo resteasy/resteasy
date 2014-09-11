@@ -9,6 +9,7 @@ import org.junit.Test;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -39,6 +40,14 @@ public class NettyTest
       public void empty() {
 
       }
+
+      @GET
+      @Path("query")
+      public String query(@QueryParam("param") String value) {
+         return value;
+
+      }
+
 
       @GET
       @Path("/exception")
@@ -94,6 +103,14 @@ public class NettyTest
       WebTarget target = client.target(generateURL("/test"));
       String val = target.request().get(String.class);
       Assert.assertEquals("hello world", val);
+   }
+
+   @Test
+   public void testQuery() throws Exception
+   {
+      WebTarget target = client.target(generateURL("/query"));
+      String val = target.queryParam("param", "val").request().get(String.class);
+      Assert.assertEquals("val", val);
    }
 
    @Test
