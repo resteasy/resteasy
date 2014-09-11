@@ -156,4 +156,25 @@ processStuffResponse(&lt;nomal JSON body&gt;)
             You can change the name of the callback parameter by setting the callbackQueryParameter property.
         </para>
     </sect1>
+    <sect1 id="Jackson_JSON_Decorator">
+        <title>Jackson JSON Decorator</title>
+        <para>
+            If you are using the Jackson 2.2.x provider, Resteasy has provided a pretty-printing annotation simliar with the one in JAXB provider:
+<programlisting>
+org.jboss.resteasy.annotations.providers.jackson.Formatted
+</programlisting>
+            Here is an example:
+<programlisting>
+@GET
+@Produces("application/json")
+@Path("/formatted/{id}")
+@Formatted
+public Product getFormattedProduct()
+{
+    return new Product(333, "robot");
+}
+</programlisting>
+            As the example shown above, the @Formatted annotation will enable the underlying Jackson option "SerializationFeature.INDENT_OUTPUT".
+        </para>
+    </sect1>
 </chapter>

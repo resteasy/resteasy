@@ -1,6 +1,5 @@
 package org.jboss.resteasy.plugins.server.netty;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
@@ -8,11 +7,13 @@ import io.netty.handler.codec.http.HttpHeaders.Names;
 import io.netty.handler.codec.http.HttpHeaders.Values;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.LastHttpContent;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.List;
 import java.util.Map;
+
+import javax.ws.rs.ext.RuntimeDelegate;
+
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 
 /**
@@ -28,15 +29,6 @@ import java.util.Map;
 public class RestEasyHttpResponseEncoder extends MessageToMessageEncoder<NettyHttpResponse>
 {
 
-    private final RequestDispatcher dispatcher;
-
-    public RestEasyHttpResponseEncoder(RequestDispatcher dispatcher)
-    {
-        this.dispatcher = dispatcher;
-    }
-
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected void encode(ChannelHandlerContext ctx, NettyHttpResponse nettyResponse, List<Object> out) throws Exception
     {
@@ -49,12 +41,18 @@ public class RestEasyHttpResponseEncoder extends MessageToMessageEncoder<NettyHt
        }
     }
 
+   @SuppressWarnings({ "rawtypes", "unchecked" }) 
    public static void transformHeaders(NettyHttpResponse nettyResponse, HttpResponse response, ResteasyProviderFactory factory)
    {
-      if (nettyResponse.isKeepAlive())
+      if(nettyResponse.isKeepAlive()) 
       {
          response.headers().set(Names.CONNECTION, Values.KEEP_ALIVE);
+      } 
+      else 
+      {
+         response.headers().set(Names.CONNECTION, Values.CLOSE);
       }
+      
       for (Map.Entry<String, List<Object>> entry : nettyResponse.getOutputHeaders().entrySet())
       {
          String key = entry.getKey();

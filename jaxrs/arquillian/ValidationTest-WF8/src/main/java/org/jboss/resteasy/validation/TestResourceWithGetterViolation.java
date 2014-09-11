@@ -22,11 +22,11 @@ public class TestResourceWithGetterViolation
    public String getS()
    {
    	/*
-   	 * Called twice by Hibernate Validator 5 during field, property, class
+   	 * Called three times by Hibernate Validator 5 during field, property, class
    	 * constraint validation.
    	 */
    	System.out.println("getS(): count: " + count);
-   	String s = count++ <= 1 ? "abc" : "a";
+   	String s = count++ <= 2 ? "abc" : "a";
    	System.out.println("s: " + s);
    	return s;
    }

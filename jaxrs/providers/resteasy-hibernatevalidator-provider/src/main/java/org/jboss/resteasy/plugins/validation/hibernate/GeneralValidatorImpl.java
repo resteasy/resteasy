@@ -1,11 +1,16 @@
 package org.jboss.resteasy.plugins.validation.hibernate;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.Stateful;
 import javax.ejb.Stateless;
 import javax.enterprise.util.AnnotationLiteral;
@@ -19,14 +24,16 @@ import org.jboss.resteasy.api.validation.ConstraintType.Type;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.cdi.CdiInjectorFactory;
+import org.jboss.resteasy.cdi.ResteasyCdiExtension;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.InjectorFactory;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 import org.jboss.resteasy.util.FindAnnotation;
-import org.jboss.resteasy.util.GetRestful;
 
 /**
  * 
@@ -43,6 +50,10 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    private Validator validator;
    private MethodValidator methodValidator;
    private ConstraintTypeUtil util = new ConstraintTypeUtil10();
+   private boolean suppressPath;
+   private boolean cdiActive;
+   
+   public static final String SUPPRESS_VIOLATION_PATH = "resteasy.validation.suppress.path";
    
    public abstract static class S1 extends AnnotationLiteral<Stateless> implements Stateless { }
    public static final Annotation STATELESS = new S1() 
@@ -68,30 +79,49 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       @Override public String description() {return null;}
    };
    
+   public abstract static class S4 extends AnnotationLiteral<Local> implements Local { }
+   public static final Annotation LOCAL = new S4() 
+   {
+      @Override
+      public Class<?>[] value() {return null;}
+   };
+
+   public abstract static class S5 extends AnnotationLiteral<Remote> implements Remote { }
+   public static final Annotation REMOTE = new S5() 
+   {
+      @Override
+      public Class<?>[] value() {return null;}
+   };
+   
    public GeneralValidatorImpl(Validator validator, MethodValidator methodValidator)
    {
       this.validator = validator;
       this.methodValidator = methodValidator;
-   }
-
-   protected ViolationsContainer<Object> getViolationsContainer(HttpRequest request, Object target)
-   {
-      if (request == null)
+      
+      try
       {
-         return new ViolationsContainer<Object>(target);
+         cdiActive = ResteasyCdiExtension.isCDIActive();
       }
-      ViolationsContainer<Object> violationsContainer = ViolationsContainer.class.cast(request.getAttribute(ViolationsContainer.class.getName()));
-      if (violationsContainer == null)
+      catch (Throwable t)
       {
-         violationsContainer = new ViolationsContainer<Object>(target);
-         request.setAttribute(ViolationsContainer.class.getName(), violationsContainer);
+         // In case ResteasyCdiExtension is not on the classpath.
+         log.debug("ResteasyCdiExtension is not on the classpath. Assuming CDI is not active");
       }
-      return violationsContainer;
+      
+      ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+      if (context != null)
+      {
+         String s = context.getParameter(SUPPRESS_VIOLATION_PATH);
+         if (s != null)
+         {
+            suppressPath = Boolean.parseBoolean(s);
+         }
+      }
    }
-
 
    public void checkViolations(HttpRequest request)
    {
+      // Called from resteasy-jaxrs only if two argument version of isValidatable() returns true.
       ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, null);
       Object target = violationsContainer.getTarget();
       if (target != null && !isWeldProxy(target.getClass()))
@@ -130,7 +160,8 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          {
             ConstraintViolation<Object> cv = it.next();
             Type ct = util.getConstraintType(cv);
-            rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), (cv.getInvalidValue() == null ? "null" :cv.getInvalidValue().toString())));
+            String path = (suppressPath ? "*" : cv.getPropertyPath().toString());
+            rcvs.add(new ResteasyConstraintViolation(ct, path, cv.getMessage(), (cv.getInvalidValue() == null ? "null" :cv.getInvalidValue().toString())));
          }
       }
       catch (Exception e)
@@ -152,7 +183,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    @Override
    public void validateAllParameters(HttpRequest request, Object object, Method method, Object[] parameterValues, Class<?>... groups)
    {
-      if (isSessionBean(method.getDeclaringClass()))
+      if (isSessionBean(method.getDeclaringClass()) || isSessionBean(object.getClass()))
       {
          try
          {
@@ -162,6 +193,16 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          catch (NoSuchMethodException e1)
          {
             // 
+         }
+         
+         if (!isWeldProxy(object.getClass()))
+         {
+            Class<?>[] interfaces = getInterfaces(method.getDeclaringClass());
+            if (interfaces.length > 0)
+            {
+//               object = getProxy(method.getDeclaringClass(), interfaces, object);
+               object = getProxy(object.getClass(), interfaces, object);
+            }
          }
       }
       
@@ -176,7 +217,8 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
             Type ct = util.getConstraintType(cv);
             Object o = cv.getInvalidValue();
             String value = (o == null ? "" : o.toString());
-            rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), value));
+            String path = (suppressPath ? "*" : cv.getPropertyPath().toString());
+            rcvs.add(new ResteasyConstraintViolation(ct, path, cv.getMessage(), value));
          }
       }
       catch (Exception e)
@@ -185,7 +227,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          throw new ResteasyViolationException(violationsContainer);
       }
       violationsContainer.addViolations(rcvs);
-      if (!isWeldProxy(object.getClass()) && violationsContainer.size() > 0)
+      if (!isWeldProxy(object.getClass()) && violationsContainer.size() > 0) // ???
       {
          throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }
@@ -218,7 +260,8 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
             Type ct = util.getConstraintType(cv);
             Object o = cv.getInvalidValue();
             String value = (o == null ? "" : o.toString());
-            rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), value));
+            String path = (suppressPath ? "*" : cv.getPropertyPath().toString());
+            rcvs.add(new ResteasyConstraintViolation(ct, path, cv.getMessage(), value));
          }
       }
       catch (Exception e)
@@ -236,24 +279,35 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    @Override
    public boolean isValidatable(Class<?> clazz)
    {
-      return true;
-   }
-   
-   @Override
-   public boolean isValidatable(Class<?> clazz, InjectorFactory injectorFactory)
-   {
       // Called from resteasy-jaxrs.
-      if (injectorFactory instanceof CdiInjectorFactory)
+      if (cdiActive)
       {
          return false;
       }
-      return true;
+      return checkIsValidatable(clazz);
+   }
+
+   public boolean isValidatable(Class<?> clazz, InjectorFactory injectorFactory)
+   {
+      try
+      {
+         // Called from resteasy-jaxrs.
+         if (cdiActive && injectorFactory instanceof CdiInjectorFactory)
+         {
+            return false;
+         }
+      }
+      catch (NoClassDefFoundError e)
+      {
+         // Shouldn't get here. Deliberately empty.
+      }
+      return checkIsValidatable(clazz);
    }
    
    @Override
    public boolean isValidatableFromCDI(Class<?> clazz)
    {
-      return true;
+      return checkIsValidatable(clazz);
    }
    
    protected boolean checkIsValidatable(Class<?> clazz)
@@ -291,7 +345,8 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
             {
                ConstraintViolation<?> cv = it.next();
                Type ct = util.getConstraintType(cv);
-               rcvs.add(new ResteasyConstraintViolation(ct, cv.getPropertyPath().toString(), cv.getMessage(), (cv.getInvalidValue() == null ? "null" :cv.getInvalidValue().toString())));
+               String path = (suppressPath ? "*" : cv.getPropertyPath().toString());
+               rcvs.add(new ResteasyConstraintViolation(ct, path, cv.getMessage(), (cv.getInvalidValue() == null ? "null" :cv.getInvalidValue().toString())));
             }
          }
          catch (Exception e1)
@@ -319,20 +374,70 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       }
    }
    
+   protected ViolationsContainer<Object> getViolationsContainer(HttpRequest request, Object target)
+   {
+      if (request == null)
+      {
+         return new ViolationsContainer<Object>(target);
+      }
+      ViolationsContainer<Object> violationsContainer = ViolationsContainer.class.cast(request.getAttribute(ViolationsContainer.class.getName()));
+      if (violationsContainer == null)
+      {
+         violationsContainer = new ViolationsContainer<Object>(target);
+         request.setAttribute(ViolationsContainer.class.getName(), violationsContainer);
+      }
+      return violationsContainer;
+   }
+   
    private boolean isSessionBean(Class<?> clazz)
    {
+      if (clazz.getName().indexOf("$$$view") >= 0)
+      {
+         return true;
+      }
       while (clazz != null)
       {
-         Annotation[] as = clazz.getAnnotations();
          if (clazz.getAnnotation(STATELESS.annotationType()) != null 
                || clazz.getAnnotation(STATEFUL.annotationType()) != null
-               || clazz.getAnnotation(SINGLETON.annotationType()) != null)
+               || clazz.getAnnotation(SINGLETON.annotationType()) != null
+               || clazz.getAnnotation(LOCAL.annotationType()) != null
+               || clazz.getAnnotation(REMOTE.annotationType()) != null)
          {
             return true;
          }
          clazz = clazz.getSuperclass();
       }
       return false;
+   }
+   
+   private Class<?>[] getInterfaces(Class<?> clazz)
+   {
+      ArrayList<Class<?>> list = new ArrayList<Class<?>>();
+      getInterfaces(list, clazz);
+      return list.toArray(new Class<?>[] {});
+   }
+   
+   private void getInterfaces(ArrayList<Class<?>> list, Class<?> clazz)
+   {
+      Class<?>[] interfaces = clazz.getInterfaces();
+      for (int i = 0; i < interfaces.length; i++)
+      {
+         list.add(interfaces[i]);
+         getInterfaces(list, interfaces[i]);
+      }
+   }
+   
+   private Object getProxy(Class<?> clazz, Class<?>[] interfaces, final Object delegate)
+   {
+      InvocationHandler handler = new InvocationHandler()
+      {
+         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
+         {
+            return method.invoke(delegate, args);
+         }
+      };
+      Object proxy = Proxy.newProxyInstance(clazz.getClassLoader(), interfaces, handler);
+      return proxy;
    }
    
    private static final String PROXY_OBJECT_INTERFACE_NAME = "javassist.util.proxy.ProxyObject";

@@ -184,6 +184,24 @@ public class MapTest extends BaseResourceTest
          Assert.assertEquals(map.get("monica").getName(), "monica");
          return map;
       }
+
+      @POST
+      @Produces("application/xml")
+      @Consumes("application/xml")
+      @Path("/integerFoo")
+      public Map<Integer, Foo> postIntegerFoo(Map<String, Foo> map)
+      {
+         Assert.assertEquals(2, map.size());
+         Assert.assertNotNull(map.get("1"));
+         Assert.assertNotNull(map.get("2"));
+         Assert.assertEquals(map.get("1").getName(), "bill");
+         Assert.assertEquals(map.get("2").getName(), "monica");
+         Map<Integer, Foo> result = new HashMap<Integer, Foo>();
+         for (java.util.Map.Entry<String, Foo> e : map.entrySet()) {
+           result.put(Integer.valueOf(e.getKey()), e.getValue());
+         }
+         return result;
+      }
    }
 
    @Before
@@ -196,6 +214,11 @@ public class MapTest extends BaseResourceTest
    @Test
    public void testMap() throws Exception
    {
+      String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+         + "<resteasy:map xmlns=\"http://foo.com\" xmlns:resteasy=\"http://jboss.org/resteasy\">"
+         + "<resteasy:entry key=\"bill\"><foo name=\"hello\"/></resteasy:entry>"
+         + "</resteasy:map>";
+     
       JAXBContext ctx = JAXBContext.newInstance(JaxbMap.class, JaxbMap.Entry.class, Foo.class);
 
       JaxbMap map = new JaxbMap("entry", "key", "http://jboss.org/resteasy");
@@ -206,10 +229,9 @@ public class MapTest extends BaseResourceTest
 
       StringWriter writer = new StringWriter();
       ctx.createMarshaller().marshal(element, writer);
-      String s = writer.toString();
-      System.out.println(s);
+      Assert.assertEquals(xml, writer.toString());
 
-      ByteArrayInputStream is = new ByteArrayInputStream(s.getBytes());
+      ByteArrayInputStream is = new ByteArrayInputStream(writer.toString().getBytes());
       StreamSource source = new StreamSource(is);
       JAXBContext ctx2 = JAXBContext.newInstance(JaxbMap.class);
       element = ctx2.createUnmarshaller().unmarshal(source, JaxbMap.class);
@@ -218,9 +240,6 @@ public class MapTest extends BaseResourceTest
 
       JAXBContext ctx3 = JAXBContext.newInstance(JaxbMap.Entry.class);
       JAXBElement<JaxbMap.Entry> e = ctx3.createUnmarshaller().unmarshal(entry, JaxbMap.Entry.class);
-
-      System.out.println("hello");
-
    }
 
 
@@ -255,6 +274,41 @@ public class MapTest extends BaseResourceTest
 
    }
 
+   @Test
+   public void testProviderMapIntegerFoo() throws Exception
+   {
+      String xml = "<resteasy:map xmlns:resteasy=\"http://jboss.org/resteasy\">"
+          + "<resteasy:entry key=\"1\" xmlns=\"http://foo.com\">"
+          + "<foo name=\"bill\"/></resteasy:entry>"
+          + "<resteasy:entry key=\"2\" xmlns=\"http://foo.com\">"
+          + "<foo name=\"monica\"/></resteasy:entry>"
+          + "</resteasy:map>";
+
+      ClientRequest request = new ClientRequest(generateURL("/map/integerFoo"));
+      request.body("application/xml", xml);
+      ClientResponse<Map<String, Foo>> response = request.post(new GenericType<Map<String, Foo>>() {});
+      Assert.assertEquals(200, response.getStatus());
+      Map<String, Foo> map = response.getEntity();
+      Assert.assertEquals(2, map.size());
+      Assert.assertNotNull(map.get("1"));
+      Assert.assertNotNull(map.get("2"));
+      Assert.assertEquals(map.get("1").getName(), "bill");
+      Assert.assertEquals(map.get("2").getName(), "monica");
+
+      request = new ClientRequest(generateURL("/map/integerFoo"));
+      request.body("application/xml", xml);
+      ClientResponse<String> response2 = request.post(String.class);
+      xml = xml.replace("resteasy:map", "map").replace("jboss.org/resteasy", "foo.com").replace("resteasy", "ns2");
+      
+      String result = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+          + "<map xmlns:ns2=\"http://foo.com\">"
+          + "<entry key=\"1\"><ns2:foo name=\"bill\"/></entry>"
+          + "<entry key=\"2\"><ns2:foo name=\"monica\"/></entry>"
+          + "</map>";
+      Assert.assertEquals(result, response2.getEntity());
+   }
+
+   
    @Test
    public void testWrapped() throws Exception
    {

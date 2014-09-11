@@ -19,6 +19,7 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
+import java.net.InetSocketAddress;
 
 /**
  * An HTTP server that sends back the content of the received HTTP request
@@ -33,6 +34,7 @@ import javax.net.ssl.SSLEngine;
 public class NettyJaxrsServer implements EmbeddedJaxrsServer
 {
    protected ServerBootstrap bootstrap = new ServerBootstrap();
+   protected String hostname = null;
    protected int port = 8080;
    protected ResteasyDeployment deployment = new ResteasyDeployment();
    protected String root = "";
@@ -80,6 +82,14 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    public void setMaxRequestSize(int maxRequestSize)
    {
        this.maxRequestSize  = maxRequestSize;
+   }
+
+   public String getHostname() {
+       return hostname;
+   }
+
+   public void setHostname(String hostname) {
+       this.hostname = hostname;
    }
 
    public int getPort()
@@ -146,7 +156,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
                            ch.pipeline().addLast(new HttpObjectAggregator(maxRequestSize));
                            ch.pipeline().addLast(new HttpResponseEncoder());
                            ch.pipeline().addLast(new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, RestEasyHttpRequestDecoder.Protocol.HTTP));
-                           ch.pipeline().addLast(new RestEasyHttpResponseEncoder(dispatcher));
+                           ch.pipeline().addLast(new RestEasyHttpResponseEncoder());
                            ch.pipeline().addLast(eventExecutor, new RequestHandler(dispatcher));
                        }
                    })
@@ -165,7 +175,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
                            ch.pipeline().addLast(new HttpObjectAggregator(maxRequestSize));
                            ch.pipeline().addLast(new HttpResponseEncoder());
                            ch.pipeline().addLast(new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, RestEasyHttpRequestDecoder.Protocol.HTTPS));
-                           ch.pipeline().addLast(new RestEasyHttpResponseEncoder(dispatcher));
+                           ch.pipeline().addLast(new RestEasyHttpResponseEncoder());
                            ch.pipeline().addLast(eventExecutor, new RequestHandler(dispatcher));
 
                        }
@@ -174,7 +184,14 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
                    .childOption(ChannelOption.SO_KEEPALIVE, true);
        }
 
-        bootstrap.bind(port).syncUninterruptibly();
+       final InetSocketAddress socketAddress;
+       if(null == hostname || hostname.isEmpty()) {
+           socketAddress = new InetSocketAddress(port);
+       } else {
+           socketAddress = new InetSocketAddress(hostname, port);
+       }
+
+       bootstrap.bind(socketAddress).syncUninterruptibly();
    }
 
    @Override

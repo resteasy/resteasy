@@ -410,11 +410,16 @@ public class Serve implements ServletContext, Serializable
       mime = new Properties();
       try
       {
-         mime.load(getClass().getClassLoader().getResourceAsStream("Acme/Resource/mime.properties"));
+         InputStream inputStream = getClass().getClassLoader().getResourceAsStream("Acme/Resource/mime.properties");
+         if (inputStream != null) {
+            mime.load(inputStream);
+         } else {
+            log("MIME map can't be found");
+         }
       }
       catch (Exception ex)
       {
-         log("MIME map can't be loaded:" + ex);
+         log("MIME map can't be loaded", ex);
       }
    }
 

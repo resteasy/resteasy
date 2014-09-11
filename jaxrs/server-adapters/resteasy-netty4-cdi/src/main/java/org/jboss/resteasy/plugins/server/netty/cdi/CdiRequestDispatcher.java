@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.server.netty.cdi;
 
+import io.netty.channel.ChannelHandlerContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.netty.RequestDispatcher;
@@ -24,14 +25,14 @@ public class CdiRequestDispatcher extends RequestDispatcher {
     }
 
     @Override
-    public void service(HttpRequest request, HttpResponse response, boolean handleNotFound) throws IOException {
+    public void service(ChannelHandlerContext ctx, HttpRequest request, HttpResponse response, boolean handleNotFound) throws IOException {
         BoundRequestContext context = CDI.current().select(BoundRequestContext.class).get();
         Map<String,Object> contextMap = new HashMap<String,Object>();
         context.associate(contextMap);
         context.activate();
         try
         {
-            super.service(request,response,handleNotFound);
+            super.service(ctx, request,response,handleNotFound);
         }
         finally
         {

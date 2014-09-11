@@ -31,6 +31,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
 {
    protected ServerBootstrap bootstrap;
    protected Channel channel;
+   protected String hostname = null;
    protected int port = 8080;
    protected ResteasyDeployment deployment = new ResteasyDeployment();
    protected String root = "";
@@ -85,7 +86,15 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    {
        this.isKeepAlive = isKeepAlive;
    }
-   
+
+   public String getHostname() {
+       return hostname;
+   }
+
+   public void setHostname(String hostname) {
+       this.hostname = hostname;
+   }
+
    public int getPort()
    {
       return port;
@@ -144,7 +153,14 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
       bootstrap.setPipelineFactory(factory);
 
       // Bind and start to accept incoming connections.
-      channel = bootstrap.bind(new InetSocketAddress(port));
+      final InetSocketAddress socketAddress;
+      if(null == hostname || hostname.isEmpty()) {
+          socketAddress = new InetSocketAddress(port);
+      } else {
+          socketAddress = new InetSocketAddress(hostname, port);
+      }
+
+      channel = bootstrap.bind(socketAddress);
       allChannels.add(channel);
    }
 

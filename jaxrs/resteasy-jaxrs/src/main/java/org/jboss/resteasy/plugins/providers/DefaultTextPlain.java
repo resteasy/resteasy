@@ -15,6 +15,7 @@ import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
@@ -49,13 +50,29 @@ public class DefaultTextPlain implements MessageBodyReader, MessageBodyWriter
 
    public long getSize(Object o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return o.toString().getBytes().length;
+      String charset = mediaType.getParameters().get("charset");
+      if (charset != null)
+         try
+         {
+            return o.toString().getBytes(charset).length;
+         } catch (UnsupportedEncodingException e)
+         {
+            // Use default encoding.
+         }
+      try
+      {
+         return o.toString().getBytes("UTF-8").length;
+      } catch (UnsupportedEncodingException e)
+      {
+         // Use default charset.
+         return o.toString().getBytes().length;
+      }
    }
 
    public void writeTo(Object o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
       String charset = mediaType.getParameters().get("charset");
-      if (charset == null) entityStream.write(o.toString().getBytes());
+      if (charset == null) entityStream.write(o.toString().getBytes("UTF-8"));
       else entityStream.write(o.toString().getBytes(charset));
    }
 }

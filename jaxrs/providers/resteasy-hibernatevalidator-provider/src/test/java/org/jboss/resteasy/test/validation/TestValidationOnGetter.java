@@ -14,18 +14,19 @@ import javax.validation.Payload;
 import javax.validation.Valid;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 
 import junit.framework.Assert;
 
 import org.jboss.resteasy.api.validation.ViolationReport;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.validation.hibernate.ValidateRequest;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.Test;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.core.Response;
 
 /**
 *
@@ -117,12 +118,15 @@ public class TestValidationOnGetter
    public void testGetter() throws Exception
    {
       before(ValidateExecutableResource.class);
-      ClientRequest request = new ClientRequest(generateURL("/resource/executable/getter"));
-      request.accept(MediaType.APPLICATION_XML);
-      ClientResponse<?> response = request.get(ViolationReport.class);
-      ViolationReport report = response.getEntity(ViolationReport.class);
-      System.out.println("report: " + report.toString());
+
+      Client client = ClientBuilder.newClient();
+      WebTarget target = client.target(generateURL("/resource/executable/getter"));
+      Response response = target.request().get();
+      ViolationReport report = response.readEntity(ViolationReport.class);
+      response.close();
+
       countViolations(report, 1, 0, 1, 0, 0, 0);
+
       after();
    }
    

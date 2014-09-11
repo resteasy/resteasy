@@ -287,7 +287,28 @@ public class ConstraintType
       <listitem>message</listitem>
       <listitem>violating element</listitem>
    </orderedlist>
- 
+   
+   <para>
+   The <classname>ViolationReport</classname> can be reconsititued from the <classname>String</classname> as follows:
+   </para>
+   
+<programlisting><![CDATA[
+ResteasyClient client = new ResteasyClientBuilder().build();
+Invocation.Builder request = client.target(...).request();
+Response response = request.get();
+if (Boolean.valueOf(response.getHeaders().getFirst(Validation.VALIDATION_HEADER)))
+{
+   String s = response.getEntity(String.class);
+   ViolationReport report = new ViolationReport(s);
+}
+]]></programlisting>
+
+<para>
+If the path field is considered to be too much server side information, it can be surpressed by setting
+the context parameter "resteasy.validation.suppress.path" to "true". In that case, "*" will be returned in the
+path fields.
+</para>
+
    </section>
 
    <section>

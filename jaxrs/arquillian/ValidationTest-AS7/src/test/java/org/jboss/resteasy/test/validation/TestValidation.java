@@ -9,6 +9,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
+import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.validation.Foo;
@@ -88,8 +89,8 @@ public class TestValidation
          Assert.assertTrue(Boolean.valueOf(header));
          String entity = response.getEntity(String.class);
          System.out.println("entity: " + entity);
-         ResteasyViolationException e = new ResteasyViolationException(entity);
-         ResteasyConstraintViolation violation = e.getReturnValueViolations().iterator().next();
+         ViolationReport r = new ViolationReport(entity);
+         ResteasyConstraintViolation violation = r.getReturnValueViolations().iterator().next();
          System.out.println("violation: " + violation);
          Assert.assertTrue(violation.getMessage().equals("s must have length: 1 <= length <= 3"));
          Assert.assertEquals("Foo[abcdef]", violation.getValue());
@@ -106,9 +107,9 @@ public class TestValidation
          Assert.assertTrue(Boolean.valueOf(header));
          String entity = response.getEntity(String.class);
          System.out.println("entity: " + entity);
-         ResteasyViolationException e = new ResteasyViolationException(entity);
-         countViolations(e, 1, 0, 0, 0, 0, 1);
-         ResteasyConstraintViolation violation = e.getReturnValueViolations().iterator().next();
+         ViolationReport r = new ViolationReport(entity);
+         countViolations(r, 0, 0, 0, 0, 1);
+         ResteasyConstraintViolation violation = r.getReturnValueViolations().iterator().next();
          System.out.println("violation: " + violation);
          Assert.assertTrue(violation.getMessage().equals("s must have length: 3 <= length <= 5"));
          Assert.assertEquals("Foo[abcdef]", violation.getValue());
@@ -125,9 +126,9 @@ public class TestValidation
          Assert.assertTrue(Boolean.valueOf(header));
          String entity = response.getEntity(String.class);
          System.out.println("entity: " + entity);
-         ResteasyViolationException e = new ResteasyViolationException(entity);
-         countViolations(e, 2, 0, 0, 0, 0, 2);
-         Iterator<ResteasyConstraintViolation > it = e.getReturnValueViolations().iterator(); 
+         ViolationReport r = new ViolationReport(entity);
+         countViolations(r, 0, 0, 0, 0, 2);
+         Iterator<ResteasyConstraintViolation > it = r.getReturnValueViolations().iterator(); 
          ResteasyConstraintViolation cv1 = it.next();
          ResteasyConstraintViolation cv2 = it.next();
          if (cv1.getMessage().indexOf('1') < 0)
@@ -166,30 +167,29 @@ public class TestValidation
       Assert.assertTrue(Boolean.valueOf(header));
       String entity = response.getEntity(String.class);
       System.out.println("entity: " + entity);
-      ResteasyViolationException e = new ResteasyViolationException(entity);
-      countViolations(e, 4, 1, 1, 1, 1, 0);
-      ResteasyConstraintViolation violation = e.getFieldViolations().iterator().next();
+      ViolationReport r = new ViolationReport(entity);
+      countViolations(r, 1, 1, 1, 1, 0);
+      ResteasyConstraintViolation violation = r.getFieldViolations().iterator().next();
       System.out.println("violation: " + violation);
       Assert.assertEquals("size must be between 2 and 4", violation.getMessage());
       Assert.assertEquals("a", violation.getValue());
-      violation = e.getPropertyViolations().iterator().next();
+      violation = r.getPropertyViolations().iterator().next();
       System.out.println("violation: " + violation);
       Assert.assertEquals("size must be between 3 and 5", violation.getMessage());
       Assert.assertEquals("z", violation.getValue());
-      violation = e.getClassViolations().iterator().next();
+      violation = r.getClassViolations().iterator().next();
       System.out.println("violation: " + violation);
       Assert.assertEquals("Concatenation of s and t must have length > 5", violation.getMessage());
       System.out.println("violation value: " + violation.getValue());
       Assert.assertTrue(violation.getValue().startsWith("org.jboss.resteasy.validation.TestResourceWithAllViolationTypes@"));
-      violation = e.getParameterViolations().iterator().next();
+      violation = r.getParameterViolations().iterator().next();
       System.out.println("violation: " + violation);
       Assert.assertEquals("s must have length: 3 <= length <= 5", violation.getMessage());
       Assert.assertEquals("Foo[p]", violation.getValue());
    }
    
-   private void countViolations(ResteasyViolationException e, int totalCount, int fieldCount, int propertyCount, int classCount, int parameterCount, int returnValueCount)
+   private void countViolations(ViolationReport e, int fieldCount, int propertyCount, int classCount, int parameterCount, int returnValueCount)
    {
-      Assert.assertEquals(totalCount,       e.getViolations().size());
       Assert.assertEquals(fieldCount,       e.getFieldViolations().size());
       Assert.assertEquals(propertyCount,    e.getPropertyViolations().size());
       Assert.assertEquals(classCount,       e.getClassViolations().size());
