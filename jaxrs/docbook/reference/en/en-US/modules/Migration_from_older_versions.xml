@@ -9,6 +9,24 @@
 <chapter id="Migration_from_older_versions">
 <title>Migration from older versions</title>
 <sect1>
+    <title>Migrating from 3.0.7 to 3.0.9</title>
+    <itemizedlist>
+        <listitem>
+            ContainerRequestContext.setRequestUri() method behavior has been changed to match the behavior of the JAXRS RI.
+            The relative URI must be equal to are an extension of the base URI or it will not work. i.e.
+<programlisting>
+    context.setRequestUri(URI.create("https://foo.com/base"),
+                          URI.create("https://foo.com/base/path"));  // legal
+    context.setRequestUri(URI.create("https://foo.com/base"),
+                          URI.create("/path"));  // "path" is ignored
+    // if base uri is "http://foo.com/base"
+    context.setRequestUri(URI.create("http://foo.com/base/path")); // legal
+    context.setRequestUri(URI.create("/path")); // ignored
+</programlisting>
+        </listitem>
+    </itemizedlist>
+</sect1>
+<sect1>
     <title>Migrating from 3.0.6 to 3.0.7</title>
     <itemizedlist>
         <listitem>

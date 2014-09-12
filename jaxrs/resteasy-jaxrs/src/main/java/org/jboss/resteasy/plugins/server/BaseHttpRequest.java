@@ -1,9 +1,7 @@
 package org.jboss.resteasy.plugins.server;
 
-import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.Encode;
 
@@ -35,7 +33,6 @@ public abstract class BaseHttpRequest implements HttpRequest
    {
       return uri;
    }
-
 
 
    public MultivaluedMap<String, String> getFormParameters()
@@ -76,18 +73,18 @@ public abstract class BaseHttpRequest implements HttpRequest
       return true;
    }
 
-    @Override
-    public void setRequestUri(URI requestUri) throws IllegalStateException
-    {
-        uri = uri.setRequestUri(requestUri);
-    }
 
-    @Override
-    public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
-    {
-        uri = new ResteasyUriInfo(baseUri.resolve(requestUri));
-    }
+   @Override
+   public void setRequestUri(URI requestUri) throws IllegalStateException
+   {
+      uri.setRequestUri(requestUri);
+   }
 
+   @Override
+   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
+   {
+      uri.setUri(baseUri, requestUri);
+   }
 
 
 }

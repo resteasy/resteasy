@@ -27,7 +27,7 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
    private ResteasyDeployment deployment = new ResteasyDeployment();
 
 
-    public ResteasyDeployment createDeployment()
+   public ResteasyDeployment createDeployment()
    {
       String loggerTypeString = getParameter("resteasy.logger.type");
       if (loggerTypeString != null)
