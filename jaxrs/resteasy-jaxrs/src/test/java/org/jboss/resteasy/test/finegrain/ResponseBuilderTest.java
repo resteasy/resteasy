@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
@@ -158,5 +159,31 @@ public class ResponseBuilderTest
       Assert.assertEquals(set.iterator().next(), Request.OPTIONS.name());
    }
 
+   @Test
+   public void testLinkHeaders()
+   {
+      Response r1 = Response.ok()
+              .link("Link1", "rel1")
+              .links(
+                      Link.fromUri("Link2").rel("rel2").build(),
+                      Link.fromUri("Link3").rel("rel3").build()
+              )
+              .link("Link4", "rel4").build();
+
+      Assert.assertEquals(4, r1.getLinks().size());
+      Assert.assertNotNull("Link-Header 'Link1' missing", r1.getLink("rel1"));
+      Assert.assertNotNull("Link-Header 'Link2' missing", r1.getLink("rel2"));
+      Assert.assertNotNull("Link-Header 'Link3' missing", r1.getLink("rel3"));
+      Assert.assertNotNull("Link-Header 'Link4' missing", r1.getLink("rel4"));
+
+      Response r2 = Response.ok()
+              .link("Link1", "rel1")
+              .links(null)
+              .link("Link2", "rel2").build();
+
+      Assert.assertEquals(1, r2.getLinks().size());
+      Assert.assertNull("Link-Header 'Link1' was not removed", r2.getLink("rel1"));
+      Assert.assertNotNull("Link-Header 'Link2' missing", r2.getLink("rel2"));
+   }    
 
 }
