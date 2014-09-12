@@ -35,6 +35,7 @@
         <module>RESTEASY-1058-WF8</module>
         <module>RESTEASY-1073-WF8</module>
         <module>RESTEASY-1082-WF8</module>
+        <module>RESTEASY-TEST-WF8</module>
     </modules>
     
     <artifactId>arquillian</artifactId>
