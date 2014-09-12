@@ -23,30 +23,6 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <warName>RESTEASY-1082</warName>
-          <archive>
-             <manifestEntries>
-                <Dependencies>
-                javax.xml.bind.api
-                </Dependencies>
-             </manifestEntries>
-          </archive>
-        </configuration>
-        <executions>
-          <execution>
-            <id>war</id>
-            <phase>process-test-classes</phase>
-            <goals>
-              <goal>war</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.3.2</version>
         <configuration>
