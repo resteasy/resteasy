@@ -63,6 +63,7 @@ public class CorsFiltersTest extends BaseResourceTest
       response = target.request().header(CorsHeaders.ORIGIN, "http://localhost")
               .get();
       Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals(response.getHeaderString(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN), "http://localhost");
       Assert.assertEquals("hello", response.readEntity(String.class));
       response.close();
 
