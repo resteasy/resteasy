@@ -73,7 +73,39 @@ public class ContainerResponseFilterRegistry extends JaxrsInterceptorRegistry<Co
       return clone;
    }
 
+   @Override
+   public synchronized void registerClass(Class<? extends ContainerResponseFilter> declaring)
+   {
+      OnDemandInterceptorFactory factory = new OnDemandInterceptorFactory(declaring);
+      factory.setIgnorePrematch(true);
+      register(factory);
+   }
 
+   @Override
+   public synchronized void registerClass(Class<? extends ContainerResponseFilter> declaring, int priority)
+   {
+      OnDemandInterceptorFactory factory = new OnDemandInterceptorFactory(declaring);
+      factory.setIgnorePrematch(true);
+      factory.setOrder(priority);
+      register(factory);
+   }
+
+   @Override
+   public synchronized void registerSingleton(ContainerResponseFilter interceptor)
+   {
+      SingletonInterceptorFactory factory = new SingletonInterceptorFactory(interceptor.getClass(), interceptor);
+      factory.setIgnorePrematch(true);
+      register(factory);
+   }
+
+   @Override
+   public synchronized void registerSingleton(ContainerResponseFilter interceptor, int priority)
+   {
+      SingletonInterceptorFactory factory = new SingletonInterceptorFactory(interceptor.getClass(), interceptor);
+      factory.setIgnorePrematch(true);
+      factory.setOrder(priority);
+      register(factory);
+   }
 
    public void registerLegacy(Class<? extends PostProcessInterceptor> decl)
    {

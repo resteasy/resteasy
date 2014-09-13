@@ -16,6 +16,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
@@ -35,8 +36,11 @@ public class SetRequestUriTest
    @Path("resource")
    public static class Resource {
 
+      @Context
+      protected UriInfo uriInfo;
+
       @GET
-      @Path("setrequesturi1uri")
+      @Path("setrequesturi1/uri")
       public String setRequestUri() {
          return "OK";
       }
@@ -45,6 +49,12 @@ public class SetRequestUriTest
       @Path("setrequesturi1")
       public String setRequestUriDidNotChangeUri() {
          return "Filter did not change the uri to go to";
+      }
+
+      @GET
+      @Path("change")
+      public String changeProtocol() {
+         return uriInfo.getAbsolutePath().toString();
       }
    }
 
@@ -56,16 +66,18 @@ public class SetRequestUriTest
       @Override
       public void filter(ContainerRequestContext requestContext) throws IOException
       {
-         URI uri = null;
-         try {
-            UriInfo info = requestContext.getUriInfo();
-            String path = new StringBuilder().append(info.getAbsolutePath())
-                    .append("uri").toString();
-            uri = new java.net.URI(path);
-         } catch (URISyntaxException e) {
-            throw new IOException(e);
+         if ("https".equalsIgnoreCase(requestContext.getHeaderString("X-Forwarded-Proto")))
+         {
+            requestContext.setRequestUri(
+                    requestContext.getUriInfo().getBaseUriBuilder().scheme("https").build(),
+                    requestContext.getUriInfo().getRequestUriBuilder().scheme("https").build());
          }
-         requestContext.setRequestUri(uri);
+         else
+         {
+            requestContext.setRequestUri(
+                    requestContext.getUriInfo().getRequestUriBuilder().path("uri").build());
+         }
+
 
       }
    }
@@ -92,6 +104,16 @@ public class SetRequestUriTest
       dispatcher = null;
       deployment = null;
       client.close();
+   }
+
+   @Test
+   public void testSchemaChange() {
+      String uri = generateURL("/base/resource/change");
+      String httpsUri = uri.replace("http://", "https://");
+      Response response = client.target(uri).request().header("X-Forwarded-Proto", "https").get();
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals(httpsUri, response.readEntity(String.class));
+
    }
 
    @Test

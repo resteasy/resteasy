@@ -8,6 +8,7 @@ import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.net.URI;
@@ -46,38 +47,65 @@ public class AcceptHeaderByFileSuffixFilter implements ContainerRequestFilter
    @Override
    public void filter(ContainerRequestContext requestContext) throws IOException
    {
-      List<PathSegment> segments = null;
-      if (mediaTypeMappings != null || languageMappings != null)
-      {
-         segments = process(requestContext, segments);
-      }
-      if (segments == null)
+      if (mediaTypeMappings == null && languageMappings == null)
       {
          return;
       }
 
-      StringBuilder preprocessedPath = new StringBuilder();
-      for (PathSegment pathSegment : segments)
+      URI uri = requestContext.getUriInfo().getRequestUri();
+      String rawPath = uri.getRawPath();
+      int lastSegment = rawPath.lastIndexOf('/');
+      if (lastSegment < 0)
       {
-         preprocessedPath.append("/").append(pathSegment.getPath());
+         lastSegment = 0;
       }
-      if (! requestContext.getUriInfo().getQueryParameters().isEmpty())
+      int index = rawPath.indexOf('.', lastSegment);
+      if (index < 0)
       {
-         char sep = '?';
-         for (Map.Entry<String, List<String>> entry : requestContext.getUriInfo().getQueryParameters(false).entrySet()) {
-            for (String value : entry.getValue()) {
-               preprocessedPath.append(sep);
-               sep = '&';
-               preprocessedPath.append(entry.getKey()).append('=').append(value);
+         return;
+      }
+
+      boolean preprocessed = false;
+
+      String extension = rawPath.substring(index + 1);
+      String[] extensions = extension.split("\\.");
+
+      StringBuilder rebuilt = new StringBuilder();
+      for (String ext : extensions)
+      {
+         if (mediaTypeMappings != null)
+         {
+            String match = mediaTypeMappings.get(ext);
+            if (match != null)
+            {
+               requestContext.getHeaders().addFirst(HttpHeaders.ACCEPT, match);
+               preprocessed = true;
+               continue;
             }
          }
+         if (languageMappings != null)
+         {
+            String match = languageMappings.get(ext);
+            if (match != null)
+            {
+               requestContext.getHeaders().add(HttpHeaders.ACCEPT_LANGUAGE, match);
+               preprocessed = true;
+               continue;
+            }
+         }
+         rebuilt.append(".").append(ext);
       }
-      URI requestUri = URI.create(preprocessedPath.toString());
-      requestContext.setRequestUri(requestUri);
+
+      if (!preprocessed) return;
+
+      rawPath = rawPath.substring(0, index) + rebuilt.toString();
+
+      URI newUri = requestContext.getUriInfo().getBaseUriBuilder().replacePath(rawPath).replaceQuery(uri.getRawQuery()).build();
+      requestContext.setRequestUri(newUri);
 
    }
 
-   private List<PathSegment> process(ContainerRequestContext in, List<PathSegment> segments)
+   private List<PathSegment> process(ContainerRequestContext in)
    {
       String path = in.getUriInfo().getPath(false);
       int lastSegment = path.lastIndexOf('/');
@@ -121,6 +149,7 @@ public class AcceptHeaderByFileSuffixFilter implements ContainerRequestFilter
          }
          rebuilt.append(".").append(ext);
       }
+      List<PathSegment> segments = null;
       if (preprocessed)
       {
          segments = PathSegmentImpl.parseSegments(rebuilt.toString(), false);

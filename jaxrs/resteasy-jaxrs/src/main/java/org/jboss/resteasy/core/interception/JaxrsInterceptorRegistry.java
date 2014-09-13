@@ -71,6 +71,7 @@ public class JaxrsInterceptorRegistry<T>
       protected int order = Priorities.USER;
       protected List<Class<? extends Annotation>> nameBound;
       protected volatile boolean initialized;
+      protected boolean ignorePrematch;
 
       public AbstractInterceptorFactory(Class declaring)
       {
@@ -107,6 +108,11 @@ public class JaxrsInterceptorRegistry<T>
          this.order = order;
       }
 
+      public void setIgnorePrematch(boolean ignorePrematch)
+      {
+         this.ignorePrematch = ignorePrematch;
+      }
+
       @Override
       public Match preMatch()
       {
@@ -117,7 +123,7 @@ public class JaxrsInterceptorRegistry<T>
       @Override
       public Match postMatch(Class targetClass, AccessibleObject target)
       {
-         if (declaring.isAnnotationPresent(PreMatching.class)) return null;
+         if (!ignorePrematch && declaring.isAnnotationPresent(PreMatching.class)) return null;
          if (targetClass != null && target != null)
          {
             if (nameBound.size() > 0)
