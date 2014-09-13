@@ -14,6 +14,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -41,6 +42,8 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
    private final TransformerFactory transformerFactory;
    private final DocumentBuilderFactory documentBuilder;
    private boolean expandEntityReferences = false;
+   private boolean enableSecureProcessingFeature = true;
+   private boolean disableDTDs = true;
 
    public DocumentProvider(@Context ResteasyConfiguration config)
    {
@@ -54,6 +57,24 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
       catch (Exception e)
       {
          logger.debug("Unable to retrieve config: expandEntityReferences defaults to false");
+      }
+      try
+      {
+         String s = config.getParameter(ResteasyContextParameters.RESTEASY_SECURE_PROCESSING_FEATURE);
+         enableSecureProcessingFeature = (s == null ? true : Boolean.parseBoolean(s));
+      }
+      catch (Exception e)
+      {
+         logger.debug("Unable to retrieve config: enableSecureProcessingFeature defaults to true");
+      }
+      try
+      {
+         String s = config.getParameter(ResteasyContextParameters.RESTEASY_DISABLE_DTDS);
+         disableDTDs = (s == null ? true : Boolean.parseBoolean(s));
+      }
+      catch (Exception e)
+      {
+         logger.debug("Unable to retrieve config: disableDTDs defaults to true");
       }
    }
 
@@ -71,6 +92,8 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
       try
       {
          documentBuilder.setExpandEntityReferences(expandEntityReferences);
+         documentBuilder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, enableSecureProcessingFeature);
+         documentBuilder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", disableDTDs);
          return documentBuilder.newDocumentBuilder().parse(input);
       }
       catch (Exception e)
