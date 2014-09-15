@@ -16,7 +16,7 @@ import javax.ws.rs.ext.Provider;
 public class FastinfoSetElementProvider extends JAXBElementProvider
 {
    @Override
-   protected boolean needsSecurity()
+   protected boolean suppressExpandEntityExpansion()
    {
       return false;
    }

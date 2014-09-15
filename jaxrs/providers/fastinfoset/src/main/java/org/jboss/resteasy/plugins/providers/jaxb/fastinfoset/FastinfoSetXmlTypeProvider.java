@@ -16,7 +16,7 @@ import javax.ws.rs.ext.Provider;
 public class FastinfoSetXmlTypeProvider extends JAXBXmlTypeProvider
 {
    @Override
-   protected boolean needsSecurity()
+   protected boolean suppressExpandEntityExpansion()
    {
       return false;
    }

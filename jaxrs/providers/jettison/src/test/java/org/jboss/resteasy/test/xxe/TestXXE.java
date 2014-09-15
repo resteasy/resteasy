@@ -7,8 +7,6 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.GenericType;
-import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.ws.rs.Consumes;
@@ -164,15 +162,14 @@ public class TestXXE
       deployment.getRegistry().addPerRequestResource(MovieResource.class);
    }
    
-   @After
-   public void after() throws Exception
+   public static void after() throws Exception
    {
       EmbeddedContainer.stop();
       dispatcher = null;
       deployment = null;
    }
 
-   @Test @Ignore
+   @Test
    public void testXmlRootElementDefault() throws Exception
    {
       before();
@@ -185,9 +182,10 @@ public class TestXXE
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+      after();
    }
    
-   @Test @Ignore
+   @Test
    public void testXmlRootElementWithoutExpansion() throws Exception
    {
       before("false");
@@ -199,9 +197,11 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
+      Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+      after();
    }
 
-   @Test @Ignore
+   @Test
    public void testXmlRootElementWithExpansion() throws Exception
    {
       before("true");
@@ -213,9 +213,10 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+      after();
    }
 
-   @Test @Ignore
+//   @Test
    public void testXmlTypeDefault() throws Exception
    {
       before();
@@ -228,9 +229,10 @@ public class TestXXE
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+      after();
    }
    
-   @Test @Ignore
+//   @Test
    public void testXmlTypeWithoutExpansion() throws Exception
    {
       before("false");
@@ -243,9 +245,10 @@ public class TestXXE
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+      after();
    }
 
-   @Test @Ignore
+//   @Test
    public void testXmlTypeWithExpansion() throws Exception
    {
       before("true");
@@ -258,9 +261,10 @@ public class TestXXE
       String entity = response.getEntity(String.class);
       System.out.println("result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+      after();
    }
    
-   @Test @Ignore
+   @Test
    public void testJAXBElementDefault() throws Exception
    {
       before();
@@ -272,9 +276,10 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+      after();
    }
    
-   @Test @Ignore
+   @Test
    public void testJAXBElementWithoutExpansion() throws Exception
    {
       before("false");
@@ -286,9 +291,10 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+      after();
    }
    
-   @Test @Ignore
+   @Test
    public void testJAXBElementWithExpansion() throws Exception
    {
       before("true");
@@ -300,75 +306,76 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+      after();
    }
    
-   @Test @Ignore
+   @Test
    public void testListDefault() throws Exception
    {
       doListTest(null);
    }
    
-   @Test @Ignore
+   @Test
    public void testListWithoutExpansion() throws Exception
    {
       doListTest(false);
    }
 
-   @Test @Ignore
+   @Test
    public void testListWithExpansion() throws Exception
    {
       doListTest(true);
    }
    
-   @Test @Ignore
+   @Test
    public void testSetDefault() throws Exception
    {
       doSetTest(null);
    }
    
-   @Test @Ignore
+   @Test
    public void testSetWithoutExpansion() throws Exception
    {
       doSetTest(false);
    }
 
-   @Test @Ignore
+   @Test
    public void testSetWithExpansion() throws Exception
    {
       doSetTest(true);
    }
    
-   @Test @Ignore
+   @Test
    public void testArrayDefault() throws Exception
    {
       doArrayTest(null);
    }
    
-   @Test @Ignore
+   @Test
    public void testArrayWithoutExpansion() throws Exception
    {
       doArrayTest(false);
    }
 
-   @Test @Ignore
+   @Test
    public void testArrayWithExpansion() throws Exception
    {
       doArrayTest(true);
    }
 
-   @Test @Ignore
+   @Test
    public void testMapDefault() throws Exception
    {
       doMapTest(null);
    }
    
-   @Test @Ignore
+   @Test
    public void testMapWithoutExpansion() throws Exception
    {
       doMapTest(false);
    }
    
-   @Test @Ignore
+   @Test
    public void testMapWithExpansion() throws Exception
    {
       doMapTest(true);
@@ -398,6 +405,7 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+      after();
    }
    
    void doSetTest(Boolean expand) throws Exception
@@ -424,6 +432,7 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+      after();
    }
    
    void doArrayTest(Boolean expand) throws Exception
@@ -450,6 +459,7 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+      after();
    }
    
    void doMapTest(Boolean expand) throws Exception
@@ -476,5 +486,6 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+      after();
    }
 }

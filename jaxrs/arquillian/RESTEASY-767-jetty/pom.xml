@@ -15,7 +15,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <!--jetty.version>7.0.2.v20100331</jetty.version-->
       <jetty.version>8.1.1.v20120215</jetty.version>
-      <resteasy.version>3.0.9.Final</resteasy.version>
+      <resteasy.version>2.3.6.Final</resteasy.version>
   </properties>
   
   <dependencyManagement>
