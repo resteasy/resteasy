@@ -19,7 +19,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -39,9 +38,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    @Context
    protected Providers providers;
 
-   private boolean disableExternalEntities = true;
-   private boolean enableSecureProcessingFeature = true;
-   private boolean disableDTDs = true;
+   private boolean expandEntityReferences = false;
    
    public AbstractJAXBProvider()
    {
@@ -51,17 +48,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
          String s = context.getParameter("resteasy.document.expand.entity.references");
          if (s != null)
          {
-            setDisableExternalEntities(!Boolean.parseBoolean(s));
-         }
-         s = context.getParameter("resteasy.document.secure.processing.feature");
-         if (s != null)
-         {
-            setEnableSecureProcessingFeature(Boolean.parseBoolean(s));
-         }
-         s = context.getParameter("resteasy.document.secure.disableDTDs");
-         if (s != null)
-         {
-            setDisableDTDs(Boolean.parseBoolean(s));
+            setExpandEntityReferences(Boolean.parseBoolean(s));
          }
       }
    }
@@ -107,16 +94,17 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
          JAXBContext jaxb = findJAXBContext(type, annotations, mediaType, true);
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
          unmarshaller = decorateUnmarshaller(type, annotations, mediaType, unmarshaller);
-         
-         if (needsSecurity())
+       
+         if (suppressExpandEntityExpansion())
          {
-            return processWithSecureProcessing(unmarshaller, entityStream, getCharset(mediaType));
+            return processWithoutEntityExpansion(unmarshaller, entityStream, getCharset(mediaType));
          }
          
          if (getCharset(mediaType) == null)
          {
             InputSource is = new InputSource(entityStream);
             is.setEncoding("UTF-8");
+            System.out.println("readFrom(): UTF-8");
             StreamSource source = new StreamSource(new InputStreamReader(entityStream, "UTF-8"));
             source.setInputStream(entityStream);
             return (T) unmarshaller.unmarshal(source);
@@ -245,49 +233,30 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       }
       return null;
    }
-   
-   public boolean isDisableExternalEntities()
+
+   public boolean isExpandEntityReferences()
    {
-      return disableExternalEntities;
+      return expandEntityReferences;
    }
 
-   public void setDisableExternalEntities(boolean disableExternalEntities)
+   public void setExpandEntityReferences(boolean expandEntityReferences)
    {
-      this.disableExternalEntities = disableExternalEntities;
-   }
-
-   public boolean isEnableSecureProcessingFeature()
-   {
-      return enableSecureProcessingFeature;
-   }
-
-   public void setEnableSecureProcessingFeature(boolean enableSecureProcessingFeature)
-   {
-      this.enableSecureProcessingFeature = enableSecureProcessingFeature;
-   }
-
-   public boolean isDisableDTDs()
-   {
-      return disableDTDs;
-   }
-
-   public void setDisableDTDs(boolean disableDTDs)
-   {
-      this.disableDTDs = disableDTDs;
-   }
-
-   protected boolean needsSecurity()
-   {
-      return true;
+      this.expandEntityReferences = expandEntityReferences;
    }
    
-   protected T processWithSecureProcessing(Unmarshaller unmarshaller, InputStream entityStream, String charset) throws JAXBException
-   {  
-      unmarshaller = new SecureUnmarshaller(unmarshaller, disableExternalEntities, enableSecureProcessingFeature, disableDTDs);
+   protected boolean suppressExpandEntityExpansion()
+   {
+      return !isExpandEntityReferences();
+   }
+   
+   protected T processWithoutEntityExpansion(Unmarshaller unmarshaller, InputStream entityStream, String charset) throws JAXBException
+   {
+      unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);
       if (charset == null)
       {
          InputSource is = new InputSource(entityStream);
          is.setEncoding("UTF-8");
+         System.out.println("processWithoutEntityExpansion(): UTF-8");
          return (T) unmarshaller.unmarshal(is);
       }
       else

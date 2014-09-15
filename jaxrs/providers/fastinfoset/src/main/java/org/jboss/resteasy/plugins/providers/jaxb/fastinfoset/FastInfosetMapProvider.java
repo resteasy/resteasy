@@ -15,7 +15,7 @@ import org.jboss.resteasy.plugins.providers.jaxb.MapProvider;
 public class FastInfosetMapProvider extends MapProvider {
 
   @Override
-  protected boolean needsSecurity() {
+  protected boolean suppressExpandEntityExpansion() {
     return false;
   }
 }

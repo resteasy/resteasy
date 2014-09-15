@@ -7,7 +7,6 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.After;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -58,14 +57,12 @@ public class TestXXE
       Hashtable<String,String> initParams = new Hashtable<String,String>();
       Hashtable<String,String> contextParams = new Hashtable<String,String>();
       contextParams.put(ResteasyContextParameters.RESTEASY_EXPAND_ENTITY_REFERENCES, expandEntityReferences);
-      contextParams.put(ResteasyContextParameters.RESTEASY_DISABLE_DTDS, "false");
       deployment = EmbeddedContainer.start(initParams, contextParams);
       dispatcher = deployment.getDispatcher();
       deployment.getRegistry().addPerRequestResource(TestResource.class);
    }
 
-   @After
-   public void after() throws Exception
+   public static void after() throws Exception
    {
       EmbeddedContainer.stop();
       dispatcher = null;
@@ -90,6 +87,7 @@ public class TestXXE
       String entity = response.getEntity(String.class);
       System.out.println("result: " + entity);
       Assert.assertEquals(entity, null);
+      after();
    }
 
    @Test
@@ -110,5 +108,6 @@ public class TestXXE
       String entity = response.getEntity(String.class);
       System.out.println("result: " + entity);
       Assert.assertEquals("xx:xx:xx:xx:xx:xx:xx", entity);
+      after();
    }
 }

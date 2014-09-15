@@ -15,7 +15,7 @@ import org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider;
 public class FastInfosetCollectionProvider extends CollectionProvider {
 
   @Override
-  protected boolean needsSecurity() {
+  protected boolean suppressExpandEntityExpansion() {
     return false;
   }
 }

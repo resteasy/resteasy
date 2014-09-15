@@ -6,7 +6,6 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.After;
 import org.junit.Test;
 
 import javax.ws.rs.Consumes;
@@ -141,31 +140,24 @@ public class TestXXE
      }
    }
 
-   public static void before(String expandEntityReferences, String enableSecurityFeature) throws Exception
+   public static void before(String expandEntityReferences) throws Exception
    {
       Hashtable<String,String> initParams = new Hashtable<String,String>();
       Hashtable<String,String> contextParams = new Hashtable<String,String>();
-      contextParams.put("resteasy.document.secure.processing.feature", enableSecurityFeature);
-      contextParams.put("resteasy.document.secure.disableDTDs", "false");
       contextParams.put("resteasy.document.expand.entity.references", expandEntityReferences);
       deployment = EmbeddedContainer.start(initParams, contextParams);
       dispatcher = deployment.getDispatcher();
       deployment.getRegistry().addPerRequestResource(MovieResource.class);
    }
 
-   public static void before(String enableSecurityFeature) throws Exception
+   public static void before() throws Exception
    {
-      Hashtable<String,String> initParams = new Hashtable<String,String>();
-      Hashtable<String,String> contextParams = new Hashtable<String,String>();
-      contextParams.put("resteasy.document.secure.processing.feature", enableSecurityFeature);
-      contextParams.put("resteasy.document.secure.disableDTDs", "false");
-      deployment = EmbeddedContainer.start(initParams, contextParams);
+      deployment = EmbeddedContainer.start();
       dispatcher = deployment.getDispatcher();
       deployment.getRegistry().addPerRequestResource(MovieResource.class);
    }
    
-//   @After
-   public void after() throws Exception
+   public static void after() throws Exception
    {
       EmbeddedContainer.stop();
       dispatcher = null;
@@ -175,13 +167,7 @@ public class TestXXE
    @Test
    public void testXmlRootElementDefault() throws Exception
    {
-      doTestXmlRootElementDefault("false");
-      doTestXmlRootElementDefault("true");
-   }
-   
-   void doTestXmlRootElementDefault(String enableSecurityFeature) throws Exception
-   {
-      before(enableSecurityFeature);
+      before();
       ClientRequest request = new ClientRequest(generateURL("/xmlRootElement"));
       String filename = "src/test/java/org/jboss/resteasy/test/xxe/testpasswd";
       String str = "<?xml version=\"1.0\"?>\r" +
@@ -203,13 +189,7 @@ public class TestXXE
    @Test
    public void testXmlRootElementWithoutExpansion() throws Exception
    {
-      doTestXmlRootElementWithoutExpansion("false");
-      doTestXmlRootElementWithoutExpansion("true");
-   }
-   
-   void doTestXmlRootElementWithoutExpansion(String enableSecurityFeature) throws Exception
-   {
-      before("false", enableSecurityFeature);
+      before("false");
       ClientRequest request = new ClientRequest(generateURL("/xmlRootElement"));
       String filename = "src/test/java/org/jboss/resteasy/test/xxe/testpasswd";
       String str = "<?xml version=\"1.0\"?>\r" +
@@ -231,13 +211,7 @@ public class TestXXE
    @Test
    public void testXmlRootElementWithExpansion() throws Exception
    {
-      doTestXmlRootElementWithExpansion("false");
-      doTestXmlRootElementWithExpansion("true");
-   }
-   
-   void doTestXmlRootElementWithExpansion(String enableSecurityFeature) throws Exception
-   {
-      before("true", enableSecurityFeature);
+      before("true");
       ClientRequest request = new ClientRequest(generateURL("/xmlRootElement"));
       String filename = "src/test/java/org/jboss/resteasy/test/xxe/testpasswd";
       String str = "<?xml version=\"1.0\"?>\r" +
@@ -259,13 +233,7 @@ public class TestXXE
    @Test
    public void testXmlTypeDefault() throws Exception
    {
-      doTestXmlTypeDefault("false");
-      doTestXmlTypeDefault("true");
-   }
-   
-   void doTestXmlTypeDefault(String enableSecurityFeature) throws Exception
-   {
-      before(enableSecurityFeature);
+      before();
       ClientRequest request = new ClientRequest(generateURL("/xmlType"));
       String filename = "src/test/java/org/jboss/resteasy/test/xxe/testpasswd";
       String str = "<?xml version=\"1.0\"?>\r" +
@@ -287,13 +255,7 @@ public class TestXXE
    @Test
    public void testXmlTypeWithoutExpansion() throws Exception
    {
-      doTestXmlTypeWithoutExpansion("false");
-      doTestXmlTypeWithoutExpansion("true");
-   }
-   
-   void doTestXmlTypeWithoutExpansion(String enableSecurityFeature) throws Exception
-   {
-      before("false", enableSecurityFeature);
+      before("false");
       ClientRequest request = new ClientRequest(generateURL("/xmlType"));
       String filename = "src/test/java/org/jboss/resteasy/test/xxe/testpasswd";
       String str = "<?xml version=\"1.0\"?>\r" +
@@ -315,13 +277,7 @@ public class TestXXE
    @Test
    public void testXmlTypeWithExpansion() throws Exception
    {
-      doTestXmlTypeWithExpansion("false");
-      doTestXmlTypeWithExpansion("true");
-   }
-   
-   void doTestXmlTypeWithExpansion(String enableSecurityFeature) throws Exception
-   {
-      before("true", enableSecurityFeature);
+      before("true");
       ClientRequest request = new ClientRequest(generateURL("/xmlType"));
       String filename = "src/test/java/org/jboss/resteasy/test/xxe/testpasswd";
       String str = "<?xml version=\"1.0\"?>\r" +
@@ -336,20 +292,14 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       System.out.println("result: " + entity);
-      Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0);  
+      Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0);
       after();
    }
    
    @Test
    public void testJAXBElementDefault() throws Exception
    {
-      doTestJAXBElementDefault("false");
-      doTestJAXBElementDefault("true");
-   }
-   
-   void doTestJAXBElementDefault(String enableSecurityFeature) throws Exception
-   {
-      before(enableSecurityFeature);
+      before();
       ClientRequest request = new ClientRequest(generateURL("/JAXBElement"));
       String filename = "src/test/java/org/jboss/resteasy/test/xxe/testpasswd";
       String str = "<?xml version=\"1.0\"?>\r" +
@@ -371,13 +321,7 @@ public class TestXXE
    @Test
    public void testJAXBElementWithoutExpansion() throws Exception
    {
-      doTestJAXBElementWithoutExpansion("false");
-      doTestJAXBElementWithoutExpansion("true");
-   }
-   
-   void doTestJAXBElementWithoutExpansion(String enableSecurityFeature) throws Exception
-   {
-      before("false", enableSecurityFeature);
+      before("false");
       ClientRequest request = new ClientRequest(generateURL("/JAXBElement"));
       String filename = "src/test/java/org/jboss/resteasy/test/xxe/testpasswd";
       String str = "<?xml version=\"1.0\"?>\r" +
@@ -399,13 +343,7 @@ public class TestXXE
    @Test
    public void testJAXBElementWithExpansion() throws Exception
    {
-      doTestJAXBElementWithExpansion("false");
-      doTestJAXBElementWithExpansion("true");
-   }
-   
-   void doTestJAXBElementWithExpansion(String enableSecurityFeature) throws Exception
-   {
-      before("true", enableSecurityFeature);
+      before("true");
       ClientRequest request = new ClientRequest(generateURL("/JAXBElement"));
       String filename = "src/test/java/org/jboss/resteasy/test/xxe/testpasswd";
       String str = "<?xml version=\"1.0\"?>\r" +
@@ -420,104 +358,92 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
-      Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0);  
+      Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0);
       after();
    }
    
    @Test
    public void testListDefault() throws Exception
    {
-      doCollectionTest(false, null, "list");
-      doCollectionTest(true, null, "list");
+      doCollectionTest(null, "list");
    }
    
    @Test
    public void testListWithoutExpansion() throws Exception
    {
-      doCollectionTest(false, false, "list");
-      doCollectionTest(true, false, "list");
+      doCollectionTest(false, "list");
    }
 
    @Test
    public void testListWithExpansion() throws Exception
    {
-      doCollectionTest(false, true, "list");
-      doCollectionTest(true, true, "list");
+      doCollectionTest(true, "list");
    }
    
    @Test
    public void testSetDefault() throws Exception
    {
-      doCollectionTest(false, null, "set");
-      doCollectionTest(false, null, "set");
+      doCollectionTest(null, "set");
    }
    
    @Test
    public void testSetWithoutExpansion() throws Exception
    {
-      doCollectionTest(false, false, "set");
-      doCollectionTest(true, false, "set");
+      doCollectionTest(false, "set");
    }
 
    @Test
    public void testSetWithExpansion() throws Exception
    {
-      doCollectionTest(false, true, "set");
-      doCollectionTest(true, true, "set");
+      doCollectionTest(true, "set");
    }
    
    @Test
    public void testArrayDefault() throws Exception
    {
-      doCollectionTest(false, null, "array");
-      doCollectionTest(true, null, "array");
+      doCollectionTest(null, "array");
    }
    
    @Test
    public void testArrayWithoutExpansion() throws Exception
    {
-      doCollectionTest(false, false, "array");
-      doCollectionTest(true, false, "array");
+      doCollectionTest(false, "array");
    }
 
    @Test
    public void testArrayWithExpansion() throws Exception
    {
-      doCollectionTest(false, true, "array");
-      doCollectionTest(true, true, "array");
+      doCollectionTest(true, "array");
    }
 
    @Test
    public void testMapDefault() throws Exception
    {
-      doMapTest(false, null);
-      doMapTest(true, null);
+      doMapTest(null);
    }
    
    @Test
    public void testMapWithoutExpansion() throws Exception
    {
-      doMapTest(false, false);
-      doMapTest(true, false);
+      doMapTest(false);
    }
    
    @Test
    public void testMapWithExpansion() throws Exception
    {
-      doMapTest(false, true);
-      doMapTest(true, true);
+      doMapTest(true);
    }
    
-   void doCollectionTest(Boolean enableSecurityFeature, Boolean expand, String path) throws Exception
+   void doCollectionTest(Boolean expand, String path) throws Exception
    {
       if (expand == null)
       {
-         before(Boolean.toString(enableSecurityFeature));
+         before();
          expand = false;
       }
       else
       {
-         before(Boolean.toString(expand), Boolean.toString(enableSecurityFeature));
+         before(Boolean.toString(expand));
       }
       ClientRequest request = new ClientRequest(generateURL("/" + path));
       String filename = "src/test/java/org/jboss/resteasy/test/xxe/testpasswd";
@@ -547,16 +473,16 @@ public class TestXXE
       after();
    }
    
-   void doMapTest(boolean enableSecurityFeature, Boolean expand) throws Exception
+   void doMapTest(Boolean expand) throws Exception
    {
       if (expand == null)
       {
-         before(Boolean.toString(enableSecurityFeature));
+         before();
          expand = false;
       }
       else
       {
-         before(Boolean.toString(expand), Boolean.toString(enableSecurityFeature));  
+         before(Boolean.toString(expand));  
       }
       ClientRequest request = new ClientRequest(generateURL("/map"));
       String filename = "src/test/java/org/jboss/resteasy/test/xxe/testpasswd";

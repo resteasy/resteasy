@@ -24,7 +24,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.After;
 import org.junit.Test;
 
 /**
@@ -156,8 +155,7 @@ public class TestNamespace
       client = new ResteasyClientBuilder().build();
    }
    
-   @After
-   public void after() throws Exception
+   public static void after() throws Exception
    {
       EmbeddedContainer.stop();
       dispatcher = null;
@@ -177,6 +175,7 @@ public class TestNamespace
       String entity = response.readEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertEquals("La Regle du Jeu", entity);
+      after();
    }
    
    @Test
@@ -192,6 +191,7 @@ public class TestNamespace
       String entity = response.readEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertEquals("La Cage Aux Folles", entity);
+      after();
    }
    
    @Test
@@ -207,6 +207,7 @@ public class TestNamespace
       String entity = response.readEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertEquals("La Cage Aux Folles", entity);
+      after();
    }
    
    @Test
@@ -256,6 +257,7 @@ public class TestNamespace
       {
          Assert.assertEquals("/La Regle du Jeu/La Cage Aux Folles", entity);
       }
+      after();
    }
    
    void doMapTest() throws Exception
@@ -285,5 +287,6 @@ public class TestNamespace
       {
          Assert.assertEquals("/La Regle du Jeu/La Cage Aux Folles", entity);
       }
+      after();
    }
 }

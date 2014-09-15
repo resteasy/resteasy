@@ -982,33 +982,7 @@ The extra @XmlSeeAlso on IFoo allows RESTEasy to create a JAXBContext that knows
      (<ulink url="http://www.securiteam.com/securitynews/6D0100A5PU.html">http://www.securiteam.com/securitynews/6D0100A5PU.html</ulink>),
      in which expanding an external entity causes an unsafe file to be loaded.  Preventing the expansion of 
      external entities is discussed in <xref linkend="Configuring_Document_Marshalling"/>.  The same context
-     parameter,
-   </para>
-   
-   <blockquote>
-     resteasy.document.expand.entity.references
-   </blockquote>
-   
-   <para>applies to JAXB unmarshallers as well.</para>
-   
-   
-   <para>
-     <xref linkend="Configuring_Document_Marshalling"/> also discusses the prohibition of DTDs and the 
-     imposition of limits on entity expansion and the number of attributes per element. The context parameters
-   </para>
-   
-   <blockquote>
-     resteasy.document.secure.disableDTDs
-   </blockquote>
-   
-   <para>and</para>
-   
-   <blockquote>
-     resteasy.document.secure.processing.feature
-   </blockquote>
-   
-   <para>
-     discussed there, and their default values, also apply to the representation of JAXB objects.
+     parameter, "resteasy.document.expand.entity.references", applies to JAXB unmarshallers as well.
    </para>
 </sect1>
 </chapter>
