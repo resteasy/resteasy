@@ -1806,7 +1806,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addContextResolver((ContextResolver) provider);
-            int priority = getPriority(priorityOverride, contracts, ExceptionMapper.class, provider.getClass());
+            int priority = getPriority(priorityOverride, contracts, ContextResolver.class, provider.getClass());
             newContracts.put(ContextResolver.class, priority);
          }
          catch (Exception e)
