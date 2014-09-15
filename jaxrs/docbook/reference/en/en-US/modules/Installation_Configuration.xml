@@ -476,10 +476,35 @@
                                 resteasy.document.expand.entity.references
                             </entry>
                             <entry>
+                                false
+                            </entry>
+                            <entry>
+                                Expand external entities in org.w3c.dom.Document documents
+                                and JAXB object representations
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                resteasy.document.secure.processing.feature
+                            </entry>
+                            <entry>
                                 true
                             </entry>
                             <entry>
-                                Expand external entities in org.w3c.dom.Document files
+                                Impose security constraints in processing org.w3c.dom.Document documents
+                                and JAXB object representations
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                resteasy.document.secure.disableDTDs
+                            </entry>
+                            <entry>
+                                true
+                            </entry>
+                            <entry>
+                                Prohibit DTDs in org.w3c.dom.Document documents
+                                and JAXB object representations
                             </entry>
                         </row>
                         <row>

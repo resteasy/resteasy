@@ -304,16 +304,61 @@ public interface Providers
       
       <para>
       
-         Resteasy's built-in unmarshaller for org.w3c.dom.Document files will expand external entities by default, but it can be configured to replace them by the empty string by setting the context parameter "resteasy.document.expand.entity.references" to "false" in the web.xml file:
+         By default, Resteasy's built-in unmarshaller for org.w3c.dom.Document documents will not expand external entities,
+         replacing them by the empty string instead. It can be configured to replace external entities by values defined in the
+         DTD by setting the context parameter
    
       </para>
+      
+      <blockquote>resteasy.document.expand.entity.references</blockquote>
+      
+      <para> to "true" in the web.xml file:</para>
       
       <programlisting>
          &lt;context-param&gt;
             &lt;param-name&gt;resteasy.document.expand.entity.references&lt;/param-name&gt;
-            &lt;param-value&gt;false&lt;/param-value&gt;
+            &lt;param-value&gt;true&lt;/param-value&gt;
          &lt;/context-param&gt;
       </programlisting>
+      
+      <para>
+      
+      Another way of dealing with the problem is by prohibiting DTDs, which Resteasy does by default. This behavior
+      can be changed by setting the context parameter
+      
+      </para>
+      
+      <blockquote>resteasy.document.secure.disableDTDs</blockquote>
+           
+      <para>to "false".</para>
+ 
+ 	  <para>
+ 	  
+ 	  Documents are also subject to Denial of Service Attacks when buffers are overrun by large entities or too many
+ 	  attributes.  For example, if a DTD defined the following entities
+ 	  
+ 	  </para>
+ 	  
+ 	  <programlisting>
+   &lt;!ENTITY foo 'foo'&gt;
+   &lt;!ENTITY foo1 '&amp;foo;&amp;foo;&amp;foo;&amp;foo;&amp;foo;&amp;foo;&amp;foo;&amp;foo;&amp;foo;&amp;foo;'&gt;
+   &lt;!ENTITY foo2 '&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;'&gt;
+   &lt;!ENTITY foo3 '&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;'&gt;
+   &lt;!ENTITY foo4 '&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;'&gt;
+   &lt;!ENTITY foo5 '&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;'&gt;
+   &lt;!ENTITY foo6 '&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;'&gt;
+ 	  </programlisting>
+ 	  
+   <para>
+   then the expansion of &amp;foo6; 
+   would result in 1,000,000 foos. By default, Resteasy will limit the number of expansions and
+   the number of attributes per entity. The exact behavior depends on the underlying parser. The limits
+   can be turned off by setting the context parameter
+   </para>
+   
+   <blockquote>resteasy.document.secure.processing.feature</blockquote>
+   
+   <para>to "false".</para>
    </sect1>
    
 </chapter>

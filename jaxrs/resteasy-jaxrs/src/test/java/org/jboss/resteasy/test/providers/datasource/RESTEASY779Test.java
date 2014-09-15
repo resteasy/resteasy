@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.providers;
+package org.jboss.resteasy.test.providers.datasource;
 
 import static org.junit.Assert.*;
 
@@ -18,6 +18,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpParams;
+import org.jboss.resteasy.plugins.providers.DataSourceProvider;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.Before;
