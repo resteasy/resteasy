@@ -25,7 +25,7 @@ public class NoContent
       String contentLength = (String)httpHeaders.getFirst(HttpHeaders.CONTENT_LENGTH);
       if (contentLength != null)
       {
-         int length = Integer.parseInt(contentLength);
+         long length = Long.parseLong(contentLength);
          if (length == 0) return true;
       }
       return false;
