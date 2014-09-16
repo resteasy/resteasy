@@ -7,6 +7,7 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.GenericType;
+import org.junit.After;
 import org.junit.Test;
 
 import javax.ws.rs.Consumes;
@@ -162,7 +163,8 @@ public class TestXXE
       deployment.getRegistry().addPerRequestResource(MovieResource.class);
    }
    
-   public static void after() throws Exception
+   @After
+   public void after() throws Exception
    {
       EmbeddedContainer.stop();
       dispatcher = null;
@@ -182,7 +184,6 @@ public class TestXXE
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
-      after();
    }
    
    @Test
@@ -198,7 +199,6 @@ public class TestXXE
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
-      after();
    }
 
    @Test
@@ -213,7 +213,6 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
-      after();
    }
 
 //   @Test
@@ -229,7 +228,6 @@ public class TestXXE
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
-      after();
    }
    
 //   @Test
@@ -245,7 +243,6 @@ public class TestXXE
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
-      after();
    }
 
 //   @Test
@@ -261,7 +258,6 @@ public class TestXXE
       String entity = response.getEntity(String.class);
       System.out.println("result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
-      after();
    }
    
    @Test
@@ -276,7 +272,6 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
-      after();
    }
    
    @Test
@@ -291,7 +286,6 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
-      after();
    }
    
    @Test
@@ -306,7 +300,6 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
-      after();
    }
    
    @Test
@@ -405,7 +398,6 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
-      after();
    }
    
    void doSetTest(Boolean expand) throws Exception
@@ -432,7 +424,6 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
-      after();
    }
    
    void doArrayTest(Boolean expand) throws Exception
@@ -459,7 +450,6 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
-      after();
    }
    
    void doMapTest(Boolean expand) throws Exception
@@ -486,6 +476,5 @@ public class TestXXE
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
-      after();
    }
 }

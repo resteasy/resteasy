@@ -15,8 +15,10 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -79,16 +81,36 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
       {
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
          unmarshaller = decorateUnmarshaller(type, annotations, mediaType, unmarshaller);
-         if (suppressExpandEntityExpansion())
+         
+         if (needsSecurity())
          {
-            unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);
-            SAXSource source = new SAXSource(new InputSource(entityStream));
+            unmarshaller = new SecureUnmarshaller(unmarshaller, isDisableExternalEntities(), isEnableSecureProcessingFeature(), isDisableDTDs());
+            SAXSource source = null;
+            if (getCharset(mediaType) == null)
+            {
+               source = new SAXSource(new InputSource(new InputStreamReader(entityStream, "UTF-8")));
+            }
+            else
+            {
+               source = new SAXSource(new InputSource(entityStream));
+            }
             result = unmarshaller.unmarshal(source, (Class<?>) typeArg);
          }
          else
          {
-            JAXBElement<?> e = unmarshaller.unmarshal(new StreamSource(entityStream), (Class<?>) typeArg);
-            result = e;
+            if (getCharset(mediaType) == null)
+            {
+               InputSource is = new InputSource(entityStream);
+               is.setEncoding("UTF-8");
+               StreamSource source = new StreamSource(new InputStreamReader(entityStream, "UTF-8"));
+               source.setInputStream(entityStream);
+               result = unmarshaller.unmarshal(source, (Class<?>) typeArg);
+            }
+            else
+            {
+               JAXBElement<?> e = unmarshaller.unmarshal(new StreamSource(entityStream), (Class<?>) typeArg);
+               result = e;
+            }
          };
       }
       catch (JAXBException e)
