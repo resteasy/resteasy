@@ -175,11 +175,13 @@ public class FileProvider implements MessageBodyReader<File>,
                String substring = range.substring(separator + 1);
                end = Long.parseLong(substring);
             }
+            /*
             if (begin == 0 && end + 1 >= fileSize)
             {
                writeIt(uploadFile, entityStream);
                return;
             }
+            */
             throw new FileRangeException(mediaType, uploadFile, begin, end);
          }
          catch (NumberFormatException e)
