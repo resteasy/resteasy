@@ -12,6 +12,11 @@
     <title>Migrating from 3.0.7 to 3.0.9</title>
     <itemizedlist>
         <listitem>
+            You may need to upgrade your JDK to the latest 1.7.x or 1.8 releases if you are using JAXB.  There's some
+            entity expansion security vulnerabilities that we had to patch and it seems the fix doesn't work on earlier
+            versions of JDK 1.7.
+        </listitem>
+        <listitem>
             ContainerRequestContext.setRequestUri() method behavior has been changed to match the behavior of the JAXRS RI.
             The relative URI must be equal to are an extension of the base URI or it will not work. i.e.
 <programlisting>
