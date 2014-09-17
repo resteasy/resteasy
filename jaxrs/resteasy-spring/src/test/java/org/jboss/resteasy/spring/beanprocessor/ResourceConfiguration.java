@@ -21,7 +21,7 @@ public class ResourceConfiguration
    }
 
    @Bean
-   public Counter singletonCounter()
+   Counter singletonCounter()
    {
       return new Counter();
    }

@@ -425,7 +425,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
             }
          }
 
-         for (Method method : getBeanClass(factoryClassName).getMethods())
+         for (Method method : getBeanClass(factoryClassName).getDeclaredMethods())
          {
             if (method.getName().equals(factoryMethodName))
             {
