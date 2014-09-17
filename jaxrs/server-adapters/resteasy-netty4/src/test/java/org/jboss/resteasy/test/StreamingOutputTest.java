@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test;
 
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -18,6 +19,7 @@ import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CountDownLatch;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -29,6 +31,7 @@ public class StreamingOutputTest
 {
    static String BASE_URI = generateURL("");
    static Client client;
+   static CountDownLatch latch;
 
    @Path("/test")
    public static class Resteasy1029Netty4StreamingOutput {
@@ -47,13 +50,40 @@ public class StreamingOutputTest
             }
          };
       }
+      @GET
+      @Path("delay")
+      @Produces(MediaType.TEXT_PLAIN)
+      public StreamingOutput delay() {
+         return new StreamingOutput() {
+            @Override
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+               for (int i = 0; i < 10; i++) {
+                  output.write(("" + i + "\n\n").getBytes(StandardCharsets.ISO_8859_1));
+                  try
+                  {
+                     latch.countDown();
+                     Thread.sleep(100);
+                  }
+                  catch (InterruptedException e)
+                  {
+                     throw new RuntimeException(e);
+                  }
+                  output.flush();
+               }
+               output.close();
+            }
+         };
+      }
+
+
+
    }
 
    @BeforeClass
    public static void setup() throws Exception
    {
       NettyContainer.start().getRegistry().addPerRequestResource(Resteasy1029Netty4StreamingOutput.class);
-      client = ClientBuilder.newClient();
+      client = new ResteasyClientBuilder().connectionPoolSize(10).build();
    }
 
    @AfterClass
@@ -61,6 +91,34 @@ public class StreamingOutputTest
    {
       client.close();
       NettyContainer.stop();
+   }
+
+   static boolean pass = false;
+
+   @Test
+   public void testConcurrent() throws Exception
+   {
+      pass = false;
+      latch = new CountDownLatch(1);
+      Runnable r = new Runnable()
+      {
+         @Override
+         public void run()
+         {
+            String str = client.target(BASE_URI).path("test/delay").request().get(String.class);
+            pass = true;
+         }
+      };
+      Thread t = new Thread(r);
+      t.start();
+      latch.await();
+      long start = System.currentTimeMillis();
+      testStreamingOutput();
+      long end = System.currentTimeMillis() - start;
+      System.out.println(end);
+      Assert.assertTrue(end < 1000);
+      t.join();
+      Assert.assertTrue(pass);
    }
 
    @Test
