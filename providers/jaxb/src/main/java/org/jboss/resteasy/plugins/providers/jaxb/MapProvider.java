@@ -35,6 +35,7 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -52,7 +53,9 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
 {
    @Context
    protected Providers providers;
-   private boolean expandEntityReferences = false;
+   private boolean disableExternalEntities = true;
+   private boolean enableSecureProcessingFeature = true;
+   private boolean disableDTDs = true;
    
    public MapProvider()
    {
@@ -62,7 +65,17 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
          String s = context.getParameter("resteasy.document.expand.entity.references");
          if (s != null)
          {
-            setExpandEntityReferences(Boolean.parseBoolean(s));
+            setDisableExternalEntities(!Boolean.parseBoolean(s));
+         }
+         s = context.getParameter("resteasy.document.secure.processing.feature");
+         if (s != null)
+         {
+            setEnableSecureProcessingFeature(Boolean.parseBoolean(s));
+         }
+         s = context.getParameter("resteasy.document.secure.disableDTDs");
+         if (s != null)
+         {
+            setDisableDTDs(Boolean.parseBoolean(s));
          }
       }
    }
@@ -115,16 +128,33 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
       try
       {
          JAXBContext ctx = finder.findCacheContext(mediaType, annotations, JaxbMap.class, JaxbMap.Entry.class, valueType);
-         if (suppressExpandEntityExpansion())
+         if (needsSecurity())
          {
-            SAXSource source = new SAXSource(new InputSource(entityStream));
+            SAXSource source = null;
+            if (getCharset(mediaType) == null)
+            {
+               source = new SAXSource(new InputSource(new InputStreamReader(entityStream, "UTF-8")));
+            }
+            else
+            {
+               source = new SAXSource(new InputSource(entityStream));
+            }
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
-            unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);
+            unmarshaller = new SecureUnmarshaller(unmarshaller, disableExternalEntities, enableSecureProcessingFeature, disableDTDs);
             ele = unmarshaller.unmarshal(source, JaxbMap.class);
          }
          else
          {
-            StreamSource source = new StreamSource(entityStream);
+            StreamSource source = null;
+            if (getCharset(mediaType) == null)
+            {
+               source = new StreamSource(new InputStreamReader(entityStream, "UTF-8"));
+            }
+            else
+            {
+               source = new StreamSource(entityStream);
+            }
+            
             ele = ctx.createUnmarshaller().unmarshal(source, JaxbMap.class);
          }
          WrappedMap wrapped = FindAnnotation.findAnnotation(annotations, WrappedMap.class);
@@ -242,19 +272,48 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
          throw new JAXBMarshalException(e);
       }
    }
-   
-   public boolean isExpandEntityReferences()
+
+   public boolean isDisableExternalEntities()
    {
-      return expandEntityReferences;
+      return disableExternalEntities;
    }
 
-   public void setExpandEntityReferences(boolean expandEntityReferences)
+   public void setDisableExternalEntities(boolean disableExternalEntities)
    {
-      this.expandEntityReferences = expandEntityReferences;
+      this.disableExternalEntities = disableExternalEntities;
+   }
+
+   public boolean isEnableSecureProcessingFeature()
+   {
+      return enableSecureProcessingFeature;
+   }
+
+   public void setEnableSecureProcessingFeature(boolean enableSecureProcessingFeature)
+   {
+      this.enableSecureProcessingFeature = enableSecureProcessingFeature;
+   }
+
+   public boolean isDisableDTDs()
+   {
+      return disableDTDs;
+   }
+
+   public void setDisableDTDs(boolean disableDTDs)
+   {
+      this.disableDTDs = disableDTDs;
    }
    
-   protected boolean suppressExpandEntityExpansion()
+   public static String getCharset(final MediaType mediaType)
    {
-      return !isExpandEntityReferences();
+      if (mediaType != null)
+      {
+         return mediaType.getParameters().get("charset");
+      }
+      return null;
+   }
+   
+   protected boolean needsSecurity()
+   {
+      return true;
    }
 }

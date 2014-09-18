@@ -19,6 +19,7 @@
         <module>RESTEASY-800</module>
         <module>RESTEASY-802</module>
         <module>RESTEASY-1043</module>
+        <module>RESTEASY-TEST-EAP6</module>
     </modules>
 
 </project>

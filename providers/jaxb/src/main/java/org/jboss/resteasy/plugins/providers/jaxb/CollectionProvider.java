@@ -57,7 +57,10 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
 {
    @Context
    protected Providers providers;
-   private boolean expandEntityReferences = false;
+   
+   private boolean disableExternalEntities = true;
+   private boolean enableSecureProcessingFeature = true;
+   private boolean disableDTDs = true;
    
    public CollectionProvider()
    {
@@ -67,7 +70,17 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
          String s = context.getParameter("resteasy.document.expand.entity.references");
          if (s != null)
          {
-            setExpandEntityReferences(Boolean.parseBoolean(s));
+            setDisableExternalEntities(!Boolean.parseBoolean(s));
+         }
+         s = context.getParameter("resteasy.document.secure.processing.feature");
+         if (s != null)
+         {
+            setEnableSecureProcessingFeature(Boolean.parseBoolean(s));
+         }
+         s = context.getParameter("resteasy.document.secure.disableDTDs");
+         if (s != null)
+         {
+            setDisableDTDs(Boolean.parseBoolean(s));
          }
       }
    }
@@ -115,7 +128,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       {
          JAXBElement<JaxbCollection> ele = null;
          
-         if (suppressExpandEntityExpansion())
+         if (needsSecurity())
          {
             SAXSource source = null;
             if (getCharset(mediaType) == null)
@@ -128,7 +141,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
             }
             JAXBContext ctx = finder.findCachedContext(JaxbCollection.class, mediaType, annotations);
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
-            unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);
+            unmarshaller = new SecureUnmarshaller(unmarshaller, disableExternalEntities, enableSecureProcessingFeature, disableDTDs);
             ele = unmarshaller.unmarshal(source, JaxbCollection.class);
          }
          else
@@ -275,22 +288,37 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
          throw new JAXBMarshalException(e);
       }
    }
-   
-   public boolean isExpandEntityReferences()
+
+   public boolean isDisableExternalEntities()
    {
-      return expandEntityReferences;
+      return disableExternalEntities;
    }
 
-   public void setExpandEntityReferences(boolean expandEntityReferences)
+   public void setDisableExternalEntities(boolean disableExternalEntities)
    {
-      this.expandEntityReferences = expandEntityReferences;
+      this.disableExternalEntities = disableExternalEntities;
    }
-   
-   protected boolean suppressExpandEntityExpansion()
+
+   public boolean isEnableSecureProcessingFeature()
    {
-      return !isExpandEntityReferences();
+      return enableSecureProcessingFeature;
    }
-   
+
+   public void setEnableSecureProcessingFeature(boolean enableSecureProcessingFeature)
+   {
+      this.enableSecureProcessingFeature = enableSecureProcessingFeature;
+   }
+
+   public boolean isDisableDTDs()
+   {
+      return disableDTDs;
+   }
+
+   public void setDisableDTDs(boolean disableDTDs)
+   {
+      this.disableDTDs = disableDTDs;
+   }
+
    public static String getCharset(final MediaType mediaType)
    {
       if (mediaType != null)
@@ -298,5 +326,10 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
          return mediaType.getParameters().get("charset");
       }
       return null;
+   }
+   
+   protected boolean needsSecurity()
+   {
+      return true;
    }
 }

@@ -12,7 +12,11 @@ import junit.framework.Assert;
 
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.BaseResourceTest;
+import org.jboss.resteasy.test.EmbeddedContainer;
+import org.junit.After;
 import org.junit.Test;
 
 /**
@@ -21,8 +25,11 @@ import org.junit.Test;
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
  * @date August 16, 2013
  */
-public class TestXXESecureProcessing extends BaseResourceTest
+public class TestXXESecureProcessing
 {
+   protected static ResteasyDeployment deployment;
+   protected static Dispatcher dispatcher;
+   
    String doctype =
          "<!DOCTYPE foodocument [" +
                "<!ENTITY foo 'foo'>" +
@@ -58,25 +65,35 @@ public class TestXXESecureProcessing extends BaseResourceTest
    {
       Hashtable<String,String> initParams = new Hashtable<String,String>();
       Hashtable<String,String> contextParams = new Hashtable<String,String>();
-      if (expandEntityReferences != null)
-          contextParams.put("resteasy.document.expand.entity.references", expandEntityReferences);
-
-      createContainer(initParams, contextParams);
-      addPerRequestResource(MovieResource.class, FavoriteMovieXmlRootElement.class, MovieResource.class, FavoriteMovieXmlRootElement.class);
-      startContainer();
+      contextParams.put("resteasy.document.secure.disableDTDs", "false");
+      contextParams.put("resteasy.document.expand.entity.references", expandEntityReferences);
+      deployment = EmbeddedContainer.start(initParams, contextParams);
+      dispatcher = deployment.getDispatcher();
+      deployment.getRegistry().addPerRequestResource(MovieResource.class);
    }
 
-   @Override
    public void before() throws Exception
+   { 
+      Hashtable<String,String> initParams = new Hashtable<String,String>();
+      Hashtable<String,String> contextParams = new Hashtable<String,String>();
+      contextParams.put("resteasy.document.secure.disableDTDs", "false");
+      deployment = EmbeddedContainer.start(initParams, contextParams);
+      dispatcher = deployment.getDispatcher();
+      deployment.getRegistry().addPerRequestResource(MovieResource.class);
+   }
+   
+   @After
+   public void after() throws Exception
    {
-      manualStart = true;
-      super.before();
+      EmbeddedContainer.stop();
+      dispatcher = null;
+      deployment = null;
    }
 
    @Test
    public void testXmlRootElementDefaultSmall() throws Exception
    {
-      before(null);
+      before();
       ClientRequest request = new ClientRequest(generateURL("/xmlRootElement"));
       request.body("application/xml", small);
       ClientResponse<?> response = request.post();
@@ -91,7 +108,7 @@ public class TestXXESecureProcessing extends BaseResourceTest
    @Test
    public void testXmlRootElementDefaultBig() throws Exception
    {
-      before(null);
+      before();
       ClientRequest request = new ClientRequest(generateURL("/xmlRootElement"));
       request.body("application/xml", big);
       ClientResponse<?> response = request.post();
