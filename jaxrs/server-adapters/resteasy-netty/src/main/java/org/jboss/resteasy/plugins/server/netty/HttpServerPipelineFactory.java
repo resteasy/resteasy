@@ -10,6 +10,8 @@ import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol;
 
+import java.util.List;
+
 import static org.jboss.netty.channel.Channels.pipeline;
 
 /**
@@ -28,9 +30,10 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
    private final ChannelHandler resteasyDecoder;
    private final ChannelHandler resteasyRequestHandler;
    private final ChannelHandler executionHandler;
+   private final List<ChannelHandler> additionalChannelHandlers;
    private final int maxRequestSize;
    
-   public HttpServerPipelineFactory(RequestDispatcher dispatcher, String root, int executorThreadCount, int maxRequestSize, boolean isKeepAlive)
+   public HttpServerPipelineFactory(RequestDispatcher dispatcher, String root, int executorThreadCount, int maxRequestSize, boolean isKeepAlive, List<ChannelHandler> additionalChannelHandlers)
    {
       this.resteasyDecoder = new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, getProtocol(), isKeepAlive);
       this.resteasyEncoder = new RestEasyHttpResponseEncoder(dispatcher);
@@ -44,6 +47,7 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
           this.executionHandler = null;
       }
       this.maxRequestSize = maxRequestSize;
+      this.additionalChannelHandlers = additionalChannelHandlers;
    }
 
    @Override
@@ -51,6 +55,11 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory
    {
       // Create a default pipeline implementation.
       ChannelPipeline pipeline = pipeline();
+
+      // Add custom channel handlers
+      for (ChannelHandler channelHandler : additionalChannelHandlers) {
+         pipeline.addLast(channelHandler.getClass().getSimpleName(), channelHandler);
+      }
 
       pipeline.addLast("decoder", new HttpRequestDecoder());
       pipeline.addLast("aggregator", new HttpChunkAggregator(maxRequestSize));

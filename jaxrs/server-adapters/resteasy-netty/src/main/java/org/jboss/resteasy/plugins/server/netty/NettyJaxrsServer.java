@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.server.netty;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
@@ -15,6 +16,9 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 
 import javax.net.ssl.SSLContext;
 import java.net.InetSocketAddress;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 
 /**
@@ -41,6 +45,8 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    private SSLContext sslContext;
    private int maxRequestSize = 1024 * 1024 * 10;
    private boolean isKeepAlive = true;
+   private List<ChannelHandler> channelHandlers = Collections.emptyList();
+   private Map<String, Object> channelOptions = Collections.emptyMap();
 
    static final ChannelGroup allChannels = new DefaultChannelGroup("NettyJaxrsServer");
 
@@ -105,6 +111,26 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
       this.port = port;
    }
 
+    /**
+     * Add additional {@link org.jboss.netty.channel.ChannelHandler}s to the {@link org.jboss.netty.bootstrap.ServerBootstrap}.
+     * <p>The additional channel handlers are being added <em>before</em> the HTTP handling.</p>
+     *
+     * @param channelHandlers the additional {@link org.jboss.netty.channel.ChannelHandler}s.
+     */
+    public void setChannelHandlers(final List<ChannelHandler> channelHandlers) {
+        this.channelHandlers = channelHandlers == null ? Collections.<ChannelHandler>emptyList() : channelHandlers;
+    }
+
+    /**
+     * Add channel options to Netty {@link org.jboss.netty.bootstrap.ServerBootstrap}.
+     *
+     * @param channelOptions a {@link java.util.Map} containing the Netty bootstrap options.
+     * @see org.jboss.netty.bootstrap.ServerBootstrap#setOptions(java.util.Map)
+     */
+    public void setChannelOptions(final Map<String, Object> channelOptions) {
+        this.channelOptions = channelOptions == null ? Collections.<String, Object>emptyMap() : channelOptions;
+    }
+
    @Override
    public void setDeployment(ResteasyDeployment deployment)
    {
@@ -145,12 +171,15 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
 
       ChannelPipelineFactory factory;
       if (sslContext == null) {
-          factory = new HttpServerPipelineFactory(dispatcher, root, executorThreadCount, maxRequestSize, isKeepAlive);
+          factory = new HttpServerPipelineFactory(dispatcher, root, executorThreadCount, maxRequestSize, isKeepAlive, channelHandlers);
       } else {
-          factory = new HttpsServerPipelineFactory(dispatcher, root, executorThreadCount, maxRequestSize, isKeepAlive, sslContext);
+          factory = new HttpsServerPipelineFactory(dispatcher, root, executorThreadCount, maxRequestSize, isKeepAlive, channelHandlers, sslContext);
       }
       // Set up the event pipeline factory.
       bootstrap.setPipelineFactory(factory);
+
+      // Add custom bootstrap options
+      bootstrap.setOptions(channelOptions);
 
       // Bind and start to accept incoming connections.
       final InetSocketAddress socketAddress;
