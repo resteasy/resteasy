@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.server.netty;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -20,6 +21,9 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import java.net.InetSocketAddress;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An HTTP server that sends back the content of the received HTTP request
@@ -46,6 +50,9 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    private SSLContext sslContext;
    private int maxRequestSize = 1024 * 1024 * 10;
    private int backlog = 128;
+   private List<ChannelHandler> channelHandlers = Collections.emptyList();
+   private Map<ChannelOption, Object> channelOptions = Collections.emptyMap();
+   private Map<ChannelOption, Object> childChannelOptions = Collections.emptyMap();
 
    public void setSSLContext(SSLContext sslContext)
    {
@@ -107,6 +114,36 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
         this.backlog = backlog;
     }
 
+    /**
+     * Add additional {@link io.netty.channel.ChannelHandler}s to the {@link io.netty.bootstrap.ServerBootstrap}.
+     * <p>The additional channel handlers are being added <em>before</em> the HTTP handling.</p>
+     *
+     * @param channelHandlers the additional {@link io.netty.channel.ChannelHandler}s.
+     */
+    public void setChannelHandlers(final List<ChannelHandler> channelHandlers) {
+        this.channelHandlers = channelHandlers == null ? Collections.<ChannelHandler>emptyList() : channelHandlers;
+    }
+
+    /**
+     * Add Netty {@link io.netty.channel.ChannelOption}s to the {@link io.netty.bootstrap.ServerBootstrap}.
+     *
+     * @param channelOptions the additional {@link io.netty.channel.ChannelOption}s.
+     * @see io.netty.bootstrap.ServerBootstrap#option(io.netty.channel.ChannelOption, Object)
+     */
+    public void setChannelOptions(final Map<ChannelOption, Object> channelOptions) {
+        this.channelOptions = channelOptions == null ? Collections.<ChannelOption, Object>emptyMap() : channelOptions;
+    }
+
+    /**
+     * Add child options to the {@link io.netty.bootstrap.ServerBootstrap}.
+     *
+     * @param channelOptions the additional child {@link io.netty.channel.ChannelOption}s.
+     * @see io.netty.bootstrap.ServerBootstrap#childOption(io.netty.channel.ChannelOption, Object)
+     */
+    public void setChildChannelOptions(final Map<ChannelOption, Object> channelOptions) {
+        this.childChannelOptions = channelOptions == null ? Collections.<ChannelOption, Object>emptyMap() : channelOptions;
+    }
+
    @Override
    public void setDeployment(ResteasyDeployment deployment)
    {
@@ -152,6 +189,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
                    .childHandler(new ChannelInitializer<SocketChannel>() {
                        @Override
                        public void initChannel(SocketChannel ch) throws Exception {
+                           ch.pipeline().addLast(channelHandlers.toArray(new ChannelHandler[channelHandlers.size()]));
                            ch.pipeline().addLast(new HttpRequestDecoder());
                            ch.pipeline().addLast(new HttpObjectAggregator(maxRequestSize));
                            ch.pipeline().addLast(new HttpResponseEncoder());
@@ -171,6 +209,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
                        @Override
                        public void initChannel(SocketChannel ch) throws Exception {
                            ch.pipeline().addFirst(new SslHandler(engine));
+                           ch.pipeline().addLast(channelHandlers.toArray(new ChannelHandler[channelHandlers.size()]));
                            ch.pipeline().addLast(new HttpRequestDecoder());
                            ch.pipeline().addLast(new HttpObjectAggregator(maxRequestSize));
                            ch.pipeline().addLast(new HttpResponseEncoder());
@@ -182,6 +221,14 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
                    })
                    .option(ChannelOption.SO_BACKLOG, backlog)
                    .childOption(ChannelOption.SO_KEEPALIVE, true);
+
+           for(Map.Entry<ChannelOption, Object> entry : channelOptions.entrySet()) {
+               bootstrap.option(entry.getKey(), entry.getValue());
+           }
+
+           for(Map.Entry<ChannelOption, Object> entry : childChannelOptions.entrySet()) {
+               bootstrap.childOption(entry.getKey(), entry.getValue());
+           }
        }
 
        final InetSocketAddress socketAddress;
