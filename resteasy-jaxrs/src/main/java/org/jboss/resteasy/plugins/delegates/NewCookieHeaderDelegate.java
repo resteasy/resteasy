@@ -3,6 +3,8 @@ package org.jboss.resteasy.plugins.delegates;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import org.jboss.resteasy.i18n.Messages;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -11,7 +13,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 {
    public Object fromString(String newCookie) throws IllegalArgumentException
    {
-      if (newCookie == null) throw new IllegalArgumentException("NewCookie value is null");
+      if (newCookie == null) throw new IllegalArgumentException(Messages.MESSAGES.newCookieValueNull());
 
       String cookieName = null;
       String cookieValue = null;

@@ -4,6 +4,7 @@ import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.client.core.ClientInterceptorRepositoryImpl;
 import org.jboss.resteasy.client.core.ClientMessageBodyWriterContext;
 import org.jboss.resteasy.core.interception.ClientExecutionContextImpl;
+import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.Link;
@@ -467,8 +468,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
                       bodyAnnotations, bodyContentType);
       if (writer == null)
       {
-         throw new RuntimeException("could not find writer for content-type "
-                 + bodyContentType + " type: " + bodyType.getName());
+         throw new RuntimeException(Messages.MESSAGES.couldNotFindWriterForContentType(bodyContentType, bodyType.getName()));
       }
       new ClientMessageBodyWriterContext(getWriterInterceptors(), writer, body,
               bodyType, bodyGenericType, bodyAnnotations, bodyContentType,
@@ -787,7 +787,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
       catch (CloneNotSupportedException e)
       {
          // this shouldn't happen
-         throw new RuntimeException("ClientRequest doesn't implement Clonable.  Notify the RESTEasy staff right away.");
+         throw new RuntimeException(Messages.MESSAGES.clientRequestDoesntSupportClonable());
       }
    }
 }

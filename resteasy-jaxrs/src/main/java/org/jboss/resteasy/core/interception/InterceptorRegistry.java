@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core.interception;
 
 import org.jboss.resteasy.annotations.interception.Precedence;
+import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.AcceptedByMethod;
@@ -47,7 +48,7 @@ public class InterceptorRegistry<T>
          {
             this.precedence = precedence.value();
             Integer o = precedenceOrder.get(this.precedence);
-            if (o == null) throw new RuntimeException("Unknown interceptor precedence: " + this.precedence);
+            if (o == null) throw new RuntimeException(Messages.MESSAGES.unknownInterceptorPrecedence(this.precedence));
             this.order = o;
          }
          else
@@ -59,7 +60,7 @@ public class InterceptorRegistry<T>
                {
                   this.precedence = precedence.value();
                   Integer o = precedenceOrder.get(this.precedence);
-                  if (o == null) throw new RuntimeException("Unknown interceptor precedence: " + this.precedence);
+                  if (o == null) throw new RuntimeException(Messages.MESSAGES.unknownInterceptorPrecedence(this.precedence));
                   this.order = o;
                   break;
                }
@@ -106,7 +107,7 @@ public class InterceptorRegistry<T>
          Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
          if (constructor == null)
          {
-            throw new RuntimeException("Unable to find a public constructor for interceptor class " + clazz.getName());
+            throw new RuntimeException(Messages.MESSAGES.unableToFindPublicConstructorForInterceptor(clazz.getName()));
          }
          constructorInjector = providerFactory.getInjectorFactory().createConstructor(constructor);
          setPrecedence(clazz);

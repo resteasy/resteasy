@@ -12,6 +12,7 @@ import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
+import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.EntityTagDelegate;
@@ -299,9 +300,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (getContextDataLevelCount() == maxForwards)
       {
-         throw new BadRequestException(
-                 "You have exceeded your maximum forwards ResteasyProviderFactory allows.  Last good uri: "
-                         + getContextData(UriInfo.class).getPath());
+         throw new BadRequestException(Messages.MESSAGES.excededMaximumForwards(getContextData(UriInfo.class).getPath()));
       }
       Map<Class<?>, Object> map = new HashMap<Class<?>, Object>();
       contextualData.push(map);
@@ -618,7 +617,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       Class<?> exceptionClass = Types.getRawType(exceptionType);
       if (!Throwable.class.isAssignableFrom(exceptionClass))
       {
-         throw new RuntimeException("Incorrect type parameter. ExceptionMapper requires a subclass of java.lang.Throwable as its type parameter.");
+         throw new RuntimeException(Messages.MESSAGES.incorrectTypeParameter());
       }
       exceptionMappers.put(exceptionClass, provider);
    }
@@ -648,7 +647,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       Class<?> exceptionClass = Types.getRawType(exceptionType);
       if (!Throwable.class.isAssignableFrom(exceptionClass))
       {
-         throw new RuntimeException("Incorrect type parameter. ExceptionMapper requires a subclass of java.lang.Throwable as its type parameter.");
+         throw new RuntimeException(Messages.MESSAGES.incorrectTypeParameter());
       }
       clientExceptionMappers.put(exceptionClass, provider);
    }
@@ -835,7 +834,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate MessageBodyReader", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateMessageBodyReader(), e);
          }
       }
       if (MessageBodyWriter.class.isAssignableFrom(provider))
@@ -846,7 +845,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate MessageBodyWriter", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateMessageBodyWriter(), e);
          }
       }
       if (ExceptionMapper.class.isAssignableFrom(provider))
@@ -857,7 +856,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateExceptionMapper(), e);
          }
       }
       if (ClientExceptionMapper.class.isAssignableFrom(provider))
@@ -868,7 +867,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate ClientExceptionMapper", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateClientExceptionMapper(), e);
          }
       }
       if (ClientExecutionInterceptor.class.isAssignableFrom(provider))
@@ -895,7 +894,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
          {
-            throw new RuntimeException("Interceptor class must be annotated with @ServerInterceptor and/or @ClientInterceptor");
+            throw new RuntimeException(Messages.MESSAGES.interceptorClassMustBeAnnotated());
          }
 
       }
@@ -911,7 +910,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
          {
-            throw new RuntimeException("Interceptor class must be annotated with @ServerInterceptor and/or @ClientInterceptor");
+            throw new RuntimeException(Messages.MESSAGES.interceptorClassMustBeAnnotated());
          }
 
       }
@@ -923,7 +922,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate ContextResolver", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateContextResolver(), e);
          }
       }
       if (StringConverter.class.isAssignableFrom(provider))
@@ -963,7 +962,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate MessageBodyReader", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateMessageBodyReader(), e);
          }
       }
       if (provider instanceof MessageBodyWriter)
@@ -974,7 +973,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate MessageBodyWriter", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateMessageBodyWriter(), e);
          }
       }
       if (provider instanceof ExceptionMapper)
@@ -985,7 +984,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateExceptionMapper(), e);
          }
       }
       if (provider instanceof ClientExceptionMapper)
@@ -996,7 +995,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateExceptionMapper(), e);
          }
       }
       if (provider instanceof ContextResolver)
@@ -1007,7 +1006,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate ContextResolver", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateContextResolver(), e);
          }
       }
       if (provider instanceof ClientExecutionInterceptor)
@@ -1034,7 +1033,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
-            throw new RuntimeException("Interceptor class " + provider.getClass() + " must be annotated with @ServerInterceptor and/or @ClientInterceptor");
+            throw new RuntimeException(Messages.MESSAGES.interceptorClassMustBeAnnotatedWithClass(provider.getClass()));
          }
 
       }
@@ -1050,7 +1049,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
-            throw new RuntimeException("Interceptor class " + provider.getClass() + " must be annotated with @ServerInterceptor and/or @ClientInterceptor");
+            throw new RuntimeException(Messages.MESSAGES.interceptorClassMustBeAnnotatedWithClass(provider.getClass()));
          }
 
       }
@@ -1136,7 +1135,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
       if (constructor == null)
       {
-         throw new RuntimeException("Unable to find a public constructor for provider class " + clazz.getName());
+         throw new RuntimeException(Messages.MESSAGES.unableToFindPublicConstructorForProvider(clazz.getName()));
       }
       ConstructorInjector constructorInjector = injectorFactory.createConstructor(constructor);
 

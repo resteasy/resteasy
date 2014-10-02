@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.i18n.LogMessages;
+import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -29,8 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressWarnings("unchecked")
 public class ResourceLocator implements ResourceInvoker
 {
-
-   final static Logger logger = Logger.getLogger(ResourceLocator.class);
 
    protected InjectorFactory injector;
    protected MethodInjector methodInjector;
@@ -117,7 +116,7 @@ public class ResourceLocator implements ResourceInvoker
    {
       if (target == null)
       {
-         NotFoundException notFound = new NotFoundException("Null subresource for path: " + request.getUri().getAbsolutePath());
+         NotFoundException notFound = new NotFoundException(Messages.MESSAGES.nullResource(request.getUri().getAbsolutePath()));
          notFound.setLoggable(true);
          throw notFound;
       }
@@ -128,7 +127,7 @@ public class ResourceLocator implements ResourceInvoker
          
          if (!GetRestful.isSubResourceClass(target.getClass()))
          {
-            String msg = "Subresource for target class has no jax-rs annotations.: " + target.getClass().getName();
+            String msg = Messages.MESSAGES.subresourceHasNoJaxRsAnnotations(target.getClass().getName());
             throw new InternalServerErrorException(msg);
          }
          if (Proxy.isProxyClass(target.getClass()))
@@ -144,7 +143,7 @@ public class ResourceLocator implements ResourceInvoker
       ResourceInvoker invoker = registry.getResourceInvoker(request);
       if (invoker == null)
       {
-         NotFoundException notFound = new NotFoundException("No path match in subresource for: " + request.getUri().getAbsolutePath());
+         NotFoundException notFound = new NotFoundException(Messages.MESSAGES.noPathMatchInSubresource(request.getUri().getAbsolutePath()));
          notFound.setLoggable(true);
          throw notFound;
       }
@@ -181,8 +180,7 @@ public class ResourceLocator implements ResourceInvoker
 
             if (annotations.length != 0)
             {
-               logger.warn("Field {0} of subresource {1} will not be injected " +
-                       "according to spec", field.getName(), obj.getClass().getName());
+               LogMessages.LOGGER.fieldOfSubesourceWillNotBeInjected(field.getName(), obj.getClass().getName());
             }
 
          }

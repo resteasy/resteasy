@@ -4,7 +4,8 @@
 package org.jboss.resteasy.util;
 
 import org.jboss.resteasy.core.ExceptionAdapter;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.i18n.LogMessages;
+import org.jboss.resteasy.i18n.Messages;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -22,9 +23,7 @@ import java.util.Map;
 public final class TypeConverter
 {
    private static final String VALUE_OF_METHOD = "valueOf";
-
-   private static final Logger logger = Logger.getLogger(TypeConverter.class);
-
+   
    /**
     * A map of primitive to objects.
     */
@@ -66,7 +65,7 @@ public final class TypeConverter
        */
       if (Date.class.isAssignableFrom(targetType))
       {
-         throw new IllegalArgumentException("Date instances are not supported by this class.");
+         throw new IllegalArgumentException(Messages.MESSAGES.dateInstancesNotSupported());
       }
       T result;
       // boolean types need special handling
@@ -80,8 +79,7 @@ public final class TypeConverter
       }
       catch (NoSuchMethodException e)
       {
-         logger.warn("No valueOf() method available for {0}, trying constructor...", targetType
-                 .getSimpleName());
+         LogMessages.LOGGER.warn("No valueOf() method available for " + targetType.getSimpleName() + ", trying constructor...");
          result = getTypeViaStringConstructor(source, targetType);
       }
       return result;
@@ -235,9 +233,7 @@ public final class TypeConverter
       }
       catch (NoSuchMethodException e)
       {
-         String msg = new StringBuilder().append(targetType.getName()).append(
-                 " has no String constructor").toString();
-         throw new IllegalArgumentException(msg, e);
+         throw new IllegalArgumentException(Messages.MESSAGES.hasNoStringConstructor(targetType.getName()), e);
       }
 
       try

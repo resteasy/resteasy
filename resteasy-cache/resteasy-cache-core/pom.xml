@@ -14,6 +14,12 @@
         <dependency>
             <groupId>org.jboss.cache</groupId>
             <artifactId>jbosscache-core</artifactId>
+            <exclusions>
+		       <exclusion>
+                   <groupId>org.jboss.logging</groupId>
+                   <artifactId>jboss-logging-spi</artifactId>
+		       </exclusion>
+		    </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>

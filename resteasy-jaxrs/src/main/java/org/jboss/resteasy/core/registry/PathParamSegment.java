@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core.registry;
 
 import org.jboss.resteasy.core.ResourceInvoker;
+import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -171,8 +172,7 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
 
          if (segmentIndex + numSegments > request.getUri().getPathSegments().size())
          {
-
-            throw new BadRequestException("Number of matched segments greater than actual");
+            throw new BadRequestException(Messages.MESSAGES.numberOfMatchedSegments());
          }
          PathSegment[] encodedSegments = new PathSegment[numSegments];
          PathSegment[] decodedSegments = new PathSegment[numSegments];
@@ -199,14 +199,14 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
          // we consumed entire path string
          ResourceInvoker invoker = match(request.getHttpMethod(), request);
          if (invoker == null)
-            throw new NotFoundException("Could not find resource for relative : " + path + " of full path: " + request.getUri().getRequestUri());
+            throw new NotFoundException(Messages.MESSAGES.couldNotFindResourceForRelativePath(path, request.getUri().getRequestUri()));
          uriInfo.pushMatchedURI(path, Encode.decode(path));
          populatePathParams(request, matcher, path);
          return invoker;
       }
       if (locator == null)
       {
-         throw new NotFoundException("Could not find resource for relative : " + path + " of full path: " + request.getUri().getRequestUri());
+         throw new NotFoundException(Messages.MESSAGES.couldNotFindResourceForRelativePath(path, request.getUri().getRequestUri()));
       }
       if (matcher.find(start) && matcher.start() == start)
       {
@@ -223,7 +223,7 @@ public class PathParamSegment extends Segment implements Comparable<PathParamSeg
             return locator;
          }
       }
-      throw new NotFoundException("Could not find resource for relative : " + path + " of full path: " + request.getUri().getRequestUri());
+      throw new NotFoundException(Messages.MESSAGES.couldNotFindResourceForRelativePath(path, request.getUri().getRequestUri()));
    }
 
    public static int pathSegmentIndex

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.delegates;
 
+import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.LinkHeader;
@@ -44,7 +45,7 @@ public class LinkHeaderDelegate implements RuntimeDelegate.HeaderDelegate<LinkHe
             if (c == '<')
             {
                if (href != null)
-                  throw new IllegalArgumentException("Unable to parse Link header. Too many links in declaration: " + value);
+                  throw new IllegalArgumentException(Messages.MESSAGES.unableToParseLinkHeaderTooManyLinks(value));
                href = parseLink();
             }
             else if (c == ';' || c == ' ')
@@ -108,7 +109,7 @@ public class LinkHeaderDelegate implements RuntimeDelegate.HeaderDelegate<LinkHe
       public String parseLink()
       {
          int end = value.indexOf('>', curr);
-         if (end == -1) throw new IllegalArgumentException("Unable to parse Link header.  No end to link: " + value);
+         if (end == -1) throw new IllegalArgumentException(Messages.MESSAGES.unableToParseLinkHeaderNoEndToLink(value));
          String href = value.substring(curr + 1, end);
          curr = end + 1;
          return href;
@@ -118,7 +119,7 @@ public class LinkHeaderDelegate implements RuntimeDelegate.HeaderDelegate<LinkHe
       {
          int end = value.indexOf('=', curr);
          if (end == -1 || end + 1 >= value.length())
-            throw new IllegalArgumentException("Unable to parse Link header.  No end to parameter: " + value);
+            throw new IllegalArgumentException(Messages.MESSAGES.unableToParseLinkHeaderNoEndToParameter(value));
          String name = value.substring(curr, end);
          name = name.trim();
          curr = end + 1;
@@ -133,11 +134,11 @@ public class LinkHeaderDelegate implements RuntimeDelegate.HeaderDelegate<LinkHe
             if (value.charAt(curr) == '"')
             {
                if (curr + 1 >= value.length())
-                  throw new IllegalArgumentException("Unable to parse Link header.  No end to parameter: " + value);
+                  throw new IllegalArgumentException(Messages.MESSAGES.unableToParseLinkHeaderNoEndToParameter(value));
                curr++;
                end = value.indexOf('"', curr);
                if (end == -1)
-                  throw new IllegalArgumentException("Unable to parse Link header.  No end to parameter: " + value);
+                  throw new IllegalArgumentException(Messages.MESSAGES.unableToParseLinkHeaderNoEndToParameter(value));
                val = value.substring(curr, end);
                curr = end + 1;
             }

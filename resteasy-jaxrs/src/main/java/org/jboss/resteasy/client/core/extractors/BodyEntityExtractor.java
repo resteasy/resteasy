@@ -10,6 +10,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.core.BaseClientResponse;
+import org.jboss.resteasy.i18n.Messages;
 
 /**
  * BodyEntityExtractor extract body objects from responses. This ends up calling
@@ -56,8 +57,7 @@ public class BodyEntityExtractor implements EntityExtractor
          // void methods should be handled before this method gets called, but it's worth being defensive   
          if (method.getReturnType() == null)
          {
-            throw new RuntimeException(
-                    "No type information to extract entity with.  You use other getEntity() methods");
+            throw new RuntimeException(Messages.MESSAGES.noTypeInformationForEntity());
          }
          Object obj = response.getEntity(method.getReturnType(), method.getGenericReturnType());
          if (obj instanceof InputStream)
@@ -77,6 +77,6 @@ public class BodyEntityExtractor implements EntityExtractor
          if (releaseConnectionAfter)
             response.releaseConnection();
       }
-      throw new RuntimeException("Should be unreachable");
+      throw new RuntimeException(Messages.MESSAGES.shouldBeUnreachable());
    }
 }

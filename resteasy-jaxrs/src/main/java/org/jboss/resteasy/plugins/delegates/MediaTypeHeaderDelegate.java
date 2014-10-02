@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.delegates;
 
+import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.util.HeaderParameterParser;
 
 import javax.ws.rs.core.MediaType;
@@ -14,7 +15,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 {
    public Object fromString(String type) throws IllegalArgumentException
    {
-      if (type == null) throw new IllegalArgumentException("MediaType value is null");
+      if (type == null) throw new IllegalArgumentException(Messages.MESSAGES.mediaTypeValueNull());
       return parse(type);
    }
 
@@ -41,7 +42,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
             || "".equals(paths[0]) || "".equals(paths[1])
             || paths[0].contains(" ") || paths[1].contains(" "))
       {
-         throw new IllegalArgumentException("Failure parsing MediaType string: " + type);
+         throw new IllegalArgumentException(Messages.MESSAGES.failureParsingMediaType(type));
       }
       else if (paths.length == 2)
       {

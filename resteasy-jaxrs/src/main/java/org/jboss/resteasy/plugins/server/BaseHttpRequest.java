@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.server;
 import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -55,7 +56,7 @@ public abstract class BaseHttpRequest implements HttpRequest
       }
       else
       {
-         throw new IllegalArgumentException("Request media type is not application/x-www-form-urlencoded");
+         throw new IllegalArgumentException(Messages.MESSAGES.requestMediaTypeNotUrlencoded());
       }
       return formParameters;
    }

@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.jboss.resteasy.i18n.Messages;
 /**
  * A utility class for parsing and formatting HTTP dates as used in cookies and
  * other headers.  This class handles dates as defined by RFC 2616 section
@@ -122,7 +123,7 @@ public class DateUtil
 
       if (dateValue == null)
       {
-         throw new IllegalArgumentException("dateValue is null");
+         throw new IllegalArgumentException(Messages.MESSAGES.dateValueNull());
       }
       if (dateFormats == null)
       {
@@ -169,7 +170,7 @@ public class DateUtil
       }
 
       // we were unable to parse the date
-      throw new DateParseException("Unable to parse the date " + dateValue);
+      throw new DateParseException(Messages.MESSAGES.unableToParseDate(dateValue));
    }
 
    /**
@@ -196,9 +197,9 @@ public class DateUtil
     * @see SimpleDateFormat
     */
    public static String formatDate(Date date, String pattern)
-   {
-      if (date == null) throw new IllegalArgumentException("date is null");
-      if (pattern == null) throw new IllegalArgumentException("pattern is null");
+   {;
+      if (date == null) throw new IllegalArgumentException(Messages.MESSAGES.dateNull());
+      if (pattern == null) throw new IllegalArgumentException(Messages.MESSAGES.patternNull());
 
       SimpleDateFormat formatter = new SimpleDateFormat(pattern, Locale.US);
       formatter.setTimeZone(GMT);

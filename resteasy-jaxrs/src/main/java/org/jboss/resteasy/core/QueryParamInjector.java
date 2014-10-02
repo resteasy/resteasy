@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -32,7 +33,7 @@ public class QueryParamInjector extends StringParameterInjector implements Value
       }
       catch (UnsupportedEncodingException e)
       {
-         throw new BadRequestException("Unable to decode query string", e);
+         throw new BadRequestException(Messages.MESSAGES.unableToDecodeQueryString(), e);
       }
    }
 
@@ -53,7 +54,7 @@ public class QueryParamInjector extends StringParameterInjector implements Value
 
    public Object inject()
    {
-      throw new RuntimeException("It is illegal to inject a @QueryParam into a singleton");
+      throw new RuntimeException(Messages.MESSAGES.illegalToInjectQueryParam());
    }
 
 

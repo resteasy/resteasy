@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.delegates;
 
+import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.util.LocaleHelper;
 
 import javax.ws.rs.ext.RuntimeDelegate;
@@ -13,7 +14,7 @@ public class LocaleDelegate implements RuntimeDelegate.HeaderDelegate<Locale>
 {
    public Locale fromString(String value) throws IllegalArgumentException
    {
-      if (value == null) throw new IllegalArgumentException("Locale value is null");
+      if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.localeValueNull());
       return LocaleHelper.extractLocale(value);
    }
 

@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core.request;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.i18n.LogMessages;
+import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.spi.BadRequestException;
 
 import javax.ws.rs.core.MediaType;
@@ -16,8 +17,6 @@ import java.util.Map.Entry;
  */
 public class AcceptHeaders
 {
-
-   private static final Logger logger = Logger.getLogger(AcceptHeaders.class);
 
 
    /**
@@ -55,17 +54,17 @@ public class AcceptHeaders
 
             int equalsIndex = parameter.indexOf('=');
             if (equalsIndex < 0)
-               throw new BadRequestException("Malformed parameter: " + parameter);
+               throw new BadRequestException(Messages.MESSAGES.malformedParameter(parameter));
             String name = parameter.substring(0, equalsIndex).trim();
             if (!"q".equals(name))
-               throw new BadRequestException("Unsupported parameter: " + name);
+               throw new BadRequestException(Messages.MESSAGES.unsupportedParameter(name));   
             String value = parameter.substring(equalsIndex + 1).trim();
             qualityValue = QualityValue.valueOf(value);
          }
 
          content = content.trim();
          if (content.length() == 0)
-            throw new BadRequestException("Empty field in: " + header + ".");
+            throw new BadRequestException(Messages.MESSAGES.emptyFieldInHeader(header));
          if (content.equals("*"))
             result.put(null, qualityValue);
          else
@@ -77,8 +76,7 @@ public class AcceptHeaders
       }
       ;
 
-      if (logger.isDebugEnabled())
-         logger.debug(result.toString());
+      LogMessages.LOGGER.debug(result.toString());
       return result;
    }
 
@@ -117,15 +115,14 @@ public class AcceptHeaders
             }
             else
             {
-               logger.warn("Ignoring unsupported locale: " + value);
+               LogMessages.LOGGER.ignoringUnsupportedLocale(value);
                continue;
             }
          }
          result.put(locale, quality);
       }
 
-      if (logger.isDebugEnabled())
-         logger.debug(result.toString());
+      LogMessages.LOGGER.debug(result.toString());
       return result;
    }
 
@@ -150,7 +147,7 @@ public class AcceptHeaders
       {
          int slashIndex = header.indexOf('/', offset);
          if (slashIndex < 0)
-            throw new BadRequestException("Malformed media type: " + header);
+            throw new BadRequestException(Messages.MESSAGES.malformedMediaType(header));
          String type = header.substring(offset, slashIndex);
          String subtype;
          Map<String, String> parameters = null;
@@ -181,8 +178,7 @@ public class AcceptHeaders
          result.put(new MediaType(type.trim(), subtype.trim(), parameters), qualityValue);
       }
 
-      if (logger.isDebugEnabled())
-         logger.debug(result.toString());
+      LogMessages.LOGGER.debug(result.toString());
       return result;
    }
 
@@ -193,7 +189,7 @@ public class AcceptHeaders
       {
          int equalsIndex = header.indexOf('=', offset);
          if (equalsIndex < 0)
-            throw new BadRequestException("Malformed parameters: " + header);
+            throw new BadRequestException(Messages.MESSAGES.malformedParameters(header));
          String name = header.substring(offset, equalsIndex).trim();
          offset = equalsIndex + 1;
          if (header.charAt(offset) == '"')
@@ -204,7 +200,7 @@ public class AcceptHeaders
             {
                end = header.indexOf('"', ++end);
                if (end < 0)
-                  throw new BadRequestException("Quoted string is not closed: " + header);
+                  throw new BadRequestException(Messages.MESSAGES.quotedStringIsNotClosed(header));
             } while (header.charAt(end - 1) == '\\');
             String value = header.substring(offset, end);
             parameters.put(name, value);
@@ -216,19 +212,19 @@ public class AcceptHeaders
             {
                assert itemEndIndex == -1;
                if (header.substring(offset).trim().length() != 0)
-                  throw new BadRequestException("Tailing garbage: " + header);
+                  throw new BadRequestException(Messages.MESSAGES.tailingGarbage(header));
                return -1;
             }
             else if (parameterEndIndex < 0 || (itemEndIndex >= 0 && itemEndIndex < parameterEndIndex))
             {
                if (header.substring(offset, itemEndIndex).trim().length() != 0)
-                  throw new BadRequestException("Garbage after quoted string: " + header);
+                  throw new BadRequestException(Messages.MESSAGES.garbageAfterQuotedString(header));
                return itemEndIndex + 1;
             }
             else
             {
                if (header.substring(offset, parameterEndIndex).trim().length() != 0)
-                  throw new BadRequestException("Garbage after quoted string: " + header);
+                  throw new BadRequestException(Messages.MESSAGES.garbageAfterQuotedString(header));
                offset = parameterEndIndex + 1;
             }
          }
@@ -281,7 +277,7 @@ public class AcceptHeaders
          {
             if (i.hasNext())
             {
-               logger.warn("Accept extensions not supported.");
+               LogMessages.LOGGER.acceptExtensionsNotSupported();
                i.remove();
                do
                {

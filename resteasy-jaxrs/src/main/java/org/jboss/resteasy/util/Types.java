@@ -9,6 +9,8 @@ import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jboss.resteasy.i18n.Messages;
+
 /**
  * Type conversions and generic type manipulations
  *
@@ -186,7 +188,7 @@ public class Types
             {
                TypeVariable tv = (TypeVariable) paramGenericTypes[i];
                Type t = typeVarMap.get(tv.getName());
-               if (t == null) throw new RuntimeException("Unable to resolve type variable");
+               if (t == null) throw new RuntimeException(Messages.MESSAGES.unableToResolveTypeVariable());
                paramTypes[i] = getRawType(t);
             }
             else
@@ -246,7 +248,7 @@ public class Types
             return getRawType(typeVar.getBounds()[0]);
          }
       }
-      throw new RuntimeException("Unable to determine base class from Type");
+      throw new RuntimeException(Messages.MESSAGES.unableToDetermineBaseClass());
    }
 
 
@@ -397,7 +399,7 @@ public class Types
          }
       }
 
-      throw new RuntimeException("Unable to determine value of type parameter " + typeVariable);
+      throw new RuntimeException(Messages.MESSAGES.unableToDetermineTypeParameter(typeVariable));
    }
 
 
@@ -451,7 +453,7 @@ public class Types
          }
          clazz = clazz.getSuperclass();
       }
-      throw new RuntimeException("Unable to find type arguments of " + interfaceToFind);
+      throw new RuntimeException(Messages.MESSAGES.unableToFindTypeArguments(interfaceToFind));
    }
 
    private static final Type[] EMPTY_TYPE_ARRAY = {};

@@ -22,6 +22,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
+import org.jboss.resteasy.i18n.Messages;
+
 /**
  * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
@@ -106,7 +108,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
       @Override
       public OutputStream getOutputStream() throws IOException
       {
-         throw new IOException("No output stream allowed");
+         throw new IOException(Messages.MESSAGES.noOutputStreamAllowed());
       }
 
    }

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.spi.touri;
 
+import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.util.AnnotationResolver;
 
@@ -50,9 +51,7 @@ public abstract class AbstractURITemplateAnnotationResolver implements
          PropertyDescriptor propertyDescriptor = descriptors.get(param);
          if (propertyDescriptor == null)
          {
-            throw new RuntimeException(
-                    "URITemplateAnnotationResolver could not find a getter for param "
-                            + param);
+            throw new RuntimeException(Messages.MESSAGES.couldNotFindGetterForParam(param));
          }
 
          Method readMethod = propertyDescriptor.getReadMethod();
@@ -67,9 +66,7 @@ public abstract class AbstractURITemplateAnnotationResolver implements
          }
          catch (Exception e)
          {
-            throw new RuntimeException(
-                    "URITemplateAnnotationResolver could not get a value for "
-                            + param, e);
+            throw new RuntimeException(Messages.MESSAGES.couldNotGetAValue(param), e);
          }
       }
       return values;
@@ -92,9 +89,7 @@ public abstract class AbstractURITemplateAnnotationResolver implements
       }
       catch (IntrospectionException e)
       {
-         throw new RuntimeException(
-                 "URITemplateAnnotationResolver could not introspect class "
-                         + clazz.getName(), e);
+         throw new RuntimeException(Messages.MESSAGES.couldNotIntrospectClass(clazz.getName()), e);
       }
    }
 }

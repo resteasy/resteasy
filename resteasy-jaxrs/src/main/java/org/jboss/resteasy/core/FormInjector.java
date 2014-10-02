@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -29,7 +30,7 @@ public class FormInjector implements ValueInjector
       }
       catch (NoSuchMethodException e)
       {
-         throw new RuntimeException("Unable to instantiate @Form class. No no-arg constructor.");
+         throw new RuntimeException(Messages.MESSAGES.unableToInstantiateForm());
       }
 
       constructorInjector = factory.getInjectorFactory().createConstructor(constructor);
@@ -39,7 +40,7 @@ public class FormInjector implements ValueInjector
 
    public Object inject()
    {
-      throw new IllegalStateException("You cannot inject into a form outside the scope of an HTTP request");
+      throw new IllegalStateException(Messages.MESSAGES.cannotInjectIntoForm());
    }
 
    public Object inject(HttpRequest request, HttpResponse response)

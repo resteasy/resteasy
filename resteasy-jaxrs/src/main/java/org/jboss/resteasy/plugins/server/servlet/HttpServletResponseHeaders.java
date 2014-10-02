@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
+import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
@@ -106,7 +107,7 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
 
    public List<Object> remove(Object o)
    {
-      throw new RuntimeException("Removing a header is illegal for an HttpServletResponse");
+      throw new RuntimeException(Messages.MESSAGES.removingHeaderIllegal());
    }
 
    public void putAll(Map<? extends String, ? extends List<Object>> map)
@@ -123,7 +124,7 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
 
    public void clear()
    {
-      throw new RuntimeException("Removing a header is illegal for an HttpServletResponse");
+      throw new RuntimeException(Messages.MESSAGES.removingHeaderIllegal());
    }
 
    public Set<String> keySet()

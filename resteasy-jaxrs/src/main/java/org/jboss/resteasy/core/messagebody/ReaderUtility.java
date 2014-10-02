@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core.messagebody;
 
 import org.jboss.resteasy.core.interception.MessageBodyReaderContextImpl;
+import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -58,8 +59,7 @@ public abstract class ReaderUtility
          public RuntimeException createReaderNotFound(Type genericType,
                                                       MediaType mediaType)
          {
-            throw new RuntimeException("Could not read type " + genericType
-                    + " for media type " + mediaType);
+            throw new RuntimeException(Messages.MESSAGES.couldNotReadType(genericType, mediaType));
          }
       }.doRead(type, mt, is);
    }

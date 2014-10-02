@@ -1,5 +1,6 @@
 package org.jboss.resteasy.client.core;
 
+import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
@@ -199,8 +200,7 @@ public class ClientInterceptorRepositoryImpl implements
 
       if (!registered)
       {
-         throw new RuntimeException(
-                 "The object you supplied to registerInterceptor is not of an understood type");
+         throw new RuntimeException(Messages.MESSAGES.entityNotOfUnderstoodType());
       }
    }
 

@@ -3,6 +3,8 @@ package org.jboss.resteasy.plugins.delegates;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import org.jboss.resteasy.i18n.Messages;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -13,7 +15,7 @@ public class CookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 
    public Object fromString(String value) throws IllegalArgumentException
    {
-      if (value == null) throw new IllegalArgumentException("Cookie header value was null");
+      if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.cookieHeaderValueNull());
       try
       {
          int version = 0;
@@ -52,7 +54,7 @@ public class CookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate
       }
       catch (Exception ex)
       {
-         throw new IllegalArgumentException("Failed to parse cookie string '" + value + "'", ex);
+         throw new IllegalArgumentException(Messages.MESSAGES.failedToParseCookie(value), ex);
       }
    }
 

@@ -16,7 +16,8 @@ import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.i18n.LogMessages;
+import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.plugins.interceptors.SecurityInterceptor;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
@@ -67,8 +68,7 @@ public class ResteasyDeployment
    protected ResteasyProviderFactory providerFactory;
    protected ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
    protected String paramMapping;
-   private final static Logger logger = Logger.getLogger(ResteasyDeployment.class);
-
+   
    public void start()
    {
       // it is very important that each deployment create their own provider factory
@@ -147,11 +147,11 @@ public class ResteasyDeployment
             }
             catch (ClassNotFoundException cnfe)
             {
-               throw new RuntimeException("Unable to find InjectorFactory implementation.", cnfe);
+               throw new RuntimeException(Messages.MESSAGES.unableToFindInjectorFactory(), cnfe);
             }
             catch (Exception e)
             {
-               throw new RuntimeException("Unable to instantiate InjectorFactory implementation.", e);
+               throw new RuntimeException(Messages.MESSAGES.unableToInstantiateInjectorFactory(), e);
             }
 
             providerFactory.setInjectorFactory(injectorFactory);
@@ -170,10 +170,10 @@ public class ResteasyDeployment
                }
                catch (ClassNotFoundException e)
                {
-                  throw new RuntimeException("Unable to instantiate context object " + entry.getKey(), e);
+                  throw new RuntimeException(Messages.MESSAGES.unableToInstantiateContextObject(entry.getKey()), e);
                }
                Object obj = createFromInjectorFactory(entry.getValue(), providerFactory);
-               logger.debug("Creating context object <" + entry.getKey() + " : " + entry.getValue() + ">");
+               LogMessages.LOGGER.creatingContextObject(entry.getKey(), entry.getValue());
                defaultContextObjects.put(key, obj);
                dispatcher.getDefaultContextObjects().put(key, obj);
                contextDataMap.put(key, obj);
@@ -265,7 +265,7 @@ public class ResteasyDeployment
    public static Application createApplication(String applicationClass, ResteasyProviderFactory providerFactory)
    {
      if (applicationClass == null || applicationClass.trim().equals("")) {
-        throw new ApplicationException("The implementation of javax.ws.rs.core.Application must be specified.", null);
+        throw new ApplicationException(Messages.MESSAGES.applicationMustBeSpecified(), null);
      }
      return (Application) createFromInjectorFactory(applicationClass, providerFactory);
    }
@@ -285,7 +285,7 @@ public class ResteasyDeployment
       Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
       if (constructor == null)
       {
-         throw new RuntimeException("Unable to find a public constructor for class " + clazz.getName());
+         throw new RuntimeException(Messages.MESSAGES.unableToFindPublicConstructorForClass(clazz.getName()));
       }
       ConstructorInjector constructorInjector = providerFactory.getInjectorFactory().createConstructor(constructor);
       PropertyInjector propertyInjector = providerFactory.getInjectorFactory().createPropertyInjector(clazz);
@@ -419,7 +419,7 @@ public class ResteasyDeployment
       String[] config = resource.trim().split(";");
       if (config.length < 3)
       {
-         throw new RuntimeException("JNDI Component Resource variable is not set correctly: jndi;class;true|false comma delimited");
+         throw new RuntimeException(Messages.MESSAGES.jndiComponentResourceNotSetCorrectly());
       }
       String jndiName = config[0];
       Class clazz = null;
@@ -429,7 +429,7 @@ public class ResteasyDeployment
       }
       catch (ClassNotFoundException e)
       {
-         throw new RuntimeException("Could not find class " + config[1] + " provided to JNDI Component Resource", e);
+         throw new RuntimeException(Messages.MESSAGES.couldNotFindClassJndi(config[1]), e);
       }
       boolean cacheRefrence = Boolean.valueOf(config[2].trim());
       JndiComponentResourceFactory factory = new JndiComponentResourceFactory(jndiName, clazz, cacheRefrence);
@@ -454,7 +454,7 @@ public class ResteasyDeployment
     */
    protected boolean processApplication(Application config)
    {
-      logger.info("Deploying " + Application.class.getName() + ": " + config.getClass());
+      LogMessages.LOGGER.deployingApplication(Application.class.getName(), config.getClass());
       boolean registered = false;
       if (config.getClasses() != null)
       {
@@ -473,7 +473,7 @@ public class ResteasyDeployment
             else
             {
                // required by spec to warn and not abort
-               logger.warn("Application.getClasses() returned unknown class type: " + clazz.getName());
+               LogMessages.LOGGER.warn("Application.getClasses() returned unknown class type: " + clazz.getName());
             }
          }
       }
@@ -483,7 +483,7 @@ public class ResteasyDeployment
          {
             if (GetRestful.isRootResource(obj.getClass()))
             {
-               logger.info("Adding singleton resource " + obj.getClass().getName() + " from Application " + Application.class.getName());
+               LogMessages.LOGGER.addingSingletonResource(obj.getClass().getName(), Application.class.getName());
                resources.add(obj);
                registered = true;
             }
@@ -495,7 +495,7 @@ public class ResteasyDeployment
             else
             {
                // required by spec to warn and not abort
-               logger.warn("Application.getSingletons() returned unknown class type: " + obj.getClass().getName());
+               LogMessages.LOGGER.warn("Application.getSingletons() returned unknown class type: " + obj.getClass().getName());
             }
          }
       }

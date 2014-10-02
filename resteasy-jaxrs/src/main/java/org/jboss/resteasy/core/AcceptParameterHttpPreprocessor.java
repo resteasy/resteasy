@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpRequestPreprocessor;
 import org.jboss.resteasy.util.MediaTypeHelper;
@@ -43,7 +44,7 @@ public class AcceptParameterHttpPreprocessor implements HttpRequestPreprocessor
    public AcceptParameterHttpPreprocessor(String paramMapping)
    {
       if (paramMapping == null || paramMapping.matches("\\s+"))
-         throw new IllegalArgumentException("Constructor arg paramMapping is invalid");
+         throw new IllegalArgumentException(Messages.MESSAGES.constructorMappingInvalid());
       this.paramMapping = paramMapping;
    }
 

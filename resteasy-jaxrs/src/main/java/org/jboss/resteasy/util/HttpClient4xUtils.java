@@ -6,7 +6,7 @@ import java.net.URISyntaxException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.i18n.LogMessages;
 
 /**
  * HttpClient4xUtils provides utility methods useful for changes
@@ -17,7 +17,6 @@ import org.jboss.resteasy.logging.Logger;
  */
 public class HttpClient4xUtils
 {
-   private final static Logger log = Logger.getLogger(HttpClient4xUtils.class);
 
    static public void consumeEntity(HttpResponse response)
    {
@@ -26,7 +25,7 @@ public class HttpClient4xUtils
          EntityUtils.consume(response.getEntity());
       } catch (IOException e)
       {
-         log.info("unable to close entity stream", e);
+         LogMessages.LOGGER.unableToCloseEntityStream(e);
       }
    }
    

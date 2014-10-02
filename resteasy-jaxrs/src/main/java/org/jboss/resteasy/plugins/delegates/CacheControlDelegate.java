@@ -4,6 +4,7 @@ import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.jboss.resteasy.core.ExtendedCacheControl;
+import org.jboss.resteasy.i18n.Messages;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<Cach
 {
    public CacheControl fromString(String value) throws IllegalArgumentException
    {
-      if (value == null) throw new IllegalArgumentException("Cache-Control value is null");
+      if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.cacheControlValueNull());
       ExtendedCacheControl result = new ExtendedCacheControl();
 
       String[] directives = value.split(",");
@@ -57,13 +58,13 @@ public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<Cach
          else if ("max-age".equals(lowercase))
          {
             if (val == null)
-               throw new IllegalArgumentException("CacheControl max-age header does not have a value: " + value);
+               throw new IllegalArgumentException(Messages.MESSAGES.cacheControlMaxAgeHeader(value));
             result.setMaxAge(Integer.valueOf(val));
          }
          else if ("s-maxage".equals(lowercase))
          {
             if (val == null)
-               throw new IllegalArgumentException("CacheControl s-maxage header does not have a value: " + value);
+               throw new IllegalArgumentException(Messages.MESSAGES.cacheControlSMaxAgeHeader(value));
             result.setSMaxAge(Integer.valueOf(val));
          }
          else if ("no-transform".equals(lowercase))

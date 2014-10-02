@@ -1,5 +1,7 @@
 package org.jboss.resteasy.util;
 
+import org.jboss.resteasy.i18n.Messages;
+
 /**
  * <p>Encodes and decodes to and from Base64 notation.</p>
  * <p>Homepage: <a href="http://iharder.net/base64">http://iharder.net/base64</a>.</p>
@@ -693,7 +695,7 @@ public class Base64
 
       if (serializableObject == null)
       {
-         throw new NullPointerException("Cannot serialize a null object.");
+         throw new NullPointerException(Messages.MESSAGES.cannotSerializeNullObject());
       }   // end if: null
 
       // Streams
@@ -954,23 +956,22 @@ public class Base64
 
       if (source == null)
       {
-         throw new NullPointerException("Cannot serialize a null array.");
+         throw new NullPointerException(Messages.MESSAGES.cannotSerializeNullArray());
       }   // end if: null
 
       if (off < 0)
       {
-         throw new IllegalArgumentException("Cannot have negative offset: " + off);
+         throw new IllegalArgumentException(Messages.MESSAGES.cannotHaveNegativeOffset(off));
       }   // end if: off < 0
 
       if (len < 0)
       {
-         throw new IllegalArgumentException("Cannot have length offset: " + len);
+         throw new IllegalArgumentException(Messages.MESSAGES.cannotHaveLengthOffset(len));
       }   // end if: len < 0
 
       if (off + len > source.length)
       {
-         throw new IllegalArgumentException(
-                 String.format("Cannot have offset of %d and length of %d with array of length %d", off, len, source.length));
+         throw new IllegalArgumentException(Messages.MESSAGES.cannotHaveOffset(off, len, source.length));
       }   // end if: off < 0
 
 
@@ -1121,21 +1122,19 @@ public class Base64
       // Lots of error checking and exception throwing
       if (source == null)
       {
-         throw new NullPointerException("Source array was null.");
+         throw new NullPointerException(Messages.MESSAGES.sourceArrayNull());
       }   // end if
       if (destination == null)
       {
-         throw new NullPointerException("Destination array was null.");
+         throw new NullPointerException(Messages.MESSAGES.destinationArrayNull());
       }   // end if
       if (srcOffset < 0 || srcOffset + 3 >= source.length)
       {
-         throw new IllegalArgumentException(String.format(
-                 "Source array with length %d cannot have offset of %d and still process four bytes.", source.length, srcOffset));
+         throw new IllegalArgumentException(Messages.MESSAGES.sourceArrayCannotProcessFourBytes(source.length, srcOffset));
       }   // end if
       if (destOffset < 0 || destOffset + 2 >= destination.length)
       {
-         throw new IllegalArgumentException(String.format(
-                 "Destination array with length %d cannot have offset of %d and still store three bytes.", destination.length, destOffset));
+         throw new IllegalArgumentException(Messages.MESSAGES.destinationArrayCannotStoreThreeBytes(destination.length, destOffset));
       }   // end if
 
 
@@ -1243,12 +1242,11 @@ public class Base64
       // Lots of error checking and exception throwing
       if (source == null)
       {
-         throw new NullPointerException("Cannot decode null source array.");
+         throw new NullPointerException(Messages.MESSAGES.cannotDecodeNullSourceArray());
       }   // end if
       if (off < 0 || off + len > source.length)
       {
-         throw new IllegalArgumentException(String.format(
-                 "Source array with length %d cannot have offset of %d and process %d bytes.", source.length, off, len));
+         throw new IllegalArgumentException(Messages.MESSAGES.sourceArrayCannotProcessBytes(source.length, off, len));
       }   // end if
 
       if (len == 0)
@@ -1257,8 +1255,7 @@ public class Base64
       }
       else if (len < 4)
       {
-         throw new IllegalArgumentException(
-                 "Base64-encoded string must have at least four characters, but length specified was " + len);
+         throw new IllegalArgumentException(Messages.MESSAGES.base64StringMustHaveFourCharacters(len));
       }   // end if
 
       byte[] DECODABET = getDecodabet(options);
@@ -1301,8 +1298,7 @@ public class Base64
          else
          {
             // There's a bad input character in the Base64 stream.
-            throw new java.io.IOException(String.format(
-                    "Bad Base64 input character decimal %d in array position %d", ((int) source[i]) & 0xFF, i));
+            throw new java.io.IOException(Messages.MESSAGES.badBase64Character(((int) source[i]) & 0xFF, i));
          }   // end else:
       }   // each input character
 
@@ -1343,7 +1339,7 @@ public class Base64
 
       if (s == null)
       {
-         throw new NullPointerException("Input string was null.");
+         throw new NullPointerException(Messages.MESSAGES.inputStringNull());
       }   // end if
 
       byte[] bytes;
@@ -1544,7 +1540,7 @@ public class Base64
 
       if (dataToEncode == null)
       {
-         throw new NullPointerException("Data to encode was null.");
+         throw new NullPointerException(Messages.MESSAGES.dataToEncodeNull());
       }   // end iff
 
       Base64.OutputStream bos = null;
@@ -1639,7 +1635,7 @@ public class Base64
          // Check for size of file
          if (file.length() > Integer.MAX_VALUE)
          {
-            throw new java.io.IOException("File is too big for this convenience method (" + file.length() + " bytes).");
+            throw new java.io.IOException(Messages.MESSAGES.fileTooBig(file.length()));
          }   // end if: file too big for int index
          buffer = new byte[(int) file.length()];
 
@@ -1951,7 +1947,7 @@ public class Base64
                else
                {
                   // Must have broken out from above.
-                  throw new java.io.IOException("Improperly padded Base64 input.");
+                  throw new java.io.IOException(Messages.MESSAGES.improperlyPaddedBase64Input());
                }   // end
 
             }   // end else: decode
@@ -1992,7 +1988,7 @@ public class Base64
          // Else error
          else
          {
-            throw new java.io.IOException("Error in Base64 code reading stream.");
+            throw new java.io.IOException(Messages.MESSAGES.errorInBase64Stream());
          }   // end else
       }   // end read
 
@@ -2170,7 +2166,7 @@ public class Base64
             }   // end if: meaningful base64 character
             else if (decodabet[theByte & 0x7f] != WHITE_SPACE_ENC)
             {
-               throw new java.io.IOException("Invalid character in Base64 data.");
+               throw new java.io.IOException(Messages.MESSAGES.invalidCharacterInBase64Data());
             }   // end else: not white space either
          }   // end else: decoding
       }   // end write
@@ -2221,7 +2217,7 @@ public class Base64
             }   // end if: encoding
             else
             {
-               throw new java.io.IOException("Base64 input not properly padded.");
+               throw new java.io.IOException(Messages.MESSAGES.base64InputNotProperlyPadded());
             }   // end else: decoding
          }   // end if: buffer partially full
 

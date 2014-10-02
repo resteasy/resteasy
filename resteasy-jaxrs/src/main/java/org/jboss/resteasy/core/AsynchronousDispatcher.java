@@ -1,6 +1,6 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.i18n.LogMessages;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -66,7 +66,6 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
    private Cache cache;
    private String basePath = "/asynch/jobs";
    private AtomicLong counter = new AtomicLong(0);
-   private final static Logger logger = Logger.getLogger(AsynchronousDispatcher.class);
    private long maxWaitMilliSeconds = 300000;
    private int maxCacheSize = 100;
 
@@ -285,7 +284,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
 
    public void oneway(HttpRequest request, HttpResponse response, final ResourceInvoker invoker)
    {
-      logger.debug("IN ONE WAY!!!!!");
+      LogMessages.LOGGER.inOneWay();
       final MockHttpRequest in;
       try
       {
@@ -300,7 +299,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
 
          public void run()
          {
-            logger.debug("RUNNING JOB!!!!");
+            LogMessages.LOGGER.runningJob();
             MockHttpResponse theResponse = new MockHttpResponse();
 
 
@@ -311,7 +310,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
             }
             catch (Exception ignored)
             {
-               logger.error("Failed to invoke asynchronously", ignored);
+               LogMessages.LOGGER.failedToInvokeAsynchronously(ignored);
             }
             finally
             {
