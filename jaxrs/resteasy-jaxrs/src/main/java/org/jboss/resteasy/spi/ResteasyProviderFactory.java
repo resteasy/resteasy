@@ -1683,7 +1683,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             if (clientDynamicFeatures == null)
             {
-               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
+               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getClientDynamicFeatures());
             }
             clientDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
          }
@@ -1696,7 +1696,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             serverDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
             if (clientDynamicFeatures == null)
             {
-               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
+               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getClientDynamicFeatures());
             }
             clientDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
          }
@@ -2026,9 +2026,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             if (clientDynamicFeatures == null)
             {
-               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
+               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getClientDynamicFeatures());
             }
-            serverDynamicFeatures.add((DynamicFeature) provider);
+            clientDynamicFeatures.add((DynamicFeature) provider);
          }
          if (constrainedTo == null)
          {
@@ -2039,9 +2039,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             serverDynamicFeatures.add((DynamicFeature) provider);
             if (clientDynamicFeatures == null)
             {
-               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
+               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getClientDynamicFeatures());
             }
-            serverDynamicFeatures.add((DynamicFeature) provider);
+            clientDynamicFeatures.add((DynamicFeature) provider);
          }
          newContracts.put(DynamicFeature.class, priority);
       }
