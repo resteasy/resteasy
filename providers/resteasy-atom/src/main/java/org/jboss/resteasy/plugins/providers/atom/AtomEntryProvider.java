@@ -1,6 +1,8 @@
 package org.jboss.resteasy.plugins.providers.atom;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+
+import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException;
@@ -55,7 +57,7 @@ public class AtomEntryProvider implements MessageBodyReader<Entry>, MessageBodyW
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
-         throw new JAXBUnmarshalException("Unable to find JAXBContext for media type: " + mediaType);
+         throw new JAXBUnmarshalException(Messages.MESSAGES.unableToFindJAXBContext(mediaType));
       }
 
       try
@@ -68,7 +70,7 @@ public class AtomEntryProvider implements MessageBodyReader<Entry>, MessageBodyW
       }
       catch (JAXBException e)
       {
-         throw new JAXBUnmarshalException("Unable to unmarshal: " + mediaType, e);
+         throw new JAXBUnmarshalException(Messages.MESSAGES.unableToUnmarshal(mediaType), e);
       }
    }
 
@@ -87,7 +89,7 @@ public class AtomEntryProvider implements MessageBodyReader<Entry>, MessageBodyW
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
-         throw new JAXBMarshalException("Unable to find JAXBContext for media type: " + mediaType);
+         throw new JAXBMarshalException(Messages.MESSAGES.unableToFindJAXBContext(mediaType));
       }
       HashSet<Class> set = new HashSet<Class>();
       set.add(Entry.class);
@@ -118,7 +120,7 @@ public class AtomEntryProvider implements MessageBodyReader<Entry>, MessageBodyW
       }
       catch (JAXBException e)
       {
-         throw new JAXBMarshalException("Unable to marshal: " + mediaType, e);
+         throw new JAXBMarshalException(Messages.MESSAGES.unableToMarshal(mediaType), e);
       }
    }
 }
