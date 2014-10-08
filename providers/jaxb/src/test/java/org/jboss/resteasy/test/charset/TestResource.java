@@ -22,6 +22,7 @@ public class TestResource
    @Path("junk")
    public String junk()
    {
+      System.out.println("TestResource.junk(): server is started");
       return "junk";
    }
    
