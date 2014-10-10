@@ -1,6 +1,7 @@
 package org.jboss.resteasy.security.doseta;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.crypto.i18n.LogMessages;
+import org.jboss.resteasy.crypto.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.Base64;
 import org.jboss.resteasy.util.ParameterParser;
@@ -25,7 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DosetaKeyRepository implements KeyRepository
 {
-   private static final Logger log = Logger.getLogger(DosetaKeyRepository.class);
 
    protected class CacheEntry<T>
    {
@@ -75,7 +75,7 @@ public class DosetaKeyRepository implements KeyRepository
             if (keyStorePath != null)
             {
                InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(keyStorePath.trim());
-               if (is == null) throw new RuntimeException("Unable to find key store in path: " + keyStorePath);
+               if (is == null) throw new RuntimeException(Messages.MESSAGES.unableToFindKeyStore(keyStorePath));
                keyStore = new KeyStoreKeyRepository(is, keyStorePassword);
             }
          }
@@ -228,7 +228,7 @@ public class DosetaKeyRepository implements KeyRepository
       String domain = header.getDomain();
       if (domain == null)
       {
-         throw new RuntimeException("domain attribute is required in header to find a key");
+         throw new RuntimeException(Messages.MESSAGES.domainAttributeIsRequired());
       }
       buf.append(domain);
       return buf.toString();
@@ -275,7 +275,7 @@ public class DosetaKeyRepository implements KeyRepository
 
    protected PublicKey findFromDns(String alias)
    {
-      if (log.isDebugEnabled()) log.debug(">>>> Check DNS: " + alias);
+      LogMessages.LOGGER.debug(Messages.MESSAGES.checkDNS(alias));
       PublicKey key;
       try
       {
@@ -290,19 +290,19 @@ public class DosetaKeyRepository implements KeyRepository
          Attributes attrs1 = dnsContext.getAttributes(alias, new String[]{"TXT"});
          javax.naming.directory.Attribute txtrecord = attrs1.get("txt");
          String record = txtrecord.get().toString();
-         if (log.isDebugEnabled()) log.debug(">>>> DNS found record: " + record);
+         LogMessages.LOGGER.debug(Messages.MESSAGES.dnsRecordFound(record));
          ParameterParser parser = new ParameterParser();
          parser.setLowerCaseNames(true);
          Map<String, String> keyEntry = parser.parse(record, ';');
          String type = keyEntry.get("k");
          if (type != null && !type.toLowerCase().equals("rsa"))
-            throw new RuntimeException("Unsupported key type: " + type);
+            throw new RuntimeException(Messages.MESSAGES.unsupportedKeyType(type));
          String pem = keyEntry.get("p");
          if (pem == null)
          {
-            throw new RuntimeException("No p entry in text record.");
+            throw new RuntimeException(Messages.MESSAGES.noPEntry());
          }
-         if (log.isDebugEnabled()) log.debug("pem: " + pem);
+         LogMessages.LOGGER.debug(Messages.MESSAGES.pem(pem));
          byte[] der = Base64.decode(pem);
 
 
@@ -314,7 +314,7 @@ public class DosetaKeyRepository implements KeyRepository
       }
       catch (Exception e)
       {
-         throw new RuntimeException("Failed to find public key in DNS " + alias, e);
+         throw new RuntimeException(Messages.MESSAGES.failedToFindPublicKey(alias), e);
       }
       return key;
    }

@@ -1,6 +1,9 @@
 package org.jboss.resteasy.security.doseta;
 
 import javax.ws.rs.core.MultivaluedMap;
+
+import org.jboss.resteasy.crypto.i18n.Messages;
+
 import java.security.PublicKey;
 import java.security.SignatureException;
 import java.util.HashMap;
@@ -203,7 +206,7 @@ public class Verification
    public MultivaluedMap<String, String> verify(DKIMSignature signature, Map headers, byte[] body, PublicKey publicKey) throws SignatureException
    {
       if (publicKey == null) publicKey = key;
-      if (publicKey == null) throw new SignatureException("Public key is null.");
+      if (publicKey == null) throw new SignatureException(Messages.MESSAGES.publicKeyIsNull());
 
       MultivaluedMap<String, String> verifiedHeaders = signature.verify(bodyHashRequired, headers, body, publicKey);
 
@@ -211,7 +214,7 @@ public class Verification
       {
          if (signature.isExpired())
          {
-            throw new SignatureException("Signature expired");
+            throw new SignatureException(Messages.MESSAGES.signatureExpired());
          }
       }
       if (isStaleCheck())
@@ -223,7 +226,7 @@ public class Verification
                  getStaleMonths(),
                  getStaleYears()))
          {
-            throw new SignatureException("Signature is stale");
+            throw new SignatureException(Messages.MESSAGES.signatureIsStale());
          }
       }
 
@@ -232,7 +235,7 @@ public class Verification
          String value = signature.getAttributes().get(required.getKey());
          if (!value.equals(required.getValue()))
          {
-            throw new SignatureException("Expected value '" + required.getValue() + "' got '" + value + "' for attribute '" + required.getKey() + "'");
+            throw new SignatureException(Messages.MESSAGES.expectedValue(required.getValue(), value, required.getKey()));
          }
       }
 

@@ -496,7 +496,9 @@ public class SigningTest extends BaseResourceTest
       }
       catch (UnauthorizedSignatureException e)
       {
-         Assert.assertEquals("Failed to verify signatures:\r\n Signature is stale", e.getMessage());
+//         Assert.assertEquals("Failed to verify signatures:\r\n Signature is stale", e.getMessage());
+         Assert.assertTrue(e.getMessage().contains("Failed to verify signatures:\r\n "));
+         Assert.assertTrue(e.getMessage().contains("Signature is stale"));
       }
       response.releaseConnection();
    }
@@ -601,7 +603,9 @@ public class SigningTest extends BaseResourceTest
       }
       catch (UnauthorizedSignatureException e)
       {
-         Assert.assertEquals("Failed to verify signatures:\r\n Signature expired", e.getMessage());
+//         Assert.assertEquals("Failed to verify signatures:\r\n Signature expired", e.getMessage());
+         Assert.assertTrue(e.getMessage().contains("Failed to verify signatures:\r\n"));
+         Assert.assertTrue(e.getMessage().contains("Signature expired"));
       }
       response.releaseConnection();
 
@@ -632,7 +636,9 @@ public class SigningTest extends BaseResourceTest
       }
       catch (UnauthorizedSignatureException e)
       {
-         Assert.assertEquals("Failed to verify signatures:\r\n Failed to verify signature.", e.getMessage());
+//         Assert.assertEquals("Failed to verify signatures:\r\n Failed to verify signature.", e.getMessage());
+         Assert.assertTrue(e.getMessage().contains("Failed to verify signatures:\r\n"));
+         Assert.assertTrue(e.getMessage().contains("Failed to verify signature."));
       }
       response.releaseConnection();
 

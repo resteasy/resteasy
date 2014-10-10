@@ -7,6 +7,7 @@ import org.bouncycastle.cms.jcajce.JceKeyTransRecipientId;
 import org.bouncycastle.mail.smime.SMIMEEnveloped;
 import org.bouncycastle.mail.smime.SMIMEUtil;
 import org.jboss.resteasy.core.Headers;
+import org.jboss.resteasy.crypto.i18n.Messages;
 import org.jboss.resteasy.util.GenericType;
 
 import javax.mail.Header;
@@ -192,7 +193,7 @@ public class EnvelopedInputImpl implements EnvelopedInput
       MessageBodyReader reader = providers.getMessageBodyReader(t, gt, ann, mediaType);
       if (reader == null)
       {
-         throw new RuntimeException("Could not find a message body reader for type: " + t.getClass().getName());
+         throw new RuntimeException(Messages.MESSAGES.couldNotFindMessageBodyReader(t.getClass().getName()));
       }
       try
       {

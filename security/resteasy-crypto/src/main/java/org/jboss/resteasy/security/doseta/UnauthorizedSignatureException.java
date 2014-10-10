@@ -1,5 +1,6 @@
 package org.jboss.resteasy.security.doseta;
 
+import org.jboss.resteasy.crypto.i18n.Messages;
 import org.jboss.resteasy.spi.ReaderException;
 
 /**
@@ -22,7 +23,7 @@ public class UnauthorizedSignatureException extends ReaderException
 
    public static String failedVerifierMessage(VerificationResults results)
    {
-      StringBuffer msg = new StringBuffer("Failed to verify signatures:");
+      StringBuffer msg = new StringBuffer(Messages.MESSAGES.failedToVerifySignatures());
       for (VerificationResultSet set : results.getResults())
       {
          for (VerificationResult result : set.getResults())
