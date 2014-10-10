@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
+import org.jboss.resteasy.providers.jaxb.i18n.Messages;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.xml.sax.InputSource;
 
@@ -87,8 +88,8 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
          JAXBContextFinder finder = resolver.getContext(type);
          if (finder == null)
          {
-            if (true) throw new JAXBUnmarshalException("Could not find JAXBContextFinder for media type: " + mediaType);
-            else throw new JAXBMarshalException("Could not find JAXBContextFinder for media type: " + mediaType);
+            if (true) throw new JAXBUnmarshalException(Messages.MESSAGES.couldNotFindJAXBContextFinder(mediaType));
+            else throw new JAXBMarshalException(Messages.MESSAGES.couldNotFindJAXBContextFinder(mediaType));
          }
          JAXBContext jaxb = finder.findCacheXmlTypeContext(mediaType, annotations, type);
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
@@ -174,7 +175,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
          }
          else
          {
-            throw new JAXBMarshalException("A valid XmlRegistry could not be located.");
+            throw new JAXBMarshalException(Messages.MESSAGES.validXmlRegistryCouldNotBeLocated());
          }
       }
       catch (InstantiationException e)
@@ -213,8 +214,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
                return JAXBElement.class.cast(result);
             }
          }
-         throw new JAXBMarshalException(String.format("The method create%s() "
-                 + "was not found in the object Factory!", type));
+         throw new JAXBMarshalException(Messages.MESSAGES.createMethodNotFound(type));
       }
       catch (IllegalArgumentException e)
       {

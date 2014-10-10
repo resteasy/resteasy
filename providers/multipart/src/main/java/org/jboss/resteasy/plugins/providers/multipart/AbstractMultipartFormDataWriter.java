@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
+import org.jboss.resteasy.providers.multipart.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -16,11 +17,7 @@ public class AbstractMultipartFormDataWriter extends AbstractMultipartWriter {
 	protected void writeParts(MultipartOutput multipartOutput,
 			OutputStream entityStream, byte[] boundaryBytes) throws IOException {
 		if (!(multipartOutput instanceof MultipartFormDataOutput))
-			throw new IllegalArgumentException(
-					"Had to write out multipartoutput = " + multipartOutput
-							+ " with writer = " + this
-							+ " but this writer can only handle "
-							+ MultipartFormDataOutput.class);
+	       throw new IllegalArgumentException(Messages.MESSAGES.hadToWriteMultipartOutput(multipartOutput, this, MultipartFormDataOutput.class));
 		MultipartFormDataOutput form = (MultipartFormDataOutput) multipartOutput;
 		for (Map.Entry<String, OutputPart> entry : form.getFormData()
 				.entrySet()) {

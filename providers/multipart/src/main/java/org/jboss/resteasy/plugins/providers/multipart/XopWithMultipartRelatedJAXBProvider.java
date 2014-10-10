@@ -27,6 +27,7 @@ import javax.xml.bind.attachment.AttachmentUnmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider;
+import org.jboss.resteasy.providers.multipart.i18n.Messages;
 
 /**
  * A special JAXB Provider. It is not a real provider, it is only used as a
@@ -72,8 +73,7 @@ public class XopWithMultipartRelatedJAXBProvider extends
 
 		@Override
 		public String addSwaRefAttachment(DataHandler data) {
-			throw new UnsupportedOperationException(
-					"SwaRefs are not supported in xop creation.");
+	       throw new UnsupportedOperationException(Messages.MESSAGES.swaRefsNotSupported());
 		}
 
 		@Override
@@ -104,8 +104,7 @@ public class XopWithMultipartRelatedJAXBProvider extends
 		}
 
 		public OutputStream getOutputStream() throws IOException {
-			throw new IOException(
-					"This DataSource represents an incoming xop message part. Getting an OutputStream on it is not allowed.");
+	       throw new IOException(Messages.MESSAGES.dataSourceRepresentsXopMessagePart());
 		}
 	}
 
@@ -124,9 +123,7 @@ public class XopWithMultipartRelatedJAXBProvider extends
 			try {
 				return inputPart.getBody(byte[].class, null);
 			} catch (IOException e) {
-				throw new IllegalArgumentException(
-						"Exception while extracting attachment with cid = "
-								+ cid + " from xop message to a byte[].", e);
+            throw new IllegalArgumentException(Messages.MESSAGES.exceptionWhileExtractionAttachment(cid), e);
 			}
 		}
 
@@ -141,9 +138,7 @@ public class XopWithMultipartRelatedJAXBProvider extends
 			String contentID = ContentIDUtils.convertCidToContentID(cid);
 			InputPart inputPart = xopPackage.getRelatedMap().get(contentID);
 			if (inputPart == null)
-				throw new IllegalArgumentException("No attachment with cid = "
-						+ cid + " (Content-ID = " + contentID
-						+ ") found in xop message.");
+            throw new IllegalArgumentException(Messages.MESSAGES.noAttachmentFound(cid, contentID));
 			return inputPart;
 		}
 
@@ -161,8 +156,7 @@ public class XopWithMultipartRelatedJAXBProvider extends
 	@Override
 	protected boolean isReadWritable(Class<?> type, Type genericType,
 			Annotation[] annotations, MediaType mediaType) {
-		throw new UnsupportedOperationException(
-				"This provider and this method are not ment for stand alone usage.");
+	     throw new UnsupportedOperationException(Messages.MESSAGES.notMeantForStandaloneUsage());
 	}
 
 	public Object readFrom(Class<Object> type, Type genericType,

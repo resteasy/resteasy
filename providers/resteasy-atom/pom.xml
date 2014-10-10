@@ -25,9 +25,27 @@
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxrs-test</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-test-tjws</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
+        </dependency>
+               
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-processor</artifactId>
+            <version>1.2.0.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <version>3.1.4.GA</version>
         </dependency>
     </dependencies>
     
@@ -58,18 +76,6 @@
                     <name>i18n</name>
                 </property>
             </activation>
-            <dependencies>
-                <dependency>
-                   <groupId>org.jboss.logging</groupId>
-                   <artifactId>jboss-logging-processor</artifactId>
-                   <version>1.2.0.Final</version>
-                </dependency>
-                <dependency>
-                   <groupId>org.jboss.logging</groupId>
-                   <artifactId>jboss-logging</artifactId>
-                   <version>3.1.4.GA</version>
-                </dependency>
-            </dependencies>
             <build>
                 <plugins>
                     <plugin>
@@ -84,7 +90,7 @@
                                     <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${basedir}/src/main/resources/org/jboss/resteasy/i18n</outputDirectory>
+                                    <outputDirectory>${basedir}/src/main/resources/org/jboss/resteasy/providers/resteasy_atom/i18n</outputDirectory>
                                     <resources>
                                         <resource>
                                             <directory>${basedir}/src/test/resources/i18n</directory>

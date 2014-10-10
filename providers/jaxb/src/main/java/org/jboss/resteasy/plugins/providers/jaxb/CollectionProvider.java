@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
+import org.jboss.resteasy.providers.jaxb.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -120,7 +121,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
-         throw new JAXBUnmarshalException("Unable to find JAXBContext for media type: " + mediaType);
+         throw new JAXBUnmarshalException(Messages.MESSAGES.unableToFindJAXBContext(mediaType));
       }
       Class baseType = Types.getCollectionBaseType(type, genericType);
       JaxbCollection col = null;
@@ -164,11 +165,11 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
          {
             if (!wrapped.element().equals(ele.getName().getLocalPart()))
             {
-               throw new JAXBUnmarshalException("Collection wrapping failed, expected root element name of " + wrapped.element() + " got " + ele.getName().getLocalPart());
+               throw new JAXBUnmarshalException(Messages.MESSAGES.collectionWrappingFailedLocalPart(wrapped.element(), ele.getName().getLocalPart()));
             }
             if (!wrapped.namespace().equals(ele.getName().getNamespaceURI()))
             {
-               throw new JAXBUnmarshalException("Collection wrapping failed, expect namespace of " + wrapped.namespace() + " got " + ele.getName().getNamespaceURI());
+               throw new JAXBUnmarshalException(Messages.MESSAGES.collectionWrappingFailedNamespace(wrapped.namespace(), ele.getName().getNamespaceURI()));
             }
          }
 
@@ -244,7 +245,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
-         throw new JAXBMarshalException("Unable to find JAXBContext for media type: " + mediaType);
+         throw new JAXBMarshalException(Messages.MESSAGES.unableToFindJAXBContext(mediaType));
       }
       Class baseType = Types.getCollectionBaseType(type, genericType);
       try

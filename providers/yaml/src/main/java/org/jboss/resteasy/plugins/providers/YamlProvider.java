@@ -1,7 +1,8 @@
 package org.jboss.resteasy.plugins.providers;
 
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.providers.yaml.i18n.LogMessages;
+import org.jboss.resteasy.providers.yaml.i18n.Messages;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.WriterException;
 import org.yaml.snakeyaml.Yaml;
@@ -38,9 +39,6 @@ import java.util.Set;
 public class YamlProvider extends AbstractEntityProvider<Object>
 {
 
-
-   final static Logger logger = Logger.getLogger(YamlProvider.class);
-
    // MessageBodyReader
 
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
@@ -61,13 +59,13 @@ public class YamlProvider extends AbstractEntityProvider<Object>
       }
       catch (YAMLException ye)
       {
-         logger.debug("Failed to decode Yaml: {0}", ye.getMessage());
-         throw new ReaderException("Failed to decode Yaml", ye);
+         LogMessages.LOGGER.debug(Messages.MESSAGES.failedToDecodeYamlMessage(ye.getMessage()));
+         throw new ReaderException(Messages.MESSAGES.failedToDecodeYaml(), ye);
       }
       catch (Exception e)
       {
-         logger.debug("Failed to decode Yaml: {0}", e.getMessage());
-         throw new ReaderException("Failed to decode Yaml", e);
+         LogMessages.LOGGER.debug(Messages.MESSAGES.failedToDecodeYamlMessage(e.getMessage()));
+         throw new ReaderException(Messages.MESSAGES.failedToDecodeYaml(), e);
       }
 
 
@@ -113,7 +111,7 @@ public class YamlProvider extends AbstractEntityProvider<Object>
       catch (Exception e)
       {
 
-         logger.debug("Failed to encode yaml for object: {0}", t.toString());
+         LogMessages.LOGGER.debug(Messages.MESSAGES.failedToEncodeYaml(t.toString()));
          throw new WriterException(e);
 
       }

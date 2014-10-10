@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
 import org.jboss.resteasy.annotations.providers.multipart.XopWithMultipartRelated;
+import org.jboss.resteasy.providers.multipart.i18n.Messages;
 import org.jboss.resteasy.util.FindAnnotation;
 
 import javax.ws.rs.Consumes;
@@ -46,7 +47,7 @@ public class XopWithMultipartRelatedReader implements MessageBodyReader<Object>
    {
       String boundary = mediaType.getParameters().get("boundary");
       if (boundary == null)
-         throw new IOException("Unable to get boundary for multipart");
+         throw new IOException(Messages.MESSAGES.unableToGetBoundary());
       MultipartRelatedInputImpl input = new MultipartRelatedInputImpl(
               mediaType, workers);
       input.parse(entityStream);

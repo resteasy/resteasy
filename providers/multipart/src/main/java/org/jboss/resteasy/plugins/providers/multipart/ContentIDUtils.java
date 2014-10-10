@@ -5,7 +5,9 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.UUID;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.providers.multipart.i18n.LogMessages;
+import org.jboss.resteasy.providers.multipart.i18n.Messages;
+
 
 /**
  * Utility class to help generate, convert RFC compliant Content-ID and cid.
@@ -14,7 +16,6 @@ import org.jboss.resteasy.logging.Logger;
  *
  */
 public class ContentIDUtils {
-	private static final Logger LOGGER = Logger.getLogger(ContentIDUtils.class);
 	public static final String CID_URL_SCHEME = "cid:";
 
 	/**
@@ -63,8 +64,7 @@ public class ContentIDUtils {
 		try {
 			cid += URLEncoder.encode(addrSpec, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			LOGGER.error("java.net.URLEncoder does not support UTF-8 encoding",
-					e);
+	       LogMessages.LOGGER.error(Messages.MESSAGES.urlEncoderDoesNotSupportUtf8(), e);
 		}
 		return cid;
 	}
@@ -82,8 +82,7 @@ public class ContentIDUtils {
 		try {
 			addrSpec = URLDecoder.decode(addrSpec, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			LOGGER.error("java.net.URLDecoder does not support UTF-8 encoding",
-					e);
+		   LogMessages.LOGGER.error(Messages.MESSAGES.urlEncoderDoesNotSupportUtf8(), e);
 		}
 
 		return addrSpec;

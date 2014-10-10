@@ -2,10 +2,10 @@ package org.jboss.resteasy.plugins.providers.atom;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 
-import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException;
+import org.jboss.resteasy.providers.resteasy_atom.i18n.Messages;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;

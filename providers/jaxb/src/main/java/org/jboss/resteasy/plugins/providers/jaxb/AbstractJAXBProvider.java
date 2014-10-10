@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.core.interception.DecoratorMatcher;
 import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
+import org.jboss.resteasy.providers.jaxb.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.TypeConverter;
@@ -73,8 +74,8 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       JAXBContextFinder finder = resolver.getContext(type);
       if (finder == null)
       {
-         if (reader) throw new JAXBUnmarshalException("Could not find JAXBContextFinder for media type: " + mediaType);
-         else throw new JAXBMarshalException("Could not find JAXBContextFinder for media type: " + mediaType);
+         if (reader) throw new JAXBUnmarshalException(Messages.MESSAGES.couldNotFindJAXBContextFinder(mediaType));
+         else throw new JAXBMarshalException(Messages.MESSAGES.couldNotFindJAXBContextFinder(mediaType));
       }
       return finder.findCachedContext(type, mediaType, annotations);
    }

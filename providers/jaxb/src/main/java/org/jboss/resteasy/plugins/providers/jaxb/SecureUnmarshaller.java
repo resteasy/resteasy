@@ -24,7 +24,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.validation.Schema;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.providers.jaxb.i18n.Messages;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -40,7 +40,6 @@ import org.xml.sax.XMLReader;
  * Created Feb 1, 2012
  */
 public class SecureUnmarshaller implements Unmarshaller {
-   final static Logger log = Logger.getLogger(SecureUnmarshaller.class);
 
 	private Unmarshaller delegate;
 	boolean disableExternalEntities;
@@ -134,7 +133,7 @@ public class SecureUnmarshaller implements Unmarshaller {
    }
 
    public Object unmarshal(File f) throws JAXBException {
-      throw new UnsupportedOperationException(errorMessage("File"));
+      throw new UnsupportedOperationException(Messages.MESSAGES.secureUnmarshallerUnexpectedUseFile());
    }
 
    /**
@@ -145,11 +144,11 @@ public class SecureUnmarshaller implements Unmarshaller {
    }
    
    public Object unmarshal(Reader reader) throws JAXBException {
-      throw new UnsupportedOperationException(errorMessage("Reader"));
+      throw new UnsupportedOperationException(Messages.MESSAGES.secureUnmarshallerUnexpectedUseReader());
    }
 
    public Object unmarshal(URL url) throws JAXBException {
-      throw new UnsupportedOperationException(errorMessage("URL"));
+      throw new UnsupportedOperationException(Messages.MESSAGES.secureUnmarshallerUnexpectedUseURL());
    }
 
    /**
@@ -202,19 +201,19 @@ public class SecureUnmarshaller implements Unmarshaller {
          }
       }
       
-      throw new UnsupportedOperationException(errorMessage("Source, Class<T>"));
+      throw new UnsupportedOperationException(Messages.MESSAGES.secureUnmarshallerUnexpectedUseSourceClass());
    }
 
    public Object unmarshal(XMLStreamReader reader) throws JAXBException {
-      throw new UnsupportedOperationException(errorMessage("XMLStreamReader"));
+      throw new UnsupportedOperationException(Messages.MESSAGES.secureUnmarshallerUnexpectedUseXMLStreamReader());
    }
 
    public Object unmarshal(XMLEventReader reader) throws JAXBException {
-      throw new UnsupportedOperationException(errorMessage("XMLEventReader"));
+      throw new UnsupportedOperationException(Messages.MESSAGES.secureUnmarshallerUnexpectedUseXMLEventReader());
    }
 
    public <T> JAXBElement<T> unmarshal(Node node, Class<T> declaredType) throws JAXBException {
-      throw new UnsupportedOperationException(errorMessage("Node, Class<T>"));
+      throw new UnsupportedOperationException(Messages.MESSAGES.secureUnmarshallerUnexpectedUseNodeClass());
    }
 
    public <T> JAXBElement<T> unmarshal(Source source, Class<T> declaredType) throws JAXBException
@@ -240,15 +239,15 @@ public class SecureUnmarshaller implements Unmarshaller {
          }
       }
       
-      throw new UnsupportedOperationException(errorMessage("Source, Class<T>"));
+      throw new UnsupportedOperationException(Messages.MESSAGES.secureUnmarshallerUnexpectedUseSourceClass());
    }
 
    public <T> JAXBElement<T> unmarshal(XMLStreamReader reader, Class<T> declaredType) throws JAXBException {
-      throw new UnsupportedOperationException(errorMessage("XMLStreamReader, Class<T>"));
+      throw new UnsupportedOperationException(Messages.MESSAGES.secureUnmarshallerUnexpectedUseXMLStreamReaderClass());
    }
 
    public <T> JAXBElement<T> unmarshal(XMLEventReader reader, Class<T> declaredType) throws JAXBException {
-      throw new UnsupportedOperationException(errorMessage("XMLEventReader, Class<T>"));
+      throw new UnsupportedOperationException(Messages.MESSAGES.secureUnmarshallerUnexpectedUseXMLEventReaderClass());
    }
 
    public Unmarshaller getDelegate()
@@ -270,9 +269,5 @@ public class SecureUnmarshaller implements Unmarshaller {
       factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, enableSecureProcessingFeature); 
       factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", disableDTDs); 
    }
-   
-   private String errorMessage(String s)
-   {
-      return "ExternalEntityUnmarshallerWrapper: unexpected use of unmarshal(" + s + ")";
-   }
+
 }

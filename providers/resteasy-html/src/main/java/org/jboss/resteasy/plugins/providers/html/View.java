@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 
+import org.jboss.resteasy.providers.html.i18n.Messages;
 import org.jboss.resteasy.spi.InternalServerErrorException;
 
 public class View implements Renderable
@@ -95,8 +96,8 @@ public class View implements Renderable
 
       RequestDispatcher disp = request.getRequestDispatcher(path);
       if (disp == null)
-         throw new InternalServerErrorException("No dispatcher found for path '" + path + "'");
-
+         throw new InternalServerErrorException(Messages.MESSAGES.noDispatcherFound(path));
+      
       disp.forward(request, response);
    }
 }

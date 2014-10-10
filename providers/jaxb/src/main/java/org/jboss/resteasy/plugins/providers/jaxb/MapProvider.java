@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.annotations.providers.jaxb.WrappedMap;
+import org.jboss.resteasy.providers.jaxb.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -119,7 +120,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
-         throw new JAXBUnmarshalException("Unable to find JAXBContext for media type: " + mediaType);
+         throw new JAXBUnmarshalException(Messages.MESSAGES.unableToFindJAXBContext(mediaType));
       }
       Class valueType = Types.getMapValueType(genericType);
       JaxbMap jaxbMap = null;
@@ -162,11 +163,11 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
          {
             if (!wrapped.map().equals(ele.getName().getLocalPart()))
             {
-               throw new JAXBUnmarshalException("Map wrapping failed, expected root element name of " + wrapped.map() + " got " + ele.getName().getLocalPart());
+               throw new JAXBUnmarshalException(Messages.MESSAGES.mapWrappingFailedLocalPart(wrapped.map(), ele.getName().getLocalPart()));
             }
             if (!wrapped.namespace().equals(ele.getName().getNamespaceURI()))
             {
-               throw new JAXBUnmarshalException("Map wrapping failed, expect namespace of " + wrapped.namespace() + " got " + ele.getName().getNamespaceURI());
+               throw new JAXBUnmarshalException(Messages.MESSAGES.mapWrappingFailedNamespace(wrapped.namespace(), ele.getName().getNamespaceURI()));
             }
          }
 
@@ -190,7 +191,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
             else
             {
                if (attributeMap.getLength() == 0)
-                  throw new JAXBUnmarshalException("Map wrapped failed, could not find map entry key attribute");
+                  throw new JAXBUnmarshalException(Messages.MESSAGES.mapWrappedFailedKeyAttribute());
                for (int j = 0; j < attributeMap.getLength(); j++)
                {
                   Attr key = (Attr) attributeMap.item(j);
@@ -231,7 +232,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
-         throw new JAXBMarshalException("Unable to find JAXBContext for media type: " + mediaType);
+         throw new JAXBMarshalException(Messages.MESSAGES.unableToFindJAXBContext(mediaType));
       }
       Class valueType = Types.getMapValueType(genericType);
       try

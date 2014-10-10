@@ -20,6 +20,7 @@ import javax.validation.Validator;
 import org.hibernate.validator.method.MethodConstraintViolation;
 import org.hibernate.validator.method.MethodConstraintViolationException;
 import org.hibernate.validator.method.MethodValidator;
+import org.jboss.resteasy.providers.hibernatevalidator.i18n.Messages;
 import org.jboss.resteasy.spi.validation.DoNotValidateRequest;
 import org.jboss.resteasy.spi.validation.ValidateRequest;
 import org.jboss.resteasy.spi.validation.ValidatorAdapter;
@@ -32,7 +33,7 @@ class HibernateValidatorAdapter implements ValidatorAdapter {
 
 	HibernateValidatorAdapter(Validator validator) {
 		if( validator == null )
-			throw new IllegalArgumentException("Validator cannot be null");
+	       throw new IllegalArgumentException(Messages.MESSAGES.validatorCannotBeNull());
 		
 		this.validator = validator;
 		this.methodValidator = validator.unwrap(MethodValidator.class);
