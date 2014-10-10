@@ -1,9 +1,9 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import org.apache.james.mime4j.field.ContentDispositionField;
-import org.apache.james.mime4j.field.FieldName;
+import org.apache.james.mime4j.dom.field.ContentDispositionField;
+import org.apache.james.mime4j.dom.field.FieldName;
 import org.apache.james.mime4j.message.BodyPart;
-import org.apache.james.mime4j.parser.Field;
+import org.apache.james.mime4j.stream.Field;
 import org.jboss.resteasy.util.GenericType;
 
 import javax.ws.rs.core.MediaType;

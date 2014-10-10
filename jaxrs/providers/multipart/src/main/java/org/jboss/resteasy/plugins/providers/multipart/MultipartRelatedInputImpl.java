@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import org.apache.james.mime4j.field.ContentTypeField;
-import org.apache.james.mime4j.field.FieldName;
+import org.apache.james.mime4j.dom.field.ContentTypeField;
+import org.apache.james.mime4j.dom.field.FieldName;
 import org.apache.james.mime4j.message.BodyPart;
 
 import javax.ws.rs.core.MediaType;
