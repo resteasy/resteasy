@@ -13,10 +13,12 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jboss.resteasy.oath.i18n.LogMessages;
+import org.jboss.resteasy.oath.i18n.Messages;
+
 import net.oauth.OAuth;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
-import org.jboss.resteasy.logging.Logger;
 
 /**
  * OAuth Servlet Filter that interprets OAuth Authentication messages to set the Principal and roles
@@ -27,13 +29,11 @@ public class OAuthFilter implements Filter {
 
 	public static final String OAUTH_AUTH_METHOD = "OAuth";
 
-	private final static Logger logger = Logger.getLogger(OAuthFilter.class);
-
 	private OAuthProvider provider;
 	private OAuthValidator validator;
 
 	public void init(FilterConfig config) throws ServletException {
-		logger.info("Loading OAuth Filter");
+	   LogMessages.LOGGER.info(Messages.MESSAGES.loadingOAuthFilter());
 		ServletContext context = config.getServletContext();
 		provider = OAuthUtils.getOAuthProvider(context);
 		validator = OAuthUtils.getValidator(context, provider);
@@ -50,7 +50,7 @@ public class OAuthFilter implements Filter {
 	protected void _doFilter(HttpServletRequest request, HttpServletResponse response,
 			FilterChain filterChain) throws IOException, ServletException {
 	    
-	    logger.debug("Filtering " + request.getMethod() + " " + request.getRequestURL().toString());
+	   LogMessages.LOGGER.debug(Messages.MESSAGES.filteringMethod(request.getMethod(), request.getRequestURL().toString()));
 
 		OAuthMessage message = OAuthUtils.readMessage(request);
         try{
@@ -79,7 +79,7 @@ public class OAuthFilter implements Filter {
             request = createSecurityContext(request, consumer, accessToken);
             
             // let the request through with the new credentials
-            logger.debug("doFilter");
+            LogMessages.LOGGER.debug(Messages.MESSAGES.doFilter());
             filterChain.doFilter(request, response);
             
         } catch (OAuthException x) {
