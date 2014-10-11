@@ -20,6 +20,9 @@
 package javax.ws.rs.core;
 
 import javax.ws.rs.ext.RuntimeDelegate;
+
+import org.jboss.resteasy.jaxrs_api.i18n.Messages;
+
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Map;
@@ -122,7 +125,7 @@ public abstract class UriBuilder
     */
    public static UriBuilder fromPath(String path) throws IllegalArgumentException
    {
-      if (path == null) throw new IllegalArgumentException("path parameter is null");
+      if (path == null) throw new IllegalArgumentException(Messages.MESSAGES.pathParameterIsNull());
       UriBuilder b = newInstance();
       b.replacePath(path);
       return b;
