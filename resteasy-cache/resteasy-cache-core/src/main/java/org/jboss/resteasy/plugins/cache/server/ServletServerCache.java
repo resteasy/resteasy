@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.cache.server;
 
+import org.jboss.resteasy.cache.i18n.Messages;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -22,7 +23,7 @@ public class ServletServerCache implements ServletContextListener
       providerFactory = (ResteasyProviderFactory) servletContext.getAttribute(ResteasyProviderFactory.class.getName());
       if (providerFactory == null)
       {
-         throw new RuntimeException("Resteasy is not intialized, could not find ResteasyProviderFactory attribute");
+         throw new RuntimeException(Messages.MESSAGES.resteasyIsNotInitialized());
       }
 
       String maxSize = servletContext.getInitParameter("resteasy.server.cache.maxsize");
