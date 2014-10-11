@@ -25,10 +25,8 @@
             <version>3.1.4.GA</version>
         </dependency>
         <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs-test</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
         </dependency>
     </dependencies>
     
