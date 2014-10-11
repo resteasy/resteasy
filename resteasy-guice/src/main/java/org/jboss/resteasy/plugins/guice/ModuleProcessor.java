@@ -5,7 +5,9 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
-import org.jboss.resteasy.logging.Logger;
+
+import org.jboss.resteasy.guice.i18n.LogMessages;
+import org.jboss.resteasy.guice.i18n.Messages;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -16,8 +18,6 @@ import java.lang.reflect.Type;
 
 public class ModuleProcessor
 {
-   private final static Logger logger = Logger.getLogger(ModuleProcessor.class);
-
    private final Registry registry;
    private final ResteasyProviderFactory providerFactory;
 
@@ -62,12 +62,12 @@ public class ModuleProcessor
             if (GetRestful.isRootResource(beanClass))
             {
                final ResourceFactory resourceFactory = new GuiceResourceFactory(binding.getProvider(), beanClass);
-               logger.info("registering factory for {0}", beanClass.getName());
+               LogMessages.LOGGER.info(Messages.MESSAGES.registeringFactory(beanClass.getName()));
                registry.addResourceFactory(resourceFactory);
             }
             if (beanClass.isAnnotationPresent(Provider.class))
             {
-               logger.info("registering provider instance for {0}", beanClass.getName());
+               LogMessages.LOGGER.info(Messages.MESSAGES.registeringProviderInstance(beanClass.getName()));
                providerFactory.registerProviderInstance(binding.getProvider().get());
             }
          }

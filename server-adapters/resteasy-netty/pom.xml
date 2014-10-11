@@ -37,7 +37,7 @@
         </dependency>
     </dependencies>
 
-       <profiles>
+    <profiles>
         <profile>
             <id>i18n</id>
             <activation>

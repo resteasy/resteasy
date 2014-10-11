@@ -2,7 +2,9 @@ package org.jboss.resteasy.plugins.guice;
 
 import com.google.inject.Module;
 import com.google.inject.Stage;
-import org.jboss.resteasy.logging.Logger;
+
+import org.jboss.resteasy.guice.i18n.LogMessages;
+import org.jboss.resteasy.guice.i18n.Messages;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -15,8 +17,6 @@ import java.util.List;
 
 public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootstrap implements ServletContextListener
 {
-   private final static Logger logger = Logger.getLogger(GuiceResteasyBootstrapServletContextListener.class);
-
    public void contextInitialized(final ServletContextEvent event)
    {
       super.contextInitialized(event);
@@ -49,8 +49,7 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
       }
       catch (IllegalArgumentException e)
       {
-         throw new RuntimeException("Injector stage is not defined properly. " + stageAsString + " is wrong value." +
-                 " Possible values are PRODUCTION, DEVELOPMENT, TOOL.");
+         throw new RuntimeException(Messages.MESSAGES.injectorStageNotProperlyDefined(stageAsString));
       }
    }
 
@@ -65,7 +64,7 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
          {
             try
             {
-               logger.info("found module: {0}", moduleString);
+               LogMessages.LOGGER.info(Messages.MESSAGES.foundModule(moduleString));
                final Class clazz = Thread.currentThread().getContextClassLoader().loadClass(moduleString.trim());
                final Module module = (Module) clazz.newInstance();
                result.add(module);
