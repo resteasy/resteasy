@@ -17,6 +17,7 @@ import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Values;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.jboss.resteasy.resteasy_netty.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.HttpResponse;
 
@@ -121,7 +122,7 @@ public class NettyHttpResponse implements HttpResponse
    {
       if (committed) 
       {
-          throw new IllegalStateException("Already committed");
+         throw new IllegalStateException(Messages.MESSAGES.alreadyCommitted());
       }
       outputHeaders.clear();
       os.buffer().clear();
