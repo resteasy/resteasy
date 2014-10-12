@@ -4,7 +4,7 @@ import java.util.Locale;
 
 import junit.framework.Assert;
 
-import org.jboss.resteasy.guice.i18n.Messages;
+import org.jboss.resteasy.links.i18n.Messages;
 import org.jboss.resteasy.test.resteasy_jaxrs.i18n.TestMessagesParent;
 import org.junit.Test;
 
@@ -17,23 +17,22 @@ import org.junit.Test;
  */
 abstract public class TestMessagesAbstract extends TestMessagesParent
 {
-   protected static final String BASE = String.format("00%4s", Messages.BASE).substring(0, 4);
+   protected static final String BASE = String.format("0%5s", Messages.BASE).substring(0, 4);
 
    @Test
    public void testLocale() throws Exception
    {  
       Locale locale = getLocale();
-      String filename = "org/jboss/resteasy/guice/i18n/Messages.i18n_" + locale.toString() + ".properties";
+      String filename = "org/jboss/resteasy/links/i18n/Messages.i18n_" + locale.toString() + ".properties";
       if (!before(locale, filename))
       {
          System.out.println(getClass() + ": " + filename + " not found.");
          return;
       }
       
-      Assert.assertEquals(getExpected(BASE + "00", "foundModule", "module"), Messages.MESSAGES.foundModule("module"));
-      Assert.assertEquals(getExpected(BASE + "05", "injectorStageNotProperlyDefined", "stage"), Messages.MESSAGES.injectorStageNotProperlyDefined("stage"));
-      Assert.assertEquals(getExpected(BASE + "10", "registeringFactory", "factory"), Messages.MESSAGES.registeringFactory("factory"));
-      Assert.assertEquals(getExpected(BASE + "15", "registeringProviderInstance", "provider"), Messages.MESSAGES.registeringProviderInstance("provider"));
+      Assert.assertEquals(getExpected(BASE + "00", "cannotGuessCollectionType"), Messages.MESSAGES.cannotGuessCollectionType());
+      Assert.assertEquals(getExpected(BASE + "30", "failedToInjectLinks", new Integer(17)), Messages.MESSAGES.failedToInjectLinks(new Integer(17)));
+      Assert.assertEquals(getExpected(BASE + "55", "notEnoughtUriParameters", 3, 5), Messages.MESSAGES.notEnoughtUriParameters(3, 5));
    }
    
    @Override
