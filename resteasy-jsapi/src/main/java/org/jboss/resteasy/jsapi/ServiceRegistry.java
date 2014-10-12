@@ -11,7 +11,8 @@ import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceLocator;
 import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.resteasy_jsapi.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jsapi.i18n.Messages;
 import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
@@ -21,9 +22,6 @@ import org.jboss.resteasy.util.GetRestful;
  */
 public class ServiceRegistry
 {
-	private final static Logger logger = Logger
-       .getLogger(ServiceRegistry.class);
-
 	private static final long serialVersionUID = -1985015444704126795L;
 
 	private ResourceMethodRegistry registry;
@@ -87,11 +85,7 @@ public class ServiceRegistry
 					   {
 					      // FIXME: we could generate an error for the client, which would be more informative than
 					      // just logging this
-					      if(logger.isWarnEnabled()){
-					         logger.warn("Impossible to generate JSAPI for subresource returned by method "+
-					               method.getDeclaringClass().getName()+"."+method.getName()+
-					               " since return type is not a static JAXRS resource type");
-					      }
+				         LogMessages.LOGGER.warn(Messages.MESSAGES.impossibleToGenerateJsapi(method.getDeclaringClass().getName(), method.getName()));
 					      // skip this
 					      continue;
 					   }
