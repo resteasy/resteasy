@@ -5,6 +5,7 @@ import javax.servlet.ServletContext;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spring.i18n.Messages;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 /**
@@ -41,15 +42,15 @@ public class SpringContextLoaderSupport
    {
       ResteasyProviderFactory providerFactory = (ResteasyProviderFactory) servletContext.getAttribute(ResteasyProviderFactory.class.getName());
       if (providerFactory == null)
-         throw new RuntimeException("RESTeasy Provider Factory is null, do you have the ResteasyBootstrap listener configured?");
+         throw new RuntimeException(Messages.MESSAGES.providerFactoryIsNull());
 
       Registry registry = (Registry) servletContext.getAttribute(Registry.class.getName());
       if (registry == null)
-         throw new RuntimeException("RESTeasy Registry is null, do ou have the ResteasyBootstrap listener configured?");
+         throw new RuntimeException(Messages.MESSAGES.registryIsNull());
 
       Dispatcher dispatcher = (Dispatcher) servletContext.getAttribute(Dispatcher.class.getName());
       if (dispatcher == null)
-         throw new RuntimeException("RESTeasy Dispatcher is null, do ou have the ResteasyBootstrap listener configured?");
+         throw new RuntimeException(Messages.MESSAGES.dispatcherIsNull());
 
       SpringBeanProcessor processor = new SpringBeanProcessor(dispatcher, registry, providerFactory);
       configurableWebApplicationContext.addBeanFactoryPostProcessor(processor);

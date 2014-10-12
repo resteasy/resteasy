@@ -36,7 +36,6 @@ public interface Messages
    String failedToFindBeanProperty(String property);
 
    @Message(id = BASE + 30, value = "Failed to inject links in %s")
-//   <T> String failedToInjectLinks(T expression);
    String failedToInjectLinks(Object expression);
    
    @Message(id = BASE + 35, value = "Failed to instantiate ELProvider: %s")
