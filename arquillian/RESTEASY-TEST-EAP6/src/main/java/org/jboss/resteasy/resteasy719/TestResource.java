@@ -9,7 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 
-import org.jboss.resteasy.providers.hibernatevalidator.i18n.Messages;
+import org.jboss.resteasy.plugins.hibernatevalidator.i18n.Messages;
 
 @Path("/")
 public class TestResource

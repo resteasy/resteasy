@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import org.jboss.resteasy.providers.multipart.i18n.Messages;
+import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
 import javax.ws.rs.core.MultivaluedMap;

@@ -2,15 +2,10 @@ package org.jboss.resteasy.test.resteasy719;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Properties;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.providers.hibernatevalidator.i18n.Messages;
 import org.jboss.resteasy.resteasy719.TestApplication;
 import org.jboss.resteasy.resteasy719.TestResource;
 import org.jboss.shrinkwrap.api.Archive;
@@ -48,9 +43,9 @@ public class TestMessages
    @Test
    public void test_enUS() throws Exception
    {
-      if (Messages.class.getClassLoader().getResourceAsStream("/org/jboss/resteasy/providers/hibernatevalidator/i18n/Messages.i18n_xx.properties") == null)
+      if (org.jboss.resteasy.plugins.hibernatevalidator.i18n.Messages.class.getClassLoader().getResourceAsStream("org/jboss/resteasy/plugins/hibernatevalidator/i18n/Messages.i18n_xx.properties") == null)
       {
-         System.out.println("Resteasy build without i18n test property files. Skipping test.");
+         System.out.println("Resteasy built without i18n test property files. Skipping test.");
          return;
       }
       String language = "xx";

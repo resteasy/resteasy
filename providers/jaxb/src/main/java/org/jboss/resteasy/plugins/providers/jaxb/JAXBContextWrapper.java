@@ -1,8 +1,8 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.JAXBConfig;
-import org.jboss.resteasy.providers.jaxb.i18n.LogMessages;
-import org.jboss.resteasy.providers.jaxb.i18n.Messages;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 

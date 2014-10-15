@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.cache.server;
 
-import org.jboss.resteasy.cache.i18n.Messages;
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.plugins.cache.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.servlet.ServletContext;

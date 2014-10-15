@@ -13,12 +13,12 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.plugins.spring.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spring.i18n.Messages;
 import org.jboss.resteasy.util.GetRestful;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;

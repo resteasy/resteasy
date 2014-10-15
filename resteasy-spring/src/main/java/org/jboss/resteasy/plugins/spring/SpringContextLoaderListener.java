@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.spring;
 
-import org.jboss.resteasy.spring.i18n.Messages;
+import org.jboss.resteasy.plugins.spring.i18n.Messages;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;

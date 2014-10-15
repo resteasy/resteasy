@@ -197,7 +197,7 @@ public class DateUtil
     * @see SimpleDateFormat
     */
    public static String formatDate(Date date, String pattern)
-   {;
+   {
       if (date == null) throw new IllegalArgumentException(Messages.MESSAGES.dateNull());
       if (pattern == null) throw new IllegalArgumentException(Messages.MESSAGES.patternNull());
 

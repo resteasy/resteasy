@@ -13,8 +13,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jboss.resteasy.oath.i18n.LogMessages;
-import org.jboss.resteasy.oath.i18n.Messages;
+import org.jboss.resteasy.auth.oauth.i18n.LogMessages;
+import org.jboss.resteasy.auth.oauth.i18n.Messages;
 
 import net.oauth.OAuth;
 import net.oauth.OAuthMessage;

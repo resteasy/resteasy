@@ -6,8 +6,8 @@ import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.jboss.resteasy.resteasy_netty.i18n.LogMessages;
-import org.jboss.resteasy.resteasy_netty.i18n.Messages;
+import org.jboss.resteasy.plugins.server.netty.i18n.LogMessages;
+import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.spi.Failure;
 
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.CONTINUE;

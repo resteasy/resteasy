@@ -90,7 +90,7 @@
                                     <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${basedir}/src/main/resources/org/jboss/resteasy/providers/resteasy_atom/i18n</outputDirectory>
+                                    <outputDirectory>${basedir}/src/main/resources/org/jboss/resteasy/plugins/providers/resteasy_atom/i18n</outputDirectory>
                                     <resources>
                                         <resource>
                                             <directory>${basedir}/src/test/resources/i18n</directory>

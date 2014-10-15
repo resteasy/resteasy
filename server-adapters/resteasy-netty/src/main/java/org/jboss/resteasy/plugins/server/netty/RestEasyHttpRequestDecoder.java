@@ -8,8 +8,8 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
 import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.resteasy_netty.i18n.LogMessages;
-import org.jboss.resteasy.resteasy_netty.i18n.Messages;
+import org.jboss.resteasy.plugins.server.netty.i18n.LogMessages;
+import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 

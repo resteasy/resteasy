@@ -66,7 +66,6 @@ public class PickConstructor
       }
       if (potentialConflict) {
          LogMessages.LOGGER.ambiguousConstructorsFound(clazz);
-
       }
       return pick;
    }

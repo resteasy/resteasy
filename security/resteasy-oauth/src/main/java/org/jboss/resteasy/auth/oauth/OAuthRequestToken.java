@@ -2,7 +2,7 @@ package org.jboss.resteasy.auth.oauth;
 
 import java.net.HttpURLConnection;
 
-import org.jboss.resteasy.oath.i18n.Messages;
+import org.jboss.resteasy.auth.oauth.i18n.Messages;
 
 /**
  * Represents either an OAuth Access or Request Token.

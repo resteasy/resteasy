@@ -1,10 +1,10 @@
 package org.jboss.resteasy.springmvc;
 
 import org.jboss.resteasy.core.CookieParamInjector;
+import org.jboss.resteasy.plugins.spring.i18n.Messages;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spring.i18n.Messages;
 import org.jboss.resteasy.springmvc.annotation.RestfulData;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.springframework.core.MethodParameter;

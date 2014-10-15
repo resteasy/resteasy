@@ -4,7 +4,7 @@ import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
-import org.jboss.resteasy.resteasy_netty.i18n.Messages;
+import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.util.Encode;
 

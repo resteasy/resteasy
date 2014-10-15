@@ -3,8 +3,8 @@ package org.jboss.resteasy.auth.oauth;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import org.jboss.resteasy.oath.i18n.LogMessages;
-import org.jboss.resteasy.oath.i18n.Messages;
+import org.jboss.resteasy.auth.oauth.i18n.LogMessages;
+import org.jboss.resteasy.auth.oauth.i18n.Messages;
 
 import net.oauth.OAuth;
 import net.oauth.OAuthAccessor;

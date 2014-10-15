@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.jboss.resteasy.oath.i18n.Messages;
+import org.jboss.resteasy.auth.oauth.i18n.Messages;
 
 /**
  * OAuthProvider that keeps all data in memory. Mainly used as an example and for tests.

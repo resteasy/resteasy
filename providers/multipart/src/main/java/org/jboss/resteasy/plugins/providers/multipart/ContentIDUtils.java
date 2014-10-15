@@ -5,8 +5,8 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.UUID;
 
-import org.jboss.resteasy.providers.multipart.i18n.LogMessages;
-import org.jboss.resteasy.providers.multipart.i18n.Messages;
+import org.jboss.resteasy.plugins.providers.multipart.i18n.LogMessages;
+import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 
 
 /**

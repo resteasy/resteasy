@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.spring;
 
-import org.jboss.resteasy.spring.i18n.LogMessages;
-import org.jboss.resteasy.spring.i18n.Messages;
+import org.jboss.resteasy.plugins.spring.i18n.LogMessages;
+import org.jboss.resteasy.plugins.spring.i18n.Messages;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;

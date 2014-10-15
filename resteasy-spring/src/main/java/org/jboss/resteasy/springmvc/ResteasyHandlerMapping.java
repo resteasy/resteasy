@@ -2,11 +2,11 @@ package org.jboss.resteasy.springmvc;
 
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.plugins.spring.i18n.LogMessages;
+import org.jboss.resteasy.plugins.spring.i18n.Messages;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.NotFoundException;
-import org.jboss.resteasy.spring.i18n.LogMessages;
-import org.jboss.resteasy.spring.i18n.Messages;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.Ordered;
 import org.springframework.web.servlet.HandlerExecutionChain;

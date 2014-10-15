@@ -57,7 +57,7 @@
                                     <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${basedir}/src/main/resources/org/jboss/resteasy/oath/i18n</outputDirectory>
+                                    <outputDirectory>${basedir}/src/main/resources/org/jboss/resteasy/auth/oauth/i18n</outputDirectory>
                                     <resources>
                                         <resource>
                                             <directory>${basedir}/src/test/resources/i18n</directory>

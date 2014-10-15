@@ -4,7 +4,7 @@ import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException;
 import org.jboss.resteasy.plugins.providers.jaxb.MapProvider;
-import org.jboss.resteasy.providers.jaxb.json.i18n.Messages;
+import org.jboss.resteasy.plugins.providers.jaxb.json.i18n.Messages;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.Consumes;

@@ -6,8 +6,8 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
 
-import org.jboss.resteasy.guice.i18n.LogMessages;
-import org.jboss.resteasy.guice.i18n.Messages;
+import org.jboss.resteasy.plugins.guice.i18n.LogMessages;
+import org.jboss.resteasy.plugins.guice.i18n.Messages;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;

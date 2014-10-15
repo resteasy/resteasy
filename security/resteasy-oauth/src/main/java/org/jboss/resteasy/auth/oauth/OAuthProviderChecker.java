@@ -2,7 +2,7 @@ package org.jboss.resteasy.auth.oauth;
 
 import java.util.Set;
 
-import org.jboss.resteasy.oath.i18n.Messages;
+import org.jboss.resteasy.auth.oauth.i18n.Messages;
 
 /**
  * Used to make sure the OAuthProvider implementer does not return null values.

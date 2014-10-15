@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.providers.jaxb.json;
 
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException;
-import org.jboss.resteasy.providers.jaxb.json.i18n.Messages;
+import org.jboss.resteasy.plugins.providers.jaxb.json.i18n.Messages;
 
 import java.io.IOException;
 import java.io.Reader;

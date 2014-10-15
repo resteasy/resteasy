@@ -1,8 +1,8 @@
 package org.jboss.resteasy.plugins.providers;
 
 
-import org.jboss.resteasy.providers.yaml.i18n.LogMessages;
-import org.jboss.resteasy.providers.yaml.i18n.Messages;
+import org.jboss.resteasy.plugins.providers.yaml.i18n.LogMessages;
+import org.jboss.resteasy.plugins.providers.yaml.i18n.Messages;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.WriterException;
 import org.yaml.snakeyaml.Yaml;

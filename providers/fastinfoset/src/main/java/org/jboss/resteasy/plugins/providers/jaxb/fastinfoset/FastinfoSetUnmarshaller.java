@@ -2,7 +2,7 @@ package org.jboss.resteasy.plugins.providers.jaxb.fastinfoset;
 
 import com.sun.xml.fastinfoset.stax.StAXDocumentParser;
 
-import org.jboss.resteasy.providers.fastinfoset.i18n.Messages;
+import org.jboss.resteasy.plugins.providers.fastinfoset.i18n.Messages;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 

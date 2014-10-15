@@ -5,7 +5,7 @@ import org.codehaus.jettison.json.JSONTokener;
 import org.codehaus.jettison.mapped.Configuration;
 import org.codehaus.jettison.mapped.MappedNamespaceConvention;
 import org.codehaus.jettison.mapped.MappedXMLStreamReader;
-import org.jboss.resteasy.providers.jaxb.json.i18n.Messages;
+import org.jboss.resteasy.plugins.providers.jaxb.json.i18n.Messages;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 

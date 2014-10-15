@@ -27,7 +27,7 @@ import javax.xml.bind.attachment.AttachmentUnmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider;
-import org.jboss.resteasy.providers.multipart.i18n.Messages;
+import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 
 /**
  * A special JAXB Provider. It is not a real provider, it is only used as a

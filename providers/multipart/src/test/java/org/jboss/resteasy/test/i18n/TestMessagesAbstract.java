@@ -13,7 +13,7 @@ import org.jboss.resteasy.plugins.providers.multipart.AbstractMultipartWriter;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartOutput;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartReader;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartWriter;
-import org.jboss.resteasy.providers.multipart.i18n.Messages;
+import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 import org.jboss.resteasy.test.resteasy_jaxrs.i18n.TestMessagesParent;
 import org.junit.Test;
 
@@ -53,7 +53,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
    public void testLocale() throws Exception
    {  
       Locale locale = getLocale();
-      String filename = "org/jboss/resteasy/providers/multipart/i18n/Messages.i18n_" + locale.toString() + ".properties";
+      String filename = "org/jboss/resteasy/plugins/providers/multipart/i18n/Messages.i18n_" + locale.toString() + ".properties";
       if (!before(locale, filename))
       {
          System.out.println(getClass() + ": " + filename + " not found.");
