@@ -1,6 +1,6 @@
 package org.jboss.resteasy.util;
 
-import org.jboss.resteasy.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 public class Hex
 {

@@ -2,7 +2,7 @@ package org.jboss.resteasy.plugins.delegates;
 
 import javax.ws.rs.ext.RuntimeDelegate;
 
-import org.jboss.resteasy.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 import java.net.URI;
 

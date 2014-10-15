@@ -6,7 +6,7 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.EntityTypeFactory;
 import org.jboss.resteasy.client.core.BaseClientResponse;
-import org.jboss.resteasy.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.core.Response;

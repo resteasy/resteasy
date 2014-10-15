@@ -1,7 +1,7 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.i18n.LogMessages;
-import org.jboss.resteasy.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.RequestImpl;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;

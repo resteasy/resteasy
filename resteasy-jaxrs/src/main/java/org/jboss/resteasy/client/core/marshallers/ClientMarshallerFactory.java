@@ -2,7 +2,7 @@ package org.jboss.resteasy.client.core.marshallers;
 
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.client.ClientURI;
-import org.jboss.resteasy.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.MediaTypeHelper;

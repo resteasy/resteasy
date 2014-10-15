@@ -1,7 +1,7 @@
 package org.jboss.resteasy.core.request;
 
-import org.jboss.resteasy.i18n.LogMessages;
-import org.jboss.resteasy.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.BadRequestException;
 
 import javax.ws.rs.core.MediaType;

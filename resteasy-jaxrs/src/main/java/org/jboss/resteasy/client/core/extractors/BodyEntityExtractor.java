@@ -10,7 +10,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.core.BaseClientResponse;
-import org.jboss.resteasy.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 /**
  * BodyEntityExtractor extract body objects from responses. This ends up calling

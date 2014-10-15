@@ -3,7 +3,7 @@ package org.jboss.resteasy.util;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import org.jboss.resteasy.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 /**
  * This class is a trick used to extract GenericType information at runtime.  Java does not allow you get generic

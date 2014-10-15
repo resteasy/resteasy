@@ -1,6 +1,6 @@
 package org.jboss.resteasy.util;
 
-import org.jboss.resteasy.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 
 import javax.ws.rs.core.Context;
 import java.lang.annotation.Annotation;
@@ -65,7 +65,8 @@ public class PickConstructor
          }
       }
       if (potentialConflict) {
-          LogMessages.LOGGER.warn("Ambiguity constructors are found in " + clazz + ". More details please refer to http://jsr311.java.net/nonav/releases/1.1/spec/spec.html");
+         LogMessages.LOGGER.ambiguousConstructorsFound(clazz);
+
       }
       return pick;
    }
@@ -119,7 +120,7 @@ public class PickConstructor
       }
 
       if (potentialConflict) {
-          LogMessages.LOGGER.warn("Ambiguity constructors are found in " + clazz + ". More details please refer to http://jsr311.java.net/nonav/releases/1.1/spec/spec.html");
+         LogMessages.LOGGER.ambiguousConstructorsFound(clazz);
       }
       return pick;
    }

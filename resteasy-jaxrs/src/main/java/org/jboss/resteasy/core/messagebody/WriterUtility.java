@@ -1,7 +1,7 @@
 package org.jboss.resteasy.core.messagebody;
 
 import org.jboss.resteasy.core.interception.MessageBodyWriterContextImpl;
-import org.jboss.resteasy.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;

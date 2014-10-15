@@ -4,7 +4,7 @@ import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.jboss.resteasy.core.ExtendedCacheControl;
-import org.jboss.resteasy.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 import java.util.List;
 

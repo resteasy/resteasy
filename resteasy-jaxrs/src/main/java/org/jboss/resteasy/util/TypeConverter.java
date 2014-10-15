@@ -4,8 +4,8 @@
 package org.jboss.resteasy.util;
 
 import org.jboss.resteasy.core.ExceptionAdapter;
-import org.jboss.resteasy.i18n.LogMessages;
-import org.jboss.resteasy.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -79,7 +79,7 @@ public final class TypeConverter
       }
       catch (NoSuchMethodException e)
       {
-         LogMessages.LOGGER.warn("No valueOf() method available for " + targetType.getSimpleName() + ", trying constructor...");
+         LogMessages.LOGGER.noValueOfMethodAvailable(targetType.getSimpleName());
          result = getTypeViaStringConstructor(source, targetType);
       }
       return result;

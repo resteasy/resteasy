@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.annotations.providers.img.ImageWriterParams;
-import org.jboss.resteasy.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.util.FindAnnotation;
 
 import javax.imageio.IIOImage;

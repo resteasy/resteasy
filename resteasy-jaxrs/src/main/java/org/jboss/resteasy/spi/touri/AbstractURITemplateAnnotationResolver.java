@@ -1,6 +1,6 @@
 package org.jboss.resteasy.spi.touri;
 
-import org.jboss.resteasy.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.util.AnnotationResolver;
 

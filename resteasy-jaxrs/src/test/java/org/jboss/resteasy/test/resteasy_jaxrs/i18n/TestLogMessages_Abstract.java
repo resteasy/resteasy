@@ -8,7 +8,8 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.jboss.resteasy.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -21,9 +22,10 @@ import org.junit.Test;
  * 
  * Copyright Sep 26, 2014
  */
-public abstract class TestLogMessages_Abstract
+public abstract class TestLogMessages_Abstract extends TestMessagesParent
 {
    static protected Locale savedLocale;
+   protected static final String BASE = "000";
    protected ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
    @BeforeClass
@@ -39,15 +41,9 @@ public abstract class TestLogMessages_Abstract
       System.out.println("Reset default locale to: " + savedLocale);
    }
    
-   public void before(Level level, Locale locale) throws Exception
+   public void before(Level level, Locale locale, String filename) throws Exception
    {
-      if (locale != null)
-      {
-         System.out.println("default locale: " + Locale.getDefault());
-         Locale.setDefault(locale);
-         System.out.println("Set default locale to: " + locale);
-      }
-      System.out.println("locale: " + Locale.getDefault());
+      super.before(locale, filename);
       String pattern = "[%d{ABSOLUTE}] [%t] %5p (%F:%L) - %m%n";
       PatternLayout layout = new PatternLayout(pattern);
       ConsoleAppender consoleAppender = new ConsoleAppender(layout);
@@ -62,36 +58,42 @@ public abstract class TestLogMessages_Abstract
    @Test
    public void testLocale() throws Exception
    {
-      doTest(getLocale(), failedExecuting(), couldNotDeleteFile(), deploying(), creatingContextObject());
+      String filename = "org/jboss/resteasy/resteasy_jaxrs/i18n/LogMessages.i18n_" + getLocale().toString() + ".properties";
+      if (!before(Locale.getDefault(), filename))
+      {
+         System.out.println(getClass() + ": " + filename + " not found.");
+         return;
+      }
+      doTest(getLocale(), filename);
    }
    
-   protected void doTest(Locale locale, String failedExecuting, String couldNotDelete, String deployingClass, String creatingContextObject) throws Exception
+   protected void doTest(Locale locale, String filename) throws Exception
    {
-      doTestFatal(locale);
-      doTestError(locale, failedExecuting);
-      doTestWarn (locale, failedExecuting, couldNotDelete);
-      doTestInfo (locale, failedExecuting, couldNotDelete, deployingClass);
-      doTestDebug(locale, failedExecuting, couldNotDelete, deployingClass, creatingContextObject);
-      doTestTrace(locale, failedExecuting, couldNotDelete, deployingClass, creatingContextObject);
+      doTestFatal(locale, filename);
+      doTestError(locale, filename);
+      doTestWarn (locale, filename);
+      doTestInfo (locale, filename);
+      doTestDebug(locale, filename);
+      doTestTrace(locale, filename);
    }
 
    
-   protected void doTestFatal(Locale locale) throws Exception
+   protected void doTestFatal(Locale locale, String filename) throws Exception
    {  
-      before(Level.FATAL, locale);
+      before(Level.FATAL, getLocale(), filename);
       LogMessages.LOGGER.failedExecutingError("method", "path", new Exception("oh no mr bill"));
       LogMessages.LOGGER.couldNotDeleteFile("path", new Exception("Sluggo says"));
       Assert.assertEquals("", baos.toString());
    }
 
-   protected void doTestError(Locale locale, String failedExecuting) throws Exception
+   protected void doTestError(Locale locale, String filename) throws Exception
    {  
-      before(Level.ERROR, locale);
+      before(Level.ERROR, getLocale(), filename);
 
       // ERROR
       LogMessages.LOGGER.failedExecutingError("method", "path", new Exception("oh no mr bill"));
-      System.out.println("expected: " + "RESTEASY000100: " + failedExecuting + " method path");
-      Assert.assertTrue(baos.toString().contains("RESTEASY000100: " + failedExecuting + " method path"));
+      String expected = getExpected(BASE + "100", "failedExecutingError", "method", "path");
+      Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("oh no mr bill"));
       baos.reset();
@@ -101,20 +103,22 @@ public abstract class TestLogMessages_Abstract
       Assert.assertEquals("", baos.toString());
    }
 
-   protected void doTestWarn(Locale locale, String failedExecuting, String couldNotDelete) throws Exception
+   protected void doTestWarn(Locale locale, String filename) throws Exception
    {  
-      before(Level.WARN, locale);
+      before(Level.WARN, locale, filename);
 
       // ERROR
       LogMessages.LOGGER.failedExecutingError("method", "path", new Exception("oh no mr bill"));
-      Assert.assertTrue(baos.toString().contains("RESTEASY000100: " + failedExecuting + " method path"));
+      String expected = getExpected(BASE + "100", "failedExecutingError", "method", "path");
+      Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("oh no mr bill"));
       baos.reset();
 
       // WARN
       LogMessages.LOGGER.couldNotDeleteFile("file", new Exception("Sluggo says"));
-      Assert.assertTrue(baos.toString().contains("RESTEASY000205: " + String.format(couldNotDelete, "file")));
+      expected = getExpected(BASE + "215", "couldNotDeleteFile", "file");
+      Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("Sluggo says"));
       baos.reset();
@@ -124,29 +128,30 @@ public abstract class TestLogMessages_Abstract
       Assert.assertEquals("", baos.toString());
    }
 
-   protected void doTestInfo(Locale locale, String failedExecuting, String couldNotDelete, String deployingClass) throws Exception
+   protected void doTestInfo(Locale locale, String filename) throws Exception
    {  
-      before(Level.INFO, locale);
+      before(Level.INFO, locale, filename);
 
       // ERROR
       LogMessages.LOGGER.failedExecutingError("method", "path", new Exception("oh no mr bill"));
-      Assert.assertTrue(baos.toString().contains("RESTEASY000100: " + failedExecuting + " method path"));
+      String expected = getExpected(BASE + "100", "failedExecutingError", "method", "path");
+      Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("oh no mr bill"));
       baos.reset();
 
       // WARN
       LogMessages.LOGGER.couldNotDeleteFile("file", new Exception("Sluggo says"));
-      Assert.assertTrue(baos.toString().contains("RESTEASY000205: " + String.format(couldNotDelete, "file")));
+      expected = getExpected(BASE + "215", "couldNotDeleteFile", "file");
+      Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("Sluggo says"));
       baos.reset();
 
       // INFO
       LogMessages.LOGGER.deployingApplication("className", getClass());
-      System.out.println("class: " + getClass());
-      System.out.println("expected: " + "RESTEASY000320: " + deployingClass + "className: " + getClass());
-      Assert.assertTrue(baos.toString().contains("RESTEASY000320: " + deployingClass + "className: " + getClass()));
+      expected = getExpected(BASE + "320", "deployingApplication", "className", getClass());
+      Assert.assertTrue(baos.toString().contains(expected));
       baos.reset();
 
       // DEBUG
@@ -154,66 +159,75 @@ public abstract class TestLogMessages_Abstract
       Assert.assertEquals("", baos.toString());
    }
 
-   protected void doTestDebug(Locale locale, String failedExecuting, String couldNotDelete, String deployingClass, String creatingContextObject) throws Exception
+   protected void doTestDebug(Locale locale, String filename) throws Exception
    {  
-      before(Level.DEBUG, locale);
+      before(Level.DEBUG, locale, filename);
 
       // ERROR
       LogMessages.LOGGER.failedExecutingError("method", "path", new Exception("oh no mr bill"));
-      Assert.assertTrue(baos.toString().contains("RESTEASY000100: " + failedExecuting + " method path"));
+      String expected = getExpected(BASE + "100", "failedExecutingError", "method", "path");
+      Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("oh no mr bill"));
       baos.reset();
 
       // WARN
       LogMessages.LOGGER.couldNotDeleteFile("file", new Exception("Sluggo says"));
-      Assert.assertTrue(baos.toString().contains("RESTEASY000205: " + String.format(couldNotDelete, "file")));
+      expected = getExpected(BASE + "215", "couldNotDeleteFile", "file");
+      Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("Sluggo says"));
       baos.reset();
 
       // INFO
       LogMessages.LOGGER.deployingApplication("className", getClass());
-      Assert.assertTrue(baos.toString().contains("RESTEASY000320: " + deployingClass + "className: " + getClass()));
+      expected = getExpected(BASE + "320", "deployingApplication", "className", getClass());
+      Assert.assertTrue(baos.toString().contains(expected));
       baos.reset();
 
       // DEBUG
       LogMessages.LOGGER.creatingContextObject("key", "value");
-      System.out.println("expected: " + String.format(creatingContextObject, "key", "value"));
-      Assert.assertTrue(baos.toString().contains("RESTEASY000400: " + String.format(creatingContextObject, "key", "value")));
+      expected = getExpected(BASE + "400", "creatingContextObject", "key", "value");
+      Assert.assertTrue(baos.toString().contains(expected));
    }
 
-   protected void doTestTrace(Locale locale, String failedExecuting, String couldNotDelete, String deployingClass, String creatingContextObject) throws Exception
+   protected void doTestTrace(Locale locale, String filename) throws Exception
    {  
-      before(Level.TRACE, locale);
+      before(Level.TRACE, locale, filename);
 
       // ERROR
       LogMessages.LOGGER.failedExecutingError("method", "path", new Exception("oh no mr bill"));
-      Assert.assertTrue(baos.toString().contains("RESTEASY000100: " + failedExecuting + " method path"));
+      String expected = getExpected(BASE + "100", "failedExecutingError", "method", "path");
+      Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("oh no mr bill"));
       baos.reset();
 
       // WARN
       LogMessages.LOGGER.couldNotDeleteFile("file", new Exception("Sluggo says"));
-      Assert.assertTrue(baos.toString().contains("RESTEASY000205: " + String.format(couldNotDelete, "file")));
+      expected = getExpected(BASE + "215", "couldNotDeleteFile", "file");
+      Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("Sluggo says"));
       baos.reset();
 
       // INFO
       LogMessages.LOGGER.deployingApplication("className", getClass());
-      Assert.assertTrue(baos.toString().contains("RESTEASY000320: " + deployingClass + "className: " + getClass()));
+      expected = getExpected(BASE + "320", "deployingApplication", "className", getClass());
+      Assert.assertTrue(baos.toString().contains(expected));
       baos.reset();
 
       // DEBUG
       LogMessages.LOGGER.creatingContextObject("key", "value");
-      Assert.assertTrue(baos.toString().contains("RESTEASY000400: " + String.format(creatingContextObject, "key", "value")));
+      expected = getExpected(BASE + "400", "creatingContextObject", "key", "value");
+      Assert.assertTrue(baos.toString().contains(expected));
+   }
+   
+   @Override
+   protected int getExpectedNumberOfMethods()
+   {
+      return LogMessages.class.getDeclaredMethods().length;  
    }
    
    abstract protected Locale getLocale();
-   abstract protected String failedExecuting();
-   abstract protected String couldNotDeleteFile();
-   abstract protected String deploying();
-   abstract protected String creatingContextObject();
 }

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.delegates;
 
-import org.jboss.resteasy.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.util.LocaleHelper;
 
 import javax.ws.rs.ext.RuntimeDelegate;

@@ -1,11 +1,11 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.core.registry.RootSegment;
-import org.jboss.resteasy.i18n.LogMessages;
-import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiResourceFactory;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.UriBuilderImpl;
 import org.jboss.resteasy.spi.*;
 import org.jboss.resteasy.util.GetRestful;

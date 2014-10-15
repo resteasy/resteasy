@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.jboss.resteasy.client.ProxyBuilder;
 import org.jboss.resteasy.client.ProxyConfig;
-import org.jboss.resteasy.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.providers;
 
-import org.jboss.resteasy.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.ext.Providers;

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.specimpl;
 
 import org.jboss.resteasy.core.request.ServerDrivenNegotiation;
-import org.jboss.resteasy.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HttpHeaderNames;

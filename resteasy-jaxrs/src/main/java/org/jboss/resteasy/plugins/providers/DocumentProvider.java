@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.providers;
 
-import org.jboss.resteasy.i18n.LogMessages;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.WriterException;

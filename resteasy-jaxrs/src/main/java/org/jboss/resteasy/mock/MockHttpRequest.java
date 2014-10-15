@@ -1,8 +1,8 @@
 package org.jboss.resteasy.mock;
 
 import org.jboss.resteasy.core.Headers;
-import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.HttpHeadersImpl;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.PathSegmentImpl;

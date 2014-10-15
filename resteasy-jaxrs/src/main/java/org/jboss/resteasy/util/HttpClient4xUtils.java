@@ -6,7 +6,7 @@ import java.net.URISyntaxException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
-import org.jboss.resteasy.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 
 /**
  * HttpClient4xUtils provides utility methods useful for changes

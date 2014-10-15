@@ -1,6 +1,6 @@
 package org.jboss.resteasy.specimpl;
 
-import org.jboss.resteasy.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.PathHelper;
 

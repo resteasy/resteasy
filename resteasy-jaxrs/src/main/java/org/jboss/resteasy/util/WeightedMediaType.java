@@ -1,7 +1,7 @@
 package org.jboss.resteasy.util;
 
-import org.jboss.resteasy.i18n.Messages;
 import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.LoggableFailure;
 
 import javax.ws.rs.core.MediaType;

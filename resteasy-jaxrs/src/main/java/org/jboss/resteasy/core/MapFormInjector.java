@@ -1,7 +1,7 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.annotations.Form;
-import org.jboss.resteasy.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import java.lang.annotation.Annotation;

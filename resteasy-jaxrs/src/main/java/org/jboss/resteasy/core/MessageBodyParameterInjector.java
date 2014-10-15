@@ -3,7 +3,7 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.core.interception.InterceptorRegistryListener;
 import org.jboss.resteasy.core.interception.ServerMessageBodyReaderContext;
-import org.jboss.resteasy.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;

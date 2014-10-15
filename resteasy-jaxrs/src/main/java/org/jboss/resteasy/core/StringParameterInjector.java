@@ -1,7 +1,7 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
-import org.jboss.resteasy.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringConverter;
