@@ -48,11 +48,11 @@ public class TestMessages
    @Test
    public void test_enUS() throws Exception
    {
-      InputStream is = Messages.class.getClass().getResourceAsStream("org/jboss/resteasy/hibernatevalidator/i18n/Messages.i18n_xx.properties");
-      Properties properties = new Properties();
-      properties.load(is);
-      System.out.println("Messages.i18n_xx.properties: " + properties);
-      
+      if (Messages.class.getClassLoader().getResourceAsStream("/org/jboss/resteasy/providers/hibernatevalidator/i18n/Messages.i18n_xx.properties") == null)
+      {
+         System.out.println("Resteasy build without i18n test property files. Skipping test.");
+         return;
+      }
       String language = "xx";
       String country = "YY";
       ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-719/setLocale/" + language +"/" + country);
