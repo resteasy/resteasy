@@ -16,28 +16,4 @@ public class TestLogMessages_xx extends TestLogMessages_Abstract
    {
       return new Locale("xx");
    }
-
-   @Override
-   protected String failedExecuting()
-   {
-      return "fallito in esecuzione";
-   }
-
-   @Override
-   protected String couldNotDeleteFile()
-   {
-      return "Impossibile eliminare il file '%s' per la richiesta:";
-   }
-
-   @Override
-   protected String deploying()
-   {
-      return "Distribuzione de ";
-   }
-
-   @Override
-   protected String creatingContextObject()
-   {
-      return "Creazione dello oggetto di contesto <%s : %s>";
-   }  
 }
