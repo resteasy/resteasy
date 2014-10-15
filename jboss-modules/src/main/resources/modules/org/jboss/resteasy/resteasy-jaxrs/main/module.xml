@@ -46,5 +46,6 @@
         
         <!-- exported -->
         <module name="org.apache.httpcomponents" export="true"/>
+        <module name="org.jboss.logging" export="true"/>
     </dependencies>
 </module>
