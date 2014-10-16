@@ -1,22 +1,24 @@
 package org.jboss.resteasy.test;
 
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 import io.netty.channel.ChannelHandlerContext;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -72,6 +74,13 @@ public class NettyTest
       @Produces("text/plain")
       public String context(@Context ChannelHandlerContext context) {
           return context.channel().toString();
+      }
+      
+      @POST
+      @Path("/post")
+      @Produces("text/plain")
+      public String post(String postBody) {
+          return postBody;
       }
    }
 
@@ -172,5 +181,13 @@ public class NettyTest
         String val = target.request().get(String.class);
         Assert.assertNotNull(val);
         Assert.assertFalse(val.isEmpty());
+    }
+    
+    @Test
+    public void testPost() {
+      WebTarget target = client.target(generateURL("/post"));
+      String postBody = "hello world";
+      String result = (String) target.request().post(Entity.text(postBody), String.class);
+      Assert.assertEquals(postBody, result);
     }
 }

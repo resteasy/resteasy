@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.server.netty;
 
+import static io.netty.handler.codec.http.HttpHeaders.is100ContinueExpected;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -7,16 +8,13 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.util.ReferenceCountUtil;
+
+import java.util.List;
 
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
-
-import java.util.List;
-
-import static io.netty.handler.codec.http.HttpHeaders.is100ContinueExpected;
 
 /**
  * This {@link MessageToMessageDecoder} is responsible for decode {@link io.netty.handler.codec.http.HttpRequest}
@@ -71,16 +69,15 @@ public class RestEasyHttpRequestDecoder extends MessageToMessageDecoder<io.netty
            if (request instanceof HttpContent)
            {
                HttpContent content = (HttpContent) request;
-               ByteBuf buf = content.content().retain();
-               try {
-                   ByteBufInputStream in = new ByteBufInputStream(buf);
-                   nettyRequest.setInputStream(in);
-                   out.add(nettyRequest);
-               } 
-               finally
-               {
-                  ReferenceCountUtil.release(buf); 
+               
+               // Does the request contain a body that will need to be retained
+               if(content.content().readableBytes() > 0) {
+                 ByteBuf buf = content.content().retain();
+                 ByteBufInputStream in = new ByteBufInputStream(buf);
+                 nettyRequest.setInputStream(in);
                }
+               
+               out.add(nettyRequest); 
            }
         }
         catch (Exception e)
