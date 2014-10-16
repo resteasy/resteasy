@@ -1,20 +1,25 @@
 package org.jboss.resteasy.test;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import io.netty.channel.ChannelHandlerContext;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -73,6 +78,14 @@ public class NettyTest
       public String context(@Context ChannelHandlerContext context) {
           return context.channel().toString();
       }
+
+       @POST
+       @Path("/postBody")
+       @Produces("text/plain")
+       @Consumes("text/plain")
+       public String postBody(String body) {
+           return "Received body " + body;
+       }
    }
 
    static Client client;
@@ -172,5 +185,12 @@ public class NettyTest
         String val = target.request().get(String.class);
         Assert.assertNotNull(val);
         Assert.assertFalse(val.isEmpty());
+    }
+
+    @Test
+    public void testPostBody() throws Exception {
+        WebTarget target = client.target(generateURL("/postBody"));
+        String val = target.request().post(Entity.entity("test", MediaType.TEXT_PLAIN_TYPE), String.class);
+        Assert.assertEquals("Received body test", val);
     }
 }
