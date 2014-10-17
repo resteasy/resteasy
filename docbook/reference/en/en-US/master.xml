@@ -51,6 +51,7 @@
                 <!ENTITY Signature SYSTEM "modules/signature.xml">
                 <!ENTITY SMIME SYSTEM "modules/smime.xml">
                 <!ENTITY Validation SYSTEM "modules/Validation.xml">
+                <!ENTITY I18N SYSTEM "modules/I18N.xml">
                 ]>
 
 <book>
@@ -137,6 +138,7 @@
    &RESTEasy_Client_Framework;
    &AJAX_Client;
    &Validation;
+   &I18N;
    &Maven_and_RESTEasy;
    &JBoss;
    &Migration_from_older_versions;
