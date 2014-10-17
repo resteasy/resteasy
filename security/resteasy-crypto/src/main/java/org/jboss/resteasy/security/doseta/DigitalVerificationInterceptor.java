@@ -3,6 +3,7 @@ package org.jboss.resteasy.security.doseta;
 import org.jboss.resteasy.annotations.interception.ClientInterceptor;
 import org.jboss.resteasy.annotations.interception.DecoderPrecedence;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
+import org.jboss.resteasy.crypto.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderContext;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
@@ -41,7 +42,7 @@ public class DigitalVerificationInterceptor implements MessageBodyReaderIntercep
       List<String> strings = headers.get(DKIMSignature.DKIM_SIGNATURE);
       if (strings == null)
       {
-         throw new UnauthorizedSignatureException("There was no " + DKIMSignature.DKIM_SIGNATURE + " header");
+         throw new UnauthorizedSignatureException(Messages.MESSAGES.thereWasNoSignatureHeader(DKIMSignature.DKIM_SIGNATURE));
       }
       List<DKIMSignature> signatures = new ArrayList<DKIMSignature>();
       for (String headerVal : strings)
@@ -52,7 +53,7 @@ public class DigitalVerificationInterceptor implements MessageBodyReaderIntercep
          }
          catch (Exception e)
          {
-            throw new UnauthorizedSignatureException("Malformed " + DKIMSignature.DKIM_SIGNATURE + " header");
+            throw new UnauthorizedSignatureException(Messages.MESSAGES.malformedSignatureHeader(DKIMSignature.DKIM_SIGNATURE));
          }
       }
 

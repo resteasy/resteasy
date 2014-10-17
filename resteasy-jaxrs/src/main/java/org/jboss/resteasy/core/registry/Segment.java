@@ -3,6 +3,7 @@ package org.jboss.resteasy.core.registry;
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceLocator;
 import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.MethodNotAllowedException;
@@ -78,7 +79,7 @@ public class Segment
          if (locator != null) return locator;
          if (methods == null || methods.size() == 0)
          {
-            throw new NotFoundException("Could not find resource for full path: " + request.getUri().getRequestUri());
+            throw new NotFoundException(Messages.MESSAGES.couldNotFindResourceForFullPath(request.getUri().getRequestUri()));
          }
          if (!methodMatch)
          {
@@ -104,19 +105,19 @@ public class Segment
             if (httpMethod.equals("OPTIONS"))
             {
                Response res = Response.ok().header(HttpHeaderNames.ALLOW, allowHeaderValue).build();
-               throw new DefaultOptionsMethodException("No resource method found for options, return OK with Allow header", res);
+               throw new DefaultOptionsMethodException(Messages.MESSAGES.noResourceMethodFoundForOptions(), res);
             }
             else
             {
                Response res = Response.status(HttpResponseCodes.SC_METHOD_NOT_ALLOWED).header(HttpHeaderNames.ALLOW, allowHeaderValue).build();
-               throw new MethodNotAllowedException("No resource method found for " + httpMethod + ", return 405 with Allow header", res);
+               throw new MethodNotAllowedException(Messages.MESSAGES.noResourceMethodFoundForHttpMethod(httpMethod), res);
             }
          }
          else if (!consumeMatch)
          {
-            throw new UnsupportedMediaTypeException("Cannot consume content type");
+            throw new UnsupportedMediaTypeException(Messages.MESSAGES.cannotConsumeContentType());
          }
-         throw new NotAcceptableException("No match for accept header");
+         throw new NotAcceptableException(Messages.MESSAGES.noMatchForAcceptHeader());
       }
       if (list.size() == 1) return list.get(0);
 

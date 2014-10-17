@@ -28,6 +28,8 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Properties;
 
+import org.jboss.resteasy.jaxrs_api.i18n.Messages;
+
 class FactoryFinder
 {
 
@@ -85,9 +87,7 @@ class FactoryFinder
       }
       catch (Exception x)
       {
-         throw new ClassNotFoundException(
-                 "Provider " + className + " could not be instantiated: " + x,
-                 x);
+         throw new ClassNotFoundException(Messages.MESSAGES.providerCouldNotBeInstantiated(className, x), x);
       }
    }
 
@@ -147,7 +147,7 @@ class FactoryFinder
                {
                   URL url = classLoader.getResource(serviceId);
 
-                  throw new ClassNotFoundException("Could not find from factory file" + url, e);
+                  throw new ClassNotFoundException(Messages.MESSAGES.couldNotFindFromFactoryFile(url), e);
                }
             }
          }
@@ -194,8 +194,7 @@ class FactoryFinder
 
       if (fallbackClassName == null)
       {
-         throw new ClassNotFoundException(
-                 "Provider for " + factoryId + " cannot be found", null);
+         throw new ClassNotFoundException(Messages.MESSAGES.providerCouldNotBeFound(factoryId), null);
       }
 
       return newInstance(fallbackClassName, classLoader);

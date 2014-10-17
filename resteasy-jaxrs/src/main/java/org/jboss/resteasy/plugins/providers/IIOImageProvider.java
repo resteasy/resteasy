@@ -4,7 +4,6 @@
 package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.annotations.providers.img.ImageWriterParams;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.util.FindAnnotation;
 
 import javax.imageio.IIOImage;
@@ -37,10 +36,6 @@ import java.util.Locale;
 @Produces("image/*")
 public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
 {
-   /**
-    *
-    */
-   private static final Logger logger = Logger.getLogger(IIOImageProvider.class);
 
    /**
     * @param type

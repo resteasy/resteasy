@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core.request;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.BadRequestException;
 
 
@@ -16,7 +17,6 @@ public final class QualityValue extends Number implements Comparable<QualityValu
    public static final QualityValue DEFAULT = HIGHEST;
 
    private static final long serialVersionUID = 1L;
-   private static final String MALFORMED_VALUE_MESSAGE = "Malformed quality value.";
 
    private final int WEIGHT;
 
@@ -107,15 +107,15 @@ public final class QualityValue extends Number implements Comparable<QualityValu
    {
       int length = value.length();
       if (length == 0 || length > 5)
-         throw new BadRequestException(MALFORMED_VALUE_MESSAGE);
+         throw new BadRequestException(Messages.MESSAGES.malformedQualityValue());
       if (length > 1 && value.charAt(1) != '.')
-         throw new BadRequestException(MALFORMED_VALUE_MESSAGE);
+         throw new BadRequestException(Messages.MESSAGES.malformedQualityValue());
       int firstCharacter = value.codePointAt(0);
       if (firstCharacter == '1')
       {
          for (int i = 2; i < length; ++i)
             if (value.charAt(i) != '0')
-               throw new BadRequestException(MALFORMED_VALUE_MESSAGE);
+               throw new BadRequestException(Messages.MESSAGES.malformedQualityValue());
          return 1000;
       }
       else if (firstCharacter == '0')
@@ -128,14 +128,14 @@ public final class QualityValue extends Number implements Comparable<QualityValu
             {
                int digit = value.codePointAt(i) - '0';
                if (digit < 0 || digit > 9)
-                  throw new BadRequestException(MALFORMED_VALUE_MESSAGE);
+                  throw new BadRequestException(Messages.MESSAGES.malformedQualityValue());
                weight += digit;
             }
          }
          return weight;
       }
       else
-         throw new BadRequestException(MALFORMED_VALUE_MESSAGE);
+         throw new BadRequestException(Messages.MESSAGES.malformedQualityValue());
    }
 
 }

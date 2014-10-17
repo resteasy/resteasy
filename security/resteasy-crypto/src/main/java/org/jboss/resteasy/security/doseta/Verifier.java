@@ -1,6 +1,9 @@
 package org.jboss.resteasy.security.doseta;
 
 import javax.ws.rs.core.MultivaluedMap;
+
+import org.jboss.resteasy.crypto.i18n.Messages;
+
 import java.security.PublicKey;
 import java.security.SignatureException;
 import java.util.ArrayList;
@@ -142,7 +145,7 @@ public class Verifier
          }
          if (key == null)
          {
-            throw new SignatureException("Could not find PublicKey for DKIMSignature " + signature);
+            throw new SignatureException(Messages.MESSAGES.couldNotFindPublicKey(signature));
          }
       }
 

@@ -45,6 +45,10 @@
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-cdi"/>
         </module-def>
 
+    	<module-def name="org.jboss.resteasy.resteasy-hibernatevalidator-provider">
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-hibernatevalidator-provider"  jandex="true"/>
+        </module-def>
+    	
         <module-def name="org.jboss.resteasy.resteasy-jackson-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jackson-provider" jandex="true"/>
         </module-def>

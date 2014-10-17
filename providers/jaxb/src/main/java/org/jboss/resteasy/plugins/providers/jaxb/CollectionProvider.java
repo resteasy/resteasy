@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -57,7 +58,10 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
 {
    @Context
    protected Providers providers;
-   private boolean expandEntityReferences = false;
+   
+   private boolean disableExternalEntities = true;
+   private boolean enableSecureProcessingFeature = true;
+   private boolean disableDTDs = true;
    
    public CollectionProvider()
    {
@@ -67,7 +71,17 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
          String s = context.getParameter("resteasy.document.expand.entity.references");
          if (s != null)
          {
-            setExpandEntityReferences(Boolean.parseBoolean(s));
+            setDisableExternalEntities(!Boolean.parseBoolean(s));
+         }
+         s = context.getParameter("resteasy.document.secure.processing.feature");
+         if (s != null)
+         {
+            setEnableSecureProcessingFeature(Boolean.parseBoolean(s));
+         }
+         s = context.getParameter("resteasy.document.secure.disableDTDs");
+         if (s != null)
+         {
+            setDisableDTDs(Boolean.parseBoolean(s));
          }
       }
    }
@@ -107,7 +121,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
-         throw new JAXBUnmarshalException("Unable to find JAXBContext for media type: " + mediaType);
+         throw new JAXBUnmarshalException(Messages.MESSAGES.unableToFindJAXBContext(mediaType));
       }
       Class baseType = Types.getCollectionBaseType(type, genericType);
       JaxbCollection col = null;
@@ -115,7 +129,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       {
          JAXBElement<JaxbCollection> ele = null;
          
-         if (suppressExpandEntityExpansion())
+         if (needsSecurity())
          {
             SAXSource source = null;
             if (getCharset(mediaType) == null)
@@ -128,7 +142,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
             }
             JAXBContext ctx = finder.findCachedContext(JaxbCollection.class, mediaType, annotations);
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
-            unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);
+            unmarshaller = new SecureUnmarshaller(unmarshaller, disableExternalEntities, enableSecureProcessingFeature, disableDTDs);
             ele = unmarshaller.unmarshal(source, JaxbCollection.class);
          }
          else
@@ -151,11 +165,11 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
          {
             if (!wrapped.element().equals(ele.getName().getLocalPart()))
             {
-               throw new JAXBUnmarshalException("Collection wrapping failed, expected root element name of " + wrapped.element() + " got " + ele.getName().getLocalPart());
+               throw new JAXBUnmarshalException(Messages.MESSAGES.collectionWrappingFailedLocalPart(wrapped.element(), ele.getName().getLocalPart()));
             }
             if (!wrapped.namespace().equals(ele.getName().getNamespaceURI()))
             {
-               throw new JAXBUnmarshalException("Collection wrapping failed, expect namespace of " + wrapped.namespace() + " got " + ele.getName().getNamespaceURI());
+               throw new JAXBUnmarshalException(Messages.MESSAGES.collectionWrappingFailedNamespace(wrapped.namespace(), ele.getName().getNamespaceURI()));
             }
          }
 
@@ -231,7 +245,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
-         throw new JAXBMarshalException("Unable to find JAXBContext for media type: " + mediaType);
+         throw new JAXBMarshalException(Messages.MESSAGES.unableToFindJAXBContext(mediaType));
       }
       Class baseType = Types.getCollectionBaseType(type, genericType);
       try
@@ -275,22 +289,37 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
          throw new JAXBMarshalException(e);
       }
    }
-   
-   public boolean isExpandEntityReferences()
+
+   public boolean isDisableExternalEntities()
    {
-      return expandEntityReferences;
+      return disableExternalEntities;
    }
 
-   public void setExpandEntityReferences(boolean expandEntityReferences)
+   public void setDisableExternalEntities(boolean disableExternalEntities)
    {
-      this.expandEntityReferences = expandEntityReferences;
+      this.disableExternalEntities = disableExternalEntities;
    }
-   
-   protected boolean suppressExpandEntityExpansion()
+
+   public boolean isEnableSecureProcessingFeature()
    {
-      return !isExpandEntityReferences();
+      return enableSecureProcessingFeature;
    }
-   
+
+   public void setEnableSecureProcessingFeature(boolean enableSecureProcessingFeature)
+   {
+      this.enableSecureProcessingFeature = enableSecureProcessingFeature;
+   }
+
+   public boolean isDisableDTDs()
+   {
+      return disableDTDs;
+   }
+
+   public void setDisableDTDs(boolean disableDTDs)
+   {
+      this.disableDTDs = disableDTDs;
+   }
+
    public static String getCharset(final MediaType mediaType)
    {
       if (mediaType != null)
@@ -298,5 +327,10 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
          return mediaType.getParameters().get("charset");
       }
       return null;
+   }
+   
+   protected boolean needsSecurity()
+   {
+      return true;
    }
 }

@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.providers.jaxb.json;
 
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException;
+import org.jboss.resteasy.plugins.providers.jaxb.json.i18n.Messages;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -20,13 +21,13 @@ public class JsonParsing
       int i = reader.read();
       char c = (char) i;
       StringBuffer buffer = new StringBuffer();
-      if (c != '{') throw new JAXBUnmarshalException("Expecting '{' in json map");
+      if (c != '{') throw new JAXBUnmarshalException(Messages.MESSAGES.expectingLeftBraceJsonMap());
 
       buffer.append(c);
       do
       {
          i = reader.read();
-         if (i == -1) throw new JAXBUnmarshalException("Unexpected end of stream");
+         if (i == -1) throw new JAXBUnmarshalException(Messages.MESSAGES.unexpectedEndOfStream());
          c = (char) i;
          buffer.append(c);
          if (backslash)
@@ -71,12 +72,12 @@ public class JsonParsing
       int i = reader.read();
       char c = (char) i;
       StringBuffer buffer = new StringBuffer();
-      if (c != '"') throw new JAXBUnmarshalException("Expecting '\"' in json map key");
+      if (c != '"') throw new JAXBUnmarshalException(Messages.MESSAGES.expectingQuote());
 
       do
       {
          i = reader.read();
-         if (i == -1) throw new JAXBUnmarshalException("Unexpected end of stream");
+         if (i == -1) throw new JAXBUnmarshalException(Messages.MESSAGES.unexpectedEndOfStream());
          c = (char) i;
          if (backslash)
          {
@@ -116,7 +117,7 @@ public class JsonParsing
       {
          buffer.mark(2);
          i = buffer.read();
-         if (i == -1) throw new JAXBUnmarshalException("Unexpected end of json input");
+         if (i == -1) throw new JAXBUnmarshalException(Messages.MESSAGES.unexpectedEndOfJsonInput());
          c = (char) i;
       } while (Character.isWhitespace(c));
       if (reset) buffer.reset();

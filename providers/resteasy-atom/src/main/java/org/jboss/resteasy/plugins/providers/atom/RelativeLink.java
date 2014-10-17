@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.atom;
 
+import org.jboss.resteasy.plugins.providers.resteasy_atom.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.MediaType;
@@ -28,7 +29,7 @@ public class RelativeLink extends Link
    {
       UriInfo uriInfo = ResteasyProviderFactory.getContextData(UriInfo.class);
       if (uriInfo == null)
-         throw new IllegalStateException("This constructor must be called in the context of a JAX-RS request");
+         throw new IllegalStateException(Messages.MESSAGES.consructorMustBeCalled());
       URI uri = uriInfo.getAbsolutePathBuilder().path(relativeLink).build();
       setHref(uri);
       setRel(rel);

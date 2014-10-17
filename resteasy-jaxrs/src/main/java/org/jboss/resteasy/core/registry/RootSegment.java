@@ -3,6 +3,7 @@ package org.jboss.resteasy.core.registry;
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceLocator;
 import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -64,7 +65,7 @@ public class RootSegment extends Segment
          {
             PathParamSegment segmentNode = locatorExpressions.get(expression);
             if (segmentNode != null)
-               throw new LoggableFailure("You cannot have 2 locators for same path: " + expression);
+               throw new LoggableFailure(Messages.MESSAGES.cannotHaveTwoLocators(expression));
             segmentNode = new PathParamSegment(expression);
             segmentNode.locator = (ResourceLocator) invoker;
             locatorExpressions.put(segmentNode.getPathExpression(), segmentNode);
@@ -357,7 +358,7 @@ public class RootSegment extends Segment
          }
       }
       if (lastFailure != null) throw lastFailure;
-      throw new NotFoundException("Could not find resource for relative : " + path + " of full path: " + request.getUri().getRequestUri());
+      throw new NotFoundException(Messages.MESSAGES.couldNotFindResourceForRelativePath(path, request.getUri().getRequestUri()));
    }
 
 

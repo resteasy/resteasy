@@ -1,5 +1,6 @@
 package org.jboss.resteasy.util;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.LoggableFailure;
 
 import javax.ws.rs.Consumes;
@@ -65,13 +66,13 @@ public class MediaTypeHelper
             {
                float rtn = Float.valueOf(val);
                if (rtn > 1.0F)
-                  throw new LoggableFailure("MediaType q value cannot be greater than 1.0: " + type.toString(), HttpResponseCodes.SC_BAD_REQUEST);
+                  throw new LoggableFailure(Messages.MESSAGES.mediaTypeQGreaterThan1(type.toString()), HttpResponseCodes.SC_BAD_REQUEST);
                return rtn;
             }
          }
          catch (NumberFormatException e)
          {
-            throw new RuntimeException("MediaType q parameter must be a float: " + type, e);
+            throw new RuntimeException(Messages.MESSAGES.mediaTypeQMustBeFloat(type), e);
          }
       }
       return 2.0f;

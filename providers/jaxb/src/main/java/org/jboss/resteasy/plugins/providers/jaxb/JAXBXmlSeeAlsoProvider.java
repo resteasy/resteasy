@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
 import org.jboss.resteasy.util.FindAnnotation;
 
 import javax.ws.rs.Consumes;
@@ -35,8 +36,8 @@ public class JAXBXmlSeeAlsoProvider extends AbstractJAXBProvider<Object>
       JAXBContextFinder finder = resolver.getContext(type);
       if (finder == null)
       {
-         if (reader) throw new JAXBUnmarshalException("Could not find JAXBContextFinder for media type: " + mediaType);
-         else throw new JAXBMarshalException("Could not find JAXBContextFinder for media type: " + mediaType);
+         if (reader) throw new JAXBUnmarshalException(Messages.MESSAGES.couldNotFindJAXBContextFinder(mediaType));
+         else throw new JAXBMarshalException(Messages.MESSAGES.couldNotFindJAXBContextFinder(mediaType));
       }
 
       XmlSeeAlso seeAlso = type.getAnnotation(XmlSeeAlso.class);

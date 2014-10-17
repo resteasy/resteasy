@@ -10,7 +10,8 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.ws.rs.WebApplicationException;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.cdi.i18n.LogMessages;
+import org.jboss.resteasy.cdi.i18n.Messages;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.Failure;
@@ -28,7 +29,6 @@ public class CdiConstructorInjector implements ConstructorInjector
 {
    private BeanManager manager;
    private Type type;
-   private static final Logger log = Logger.getLogger(CdiConstructorInjector.class);
 
    public CdiConstructorInjector(Type type, BeanManager manager)
    {
@@ -58,7 +58,7 @@ public class CdiConstructorInjector implements ConstructorInjector
          beans = modifiableBeans;
       }
       
-      log.debug("Beans found for {0} : {1}", type, beans);
+      LogMessages.LOGGER.debug(Messages.MESSAGES.beansFound(type, beans));
       
       Bean<?> bean = manager.resolve(beans);
       CreationalContext<?> context = manager.createCreationalContext(bean);

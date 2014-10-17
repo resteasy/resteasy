@@ -3,7 +3,8 @@ package org.jboss.resteasy.plugins.server.servlet;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.UriInfoImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -35,7 +36,6 @@ public class ServletContainerDispatcher
 {
    protected Dispatcher dispatcher;
    protected ResteasyProviderFactory providerFactory;
-   private final static Logger logger = Logger.getLogger(ServletContainerDispatcher.class);
    private String servletMappingPrefix = "";
    protected ResteasyDeployment deployment = null;
    protected HttpRequestFactory requestFactory;
@@ -56,7 +56,7 @@ public class ServletContainerDispatcher
 
       if ((providerFactory != null && dispatcher == null) || (providerFactory == null && dispatcher != null))
       {
-         throw new ServletException("Unknown state.  You have a Listener messing up what resteasy expects");
+         throw new ServletException(Messages.MESSAGES.unknownStateListener());
       }
 
 
@@ -112,7 +112,7 @@ public class ServletContainerDispatcher
 
    protected void processApplication(Application config)
    {
-      logger.info("Deploying " + Application.class.getName() + ": " + config.getClass());
+      LogMessages.LOGGER.deployingApplication(Application.class.getName(), config.getClass());
       ArrayList<Class> actualResourceClasses = new ArrayList<Class>();
       ArrayList<Class> actualProviderClasses = new ArrayList<Class>();
       ArrayList resources = new ArrayList();
@@ -131,7 +131,7 @@ public class ServletContainerDispatcher
             }
             else
             {
-               throw new RuntimeException("Application.getClasses() returned unknown class type: " + clazz.getName());
+               throw new RuntimeException(Messages.MESSAGES.unknownClassTypeGetClasses(clazz.getName()));
             }
          }
       }
@@ -141,17 +141,17 @@ public class ServletContainerDispatcher
          {
             if (GetRestful.isRootResource(obj.getClass()))
             {
-               logger.info("Adding singleton resource " + obj.getClass().getName() + " from Application " + Application.class.getName());
+               LogMessages.LOGGER.addingSingletonResource(obj.getClass().getName(), Application.class.getName());
                resources.add(obj);
             }
             else if (obj.getClass().isAnnotationPresent(Provider.class))
             {
-               logger.info("Adding singleton provider " + obj.getClass().getName() + " from Application " + Application.class.getName());
+               LogMessages.LOGGER.addingSingletonProvider(obj.getClass().getName(), Application.class.getName());
                providers.add(obj);
             }
             else
             {
-               throw new RuntimeException("Application.getSingletons() returned unknown class type: " + obj.getClass().getName());
+               throw new RuntimeException(Messages.MESSAGES.unknownClassTypeGetSingletons(obj.getClass().getName()));
             }
          }
       }
@@ -190,7 +190,7 @@ public class ServletContainerDispatcher
          {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             // made it warn so that people can filter this.
-            logger.warn("Failed to parse request.", e);
+            LogMessages.LOGGER.failedToParseRequest(e);
             return;
          }
 

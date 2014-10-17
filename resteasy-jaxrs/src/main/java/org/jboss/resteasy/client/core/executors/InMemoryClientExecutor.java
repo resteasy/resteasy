@@ -9,6 +9,7 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -134,7 +135,7 @@ public class InMemoryClientExecutor implements ClientExecutor
       // else httpMethod.setFollowRedirects(false);
 
       if (request.getBody() != null && !request.getFormParameters().isEmpty())
-         throw new RuntimeException("You cannot send both form parameters and an entity body");
+         throw new RuntimeException(Messages.MESSAGES.cannotSendFormParametersAndEntity());
 
       if (!request.getFormParameters().isEmpty())
       {

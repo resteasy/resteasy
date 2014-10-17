@@ -3,6 +3,7 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.core.interception.InterceptorRegistryListener;
 import org.jboss.resteasy.core.interception.ServerMessageBodyReaderContext;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -78,7 +79,7 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
       {
          if (genericType == null || !(genericType instanceof ParameterizedType))
          {
-            throw new RuntimeException("MarshalledEntity must have type information.");
+            throw new RuntimeException(Messages.MESSAGES.marshalledEntityMustHaveTypeInfo());
          }
          isMarshalledEntity = true;
          ParameterizedType param = (ParameterizedType) genericType;
@@ -150,9 +151,7 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
                  genericType, annotations, mediaType);
          if (reader == null)
          {
-            throw new BadRequestException(
-                    "Could not find message body reader for type: "
-                            + genericType + " of content type: " + mediaType);
+            throw new BadRequestException(Messages.MESSAGES.couldNotFindMessageBodyReader(genericType, mediaType));
          }
 
          try
@@ -207,6 +206,6 @@ public class MessageBodyParameterInjector implements ValueInjector, InterceptorR
 
    public Object inject()
    {
-      throw new RuntimeException("Illegal to inject a message body into a singleton into " + this.target);
+      throw new RuntimeException(Messages.MESSAGES.illegalToInjectMessageBody(target));
    }
 }

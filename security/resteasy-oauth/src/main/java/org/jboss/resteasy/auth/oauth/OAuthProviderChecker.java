@@ -2,6 +2,8 @@ package org.jboss.resteasy.auth.oauth;
 
 import java.util.Set;
 
+import org.jboss.resteasy.auth.oauth.i18n.Messages;
+
 /**
  * Used to make sure the OAuthProvider implementer does not return null values.
  * If any null is returned, throws a RuntimeException
@@ -17,7 +19,7 @@ public class OAuthProviderChecker implements OAuthProvider {
 
 	private <T> T checkNull(T arg) {
 		if(arg == null)
-			throw new RuntimeException("OAuthProvider should not return null");
+		   throw new RuntimeException(Messages.MESSAGES.oAuthProviderShouldNotReturnNull());
 		return arg;
 	}
 	

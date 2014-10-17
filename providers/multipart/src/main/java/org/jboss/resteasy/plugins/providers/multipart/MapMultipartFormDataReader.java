@@ -18,6 +18,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 
+import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 import org.jboss.resteasy.util.Types;
 
 /**
@@ -42,13 +43,11 @@ public class MapMultipartFormDataReader implements MessageBodyReader<Map<?, ?>> 
 			throws IOException, WebApplicationException {
 		String boundary = mediaType.getParameters().get("boundary");
 		if (boundary == null)
-			throw new IOException("Unable to get boundary for multipart");
+		   throw new IOException(Messages.MESSAGES.unableToGetBoundary());
 
-		if (!(genericType instanceof ParameterizedType))
-			throw new IllegalArgumentException("Reader = " + this
-					+ " received genericType = " + genericType
-					+ ", but it is not instance of " + ParameterizedType.class);
-
+      if (!(genericType instanceof ParameterizedType))
+         throw new IllegalArgumentException(Messages.MESSAGES.receivedGenericType(this, genericType, ParameterizedType.class));
+      
 		ParameterizedType param = (ParameterizedType) genericType;
 		Type baseType = param.getActualTypeArguments()[1];
 		Class<?> rawType = Types.getRawType(baseType);

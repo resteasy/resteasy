@@ -1,10 +1,14 @@
 package org.jboss.resteasy.test.charset;
 
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -19,7 +23,7 @@ public class TestCharsetNoExpand extends TestCharsetParent
    protected static Process process;
 
    @BeforeClass
-   public static void deployServer()
+   public static void deployServer() throws Exception
    {
       System.out.println("server default charset: " + Charset.defaultCharset());
       Map<String, Charset> charsets = Charset.availableCharsets();
@@ -48,9 +52,30 @@ public class TestCharsetNoExpand extends TestCharsetParent
          System.out.println("Starting server JVM");
          process = processBuilder.start();
          System.out.println("Started server JVM");
-      } catch (IOException e1)
+      }
+      catch (IOException e1)
       {
          e1.printStackTrace();
+      }
+      
+      ClientRequest request = new ClientRequest(generateURL("/junk"));
+      ClientResponse<?> response = null;
+      while (true)
+      {
+         try
+         {
+            response = request.get();
+            if (response.getStatus() == 200)
+            {
+               break;
+            }
+         }
+         catch (Exception e)
+         {
+            // keep trying
+         }
+         System.out.println("Waiting for server");
+         Thread.sleep(1000);
       }
    }
 

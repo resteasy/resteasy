@@ -3,6 +3,7 @@ package org.jboss.resteasy.security.smime;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.mail.smime.SMIMESigned;
+import org.jboss.resteasy.crypto.i18n.Messages;
 import org.jboss.resteasy.util.GenericType;
 
 import javax.mail.MessagingException;
@@ -144,7 +145,7 @@ public class SignedInputImpl implements SignedInput
    {
       if (certificate != null) return verify(certificate);
       else if (publicKey != null) return verify(publicKey);
-      else throw new NullPointerException("Certificate nor public key properties set");
+      else throw new NullPointerException(Messages.MESSAGES.certificateNoPublicKeySet());
    }
 
    public boolean verify(X509Certificate certificate) throws Exception

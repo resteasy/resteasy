@@ -11,6 +11,7 @@ import org.jboss.resteasy.client.core.ClientInvoker;
 import org.jboss.resteasy.client.core.ClientInvokerInterceptorFactory;
 import org.jboss.resteasy.client.core.extractors.DefaultEntityExtractorFactory;
 import org.jboss.resteasy.client.core.extractors.EntityExtractorFactory;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.IsHttpMethod;
 
@@ -83,7 +84,7 @@ public class ProxyFactory
 		Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
 		if (httpMethods == null || httpMethods.size() != 1)
 		{
-			throw new RuntimeException("You must use at least one, but no more than one http method annotation on: " + method.toString());
+		   throw new RuntimeException(Messages.MESSAGES.mustUseOneHttpMethod(method.toString()));
 		}
 		ClientInvoker invoker = new ClientInvoker(baseUri, clazz, method, config);
 		invoker.getAttributes().putAll(config.getRequestAttributes());

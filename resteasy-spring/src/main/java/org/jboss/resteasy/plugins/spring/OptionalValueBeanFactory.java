@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.spring;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.plugins.spring.i18n.LogMessages;
+import org.jboss.resteasy.plugins.spring.i18n.Messages;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -15,9 +16,6 @@ import org.springframework.beans.factory.FactoryBean;
 
 public class OptionalValueBeanFactory implements FactoryBean<Object>, BeanFactoryAware
 {
-   private final static Logger logger = Logger
-         .getLogger(OptionalValueBeanFactory.class);
-
    private String beanName;
    private Class<?> clazz;
    private BeanFactory beanFactory;
@@ -51,7 +49,7 @@ public class OptionalValueBeanFactory implements FactoryBean<Object>, BeanFactor
       }
       catch (Exception e)
       {
-         logger.error("Could not retrieve bean " + beanName, e);
+         LogMessages.LOGGER.error(Messages.MESSAGES.couldNotRetrieveBean(beanName), e);
       }
       return null;
    }

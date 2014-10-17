@@ -1,9 +1,11 @@
 package org.jboss.resteasy.plugins.providers.atom;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException;
+import org.jboss.resteasy.plugins.providers.resteasy_atom.i18n.Messages;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -55,7 +57,7 @@ public class AtomFeedProvider implements MessageBodyReader<Feed>, MessageBodyWri
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
-         throw new JAXBUnmarshalException("Unable to find JAXBContext for media type: " + mediaType);
+         throw new JAXBUnmarshalException(Messages.MESSAGES.unableToFindJAXBContext(mediaType));
       }
 
       try
@@ -70,7 +72,7 @@ public class AtomFeedProvider implements MessageBodyReader<Feed>, MessageBodyWri
       }
       catch (JAXBException e)
       {
-         throw new JAXBUnmarshalException("Unable to unmarshal: " + mediaType, e);
+         throw new JAXBUnmarshalException(Messages.MESSAGES.unableToUnmarshal(mediaType), e);
       }
    }
 
@@ -89,7 +91,7 @@ public class AtomFeedProvider implements MessageBodyReader<Feed>, MessageBodyWri
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
-         throw new JAXBMarshalException("Unable to find JAXBContext for media type: " + mediaType);
+         throw new JAXBMarshalException(Messages.MESSAGES.unableToFindJAXBContext(mediaType));
       }
       HashSet<Class> set = new HashSet<Class>();
       set.add(Feed.class);
@@ -123,7 +125,7 @@ public class AtomFeedProvider implements MessageBodyReader<Feed>, MessageBodyWri
       }
       catch (JAXBException e)
       {
-         throw new JAXBMarshalException("Unable to marshal: " + mediaType, e);
+         throw new JAXBMarshalException(Messages.MESSAGES.unableToMarshal(mediaType), e);
       }
    }
 }

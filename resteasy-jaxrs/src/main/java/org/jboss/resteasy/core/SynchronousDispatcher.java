@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.RequestImpl;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
@@ -50,8 +51,6 @@ public class SynchronousDispatcher implements Dispatcher
    protected ExtensionHttpPreprocessor extentionHttpPreprocessor;
    protected Map<Class, Object> defaultContextObjects = new HashMap<Class, Object>();
    protected Set<String> unwrappedExceptions = new HashSet<String>();
-
-   private final static Logger logger = Logger.getLogger(SynchronousDispatcher.class);
 
    public SynchronousDispatcher(ResteasyProviderFactory providerFactory)
    {
@@ -183,16 +182,16 @@ public class SynchronousDispatcher implements Dispatcher
    public ResourceInvoker getInvoker(HttpRequest request)
            throws Failure
    {
-      logger.debug("PathInfo: " + request.getUri().getPath());
+      LogMessages.LOGGER.pathInfo(request.getUri().getPath());
       if (!request.isInitial())
       {
-         throw new InternalServerErrorException(request.getUri().getPath() + " is not initial request.  Its suspended and retried.  Aborting.");
+         throw new InternalServerErrorException(Messages.MESSAGES.isNotInitialRequest(request.getUri().getPath()));
       }
       preprocess(request);
       ResourceInvoker invoker = registry.getResourceInvoker(request);
       if (invoker == null)
       {
-         throw new NotFoundException("Unable to find JAX-RS resource associated with path: " + request.getUri().getPath());
+         throw new NotFoundException(Messages.MESSAGES.unableToFindJaxRsResource(request.getUri().getPath()));
       }
       return invoker;
    }
@@ -260,7 +259,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       else
       {
-         logger.error("Unknown exception while executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
+         LogMessages.LOGGER.unknownException(request.getHttpMethod(), request.getUri().getPath(), e);
          throw new UnhandledException(e);
       }
    }
@@ -268,8 +267,8 @@ public class SynchronousDispatcher implements Dispatcher
    protected void handleFailure(HttpRequest request, HttpResponse response, Failure failure)
    {
       if (failure.isLoggable())
-         logger.error("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), failure);
-      else logger.debug("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), failure);
+         LogMessages.LOGGER.failedExecutingError(request.getHttpMethod(), request.getUri().getPath(), failure);
+      else LogMessages.LOGGER.failedExecutingDebug(request.getHttpMethod(), request.getUri().getPath(), failure);
 
       if (failure.getResponse() != null)
       {
@@ -449,7 +448,7 @@ public class SynchronousDispatcher implements Dispatcher
       catch (WebApplicationException ex)
       {
          if (response.isCommitted())
-            throw new UnhandledException("Request was committed couldn't handle exception", ex);
+            throw new UnhandledException(Messages.MESSAGES.requestWasCommitted(), ex);
          // don't think I want to call writeJaxrsResponse infinately! so we'll just write the status
          response.reset();
          response.setStatus(ex.getResponse().getStatus());
@@ -463,9 +462,9 @@ public class SynchronousDispatcher implements Dispatcher
 
    protected void handleWebApplicationException(HttpRequest request, HttpResponse response, WebApplicationException wae)
    {
-      if (!(wae instanceof NoLogWebApplicationException)) logger.error("failed to execute", wae);
-      if (response.isCommitted()) throw new UnhandledException("Request was committed couldn't handle exception", wae);
-
+      if (!(wae instanceof NoLogWebApplicationException)) LogMessages.LOGGER.failedToExecute(wae);
+      if (response.isCommitted()) throw new UnhandledException(Messages.MESSAGES.requestWasCommitted(), wae);
+      
       writeFailure(request, response, wae.getResponse());
    }
 

@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.core.interception.DecoratorMatcher;
 import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.TypeConverter;
@@ -38,9 +39,11 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
 {
    @Context
    protected Providers providers;
-   
-   private boolean expandEntityReferences = false;
 
+   private boolean disableExternalEntities = true;
+   private boolean enableSecureProcessingFeature = true;
+   private boolean disableDTDs = true;
+   
    public AbstractJAXBProvider()
    {
       ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
@@ -49,7 +52,17 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
          String s = context.getParameter("resteasy.document.expand.entity.references");
          if (s != null)
          {
-            setExpandEntityReferences(Boolean.parseBoolean(s));
+            setDisableExternalEntities(!Boolean.parseBoolean(s));
+         }
+         s = context.getParameter("resteasy.document.secure.processing.feature");
+         if (s != null)
+         {
+            setEnableSecureProcessingFeature(Boolean.parseBoolean(s));
+         }
+         s = context.getParameter("resteasy.document.secure.disableDTDs");
+         if (s != null)
+         {
+            setDisableDTDs(Boolean.parseBoolean(s));
          }
       }
    }
@@ -61,8 +74,8 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       JAXBContextFinder finder = resolver.getContext(type);
       if (finder == null)
       {
-         if (reader) throw new JAXBUnmarshalException("Could not find JAXBContextFinder for media type: " + mediaType);
-         else throw new JAXBMarshalException("Could not find JAXBContextFinder for media type: " + mediaType);
+         if (reader) throw new JAXBUnmarshalException(Messages.MESSAGES.couldNotFindJAXBContextFinder(mediaType));
+         else throw new JAXBMarshalException(Messages.MESSAGES.couldNotFindJAXBContextFinder(mediaType));
       }
       return finder.findCachedContext(type, mediaType, annotations);
    }
@@ -111,9 +124,9 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
          unmarshaller = decorateUnmarshaller(type, annotations, mediaType, unmarshaller);
       
-         if (suppressExpandEntityExpansion())
+         if (needsSecurity())
          {
-            return processWithoutEntityExpansion(unmarshaller, entityStream, getCharset(mediaType));
+            return processWithSecureProcessing(unmarshaller, entityStream, getCharset(mediaType));
          }
          
          if (getCharset(mediaType) == null)
@@ -247,25 +260,45 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       }
       return null;
    }
-
-   public boolean isExpandEntityReferences()
+   
+   public boolean isDisableExternalEntities()
    {
-      return expandEntityReferences;
+      return disableExternalEntities;
    }
 
-   public void setExpandEntityReferences(boolean expandEntityReferences)
+   public void setDisableExternalEntities(boolean disableExternalEntities)
    {
-      this.expandEntityReferences = expandEntityReferences;
+      this.disableExternalEntities = disableExternalEntities;
+   }
+
+   public boolean isEnableSecureProcessingFeature()
+   {
+      return enableSecureProcessingFeature;
+   }
+
+   public void setEnableSecureProcessingFeature(boolean enableSecureProcessingFeature)
+   {
+      this.enableSecureProcessingFeature = enableSecureProcessingFeature;
+   }
+
+   public boolean isDisableDTDs()
+   {
+      return disableDTDs;
+   }
+
+   public void setDisableDTDs(boolean disableDTDs)
+   {
+      this.disableDTDs = disableDTDs;
+   }
+
+   protected boolean needsSecurity()
+   {
+      return true;
    }
    
-   protected boolean suppressExpandEntityExpansion()
-   {
-      return !isExpandEntityReferences();
-   }
-   
-   protected T processWithoutEntityExpansion(Unmarshaller unmarshaller, InputStream entityStream, String charset) throws JAXBException
-   {
-      unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);
+   protected T processWithSecureProcessing(Unmarshaller unmarshaller, InputStream entityStream, String charset) throws JAXBException
+   {  
+      unmarshaller = new SecureUnmarshaller(unmarshaller, disableExternalEntities, enableSecureProcessingFeature, disableDTDs);
       if (charset == null)
       {
          InputSource is = new InputSource(entityStream);

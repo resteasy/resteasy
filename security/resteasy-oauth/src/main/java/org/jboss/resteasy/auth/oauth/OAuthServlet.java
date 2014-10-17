@@ -14,12 +14,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jboss.resteasy.auth.oauth.i18n.LogMessages;
+import org.jboss.resteasy.auth.oauth.i18n.Messages;
+
 import net.oauth.OAuth;
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
-import org.jboss.resteasy.logging.Logger;
 
 
 /**
@@ -28,8 +30,6 @@ import org.jboss.resteasy.logging.Logger;
  */
 public class OAuthServlet extends HttpServlet {
 	private static final long serialVersionUID = 3083924242786185155L;
-
-	private final static Logger logger = Logger.getLogger(OAuthServlet.class);
 
 	/**
      * Servlet context parameter name for the Consumer Registration URL
@@ -79,7 +79,7 @@ public class OAuthServlet extends HttpServlet {
 	public void init(ServletConfig config)
     throws ServletException {
 		super.init(config);
-		logger.info("Loading OAuth Servlet");
+		LogMessages.LOGGER.info(Messages.MESSAGES.loadingOAuthServlet());
 		
 		// load the context-parameters 
 		ServletContext context = config.getServletContext();
@@ -98,13 +98,13 @@ public class OAuthServlet extends HttpServlet {
 		if(accessTokenURL == null)
 			accessTokenURL = "/accessToken";
 
-		logger.info("Request token URL: "+ requestTokenURL);
-		logger.info("Access token URL: "+ accessTokenURL);
+		LogMessages.LOGGER.info(Messages.MESSAGES.requestTokenUrl(requestTokenURL));
+		LogMessages.LOGGER.info(Messages.MESSAGES.accessTokenUrl(accessTokenURL));
 		
 		// now load the provider and validator
 		provider = OAuthUtils.getOAuthProvider(context);
 		validator = OAuthUtils.getValidator(context, provider);
-		logger.debug("OAuthServlet loaded");
+		LogMessages.LOGGER.debug(Messages.MESSAGES.oAuthServletLoaded());
 	}
 	
 	@Override
@@ -113,8 +113,8 @@ public class OAuthServlet extends HttpServlet {
 	throws ServletException,
 	IOException{
 		String pathInfo = req.getPathInfo();
-		logger.debug("Serving "+pathInfo);
-		logger.debug("Query "+req.getQueryString());
+		LogMessages.LOGGER.debug(Messages.MESSAGES.serving(pathInfo));
+		LogMessages.LOGGER.debug(Messages.MESSAGES.queryString(req.getQueryString()));
 		if(pathInfo.equals(requestTokenURL))
 			serveRequestToken(req, resp);
 		else if(pathInfo.equals(accessTokenURL))
@@ -133,7 +133,7 @@ public class OAuthServlet extends HttpServlet {
 
 	private void serveRequestToken(HttpServletRequest req,
 			HttpServletResponse resp) throws IOException {
-		logger.debug("Request token");
+	   LogMessages.LOGGER.debug(Messages.MESSAGES.requestToken());
 		OAuthMessage message = OAuthUtils.readMessage(req);
 		try{
 			// require some parameters
@@ -142,7 +142,7 @@ public class OAuthServlet extends HttpServlet {
 					OAuth.OAUTH_SIGNATURE,
 					OAuth.OAUTH_TIMESTAMP,
 					OAuth.OAUTH_NONCE);
-			logger.debug("Parameters present");
+			LogMessages.LOGGER.debug(Messages.MESSAGES.parametersPresent());
 
 			String consumerKey = message.getParameter(OAuth.OAUTH_CONSUMER_KEY);
 			// load the OAuth Consumer
@@ -159,7 +159,7 @@ public class OAuthServlet extends HttpServlet {
 			String callbackURI = message.getParameter(OAuth.OAUTH_CALLBACK);
 			if (callbackURI != null && consumer.getConnectURI() != null
 			        && !callbackURI.startsWith(consumer.getConnectURI())) {
-			    throw new OAuthException(400, "Wrong callback URI");
+			   throw new OAuthException(400, Messages.MESSAGES.wrongCallbackURI());
 			}
 			OAuthToken token = provider.makeRequestToken(consumerKey, 
 			                            callbackURI, 
@@ -169,14 +169,14 @@ public class OAuthServlet extends HttpServlet {
 			// send the Token information to the Client
 			OAuthUtils.sendValues(resp, OAuth.OAUTH_TOKEN, token.getToken(),OAuth.OAUTH_TOKEN_SECRET, token.getSecret(), OAuthUtils.OAUTH_CALLBACK_CONFIRMED_PARAM, "true");
 			resp.setStatus(HttpURLConnection.HTTP_OK);
-			logger.debug("All OK");
+			LogMessages.LOGGER.debug(Messages.MESSAGES.allOK());
 
 		} catch (OAuthException x) {
 			OAuthUtils.makeErrorResponse(resp, x.getMessage(), x.getHttpCode(), provider);
 		} catch (OAuthProblemException x) {
 			OAuthUtils.makeErrorResponse(resp, x.getProblem(), OAuthUtils.getHttpCode(x), provider);
 		} catch (Exception x) {
-			logger.error("Exception ", x);
+		   LogMessages.LOGGER.error(Messages.MESSAGES.exception(), x);
 			OAuthUtils.makeErrorResponse(resp, x.getMessage(), HttpURLConnection.HTTP_INTERNAL_ERROR, provider);
 		}
 	}
@@ -184,7 +184,7 @@ public class OAuthServlet extends HttpServlet {
 
 	private void serveAccessToken(HttpServletRequest req,
 			HttpServletResponse resp) throws IOException {
-		logger.debug("Access token");
+	   LogMessages.LOGGER.debug(Messages.MESSAGES.accessToken());
 		OAuthMessage message = OAuthUtils.readMessage(req);
 		try{
 			// request some parameters
@@ -196,7 +196,7 @@ public class OAuthServlet extends HttpServlet {
 					OAuth.OAUTH_NONCE,
 					OAuthUtils.OAUTH_VERIFIER_PARAM);
 
-			logger.debug("Parameters present");
+			LogMessages.LOGGER.debug(Messages.MESSAGES.parametersPresent());
 			
 			// load some parameters
 			String consumerKey = message.getParameter(OAuth.OAUTH_CONSUMER_KEY);
@@ -221,21 +221,21 @@ public class OAuthServlet extends HttpServlet {
 			// send the Access Token
 			OAuthUtils.sendValues(resp, OAuth.OAUTH_TOKEN, tokens.getToken(),OAuth.OAUTH_TOKEN_SECRET, tokens.getSecret());
 			resp.setStatus(HttpURLConnection.HTTP_OK);
-			logger.debug("All OK");
+			LogMessages.LOGGER.debug(Messages.MESSAGES.allOK());
 
 		} catch (OAuthException x) {
 			OAuthUtils.makeErrorResponse(resp, x.getMessage(), x.getHttpCode(), provider);
 		} catch (OAuthProblemException x) {
 			OAuthUtils.makeErrorResponse(resp, x.getProblem(), OAuthUtils.getHttpCode(x), provider);
 		} catch (Exception x) {
-			logger.error("Exception ", x);
+		   LogMessages.LOGGER.error(Messages.MESSAGES.exception(), x);
 			OAuthUtils.makeErrorResponse(resp, x.getMessage(), HttpURLConnection.HTTP_INTERNAL_ERROR, provider);
 		}
 	}
 	
 	private void serveConsumerRegistration(HttpServletRequest req,
             HttpServletResponse resp) throws IOException {
-        logger.debug("Consumer registration");
+        LogMessages.LOGGER.debug(Messages.MESSAGES.consumerRegistration());
         
         try{
             String[] values = req.getParameterValues(OAuth.OAUTH_CONSUMER_KEY);
@@ -263,10 +263,10 @@ public class OAuthServlet extends HttpServlet {
             // send the shared key back to the registered consumer
             OAuthUtils.sendValues(resp, "xoauth_consumer_secret", consumer.getSecret());
             resp.setStatus(HttpURLConnection.HTTP_OK);
-            logger.debug("All OK");
+            LogMessages.LOGGER.debug(Messages.MESSAGES.allOK());
 
         } catch (Exception x) {
-            logger.error("Exception ", x);
+            LogMessages.LOGGER.error(Messages.MESSAGES.exception(), x);
             OAuthUtils.makeErrorResponse(resp, x.getMessage(), HttpURLConnection.HTTP_INTERNAL_ERROR, provider);
         }
     }
@@ -285,7 +285,7 @@ public class OAuthServlet extends HttpServlet {
      */
 	private void serveConsumerScopesRegistrationRequest(HttpServletRequest req,
             HttpServletResponse resp) throws IOException {
-        logger.debug("Consumer registration");
+	     LogMessages.LOGGER.debug(Messages.MESSAGES.consumerRegistration());
         
         try{
             String[] values = req.getParameterValues(OAuth.OAUTH_CONSUMER_KEY);
@@ -306,17 +306,17 @@ public class OAuthServlet extends HttpServlet {
             }
             
             resp.setStatus(HttpURLConnection.HTTP_OK);
-            logger.debug("All OK");
+            LogMessages.LOGGER.debug(Messages.MESSAGES.allOK());
 
         } catch (Exception x) {
-            logger.error("Exception ", x);
+            LogMessages.LOGGER.error(Messages.MESSAGES.exception(), x);
             OAuthUtils.makeErrorResponse(resp, x.getMessage(), HttpURLConnection.HTTP_INTERNAL_ERROR, provider);
         }
     }
 	
 	private void serveTokenAuthorization(HttpServletRequest req,
             HttpServletResponse resp) throws IOException {
-        logger.debug("Consumer token authorization request");
+	     LogMessages.LOGGER.debug(Messages.MESSAGES.consumerTokenAuthorizationRequest());
         
         try{
             String[] values = req.getParameterValues(OAuth.OAUTH_TOKEN);
@@ -337,7 +337,7 @@ public class OAuthServlet extends HttpServlet {
             requestEndUserConfirmation(req, resp, consumer, requestToken, format);
             
         } catch (Exception x) {
-            logger.error("Exception ", x);
+            LogMessages.LOGGER.error(Messages.MESSAGES.exception(), x);
             OAuthUtils.makeErrorResponse(resp, x.getMessage(), HttpURLConnection.HTTP_INTERNAL_ERROR, provider);
         }
     }
@@ -412,7 +412,7 @@ public class OAuthServlet extends HttpServlet {
 	
 	private void serveTokenAuthorizationConfirmation(HttpServletRequest req,
             HttpServletResponse resp) throws IOException {
-        logger.debug("Consumer registration");
+	     LogMessages.LOGGER.debug(Messages.MESSAGES.consumerRegistration());
         
         try{
             String[] values = req.getParameterValues(OAuth.OAUTH_TOKEN);
@@ -456,10 +456,10 @@ public class OAuthServlet extends HttpServlet {
                 OAuthUtils.makeErrorResponse(resp, "Token has not been authorized", 503, provider);
             }
             
-            logger.debug("All OK");
+            LogMessages.LOGGER.debug(Messages.MESSAGES.allOK());  
 
         } catch (Exception x) {
-            logger.error("Exception ", x);
+            LogMessages.LOGGER.error(Messages.MESSAGES.exception(), x);
             OAuthUtils.makeErrorResponse(resp, x.getMessage(), HttpURLConnection.HTTP_INTERNAL_ERROR, provider);
         }
     }

@@ -13,6 +13,11 @@
     <dependencies>
 
         <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        
+        <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-test-tjws</artifactId>
             <version>${project.version}</version>

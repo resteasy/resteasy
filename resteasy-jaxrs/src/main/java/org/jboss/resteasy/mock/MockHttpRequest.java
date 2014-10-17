@@ -2,6 +2,7 @@ package org.jboss.resteasy.mock;
 
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.HttpHeadersImpl;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.PathSegmentImpl;
@@ -269,7 +270,7 @@ public class MockHttpRequest implements HttpRequest
       }
       else
       {
-         throw new IllegalArgumentException("Request media type is not application/x-www-form-urlencoded");
+         throw new IllegalArgumentException(Messages.MESSAGES.requestMediaTypeNotUrlencoded());
       }
       return formParameters;
    }
@@ -323,12 +324,12 @@ public class MockHttpRequest implements HttpRequest
 
    public AsynchronousResponse createAsynchronousResponse(long suspendTimeout)
    {
-      throw new UnsupportedOperationException("NOT SUPPORTED");
+      throw new UnsupportedOperationException(Messages.MESSAGES.notSupported());
    }
 
    public AsynchronousResponse getAsynchronousResponse()
    {
-      throw new UnsupportedOperationException("NOT SUPPORTED");
+      throw new UnsupportedOperationException(Messages.MESSAGES.notSupported());
    }
 
    public void initialRequestThreadFinished()

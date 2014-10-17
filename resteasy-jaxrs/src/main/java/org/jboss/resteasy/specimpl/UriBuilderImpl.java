@@ -1,5 +1,6 @@
 package org.jboss.resteasy.specimpl;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.PathHelper;
 
@@ -112,13 +113,13 @@ public class UriBuilderImpl extends UriBuilder
          if (match.group(5) != null) fragment(match.group(5));
          return this;
       }
-      throw new RuntimeException("Illegal uri template: " + uriTemplate);
+      throw new RuntimeException(Messages.MESSAGES.illegalUriTemplate(uriTemplate));
 
    }
    @Override
    public UriBuilder uri(URI uri) throws IllegalArgumentException
    {
-      if (uri == null) throw new IllegalArgumentException("URI was null");
+      if (uri == null) throw new IllegalArgumentException(Messages.MESSAGES.uriNull());
 
       if (uri.getScheme() != null) scheme = uri.getScheme();
 
@@ -149,7 +150,7 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder schemeSpecificPart(String ssp) throws IllegalArgumentException
    {
-      if (ssp == null) throw new IllegalArgumentException("schemeSpecificPart was null");
+      if (ssp == null) throw new IllegalArgumentException(Messages.MESSAGES.schemeSpecificPartNull());
 
       StringBuilder sb = new StringBuilder();
       if (scheme != null) sb.append(scheme).append(':');
@@ -186,8 +187,8 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder host(String host) throws IllegalArgumentException
    {
-      if (host == null) throw new IllegalArgumentException("schemeSpecificPart was null");
-      if (host.equals("")) throw new IllegalArgumentException("invalid host");
+      if (host == null) throw new IllegalArgumentException(Messages.MESSAGES.schemeSpecificPartNull());
+      if (host.equals("")) throw new IllegalArgumentException(Messages.MESSAGES.invalidHost());
       this.host = host;
       return this;
    }
@@ -195,7 +196,7 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder port(int port) throws IllegalArgumentException
    {
-      if (port < -1) throw new IllegalArgumentException("Invalid port value");
+      if (port < -1) throw new IllegalArgumentException(Messages.MESSAGES.invalidPort());
       this.port = port;
       return this;
    }
@@ -241,7 +242,7 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder path(String segment) throws IllegalArgumentException
    {
-      if (segment == null) throw new IllegalArgumentException("path was null");
+      if (segment == null) throw new IllegalArgumentException(Messages.MESSAGES.pathNull());
       path = paths(true, path, segment);
       return this;
    }
@@ -250,7 +251,7 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder path(Class resource) throws IllegalArgumentException
    {
-      if (resource == null) throw new IllegalArgumentException("path was null");
+      if (resource == null) throw new IllegalArgumentException(Messages.MESSAGES.pathNull());
       Path ann = (Path) resource.getAnnotation(Path.class);
       if (ann != null)
       {
@@ -259,7 +260,7 @@ public class UriBuilderImpl extends UriBuilder
       }
       else
       {
-         throw new IllegalArgumentException("Class must be annotated with @Path to invoke path(Class)");
+         throw new IllegalArgumentException(Messages.MESSAGES.classMustBeAnnotatedWithPath());
       }
       return this;
    }
@@ -268,8 +269,8 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder path(Class resource, String method) throws IllegalArgumentException
    {
-      if (resource == null) throw new IllegalArgumentException("resource was null");
-      if (method == null) throw new IllegalArgumentException("method was null");
+      if (resource == null) throw new IllegalArgumentException(Messages.MESSAGES.resourceNull());
+      if (method == null) throw new IllegalArgumentException(Messages.MESSAGES.methodNull());
       Method theMethod = null;
       for (Method m : resource.getMethods())
       {
@@ -277,7 +278,7 @@ public class UriBuilderImpl extends UriBuilder
          {
             if (theMethod != null && m.isAnnotationPresent(Path.class))
             {
-               throw new IllegalArgumentException("there are two method named " + method);
+               throw new IllegalArgumentException(Messages.MESSAGES.twoMethodsSameName(method));
             }
             if (m.isAnnotationPresent(Path.class)) theMethod = m;
          }
@@ -288,7 +289,7 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder path(Method method) throws IllegalArgumentException
    {
-      if (method == null) throw new IllegalArgumentException("method was null");
+      if (method == null) throw new IllegalArgumentException(Messages.MESSAGES.methodNull());
       Path ann = method.getAnnotation(Path.class);
       if (ann != null)
       {
@@ -296,7 +297,7 @@ public class UriBuilderImpl extends UriBuilder
       }
       else
       {
-         throw new IllegalArgumentException("method is not annotated with @Path");
+         throw new IllegalArgumentException(Messages.MESSAGES.methodNotAnnotatedWithPath());
       }
       return this;
    }
@@ -416,7 +417,7 @@ public class UriBuilderImpl extends UriBuilder
       }
       catch (Exception e)
       {
-         throw new RuntimeException("Failed to create URI: " + buf, e);
+         throw new RuntimeException(Messages.MESSAGES.failedToCreateUri(buf), e);
       }
    }
 
@@ -458,7 +459,7 @@ public class UriBuilderImpl extends UriBuilder
          Object valObj = paramMap.get(param);
          if (valObj == null)
          {
-            throw new IllegalArgumentException("NULL value for template parameter: " + param);
+            throw new IllegalArgumentException(Messages.MESSAGES.templateParameterNull(param));
          }
          String value = valObj.toString();
          if (value != null)
@@ -475,7 +476,7 @@ public class UriBuilderImpl extends UriBuilder
          }
          else
          {
-            throw new IllegalArgumentException("path param " + param + " has not been provided by the parameter map");
+            throw new IllegalArgumentException(Messages.MESSAGES.pathParameterNotProvided(param));
          }
       }
       matcher.appendTail(buffer);
@@ -503,7 +504,7 @@ public class UriBuilderImpl extends UriBuilder
          }
          else
          {
-            throw new IllegalArgumentException("path param " + param + " has not been provided by the parameter map");
+            throw new IllegalArgumentException(Messages.MESSAGES.pathParameterNotProvided(param));
          }
       }
       matcher.appendTail(buffer);
@@ -554,7 +555,7 @@ public class UriBuilderImpl extends UriBuilder
    {
       List<String> params = getPathParamNamesInDeclarationOrder();
       if (values.length < params.size())
-         throw new IllegalArgumentException("You did not supply enough values to fill path parameters");
+         throw new IllegalArgumentException(Messages.MESSAGES.notEnoughPathParameters());
 
       Map<String, Object> pathParams = new HashMap<String, Object>();
 
@@ -563,7 +564,7 @@ public class UriBuilderImpl extends UriBuilder
       {
          String pathParam = params.get(i);
          Object val = values[i];
-         if (val == null) throw new IllegalArgumentException("A value was null");
+         if (val == null) throw new IllegalArgumentException(Messages.MESSAGES.valueNull());
          pathParams.put(pathParam, val.toString());
       }
       return buildFromMap(pathParams, encoded);
@@ -689,8 +690,8 @@ public class UriBuilderImpl extends UriBuilder
     */
    public UriBuilder clientQueryParam(String name, Object value) throws IllegalArgumentException
    {
-      if (name == null) throw new IllegalArgumentException("name parameter is null");
-      if (value == null) throw new IllegalArgumentException("A passed in value was null");
+      if (name == null) throw new IllegalArgumentException(Messages.MESSAGES.nameParameterNull());
+      if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.passedInValueNull());
       if (query == null) query = "";
       else query += "&";
       query += Encode.encodeQueryParamAsIs(name) + "=" + Encode.encodeQueryParamAsIs(value.toString());
@@ -700,11 +701,11 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder queryParam(String name, Object... values) throws IllegalArgumentException
    {
-      if (name == null) throw new IllegalArgumentException("name parameter is null");
-      if (values == null) throw new IllegalArgumentException("values parameter is null");
+      if (name == null) throw new IllegalArgumentException(Messages.MESSAGES.nameParameterNull());
+      if (values == null) throw new IllegalArgumentException(Messages.MESSAGES.valuesParameterNull());
       for (Object value : values)
       {
-         if (value == null) throw new IllegalArgumentException("A passed in value was null");
+         if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.passedInValueNull());
          if (query == null) query = "";
          else query += "&";
          query += Encode.encodeQueryParam(name) + "=" + Encode.encodeQueryParam(value.toString());
@@ -784,10 +785,10 @@ public class UriBuilderImpl extends UriBuilder
    @Override
    public UriBuilder segment(String... segments) throws IllegalArgumentException
    {
-      if (segments == null) throw new IllegalArgumentException("segments parameter was null");
+      if (segments == null) throw new IllegalArgumentException(Messages.MESSAGES.segmentsParameterNull());
       for (String segment : segments)
       {
-         if (segment == null) throw new IllegalArgumentException("A segment is null");
+         if (segment == null) throw new IllegalArgumentException(Messages.MESSAGES.segmentNull());
          path(Encode.encodePathSegment(segment));
       }
       return this;

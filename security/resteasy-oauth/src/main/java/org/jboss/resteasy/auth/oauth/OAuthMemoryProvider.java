@@ -5,6 +5,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.jboss.resteasy.auth.oauth.i18n.Messages;
+
 /**
  * OAuthProvider that keeps all data in memory. Mainly used as an example and for tests.
  * @author Stéphane Épardaud <stef@epardaud.fr>
@@ -40,10 +42,10 @@ public class OAuthMemoryProvider implements OAuthProvider {
         // get is atomic
         OAuthToken ret = accessTokens.get(accessKey);
         if (!ret.getConsumer().getKey().equals(consumerKey)) {
-            throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "Consumer is invalid");
+           throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, Messages.MESSAGES.consumerIsInvalid());
         }
         if(ret == null)
-            throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "No such access key "+accessKey);
+           throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, Messages.MESSAGES.noSuchAccessKey(accessKey));
         return ret;
     }
 
@@ -67,7 +69,7 @@ public class OAuthMemoryProvider implements OAuthProvider {
         OAuthRequestToken ret = requestTokens.get(requestKey);
         checkCustomerKey(ret, customerKey);
         if(ret == null)
-            throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "No such request key "+requestKey);
+           throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, Messages.MESSAGES.noSuchRequestKey(requestKey));
         return ret;
     }
     
@@ -76,7 +78,7 @@ public class OAuthMemoryProvider implements OAuthProvider {
         checkCustomerKey(request, customerKey);
         // check the verifier, which is only set when the request token was accepted
         if(verifier == null || !verifier.equals(request.getVerifier()))
-            throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "Invalid verifier code for token "+requestToken);
+           throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, Messages.MESSAGES.invalidVerifierCode(requestToken));
         // then let's go through and exchange this for an access token
         return requestTokens.remove(requestToken);
     }
@@ -87,7 +89,7 @@ public class OAuthMemoryProvider implements OAuthProvider {
 
 	private void checkCustomerKey(OAuthToken token, String customerKey) throws OAuthException {
 	    if (customerKey != null && !customerKey.equals(token.getConsumer().getKey())) {
-            throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "Invalid customer key");
+	       throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, Messages.MESSAGES.invalidCustomerKey());
         }
 	}
 	//
@@ -118,7 +120,7 @@ public class OAuthMemoryProvider implements OAuthProvider {
 	protected OAuthConsumer _getConsumer(String consumerKey) throws OAuthException{
 		OAuthConsumer ret = consumers.get(consumerKey); 
 		if(ret == null)
-			throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "No such consumer key "+consumerKey);
+		   throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, Messages.MESSAGES.noSuchConsumerKey(consumerKey));
 		return ret;
 	}
 
@@ -154,7 +156,7 @@ public class OAuthMemoryProvider implements OAuthProvider {
 	throws OAuthException {
 	    OAuthRequestToken token = getRequestToken(requestToken);
 	    if (consumerKey != null && !token.getConsumer().getKey().equals(consumerKey)) {
-	        throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "No such consumer key "+consumerKey);
+	       throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, Messages.MESSAGES.noSuchConsumerKey(consumerKey));
 	    }
 		return token;
 	}
@@ -166,7 +168,7 @@ public class OAuthMemoryProvider implements OAuthProvider {
 
 	public void checkTimestamp(OAuthToken token, long timestamp) throws OAuthException {
 	    if(token.getTimestamp() > timestamp)
-            throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "Invalid timestamp "+timestamp);
+	       throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, Messages.MESSAGES.invalidTimestampLong(timestamp));
 	}
 
 	public OAuthToken makeAccessToken(String consumerKey,
@@ -186,7 +188,7 @@ public class OAuthMemoryProvider implements OAuthProvider {
             throws OAuthException {
         OAuthRequestToken token = requestTokens.get(requestToken);
         if (token == null) {
-            throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "No such request token " + requestToken);
+           throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, Messages.MESSAGES.noSuchRequestToken(requestToken));
         }
         return token;
     }

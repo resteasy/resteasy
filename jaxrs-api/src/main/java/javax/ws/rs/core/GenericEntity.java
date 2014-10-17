@@ -30,6 +30,9 @@ package javax.ws.rs.core;
  */
 
 import javax.ws.rs.ext.MessageBodyWriter;
+
+import org.jboss.resteasy.jaxrs_api.i18n.Messages;
+
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -90,7 +93,7 @@ public class GenericEntity<T>
    {
       if (entity == null)
       {
-         throw new IllegalArgumentException("The entity must not be null");
+         throw new IllegalArgumentException(Messages.MESSAGES.entityMustNotBeNull());
       }
       this.entity = entity;
       this.type = getSuperclassTypeParameter(getClass());
@@ -115,7 +118,7 @@ public class GenericEntity<T>
    {
       if (entity == null || genericType == null)
       {
-         throw new IllegalArgumentException("Arguments must not be null");
+         throw new IllegalArgumentException(Messages.MESSAGES.argumentsMustNotBeNull());
       }
       this.entity = entity;
       this.rawType = entity.getClass();
@@ -145,7 +148,7 @@ public class GenericEntity<T>
          checkTypeCompatibility(c.getComponentType(), rt);
          return;
       }
-      throw new IllegalArgumentException("The type is incompatible with the class of the entity");
+      throw new IllegalArgumentException(Messages.MESSAGES.typeIsIncompatible());
    }
 
    /**
@@ -156,7 +159,7 @@ public class GenericEntity<T>
       Type superclass = subclass.getGenericSuperclass();
       if (!(superclass instanceof ParameterizedType))
       {
-         throw new RuntimeException("Missing type parameter.");
+         throw new RuntimeException(Messages.MESSAGES.missingTypeParameter());
       }
       ParameterizedType parameterized = (ParameterizedType) superclass;
       return parameterized.getActualTypeArguments()[0];

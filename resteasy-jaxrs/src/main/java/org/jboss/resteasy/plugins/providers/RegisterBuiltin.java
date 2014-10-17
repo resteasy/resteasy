@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.providers;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.ext.Providers;
@@ -17,9 +17,6 @@ import java.util.LinkedHashSet;
  */
 public class RegisterBuiltin
 {
-
-   private final static Logger logger = Logger.getLogger(RegisterBuiltin.class);
-
 
    public static void register(ResteasyProviderFactory factory)
    {
@@ -71,11 +68,11 @@ public class RegisterBuiltin
          }
          catch (NoClassDefFoundError e)
          {
-            logger.error("NoClassDefFoundError: Unable to load builtin provider: " + line, e);
+            LogMessages.LOGGER.noClassDefFoundErrorError(line, e);
          }
          catch (ClassNotFoundException e)
          {
-            logger.warn("ClassNotFoundException: Unable to load builtin provider: " + line);
+            LogMessages.LOGGER.classNotFoundException(line);
          }
       }
    }
