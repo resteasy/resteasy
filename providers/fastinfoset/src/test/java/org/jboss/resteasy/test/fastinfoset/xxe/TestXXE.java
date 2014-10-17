@@ -51,7 +51,7 @@ public class TestXXE extends BaseResourceTest
    }
 
    private String getVersion() {
-       return readSystemProperty("version.org.jboss.resteasy", "2.3.7.Final");
+       return readSystemProperty("version.org.jboss.resteasy", "2.3.9.Final");
    }
 
    private String readSystemProperty(String name, String defaultValue) {

@@ -19,7 +19,7 @@
         <version.org.aspectj>1.6.11</version.org.aspectj>
         <version.org.jboss.arquillian>1.0.2.Final</version.org.jboss.arquillian>
         <version.org.jboss.as.jboss-as-arquillian-container-managed>7.2.0.Final</version.org.jboss.as.jboss-as-arquillian-container-managed>
-        <version.org.jboss.resteasy>2.3.7.Final-redhat-2</version.org.jboss.resteasy>
+        <version.org.jboss.resteasy>2.3.9.Final-redhat-2</version.org.jboss.resteasy>
         <version.org.jboss.shrinkwrap.resolver>2.1.0-alpha-1</version.org.jboss.shrinkwrap.resolver>
         <version.org.springframework>3.2.5.RELEASE</version.org.springframework>
         <version.maven-failsafe-plugin>2.15</version.maven-failsafe-plugin>
