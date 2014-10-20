@@ -54,9 +54,9 @@ public class ResteasyUriInfo implements UriInfo
    }
 
    protected void initialize(String absoluteUri, String queryString, String contextPath)
-   {ResteasyUriBuilder absoluteBuilder = (ResteasyUriBuilder) UriBuilder.fromUri(absoluteUri).replaceQuery(queryString);
-      requestURI = absoluteBuilder.build();
-      absolutePath = URI.create(absoluteUri);
+   {ResteasyUriBuilder absoluteBuilder = (ResteasyUriBuilder) UriBuilder.fromUri(absoluteUri);
+      absolutePath = absoluteBuilder.build();
+      requestURI = absoluteBuilder.replaceQuery(queryString).build();
       encodedPath = PathHelper.getEncodedPathInfo(absolutePath.getRawPath(), contextPath);
       baseURI = absolutePath;
       if (!encodedPath.trim().equals(""))
