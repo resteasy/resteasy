@@ -425,12 +425,36 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
             }
          }
 
-         for (Method method : getBeanClass(factoryClassName).getMethods())
+         Method[] methods = getBeanClass(factoryClassName).getMethods();
+         for (Method method : methods)
          {
             if (method.getName().equals(factoryMethodName))
             {
                return method.getReturnType();
             }
+         }
+         
+         /*
+           This fixes the problem with certain factory methods (eg. https://github.com/resteasy/Resteasy/issues/585).
+           Not all factory methodes implement a method called "getX" (which is what the code above expect)
+           and instead make one or more methods called getObject, which either return Object.class or a more specific class.
+           
+           The code added here adds this check and fixes this issue in version 2.3.5.
+         */
+         String defaultFactoryMethod = "getObject";
+         Class<?> returnType = null;
+         for (Method method : methods)
+         {
+             if (method.getName().equals(defaultFactoryMethod))
+             {
+                 returnType = method.getReturnType();
+                 if(returnType != Object.class){
+                     break;
+                 }
+             }
+         }
+         if(returnType != null){
+             return returnType;
          }
       }
 
