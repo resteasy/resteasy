@@ -2,7 +2,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0.10.Final</version>
+        <version>3.0.10.Final-SNAPSHOT</version>
 	    <relativePath>../../pom.xml</relativePath>
     </parent>
     <name>OAuth Examples</name>
