@@ -8,7 +8,7 @@
     </description>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>3.0.10.Final-SNAPSHOT</version>
+    <version>3.0.10.Final</version>
     <packaging>pom</packaging>
 
     <properties>

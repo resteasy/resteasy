@@ -77,9 +77,24 @@ public class SetRequestUriTest
             requestContext.setRequestUri(
                     requestContext.getUriInfo().getRequestUriBuilder().path("uri").build());
          }
+         else if (requestContext.getUriInfo().getPath().contains("setrequesturi2"))
+         {
+            requestContext.setRequestUri(URI.create("http://localhost:888/otherbase"), URI.create("http://xx.yy:888/base/resource/sub"));
+            UriInfo info = requestContext.getUriInfo();
+            abortWithEntity(requestContext, info.getAbsolutePath().toASCIIString());
+
+         }
 
 
       }
+
+      protected void abortWithEntity(ContainerRequestContext requestContext, String entity) {
+         StringBuilder sb = new StringBuilder();
+         sb.append(entity);
+         Response response = Response.ok(sb.toString()).build();
+         requestContext.abortWith(response);
+      }
+
    }
 
    static Client client;
@@ -119,10 +134,18 @@ public class SetRequestUriTest
    @Test
    public void testResolve()
    {
-      URI base = URI.create("http://localhost:888/otherbase");
-      URI uri = URI.create("http://xx.yy:888/base/resource/sub");
+      {
+         URI base = URI.create("http://localhost:888/otherbase");
+         URI uri = URI.create("http://xx.yy:888/base/resource/sub?foo=bar");
 
-      System.out.println(base.resolve(uri));
+         System.out.println(base.resolve(uri));
+      }
+      {
+         URI base = URI.create("https://localhost:888/base");
+         URI uri = URI.create("https://localhost:888/base/resource/change");
+
+         System.out.println(base.resolve(uri));
+      }
 
    }
 
@@ -134,6 +157,14 @@ public class SetRequestUriTest
       Response response = client.target(generateURL("/base/resource/setrequesturi1")).request().get();
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("OK", response.readEntity(String.class));
+
+   }
+   @Test
+   public void testUriOverride2()
+   {
+      Response response = client.target(generateURL("/base/resource/setrequesturi2")).request().get();
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("http://xx.yy:888/base/resource/sub", response.readEntity(String.class));
 
    }
 

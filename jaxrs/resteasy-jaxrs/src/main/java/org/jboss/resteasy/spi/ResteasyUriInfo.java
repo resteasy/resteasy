@@ -102,21 +102,9 @@ public class ResteasyUriInfo implements UriInfo
 
    public void setUri(URI base, URI relative)
    {
-      String contextPath = base.getRawPath();
-      String relativePath = relative.getRawPath();
-
-      if (relativePath.startsWith(contextPath))
-      {
-         relativePath = relativePath.substring(contextPath.length());
-
-      }
-      else
-      {
-         relativePath = "";
-      }
-
-      String absoluteUri = UriBuilder.fromUri(base).path(relativePath).replaceQuery(null).toTemplate();
-      initialize(absoluteUri, relative.getRawQuery(), contextPath);
+      URI rel = base.resolve(relative);
+      String absoluteUri = UriBuilder.fromUri(rel).replaceQuery(null).toTemplate();
+      initialize(absoluteUri, rel.getRawQuery(), base.getRawPath());
    }
 
    protected void processPath()
