@@ -72,7 +72,7 @@ public class SetRequestUriTest
                     requestContext.getUriInfo().getBaseUriBuilder().scheme("https").build(),
                     requestContext.getUriInfo().getRequestUriBuilder().scheme("https").build());
          }
-         else
+         else if (requestContext.getUriInfo().getPath().contains("setrequesturi1"))
          {
             requestContext.setRequestUri(
                     requestContext.getUriInfo().getRequestUriBuilder().path("uri").build());
