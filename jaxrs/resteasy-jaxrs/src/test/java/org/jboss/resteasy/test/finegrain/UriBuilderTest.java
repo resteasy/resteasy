@@ -1204,5 +1204,19 @@ public class UriBuilderTest
          Assert.fail();
       }
    }
+   @Test
+   public void testColon() throws Exception
+   {
+      {
+         UriBuilder builder = UriBuilder.fromUri("http://foo.com/runtime/org.jbpm:HR:1.0/process/hiring/start");
+         builder.build();
+      }
+      /*
+      {
+         UriBuilder builder = UriBuilder.fromUri("runtime/org.jbpm:HR:1.0/process/hiring/start");
+         builder.build();
+      }
+      */
+   }
 
 }
