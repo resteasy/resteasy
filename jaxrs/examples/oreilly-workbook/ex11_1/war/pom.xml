@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>jaxrs-api</artifactId>
-            <version>3.0.10.Final</version>
+            <version>3.0.11.Final-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
