@@ -28,6 +28,7 @@ public class EncodingTest
    {
       tjws = new TJWSEmbeddedJaxrsServer();
       tjws.setPort(TestPortProvider.getPort());
+      Assert.assertEquals(Integer.valueOf(TestPortProvider.getPort()).toString(), tjws.getPort()); // test port isn't null
       tjws.setRootResourcePath("/");
       tjws.start();
       tjws.getDeployment().getDispatcher().getRegistry().addSingletonResource(new MyTestResource());

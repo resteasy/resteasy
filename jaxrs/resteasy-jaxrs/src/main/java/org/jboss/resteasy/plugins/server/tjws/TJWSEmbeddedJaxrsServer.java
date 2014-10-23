@@ -70,6 +70,6 @@ public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements Embedd
 
    public String getPort()
    {
-      return getProperty(Serve.ARG_PORT);
+      return props.get(Serve.ARG_PORT).toString();
    }
 }
