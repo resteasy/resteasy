@@ -198,7 +198,6 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       }
       else
       {
-         System.out.println("setCharset(): UTF-8");
          marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
       }
    }
