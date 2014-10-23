@@ -3,21 +3,21 @@
 	<parent>
         <groupId>org.jboss.resteasy.test</groupId>
         <artifactId>scanning-test</artifactId>
-        <version>3.0.10.Final</version>
+        <version>3.0.11.Final-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.resteasy.test</groupId>
     <artifactId>scanning-test-jar</artifactId>
     <packaging>jar</packaging>
-    <version>3.0.10.Final</version>
+    <version>3.0.11.Final-SNAPSHOT</version>
     <name>Scanning Test Jar</name>
     <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>3.0.10.Final</version>
+            <version>3.0.11.Final-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <build>
