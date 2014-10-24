@@ -5,10 +5,9 @@ import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.ValueInjector;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.PropertyInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.metadata.Parameter;
-import org.jboss.resteasy.spi.metadata.ResourceClass;
+import org.jboss.resteasy.spring.beanprocessor.MyInnerBean;
 import org.jboss.resteasy.springmvc.tjws.TJWSEmbeddedSpringMVCServer;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -18,6 +17,7 @@ import org.junit.Test;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.ws.rs.GET;
@@ -109,6 +109,9 @@ public class RequestScopedBeanTest
          this.configured = configured;
       }
    }
+
+    @Autowired
+    private MyInnerBean myInnerBean;
 
    @Path("/")
    public static class TestBeanResource
