@@ -1,6 +1,5 @@
 package org.jboss.resteasy.plugins.providers.atom;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
