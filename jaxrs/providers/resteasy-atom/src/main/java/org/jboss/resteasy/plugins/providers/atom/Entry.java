@@ -99,8 +99,8 @@ import java.util.List;
  */
 @XmlRootElement(name = "entry")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-@XmlType(propOrder = {"title", "links", "categories", "updated", "id", "published", "authors", "contributors", "source",
-        "rights", "content", "summary", "anyOther"})
+@XmlType(propOrder = {"titleElement", "links", "categories", "updated", "id", "published", "authors", "contributors", "source",
+        "rightsElement", "content", "summaryElement", "anyOther"})
 public class Entry extends CommonAttributes
 {
    private List<Person> authors = new ArrayList<Person>();
@@ -117,14 +117,14 @@ public class Entry extends CommonAttributes
 
    private Date published;
 
-   private String title;
+   private Text title;
    private Date updated;
 
-   private String rights;
+   private Text rights;
 
    private Source source;
 
-   private String summary;
+   private Text summary;
    
    private Element anyOtherElement;
    
@@ -150,15 +150,33 @@ public class Entry extends CommonAttributes
       this.id = id;
    }
 
-   @XmlElement
+   @XmlElement(name = "title")
+   public Text getTitleElement() 
+   {
+     return title;     
+   }
+   
+   public void setTitleElement(Text title) {
+     this.title = title;
+   }
+   
+   @XmlTransient
    public String getTitle()
    {
-      return title;
+     if (this.title == null) 
+     {
+       return null;
+     }
+      return title.getText();
    }
 
    public void setTitle(String title)
    {
-      this.title = title;
+      if (this.title == null) 
+      {
+        this.title = new Text();
+      }
+      this.title.setText(title);
    }
 
    @XmlElement
@@ -224,17 +242,35 @@ public class Entry extends CommonAttributes
       this.published = published;
    }
 
-   @XmlElement
-   public String getRights()
+   @XmlElement(name = "rights")
+   public Text getRightsElement()
    {
       return rights;
    }
 
-   public void setRights(String rights)
+   public void setRightsElement(Text rights)
    {
       this.rights = rights;
    }
+   
+   @XmlTransient
+   public String getRights() {
+     if (rights == null) 
+     {
+       return null;
+     }
+     return rights.getText();
+   }
 
+   public void setRights(String rights) 
+   {
+     if (this.rights == null) 
+     {
+       this.rights = new Text();
+     }
+     this.rights.setText(rights);
+   }
+   
    @XmlElement
    public Source getSource()
    {
@@ -246,17 +282,36 @@ public class Entry extends CommonAttributes
       this.source = source;
    }
 
-   @XmlElement
-   public String getSummary()
+   @XmlElement(name = "summary")
+   public Text getSummaryElement()
    {
       return summary;
    }
 
-   public void setSummary(String summary)
+   public void setSummaryElement(Text summary)
    {
       this.summary = summary;
    }
 
+   @XmlTransient
+   public String getSummary() {
+     if (rights == null) 
+     {
+       return null;
+     }
+     return rights.getText();
+   }
+
+   public void setSummary(String summary) 
+   {
+     if (this.summary == null) 
+     {
+       this.summary = new Text();
+     }
+     this.summary.setText(summary);
+   }
+   
+   
    /**
     * Get content as an XML Element if the content is XML.  Otherwise, this will just return null.
     *
