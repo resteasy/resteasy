@@ -43,6 +43,5 @@
         <module name="org.jboss.resteasy.resteasy-jaxrs"/>
         <module name="org.jboss.resteasy.resteasy-jaxb-provider"/>
         <module name="javax.ejb.api"/>
-        <module name="javax.xml.bind.api"/>
     </dependencies>
 </module>
