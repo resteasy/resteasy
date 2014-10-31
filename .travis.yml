@@ -1,0 +1,11 @@
+language: java
+jdk:
+  - oraclejdk7
+install: travis_retry mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -e -q
+script: travis_retry mvn test -e -q
+before_install:
+  - "env"
+  - "curl -L --cookie 'oraclelicense=accept-securebackup-cookie;'  http://download.oracle.com/otn-pub/java/jce/7/UnlimitedJCEPolicyJDK7.zip -o /tmp/policy.zip && sudo unzip -j -o /tmp/policy.zip *.jar -d /usr/lib/jvm/java-7-oracle/jre/lib/security && rm /tmp/policy.zip"
+  - 'ls -la /usr/lib/jvm/java-7-oracle/jre/lib/security'
+env: 
+  - "MAVEN_OPTS -Xmx1024m -XX:MaxPermSize=512m"

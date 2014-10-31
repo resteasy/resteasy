@@ -56,10 +56,11 @@ public class TestCharsetExpand extends TestCharsetParent
       {
          e1.printStackTrace();
       }
-      
+
+      int retryCount = 0;
       ClientRequest request = new ClientRequest(generateURL("/junk"));
       ClientResponse<?> response = null;
-      while (true)
+      while (retryCount < 20)
       {
          try
          {
@@ -76,7 +77,12 @@ public class TestCharsetExpand extends TestCharsetParent
             // keep trying
          }
          System.out.println("Waiting for server");
+         retryCount++;
          Thread.sleep(1000);
+      }
+
+      if (retryCount >= 20) {
+         throw new InterruptedException();
       }
    }
 

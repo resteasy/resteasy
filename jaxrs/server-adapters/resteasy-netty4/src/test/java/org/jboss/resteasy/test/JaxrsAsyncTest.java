@@ -25,7 +25,7 @@ public class JaxrsAsyncTest
    static String BASE_URI = generateURL("");
    static Client client;
 
-   static final int REQUEST_TIMEOUT = 1000;
+   static final int REQUEST_TIMEOUT = 2000;
 
    @BeforeClass
    public static void setupSuite() throws Exception
