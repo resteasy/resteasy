@@ -362,42 +362,22 @@ public class Types
     * @param typeVariable
     * @return actual type of the type variable
     */
-   public static Type getActualValueOfTypeVariable(Class<?> clazz, TypeVariable<?> typeVariable)
+   public static Type getActualValueOfTypeVariable(Class<?> root, TypeVariable<?> typeVariable)
    {
-      if (typeVariable.getGenericDeclaration() instanceof Class<?>)
-      {
-         Class<?> classDeclaringTypeVariable = (Class<?>) typeVariable.getGenericDeclaration();
-
-         // find the generic version of classDeclaringTypeVariable
-
-         Type fromInterface = getTypeVariableViaGenericInterface(clazz, classDeclaringTypeVariable, typeVariable);
-         if (fromInterface != null)
-         {
-            return fromInterface;
-         }
-
-         while (clazz.getSuperclass() != null)
-         {
-            if (clazz.getSuperclass().equals(classDeclaringTypeVariable))
-            {
-               // found it
-               ParameterizedType parameterizedSuperclass = (ParameterizedType) clazz.getGenericSuperclass();
-
-               for (int i = 0; i < classDeclaringTypeVariable.getTypeParameters().length; i++)
-               {
-                  TypeVariable<?> tv = classDeclaringTypeVariable.getTypeParameters()[i];
-                  if (tv.equals(typeVariable))
-                  {
-                     return parameterizedSuperclass.getActualTypeArguments()[i];
-                  }
-               }
-            }
-
-            clazz = clazz.getSuperclass();
-         }
-      }
-
-      throw new RuntimeException("Unable to determine value of type parameter " + typeVariable);
+	   if (typeVariable.getGenericDeclaration() instanceof Class<?>)
+	   {
+		   Class<?> classDeclaringTypeVariable = (Class<?>) typeVariable.getGenericDeclaration();
+		   Type[] types = findParameterizedTypes(root, classDeclaringTypeVariable);
+		   for (int i = 0; i < types.length; i++)
+		   {
+			   TypeVariable<?> tv = classDeclaringTypeVariable.getTypeParameters()[i];
+			   if (tv.equals(typeVariable))
+			   {
+				   return types[i];
+			   }
+		   }
+	   }
+	   throw new RuntimeException("Unable to determine value of type parameter " + typeVariable);
    }
 
 
