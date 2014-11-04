@@ -31,20 +31,30 @@ public class MediaTypeHelper
       return MediaType.valueOf(consume.value()[0]);
    }
 
-   public static MediaType getProduces(Class declaring, Method method)
+   public static MediaType[] getProduces(Class declaring, Method method)
    {
 	   return getProduces(declaring, method, null);
    }
    
-   public static MediaType getProduces(Class declaring, Method method, MediaType defaultProduces)
+   public static MediaType[] getProduces(Class declaring, Method method, MediaType defaultProduces)
    {
       Produces consume = method.getAnnotation(Produces.class);
       if (consume == null)
       {
          consume = (Produces) declaring.getAnnotation(Produces.class);
       }
-      if (consume == null) return defaultProduces;
-      return MediaType.valueOf(consume.value()[0]);
+      if (consume == null){
+          if(defaultProduces != null){
+              return new MediaType[]{defaultProduces};
+          } else {
+              return null;
+          }
+      }
+      MediaType[] mediaTypes = new MediaType[consume.value().length];
+      for(int i = 0; i< consume.value().length;i++){
+          mediaTypes[i] = MediaType.valueOf(consume.value()[i]);
+      }
+      return mediaTypes.length != 0 ? mediaTypes : null;
    }
 
    public static float getQ(MediaType type)

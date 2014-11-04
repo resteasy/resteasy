@@ -36,7 +36,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl implements Me
    protected ResteasyUriBuilder uri;
    protected Method method;
    protected Class declaring;
-   protected MediaType accepts;
+   protected MediaType[] accepts;
    protected Marshaller[] marshallers;
    protected ClientExecutor executor;
    protected boolean followRedirects;
@@ -73,7 +73,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl implements Me
       return attributes;
    }
 
-   public MediaType getAccepts()
+   public MediaType[] getAccepts()
    {
       return accepts;
    }
