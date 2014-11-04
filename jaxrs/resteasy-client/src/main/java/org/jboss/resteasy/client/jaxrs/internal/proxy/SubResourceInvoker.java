@@ -1,15 +1,17 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy;
 
-import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
-import org.jboss.resteasy.client.jaxrs.ProxyConfig;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.client.WebTarget;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+
+import javax.ws.rs.MatrixParam;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.client.WebTarget;
+
+import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
+import org.jboss.resteasy.client.jaxrs.ProxyConfig;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 public class SubResourceInvoker implements MethodInvoker
 {
@@ -17,25 +19,24 @@ public class SubResourceInvoker implements MethodInvoker
    final Class<?> iface;
    final Method method;
    final ResteasyWebTarget parent;
-   String[] pathParams;
-   boolean hasPathParams;
+   Annotation[] jaxParams;
+   boolean hasJaxParams;
 
    public SubResourceInvoker(ResteasyWebTarget parent, Method method, ProxyConfig config)
    {
       this.config = config;
       this.method = method;
       this.iface = method.getReturnType();
-      pathParams = new String[method.getParameterTypes().length];
-      for (int i = 0; i < pathParams.length; i++)
+      jaxParams = new Annotation[method.getParameterTypes().length];
+      for (int i = 0; i < jaxParams.length; i++)
       {
          Annotation[] paramAnnotations = method.getParameterAnnotations()[i];
          for (Annotation annotation : paramAnnotations)
          {
-            if (annotation instanceof PathParam)
+            if (annotation instanceof PathParam || annotation instanceof MatrixParam)
             {
-               String name = ((PathParam) annotation).value();
-               pathParams[i] = name;
-               hasPathParams = true;
+               jaxParams[i] = annotation;
+               hasJaxParams = true;
                break;
             }
          }
@@ -52,17 +53,23 @@ public class SubResourceInvoker implements MethodInvoker
    public Object invoke(Object[] args)
    {
       WebTarget target = parent;
-      if (hasPathParams)
+      if (hasJaxParams)
       {
-         HashMap<String, Object> params = new HashMap<String, Object>();
-         for (int i = 0; i < pathParams.length; i++)
+         HashMap<String, Object> pathParams = new HashMap<String, Object>();
+         for (int i = 0; i < jaxParams.length; i++)
          {
-            if (pathParams[i] != null)
+            if (jaxParams[i] != null)
             {
-               params.put(pathParams[i], args[i]);
+               if (jaxParams[i] instanceof PathParam) {
+                  pathParams.put(((PathParam) jaxParams[i]).value(), args[i]);
+               } else if(jaxParams[i] instanceof MatrixParam) {
+                  target = target.matrixParam(((MatrixParam) jaxParams[i]).value(), args[i]);
+               }
             }
          }
-         target = parent.resolveTemplates(params);
+         if (!pathParams.isEmpty()) {
+            target = target.resolveTemplates(pathParams);
+         }
       }
       return ProxyBuilder.proxy(iface, target, config);
    }
