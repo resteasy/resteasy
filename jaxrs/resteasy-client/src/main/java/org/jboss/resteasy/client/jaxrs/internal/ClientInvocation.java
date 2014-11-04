@@ -171,6 +171,8 @@ public class ClientInvocation implements Invocation
    public static <T> T handleErrorStatus(Response response)
    {
       final int status = response.getStatus();
+      response.bufferEntity();      // Store entity for later because of close in BodyEntityExtractor.extractEntity(ClientContext, Object...)
+      
       switch (status)
       {
          case 400:
