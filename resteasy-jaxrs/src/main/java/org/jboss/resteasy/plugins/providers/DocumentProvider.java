@@ -90,6 +90,8 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
       try
       {
          documentBuilder.setExpandEntityReferences(expandEntityReferences);
+         documentBuilder.setFeature("http://xml.org/sax/features/external-general-entities", expandEntityReferences);
+         documentBuilder.setFeature("http://xml.org/sax/features/external-parameter-entities", expandEntityReferences);
          documentBuilder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, enableSecureProcessingFeature);
          documentBuilder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", disableDTDs);
          return documentBuilder.newDocumentBuilder().parse(input);

@@ -7,6 +7,7 @@ import java.util.Hashtable;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import junit.framework.Assert;
 
@@ -373,6 +374,13 @@ public class TestSecureProcessing
    
    void doMaxAttributesFails() throws Exception
    {
+      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      System.out.println("dbf.getClass(): " + dbf.getClass());
+      if ("org.apache.xerces.jaxp.DocumentBuilderFactoryImpl".equals(dbf.getClass().getName()))
+      {
+         System.out.println("Testing with Red Hat version of Xerces, skipping max attributes test");
+         return;
+      }
       System.out.println("entering doMaxAttributesFails()");
       ClientRequest request = new ClientRequest(generateURL("/test"));
       request.body("application/xml", bigAttributeDoc);
