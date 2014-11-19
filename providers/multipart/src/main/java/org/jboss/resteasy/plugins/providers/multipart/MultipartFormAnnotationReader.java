@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
+import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.util.FindAnnotation;
 
@@ -49,7 +50,7 @@ public class MultipartFormAnnotationReader implements MessageBodyReader<Object>
    {
       String boundary = mediaType.getParameters().get("boundary");
       if (boundary == null)
-         throw new IOException("Unable to get boundary for multipart");
+         throw new IOException(Messages.MESSAGES.unableToGetBoundary());
       MultipartFormDataInputImpl input = new MultipartFormDataInputImpl(
               mediaType, workers);
       input.parse(entityStream);

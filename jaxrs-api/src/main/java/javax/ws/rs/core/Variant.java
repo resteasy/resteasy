@@ -20,6 +20,9 @@
 package javax.ws.rs.core;
 
 import javax.ws.rs.ext.RuntimeDelegate;
+
+import org.jboss.resteasy.jaxrs_api.i18n.Messages;
+
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Locale;
@@ -47,7 +50,7 @@ public class Variant
    public Variant(MediaType mediaType, Locale language, String encoding)
    {
       if (mediaType == null && language == null && encoding == null)
-         throw new IllegalArgumentException("mediaType, language, encoding all null");
+         throw new IllegalArgumentException(Messages.MESSAGES.mediaTypeLanguageEncodingNull());
       this.encoding = encoding;
       this.language = language;
       this.mediaType = mediaType;

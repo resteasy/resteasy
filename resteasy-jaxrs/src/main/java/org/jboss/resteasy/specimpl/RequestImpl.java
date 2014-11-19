@@ -1,6 +1,7 @@
 package org.jboss.resteasy.specimpl;
 
 import org.jboss.resteasy.core.request.ServerDrivenNegotiation;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -46,8 +47,8 @@ public class RequestImpl implements Request
 
    public Variant selectVariant(List<Variant> variants) throws IllegalArgumentException
    {
-      if (variants == null || variants.size() == 0) throw new IllegalArgumentException("Variant list must not be zero");
-
+      if (variants == null || variants.size() == 0) throw new IllegalArgumentException(Messages.MESSAGES.variantListMustNotBeZero());
+      
       ServerDrivenNegotiation negotiation = new ServerDrivenNegotiation();
       MultivaluedMap<String, String> requestHeaders = headers.getRequestHeaders();
       negotiation.setAcceptHeaders(requestHeaders.get(HttpHeaderNames.ACCEPT));

@@ -1,7 +1,8 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.JAXBConfig;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
@@ -33,8 +34,6 @@ import java.util.Map;
 @SuppressWarnings("deprecation")
 public class JAXBContextWrapper extends JAXBContext
 {
-
-   private static final Logger logger = Logger.getLogger(JAXBContextWrapper.class);
 
    private static final String NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
    private static final String XML_NAMESPACE_PREFIX_MAPPER = "org.jboss.resteasy.plugins.providers.jaxb.XmlNamespacePrefixMapper";
@@ -127,7 +126,7 @@ public class JAXBContextWrapper extends JAXBContext
          {
             if (mapperConstructor == null)
             {
-               throw new JAXBException("com.sun.xml.bind.marshaller.NamespacePrefixMapper is not in your classpath.  You need to use the JAXB RI for the prefix mapping feature");
+               throw new JAXBException(Messages.MESSAGES.namespacePrefixMapperNotInClassPath());
             }
             try
             {
@@ -149,7 +148,7 @@ public class JAXBContextWrapper extends JAXBContext
             }
             catch (SAXException e)
             {
-               throw new JAXBException("Error while trying to load schema for " + config.schema(), e);
+               throw new JAXBException(Messages.MESSAGES.errorTryingToLoadSchema(config.schema()), e);
             }
          }
 
@@ -221,7 +220,7 @@ public class JAXBContextWrapper extends JAXBContext
          }
          catch (PropertyException e)
          {
-            logger.warn(e.getMessage());
+            LogMessages.LOGGER.warn(e.getLocalizedMessage());
          }
       }
       return marshaller;

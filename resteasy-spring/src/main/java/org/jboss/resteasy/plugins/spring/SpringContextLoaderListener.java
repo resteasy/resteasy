@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.spring;
 
+import org.jboss.resteasy.plugins.spring.i18n.Messages;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;
@@ -39,7 +40,7 @@ public class SpringContextLoaderListener extends ContextLoaderListener
 
       if (scanProviders || scanResources)
       {
-         throw new RuntimeException("You cannot use resteasy.scan, resteasy.scan.resources, or resteasy.scan.providers with the SpringContextLoaderLister as this may cause serious deployment errors in your application");
+         throw new RuntimeException(Messages.MESSAGES.cannotUseScanParameters());
       }
 
 

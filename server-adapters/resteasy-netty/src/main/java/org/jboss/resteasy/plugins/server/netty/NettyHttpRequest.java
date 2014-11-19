@@ -4,6 +4,7 @@ import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
+import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.util.Encode;
 
@@ -76,7 +77,7 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
       }
       else
       {
-         throw new IllegalArgumentException("Request media type is not application/x-www-form-urlencoded");
+         throw new IllegalArgumentException(Messages.MESSAGES.requestMediaType());
       }
       return formParameters;
    }

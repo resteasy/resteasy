@@ -13,6 +13,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.plugins.spring.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.PropertyInjector;
@@ -281,8 +282,7 @@ public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
       {
          if (!isSingleton(beanDef))
          {
-            throw new RuntimeException("Provider " + name
-                    + " is not a singleton.  That's not allowed");
+            throw new RuntimeException(Messages.MESSAGES.providerIsNotSingleton(name));
          }
 
          providerNames.add(name);
@@ -408,7 +408,7 @@ public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
          }
       }
 
-      throw new IllegalStateException("could not find the type for bean named " + name);
+      throw new IllegalStateException(Messages.MESSAGES.couldNotFindTypeForBean(name));
    }
 
    private static boolean isSingleton(BeanDefinition beanDef)
@@ -432,7 +432,7 @@ public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
       }
       catch (final ClassNotFoundException e)
       {
-         throw new IllegalStateException("Could not convert '" + beanClassName + "' to a class.", e);
+         throw new IllegalStateException(Messages.MESSAGES.couldNotConvertBeanToClass(beanClassName), e);
       }
    }
 

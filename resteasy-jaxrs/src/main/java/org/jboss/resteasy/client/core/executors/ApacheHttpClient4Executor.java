@@ -28,6 +28,8 @@ import org.jboss.resteasy.client.core.BaseClientResponse.BaseClientResponseStrea
 import org.jboss.resteasy.client.core.SelfExpandingBufferredInputStream;
 import org.jboss.resteasy.client.exception.mapper.ApacheHttpClient4ExceptionMapper;
 import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.Types;
@@ -43,8 +45,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -107,11 +107,6 @@ public class ApacheHttpClient4Executor implements ClientExecutor
    * Defaults to JVM temp directory.
    */
   private File fileUploadTempFileDir = new File(System.getProperty("java.io.tmpdir"));
-  
-  /**
-   * Java Util Logger
-   */
-  private final static Logger LOGGER = Logger.getLogger(ApacheHttpClient4Executor.class.getName());
 
    public ApacheHttpClient4Executor()
    {
@@ -302,8 +297,8 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       }
 
       if (request.getBody() != null && !request.getFormParameters().isEmpty())
-         throw new RuntimeException("You cannot send both form parameters and an entity body");
-
+         throw new RuntimeException(Messages.MESSAGES.cannotSendFormParametersAndEntity());
+      
       if (!request.getFormParameters().isEmpty())
       {
          commitHeaders(request, httpMethod);
@@ -325,7 +320,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       }
       else if (request.getBody() != null)
       {
-         if (httpMethod instanceof HttpGet) throw new RuntimeException("A GET request cannot have a body.");
+         if (httpMethod instanceof HttpGet) throw new RuntimeException(Messages.MESSAGES.getRequestCannotHaveBody());
          
          try
          {
@@ -435,10 +430,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
     */
    private void handleFileNotDeletedError(File tempRequestFile, Exception ex)
    {
-      if (LOGGER.isLoggable(Level.SEVERE))
-      {
-         LOGGER.log(Level.SEVERE, "Could not delete file' " + tempRequestFile.getAbsolutePath() + "' for request: ", ex);
-      }
+      LogMessages.LOGGER.couldNotDeleteFile(tempRequestFile.getAbsolutePath(), ex);
    }
 
    /**

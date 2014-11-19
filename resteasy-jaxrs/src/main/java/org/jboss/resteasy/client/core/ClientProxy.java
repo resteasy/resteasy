@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.jboss.resteasy.client.ProxyBuilder;
 import org.jboss.resteasy.client.ProxyConfig;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -83,7 +84,7 @@ public class ClientProxy implements InvocationHandler
 
       if (clientInvoker == null)
       {
-         throw new RuntimeException("Could not find a method for: " + method);
+         throw new RuntimeException(Messages.MESSAGES.couldNotFindMethod(method));
       }
       return clientInvoker.invoke(args);
    }

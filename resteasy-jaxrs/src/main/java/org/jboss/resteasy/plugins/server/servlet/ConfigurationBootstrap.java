@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -24,7 +25,6 @@ import java.util.Set;
  */
 abstract public class ConfigurationBootstrap implements ResteasyConfiguration
 {
-   private static Logger logger = null;
    private ResteasyDeployment deployment = new ResteasyDeployment();
 
    public abstract URL[] getScanningUrls();
@@ -32,14 +32,6 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
 
    public ResteasyDeployment createDeployment()
    {
-      String loggerTypeString = getParameter("resteasy.logger.type");
-      if (loggerTypeString != null)
-      {
-         Logger.LoggerType loggerType = Logger.LoggerType.valueOf(loggerTypeString);
-         Logger.setLoggerType(loggerType);
-
-      }
-      logger = Logger.getLogger(ConfigurationBootstrap.class);
       String deploymentSensitive = getParameter("resteasy.use.deployment.sensitive.factory");
       if (deploymentSensitive != null)
          deployment.setDeploymentSensitiveFactoryEnabled(Boolean.valueOf(deploymentSensitive.trim()));
@@ -82,7 +74,7 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
       }
       else
       {
-         logger.warn("The use of " + Application.class.getName() + " is deprecated, please use javax.ws.rs.Application as a context-param instead");
+         LogMessages.LOGGER.useOfApplicationClass(Application.class.getName());
       }
 
       String providers = getParameter(ResteasyContextParameters.RESTEASY_PROVIDERS);
@@ -98,14 +90,21 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
 
       if (resourceMethodInterceptors != null)
       {
-         throw new RuntimeException(ResteasyContextParameters.RESTEASY_RESOURCE_METHOD_INTERCEPTORS + " is no longer a supported context param.  See documentation for more details");
+         throw new RuntimeException(Messages.MESSAGES.noLongerASupportedContextParam(ResteasyContextParameters.RESTEASY_RESOURCE_METHOD_INTERCEPTORS));
       }
 
       String resteasySecurity = getParameter(ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY);
-      if (resteasySecurity != null) deployment.setSecurityEnabled(Boolean.valueOf(resteasySecurity.trim()));
+
+      if (resteasySecurity != null) {
+         boolean useResteasySecurity = parseBooleanParam(ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY, resteasySecurity);
+         deployment.setSecurityEnabled(useResteasySecurity);
+      }
 
       String builtin = getParameter(ResteasyContextParameters.RESTEASY_USE_BUILTIN_PROVIDERS);
-      if (builtin != null) deployment.setRegisterBuiltin(Boolean.valueOf(builtin.trim()));
+      if (builtin != null) {
+         boolean useBuiltin = parseBooleanParam(ResteasyContextParameters.RESTEASY_USE_BUILTIN_PROVIDERS, builtin);
+         deployment.setRegisterBuiltin(useBuiltin);
+      }
 
       boolean scanProviders = false;
       boolean scanResources = false;
@@ -142,12 +141,12 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
 
       if (scanProviders || scanResources)
       {
-         logger.debug("Scanning...");
+         LogMessages.LOGGER.scanning();
 
          URL[] urls = getScanningUrls();
          for (URL u : urls)
          {
-            logger.debug("Scanning archive: " + u);
+            LogMessages.LOGGER.scanningArchive(u);
          }
          AnnotationDB db = new AnnotationDB();
          String[] ignoredPackages = {"org.jboss.resteasy.plugins", "org.jboss.resteasy.annotations", "org.jboss.resteasy.client", "org.jboss.resteasy.specimpl", "org.jboss.resteasy.core", "org.jboss.resteasy.spi", "org.jboss.resteasy.util", "org.jboss.resteasy.mock", "javax.ws.rs"};
@@ -174,7 +173,7 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
          }
          catch (IOException e)
          {
-            throw new RuntimeException("Unable to scan WEB-INF for JAX-RS annotations, you must manually register your classes/resources", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToScanWebInf(), e);
          }
 
          if (scanProviders) processScannedProviders(db);
@@ -305,7 +304,7 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
         } else if (value.equals("false") || value.equals("0")) {
             return false;
         } else {
-            throw new RuntimeException("The " + key + " config in web.xml could not be parsed, accepted values are true,false or 1,0");
+           throw new RuntimeException(Messages.MESSAGES.keyCouldNotBeParsed(key));
 
         }
     }
@@ -374,7 +373,7 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
       if (classes == null) return;
       for (String clazz : classes)
       {
-         logger.info("Adding scanned @Provider: " + clazz);
+         LogMessages.LOGGER.addingScannedProvider(clazz);
          deployment.getScannedProviderClasses().add(clazz);
       }
    }
@@ -401,7 +400,7 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
             throw new RuntimeException(e);
          }
 
-         logger.info("Adding scanned resource: " + clazz);
+         LogMessages.LOGGER.addingScannedResource(clazz);
          deployment.getScannedResourceClasses().add(clazz);
       }
    }

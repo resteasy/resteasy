@@ -23,6 +23,9 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant.VariantListBuilder;
+
+import org.jboss.resteasy.jaxrs_api.i18n.Messages;
+
 import java.lang.reflect.ReflectPermission;
 import java.net.URL;
 
@@ -123,9 +126,7 @@ public abstract class RuntimeDelegate
                loader = ClassLoader.getSystemClassLoader();
             }
             URL targetTypeURL = loader.getResource(classnameAsResource);
-            throw new LinkageError("ClassCastException: attempting to cast" +
-                    delegate.getClass().getClassLoader().getResource(classnameAsResource) +
-                    "to" + targetTypeURL.toString());
+            throw new LinkageError(Messages.MESSAGES.classCastException(delegate.getClass().getClassLoader().getResource(classnameAsResource), targetTypeURL.toString()));
          }
          return (RuntimeDelegate) delegate;
       }

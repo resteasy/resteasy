@@ -1,7 +1,8 @@
 package org.jboss.resteasy.jsapi;
 
 import org.jboss.resteasy.core.ResourceMethodRegistry;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.resteasy_jsapi.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jsapi.i18n.Messages;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -22,7 +23,6 @@ public class JSAPIServlet extends HttpServlet
 
 	private static final long serialVersionUID = -1985015444704126795L;
 
-	private final static Logger logger = Logger.getLogger(JSAPIServlet.class);
 	private ServiceRegistry service;
 
 	private JSAPIWriter apiWriter;
@@ -31,13 +31,11 @@ public class JSAPIServlet extends HttpServlet
 	public void init(ServletConfig config) throws ServletException
 	{
 		super.init(config);
-		if (logger.isDebugEnabled())
-			logger.info("Loading JSAPI Servlet");
+		LogMessages.LOGGER.debug(Messages.MESSAGES.loadingJSAPIServlet());
 
 		scanResources();
 		
-		if (logger.isDebugEnabled())
-			logger.debug("JSAPIServlet loaded");
+		LogMessages.LOGGER.debug(Messages.MESSAGES.jsapiServletLoaded());
 
 		// make it possible to get to us for rescanning
 		ServletContext servletContext = config .getServletContext();
@@ -51,12 +49,8 @@ public class JSAPIServlet extends HttpServlet
 		String pathInfo = req.getPathInfo();
 		String uri = req.getRequestURL().toString();
 		uri = uri.substring(0, uri.length() - req.getServletPath().length());
-		if (logger.isDebugEnabled())
-		{
-			logger.debug("Serving " + pathInfo);
-			logger.debug("Query " + req.getQueryString());
-		}
-
+		LogMessages.LOGGER.debug(Messages.MESSAGES.serving(pathInfo));
+		LogMessages.LOGGER.debug(Messages.MESSAGES.query(req.getQueryString()));	
         this.apiWriter.writeJavaScript(uri, req, resp, service);
 	}
 

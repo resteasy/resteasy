@@ -16,7 +16,7 @@ import javax.ws.rs.ext.Provider;
 public class JettisonXmlTypeProvider extends JAXBXmlTypeProvider
 {
    @Override
-   protected boolean suppressExpandEntityExpansion()
+   protected boolean needsSecurity()
    {
       return false;
    }

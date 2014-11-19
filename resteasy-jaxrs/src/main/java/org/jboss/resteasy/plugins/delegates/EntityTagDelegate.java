@@ -3,6 +3,8 @@ package org.jboss.resteasy.plugins.delegates;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -11,7 +13,7 @@ public class EntityTagDelegate implements RuntimeDelegate.HeaderDelegate<EntityT
 {
    public EntityTag fromString(String value) throws IllegalArgumentException
    {
-      if (value == null) throw new IllegalArgumentException("value of EntityTag is null");
+      if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.entityTagValueNull());
       if (value.startsWith("\""))
       {
          value = value.substring(1);

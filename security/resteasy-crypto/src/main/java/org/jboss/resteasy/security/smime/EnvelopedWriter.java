@@ -9,6 +9,7 @@ import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
 import org.bouncycastle.mail.smime.SMIMESignedGenerator;
 import org.bouncycastle.operator.OutputEncryptor;
+import org.jboss.resteasy.crypto.i18n.Messages;
 import org.jboss.resteasy.security.BouncyIntegration;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.WriterException;
@@ -77,7 +78,7 @@ public class EnvelopedWriter implements MessageBodyWriter<EnvelopedOutput>
          OutputEncryptor encryptor = new JceCMSContentEncryptorBuilder(CMSAlgorithm.DES_EDE3_CBC)
                  .setProvider("BC")
                  .build();
-         if (out.getCertificate() == null) throw new NullPointerException("The certificate object was not set.");
+         if (out.getCertificate() == null) throw new NullPointerException(Messages.MESSAGES.certificateObjectNotSet());
          JceKeyTransRecipientInfoGenerator infoGenerator = new JceKeyTransRecipientInfoGenerator(out.getCertificate());
          infoGenerator.setProvider("BC");
          CMSEnvelopedDataStreamGenerator generator = new CMSEnvelopedDataStreamGenerator();
@@ -107,7 +108,7 @@ public class EnvelopedWriter implements MessageBodyWriter<EnvelopedOutput>
       MessageBodyWriter writer = providers.getMessageBodyWriter(out.getType(), out.getGenericType(), null, out.getMediaType());
       if (writer == null)
       {
-         throw new WriterException("Failed to find writer for type: " + out.getType().getName());
+         throw new WriterException(Messages.MESSAGES.failedToFindWriter(out.getType().getName()));
       }
       MultivaluedMapImpl<String, Object> bodyHeaders = new MultivaluedMapImpl<String, Object>();
       bodyHeaders.add("Content-Type",  out.getMediaType().toString());

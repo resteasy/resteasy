@@ -1,7 +1,8 @@
 package org.jboss.resteasy.cdi;
 
+import org.jboss.resteasy.cdi.i18n.LogMessages;
+import org.jboss.resteasy.cdi.i18n.Messages;
 import org.jboss.resteasy.core.ValueInjector;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
@@ -28,7 +29,6 @@ import java.util.Set;
 @SuppressWarnings("rawtypes")
 public class CdiInjectorFactory implements InjectorFactory
 {
-   private static final Logger log = Logger.getLogger(CdiInjectorFactory.class);
    public static final String BEAN_MANAGER_ATTRIBUTE_PREFIX = "org.jboss.weld.environment.servlet.";
    private ResteasyProviderFactory providerFactory;
    private InjectorFactory delegate;
@@ -52,18 +52,18 @@ public class CdiInjectorFactory implements InjectorFactory
 
       if (!manager.getBeans(clazz).isEmpty())
       {
-         log.debug("Using CdiConstructorInjector for class {0}.", clazz);
+         LogMessages.LOGGER.debug(Messages.MESSAGES.usingCdiConstructorInjector(clazz));
          return new CdiConstructorInjector(clazz, manager);
       }
 
       if (sessionBeanInterface.containsKey(clazz))
       {
          Type intfc = sessionBeanInterface.get(clazz);
-         log.debug("Using {0} for lookup of Session Bean {1}.", intfc, clazz);
+         LogMessages.LOGGER.debug(Messages.MESSAGES.usingInterfaceForLookup(intfc, clazz));
          return new CdiConstructorInjector(intfc, manager);
       }
 
-      log.debug("No CDI beans found for {0}. Using default ConstructorInjector.", clazz);
+      LogMessages.LOGGER.debug(Messages.MESSAGES.noCDIBeansFound(clazz));
       return delegate.createConstructor(constructor);
    }
 
@@ -101,7 +101,7 @@ public class CdiInjectorFactory implements InjectorFactory
       beanManager = lookupBeanManagerInJndi("java:comp/BeanManager");
       if (beanManager != null)
       {
-         log.info("Found BeanManager at java:comp/BeanManager");
+         LogMessages.LOGGER.info(Messages.MESSAGES.foundBeanManagerAtJavaComp());
          return beanManager;
       }
 
@@ -109,7 +109,7 @@ public class CdiInjectorFactory implements InjectorFactory
       beanManager = lookupBeanManagerInJndi("java:app/BeanManager");
       if (beanManager != null)
       {
-         log.info("Found BeanManager at java:app/BeanManager");
+         LogMessages.LOGGER.info(Messages.MESSAGES.foundBeanManagerAtJavaApp());
          return beanManager;
       }
 
@@ -118,7 +118,7 @@ public class CdiInjectorFactory implements InjectorFactory
       beanManager = (BeanManager) servletContext.getAttribute(BEAN_MANAGER_ATTRIBUTE_PREFIX + BeanManager.class.getName());
       if (beanManager != null)
       {
-         log.debug("Found BeanManager in ServletContext");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.foundBeanManagerInServletContext());
          return beanManager;
       }
 
@@ -126,11 +126,11 @@ public class CdiInjectorFactory implements InjectorFactory
       beanManager = (BeanManager) servletContext.getAttribute(BeanManager.class.getName());
       if (beanManager != null)
       {
-         log.debug("Found BeanManager in ServletContext");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.foundBeanManagerInServletContext());
          return beanManager;
       }
       
-      throw new RuntimeException("Unable to lookup BeanManager.");
+      throw new RuntimeException(Messages.MESSAGES.unableToLookupBeanManager());
    }
 
    private BeanManager lookupBeanManagerInJndi(String name)
@@ -138,17 +138,17 @@ public class CdiInjectorFactory implements InjectorFactory
       try
       {
          InitialContext ctx = new InitialContext();
-         log.debug("Doing a lookup for BeanManager in {0}", name);
+         LogMessages.LOGGER.debug(Messages.MESSAGES.doingALookupForBeanManager(name));
          return (BeanManager) ctx.lookup(name);
       }
       catch (NamingException e)
       {
-         log.debug("Unable to obtain BeanManager from {0}", name);
+         LogMessages.LOGGER.debug(Messages.MESSAGES.unableToObtainBeanManager(name));
          return null;
       }
       catch (NoClassDefFoundError ncdfe)
       {
-         log.debug("Unable to perform JNDI lookups. You are probably running on GAE.");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.unableToPerformJNDILookups());
          return null;
       }
    }
@@ -164,7 +164,7 @@ public class CdiInjectorFactory implements InjectorFactory
       Bean<?> bean = manager.resolve(beans);
       if (bean == null)
       {
-         throw new IllegalStateException("Unable to obtain ResteasyCdiExtension instance.");
+         throw new IllegalStateException(Messages.MESSAGES.unableToObtainResteasyCdiExtension());
       }
       CreationalContext<?> context = manager.createCreationalContext(bean);
       return (ResteasyCdiExtension) manager.getReference(bean, ResteasyCdiExtension.class, context);

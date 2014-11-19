@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.providers;
 
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.WriterException;
@@ -14,6 +14,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -35,12 +36,12 @@ import java.lang.reflect.Type;
 @Produces({"text/*+xml", "application/*+xml"})
 @Consumes({"text/*+xml", "application/*+xml"})
 public class DocumentProvider extends AbstractEntityProvider<Document>
-{
-   private static final Logger logger = Logger.getLogger(DocumentProvider.class);
-   
+{   
    private final TransformerFactory transformerFactory;
    private final DocumentBuilderFactory documentBuilder;
-   private boolean expandEntityReferences = true;
+   private boolean expandEntityReferences = false;
+   private boolean enableSecureProcessingFeature = true;
+   private boolean disableDTDs = true;
 
    public DocumentProvider(@Context ResteasyConfiguration config)
    {
@@ -49,11 +50,29 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
       try
       {
          String s = config.getParameter(ResteasyContextParameters.RESTEASY_EXPAND_ENTITY_REFERENCES);
-         expandEntityReferences = (s == null ? true : Boolean.parseBoolean(s));
+         expandEntityReferences = (s == null ? false : Boolean.parseBoolean(s));
       }
       catch (Exception e)
       {
-         logger.debug("Unable to retrieve config: expandEntityReferences defaults to true");
+         LogMessages.LOGGER.unableToRetrieveConfigExpand();
+      }
+      try
+      {
+         String s = config.getParameter(ResteasyContextParameters.RESTEASY_SECURE_PROCESSING_FEATURE);
+         enableSecureProcessingFeature = (s == null ? true : Boolean.parseBoolean(s));
+      }
+      catch (Exception e)
+      {
+         LogMessages.LOGGER.unableToRetrieveConfigSecure();
+      }
+      try
+      {
+         String s = config.getParameter(ResteasyContextParameters.RESTEASY_DISABLE_DTDS);
+         disableDTDs = (s == null ? true : Boolean.parseBoolean(s));
+      }
+      catch (Exception e)
+      {
+         LogMessages.LOGGER.unableToRetrieveConfigDTDs();
       }
    }
 
@@ -71,6 +90,10 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
       try
       {
          documentBuilder.setExpandEntityReferences(expandEntityReferences);
+         documentBuilder.setFeature("http://xml.org/sax/features/external-general-entities", expandEntityReferences);
+         documentBuilder.setFeature("http://xml.org/sax/features/external-parameter-entities", expandEntityReferences);
+         documentBuilder.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, enableSecureProcessingFeature);
+         documentBuilder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", disableDTDs);
          return documentBuilder.newDocumentBuilder().parse(input);
       }
       catch (Exception e)

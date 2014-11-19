@@ -146,10 +146,10 @@ public class TestNamespace extends BaseResourceTest
       movie.setTitle("La Règle du Jeu");
       request.body("application/xml", movie);
       ClientResponse<?> response = request.post();
-      Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertEquals("La Règle du Jeu", entity);
+      Assert.assertEquals(200, response.getStatus());
    }
 
    @Test

@@ -8,6 +8,9 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
+
+import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -42,7 +45,7 @@ public class MultipartRelatedReader implements
    {
       String boundary = mediaType.getParameters().get("boundary");
       if (boundary == null)
-         throw new IOException("Unable to get boundary for multipart");
+         throw new IOException(Messages.MESSAGES.unableToGetBoundary());
       MultipartRelatedInputImpl input = new MultipartRelatedInputImpl(
               mediaType, workers);
       input.parse(entityStream);

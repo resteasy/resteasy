@@ -1,5 +1,7 @@
 package org.jboss.resteasy.util;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+
 public class Hex
 {
 
@@ -31,7 +33,7 @@ public class Hex
 
       if ((len & 0x01) != 0)
       {
-         throw new RuntimeException("Odd number of characters.");
+         throw new RuntimeException(Messages.MESSAGES.oddNumberOfCharacters());
       }
 
       byte[] out = new byte[len >> 1];
@@ -61,7 +63,7 @@ public class Hex
       int digit = Character.digit(ch, 16);
       if (digit == -1)
       {
-         throw new RuntimeException("Illegal hexadecimal character " + ch + " at index " + index);
+         throw new RuntimeException(Messages.MESSAGES.illegalHexadecimalCharacter(ch, index));
       }
       return digit;
    }

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.annotations.providers.img.ImageWriterParams;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.util.FindAnnotation;
 
 import javax.imageio.IIOImage;
@@ -34,8 +34,6 @@ import java.util.Locale;
  */
 public final class IIOImageProviderHelper
 {
-
-   private static final Logger logger = Logger.getLogger(IIOImageProviderHelper.class);
 
    private IIOImageProviderHelper()
    {
@@ -95,8 +93,7 @@ public final class IIOImageProviderHelper
       if (reader == null)
       {
          String[] availableTypes = ImageIO.getReaderMIMETypes();
-         logger.warn("A reader for {0} was not found. This provider is currently configured"
-                 + "to handle only {1}", mediaType, availableTypes);
+         LogMessages.LOGGER.readerNotFound(mediaType, availableTypes);
          List<Variant> variants = ProviderHelper.getAvailableVariants(availableTypes);
          Response response = Response.notAcceptable(variants).status(Status.NOT_ACCEPTABLE).build();
          throw new WebApplicationException(response);

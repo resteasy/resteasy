@@ -431,7 +431,7 @@
         <title>Patching JBoss AS 7</title>
         <para>
             Resteasy is bundled with JBoss AS 7.  You will likely have the need to upgrade Resteasy in AS7.  The Resteasy
-            distribution comes with a zip file called resteasy-jboss-modules-2.3.7.Final.zip.  In the top level directory
+            distribution comes with a zip file called resteasy-jboss-modules-2.3.9.Final.zip.  In the top level directory
             of JBoss AS 7 (the one with the modules/ directory), unzip this file.  You should be patched with the latest
             and greatest Resteasy after this.
         </para>

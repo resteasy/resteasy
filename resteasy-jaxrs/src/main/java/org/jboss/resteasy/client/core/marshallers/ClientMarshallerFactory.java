@@ -2,6 +2,7 @@ package org.jboss.resteasy.client.core.marshallers;
 
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.client.ClientURI;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.MediaTypeHelper;
@@ -125,8 +126,7 @@ public class ClientMarshallerFactory
         	 mediaType = defaultConsumes;
          if (mediaType == null)
          {
-            throw new RuntimeException(
-                    "You must define a @Consumes type on your client method or interface, or supply a default");
+            throw new RuntimeException(Messages.MESSAGES.mustDefineConsumes());
          }
          marshaller = new MessageBodyParameterMarshaller(mediaType, type,
                  genericType, annotations);

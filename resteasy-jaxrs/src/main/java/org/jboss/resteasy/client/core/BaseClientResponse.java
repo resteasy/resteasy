@@ -4,6 +4,8 @@ import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.LinkHeader;
 import org.jboss.resteasy.spi.MarshalledEntity;
@@ -332,8 +334,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    {
       if (returnType == null)
       {
-         throw new RuntimeException(
-                 "No type information to extract entity with, use other getEntity() methods");
+         throw new RuntimeException(Messages.MESSAGES.noTypeInformationForEntity());
       }
       return (T) getEntity(returnType, genericReturnType, this.annotations);
    }
@@ -361,13 +362,11 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    {
       if (exception != null)
       {
-         throw new RuntimeException("Unable to unmarshall response for "
-                 + attributeExceptionsTo, exception);
+         throw new RuntimeException(Messages.MESSAGES.unableToUnmarshalResponse(attributeExceptionsTo), exception);
       }
 
       if (unmarshaledEntity != null && !type.isInstance(this.unmarshaledEntity))
-         throw new RuntimeException("The entity was already read, and it was of type "
-                 + unmarshaledEntity.getClass());
+         throw new RuntimeException(Messages.MESSAGES.entityAlreadyRead(unmarshaledEntity.getClass()));
 
       if (unmarshaledEntity == null)
       {
@@ -412,9 +411,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
               useGeneric, this.annotations, media);
       if (reader1 == null)
       {
-         throw createResponseFailure(format(
-                 "Unable to find a MessageBodyReader of content-type %s and type %s",
-                 media, genericType));
+         throw createResponseFailure(Messages.MESSAGES.clientResponseFailureMediaType(media, genericType));
       }
 
       try
@@ -422,7 +419,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
          InputStream is = streamFactory.getInputStream();
          if (is == null)
          {
-            throw new ClientResponseFailure("Input stream was empty, there is no entity", this);
+            throw new ClientResponseFailure(Messages.MESSAGES.inputStreamEmpty(), this);
          }
          if (isMarshalledEntity)
          {
@@ -505,7 +502,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    {
       if (status > 399 && status < 599)
       {
-         throw createResponseFailure(format("Error status %d %s returned", status, getResponseStatus()));
+         throw createResponseFailure(format(Messages.MESSAGES.clientResponseFailureStatus(status, getResponseStatus())));
       }
    }
 

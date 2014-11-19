@@ -2,7 +2,8 @@ package org.jboss.resteasy.springmvc;
 
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.plugins.spring.i18n.LogMessages;
+import org.jboss.resteasy.plugins.spring.i18n.Messages;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.NotFoundException;
@@ -20,9 +21,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class ResteasyHandlerMapping implements HandlerMapping, Ordered, InitializingBean
 {
-   private static Logger logger = Logger
-           .getLogger(ResteasyHandlerMapping.class);
-
    private int order = Integer.MAX_VALUE;
    private SynchronousDispatcher dispatcher;
 
@@ -67,8 +65,8 @@ public class ResteasyHandlerMapping implements HandlerMapping, Ordered, Initiali
          HttpRequest httpRequest = requestWrapper.getHttpRequest();
          if (!httpRequest.isInitial())
          {
-            String message = httpRequest.getUri().getPath() + " is not initial request.  Its suspended and retried.  Aborting.";
-            logger.error(message);
+            String message = Messages.MESSAGES.pathNotInitialRequest(httpRequest.getUri().getPath());
+            LogMessages.LOGGER.error(message);
             requestWrapper.setError(500, message);
          }
          else
@@ -83,11 +81,11 @@ public class ResteasyHandlerMapping implements HandlerMapping, Ordered, Initiali
          {
             throw e;
          }
-         logger.error("Resource Not Found: " + e.getMessage(), e);
+         LogMessages.LOGGER.error(Messages.MESSAGES.resourceNotFound(e.getMessage()), e);
       }
       catch (Failure e)
       {
-         logger.error("ResourceFailure: " + e.getMessage(), e);
+         LogMessages.LOGGER.error(Messages.MESSAGES.resourceFailure(e.getMessage()), e);
          throw e;
       }
       return null;
@@ -129,7 +127,7 @@ public class ResteasyHandlerMapping implements HandlerMapping, Ordered, Initiali
    {
       if (!throwNotFound && order == Integer.MAX_VALUE)
       {
-         logger.info("ResteasyHandlerMapping has the default order and throwNotFound settings.  Consider adding explicit ordering to your HandlerMappings, with ResteasyHandlerMapping being lsat, and set throwNotFound = true.");
+         LogMessages.LOGGER.info(Messages.MESSAGES.resteasyHandlerMappingHasDefaultOrder());
       }
    }
 }

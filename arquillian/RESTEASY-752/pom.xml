@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-arquillian-parent</artifactId>
-    <version>2.3.7.Final</version>
+    <version>2.3.9.Final</version>
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
   <artifactId>RESTEASY-752</artifactId>

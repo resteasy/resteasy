@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.annotations.Suspend;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.AsynchronousResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -16,13 +17,13 @@ public class SuspendInjector implements ValueInjector
    public SuspendInjector(Suspend suspend, Class type)
    {
       if (!type.equals(AsynchronousResponse.class))
-         throw new IllegalArgumentException(type.getName() + " is not a valid injectable type for @Suspend");
+         throw new IllegalArgumentException(Messages.MESSAGES.notValidInjectableType(type.getName()));
       this.suspend = suspend;
    }
 
    public Object inject()
    {
-      throw new IllegalStateException("You cannot inject into a form outside the scope of an HTTP request");
+      throw new IllegalStateException(Messages.MESSAGES.cannotInjectIntoForm());
    }
 
    public Object inject(HttpRequest request, HttpResponse response)

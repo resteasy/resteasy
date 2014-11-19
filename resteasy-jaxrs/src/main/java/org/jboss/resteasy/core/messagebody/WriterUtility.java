@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core.messagebody;
 
 import org.jboss.resteasy.core.interception.MessageBodyWriterContextImpl;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
@@ -52,8 +53,7 @@ public abstract class WriterUtility
          public RuntimeException createWriterNotFound(Type genericType,
                                                       MediaType mediaType)
          {
-            throw new RuntimeException("Could not read type " + genericType
-                    + " for media type " + mediaType);
+            throw new RuntimeException(Messages.MESSAGES.couldNotReadType(genericType, mediaType));
          }
       }.doWrite(toOutput, mt, os);
    }

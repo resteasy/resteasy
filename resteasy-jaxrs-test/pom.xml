@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>2.3.7.Final</version>
+        <version>2.3.9.Final</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>resteasy-jaxrs-test</artifactId>
@@ -13,12 +13,16 @@
     <dependencies>
 
         <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        
+        <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-test-tjws</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-
 
     </dependencies>
 
@@ -45,6 +49,24 @@
                 </plugins>
             </build>
         </profile>
+        
+        <profile>
+			<!-- Test with Red Hat version of Xerces -->
+			<id>redhat-xerces</id>
+			<activation>
+				<property>
+					<name>redhat-xerces</name>
+				</property>
+			</activation>
+            <dependencies>
+                <dependency>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                    <version>${version.xerces.xercesImpl}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+		</profile>
     </profiles>
 
 </project>
