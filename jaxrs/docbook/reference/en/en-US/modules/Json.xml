@@ -151,6 +151,16 @@ GET /resources/stuff?callback=processStuffResponse
 processStuffResponse(&lt;nomal JSON body&gt;)
 </programlisting>
             This supports the default behavior of <ulink url="http://api.jquery.com/jQuery.ajax/">jQuery</ulink>.
+            To enable JacksonJsonpInterceptor in WildFly, you need to import annotations from <literal>org.jboss.resteasy.resteasy-jackson-provider</literal> module using jboss-deployment-structure.xml:
+<programlisting><![CDATA[
+<jboss-deployment-structure>
+  <deployment>
+    <dependencies>
+      <module name="org.jboss.resteasy.resteasy-jackson-provider" annotations="true"/>
+    </dependencies>
+  </deployment>
+</jboss-deployment-structure>
+]]></programlisting>
         </para>
         <para>
             You can change the name of the callback parameter by setting the callbackQueryParameter property.
