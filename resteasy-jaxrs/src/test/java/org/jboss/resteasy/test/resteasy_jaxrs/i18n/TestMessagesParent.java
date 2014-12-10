@@ -44,6 +44,7 @@ abstract public class TestMessagesParent
             return false;
          }
          properties.load(is);
+         System.out.println("properties.size(): " + properties.size());
          return getExpectedNumberOfMethods() == properties.size(); 
    }
    
