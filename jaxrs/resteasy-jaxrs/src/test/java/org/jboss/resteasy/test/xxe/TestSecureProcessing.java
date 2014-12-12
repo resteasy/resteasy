@@ -7,6 +7,7 @@ import java.util.Hashtable;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import junit.framework.Assert;
 
@@ -108,7 +109,7 @@ public class TestSecureProcessing
    }
    
    ///////////////////////////////////////////////////////////////////////////////////////////////
-//   @Test
+   @Test
    public void testSecurityDefaultDTDsDefaultExpansionDefault() throws Exception
    {
       before(getParameterMap(MapInclusion.DEFAULT, MapInclusion.DEFAULT, MapInclusion.DEFAULT));
@@ -331,7 +332,6 @@ public class TestSecureProcessing
       doEntityExpansionPasses();
       doMaxAttributesPasses();
       doDTDPasses();
-      doDTDPasses();
       doExternalEntityExpansionFails();
    }
 
@@ -339,7 +339,6 @@ public class TestSecureProcessing
    {
       doEntityExpansionPasses();
       doMaxAttributesPasses();
-      doDTDPasses();
       doDTDPasses();
       doExternalEntityExpansionPasses();
    }
@@ -373,6 +372,13 @@ public class TestSecureProcessing
    
    void doMaxAttributesFails() throws Exception
    {
+      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      System.out.println("dbf.getClass(): " + dbf.getClass());
+      if ("org.apache.xerces.jaxp.DocumentBuilderFactoryImpl".equals(dbf.getClass().getName()))
+      {
+         System.out.println("Testing with Red Hat version of Xerces, skipping max attributes test");
+         return;
+      }
       System.out.println("entering doMaxAttributesFails()");
       ClientRequest request = new ClientRequest(generateURL("/test"));
       request.body("application/xml", bigAttributeDoc);
@@ -381,8 +387,10 @@ public class TestSecureProcessing
       String entity = response.getEntity(String.class);
       System.out.println("doMaxAttributesFails() result: " + entity);
       Assert.assertEquals(400, response.getStatus());
-      Assert.assertTrue(entity.startsWith("org.xml.sax.SAXParseException"));
-      Assert.assertTrue(entity.contains("has more than \"10,000\" attributes")); 
+      Assert.assertTrue(entity.contains("org.xml.sax.SAXParseException"));
+      Assert.assertTrue(entity.contains("has more than \"10,00"));
+      int pos = entity.indexOf("has more than \"10,00");
+      Assert.assertTrue(entity.substring(pos).contains("attributes"));
    }
 
    void doMaxAttributesPasses() throws Exception
@@ -408,7 +416,7 @@ public class TestSecureProcessing
       String entity = response.getEntity(String.class);
       System.out.println("doDTDFails(): result: " + entity);
       Assert.assertEquals(400, response.getStatus());
-      Assert.assertTrue(entity.startsWith("org.xml.sax.SAXParseException"));
+      Assert.assertTrue(entity.contains("org.xml.sax.SAXParseException"));
       Assert.assertTrue(entity.contains("DOCTYPE is disallowed"));  
    }
    
