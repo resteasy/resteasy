@@ -70,39 +70,47 @@ public interface LogMessages extends BasicLogger
    void ambiguousConstructorsFound(Class<?> clazz);
    
    @LogMessage(level = Level.WARN)
-   @Message(id = BASE + 210, value = "ClassNotFoundException: Unable to load builtin provider: %s")
+   @Message(id = BASE + 210, value = "Application.getClasses() returned unknown class type: %s")
+   void applicationGetClassesUnknownClassType(String className);
+   
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 215, value = "Application.getSingletons() returned unknown class type: %s")
+   void applicationGetSingletonsUnknownClassType(String className);   
+   
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 220, value = "ClassNotFoundException: Unable to load builtin provider: %s")
    void classNotFoundException(String line);
    
    @LogMessage(level = Level.WARN)
-   @Message(id = BASE + 215, value = "Could not delete file '%s' for request: ")
+   @Message(id = BASE + 225, value = "Could not delete file '%s' for request: ")
    void couldNotDeleteFile(String path, @Cause Throwable cause);
    
    @LogMessage(level = Level.WARN)
-   @Message(id = BASE + 220, value = "Failed to parse request.")
+   @Message(id = BASE + 230, value = "Failed to parse request.")
    void failedToParseRequest(@Cause Throwable cause);
    
    @LogMessage(level = Level.WARN)
-   @Message(id = BASE + 225, value =  "Field {0} of subresource {1} will not be injected according to spec", format=Format.MESSAGE_FORMAT)
+   @Message(id = BASE + 235, value =  "Field {0} of subresource {1} will not be injected according to spec", format=Format.MESSAGE_FORMAT)
    void fieldOfSubesourceWillNotBeInjected(String field, String subresource);
    
    @LogMessage(level = Level.WARN)
-   @Message(id = BASE + 230, value = "Ignoring unsupported locale: %s")
+   @Message(id = BASE + 240, value = "Ignoring unsupported locale: %s")
    void ignoringUnsupportedLocale(String locale);
    
    @LogMessage(level = Level.WARN)
-   @Message(id = BASE + 235, value =  "JAX-RS annotations found at non-public method: {0}.{1}(); Only public methods may be exposed as resource methods.", format=Format.MESSAGE_FORMAT)
+   @Message(id = BASE + 245, value =  "JAX-RS annotations found at non-public method: {0}.{1}(); Only public methods may be exposed as resource methods.", format=Format.MESSAGE_FORMAT)
    void JAXRSAnnotationsFoundAtNonPublicMethod(String className, String method);  
    
    @LogMessage(level = Level.WARN)
-   @Message(id = BASE + 240, value = "No valueOf() method available for %s, trying constructor...")
+   @Message(id = BASE + 250, value = "No valueOf() method available for %s, trying constructor...")
    void noValueOfMethodAvailable(String className);
    
    @LogMessage(level = Level.WARN)
-   @Message(id = BASE + 245, value = "A reader for {0} was not found. This provider is currently configured to handle only {1}", format=Format.MESSAGE_FORMAT)
+   @Message(id = BASE + 255, value = "A reader for {0} was not found. This provider is currently configured to handle only {1}", format=Format.MESSAGE_FORMAT)
    void readerNotFound(MediaType mediaType, String[] availableTypes);
    
    @LogMessage(level = Level.WARN)
-   @Message(id = BASE + 250, value = "The use of %s is deprecated, please use javax.ws.rs.Application as a context-param instead")
+   @Message(id = BASE + 260, value = "The use of %s is deprecated, please use javax.ws.rs.Application as a context-param instead")
    void useOfApplicationClass(String className);
    
    

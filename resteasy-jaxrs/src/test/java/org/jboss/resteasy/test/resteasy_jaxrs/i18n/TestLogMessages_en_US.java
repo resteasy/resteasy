@@ -9,7 +9,7 @@ import java.util.Locale;
  * 
  * Copyright Sep 26, 2014
  */
-public class TestLogMessages_us_EN extends TestLogMessages_Abstract
+public class TestLogMessages_en_US extends TestLogMessages_Abstract
 {
    @Override
    protected Locale getLocale()

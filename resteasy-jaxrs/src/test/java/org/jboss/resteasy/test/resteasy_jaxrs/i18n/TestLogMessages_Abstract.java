@@ -59,7 +59,8 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
    public void testLocale() throws Exception
    {
       String filename = "org/jboss/resteasy/resteasy_jaxrs/i18n/LogMessages.i18n_" + getLocale().toString() + ".properties";
-      if (!before(Locale.getDefault(), filename))
+//      if (!before(Locale.getDefault(), filename))
+      if (!(before(getLocale(), filename)))
       {
          System.out.println(getClass() + ": " + filename + " not found.");
          return;
@@ -117,7 +118,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
 
       // WARN
       LogMessages.LOGGER.couldNotDeleteFile("file", new Exception("Sluggo says"));
-      expected = getExpected(BASE + "215", "couldNotDeleteFile", "file");
+      expected = getExpected(BASE + "225", "couldNotDeleteFile", "file");
       Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("Sluggo says"));
@@ -142,7 +143,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
 
       // WARN
       LogMessages.LOGGER.couldNotDeleteFile("file", new Exception("Sluggo says"));
-      expected = getExpected(BASE + "215", "couldNotDeleteFile", "file");
+      expected = getExpected(BASE + "225", "couldNotDeleteFile", "file");
       Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("Sluggo says"));
@@ -173,7 +174,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
 
       // WARN
       LogMessages.LOGGER.couldNotDeleteFile("file", new Exception("Sluggo says"));
-      expected = getExpected(BASE + "215", "couldNotDeleteFile", "file");
+      expected = getExpected(BASE + "225", "couldNotDeleteFile", "file");
       Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("Sluggo says"));
@@ -205,7 +206,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
 
       // WARN
       LogMessages.LOGGER.couldNotDeleteFile("file", new Exception("Sluggo says"));
-      expected = getExpected(BASE + "215", "couldNotDeleteFile", "file");
+      expected = getExpected(BASE + "225", "couldNotDeleteFile", "file");
       Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("Sluggo says"));
@@ -226,6 +227,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
    @Override
    protected int getExpectedNumberOfMethods()
    {
+      System.out.println("expected number of methods: " +LogMessages.class.getDeclaredMethods().length);
       return LogMessages.class.getDeclaredMethods().length;  
    }
    

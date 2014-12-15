@@ -1,6 +1,7 @@
 package org.jboss.resteasy.springmvc;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.spring.jetty.i18n.LogMessages;
+import org.jboss.resteasy.spring.jetty.i18n.Messages;
 import org.mortbay.jetty.Server;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -13,9 +14,6 @@ import org.springframework.beans.factory.InitializingBean;
 
 public class JettyLifecycleManager implements InitializingBean, DisposableBean
 {
-   private final static Logger logger = Logger
-         .getLogger(JettyLifecycleManager.class);
-
    private Server servletContainer;
 
    public Server getServletContainer()
@@ -30,7 +28,8 @@ public class JettyLifecycleManager implements InitializingBean, DisposableBean
 
    public void afterPropertiesSet() throws Exception
    {
-      logger.info("Starting up Jetty");
+      LogMessages.LOGGER.info(Messages.MESSAGES.startingJetty());
+      
       try
       {
          servletContainer.start();
@@ -42,11 +41,11 @@ public class JettyLifecycleManager implements InitializingBean, DisposableBean
       }
       catch (InterruptedException e)
       {
-         logger.error("Interrupted while starting up Jetty", e);
+         LogMessages.LOGGER.error(Messages.MESSAGES.interruptedWhileStartingJetty(), e);
       }
       catch (Exception e)
       {
-         logger.error("Exception while starting up Jetty", e);
+         LogMessages.LOGGER.error(Messages.MESSAGES.exceptionWhileStartingJetty(), e);
       }
 
       /*
@@ -59,14 +58,14 @@ public class JettyLifecycleManager implements InitializingBean, DisposableBean
 
    public void destroy() throws Exception
    {
-      logger.info("Shutting down Jetty");
+      LogMessages.LOGGER.info(Messages.MESSAGES.shuttingDownJetty());
       try
       {
          servletContainer.stop();
       }
       catch (Exception e)
       {
-         logger.info("Exception while shutting down Jetty", e);
+         LogMessages.LOGGER.info(Messages.MESSAGES.exceptionWhileShuttingDownJetty(), e);
       }
    }
 

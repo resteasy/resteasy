@@ -473,7 +473,7 @@ public class ResteasyDeployment
             else
             {
                // required by spec to warn and not abort
-               LogMessages.LOGGER.warn("Application.getClasses() returned unknown class type: " + clazz.getName());
+               LogMessages.LOGGER.applicationGetClassesUnknownClassType(clazz.getName());
             }
          }
       }
@@ -495,7 +495,7 @@ public class ResteasyDeployment
             else
             {
                // required by spec to warn and not abort
-               LogMessages.LOGGER.warn("Application.getSingletons() returned unknown class type: " + obj.getClass().getName());
+               LogMessages.LOGGER.applicationGetSingletonsUnknownClassType(obj.getClass().getName());
             }
          }
       }
