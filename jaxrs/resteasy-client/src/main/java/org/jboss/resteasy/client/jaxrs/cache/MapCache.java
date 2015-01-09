@@ -28,7 +28,20 @@ public class MapCache implements BrowserCache
    public Entry get(String key, MediaType accept)
    {
       Map<String, Entry> parent = cache.get(key);
-      if (parent == null) return null;
+      if (parent == null || parent.isEmpty()) {
+         return null;
+      }
+      if (accept.isWildcardType()) {
+         // if the client accepts */*, return just the first entry for requested URL
+         return parent.get(parent.keySet().iterator().next());
+      } else if (accept.isWildcardSubtype()) {
+         // if the client accepts <media>/*, return the first entry which media type starts with <media>/
+         for (Map.Entry<String, Entry> parentEntry : parent.entrySet()) {
+            if (parentEntry.getKey().startsWith(accept.getType() + "/")) {
+               return parentEntry.getValue();
+            }
+         }
+      }
       return parent.get(accept.toString());
    }
 
@@ -52,7 +65,7 @@ public class MapCache implements BrowserCache
    {
       Map<String, Entry> data = cache.get(key);
       if (data == null) return null;
-      Entry removed = data.remove(type);
+      Entry removed = data.remove(type.toString());
       if (data.isEmpty())
       {
          cache.remove(key);
