@@ -241,7 +241,7 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void pushContextObjects(final HttpRequest request, final HttpResponse response)
    {
-      Map contextDataMap = ResteasyProviderFactory.getContextDataMap();
+      Map contextDataMap = new HashMap<Class<?>, Object>();
       contextDataMap.put(HttpRequest.class, request);
       contextDataMap.put(HttpResponse.class, response);
       contextDataMap.put(HttpHeaders.class, request.getHttpHeaders());
@@ -264,8 +264,8 @@ public class SynchronousDispatcher implements Dispatcher
          }
       };
       contextDataMap.put(ResourceContext.class, resourceContext);
-
       contextDataMap.putAll(defaultContextObjects);
+      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
    }
 
    public Response internalInvocation(HttpRequest request, HttpResponse response, Object entity)
