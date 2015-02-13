@@ -29,6 +29,8 @@ After pulling down a clone of the Resteasy repository run
 
 	mvn install
 
+Currently it can be built only with JDK 1.7. JDK 1.8 breaks ant scriptlets because script engine changed from `rhino` to `nashorn`.
+
 ### Requirements
 - Java Cryptography Extension [JCE](http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html)
 
