@@ -74,7 +74,7 @@ public class MockHttpRequest extends BaseHttpRequest
       URI relativeUri = baseUri.relativize(absoluteUri);
       relativeUri = UriBuilder.fromUri(relativeUri.getRawPath()).replaceQuery(absoluteUri.getRawQuery()).build();
 
-      request.uri = new ResteasyUriInfo(baseUri, relativeUri);
+      request.uri = new ResteasyUriInfo(absoluteUri.toString(), absoluteUri.getRawQuery(), baseUri.getRawPath());
       return request;
    }
 

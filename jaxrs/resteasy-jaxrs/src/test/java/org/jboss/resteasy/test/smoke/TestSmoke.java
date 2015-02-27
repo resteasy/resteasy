@@ -30,7 +30,7 @@ public class TestSmoke
       dispatcher.getRegistry().addResourceFactory(noDefaults);
 
       {
-         MockHttpRequest request = MockHttpRequest.get("/basic");
+         MockHttpRequest request = MockHttpRequest.get("/basic/");
          MockHttpResponse response = new MockHttpResponse();
 
          dispatcher.invoke(request, response);

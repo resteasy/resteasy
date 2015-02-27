@@ -174,7 +174,8 @@ public class ResteasyUriBuilder extends UriBuilder
       if (match.group(5) != null)
       {
          String group = match.group(5);
-         if (!scheme && !"".equals(group) && !group.startsWith("/") && group.indexOf(':') > -1) throw new IllegalArgumentException("Illegal uri template: " + uriTemplate);
+         if (!scheme && !"".equals(group) && !group.startsWith("/") && group.indexOf(':') > -1 &&
+           group.indexOf('/') > -1 && group.indexOf(':') < group.indexOf('/')) throw new IllegalArgumentException("Illegal uri template: " + uriTemplate);
          if (!"".equals(group)) replacePath(group);
       }
       if (match.group(7) != null) replaceQuery(match.group(7));

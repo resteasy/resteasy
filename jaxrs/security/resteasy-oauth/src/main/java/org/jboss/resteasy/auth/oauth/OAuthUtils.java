@@ -90,7 +90,7 @@ public class OAuthUtils {
 	 */
 	public static OAuthMessage readMessage(HttpServletRequest req) {
 		String authorizationHeader = req.getHeader(AUTHORIZATION_HEADER);
-		Set<OAuth.Parameter> parameters = new HashSet<OAuth.Parameter>();
+		List<OAuth.Parameter> parameters = new ArrayList<OAuth.Parameter>();
 		
 		// first read the Authorization header
 		if(authorizationHeader != null){
