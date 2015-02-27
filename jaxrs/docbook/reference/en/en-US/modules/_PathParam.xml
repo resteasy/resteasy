@@ -28,16 +28,13 @@ a constructor that takes a String parameter, or a static valueOf method that tak
 <para>
 
 <programlisting>
+@GET
+@Path("/book/{isbn}")
+public String getBook(@PathParam("isbn") ISBN id) {...}
 
-   @GET
-   @Path("/book/{isbn}")
-   public String getBook(@PathParam("isbn") ISBN id) {...}
-
-
-   public class ISBN {
-      public ISBN(String str) {...}
-   }
-
+public class ISBN {
+   public ISBN(String str) {...}
+}
 </programlisting>
 </para>
 <para>
@@ -47,10 +44,9 @@ Or instead of a public String constructors, have a valueOf method:
 <para>
 
 <programlisting>
-  public class ISBN {
-     
-     public static ISBN valueOf(String isbn) {...}
-  }
+public class ISBN {
+    public static ISBN valueOf(String isbn) {...}
+}
 </programlisting>
 </para>
 <para>
@@ -101,11 +97,9 @@ We discussed before how you can use regular expression patterns within @Path val
 <para>
 
 <programlisting>
-
 @GET
 @Path("/aaa{param:b+}/{many:.*}/stuff")
 public String getIt(@PathParam("param") String bs, @PathParam("many") String many) {...}
-
 </programlisting>
 </para>
 <para>
@@ -163,7 +157,6 @@ The specification has a very simple abstraction for examining a fragment of the 
 <para>
 
 <programlisting>
-
 public interface PathSegment {
 
     /**
@@ -172,14 +165,14 @@ public interface PathSegment {
      * @return the path segment
      */
     String getPath();
+    
     /**
      * Get a map of the matrix parameters associated with the path segment
      * @return the map of matrix parameters
      */
     MultivaluedMap&lt;String, String&gt; getMatrixParameters();
-    
-}
 
+}
 </programlisting>
 </para>
 <para>
@@ -189,10 +182,9 @@ You can have Resteasy inject a PathSegment instead of a value with your @PathPar
 <para>
 
 <programlisting>
-   @GET
-   @Path("/book/{id}")
-   public String getBook(@PathParam("id") PathSegment id) {...}
-
+@GET
+@Path("/book/{id}")
+public String getBook(@PathParam("id") PathSegment id) {...}
 </programlisting>
 </para>
 <para>

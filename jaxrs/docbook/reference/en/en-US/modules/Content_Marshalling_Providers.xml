@@ -59,7 +59,7 @@
                         text/plain
                      </entry>
                      <entry>
-                        primtives, java.lang.String, or any type that has a String constructor, or static
+                        primitives, java.lang.String, or any type that has a String constructor, or static
                         valueOf(String) method for input, toString() for output
                      </entry>
                   </row>
@@ -126,7 +126,7 @@
 
 
          The Resteasy ServletContextLoader will automatically scan your WEB-INF/lib and classes directories for classes
-         annotated with @Provider or you can manually configure them in web.xml. See Installation/Configuration
+         annotated with @Provider or you can manually configure them in web.xml. See Installation/Configuration.
       </para>
       <para>
 
@@ -145,8 +145,7 @@
       </para>
       <para>
 
-         <programlisting>
-<![CDATA[
+         <programlisting><![CDATA[
 public interface Providers
 {
 
@@ -245,9 +244,7 @@ public interface Providers
     */
    <T> ContextResolver<T> getContextResolver(Class<T> contextType,
                                              MediaType mediaType);
-}
-]]>
-         </programlisting>
+}]]></programlisting>
       </para>
       <para>
 
@@ -259,17 +256,17 @@ public interface Providers
       </para>
       <para>
 
-         <programlisting>
-            @Provider
-            @Consumes("multipart/fixed")
-            public class MultipartProvider implements MessageBodyReader {
+<programlisting>
+@Provider
+@Consumes("multipart/fixed")
+public class MultipartProvider implements MessageBodyReader {
 
-            private @Context Providers providers;
+    private @Context Providers providers;
 
-            ...
+    ...
 
-            }
-         </programlisting>
+}
+</programlisting>
       </para>
       <para>
 
@@ -287,15 +284,15 @@ public interface Providers
          in which expanding an external entity causes an unsafe file to be loaded. For example, the document
       </para>
       
-      <programlisting>
-      &lt;?xml version="1.0"?&gt;
-      &lt;!DOCTYPE foo
-      [&lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt;]&gt;
-      &lt;search&gt;
-         &lt;user&gt;bill&lt;/user&gt;
-         &lt;file&gt;&amp;xxe;&lt;file&gt;
-      &lt;/search&gt;
-      </programlisting>
+<programlisting>
+&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE foo
+[&lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt;]&gt;
+&lt;search&gt;
+    &lt;user&gt;bill&lt;/user&gt;
+    &lt;file&gt;&amp;xxe;&lt;file&gt;
+&lt;/search&gt;
+</programlisting>
       
       <para>
       
@@ -314,12 +311,12 @@ public interface Providers
       
       <para> to "true" in the web.xml file:</para>
       
-      <programlisting>
-         &lt;context-param&gt;
-            &lt;param-name&gt;resteasy.document.expand.entity.references&lt;/param-name&gt;
-            &lt;param-value&gt;true&lt;/param-value&gt;
-         &lt;/context-param&gt;
-      </programlisting>
+<programlisting>
+&lt;context-param&gt;
+    &lt;param-name&gt;resteasy.document.expand.entity.references&lt;/param-name&gt;
+    &lt;param-value&gt;true&lt;/param-value&gt;
+&lt;/context-param&gt;
+</programlisting>
       
       <para>
       
@@ -339,15 +336,15 @@ public interface Providers
  	  
  	  </para>
  	  
- 	  <programlisting>
-   &lt;!ENTITY foo 'foo'&gt;
-   &lt;!ENTITY foo1 '&amp;foo;&amp;foo;&amp;foo;&amp;foo;&amp;foo;&amp;foo;&amp;foo;&amp;foo;&amp;foo;&amp;foo;'&gt;
-   &lt;!ENTITY foo2 '&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;'&gt;
-   &lt;!ENTITY foo3 '&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;'&gt;
-   &lt;!ENTITY foo4 '&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;'&gt;
-   &lt;!ENTITY foo5 '&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;'&gt;
-   &lt;!ENTITY foo6 '&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;'&gt;
- 	  </programlisting>
+<programlisting>
+&lt;!ENTITY foo 'foo'&gt;
+&lt;!ENTITY foo1 '&amp;foo;&amp;foo;&amp;foo;&amp;foo;&amp;foo;&amp;foo;&amp;foo;&amp;foo;&amp;foo;&amp;foo;'&gt;
+&lt;!ENTITY foo2 '&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;&amp;foo1;'&gt;
+&lt;!ENTITY foo3 '&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;&amp;foo2;'&gt;
+&lt;!ENTITY foo4 '&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;&amp;foo3;'&gt;
+&lt;!ENTITY foo5 '&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;&amp;foo4;'&gt;
+&lt;!ENTITY foo6 '&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;&amp;foo5;'&gt;
+</programlisting>
  	  
    <para>
    then the expansion of &amp;foo6; 
