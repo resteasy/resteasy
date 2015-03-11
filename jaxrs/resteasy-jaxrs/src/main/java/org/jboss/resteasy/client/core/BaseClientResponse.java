@@ -3,6 +3,7 @@ package org.jboss.resteasy.client.core;
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
+import org.jboss.resteasy.core.ProvidersContextRetainer;
 import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
 import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
 import org.jboss.resteasy.spi.Link;
@@ -360,6 +361,10 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
    private <T2> Annotation[] getAnnotations(Class<T2> type, Type genericType)
    {
+      if (this.annotations != null)
+      {
+         return this.annotations;
+      }
       return (this.returnType == type && this.genericReturnType == genericType) ? this.annotations
               : null;
    }
@@ -418,6 +423,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
       Providers current = ResteasyProviderFactory.getContextData(Providers.class);
       ResteasyProviderFactory.pushContext(Providers.class, providerFactory);
+      Object obj = null;
       try
       {
          InputStream is = streamFactory.getInputStream();
@@ -431,9 +437,10 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
          }
 
-         final Object obj = new ClientReaderInterceptorContext(readerInterceptors, providerFactory, useType,
-                 useGeneric, this.annotations, media, getResponseHeaders(), is, attributes)
-                 .proceed();
+         final Object finalObj = new ClientReaderInterceptorContext(readerInterceptors, providerFactory, useType,
+               useGeneric, annotations, media, getResponseHeaders(), is, attributes)
+               .proceed();
+         obj = finalObj;
          if (isMarshalledEntity)
          {
             InputStreamToByteArray isba = (InputStreamToByteArray) is;
@@ -449,13 +456,13 @@ public class BaseClientResponse<T> extends ClientResponse<T>
                @Override
                public Object getEntity()
                {
-                  return obj;
+                  return finalObj;
                }
             };
          }
          else
          {
-            return (T2) obj;
+            return (T2) finalObj;
          }
 
       }
@@ -474,6 +481,10 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       {
          ResteasyProviderFactory.popContextData(Providers.class);
          if (current != null) ResteasyProviderFactory.pushContext(Providers.class, current);
+         if (obj instanceof ProvidersContextRetainer)
+         {
+            ((ProvidersContextRetainer) obj).setProviders(providerFactory);
+         }
       }
    }
 
