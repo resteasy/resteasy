@@ -15,6 +15,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -65,9 +66,7 @@ public class TestContextProviders
    static final MediaType MULTIPART_FORM_DATA = new MediaType("multipart", "form-data");
    static final MediaType MULTIPART_RELATED = new MediaType("multipart", "related");
    
-   static final GenericTypeWrapper<List<Name>> LIST_NANE_GENERIC_TYPE = new GenericTypeWrapper<List<Name>>(
-         new org.jboss.resteasy.util.GenericType<List<Name>>() {},
-         new javax.ws.rs.core.GenericType<List<Name>>() {});
+   static final javax.ws.rs.core.GenericType<List<Name>> LIST_NAME_TYPE = new javax.ws.rs.core.GenericType<List<Name>>() {};
    
    public abstract static class S1 extends AnnotationLiteral<PartType> implements PartType
    {
@@ -324,7 +323,7 @@ public class TestContextProviders
       Annotation[] annotations = new Annotation[1];
       annotations[0] = PART_TYPE_APPLICATION_XML;
       List<Name> names = new ArrayList<Name>();
-      names = post(version, "/post/mixed", output, MULTIPART_MIXED, names.getClass(), LIST_NANE_GENERIC_TYPE, annotations);
+      names = post(version, "/post/mixed", output, MULTIPART_MIXED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
       Assert.assertEquals(2, names.size());
       Assert.assertTrue(names.contains(new Name("Bill")));
       Assert.assertTrue(names.contains(new Name("Bob"))); 
@@ -347,7 +346,7 @@ public class TestContextProviders
       Annotation[] annotations = new Annotation[1];
       annotations[0] = PART_TYPE_APPLICATION_XML;
       List<Name> names = new ArrayList<Name>();
-      names = post(version, "/post/form", output, MULTIPART_FORM_DATA, names.getClass(), LIST_NANE_GENERIC_TYPE, annotations);
+      names = post(version, "/post/form", output, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
       Assert.assertEquals(2, names.size());
       Assert.assertTrue(names.contains(new Name("Bill")));
       Assert.assertTrue(names.contains(new Name("Bob"))); 
@@ -369,7 +368,7 @@ public class TestContextProviders
       Annotation[] annotations = new Annotation[1];
       annotations[0] = PART_TYPE_APPLICATION_XML;
       List<Name> names = new ArrayList<Name>();
-      names = post(version, "/post/list", customers, MULTIPART_MIXED, names.getClass(), LIST_NANE_GENERIC_TYPE, annotations);
+      names = post(version, "/post/list", customers, MULTIPART_MIXED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
       Assert.assertEquals(2, names.size());
       Assert.assertTrue(names.contains(new Name("Bill")));
       Assert.assertTrue(names.contains(new Name("Bob"))); 
@@ -391,7 +390,7 @@ public class TestContextProviders
       Annotation[] annotations = new Annotation[1];
       annotations[0] = PART_TYPE_APPLICATION_XML;
       List<Name> names = new ArrayList<Name>();
-      names = post(version, "/post/map", customers, MULTIPART_FORM_DATA, names.getClass(), LIST_NANE_GENERIC_TYPE, annotations);
+      names = post(version, "/post/map", customers, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
       Assert.assertEquals(2, names.size());
       Assert.assertTrue(names.contains(new Name("bill:Bill")));
       Assert.assertTrue(names.contains(new Name("bob:Bob"))); 
@@ -414,7 +413,7 @@ public class TestContextProviders
       Annotation[] annotations = new Annotation[1];
       annotations[0] = PART_TYPE_APPLICATION_XML;
       List<Name> names = new ArrayList<Name>();
-      names = post(version, "/post/related", output, MULTIPART_RELATED, names.getClass(), LIST_NANE_GENERIC_TYPE, annotations);
+      names = post(version, "/post/related", output, MULTIPART_RELATED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
       Assert.assertEquals(2, names.size());
       Assert.assertTrue(names.contains(new Name("Bill")));
       Assert.assertTrue(names.contains(new Name("Bob")));
@@ -489,8 +488,56 @@ public class TestContextProviders
       }
    }
    
+//   @SuppressWarnings({"unchecked"})
+//   <S, T> T post(Version version, String path, S payload, MediaType mediaType, Class<T> returnType, javax.ws.rs.core.GenericType<T> genericReturnType, Annotation[] annotations) throws Exception
+//   {
+//      switch (version)
+//      {
+//          case TWO:
+//          {
+//             ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-1119" + path);
+//             request.body(mediaType, payload, payload.getClass(), null, annotations);
+//             ClientResponse<T> response = request.post();
+//             T entity = null;
+//             if (genericReturnType != null)
+//             {
+//                entity = response.getEntity(returnType, genericReturnType.getType());
+//             }
+//             else
+//             {
+//                entity = response.getEntity(returnType);
+//             }
+//           
+//             return entity;
+//          }
+//          
+//          case THREE:
+//          {
+//             Client client = ClientBuilder.newClient();
+//             WebTarget target = client.target("http://localhost:8080/RESTEASY-1119" + path);
+//             Entity<S> entity = Entity.entity(payload, mediaType, annotations);
+//             Response response = target.request().post(entity);
+//             System.out.println("status: " + response.getStatus());
+//             Assert.assertEquals(200, response.getStatus());
+//             T result = null;
+//             if (genericReturnType != null)
+//             {
+//                result = response.readEntity(genericReturnType);  
+//             }
+//             else
+//             {
+//                result = response.readEntity(returnType);
+//             }
+//             return result;
+//          }
+//
+//          default:
+//             throw new Exception("Unknown version: " + version);
+//      }
+//   }
+   
    @SuppressWarnings({"unchecked"})
-   <S, T> T post(Version version, String path, S payload, MediaType mediaType, Class<T> returnType, GenericTypeWrapper<T> genericReturnType, Annotation[] annotations) throws Exception
+   <S, T> T post(Version version, String path, S payload, MediaType mediaType, Class<T> returnType, Type genericReturnType, Annotation[] annotations) throws Exception
    {
       switch (version)
       {
@@ -502,7 +549,7 @@ public class TestContextProviders
              T entity = null;
              if (genericReturnType != null)
              {
-                entity = response.getEntity(returnType, genericReturnType.version2());
+                entity = response.getEntity(returnType, genericReturnType);
              }
              else
              {
@@ -523,7 +570,7 @@ public class TestContextProviders
              T result = null;
              if (genericReturnType != null)
              {
-                result = response.readEntity(genericReturnType.version3());  
+                result = response.readEntity(new GenericType<T>(genericReturnType));  
              }
              else
              {
@@ -536,6 +583,54 @@ public class TestContextProviders
              throw new Exception("Unknown version: " + version);
       }
    }
+   
+//   @SuppressWarnings({"unchecked"})
+//   <S, T, U> T post(Version version, String path, S payload, MediaType mediaType, Class<T> returnType, GenericTypeWrapper<U> genericReturnType, Annotation[] annotations) throws Exception
+//   {
+//      switch (version)
+//      {
+//          case TWO:
+//          {
+//             ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-1119" + path);
+//             request.body(mediaType, payload, payload.getClass(), null, annotations);
+//             ClientResponse<T> response = request.post();
+//             T entity = null;
+//             if (genericReturnType != null)
+//             {
+//                entity = response.getEntity(returnType, genericReturnType.version2());
+//             }
+//             else
+//             {
+//                entity = response.getEntity(returnType);
+//             }
+//           
+//             return entity;
+//          }
+//          
+//          case THREE:
+//          {
+//             Client client = ClientBuilder.newClient();
+//             WebTarget target = client.target("http://localhost:8080/RESTEASY-1119" + path);
+//             Entity<S> entity = Entity.entity(payload, mediaType, annotations);
+//             Response response = target.request().post(entity);
+//             System.out.println("status: " + response.getStatus());
+//             Assert.assertEquals(200, response.getStatus());
+//             T result = null;
+//             if (genericReturnType != null)
+//             {
+//                result = response.readEntity(genericReturnType.version3());  
+//             }
+//             else
+//             {
+//                result = response.readEntity(returnType);
+//             }
+//             return result;
+//          }
+//
+//          default:
+//             throw new Exception("Unknown version: " + version);
+//      }
+//   }
 
    static class GenericTypeWrapper<T>
    {  
