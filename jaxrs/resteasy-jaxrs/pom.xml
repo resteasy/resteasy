@@ -10,6 +10,11 @@
     <name>RESTEasy JAX-RS Implementation</name>
     <description/>
     <packaging>jar</packaging>
+    
+    <properties>
+        <version.xerces.xercesImpl>2.9.1</version.xerces.xercesImpl>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
@@ -136,6 +141,23 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <!-- Test with Red Hat version of Xerces -->
+            <id>redhat-xerces</id>
+            <activation>
+                <property>
+                    <name>redhat-xerces</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                    <version>${version.xerces.xercesImpl}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
         </profile>
     </profiles>
     
