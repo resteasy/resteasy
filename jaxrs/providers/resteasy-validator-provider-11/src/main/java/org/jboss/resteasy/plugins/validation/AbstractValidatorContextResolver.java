@@ -30,6 +30,8 @@ public class AbstractValidatorContextResolver
    private final static Logger logger = Logger.getLogger(AbstractValidatorContextResolver.class);
    private volatile ValidatorFactory validatorFactory;
    final static Object RD_LOCK = new Object();
+   private volatile Configuration<?> config;
+   private volatile BootstrapConfiguration bootstrapConfiguration;
 
    // this used to be initialized in a static block, but I was having trouble class loading the context resolver in some
    // environments.  So instead of failing and logging a warning when the resolver is instantiated at deploy time
@@ -63,11 +65,29 @@ public class AbstractValidatorContextResolver
       return validatorFactory;
    }
 
+   BootstrapConfiguration getConfig()
+   {
+       BootstrapConfiguration tmpConfig = bootstrapConfiguration;
+       if (tmpConfig == null)
+       {
+          synchronized (RD_LOCK)
+          {
+             tmpConfig = bootstrapConfiguration;
+             if (tmpConfig == null)
+             {
+                 config = Validation.byDefaultProvider().configure();
+                 bootstrapConfiguration = tmpConfig = config.getBootstrapConfiguration();
+
+             }
+          }
+       }
+       return tmpConfig;
+   }
+
    public GeneralValidatorCDI getContext(Class<?> type) {
       try
       {
-         Configuration<?> config = Validation.byDefaultProvider().configure();
-         BootstrapConfiguration bootstrapConfiguration = config.getBootstrapConfiguration();
+         BootstrapConfiguration bootstrapConfiguration = getConfig();
          boolean isExecutableValidationEnabled = bootstrapConfiguration.isExecutableValidationEnabled();
          Set<ExecutableType> defaultValidatedExecutableTypes = bootstrapConfiguration.getDefaultValidatedExecutableTypes();
          return new GeneralValidatorImpl(getValidatorFactory(), isExecutableValidationEnabled, defaultValidatedExecutableTypes);
