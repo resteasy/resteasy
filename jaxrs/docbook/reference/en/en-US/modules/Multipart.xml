@@ -42,7 +42,7 @@ public interface InputPart
 
    boolean isContentTypeFromMessage();
 }
-      </programlisting>
+</programlisting>
       <para>MultipartInput is a simple interface that allows you to get access to each part of the multipart message.
       Each part is represented by an InputPart interface. Each part has a set of headers associated with it
       You can unmarshall the part by calling one of the getBody() methods.  The Type genericType parameter can be null,
@@ -51,22 +51,22 @@ public interface InputPart
       parts which are XML into a JAXB annotated class called Customer.
       </para>
 <programlisting>
-   @Path("/multipart")
-   public class MyService
-   {
-      @PUT
-      @Consumes("multipart/mixed")
-      public void put(MultipartInput input)
-      {
-         List&lt;Customer&gt; customers = new ArrayList...;
-         for (InputPart part : input.getParts())
-         {
+@Path("/multipart")
+public class MyService
+{
+    @PUT
+    @Consumes("multipart/mixed")
+    public void put(MultipartInput input)
+    {
+        List&lt;Customer&gt; customers = new ArrayList...;
+        for (InputPart part : input.getParts())
+        {
             Customer cust = part.getBody(Customer.class, null);
             customers.add(cust);
-         }
-         input.close();
-      }
-   }
+        }
+        input.close();
+    }
+}
 </programlisting>
       <para>
          Sometimes you may want to unmarshall a body part that is sensitive to generic type metadata.  In this case
@@ -74,21 +74,20 @@ public interface InputPart
          is sensitive to generic type metadata.
       </para>
 <programlisting>
-   @Path("/multipart")
-   public class MyService
-   {
-      @PUT
-      @Consumes("multipart/mixed")
-      public void put(MultipartInput input)
-      {
-         for (InputPart part : input.getParts())
-         {
+@Path("/multipart")
+public class MyService
+{
+    @PUT
+    @Consumes("multipart/mixed")
+    public void put(MultipartInput input)
+    {
+        for (InputPart part : input.getParts())
+        {
             List&lt;Customer&gt; cust = part.getBody(new GenericType&gt;List&gt;Customer&lt;&lt;() {});
-         }
-         input.close();
-      }
-   }
-
+        }
+        input.close();
+    }
+}
 </programlisting>
       <para>
          Use of GenericType is required because it is really the only way to obtain generic type information at runtime.
@@ -101,17 +100,16 @@ public interface InputPart
       unmarshalling with the generic parameter of the List type declaration.  Here's an example again
       of unmarshalling a list of customers.</para>
 <programlisting>
-   @Path("/multipart")
-   public class MyService
-   {
-      @PUT
-      @Consumes("multipart/mixed")
-      public void put(List&lt;Customer&gt; customers)
-      {
-         ...
-      }
-   }
-
+@Path("/multipart")
+public class MyService
+{
+    @PUT
+    @Consumes("multipart/mixed")
+    public void put(List&lt;Customer&gt; customers)
+    {
+        ...
+    }
+}
 </programlisting>
    </sect1>
    <sect1 id="MultipartFormData">
@@ -124,14 +122,14 @@ public interface InputPart
 <programlisting>
 public interface MultipartFormDataInput extends MultipartInput
 {
-   @Deprecated
-   Map&lt;String, InputPart&gt; getFormData();
+    @Deprecated
+    Map&lt;String, InputPart&gt; getFormData();
 
-   Map&lt;String, List&lt;InputPart&gt;&gt; getFormDataMap();
+    Map&lt;String, List&lt;InputPart&gt;&gt; getFormDataMap();
 
-   &lt;T&gt; T getFormDataPart(String key, Class&lt;T&gt; rawType, Type genericType) throws IOException;
+    &lt;T&gt; T getFormDataPart(String key, Class&lt;T&gt; rawType, Type genericType) throws IOException;
 
-   &lt;T&gt; T getFormDataPart(String key, GenericType&lt;T&gt; type) throws IOException;
+    &lt;T&gt; T getFormDataPart(String key, GenericType&lt;T&gt; type) throws IOException;
 }
 </programlisting>
       <para>
@@ -146,17 +144,16 @@ public interface MultipartFormDataInput extends MultipartInput
       unmarshalling with the generic parameter of the List type declaration.  Here's an example of
       of unmarshalling a Map of Customer objects which are JAXB annotated classes.</para>
 <programlisting>
-   @Path("/multipart")
-   public class MyService
-   {
-      @PUT
-      @Consumes("multipart/form-data")
-      public void put(Map&lt;String, Customer&gt; customers)
-      {
-         ...
-      }
-   }
-
+@Path("/multipart")
+public class MyService
+{
+    @PUT
+    @Consumes("multipart/form-data")
+    public void put(Map&lt;String, Customer&gt; customers)
+    {
+        ...
+    }
+}
 </programlisting>
    </sect1>
    <sect1 id="MultipartRelated">
@@ -171,15 +168,15 @@ public interface MultipartFormDataInput extends MultipartInput
 <programlisting>
 public interface MultipartRelatedInput extends MultipartInput
 {
-   String getType();
+    String getType();
 
-   String getStart();
+    String getStart();
 
-   String getStartInfo();
+    String getStartInfo();
 
-   InputPart getRootPart();
+    InputPart getRootPart();
 
-   Map&lt;String, InputPart&gt; getRelatedMap();
+    Map&lt;String, InputPart&gt; getRelatedMap();
 }
 </programlisting>
       <para>
@@ -195,34 +192,32 @@ package org.jboss.resteasy.plugins.providers.multipart;
 
 public class MultipartOutput
 {
-   public OutputPart addPart(Object entity, MediaType mediaType)
+    public OutputPart addPart(Object entity, MediaType mediaType)
 
-   public OutputPart addPart(Object entity, GenericType type, MediaType mediaType)
+    public OutputPart addPart(Object entity, GenericType type, MediaType mediaType)
 
-   public OutputPart addPart(Object entity, Class type, Type genericType, MediaType mediaType)
+    public OutputPart addPart(Object entity, Class type, Type genericType, MediaType mediaType)
 
-   public List<OutputPart> getParts()
+    public List<OutputPart> getParts()
 
-   public String getBoundary()
+    public String getBoundary()
 
-   public void setBoundary(String boundary)
+    public void setBoundary(String boundary)
 }
 
 public class OutputPart
 {
-   public MultivaluedMap<String, Object> getHeaders()
+    public MultivaluedMap<String, Object> getHeaders()
 
-   public Object getEntity()
+    public Object getEntity()
 
-   public Class getType()
+    public Class getType()
 
-   public Type getGenericType()
+    public Type getGenericType()
 
-   public MediaType getMediaType()
+    public MediaType getMediaType()
 }
-
-]]>
-</programlisting>
+]]></programlisting>
       <para>When you want to output multipart data it is as simple as creating a MultipartOutput object
       and calling addPart() methods.  Resteasy will automatically find a MessageBodyWriter
       to marshall your entity objects.  Like MultipartInput, sometimes you may have marshalling
@@ -231,19 +226,19 @@ public class OutputPart
       back a "multipart/mixed" format back to the calling client.  The parts are
       Customer objects which are JAXB annotated and will be marshalling into "application/xml".</para>
 <programlisting>
-   @Path("/multipart")
-   public class MyService
-   {
-      @GET
-      @Produces("multipart/mixed")
-      public MultipartOutput get()
-      {
-         MultipartOutput output = new MultipartOutput();
-         output.addPart(new Customer("bill"), MediaType.APPLICATION_XML_TYPE);
-         output.addPart(new Customer("monica"), MediaType.APPLICATION_XML_TYPE);
-         return output;
-      }
-
+@Path("/multipart")
+public class MyService
+{
+    @GET
+    @Produces("multipart/mixed")
+    public MultipartOutput get()
+    {
+        MultipartOutput output = new MultipartOutput();
+        output.addPart(new Customer("bill"), MediaType.APPLICATION_XML_TYPE);
+        output.addPart(new Customer("monica"), MediaType.APPLICATION_XML_TYPE);
+        return output;
+    }
+}
 </programlisting>
    </sect1>
    <sect1 id="multipart_list_output">
@@ -255,18 +250,17 @@ public class OutputPart
          with the @PartType annotation to specify what media type each part is.  Here's an example
       of sending back a list of customers back to a client.  The customers are JAXB objects</para>
 <programlisting>
-   @Path("/multipart")
-   public class MyService
-   {
-      @GET
-      @Produces("multipart/mixed")
-      @PartType("application/xml")
-      public List&lt;Customer&gt; get()
-      {
-         ...
-      }
-   }
-
+@Path("/multipart")
+public class MyService
+{
+    @GET
+    @Produces("multipart/mixed")
+    @PartType("application/xml")
+    public List&lt;Customer&gt; get()
+    {
+        ...
+    }
+}
 </programlisting>
    </sect1>
    <sect1 id="multipart_formdata_output">
@@ -277,16 +271,15 @@ package org.jboss.resteasy.plugins.providers.multipart;
 
 public class MultipartFormDataOutput extends MultipartOutput
 {
-   public OutputPart addFormData(String key, Object entity, MediaType mediaType)
+    public OutputPart addFormData(String key, Object entity, MediaType mediaType)
 
-   public OutputPart addFormData(String key, Object entity, GenericType type, MediaType mediaType)
+    public OutputPart addFormData(String key, Object entity, GenericType type, MediaType mediaType)
 
-   public OutputPart addFormData(String key, Object entity, Class type, Type genericType, MediaType mediaType)
+    public OutputPart addFormData(String key, Object entity, Class type, Type genericType, MediaType mediaType)
 
-   public Map<String, OutputPart> getFormData()
+    public Map<String, OutputPart> getFormData()
 }
-]]>
-</programlisting>
+]]></programlisting>
       <para>When you want to output multipart/form-data it is as simple as creating a MultipartFormDataOutput object
       and calling addFormData() methods.  Resteasy will automatically find a MessageBodyWriter
       to marshall your entity objects.  Like MultipartInput, sometimes you may have marshalling
@@ -295,19 +288,19 @@ public class MultipartFormDataOutput extends MultipartOutput
       back a "multipart/form-data" format back to the calling client.  The parts are
       Customer objects which are JAXB annotated and will be marshalling into "application/xml".</para>
 <programlisting>
-   @Path("/form")
-   public class MyService
-   {
-      @GET
-      @Produces("multipart/form-data")
-      public MultipartFormDataOutput get()
-      {
-         MultipartFormDataOutput output = new MultipartFormDataOutput();
-         output.addPart("bill", new Customer("bill"), MediaType.APPLICATION_XML_TYPE);
-         output.addPart("monica", new Customer("monica"), MediaType.APPLICATION_XML_TYPE);
-         return output;
-      }
-
+@Path("/form")
+public class MyService
+{
+    @GET
+    @Produces("multipart/form-data")
+    public MultipartFormDataOutput get()
+    {
+        MultipartFormDataOutput output = new MultipartFormDataOutput();
+        output.addPart("bill", new Customer("bill"), MediaType.APPLICATION_XML_TYPE);
+        output.addPart("monica", new Customer("monica"), MediaType.APPLICATION_XML_TYPE);
+        return output;
+    }
+}
 </programlisting>
    </sect1>
    <sect1 id="multipart_map_output">
@@ -319,18 +312,17 @@ public class MultipartFormDataOutput extends MultipartOutput
          with the @PartType annotation to specify what media type each part is.  Here's an example
       of sending back a list of customers back to a client.  The customers are JAXB objects</para>
 <programlisting>
-   @Path("/multipart")
-   public class MyService
-   {
-      @GET
-      @Produces("multipart/form-data")
-      @PartType("application/xml")
-      public Map&lt;String, Customer&gt; get()
-      {
-         ...
-      }
-   }
-
+@Path("/multipart")
+public class MyService
+{
+    @GET
+    @Produces("multipart/form-data")
+    @PartType("application/xml")
+    public Map&lt;String, Customer&gt; get()
+    {
+        ...
+    }
+}
 </programlisting>
    </sect1>
    <sect1 id="multipart_related_output">
@@ -341,17 +333,16 @@ package org.jboss.resteasy.plugins.providers.multipart;
 
 public class MultipartRelatedOutput extends MultipartOutput
 {
-   public OutputPart getRootPart()
+    public OutputPart getRootPart()
 
-   public OutputPart addPart(Object entity, MediaType mediaType,
-      String contentId, String contentTransferEncoding)
+    public OutputPart addPart(Object entity, MediaType mediaType,
+        String contentId, String contentTransferEncoding)
 
-   public String getStartInfo()
+    public String getStartInfo()
 
-   public void setStartInfo(String startInfo)
+    public void setStartInfo(String startInfo)
 }
-]]>
-</programlisting>
+]]></programlisting>
       <para>When you want to output multipart/related it is as simple as creating a MultipartRelatedOutput object
       and calling addPart() methods. The first added part will be used as the root part of the multipart/related
       message.
@@ -364,33 +355,32 @@ public class MultipartRelatedOutput extends MultipartOutput
 @Path("/related")
 public class MyService
 {
-   @GET
-   @Produces("multipart/related")
-   public MultipartRelatedOutput get()
-   {
-      MultipartRelatedOutput output = new MultipartRelatedOutput();
-      output.setStartInfo("text/html");
+    @GET
+    @Produces("multipart/related")
+    public MultipartRelatedOutput get()
+    {
+        MultipartRelatedOutput output = new MultipartRelatedOutput();
+        output.setStartInfo("text/html");
 
-      Map&lt;String, String&gt; mediaTypeParameters = new LinkedHashMap&lt;String, String&gt;();
-      mediaTypeParameters.put("charset", "UTF-8");
-      mediaTypeParameters.put("type", "text/html");
-      output
-         .addPart(
+        Map&lt;String, String&gt; mediaTypeParameters = new LinkedHashMap&lt;String, String&gt;();
+        mediaTypeParameters.put("charset", "UTF-8");
+        mediaTypeParameters.put("type", "text/html");
+        output.addPart(
             "&lt;html&gt;&lt;body&gt;\n"
             + "This is me: &lt;img src='cid:http://example.org/me.png' /&gt;\n"
             + "&lt;br /&gt;This is you: &lt;img src='cid:http://example.org/you.png' /&gt;\n"
             + "&lt;/body&gt;&lt;/html&gt;",
             new MediaType("text", "html", mediaTypeParameters),
             "&lt;mymessage.xml@example.org&gt;", "8bit");
-      output.addPart("// binary octets for me png",
+        output.addPart("// binary octets for me png",
             new MediaType("image", "png"), "&lt;http://example.org/me.png&gt;",
             "binary");
-      output.addPart("// binary octets for you png", new MediaType(
+        output.addPart("// binary octets for you png", new MediaType(
             "image", "png"),
             "&lt;http://example.org/you.png&gt;", "binary");
-      client.putRelated(output);
-      return output;
-   }
+        client.putRelated(output);
+        return output;
+    }
 }
 </programlisting>
    </sect1>
@@ -405,58 +395,58 @@ public class MyService
       @org.jboss.resteasy.annotations.providers.multipart.PartType if you
       are doing output.  For example:</para>
 <programlisting>
-   public class CustomerProblemForm {
-      @FormParam("customer")
-      @PartType("application/xml")
-      private Customer customer;
+public class CustomerProblemForm {
+    @FormParam("customer")
+    @PartType("application/xml")
+    private Customer customer;
 
-      @FormParam("problem")
-      @PartType("text/plain")
-      private String problem;
+    @FormParam("problem")
+    @PartType("text/plain")
+    private String problem;
 
-      public Customer getCustomer() { return customer; }
-      public void setCustomer(Customer cust) { this.customer = cust; }
-      public String getProblem() { return problem; }
-      public void setProblem(String problem) { this.problem = problem; }
-   }
+    public Customer getCustomer() { return customer; }
+    public void setCustomer(Customer cust) { this.customer = cust; }
+    public String getProblem() { return problem; }
+    public void setProblem(String problem) { this.problem = problem; }
+}
 </programlisting>
       <para>After defining your POJO class you can then use it to represent multipart/form-data.  Here's
-      an example of sending a CustomerProblemForm using the RESTEasy client framework</para>
+      an example of sending a CustomerProblemForm using the RESTEasy client framework:</para>
 <programlisting>
-   @Path("portal")
-   public interface CustomerPortal {
+@Path("portal")
+public interface CustomerPortal {
 
-      @Path("issues/{id}")
-      @Consumes("multipart/form-data")
-      @PUT
-      public void putProblem(@MultipartForm CustomerProblemForm,
-                             @PathParam("id") int id);
-   }
+    @Path("issues/{id}")
+    @Consumes("multipart/form-data")
+    @PUT
+    public void putProblem(@MultipartForm CustomerProblemForm, 
+                           @PathParam("id") int id);
+}
 
-   {
-       CustomerPortal portal = ProxyFactory.create(CustomerPortal.class, "http://example.com");
-       CustomerProblemForm form = new CustomerProblemForm();
-       form.setCustomer(...);
-       form.setProblem(...);
+{
+    CustomerPortal portal = ProxyFactory.create(CustomerPortal.class, "http://example.com");
+    CustomerProblemForm form = new CustomerProblemForm();
+    form.setCustomer(...);
+    form.setProblem(...);
 
-       portal.putProblem(form, 333);
-   }
+    portal.putProblem(form, 333);
+}
 </programlisting>
       <para>You see that the @MultipartForm annotation was used to tell RESTEasy that the object has @FormParam
       and that it should be marshalled from that.  You can also use the same object to receive multipart data.
       Here is an example of the server side counterpart of our customer portal.</para>
 <programlisting>
-   @Path("portal")
-   public class CustomerPortalServer {
+@Path("portal")
+public class CustomerPortalServer {
 
-      @Path("issues/{id})
-      @Consumes("multipart/form-data")
-      @PUT
-      public void putIssue(@MultipartForm CustoemrProblemForm,
-                           @PathParam("id") int id) {
-         ... write to database...
-      }
-   }
+    @Path("issues/{id})
+    @Consumes("multipart/form-data")
+    @PUT
+    public void putIssue(@MultipartForm CustoemrProblemForm,
+                         @PathParam("id") int id) {
+       ... write to database...
+    }
+}
 </programlisting>
    </sect1>
    <sect1 id="xop_with_multipart_related">
@@ -472,17 +462,17 @@ public class MyService
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public static class Xop {
-  private Customer bill;
+    
+    private Customer bill;
+    private Customer monica;
 
-  private Customer monica;
+    @XmlMimeType(MediaType.APPLICATION_OCTET_STREAM)
+    private byte[] myBinary;
 
-  @XmlMimeType(MediaType.APPLICATION_OCTET_STREAM)
-  private byte[] myBinary;
+    @XmlMimeType(MediaType.APPLICATION_OCTET_STREAM)
+    private DataHandler myDataHandler;
 
-  @XmlMimeType(MediaType.APPLICATION_OCTET_STREAM)
-  private DataHandler myDataHandler;
-
-  // methods, other fields ...
+    // methods, other fields ...
 }
 </programlisting>
       <para>In the above POJO myBinary and myDataHandler will be processed as binary attachments while the whole Xop
@@ -495,21 +485,21 @@ public static class Xop {
 // our client interface:
 @Path("mime")
 public static interface MultipartClient {
-  @Path("xop")
-  @PUT
-  @Consumes(MultipartConstants.MULTIPART_RELATED)
-  public void putXop(@XopWithMultipartRelated Xop bean);
+    @Path("xop")
+    @PUT
+    @Consumes(MultipartConstants.MULTIPART_RELATED)
+    public void putXop(@XopWithMultipartRelated Xop bean);
 }
 
 // Somewhere using it:
 {
-  MultipartClient client = ProxyFactory.create(MultipartClient.class,
-    "http://www.example.org");
-  Xop xop = new Xop(new Customer("bill"), new Customer("monica"),
-    "Hello Xop World!".getBytes("UTF-8"),
-    new DataHandler(new ByteArrayDataSource("Hello Xop World!".getBytes("UTF-8"),
-    MediaType.APPLICATION_OCTET_STREAM)));
-  client.putXop(xop);
+    MultipartClient client = ProxyFactory.create(MultipartClient.class,
+        "http://www.example.org");
+    Xop xop = new Xop(new Customer("bill"), new Customer("monica"),
+        "Hello Xop World!".getBytes("UTF-8"),
+        new DataHandler(new ByteArrayDataSource("Hello Xop World!".getBytes("UTF-8"),
+        MediaType.APPLICATION_OCTET_STREAM)));
+    client.putXop(xop);
 }
 </programlisting>
 	<para>We used @Consumes(MultipartConstants.MULTIPART_RELATED) to tell RESTEasy that we want to send multipart/related
@@ -519,12 +509,12 @@ public static interface MultipartClient {
 <programlisting>
 @Path("/mime")
 public class XopService {
-  @PUT
-  @Path("xop")
-  @Consumes(MultipartConstants.MULTIPART_RELATED)
-  public void putXopWithMultipartRelated(@XopWithMultipartRelated Xop xop) {
-    // do very important things here
-  }
+    @PUT
+    @Path("xop")
+    @Consumes(MultipartConstants.MULTIPART_RELATED)
+    public void putXopWithMultipartRelated(@XopWithMultipartRelated Xop xop) {
+        // do very important things here
+    }
 }
 </programlisting>
 	<para>We used @Consumes(MultipartConstants.MULTIPART_RELATED) to tell RESTEasy that we want to read multipart/related
@@ -551,16 +541,13 @@ import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 
 @Provider
 @ServerInterceptor
-public class ContentTypeSetterPreProcessorInterceptor implements
-		PreProcessInterceptor {
+public class ContentTypeSetterPreProcessorInterceptor implements PreProcessInterceptor {
 
-	public ServerResponse preProcess(HttpRequest request,
-			ResourceMethod method) throws Failure, WebApplicationException {
-		request.setAttribute(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY,
-				"*/*; charset=UTF-8");
-		return null;
-	}
-
+    public ServerResponse preProcess(HttpRequest request, ResourceMethod method)
+            throws Failure, WebApplicationException {
+        request.setAttribute(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY, "*/*; charset=UTF-8");
+        return null;
+    }
 }
 </programlisting>
       </para>
@@ -582,11 +569,11 @@ public class ContentTypeSetterPreProcessorInterceptor implements
 @Produces(MediaType.TEXT_PLAIN)
 public Response setMediaType(MultipartInput input) throws IOException
 {
-   List&lt;InputPart&gt; parts = input.getParts();
-   InputPart part = parts.get(0);
-   part.setMediaType(MediaType.valueOf("application/foo+xml"));
-   String s = part.getBody(String.class, null);
-   ...
+    List&lt;InputPart&gt; parts = input.getParts();
+    InputPart part = parts.get(0);
+    part.setMediaType(MediaType.valueOf("application/foo+xml"));
+    String s = part.getBody(String.class, null);
+    ...
 }
 </programlisting>  
       
@@ -608,15 +595,13 @@ import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 
 @Provider
 @ServerInterceptor
-public class ContentTypeSetterPreProcessorInterceptor implements
-		PreProcessInterceptor {
+public class ContentTypeSetterPreProcessorInterceptor implements PreProcessInterceptor {
 
-	public ServerResponse preProcess(HttpRequest request,
-			ResourceMethod method) throws Failure, WebApplicationException {
-		request.setAttribute(InputPart.DEFAULT_CHARSET_PROPERTY, "UTF-8");
-		return null;
-	}
-
+    public ServerResponse preProcess(HttpRequest request, ResourceMethod method)
+            throws Failure, WebApplicationException {
+        request.setAttribute(InputPart.DEFAULT_CHARSET_PROPERTY, "UTF-8");
+        return null;
+    }
 }
 </programlisting>
 

@@ -8,8 +8,8 @@
 <para>
 
 <programlisting>
-   @GET
-   public String getBooks(@QueryParam("num") @DefaultValue("10") int num) {...}
+@GET
+public String getBooks(@QueryParam("num") @DefaultValue("10") int num) {...}
 </programlisting>
 </para>
 <para>
