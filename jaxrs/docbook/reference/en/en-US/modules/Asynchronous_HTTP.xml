@@ -35,7 +35,6 @@ import javax.ws.rs.core.AsynchronousResponse;
 @Path("/")
 public class SimpleResource
 {
-
    @GET
    @Path("basic")
    @Produces("text/plain")
@@ -60,7 +59,7 @@ public class SimpleResource
       t.start();
    }
 }
-   </programlisting>
+</programlisting>
     <para>
         AsyncResponse also has other methods to cancel the execution.  See javadoc for more details.
     </para>

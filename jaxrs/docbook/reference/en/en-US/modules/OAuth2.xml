@@ -600,31 +600,31 @@ oauthclient2=oauth,user
             Here's an example using a JAX-RS 2.0 client:
         </para>
 <programlisting>
-    ResteasyClient client = new ResteasyClientBuilder()
-                                .truststore(truststore)
-                                .build();
+ResteasyClient client = new ResteasyClientBuilder()
+                            .truststore(truststore)
+                            .build();
 
-    Form form = new Form().param("grant_type", "client_credentials");
-    ResteasyWebTarget target = client.target("https://localhost:8443/auth-server/j_oauth_token_grant");
-    target.configuration().register(new BasicAuthentication("bburke@redhat.com", "password"));
-    AccessTokenResponse res = target.request()
-                           .post(Entity.form(form), AccessTokenResponse.class);
+Form form = new Form().param("grant_type", "client_credentials");
+ResteasyWebTarget target = client.target("https://localhost:8443/auth-server/j_oauth_token_grant");
+target.configuration().register(new BasicAuthentication("bburke@redhat.com", "password"));
+AccessTokenResponse res = target.request()
+                       .post(Entity.form(form), AccessTokenResponse.class);
 </programlisting>
         <para>
            The above makes a simple POST to the context root of the auth server with <literal>j_oauth_token_grant</literal>
             at the end of the target URL.  This resource is responsible for creating access tokens.
         </para>
  <programlisting><![CDATA[
-    try
-    {
-       Response response = client.target("https://localhost:8443/database/products").request()
-                               .header(HttpHeaders.AUTHORIZATION, "Bearer " + res.getToken()).get();
-       String xml = response.readEntity(String.class);
-    }
-    finally
-    {
-       client.close();
-    }
+try
+{
+   Response response = client.target("https://localhost:8443/database/products").request()
+                           .header(HttpHeaders.AUTHORIZATION, "Bearer " + res.getToken()).get();
+   String xml = response.readEntity(String.class);
+}
+finally
+{
+   client.close();
+}
 ]]></programlisting>
         <para>
             The access token is a simple string.  To invoke on a service protected by bearer token auth, just
@@ -644,25 +644,24 @@ oauthclient2=oauth,user
             you configured.  You can then extract this info and make secure remote invocations.  Here's an example of that.
         </para>
 <programlisting><![CDATA[
-   public List<String> getCustomers(HttpServletRequest request)
-   {
-      SkeletonKeySession session = (SkeletonKeySession)request.getAttribute(SkeletonKeySession.class.getName());
-      ResteasyClient client = new ResteasyClientBuilder()
-                 .truststore(session.getMetadata().getTruststore())
-                 .build();
-      try
-      {
-         Response response = client.target("https://localhost:8443/database/customers").request()
-                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + session.getToken()).get();
-         return response.readEntity(new GenericType<List<String>>(){});
-      }
-      finally
-      {
-         client.close();
-      }
-   }
-        ]]>
-</programlisting>
+public List<String> getCustomers(HttpServletRequest request)
+{
+    SkeletonKeySession session = (SkeletonKeySession)request.getAttribute(SkeletonKeySession.class.getName());
+    ResteasyClient client = new ResteasyClientBuilder()
+             .truststore(session.getMetadata().getTruststore())
+             .build();
+    try
+    {
+        Response response = client.target("https://localhost:8443/database/customers").request()
+             .header(HttpHeaders.AUTHORIZATION, "Bearer " + session.getToken()).get();
+        return response.readEntity(new GenericType<List<String>>(){});
+    }
+    finally
+    {
+        client.close();
+    }
+}
+]]></programlisting>
         <para>
             If you are within a JAX-RS environment you can inject a <literal>SkeletonKeySession</literal> using the <literal>@Context</literal> annotation.
         </para>

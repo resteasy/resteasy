@@ -3,7 +3,7 @@
 
   <para>S/MIME (Secure/Multipurpose Internet Mail Extensions) is a standard
   for public key encryption and signing of MIME data. MIME data being a set of
-  headers and a message body. Its most often seen in the email world when
+  headers and a message body. It is most often seen in the email world when
   somebody wants to encrypt and/or sign an email message they are sending
   across the internet. It can also be used for HTTP requests as well which is
   what the RESTEasy integration with S/MIME is all about. RESTEasy allows you
@@ -18,12 +18,13 @@
 
     <para>You must include the resteasy-crypto project to use the smime framework.</para>
 
-    <para><programlisting>        &lt;dependency&gt;
-            &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
-            &lt;artifactId&gt;resteasy-crypto&lt;/artifactId&gt;
-            &lt;version&gt;3.0.11.Final-SNAPSHOT&lt;/version&gt;
-        &lt;/dependency&gt;
-
+    <para>
+<programlisting>
+&lt;dependency&gt;
+    &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
+    &lt;artifactId&gt;resteasy-crypto&lt;/artifactId&gt;
+    &lt;version&gt;3.0.11.Final-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;
 </programlisting></para>
   </section>
 
@@ -60,15 +61,14 @@ public EnvelopedOutput getEncrypted()
    return output;
 }
 
-
 // client side
+
 X509Certificate cert = ...; 
 Customer cust = new Customer();
 cust.setName("Bill");
 EnvelopedOutput output = new EnvelopedOutput(cust, "application/xml");
 output.setCertificate(cert);
 Response res = target.request().post(Entity.entity(output, "application/pkcs7-mime").post();
-
 </programlisting>
 
     <para>An EnvelopedOutput instance is created passing in the entity you
@@ -112,7 +112,6 @@ public void postEncrypted(EnvelopedInput&lt;Customer&gt; input)
 ClientRequest request = new ClientRequest("http://localhost:9095/smime/encrypted");
 EnvelopedInput input = request.getTarget(EnvelopedInput.class);
 Customer cust = (Customer)input.getEntity(Customer.class, privateKey, cert);
-
 </programlisting>
 
     <para>Both examples simply call the getEntity() method passing in the
@@ -145,33 +144,33 @@ Customer cust = (Customer)input.getEntity(Customer.class, privateKey, cert);
     signature. Here's an example of signing an entity and sending a
     multipart/signed entity.</para>
 
-    <programlisting>// server-side
+<programlisting>
+// server-side
 
-   @Path("signed")
-   @GET
-   @Produces("multipart/signed")
-   public SignedOutput getSigned()
-   {
-      Customer cust = new Customer();
-      cust.setName("Bill");
-
-      SignedOutput output = new SignedOutput(cust, MediaType.APPLICATION_XML_TYPE);
-      output.setPrivateKey(privateKey);
-      output.setCertificate(certificate);
-      return output;
-   }
-
+@Path("signed")
+@GET
+@Produces("multipart/signed")
+public SignedOutput getSigned()
+{
+    Customer cust = new Customer();
+    cust.setName("Bill");
+    
+    SignedOutput output = new SignedOutput(cust, MediaType.APPLICATION_XML_TYPE);
+    output.setPrivateKey(privateKey);
+    output.setCertificate(certificate);
+    return output;
+}
 
 // client side
-      Client client = new ResteasyClient();
-      WebTarget target = client.target("http://localhost:9095/smime/signed");
-      Customer cust = new Customer();
-      cust.setName("Bill");
-      SignedOutput output = new SignedOutput(cust, "application/xml");
-      output.setPrivateKey(privateKey);
-      output.setCertificate(cert);
-      Response res = target.request().post(Entity.entity(output, "multipart/signed");
 
+Client client = new ResteasyClient();
+WebTarget target = client.target("http://localhost:9095/smime/signed");
+Customer cust = new Customer();
+cust.setName("Bill");
+SignedOutput output = new SignedOutput(cust, "application/xml");
+output.setPrivateKey(privateKey);
+output.setCertificate(cert);
+Response res = target.request().post(Entity.entity(output, "multipart/signed");
 </programlisting>
 
     <para>An SignedOutput instance is created passing in the entity you want
@@ -211,27 +210,28 @@ AAA=
     an example of unmarshalling and verifying a multipart/signed
     entity.</para>
 
-    <programlisting>// server side
+<programlisting>
+// server side
 
-   @Path("signed")
-   @POST
-   @Consumes("multipart/signed")
-   public void postSigned(SignedInput&lt;Customer&gt; input) throws Exception
-   {
-      Customer cust = input.getEntity();
-      if (!input.verify(certificate))
-      {
-         throw new WebApplicationException(500);
-      }
-   }
+@Path("signed")
+@POST
+@Consumes("multipart/signed")
+public void postSigned(SignedInput&lt;Customer&gt; input) throws Exception
+{
+    Customer cust = input.getEntity();
+    if (!input.verify(certificate))
+    {
+        throw new WebApplicationException(500);
+    }
+}
 
 // client side
-      Client client = new ResteasyClient();
-      WebTarget target = client.target("http://localhost:9095/smime/signed");
-      SignedInput input = target.request().get(SignedInput.class);
-      Customer cust = (Customer)input.getEntity(Customer.class)
-      input.verify(cert);
 
+Client client = new ResteasyClient();
+WebTarget target = client.target("http://localhost:9095/smime/signed");
+SignedInput input = target.request().get(SignedInput.class);
+Customer cust = (Customer)input.getEntity(Customer.class)
+input.verify(cert);
 </programlisting>
   </section>
     <section>

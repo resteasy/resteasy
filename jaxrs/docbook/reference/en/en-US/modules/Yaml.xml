@@ -22,13 +22,13 @@
    </para>
    <para>
 
- <programlisting>
- &lt;dependency&gt;
-&lt;groupId&gt;org.yaml&lt;/groupId&gt;
-&lt;artifactId&gt;snakeyaml&lt;/artifactId&gt;
-&lt;version&gt;1.8&lt;/version&gt;
- &lt;/dependency&gt;
-      </programlisting>
+<programlisting>
+&lt;dependency&gt;
+    &lt;groupId&gt;org.yaml&lt;/groupId&gt;
+    &lt;artifactId&gt;snakeyaml&lt;/artifactId&gt;
+    &lt;version&gt;1.8&lt;/version&gt;
+&lt;/dependency&gt;
+</programlisting>
    </para>
    <para>
 
@@ -76,24 +76,23 @@
    </para>
    <para>
 
- <programlisting>
- import javax.ws.rs.Consumes;
- import javax.ws.rs.GET;
- import javax.ws.rs.Path;
- import javax.ws.rs.Produces;
+<programlisting>
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 
- @Path("/yaml")
- public class YamlResource
- {
-
-@GET
-@Produces("text/x-yaml")
-public MyObject getMyObject() {
-   return createMyObject();
+@Path("/yaml")
+public class YamlResource
+{
+    @GET
+    @Produces("text/x-yaml")
+    public MyObject getMyObject() {
+        return createMyObject();
+    }
+    ...
 }
-...
- }
- </programlisting>
+</programlisting>
    </para>
    <para>
 

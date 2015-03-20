@@ -50,8 +50,7 @@
 				In order for RESTEasy to provide the two URL endpoints where the Client will request unauthorized Request Tokens and exchange authorized Request Tokens
 				for Access Tokens, you need to enable the OAuthServlet in your web.xml:
 			</para>
-			<programlisting language="xml">
-				<![CDATA[
+<programlisting language="xml"><![CDATA[
 <!-- The OAuth Servlet handles token exchange -->
 <servlet>
   <servlet-name>OAuth</servlet-name>
@@ -63,8 +62,7 @@
   <servlet-name>OAuth</servlet-name>
   <url-pattern>/oauth/*</url-pattern>
 </servlet-mapping>
-				]]>
-			</programlisting>
+]]></programlisting>
 			<para>
 				The following configuration options are available using <code>&lt;context-param&gt; elements</code>:
 			</para>
@@ -105,8 +103,7 @@
 				RESTEasy supports OAuth authentication for protected resources using a servlet filter which should be mapped in your web.xml for all
 				protected resources:
 			</para>
-			<programlisting language="xml">
-				<![CDATA[
+<programlisting language="xml"><![CDATA[
 <!-- The OAuth Filter handles authentication for protected resources -->
 <filter>
   <filter-name>OAuth Filter</filter-name>
@@ -118,8 +115,7 @@
   <filter-name>OAuth Filter</filter-name>
   <url-pattern>/rest/*</url-pattern>
 </filter-mapping>
-				]]>
-			</programlisting>
+]]></programlisting>
 			<para>
 				The following configuration options are available using <code>&lt;context-param&gt; elements</code>:
 			</para>
@@ -155,24 +151,22 @@
 			<para>
 				All you need to do is implement the <code>OAuthProvider</code> interface:
 			</para>
-			<programlisting>
-<![CDATA[
+<programlisting><![CDATA[
 public interface OAuthProvider {
-	String getRealm();
-
-	OAuthConsumer getConsumer(String consumerKey)throws OAuthException;
-	OAuthToken getRequestToken(String consumerKey, String requestToken) throws OAuthException;
-	OAuthToken getAccessToken(String consumerKey, String accessToken) throws OAuthException;
-	
-	OAuthToken makeRequestToken(String consumerKey, String callback) throws OAuthException;
-	OAuthToken makeAccessToken(String consumerKey, String requestToken, String verifier) throws OAuthException;
-
-	String authoriseRequestToken(String consumerKey, String requestToken) throws OAuthException;
-
-	void checkTimestamp(OAuthToken token, long timestamp) throws OAuthException;
+    String getRealm();
+    
+    OAuthConsumer getConsumer(String consumerKey)throws OAuthException;
+    OAuthToken getRequestToken(String consumerKey, String requestToken) throws OAuthException;
+    OAuthToken getAccessToken(String consumerKey, String accessToken) throws OAuthException;
+    
+    OAuthToken makeRequestToken(String consumerKey, String callback) throws OAuthException;
+    OAuthToken makeAccessToken(String consumerKey, String requestToken, String verifier) throws OAuthException;
+    
+    String authoriseRequestToken(String consumerKey, String requestToken) throws OAuthException;
+    
+    void checkTimestamp(OAuthToken token, long timestamp) throws OAuthException;
 }
-]]>
-			</programlisting>
+]]></programlisting>
 			<para>
 				If a Consumer Key, or Token doesn’t exist, or if the timestamp is not valid,
 				simply throw an <code>OAuthException</code>.
@@ -180,22 +174,20 @@ public interface OAuthProvider {
 			<para>
 				The rest of the interfaces used in <code>OAuthProvider</code> are:
 			</para>
-			<programlisting>
-<![CDATA[
+<programlisting><![CDATA[
 public interface OAuthConsumer {
-	String getKey();
-	String getSecret();
+    String getKey();
+    String getSecret();
 }
 
 public interface OAuthToken {
-	OAuthConsumer getConsumer();
-	String getToken();
-	String getSecret();
-	Principal getPrincipal();
-	Set<String> getRoles();
+    OAuthConsumer getConsumer();
+    String getToken();
+    String getSecret();
+    Principal getPrincipal();
+    Set<String> getRoles();
 }
-]]>
-			</programlisting>
+]]></programlisting>
 	    </section>
 	</section>
 </chapter>

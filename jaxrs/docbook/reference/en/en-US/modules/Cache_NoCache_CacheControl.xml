@@ -11,7 +11,7 @@
       GET request.  It can only be used on @GET annotated methods.  A successful @GET request is any request
       that returns 200 OK response.
    </para>
-   <programlisting>
+<programlisting>
 package org.jboss.resteasy.annotations.cache;
 
 public @interface Cache
@@ -29,8 +29,7 @@ public @interface NoCache
 {
    String[] fields() default {};
 }
-
-   </programlisting>
+</programlisting>
    <para>
       While @Cache builds a complex Cache-Control header, @NoCache is a simplified notation to say that you don't
       want anything cached i.e. Cache-Control: nocache.
@@ -49,15 +48,15 @@ public @interface NoCache
        and will also automatically do HTTP 1.1 cache revalidation if either or both the Last-Modified and/or ETag headers are sent back with the
        original response.  See the HTTP 1.1 specification for details on how Cache-Control or cache revalidation works.
      </para>
-     <para>It is very simple to enable caching.  Here's an example of using the client cache with the Client Proxy Framework</para>
+     <para>It is very simple to enable caching.  Here's an example of using the client cache with the Client Proxy Framework:</para>
 <programlisting>
 @Path("/orders")
 public interface OrderServiceClient {
 
-   @Path("{id}")
-   @GET
-   @Produces("application/xml")
-   public Order getOrder(@PathParam("id") String id);
+    @Path("{id}")
+    @GET
+    @Produces("application/xml")
+    public Order getOrder(@PathParam("id") String id);
 }
 </programlisting>
     <para>To create a proxy for this interface and enable caching for that proxy requires only a few simple steps:</para>
@@ -68,11 +67,11 @@ import org.jboss.resteasy.client.cache.LightweightBrowserCache;
 
 public static void main(String[] args) throws Exception
 {
-      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
-      OrderServiceClient proxy = ProxyFactory.create(OrderServiceClient.class, generateBaseUrl());
-
-      // This line enables caching
-      LightweightBrowserCache cache = CacheFactory.makeCacheable(proxy);
+    RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
+    OrderServiceClient proxy = ProxyFactory.create(OrderServiceClient.class, generateBaseUrl());
+    
+    // This line enables caching
+    LightweightBrowserCache cache = CacheFactory.makeCacheable(proxy);
 }
 </programlisting>
    <para>If you are using the ClientRequest class to make invocations rather than the proxy framework, it is just as easy</para>
@@ -83,13 +82,13 @@ import org.jboss.resteasy.client.cache.LightweightBrowserCache;
 
 public static void main(String[] args) throws Exception
 {
-      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
-
-      // This line enables caching
-      LightweightBrowserCache cache = new LightweightBrowserCache();
-
-      ClientRequest request = new ClientRequest("http://example.com/orders/333");
-      CacheFactory.makeCacheable(request, cache);
+    RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
+    
+    // This line enables caching
+    LightweightBrowserCache cache = new LightweightBrowserCache();
+    
+    ClientRequest request = new ClientRequest("http://example.com/orders/333");
+    CacheFactory.makeCacheable(request, cache);
 }
 </programlisting>
    <para>The LightweightBrowserCache, by default, has a maximum 2 megabytes of caching space.  You can change this programmatically by callings
@@ -118,45 +117,37 @@ public static void main(String[] args) throws Exception
            via the @Context annotation
        </para>
 <programlisting>
+@Context
+ServerCache cache;
 
-    @Context
-    ServerCache cache;
-
-    @GET
-    public String get(@Context ServerCache cache) {...}
-
+@GET
+public String get(@Context ServerCache cache) {...}
 </programlisting>
       <para>To set up the server-side cache you must register an instance of org.jboss.resteasy.plugins.cache.server.ServerCacheFeature
           via your Application getSingletons() or getClasses() methods.  The underlying cache is Infinispan.  By default,
           Resteasy will create an Infinispan cache for you.  Alternatively, you can create and pass in an instance
           of your cache to the ServerCacheFeature constructor.  You can also configure Infinispan by specifying
           various context-param variables in your web.xml.  First, if you are using Maven you must depend on the resteasy-cache-core artifact:</para>
-<programlisting>
-<![CDATA[
+<programlisting><![CDATA[
 <dependency>
-   <groupId>org.jboss.resteasy</groupId>
-   <artifactId>resteasy-cache-core</artifactId>
-   <version>3.0.11.Final-SNAPSHOT</version>
+    <groupId>org.jboss.resteasy</groupId>
+    <artifactId>resteasy-cache-core</artifactId>
+    <version>3.0.11.Final-SNAPSHOT</version>
 </dependency>
-]]>
-</programlisting>
+]]></programlisting>
       <para>The next thing you should probably do is set up the Infinispan configuration in your web.xml.</para>
-<programlisting>
-<![CDATA[
+<programlisting><![CDATA[
 <web-app>
     <context-param>
         <param-name>server.request.cache.infinispan.config.file</param-name>
         <param-value>infinispan.xml</param-value>
     </context-param>
-
     <context-param>
         <param-name>server.request.cache.infinispan.cache.name</param-name>
         <param-value>MyCache</param-value>
     </context-param>
-
 </web-app>
-]]>
-</programlisting>
+]]></programlisting>
    <para>
        server.request.cache.infinispan.config.file can either be a classpath or a file path. server.request.cache.infinispan.cache.name
        is the name of the cache you want to reference that is declared in the config file.

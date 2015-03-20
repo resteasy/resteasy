@@ -12,17 +12,17 @@
             The advantage of the latter is that it gives you a few more helper methods to configure your client.
         </para>
         <programlisting>
-            Client client = ClientBuilder.newClient();
-            ... or...
-            Client client = ClientBuilder.newBuilder().build();
-            WebTarget target = client.target("http://foo.com/resource");
-            Response response = target.request().get();
-            String value = response.readEntity(String.class);
-            response.close();  // You should close connections!
+Client client = ClientBuilder.newClient();
+... or...
+Client client = ClientBuilder.newBuilder().build();
+WebTarget target = client.target("http://foo.com/resource");
+Response response = target.request().get();
+String value = response.readEntity(String.class);
+response.close();  // You should close connections!
 
-            ResteasyClient client = new ResteasyClientBuilder().build();
-            ResteasyWebTarget target = client.target("http://foo.com/resource");
-        </programlisting>
+ResteasyClient client = new ResteasyClientBuilder().build();
+ResteasyWebTarget target = client.target("http://foo.com/resource");
+</programlisting>
         <para>
             Resteasy will automatically load a set of default providers. (Basically all classes listed in all
             META-INF/services/javax.ws.rs.ext.Providers files).  Additionally, you can manually register other providers,
@@ -95,21 +95,21 @@ public interface SimpleClient
     <para>
 
         <programlisting>
-            Client client = ClientFactory.newClient();
-            WebTarget target = client.target("http://example.com/base/uri");
-            ResteasyWebTarget rtarget = (ResteasyWebTarget)target;
+Client client = ClientFactory.newClient();
+WebTarget target = client.target("http://example.com/base/uri");
+ResteasyWebTarget rtarget = (ResteasyWebTarget)target;
 
-            SimpleClient simple = rtarget.proxy(SimpleClient.class);
-            client.putBasic("hello world");
-        </programlisting>
+SimpleClient simple = rtarget.proxy(SimpleClient.class);
+client.putBasic("hello world");
+</programlisting>
         Alternatively you can use the Resteasy client extension interfaces directly:
         <programlisting>
-            ResteasyClient client = new ResteasyClientBuilder().build();
-            ResteasyWebTarget target = client.target("http://example.com/base/uri");
+ResteasyClient client = new ResteasyClientBuilder().build();
+ResteasyWebTarget target = client.target("http://example.com/base/uri");
 
-            SimpleClient simple = target.proxy(SimpleClient.class);
-            client.putBasic("hello world");
-        </programlisting>
+SimpleClient simple = target.proxy(SimpleClient.class);
+client.putBasic("hello world");
+</programlisting>
 
     </para>
     <para>
@@ -149,7 +149,7 @@ public interface MyProxy {
    @POST
    Response.Status updateSite(MyPojo pojo);
 }
-            </programlisting>
+</programlisting>
         </para>
         <para>
 
@@ -219,7 +219,7 @@ public interface LibraryService {
      
      <programlisting>
 ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
-     </programlisting>
+</programlisting>
      
      <para>
          Resteasy and HttpClient make reasonable default decisions so that it is possible to use the client
@@ -250,7 +250,7 @@ localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
 DefaultHttpClient httpClient = new DefaultHttpClient();
 ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient, localContext);
 ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
-     </programlisting>
+</programlisting>
 
      <para>
          One default decision made by HttpClient and adopted by Resteasy is the use of
@@ -266,7 +266,7 @@ ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
 ClientConnectionManager cm = new ThreadSafeClientConnManager();
 HttpClient httpClient = new DefaultHttpClient(cm);
 ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
-     </programlisting>
+</programlisting>
      
      <para>
          For more information about HttpClient (4.x), see the documentation
@@ -295,7 +295,7 @@ ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
      <programlisting>
 WebTarget target = client.target("http://localhost:8081/customer/123");
 String answer = target.request().get(String.class);
-     </programlisting>
+</programlisting>
      
      <para>
          or
@@ -305,7 +305,7 @@ String answer = target.request().get(String.class);
 ResteasyWebTarget target = client.target("http://localhost:8081/customer/123");
 RegistryStats stats = target.proxy(RegistryStats.class);
 RegistryData data = stats.get();
-     </programlisting>
+</programlisting>
      
      <para>
         Resteasy will release the connection under the covers.  The only counterexample is the case
@@ -323,7 +323,7 @@ WebTarget target = client.target("http://localhost:8081/customer/123");
 Response response = target.request().get();
 System.out.println(response.getStatus());
 response.close();
-     </programlisting>
+</programlisting>
      
      <para>
          You should probably execute this in a try/finally block.  Again, releasing a connection only makes it available
@@ -344,7 +344,7 @@ HttpClient httpClient = new DefaultHttpClient();
 ApacheHttpClient4Engine executor = new ApacheHttpClient4Engine(httpClient);
 ...
 httpClient.getConnectionManager().shutdown();
-     </programlisting>
+</programlisting>
      
      <para>
          Note that if <classname>ApacheHttpClient4Engine</classname> has created its own

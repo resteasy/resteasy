@@ -8,8 +8,7 @@ JBoss's Maven Repository is at:
 
       Here's the pom.xml fragment to use. Resteasy is modularized into various components.  Mix and max as you see fit.  Please replace 3.0.11.Final-SNAPSHOT with the current Resteasy version you want to use.
    </para>
-<programlisting>
-<![CDATA[
+<programlisting><![CDATA[
 <repositories>
    <repository>
       <id>jboss</id>
@@ -82,24 +81,21 @@ JBoss's Maven Repository is at:
    </dependency>
 
 </dependencies>
-]]>
-</programlisting>
+]]></programlisting>
     <para>
         There is also a pom that can be imported so the versions of the individual modules do not have to be specified. Note that maven 2.0.9 is required for this.
     </para>
-    <programlisting>
-<![CDATA[
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-bom</artifactId>
-                <version>3.0.11.Final-SNAPSHOT</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-]]>
-    </programlisting>
+    <programlisting><![CDATA[
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-bom</artifactId>
+            <version>3.0.11.Final-SNAPSHOT</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+]]></programlisting>
 </chapter>
