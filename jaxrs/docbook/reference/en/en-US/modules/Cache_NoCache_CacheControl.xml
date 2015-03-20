@@ -130,9 +130,9 @@ public String get(@Context ServerCache cache) {...}
           various context-param variables in your web.xml.  First, if you are using Maven you must depend on the resteasy-cache-core artifact:</para>
 <programlisting><![CDATA[
 <dependency>
-    <groupId>org.jboss.resteasy</groupId>
-    <artifactId>resteasy-cache-core</artifactId>
-    <version>3.0.11.Final-SNAPSHOT</version>
+   <groupId>org.jboss.resteasy</groupId>
+   <artifactId>resteasy-cache-core</artifactId>
+   <version>3.0.12.Final-SNAPSHOT</version>
 </dependency>
 ]]></programlisting>
       <para>The next thing you should probably do is set up the Infinispan configuration in your web.xml.</para>
