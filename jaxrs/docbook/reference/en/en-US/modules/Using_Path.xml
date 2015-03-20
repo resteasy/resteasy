@@ -24,7 +24,6 @@ public class Library {
    @DELETE
    @Path("/book/{id}")
    public void removeBook(@PathParam("id") String id {...}
-
    
 }
 </programlisting>

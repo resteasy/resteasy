@@ -46,7 +46,7 @@
         <listitem>
             Servlet 3.0 deployments within standalone Tomcat or Jetty can now use the Resteasy <literal>ServletContainerInitializer</literal>.
             This allows tighter integration with Resteasy much like you have within JBoss/Wildfly.  Check out the
-            installation/configuration section of this document for more information.
+            Installation/Configuration section of this document for more information.
         </listitem>
     </itemizedlist>
 </sect1>

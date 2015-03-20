@@ -17,12 +17,12 @@
         <para>If you're deploying Resteasy outside of JBoss AS7 add the resteasy jackson provder to your WAR
         pom.xml build</para>
         <programlisting><![CDATA[
-    <dependency>
-       <groupId>org.jboss.resteasy</groupId>
-       <artifactId>resteasy-jackson-provider</artifactId>
-       <version>3.0.11.Final-SNAPSHOT</version>
-    </dependency>
- ]]></programlisting>
+<dependency>
+   <groupId>org.jboss.resteasy</groupId>
+   <artifactId>resteasy-jackson-provider</artifactId>
+   <version>3.0.12.Final-SNAPSHOT</version>
+</dependency>
+]]></programlisting>
     </sect1>
     <sect1>
         <title>Using Jackson 1.9.x Inside of JBoss AS7</title>
@@ -35,12 +35,12 @@
         <para>If you're deploying Resteasy outside of JBoss AS7 add the resteasy jackson provder to your WAR
             pom.xml build</para>
         <programlisting><![CDATA[
-    <dependency>
-       <groupId>org.jboss.resteasy</groupId>
-       <artifactId>resteasy-jackson2-provider</artifactId>
-       <version>3.0.11.Final-SNAPSHOT</version>
-    </dependency>
- ]]></programlisting>
+<dependency>
+   <groupId>org.jboss.resteasy</groupId>
+   <artifactId>resteasy-jackson2-provider</artifactId>
+   <version>3.0.12.Final-SNAPSHOT</version>
+</dependency>
+]]></programlisting>
     </sect1>
     <sect1>
         <title>Using Jackson 2.2.x Inside of JBoss AS7</title>
@@ -67,63 +67,55 @@
         media types. This allows you to create json-based media types and still
         let Jackson marshal things for you. For example:
     </para>
-    <programlisting>
-        <![CDATA[
+    <programlisting><![CDATA[
 @Path("/customers")
 public class MyService {
 
-   @GET
-   @Produces("application/vnd.customer+json")
-   public Customer[] getCustomers() {}
+    @GET
+    @Produces("application/vnd.customer+json")
+    public Customer[] getCustomers() {}
 }
-]]>
-    </programlisting>
+]]></programlisting>
     <para>Another problem that occurs is when you are using the Resteasy JAXB providers alongside Jackson.
         You may want to use Jettison and JAXB to output your JSON instead of Jackson. In this case, you must
         either not install the Jackson provider, or use the annotation
         @org.jboss.resteasy.annotations.providers.NoJackson
         on your JAXB annotated classes. For example:
     </para>
-    <programlisting>
-        <![CDATA[
+    <programlisting><![CDATA[
+@XmlRootElement
+@NoJackson
+public class Customer {...}
 
-    @XmlRootElement
-    @NoJackson
-    public class Customer {...}
+@Path("/customers")
+public class MyService {
 
-    @Path("/customers")
-    public class MyService {
-
-       @GET
-       @Produces("application/vnd.customer+json")
-       public Customer[] getCustomers() {}
-    }
-    ]]>
-    </programlisting>
+    @GET
+    @Produces("application/vnd.customer+json")
+    public Customer[] getCustomers() {}
+}
+]]></programlisting>
     <para>
         If you can't annotate the JAXB class with @NoJackson, then you can
         use the annotation on a method parameter. For example:
     </para>
-    <programlisting>
-        <![CDATA[
+    <programlisting><![CDATA[
+@XmlRootElement
+public class Customer {...}
 
-        @XmlRootElement
-        public class Customer {...}
+@Path("/customers")
+public class MyService {
 
-        @Path("/customers")
-        public class MyService {
+    @GET
+    @Produces("application/vnd.customer+json")
+    @NoJackson
+    public Customer[] getCustomers() {}
 
-           @GET
-           @Produces("application/vnd.customer+json")
-           @NoJackson
-           public Customer[] getCustomers() {}
-
-           @POST
-           @Consumes("application/vnd.customer+json")
-           public void createCustomer(@NoJackson Customer[] customers) {...}
-        }
-        ]]>
-    </programlisting>
+    @POST
+    @Consumes("application/vnd.customer+json")
+    public void createCustomer(@NoJackson Customer[] customers) {...}
+}
+]]></programlisting>
     </sect1>
     <sect1 id="Possible_Jackson_Problems">
         <title>Possible Conflict With JAXB Provider</title>
@@ -151,6 +143,16 @@ GET /resources/stuff?callback=processStuffResponse
 processStuffResponse(&lt;nomal JSON body&gt;)
 </programlisting>
             This supports the default behavior of <ulink url="http://api.jquery.com/jQuery.ajax/">jQuery</ulink>.
+            To enable JacksonJsonpInterceptor in WildFly, you need to import annotations from <literal>org.jboss.resteasy.resteasy-jackson-provider</literal> module using jboss-deployment-structure.xml:
+<programlisting><![CDATA[
+<jboss-deployment-structure>
+  <deployment>
+    <dependencies>
+      <module name="org.jboss.resteasy.resteasy-jackson-provider" annotations="true"/>
+    </dependencies>
+  </deployment>
+</jboss-deployment-structure>
+]]></programlisting>
         </para>
         <para>
             You can change the name of the callback parameter by setting the callbackQueryParameter property.

@@ -11,7 +11,10 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
+import java.util.List;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
 public class StringParameterInjectorTest
@@ -75,4 +78,30 @@ public class StringParameterInjectorTest
    public static @interface SpecialString
    {
    }
+   
+   // ***************************************************************************
+   
+   @Test
+   public void instantiation() throws Exception
+   {
+      final Type type = GenericType.class.getDeclaredMethod("returnSomething").getGenericReturnType();
+      final StringParameterInjector injector = new StringParameterInjector(
+               List.class, type, "ignored", String.class, null, null,
+               new Annotation[0], new ResteasyProviderFactory());
+      final Object result = injector.extractValue("");
+      assertNotNull(result);
+   }
+   
+   public static class GenericType<T>
+   {
+      public GenericType(String ignore)
+      {
+      }
+
+      public List<GenericType<T>> returnSomething()
+      {
+         return null;
+      }
+   }
 }
+

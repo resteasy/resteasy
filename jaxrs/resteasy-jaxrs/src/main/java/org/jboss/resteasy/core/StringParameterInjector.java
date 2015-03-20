@@ -5,6 +5,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.StringConverter;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.util.StringToPrimitive;
+import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.HeaderParam;
@@ -97,7 +98,7 @@ public class StringParameterInjector
          if (genericType != null && genericType instanceof ParameterizedType)
          {
             ParameterizedType zType = (ParameterizedType) genericType;
-            baseType = (Class) zType.getActualTypeArguments()[0];
+            baseType = Types.getRawType(zType.getActualTypeArguments()[0]);
             baseGenericType = zType.getActualTypeArguments()[0];
          }
          else
