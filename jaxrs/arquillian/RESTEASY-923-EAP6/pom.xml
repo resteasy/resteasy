@@ -16,7 +16,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <as-version>7.4.0.Final-redhat-19</as-version>
+    <as-version>7.4.0.Final-redhat-4</as-version>
     <eap-version>6.3</eap-version>
   </properties>
 
