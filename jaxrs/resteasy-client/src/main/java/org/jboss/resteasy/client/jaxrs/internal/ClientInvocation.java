@@ -323,9 +323,18 @@ public class ClientInvocation implements Invocation
       }
       else
       {
-         this.entity = ent;
-         this.entityClass = ent.getClass();
-         this.entityGenericType = ent.getClass();
+         if (ent == null)
+         {
+            this.entity = null;
+            this.entityClass = null;
+            this.entityGenericType = null;  
+         }
+         else
+         {
+            this.entity = ent;
+            this.entityClass = ent.getClass();
+            this.entityGenericType = ent.getClass();
+         }
       }
    }
 
