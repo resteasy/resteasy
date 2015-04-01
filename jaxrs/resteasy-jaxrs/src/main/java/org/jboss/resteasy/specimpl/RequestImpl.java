@@ -148,7 +148,7 @@ public class RequestImpl implements Request
    {
       Date date = DateUtil.parseDate(strDate);
 
-      if (date.getTime() >= lastModified.getTime())
+      if (date.getTime() >= truncateToSeconds(lastModified.getTime()))
       {
          return Response.notModified();
       }
@@ -160,7 +160,7 @@ public class RequestImpl implements Request
    {
       Date date = DateUtil.parseDate(strDate);
 
-      if (date.getTime() >= lastModified.getTime())
+      if (date.getTime() >= truncateToSeconds(lastModified.getTime()))
       {
          return null;
       }
@@ -219,6 +219,10 @@ public class RequestImpl implements Request
       }
 
       return Response.status(HttpResponseCodes.SC_PRECONDITION_FAILED);
+   }
+
+   private static long truncateToSeconds(long time) {
+      return time - time % 1000;
    }
 
 }

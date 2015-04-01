@@ -7,6 +7,7 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.util.DateUtil;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -18,7 +19,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import java.util.GregorianCalendar;
+import java.util.Date;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -30,6 +31,7 @@ public class PreconditionTest
 {
 
    private static Dispatcher dispatcher;
+   private static final long ARBITRARY_MILLISECOND_OFFSET = 117;
 
    @BeforeClass
    public static void before() throws Exception
@@ -52,8 +54,9 @@ public class PreconditionTest
       @GET
       public Response doGet(@Context Request request)
       {
-         GregorianCalendar lastModified = new GregorianCalendar(2007, 0, 0, 0, 0, 0);
-         Response.ResponseBuilder rb = request.evaluatePreconditions(lastModified.getTime());
+         Date lastModified = DateUtil.parseDate("Mon, 1 Jan 2007 00:00:00 GMT");
+         lastModified = new Date(lastModified.getTime() + ARBITRARY_MILLISECOND_OFFSET);
+         Response.ResponseBuilder rb = request.evaluatePreconditions(lastModified);
          if (rb != null)
             return rb.build();
 
@@ -70,6 +73,23 @@ public class PreconditionTest
       {
          ClientResponse<?> response = request.get();
          Assert.assertEquals(412, response.getStatus());
+         shutdownConnections(request);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
+   @Test
+   public void testIfUnmodifiedSinceSameAsLastModified()
+   {
+      ClientRequest request = new ClientRequest(generateURL("/"));
+      request.header(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Mon, 1 Jan 2007 00:00:00 GMT");
+      try
+      {
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
          shutdownConnections(request);
       }
       catch (Exception e)
@@ -104,6 +124,23 @@ public class PreconditionTest
       {
          ClientResponse<?> response = request.get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         shutdownConnections(request);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
+   @Test
+   public void testIfModifiedSinceSameAsLastModified()
+   {
+      ClientRequest request = new ClientRequest(generateURL("/"));
+      request.header(HttpHeaderNames.IF_MODIFIED_SINCE, "Mon, 1 Jan 2007 00:00:00 GMT");
+      try
+      {
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(304, response.getStatus());
          shutdownConnections(request);
       }
       catch (Exception e)
