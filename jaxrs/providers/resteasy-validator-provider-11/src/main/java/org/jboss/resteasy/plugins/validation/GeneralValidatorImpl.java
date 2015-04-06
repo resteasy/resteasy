@@ -538,29 +538,23 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       
       if (e instanceof ConstraintViolationException)
       {
+         ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, null);
          ConstraintViolationException cve = ConstraintViolationException.class.cast(e);
          Set<ConstraintViolation<?>> cvs = cve.getConstraintViolations();
-         Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
          try
          {
             for (Iterator<ConstraintViolation<?>> it = cvs.iterator(); it.hasNext(); )
             {
-               ConstraintViolation<?> cv = it.next();
-               Type ct = util.getConstraintType(cv);
-               String path = (suppressPath ? "*" : cv.getPropertyPath().toString());
-               rcvs.add(new ResteasyConstraintViolation(ct, path, cv.getMessage(), (cv.getInvalidValue() == null ? "null" :cv.getInvalidValue().toString())));
+               addNewConstraintViolation(violationsContainer, it.next());
             }
          }
          catch (Exception e1)
          {
-            ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, null);
             violationsContainer.setException(e);
             throw new ResteasyViolationException(violationsContainer);
          }
-         if (rcvs.size() > 0)
+         if (violationsContainer.size() > 0)
          {
-            ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, null);
-            violationsContainer.addViolations(rcvs);
             throw new ResteasyViolationException(violationsContainer);
          }
       }
@@ -685,5 +679,54 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       {
          return interpolator.interpolate(messageTemplate, context, locale);
       }
+   }
+   
+   protected void addNewConstraintViolation(ViolationsContainer<Object> container, ConstraintViolation<?> cv)
+   {
+      Type ct = util.getConstraintType(cv);
+      switch (ct)
+      {
+         case FIELD:
+            if (container.getFieldViolations().size() == 0)
+            {
+               container.addFieldViolation(createResteasyConstraintViolation(cv, ct));
+            }
+            break;
+
+         case PROPERTY:
+            if (container.getPropertyViolations().size() == 0)
+            {
+               container.addPropertyViolation(createResteasyConstraintViolation(cv, ct));
+            }
+            break;
+
+         case CLASS:
+            if (container.getClassViolations().size() == 0)
+            {
+               container.addClassViolation(createResteasyConstraintViolation(cv, ct));
+            }
+            break;
+
+         case PARAMETER:
+            if (container.getParameterViolations().size() == 0)
+            {
+               container.addParameterViolation(createResteasyConstraintViolation(cv, ct));
+            }
+            break;
+
+         case RETURN_VALUE:
+            if (container.getReturnValueViolations().size() == 0)
+            {
+               container.addReturnValueViolation(createResteasyConstraintViolation(cv, ct));
+            }
+            break;
+      }
+   }
+   
+   ResteasyConstraintViolation createResteasyConstraintViolation(ConstraintViolation<?> cv, Type ct)
+   {
+      String path = (suppressPath ? "*" : cv.getPropertyPath().toString());
+      ResteasyConstraintViolation rcv = new ResteasyConstraintViolation(ct, path, cv.getMessage(), (cv.getInvalidValue() == null ? "null" :cv.getInvalidValue().toString()));
+      return rcv;
    }
 }
