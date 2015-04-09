@@ -28,15 +28,19 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -103,6 +107,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       {
          Class baseType = Types.getCollectionBaseType(type, genericType);
          if (baseType == null) return false;
+         baseType = XmlAdapterWrapper.xmlAdapterValueType(baseType, annotations);
          return (baseType.isAnnotationPresent(XmlRootElement.class) || baseType.isAnnotationPresent(XmlType.class) || baseType.isAnnotationPresent(XmlSeeAlso.class) || JAXBElement.class.equals(baseType)) && (FindAnnotation.findAnnotation(baseType, annotations, DoNotUseJAXBProvider.class) == null) && !IgnoredMediaTypes.ignored(baseType, annotations, mediaType);
       }
       return false;
@@ -123,6 +128,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
          throw new JAXBUnmarshalException("Unable to find JAXBContext for media type: " + mediaType);
       }
       Class baseType = Types.getCollectionBaseType(type, genericType);
+      XmlAdapterWrapper xmlAdapter = XmlAdapterWrapper.getXmlAdapter(baseType, annotations);
       JaxbCollection col = null;
       try
       {
@@ -181,7 +187,16 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
 
       try
       {
-         JAXBContext ctx = finder.findCachedContext(baseType, mediaType, null);
+         JAXBContext ctx = null;
+         if (xmlAdapter != null)
+         {
+            Class<?> adaptedType = xmlAdapter.getValueType();
+            ctx = finder.findCachedContext(adaptedType, mediaType, null);  
+         }
+         else
+         {
+            ctx = finder.findCachedContext(baseType, mediaType, null);  
+         }
          Unmarshaller unmarshaller = ctx.createUnmarshaller();
          unmarshaller = AbstractJAXBProvider.decorateUnmarshaller(baseType, annotations, mediaType, unmarshaller);
          if (type.isArray())
@@ -190,7 +205,19 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
             for (int i = 0; i < col.getValue().size(); i++)
             {
                Element val = (Element) col.getValue().get(i);
-               Array.set(array, i, unmarshaller.unmarshal(val));
+               Object o = unmarshaller.unmarshal(val);
+               if (xmlAdapter != null)
+               {
+                  try
+                  {
+                     o = xmlAdapter.unmarshal(o);
+                  }
+                  catch (Exception e)
+                  {
+                     throw new JAXBUnmarshalException(e);
+                  }
+               }
+               Array.set(array, i, o);
             }
             return array;
          }
@@ -218,7 +245,19 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
             for (Object obj : col.getValue())
             {
                Element val = (Element) obj;
-               outCol.add(unmarshaller.unmarshal(val));
+               Object o = unmarshaller.unmarshal(val);
+               if (xmlAdapter != null)
+               {
+                  try
+                  {
+                     o = xmlAdapter.unmarshal(o);
+                  }
+                  catch (Exception e)
+                  {
+                     throw new JAXBUnmarshalException(e);
+                  }
+               }
+               outCol.add(o);
             }
             return outCol;
          }
@@ -247,6 +286,12 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
          throw new JAXBMarshalException("Unable to find JAXBContext for media type: " + mediaType);
       }
       Class baseType = Types.getCollectionBaseType(type, genericType);
+      XmlAdapterWrapper xmlAdapter = XmlAdapterWrapper.getXmlAdapter(baseType, annotations);
+      if (xmlAdapter != null)
+      {
+         baseType = xmlAdapter.getValueType();
+      }
+
       try
       {
          JAXBContext ctx = finder.findCacheContext(mediaType, annotations, JaxbCollection.class, baseType);
@@ -256,13 +301,38 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
             Object[] array = (Object[]) entry;
             for (Object obj : array)
             {
+               if (xmlAdapter != null)
+               {
+                  try
+                  {
+                     obj = xmlAdapter.marshal(obj);
+                  }
+                  catch (Exception e)
+                  {
+                     throw new JAXBUnmarshalException(e);
+                  }
+               }
                col.getValue().add(obj);
             }
          }
          else
          {
             Collection collection = (Collection) entry;
-            for (Object obj : collection) col.getValue().add(obj);
+            for (Object obj : collection)
+            {
+               if (xmlAdapter != null)
+               {
+                  try
+                  {
+                     obj = xmlAdapter.marshal(obj);
+                  } 
+                  catch (Exception e)
+                  {
+                     throw new JAXBUnmarshalException(e);
+                  }
+               }
+               col.getValue().add(obj);
+            }
          }
 
          String element = "collection";
