@@ -35,6 +35,19 @@ import org.jboss.resteasy.util.CommitHeaderOutputStream;
  *  parameter with the method name. The default name of this query parameter is "callback". So this interceptor is compatible with 
  *  <a href="http://api.jquery.com/jQuery.ajax/">jQuery</a>.
  * </p>
+ * <p>
+ *  It is possible to wrap the generated javascript function call in a try-catch block.
+ *  You can enable it either by setting the {@link #wrapInTryCatch} property of the provider instance to {@code true}
+ *  or by setting the {@code resteasy.jsonp.silent} context-param to true:
+ * </p>
+ * <pre>
+ *  {@code
+ *  <context-param>
+ *   <param-name>resteasy.jsonp.silent</param-name>
+ *   <param-value>true</param-value>
+ *  </context-param>
+ *  }
+ * </pre>
  *
  * @author <a href="mailto:holger.morch@nokia.com">Holger Morch</a>
  * @version $Revision: 1 $
