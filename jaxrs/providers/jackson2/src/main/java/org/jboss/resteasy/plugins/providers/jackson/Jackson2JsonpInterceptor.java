@@ -88,6 +88,8 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
     
     private String callbackQueryParameter = DEFAULT_CALLBACK_QUERY_PARAMETER;
 
+    private boolean wrapInTryCatch = false;
+
     /**
      * The {@link ObjectMapper} used to create typing information. 
      */
@@ -124,6 +126,7 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
 
             OutputStreamWriter writer = new OutputStreamWriter(context.getOutputStream());
 
+            if (wrapInTryCatch) writer.write("try{");
             writer.write(function + "(");
             writer.flush();
 
@@ -136,6 +139,7 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
                 context.proceed();
                 wrappedOutputStream.flush();
                 writer.write(")");
+                if (wrapInTryCatch) writer.write("}catch(e){}");
                 writer.flush();
             } finally {
                 context.setOutputStream(old);
@@ -218,6 +222,24 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
      */
     public void setCallbackQueryParameter(String callbackQueryParameter) {
         this.callbackQueryParameter = callbackQueryParameter;
+    }
+
+    /**
+     * Check is the JSONP callback will be wrapped with try-catch block
+     *
+     * @return true if try-catch block is generated; false otherwise
+     */
+    public boolean isWrapInTryCatch() {
+        return wrapInTryCatch;
+    }
+
+    /**
+     * Enables or disables wrapping the JSONP callback try try-catch block
+     *
+     * @param wrapInTryCatch true if you want to wrap the result with try-catch block; false otherwise
+     */
+    public void setWrapInTryCatch(boolean wrapInTryCatch) {
+        this.wrapInTryCatch = wrapInTryCatch;
     }
 
 }
