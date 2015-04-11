@@ -19,6 +19,8 @@ import javax.ws.rs.ext.WriterInterceptorContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
 
 /**
@@ -89,6 +91,13 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
     private String callbackQueryParameter = DEFAULT_CALLBACK_QUERY_PARAMETER;
 
     private boolean wrapInTryCatch = false;
+
+    public Jackson2JsonpInterceptor() {
+        ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+        if (context != null) {
+            wrapInTryCatch = Boolean.parseBoolean(context.getParameter("resteasy.jsonp.silent"));
+        }
+    }
 
     /**
      * The {@link ObjectMapper} used to create typing information. 
