@@ -207,13 +207,16 @@ public class JacksonTest extends BaseResourceTest
 
    private static ResteasyClient client;
 
+   private static Jackson2JsonpInterceptor jsonpInterceptor;
+
    @BeforeClass
    public static void setUp() throws Exception
    {
       dispatcher.getRegistry().addPerRequestResource(JacksonService.class);
       dispatcher.getRegistry().addPerRequestResource(XmlService.class);
       dispatcher.getRegistry().addPerRequestResource(JAXBService.class);
-      dispatcher.getProviderFactory().register(Jackson2JsonpInterceptor.class);
+      jsonpInterceptor = new Jackson2JsonpInterceptor();
+      dispatcher.getProviderFactory().register(jsonpInterceptor);
        client = new ResteasyClientBuilder().build();
    }
 
@@ -248,12 +251,27 @@ public class JacksonTest extends BaseResourceTest
    @Test
    public void testJacksonJsonp() throws Exception
    {
+      jsonpInterceptor.setWrapInTryCatch(false);
       WebTarget target = client.target(generateURL("/products/333?callback=foo"));
       Response response = target.request().get();
       String entity = response.readEntity(String.class);
       System.out.println(entity);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("foo({\"name\":\"Iphone\",\"id\":333})", entity);
+      response.close();
+
+   }
+
+   @Test
+   public void testJacksonJsonpWrapInTryCatch() throws Exception
+   {
+      jsonpInterceptor.setWrapInTryCatch(true);
+      WebTarget target = client.target(generateURL("/products/333?callback=foo"));
+      Response response = target.request().get();
+      String entity = response.readEntity(String.class);
+      System.out.println(entity);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("try{foo({\"name\":\"Iphone\",\"id\":333})}catch(e){}", entity);
       response.close();
 
    }
