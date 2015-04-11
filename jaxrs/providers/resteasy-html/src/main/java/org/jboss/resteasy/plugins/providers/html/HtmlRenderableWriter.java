@@ -20,17 +20,16 @@ import static org.jboss.resteasy.spi.ResteasyProviderFactory.getContextData;
  * 
  * @author Jeff Schnitzer <jeff@infohazard.org>
  */
-@SuppressWarnings("unchecked")
 @Provider
-@Produces("text/html")
+@Produces({MediaType.APPLICATION_XHTML_XML, MediaType.TEXT_HTML, MediaType.TEXT_PLAIN})
 public class HtmlRenderableWriter implements MessageBodyWriter<Renderable>
 {
 
 	/* (non-Javadoc
 	 * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType)
 	 */
-	//@Override
-	public long getSize(Renderable obj, Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
+	@Override
+	public long getSize(Renderable obj, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
 	{
 		// No chance of figuring this out ahead of time
 		return -1;
@@ -39,8 +38,8 @@ public class HtmlRenderableWriter implements MessageBodyWriter<Renderable>
 	/* (non-Javadoc)
 	 * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType)
 	 */
-	//@Override
-	public boolean isWriteable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType)
+	@Override
+	public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
 	{
 		return Renderable.class.isAssignableFrom(type);
 	}
@@ -48,13 +47,13 @@ public class HtmlRenderableWriter implements MessageBodyWriter<Renderable>
 	/* (non-Javadoc)
 	 * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
 	 */
-	//@Override
-	public void writeTo(Renderable viewingPleasure, Class type, Type genericType, Annotation[] annotations, MediaType mediaType,
-			MultivaluedMap httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
+	@Override
+	public void writeTo(Renderable viewingPleasure, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+			MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
 	{
 		try
 		{
-			viewingPleasure.render(getContextData(HttpServletRequest.class), getContextData(HttpServletResponse.class));
+			viewingPleasure.render(getContextData(HttpServletRequest.class), getContextData(HttpServletResponse.class), entityStream);
 		}
 		catch (ServletException ex)
 		{

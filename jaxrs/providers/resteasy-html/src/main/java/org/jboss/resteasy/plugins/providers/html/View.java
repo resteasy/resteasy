@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,22 +81,33 @@ public class View implements Renderable
       return this.model;
    }
 
-   /**
-    * Sets up the model in the request attributes, creates a dispatcher, and
-    * forwards the request.
-    */
-   public void render(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException,
-         WebApplicationException
+   protected void addModelTo(HttpServletRequest request)
    {
       for (Entry<String, Object> entry : model.entrySet())
       {
          request.setAttribute(entry.getKey(), entry.getValue());
       }
+   }
 
+   protected RequestDispatcher getRequestDispatcherFrom(HttpServletRequest request)
+   {
       RequestDispatcher disp = request.getRequestDispatcher(path);
       if (disp == null)
+      {
          throw new InternalServerErrorException("No dispatcher found for path '" + path + "'");
+      }
+      return disp;
+   }
 
-      disp.forward(request, response);
+   /**
+    * Sets up the model in the request attributes, creates a dispatcher, and
+    * forwards the request.
+    */
+   @Override
+   public void render(HttpServletRequest request, HttpServletResponse response, OutputStream entityStream)
+      throws IOException, ServletException, WebApplicationException
+   {
+      addModelTo(request);
+      getRequestDispatcherFrom(request).forward(request, response);
    }
 }
