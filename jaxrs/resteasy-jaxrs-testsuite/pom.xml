@@ -30,6 +30,12 @@
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>tjws</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -40,7 +46,18 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
         </dependency>
-
+        
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-undertow</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-servlet</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

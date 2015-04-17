@@ -142,7 +142,7 @@ public abstract class ClientResponse extends BuiltResponse
     *
     * @throws IOException
     */
-   protected abstract void releaseConnection() throws IOException;
+   public abstract void releaseConnection() throws IOException;
 
 
    // this is synchronized in conjunction with finalize to protect against premature finalize called by the GC
