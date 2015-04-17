@@ -53,6 +53,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    private List<ChannelHandler> channelHandlers = Collections.emptyList();
    private Map<ChannelOption, Object> channelOptions = Collections.emptyMap();
    private Map<ChannelOption, Object> childChannelOptions = Collections.emptyMap();
+   private List<ChannelHandler> httpChannelHandlers = Collections.emptyList();
 
    public void setSSLContext(SSLContext sslContext)
    {
@@ -122,6 +123,16 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
      */
     public void setChannelHandlers(final List<ChannelHandler> channelHandlers) {
         this.channelHandlers = channelHandlers == null ? Collections.<ChannelHandler>emptyList() : channelHandlers;
+    }
+
+    /**
+     * Add additional {@link io.netty.channel.ChannelHandler}s to the {@link io.netty.bootstrap.ServerBootstrap}.
+     * <p>The additional channel handlers are being added <em>after</em> the HTTP handling.</p>
+     *
+     * @param httpChannelHandlers the additional {@link io.netty.channel.ChannelHandler}s.
+     */
+    public void setHttpChannelHandlers(final List<ChannelHandler> httpChannelHandlers) {
+        this.httpChannelHandlers = httpChannelHandlers == null ? Collections.<ChannelHandler>emptyList() : httpChannelHandlers;
     }
 
     /**
@@ -195,6 +206,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
                            ch.pipeline().addLast(new HttpResponseEncoder());
                            ch.pipeline().addLast(new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, RestEasyHttpRequestDecoder.Protocol.HTTP));
                            ch.pipeline().addLast(new RestEasyHttpResponseEncoder());
+                           ch.pipeline().addLast(httpChannelHandlers.toArray(new ChannelHandler[httpChannelHandlers.size()]));
                            ch.pipeline().addLast(eventExecutor, new RequestHandler(dispatcher));
                        }
                    })
@@ -215,6 +227,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
                            ch.pipeline().addLast(new HttpResponseEncoder());
                            ch.pipeline().addLast(new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, RestEasyHttpRequestDecoder.Protocol.HTTPS));
                            ch.pipeline().addLast(new RestEasyHttpResponseEncoder());
+                           ch.pipeline().addLast(httpChannelHandlers.toArray(new ChannelHandler[httpChannelHandlers.size()]));
                            ch.pipeline().addLast(eventExecutor, new RequestHandler(dispatcher));
 
                        }
