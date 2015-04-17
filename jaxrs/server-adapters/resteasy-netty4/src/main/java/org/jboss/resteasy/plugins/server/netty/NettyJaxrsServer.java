@@ -28,7 +28,6 @@ import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
 
 /**
  * An HTTP server that sends back the content of the received HTTP request
@@ -191,56 +190,57 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
                deployment.getProviderFactory(), domain);
    }
 
-   @Override
-   public void start()
-   {
-      eventLoopGroup = new NioEventLoopGroup(ioWorkerCount);
-      eventExecutor = new NioEventLoopGroup(executorThreadCount);
-      deployment.start();
-      final RequestDispatcher dispatcher = this.createRequestDispatcher();
-       // Configure the server.
-       ChannelInitializer<SocketChannel> channelInitializer;
-       if (sslContext == null) {
-           channelInitializer = new ChannelInitializer<SocketChannel>() {
-               @Override
-               public void initChannel(SocketChannel ch) throws Exception {
-                   setupHandlers(ch, dispatcher, HTTP);
-               }
-           };
-       } else {
-           final SSLEngine engine = sslContext.createSSLEngine();
-           engine.setUseClientMode(false);
-           channelInitializer = new ChannelInitializer<SocketChannel>() {
-               @Override
-               public void initChannel(SocketChannel ch) throws Exception {
-                   ch.pipeline().addFirst(new SslHandler(engine));
-                   setupHandlers(ch, dispatcher, HTTPS);
-               }
-           };
-       }
-       bootstrap.group(eventLoopGroup)
-               .channel(NioServerSocketChannel.class)
-               .childHandler(channelInitializer)
-               .option(ChannelOption.SO_BACKLOG, backlog)
-               .childOption(ChannelOption.SO_KEEPALIVE, true);
-       
-       for(Map.Entry<ChannelOption, Object> entry : channelOptions.entrySet()) {
-           bootstrap.option(entry.getKey(), entry.getValue());
-       }
+    @Override
+    public void start() {
+        eventLoopGroup = new NioEventLoopGroup(ioWorkerCount);
+        eventExecutor = new NioEventLoopGroup(executorThreadCount);
+        deployment.start();
+        // Configure the server.
+        bootstrap.group(eventLoopGroup)
+                .channel(NioServerSocketChannel.class)
+                .childHandler(createChannelInitializer())
+                .option(ChannelOption.SO_BACKLOG, backlog)
+                .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-       for(Map.Entry<ChannelOption, Object> entry : childChannelOptions.entrySet()) {
-           bootstrap.childOption(entry.getKey(), entry.getValue());
-       }
+        for (Map.Entry<ChannelOption, Object> entry : channelOptions.entrySet()) {
+            bootstrap.option(entry.getKey(), entry.getValue());
+        }
 
-       final InetSocketAddress socketAddress;
-       if(null == hostname || hostname.isEmpty()) {
-           socketAddress = new InetSocketAddress(port);
-       } else {
-           socketAddress = new InetSocketAddress(hostname, port);
-       }
+        for (Map.Entry<ChannelOption, Object> entry : childChannelOptions.entrySet()) {
+            bootstrap.childOption(entry.getKey(), entry.getValue());
+        }
 
-       bootstrap.bind(socketAddress).syncUninterruptibly();
-   }
+        final InetSocketAddress socketAddress;
+        if (null == hostname || hostname.isEmpty()) {
+            socketAddress = new InetSocketAddress(port);
+        } else {
+            socketAddress = new InetSocketAddress(hostname, port);
+        }
+
+        bootstrap.bind(socketAddress).syncUninterruptibly();
+    }
+
+    private ChannelInitializer<SocketChannel> createChannelInitializer() {
+        final RequestDispatcher dispatcher = createRequestDispatcher();
+        if (sslContext == null) {
+            return new ChannelInitializer<SocketChannel>() {
+                @Override
+                public void initChannel(SocketChannel ch) throws Exception {
+                    setupHandlers(ch, dispatcher, HTTP);
+                }
+            };
+        } else {
+            final SSLEngine engine = sslContext.createSSLEngine();
+            engine.setUseClientMode(false);
+            return new ChannelInitializer<SocketChannel>() {
+                @Override
+                public void initChannel(SocketChannel ch) throws Exception {
+                    ch.pipeline().addFirst(new SslHandler(engine));
+                    setupHandlers(ch, dispatcher, HTTPS);
+                }
+            };
+        }
+    }
 
     private void setupHandlers(SocketChannel ch, RequestDispatcher dispatcher, RestEasyHttpRequestDecoder.Protocol protocol) {
         ChannelPipeline channelPipeline = ch.pipeline();
