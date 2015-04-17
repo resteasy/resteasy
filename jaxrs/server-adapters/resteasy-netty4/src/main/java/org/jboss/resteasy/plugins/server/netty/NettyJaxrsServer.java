@@ -248,9 +248,9 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
         channelPipeline.addLast(new HttpRequestDecoder());
         channelPipeline.addLast(new HttpObjectAggregator(maxRequestSize));
         channelPipeline.addLast(new HttpResponseEncoder());
+        channelPipeline.addLast(httpChannelHandlers.toArray(new ChannelHandler[httpChannelHandlers.size()]));
         channelPipeline.addLast(new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, protocol));
         channelPipeline.addLast(new RestEasyHttpResponseEncoder());
-        channelPipeline.addLast(httpChannelHandlers.toArray(new ChannelHandler[httpChannelHandlers.size()]));
         channelPipeline.addLast(eventExecutor, new RequestHandler(dispatcher));
     }
 
