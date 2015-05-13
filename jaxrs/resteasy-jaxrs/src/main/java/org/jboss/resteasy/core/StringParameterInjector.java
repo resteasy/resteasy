@@ -278,16 +278,33 @@ public class StringParameterInjector
    {
       if (strVal == null)
       {
-         if (defaultValue == null)
+         if (defaultValue != null)
          {
-            //System.out.println("NO DEFAULT VALUE");
-            if (!baseType.isPrimitive()) return null;
+            strVal = defaultValue;
+         }
+      }
+      if (paramConverter != null)
+      {
+         if (strVal == null)
+         {
+            try
+            {
+               return paramConverter.fromString(null);
+            }
+            catch (Exception e)
+            {
+               // fall through in this scenario to maintain old behavior that was not sending null
+               // strings to custom paramconverters
+            }
          }
          else
          {
-            strVal = defaultValue;
-            //System.out.println("DEFAULT VAULUE: " + strVal);
+            return paramConverter.fromString(strVal);
          }
+      }
+      if (strVal == null && !baseType.isPrimitive())
+      {
+         return null;
       }
       try
       {
@@ -296,10 +313,6 @@ public class StringParameterInjector
       catch (Exception e)
       {
          throwProcessingException("Unable to extract parameter from http request for " + getParamSignature() + " value is '" + strVal + "'" + " for " + target, e);
-      }
-      if (paramConverter != null)
-      {
-         return paramConverter.fromString(strVal);
       }
       if (converter != null)
       {

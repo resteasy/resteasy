@@ -7,6 +7,8 @@ import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.junit.Test;
 
 import javax.ws.rs.core.Context;
+import javax.ws.rs.ext.ParamConverter;
+import javax.ws.rs.ext.ParamConverterProvider;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -14,6 +16,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
@@ -101,6 +104,43 @@ public class StringParameterInjectorTest
       public List<GenericType<T>> returnSomething()
       {
          return null;
+      }
+   }
+
+   // ***************************************************************************
+
+   @Test
+   public void usesParamConverterEvenIfNull(){
+      ResteasyProviderFactory providerFactory = new ResteasyProviderFactory();
+      providerFactory.registerProviderInstance(new TestParamConverterProvider());
+      final StringParameterInjector injector = new StringParameterInjector(
+              String.class, null, "ignored", String.class, null, null,
+              new Annotation[0], providerFactory);
+      assertEquals("it was null", injector.extractValue(null));
+      assertEquals("asdf", injector.extractValue("asdf"));
+
+   }
+
+   public static class TestParamConverterProvider implements ParamConverterProvider {
+      @Override
+      public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation[] annotations) {
+         return (ParamConverter<T>) new TestParamConverter();
+      }
+   }
+
+   public static class TestParamConverter implements ParamConverter<String> {
+
+      @Override
+      public String fromString(String value) {
+         if (value == null){
+            return "it was null";
+         }
+         return value;
+      }
+
+      @Override
+      public String toString(String value) {
+         return value;
       }
    }
 }
