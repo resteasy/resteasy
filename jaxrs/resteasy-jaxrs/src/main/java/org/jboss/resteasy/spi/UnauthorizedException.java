@@ -4,11 +4,6 @@ import javax.ws.rs.core.Response;
 
 /**
  * Thrown by RESTEasy when HTTP Unauthorized (401) is encountered
- * 
- * @deprecated Replaced by javax.ws.rs.NotAuthorizedException in jaxrs-api module.
- * 
- * @see jaxrs-api
- * @see javax.ws.rs.NotAuthorizedException
  */
 @Deprecated
 public class UnauthorizedException extends LoggableFailure

@@ -10,11 +10,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @deprecated Caching in the Resteasy client framework in resteasy-jaxrs is replaced by 
- * caching in the JAX-RS 2.0 compliant resteasy-client module.
- * 
- * @see resteasy-client
- * @see org.jboss.resteasy.client.jaxrs.cache.CacheEntry
+ * @deprecated
  */
 @Deprecated
 public class CacheEntry implements Entry, Serializable

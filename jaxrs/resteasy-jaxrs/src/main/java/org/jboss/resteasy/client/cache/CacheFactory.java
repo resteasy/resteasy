@@ -6,13 +6,9 @@ import org.jboss.resteasy.client.core.ClientInvokerModifier;
 import org.jboss.resteasy.client.core.marshallers.ResteasyClientProxy;
 
 /**
+ * @deprecated
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * 
- * @deprecated Caching in the Resteasy client framework in resteasy-jaxrs is replaced by 
- * caching in the JAX-RS 2.0 compliant resteasy-client module.
- * 
- * @see resteasy-client
  */
 @Deprecated
 public class CacheFactory

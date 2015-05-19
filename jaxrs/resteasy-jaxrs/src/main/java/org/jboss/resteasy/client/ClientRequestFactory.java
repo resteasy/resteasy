@@ -16,12 +16,9 @@ import java.net.URI;
  * Helper class that allows you to pre-initialize an Executor, preset some ClientRequest attributes (like follow redirects)
  * and define some client-side interceptors you want applied
  *
- * @deprecated The Resteasy client framework in resteasy-jaxrs is replaced by the JAX-RS 2.0 compliant resteasy-client module.
+ * @deprecated
  * @author Solomon Duskis
  * @version $Revision: 1 $
- * 
- * @see org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder
- * @see org.jboss.resteasy.client.jaxrs.ResteasyWebTarget
  */
 @Deprecated
 public class ClientRequestFactory

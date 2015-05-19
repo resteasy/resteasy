@@ -7,11 +7,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.Map;
 
 /**
- * @deprecated The Resteasy proxy facility in the client framework in resteasy-jaxrs is replaced by the
- * proxy facility extension in the JAX-RS 2.0 compliant resteasy-client module.
- * 
- * @see resteasy-client
- * @see org.jboss.resteasy.client.jaxrs.ProxyConfig
+ * @deprecated
  */
 @Deprecated
 public class ProxyConfig
