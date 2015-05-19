@@ -19,9 +19,10 @@ The @javax.ws.rs.Encoded annotation can be used on a class, method, or param.  B
 @Path("/")
 public class MyResource {
 
-  @Path("/{param}")
-  @GET
-  public String get(@PathParam("param") @Encoded String param) {...}
+    @Path("/{param}")
+    @GET
+    public String get(@PathParam("param") @Encoded String param) {...}
+}
 </programlisting>
 </para>
 <para>
@@ -38,13 +39,11 @@ You may also use the @Encoded annotation on the entire method and any combinatio
 @Path("/")
 public class MyResource {
   
-   @Path("/{param}")
-   @GET
-   @Encoded
-   public String get(@QueryParam("foo") String foo, @PathParam("param") String param) {}
+    @Path("/{param}")
+    @GET
+    @Encoded
+    public String get(@QueryParam("foo") String foo, @PathParam("param") String param) {}
 }
-
-
 </programlisting>
 </para>
 <para>
@@ -59,8 +58,8 @@ You can also set the default to be encoded for the entire class.
 @Encoded
 public class ClassEncoded {
   
-   @GET
-   public String get(@QueryParam("foo") String foo) {}
+    @GET
+    public String get(@QueryParam("foo") String foo) {}
 }
 </programlisting>
 </para>

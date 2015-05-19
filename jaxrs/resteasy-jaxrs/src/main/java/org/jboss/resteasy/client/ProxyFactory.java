@@ -15,9 +15,15 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @deprecated
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @deprecated The Resteasy proxy facility in the client framework in resteasy-jaxrs is replaced by the
+ * proxy facility extension in the JAX-RS 2.0 compliant resteasy-client module.
+ * 
+ * @see resteasy-client
+ * @see org.jboss.resteasy.client.jaxrs.ProxyBuilder
+ * @see org.jboss.resteasy.client.jaxrs.ResteasyWebTarget
  */
 @Deprecated
 public class ProxyFactory

@@ -12,11 +12,10 @@ GET /books?num=5
 <para>
 
 <programlisting>
-   
-   @GET
-   public String getBooks(@HeaderParam("From") String from) {
-   ...
-   }
+@GET
+public String getBooks(@HeaderParam("From") String from) {
+...
+}
 </programlisting>
 </para>
 <para>
@@ -26,9 +25,8 @@ Like PathParam, your parameter type can be an String, primitive, or class that h
 <para>
 
 <programlisting>
-
-   @PUT
-   public void put(@HeaderParam("Content-Type") MediaType contentType, ...)
+@PUT
+public void put(@HeaderParam("Content-Type") MediaType contentType, ...)
 </programlisting>
 </para>
 <para>

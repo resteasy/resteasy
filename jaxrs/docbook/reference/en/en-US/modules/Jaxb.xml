@@ -106,56 +106,53 @@
         JAXB, we would set a property on the Marshaller of Marshaller.JAXB_FORMATTED_OUTPUT.  Let's
         write a Marshaller decorator.</para>
         <para>First we define a annotation:</para>
- <programlisting>
+<programlisting>
+import org.jboss.resteasy.annotations.Decorator;
 
- import org.jboss.resteasy.annotations.Decorator;
-
- @Target({ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD})
- @Retention(RetentionPolicy.RUNTIME)
- @Decorator(processor = PrettyProcessor.class, target = Marshaller.class)
- public @interface Pretty {}
- </programlisting>
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+@Decorator(processor = PrettyProcessor.class, target = Marshaller.class)
+public @interface Pretty {}
+</programlisting>
         <para>To get this to work, we must annotate our @Pretty annotation with a meta-annotation called
         @Decorator.  The target() attribute must be the JAXB Marshaller class.  The processor()
         attribute is a class we will write next.</para>
- <programlisting>
- <![CDATA[
- import org.jboss.resteasy.core.interception.DecoratorProcessor;
- import org.jboss.resteasy.annotations.DecorateTypes;
+<programlisting><![CDATA[
+import org.jboss.resteasy.core.interception.DecoratorProcessor;
+import org.jboss.resteasy.annotations.DecorateTypes;
 
- import javax.xml.bind.Marshaller;
- import javax.xml.bind.PropertyException;
- import javax.ws.rs.core.MediaType;
- import javax.ws.rs.Produces;
- import java.lang.annotation.Annotation;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.Produces;
+import java.lang.annotation.Annotation;
 
- /**
-  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
-  * @version $Revision: 1 $
-  */
- @DecorateTypes({"text/*+xml", "application/*+xml"})
- public class PrettyProcessor implements DecoratorProcessor<Marshaller, Pretty>
- {
+/**
+ * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
+ * @version $Revision: 1 $
+ */
+@DecorateTypes({"text/*+xml", "application/*+xml"})
+public class PrettyProcessor implements DecoratorProcessor<Marshaller, Pretty>
+{
     public Marshaller decorate(Marshaller target, Pretty annotation,
                   Class type, Annotation[] annotations, MediaType mediaType)
     {
        target.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
     }
- }
- ]]>
- </programlisting>
+}]]>
+</programlisting>
     <para>
         The processor implementation must implement the DecoratorProcessor interface and should also be annotated
         with @DecorateTypes.  This annotation specifies what media types the processor can be used with. Now that
         we've defined our annotation and our Processor, we can use it on our JAX-RS resource methods
         or JAXB types as follows:
     </para>
- <programlisting>
-   @GET
-   @Pretty
-   @Produces("application/xml")
-   public SomeJAXBObject get() {...}
- </programlisting>
+<programlisting>
+@GET
+@Pretty
+@Produces("application/xml")
+public SomeJAXBObject get() {...}
+</programlisting>
         <para>If you are confused, check the Resteasy source code for the implementation of @XmlHeader</para>
     </sect1>
    <sect1 id="Pluggable_JAXBContext_s_with_ContextResolvers">
@@ -173,22 +170,22 @@
       </para>
       <para>
 
- <programlisting>
- public interface ContextResolver&lt;T&gt;
- {
-T getContext(Class&lt;?&gt; type);
- }
-
- @Provider
- @Produces("application/xml")
- public class MyJAXBContextResolver implements ContextResolver&lt;JAXBContext&gt;
- {
-JAXBContext getContext(Class&lt;?&gt; type)
+<programlisting>
+public interface ContextResolver&lt;T&gt;
 {
-   if (type.equals(WhateverClassIsOverridedFor.class)) return JAXBContext.newInstance()...;
+    T getContext(Class&lt;?&gt; type);
 }
- }
-         </programlisting>
+
+@Provider
+@Produces("application/xml")
+public class MyJAXBContextResolver implements ContextResolver&lt;JAXBContext&gt;
+{
+    JAXBContext getContext(Class&lt;?&gt; type)
+    {
+        if (type.equals(WhateverClassIsOverridedFor.class)) return JAXBContext.newInstance()...;
+    }
+}
+</programlisting>
       </para>
       <para>
 
@@ -239,40 +236,38 @@ JAXBContext getContext(Class&lt;?&gt; type)
            <title>@XmlHeader and @Stylesheet</title>
            <para>Sometimes when outputting XML documents you may want to set an XML header. Resteasy provides
            the @org.jboss.resteasy.annotations.providers.jaxb.XmlHeader annotation for this.  For example:</para>
- <programlisting>
- <![CDATA[
+<programlisting><![CDATA[
 @XmlRootElement
 public static class Thing
 {
-   private String name;
+    private String name;
 
-   public String getName()
-   {
-      return name;
-   }
+    public String getName()
+    {
+        return name;
+    }
 
-   public void setName(String name)
-   {
-      this.name = name;
-   }
+    public void setName(String name)
+    {
+        this.name = name;
+    }
 }
 
 @Path("/test")
 public static class TestService
 {
-
-   @GET
-   @Path("/header")
-   @Produces("application/xml")
-   @XmlHeader("<?xml-stylesheet type='text/xsl' href='${baseuri}foo.xsl' ?>")
-   public Thing get()
-   {
-      Thing thing = new Thing();
-      thing.setName("bill");
-      return thing;
-   }
+    @GET
+    @Path("/header")
+    @Produces("application/xml")
+    @XmlHeader("<?xml-stylesheet type='text/xsl' href='${baseuri}foo.xsl' ?>")
+    public Thing get()
+    {
+        Thing thing = new Thing();
+        thing.setName("bill");
+        return thing;
+    }
 }]]>
- </programlisting>
+</programlisting>
            <para>
                The @XmlHeader here forces the XML output to have an xml-stylesheet header.  This header
                could also have been put on the Thing class to get the same result.  See the javadocs for more
@@ -281,41 +276,39 @@ public static class TestService
            <para>
                Resteasy also has a convenience annotation for stylesheet headers.  For example:
            </para>
- <programlisting>
- <![CDATA[
+<programlisting><![CDATA[
 @XmlRootElement
 public static class Thing
 {
-   private String name;
+    private String name;
 
-   public String getName()
-   {
-      return name;
-   }
+    public String getName()
+    {
+        return name;
+    }
 
-   public void setName(String name)
-   {
-      this.name = name;
-   }
+    public void setName(String name)
+    {
+        this.name = name;
+    }
 }
 
 @Path("/test")
 public static class TestService
 {
-
-   @GET
-   @Path("/stylesheet")
-   @Produces("application/xml")
-   @Stylesheet(type="text/css", href="${basepath}foo.xsl")
-   @Junk
-   public Thing getStyle()
-   {
-      Thing thing = new Thing();
-      thing.setName("bill");
-      return thing;
-   }
+    @GET
+    @Path("/stylesheet")
+    @Produces("application/xml")
+    @Stylesheet(type="text/css", href="${basepath}foo.xsl")
+    @Junk
+    public Thing getStyle()
+    {
+        Thing thing = new Thing();
+        thing.setName("bill");
+        return thing;
+    }
 }]]>
- </programlisting>
+</programlisting>
        </sect2>
    </sect1>
    <sect1 id="JAXB_+_JSON_provider">
@@ -346,79 +339,79 @@ public static class TestService
       </para>
       <para>
 
- <programlisting>
- @XmlRootElement(name = "book")
- public class Book
- {
-private String author;
-private String ISBN;
-private String title;
-
-public Book()
+<programlisting>
+@XmlRootElement(name = "book")
+public class Book
 {
-}
+    private String author;
+    private String ISBN;
+    private String title;
 
-public Book(String author, String ISBN, String title)
-{
-   this.author = author;
-   this.ISBN = ISBN;
-   this.title = title;
-}
-
-@XmlElement
-public String getAuthor()
-{
-   return author;
-}
-
-public void setAuthor(String author)
-{
-   this.author = author;
-}
-
-@XmlElement
-public String getISBN()
-{
-   return ISBN;
-}
-
-public void setISBN(String ISBN)
-{
-   this.ISBN = ISBN;
-}
-
-@XmlAttribute
-public String getTitle()
-{
-   return title;
-}
-
-public void setTitle(String title)
-{
-   this.title = title;
-}
- }
-         </programlisting>
-      </para>
-      <para>
-
-
-      </para>
-      <para>
-
-         This is how the JAXB Book class would be marshalled to JSON using the BadgerFish Convention
-      </para>
-      <para>
-
- <programlisting>
- {"book":
+    public Book()
     {
-       "@title":"EJB 3.0",
-       "author":{"$":"Bill Burke"},
-       "ISBN":{"$":"596529260"}
     }
- }
- </programlisting>
+
+    public Book(String author, String ISBN, String title)
+    {
+        this.author = author;
+        this.ISBN = ISBN;
+        this.title = title;
+    }
+
+    @XmlElement
+    public String getAuthor()
+    {
+        return author;
+    }
+
+    public void setAuthor(String author)
+    {
+    this.author = author;
+    }
+
+    @XmlElement
+    public String getISBN()
+    {
+        return ISBN;
+    }
+
+    public void setISBN(String ISBN)
+    {
+        this.ISBN = ISBN;
+    }
+
+    @XmlAttribute
+    public String getTitle()
+    {
+        return title;
+    }
+
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+}
+</programlisting>
+      </para>
+      <para>
+
+
+      </para>
+      <para>
+
+         This is how the JAXB Book class would be marshalled to JSON using the BadgerFish Convention:
+      </para>
+      <para>
+
+<programlisting>
+{"book":
+    {
+        "@title":"EJB 3.0",
+        "author":{"$":"Bill Burke"},
+        "ISBN":{"$":"596529260"}
+    }
+}
+</programlisting>
       </para>
       <para>
 
@@ -427,11 +420,11 @@ public void setTitle(String title)
       </para>
       <para>
 
- <programlisting>
- var data = eval("(" + xhr.responseText + ")");
- document.getElementById("zone").innerHTML = data.book.@title;
- document.getElementById("zone").innerHTML += data.book.author.$;
- </programlisting>
+<programlisting>
+var data = eval("(" + xhr.responseText + ")");
+document.getElementById("zone").innerHTML = data.book.@title;
+document.getElementById("zone").innerHTML += data.book.author.$;
+</programlisting>
       </para>
       <para>
 
@@ -445,11 +438,11 @@ public void setTitle(String title)
       </para>
       <para>
 
- <programlisting>
- @BadgerFish
- @XmlRootElement(name = "book")
- public class Book {...}
- </programlisting>
+<programlisting>
+@BadgerFish
+@XmlRootElement(name = "book")
+public class Book {...}
+</programlisting>
       </para>
       <para>
 
@@ -458,11 +451,11 @@ public void setTitle(String title)
       </para>
       <para>
 
- <programlisting>
- @BadgerFish
- @GET
- public Book getBook(...) {...}
- </programlisting>
+<programlisting>
+@BadgerFish
+@GET
+public Book getBook(...) {...}
+</programlisting>
       </para>
       <para>
 
@@ -470,10 +463,10 @@ public void setTitle(String title)
       </para>
       <para>
 
- <programlisting>
- @POST
- public void newBook(@BadgerFish Book book) {...}
- </programlisting>
+<programlisting>
+@POST
+public void newBook(@BadgerFish Book book) {...}
+</programlisting>
       </para>
       <para>
 
@@ -485,15 +478,15 @@ public void setTitle(String title)
       </para>
       <para>
 
- <programlisting>
- { "book" :
-      {
-         "@title":"EJB 3.0",
-         "author":"Bill Burke",
-         "ISBN":596529260
-       }
- }
- </programlisting>
+<programlisting>
+{ "book" :
+    {
+        "@title":"EJB 3.0",
+        "author":"Bill Burke",
+        "ISBN":596529260
+    }
+}
+</programlisting>
       </para>
       <para>
 
@@ -503,11 +496,11 @@ public void setTitle(String title)
       </para>
       <para>
 
- <programlisting>
- var data = eval("(" + xhr.responseText + ")");
- document.getElementById("zone").innerHTML = data.book.@title;
- document.getElementById("zone").innerHTML += data.book.author;
- </programlisting>
+<programlisting>
+var data = eval("(" + xhr.responseText + ")");
+document.getElementById("zone").innerHTML = data.book.@title;
+document.getElementById("zone").innerHTML += data.book.author;
+</programlisting>
       </para>
       <para>
 
@@ -519,28 +512,28 @@ public void setTitle(String title)
          @org.jboss.resteasy.annotations.providers.jaxb.json.Mapped annotation. You can provide an XML Namespace to
          JSON namespace mapping. For example, if you defined your JAXB namespace within your package-info.java class like this:
   </para>
- <programlisting>
- @javax.xml.bind.annotation.XmlSchema(namespace="http://jboss.org/books")
- package org.jboss.resteasy.test.books;
- </programlisting>
+<programlisting>
+@javax.xml.bind.annotation.XmlSchema(namespace="http://jboss.org/books")
+package org.jboss.resteasy.test.books;
+</programlisting>
   <para>
       You would have to define a JSON to XML namespace mapping or you would receive an exception of something like this:
   </para>
- <programlisting>
- java.lang.IllegalStateException: Invalid JSON namespace: http://jboss.org/books
- at org.codehaus.jettison.mapped.MappedNamespaceConvention.getJSONNamespace(MappedNamespaceConvention.java:151)
- at org.codehaus.jettison.mapped.MappedNamespaceConvention.createKey(MappedNamespaceConvention.java:158)
- at org.codehaus.jettison.mapped.MappedXMLStreamWriter.writeStartElement(MappedXMLStreamWriter.java:241)
- </programlisting>
+<programlisting>
+java.lang.IllegalStateException: Invalid JSON namespace: http://jboss.org/books
+at org.codehaus.jettison.mapped.MappedNamespaceConvention.getJSONNamespace(MappedNamespaceConvention.java:151)
+at org.codehaus.jettison.mapped.MappedNamespaceConvention.createKey(MappedNamespaceConvention.java:158)
+at org.codehaus.jettison.mapped.MappedXMLStreamWriter.writeStartElement(MappedXMLStreamWriter.java:241)
+</programlisting>
       <para>
         To fix this problem you need another annotation, @Mapped.  You use the @Mapped annotation on your JAXB classes, on your JAX-RS resource method, or on
         the parameter you are unmarshalling
   </para>
- <programlisting>
- import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
- import org.jboss.resteasy.annotations.providers.jaxb.json.XmlNsMap;
+<programlisting>
+import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
+import org.jboss.resteasy.annotations.providers.jaxb.json.XmlNsMap;
 
- ...
+...
 
 @GET
 @Produces("application/json")
@@ -548,18 +541,17 @@ public void setTitle(String title)
         @XmlNsMap(namespace = "http://jboss.org/books", jsonName = "books")
 })
 public Book get() {...}
-
- </programlisting>
+</programlisting>
       <para>
       Besides mapping XML to JSON namespaces, you can also force @XmlAttribute's to be marshaled as XMLElements.
       </para>
       <para>
 
-         <programlisting>
-            @Mapped(attributeAsElements={"title"})
-            @XmlRootElement(name = "book")
-            public class Book {...}
-         </programlisting>
+<programlisting>
+@Mapped(attributeAsElements={"title"})
+@XmlRootElement(name = "book")
+public class Book {...}
+</programlisting>
       </para>
       <para>
 
@@ -568,11 +560,11 @@ public Book get() {...}
       </para>
       <para>
 
-         <programlisting>
-            @Mapped(attributeAsElements={"title"})
-            @GET
-            public Book getBook(...) {...}
-         </programlisting>
+<programlisting>
+@Mapped(attributeAsElements={"title"})
+@GET
+public Book getBook(...) {...}
+</programlisting>
       </para>
       <para>
 
@@ -580,10 +572,10 @@ public Book get() {...}
       </para>
       <para>
 
- <programlisting>
- @POST
- public void newBook(@Mapped(attributeAsElements={"title"}) Book book) {...}
- </programlisting>
+<programlisting>
+@POST
+public void newBook(@Mapped(attributeAsElements={"title"}) Book book) {...}
+</programlisting>
       </para>
       <para>
 
@@ -630,150 +622,143 @@ public Book get() {...}
          RESTEasy will automatically
          marshal arrays, java.util.Set's, and java.util.List's of JAXB objects to and from XML, JSON, Fastinfoset (or any other new JAXB mapper Restasy comes up with).
       </para>
- <programlisting><![CDATA[
- @XmlRootElement(name = "customer")
- @XmlAccessorType(XmlAccessType.FIELD)
- public class Customer
- {
-@XmlElement
-private String name;
-
-public Customer()
+<programlisting><![CDATA[
+@XmlRootElement(name = "customer")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer
 {
+    @XmlElement
+    private String name;
+
+    public Customer()
+    {
+    }
+
+    public Customer(String name)
+    {
+        this.name = name;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
 }
 
-public Customer(String name)
+@Path("/")
+public class MyResource
 {
-   this.name = name;
-}
+    @PUT
+    @Path("array")
+    @Consumes("application/xml")
+    public void putCustomers(Customer[] customers)
+    {
+        Assert.assertEquals("bill", customers[0].getName());
+        Assert.assertEquals("monica", customers[1].getName());
+    }
 
-public String getName()
-{
-   return name;
-}
- }
+    @GET
+    @Path("set")
+    @Produces("application/xml")
+    public Set<Customer> getCustomerSet()
+    {
+        HashSet<Customer> set = new HashSet<Customer>();
+        set.add(new Customer("bill"));
+        set.add(new Customer("monica"));
 
- @Path("/")
- public class MyResource
- {
-   @PUT
-   @Path("array")
-   @Consumes("application/xml")
-   public void putCustomers(Customer[] customers)
-   {
-      Assert.assertEquals("bill", customers[0].getName());
-      Assert.assertEquals("monica", customers[1].getName());
-   }
+        return set;
+    }
 
-   @GET
-   @Path("set")
-   @Produces("application/xml")
-   public Set<Customer> getCustomerSet()
-   {
-      HashSet<Customer> set = new HashSet<Customer>();
-      set.add(new Customer("bill"));
-      set.add(new Customer("monica"));
-
-      return set;
-   }
-
-
-   @PUT
-   @Path("list")
-   @Consumes("application/xml")
-   public void putCustomers(List<Customer> customers)
-   {
-      Assert.assertEquals("bill", customers.get(0).getName());
-      Assert.assertEquals("monica", customers.get(1).getName());
-   }
- }
- ]]>
- </programlisting>
+    @PUT
+    @Path("list")
+    @Consumes("application/xml")
+    public void putCustomers(List<Customer> customers)
+    {
+        Assert.assertEquals("bill", customers.get(0).getName());
+        Assert.assertEquals("monica", customers.get(1).getName());
+    }
+}]]>
+</programlisting>
    <para>
       The above resource can publish and receive JAXB objects.  It is assumed that are wrapped in a collection element
    </para>
- <programlisting><![CDATA[
- <collection>
-<customer><name>bill</name></customer>
-<customer><name>monica</name></customer>
- <collection>
- ]]>
- </programlisting>
+<programlisting><![CDATA[
+<collection>
+    <customer><name>bill</name></customer>
+    <customer><name>monica</name></customer>
+<collection>]]>
+</programlisting>
    <para>You can change the namespace URI, namespace tag, and collection element name by using the @org.jboss.resteasy.annotations.providers.jaxb.Wrapped annotation on a parameter or method</para>
- <programlisting>
- @Target({ElementType.PARAMETER, ElementType.METHOD})
- @Retention(RetentionPolicy.RUNTIME)
- public @interface Wrapped
- {
-String element() default "collection";
+<programlisting>
+@Target({ElementType.PARAMETER, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Wrapped
+{
+    String element() default "collection";
 
-String namespace() default "http://jboss.org/resteasy";
+    String namespace() default "http://jboss.org/resteasy";
 
-String prefix() default "resteasy";
- }
- </programlisting>
+    String prefix() default "resteasy";
+}
+</programlisting>
 <para>So, if we wanted to output this XML</para>
- <programlisting><![CDATA[
- <foo:list xmlns:foo="http://foo.org">
-<customer><name>bill</name></customer>
-<customer><name>monica</name></customer>
- </foo:list>
- ]]>
- </programlisting>
+<programlisting><![CDATA[
+<foo:list xmlns:foo="http://foo.org">
+    <customer><name>bill</name></customer>
+    <customer><name>monica</name></customer>
+</foo:list>]]>
+</programlisting>
 <para>We would use the @Wrapped annotation as follows: </para>
- <programlisting><![CDATA[
-   @GET
-   @Path("list")
-   @Produces("application/xml")
-   @Wrapped(element="list", namespace="http://foo.org", prefix="foo")
-   public List<Customer> getCustomerSet()
-   {
-      List<Customer> list = new ArrayList<Customer>();
-      list.add(new Customer("bill"));
-      list.add(new Customer("monica"));
+<programlisting><![CDATA[
+@GET
+@Path("list")
+@Produces("application/xml")
+@Wrapped(element="list", namespace="http://foo.org", prefix="foo")
+public List<Customer> getCustomerSet()
+{
+    List<Customer> list = new ArrayList<Customer>();
+    list.add(new Customer("bill"));
+    list.add(new Customer("monica"));
 
-      return list;
-   }
- ]]>
- </programlisting>
+    return list;
+}]]>
+</programlisting>
   <sect2 id="json_list">
     <title>JSON and JAXB Collections/arrays</title>
     <para>Resteasy supports using collections with JSON.  It encloses lists, sets, or arrays of returned JAXB objects within a simple
     JSON array.  For example:</para>
- <programlisting>
-   @XmlRootElement
+<programlisting>
+@XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public static class Foo
 {
-   @XmlAttribute
-   private String test;
+    @XmlAttribute
+    private String test;
 
-   public Foo()
-   {
-   }
+    public Foo()
+    {
+    }
 
-   public Foo(String test)
-   {
-      this.test = test;
-   }
+    public Foo(String test)
+    {
+        this.test = test;
+    }
 
-   public String getTest()
-   {
-      return test;
-   }
+    public String getTest()
+    {
+        return test;
+    }
 
-   public void setTest(String test)
-   {
-      this.test = test;
-   }
+    public void setTest(String test)
+    {
+        this.test = test;
+    }
 }
- </programlisting>
+</programlisting>
  <para>This a List or array of this Foo class would be represented in JSON like this:</para>
- <programlisting>
- <![CDATA[
- [{"foo":{"@test":"bill"}},{"foo":{"@test":"monica}"}}]
- ]]>
- </programlisting>
+<programlisting><![CDATA[
+[{"foo":{"@test":"bill"}},{"foo":{"@test":"monica}"}}]]]>
+</programlisting>
  <para>It also expects this format for input</para>
   </sect2>
 </sect1>
@@ -784,149 +769,144 @@ public static class Foo
          marshal maps of JAXB objects to and from XML, JSON, Fastinfoset (or any other new JAXB mapper Restasy comes up with).
          Your parameter or method return type must be a generic with a String as the key and the JAXB object's type.
      ]]></para>
- <programlisting><![CDATA[
+<programlisting><![CDATA[
 @XmlRootElement(namespace = "http://foo.com")
 public static class Foo
 {
-   @XmlAttribute
-   private String name;
+    @XmlAttribute
+    private String name;
 
-   public Foo()
-   {
-   }
+    public Foo()
+    {
+    }
 
-   public Foo(String name)
-   {
-      this.name = name;
-   }
+    public Foo(String name)
+    {
+        this.name = name;
+    }
 
-   public String getName()
-   {
-      return name;
-   }
+    public String getName()
+    {
+        return name;
+    }
 }
 
 @Path("/map")
 public static class MyResource
 {
-   @POST
-   @Produces("application/xml")
-   @Consumes("application/xml")
-   public Map<String, Foo> post(Map<String, Foo> map)
-   {
-      Assert.assertEquals(2, map.size());
-      Assert.assertNotNull(map.get("bill"));
-      Assert.assertNotNull(map.get("monica"));
-      Assert.assertEquals(map.get("bill").getName(), "bill");
-      Assert.assertEquals(map.get("monica").getName(), "monica");
-      return map;
-   }
- }
- ]]>
- </programlisting>
+    @POST
+    @Produces("application/xml")
+    @Consumes("application/xml")
+    public Map<String, Foo> post(Map<String, Foo> map)
+    {
+        Assert.assertEquals(2, map.size());
+        Assert.assertNotNull(map.get("bill"));
+        Assert.assertNotNull(map.get("monica"));
+        Assert.assertEquals(map.get("bill").getName(), "bill");
+        Assert.assertEquals(map.get("monica").getName(), "monica");
+        return map;
+    }
+}]]>
+</programlisting>
    <para>
       The above resource can publish and receive JAXB objects within a map.  By default, they are wrapped in a "map" element in the
       default namespace.  Also, each "map" element has zero or more "entry" elements with a "key" attribute.
    </para>
- <programlisting><![CDATA[
- <map>
-<entry key="bill" xmlns="http://foo.com">
-    <foo name="bill"/>
-</entry>
-<entry key="monica" xmlns="http://foo.com">
-    <foo name="monica"/>
-</entry>
- </map>
- ]]>
- </programlisting>
+<programlisting><![CDATA[
+<map>
+    <entry key="bill" xmlns="http://foo.com">
+        <foo name="bill"/>
+    </entry>
+    <entry key="monica" xmlns="http://foo.com">
+        <foo name="monica"/>
+    </entry>
+</map>]]>
+</programlisting>
    <para>You can change the namespace URI, namespace prefix and map, entry, and key element and attribute names by using the @org.jboss.resteasy.annotations.providers.jaxb.WrappedMap annotation on a parameter or method</para>
- <programlisting>
- @Target({ElementType.PARAMETER, ElementType.METHOD})
- @Retention(RetentionPolicy.RUNTIME)
- public @interface WrappedMap
- {
-/**
- * map element name
- */
-String map() default "map";
+<programlisting>
+@Target({ElementType.PARAMETER, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface WrappedMap
+{
+    /**
+     * map element name
+     */
+    String map() default "map";
 
-/**
- * entry element name *
- */
-String entry() default "entry";
+    /**
+     * entry element name *
+     */
+    String entry() default "entry";
 
-/**
- * entry's key attribute name
- */
-String key() default "key";
+    /**
+     * entry's key attribute name
+     */
+    String key() default "key";
 
-String namespace() default "";
+    String namespace() default "";
 
-String prefix() default "";
- }
- </programlisting>
+    String prefix() default "";
+}
+</programlisting>
 <para>So, if we wanted to output this XML</para>
- <programlisting><![CDATA[
- <hashmap>
-<hashentry hashkey="bill" xmlns:foo="http://foo.com">
-    <foo:foo name="bill"/>
-</hashentry>
- </map>
- ]]>
- </programlisting>
+<programlisting><![CDATA[
+<hashmap>
+    <hashentry hashkey="bill" xmlns:foo="http://foo.com">
+        <foo:foo name="bill"/>
+    </hashentry>
+</map>]]>
+</programlisting>
 <para>We would use the @WrappedMap annotation as follows: </para>
- <programlisting><![CDATA[
+<programlisting><![CDATA[
 @Path("/map")
 public static class MyResource
 {
-   @GET
-   @Produces("application/xml")
-   @WrappedMap(map="hashmap", entry="hashentry", key="hashkey")
-   public Map<String, Foo> get()
-   {
-      ...
-      return map;
-   }
- ]]>
- </programlisting>
+    @GET
+    @Produces("application/xml")
+    @WrappedMap(map="hashmap", entry="hashentry", key="hashkey")
+    public Map<String, Foo> get()
+    {
+        ...
+        return map;
+    }
+}]]>
+</programlisting>
   <sect2 id="json_map">
     <title>JSON and JAXB maps</title>
     <para>Resteasy supports using maps with JSON.  It encloses maps returned JAXB objects within a simple
     JSON map.  For example:</para>
- <programlisting>
-   @XmlRootElement
+<programlisting>
+@XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public static class Foo
 {
-   @XmlAttribute
-   private String test;
+    @XmlAttribute
+    private String test;
 
-   public Foo()
-   {
-   }
+    public Foo()
+    {
+    }
 
-   public Foo(String test)
-   {
-      this.test = test;
-   }
+    public Foo(String test)
+    {
+        this.test = test;
+    }
 
-   public String getTest()
-   {
-      return test;
-   }
+    public String getTest()
+    {
+        return test;
+    }
 
-   public void setTest(String test)
-   {
-      this.test = test;
-   }
+    public void setTest(String test)
+    {
+        this.test = test;
+    }
 }
- </programlisting>
+</programlisting>
  <para>This a List or array of this Foo class would be represented in JSON like this:</para>
- <programlisting>
- <![CDATA[
- { "entry1" : {"foo":{"@test":"bill"}}, "entry2" : {"foo":{"@test":"monica}"}}}
- ]]>
- </programlisting>
+<programlisting><![CDATA[
+{ "entry1" : {"foo":{"@test":"bill"}}, "entry2" : {"foo":{"@test":"monica}"}}}]]>
+</programlisting>
  <para>It also expects this format for input</para>
   </sect2>
   <sect2 id="JAXB_JSON_problems">
@@ -946,29 +926,29 @@ public static class Foo
     that are root elements and RESTEasy can't unmarshal parameters that are interfaces or raw abstract classes because
     it doesn't have enough information to create a JAXBContext.  For example:
    </para>
- <programlisting>
- public interface IFoo {}
+<programlisting>
+public interface IFoo {}
 
- @XmlRootElement
- public class RealFoo implements IFoo {}
+@XmlRootElement
+public class RealFoo implements IFoo {}
 
- @Path("/jaxb")
- public class MyResource {
+@Path("/jaxb")
+public class MyResource {
 
-@PUT
-@Consumes("application/xml")
-public void put(IFoo foo) {...}
- }
- </programlisting>
+    @PUT
+    @Consumes("application/xml")
+    public void put(IFoo foo) {...}
+}
+</programlisting>
 <para>
   In this example, you would get an error from RESTEasy of something like "Cannot find a MessageBodyReader for...".  This is because
   RESTEasy does not know that implementations of IFoo are JAXB classes and doesn't know how to create a JAXBContext for it.  As a workaround,
  RESTEasy allows you to use the JAXB annotation @XmlSeeAlso on the interface to correct the problem.  (NOTE, this will not work with manual, hand-coded JAXB).
 </para>
- <programlisting>
- @XmlSeeAlso(RealFoo.class)
- public interface IFoo {}
- </programlisting>
+<programlisting>
+@XmlSeeAlso(RealFoo.class)
+public interface IFoo {}
+</programlisting>
 <para>
 The extra @XmlSeeAlso on IFoo allows RESTEasy to create a JAXBContext that knows how to unmarshal RealFoo instances.
 </para>

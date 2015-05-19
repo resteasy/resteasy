@@ -13,6 +13,7 @@ import org.jboss.resteasy.annotations.providers.NoJackson;
 import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.plugins.providers.jackson.Jackson2JsonpInterceptor;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -212,6 +213,7 @@ public class JacksonTest extends BaseResourceTest
       dispatcher.getRegistry().addPerRequestResource(JacksonService.class);
       dispatcher.getRegistry().addPerRequestResource(XmlService.class);
       dispatcher.getRegistry().addPerRequestResource(JAXBService.class);
+      dispatcher.getProviderFactory().register(Jackson2JsonpInterceptor.class);
        client = new ResteasyClientBuilder().build();
    }
 
@@ -240,6 +242,19 @@ public class JacksonTest extends BaseResourceTest
       Assert.assertEquals(200, response2.getStatus());
       Assert.assertEquals("[{\"name\":\"Iphone\",\"id\":333},{\"name\":\"macbook\",\"id\":44}]", entity2);
       response2.close();
+
+   }
+
+   @Test
+   public void testJacksonJsonp() throws Exception
+   {
+      WebTarget target = client.target(generateURL("/products/333?callback=foo"));
+      Response response = target.request().get();
+      String entity = response.readEntity(String.class);
+      System.out.println(entity);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("foo({\"name\":\"Iphone\",\"id\":333})", entity);
+      response.close();
 
    }
 

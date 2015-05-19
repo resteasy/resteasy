@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0.11.Final-SNAPSHOT</version>
+        <version>3.0.12.Final-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <name>Arquillian</name>
@@ -35,6 +35,7 @@
         <module>RESTEASY-1058-WF8</module>
         <module>RESTEASY-1073-WF8</module>
         <module>RESTEASY-1082-WF8</module>
+        <module>RESTEASY-TEST-EAP6</module>
         <module>RESTEASY-TEST-WF8</module>
     </modules>
     

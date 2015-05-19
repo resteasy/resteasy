@@ -14,6 +14,7 @@ import com.fasterxml.jackson.jaxrs.json.JsonEndpointConfig;
 import com.fasterxml.jackson.jaxrs.util.ClassKey;
 import org.jboss.resteasy.annotations.providers.jackson.Formatted;
 import org.jboss.resteasy.annotations.providers.NoJackson;
+import org.jboss.resteasy.util.DelegatingOutputStream;
 import org.jboss.resteasy.util.FindAnnotation;
 
 import javax.ws.rs.Consumes;
@@ -128,6 +129,13 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
                        MultivaluedMap<String,Object> httpHeaders, OutputStream entityStream)
            throws IOException
    {
+      entityStream = new DelegatingOutputStream(entityStream) {
+          @Override
+          public void flush() throws IOException {
+              // don't flush as this is a performance hit on Undertow.
+              // and causes chunked encoding to happen.
+          }
+      };
       ClassAnnotationKey key = new ClassAnnotationKey(type, annotations);
       JsonEndpointConfig endpoint;
       endpoint = _writers.get(key);
