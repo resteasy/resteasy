@@ -193,6 +193,13 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          this.defaultPartContentType = getMediaTypeWithDefaultCharset(this.defaultPartContentType);
       }
    }
+   
+   public MultipartInputImpl(Multipart multipart, Providers workers) throws IOException
+   {
+      for (BodyPart bodyPart : multipart.getBodyParts())
+         parts.add(extractPart(bodyPart));
+      this.workers = workers;
+   }
 
    public void parse(InputStream is) throws IOException
    {
@@ -282,6 +289,13 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
       public <T> T getBody(Class<T> type, Type genericType)
               throws IOException
       {
+         if (MultipartInput.class.equals(type))
+         {
+            if (bodyPart.getBody() instanceof Multipart)
+            {
+               return (T) new MultipartInputImpl(Multipart.class.cast(bodyPart.getBody()), workers);
+            }
+         }
          try
          {
             if (savedProviders != null)
