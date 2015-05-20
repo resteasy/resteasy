@@ -1,6 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.core.Headers;
+import org.jboss.resteasy.core.ProvidersContextRetainer;
 import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.BuiltResponse;
@@ -230,6 +231,7 @@ public abstract class ClientResponse extends BuiltResponse
 
       Providers current = ResteasyProviderFactory.getContextData(Providers.class);
       ResteasyProviderFactory.pushContext(Providers.class, configuration);
+      Object obj = null;
       try
       {
          InputStream is = getEntityStream();
@@ -245,9 +247,11 @@ public abstract class ClientResponse extends BuiltResponse
 
          ReaderInterceptor[] readerInterceptors = configuration.getReaderInterceptors(null, null);
 
-         final Object obj = new ClientReaderInterceptorContext(readerInterceptors, configuration.getProviderFactory(), useType,
+         final Object finalObj = new ClientReaderInterceptorContext(readerInterceptors, configuration.getProviderFactory(), useType,
                  useGeneric, annotations, media, getStringHeaders(), is, properties)
                  .proceed();
+         obj = finalObj;
+         
          if (isMarshalledEntity)
          {
             InputStreamToByteArray isba = (InputStreamToByteArray) is;
@@ -263,13 +267,13 @@ public abstract class ClientResponse extends BuiltResponse
                @Override
                public Object getEntity()
                {
-                  return obj;
+                  return finalObj;
                }
             };
          }
          else
          {
-            return (T) obj;
+            return (T) finalObj;
          }
 
       }
@@ -285,7 +289,10 @@ public abstract class ClientResponse extends BuiltResponse
       {
          ResteasyProviderFactory.popContextData(Providers.class);
          if (current != null) ResteasyProviderFactory.pushContext(Providers.class, current);
-
+         if (obj instanceof ProvidersContextRetainer)
+         {
+            ((ProvidersContextRetainer) obj).setProviders(configuration);
+         }
       }
    }
 
