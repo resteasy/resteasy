@@ -103,6 +103,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
 
          Class valueType = Types.getMapValueType(genericType);
          if (valueType == null) return false;
+         valueType = XmlAdapterWrapper.xmlAdapterValueType(valueType, annotations);
          return (valueType.isAnnotationPresent(XmlRootElement.class) || valueType.isAnnotationPresent(XmlType.class) || valueType.isAnnotationPresent(XmlSeeAlso.class) || JAXBElement.class.equals(valueType)) && (FindAnnotation.findAnnotation(valueType, annotations, DoNotUseJAXBProvider.class) == null) && !IgnoredMediaTypes.ignored(valueType, annotations, mediaType);
       }
       return false;
@@ -123,6 +124,11 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
          throw new JAXBUnmarshalException("Unable to find JAXBContext for media type: " + mediaType);
       }
       Class valueType = Types.getMapValueType(genericType);
+      XmlAdapterWrapper xmlAdapter = XmlAdapterWrapper.getXmlAdapter(valueType, annotations);
+      if (xmlAdapter != null)
+      {
+         valueType = xmlAdapter.getValueType();  
+      }
       JaxbMap jaxbMap = null;
       JAXBElement<JaxbMap> ele = null;
       
@@ -206,7 +212,17 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
 
 
             Object value = unmarshaller.unmarshal(element.getFirstChild());
-
+            if (xmlAdapter != null)
+            {
+               try
+               {
+                  value = xmlAdapter.unmarshal(value);
+               }
+               catch (Exception e)
+               {
+                  throw new JAXBUnmarshalException(e);
+               }
+            }
             map.put(keyValue, value);
          }
          return map;
@@ -235,6 +251,11 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
          throw new JAXBMarshalException("Unable to find JAXBContext for media type: " + mediaType);
       }
       Class valueType = Types.getMapValueType(genericType);
+      XmlAdapterWrapper xmlAdapter = XmlAdapterWrapper.getXmlAdapter(valueType, annotations);
+      if (xmlAdapter != null)
+      {
+         valueType = xmlAdapter.getValueType();
+      }
       try
       {
          JAXBContext ctx = finder.findCacheContext(mediaType, annotations, JaxbMap.class, JaxbMap.Entry.class, valueType);
@@ -260,7 +281,19 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
          Map<Object, Object> targetMap = (Map) target;
          for (Map.Entry mapEntry : targetMap.entrySet())
          {
-            map.addEntry(mapEntry.getKey().toString(), mapEntry.getValue());
+            Object value = mapEntry.getValue();
+            if (xmlAdapter != null)
+            {
+               try
+               {
+                  value = xmlAdapter.marshal(value);
+               }
+               catch (Exception e)
+               {
+                  throw new JAXBMarshalException(e);
+               }
+            }
+            map.addEntry(mapEntry.getKey().toString(), value);
          }
 
          JAXBElement<JaxbMap> jaxbMap = new JAXBElement<JaxbMap>(new QName(namespaceURI, mapName, prefix), JaxbMap.class, map);
