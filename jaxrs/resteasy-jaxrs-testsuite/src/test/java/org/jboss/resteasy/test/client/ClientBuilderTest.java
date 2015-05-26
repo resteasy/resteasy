@@ -37,6 +37,23 @@ public class ClientBuilderTest
       client = ClientBuilder.newClient(config);
 
    }
+   
+   @Test
+   public void addAndRemovePropertyTest() throws Exception
+   {
+      String property = "prop";
+      Client client = ClientBuilder.newClient();
+      client.property(property, property);
+      Object p = client.getConfiguration().getProperty(property);
+      Assert.assertEquals("prop", (String)p);
+      try {
+         client.property(property, null);
+      } catch (NullPointerException e) {
+        Assert.fail("Couldn't remove property.");
+      }
+      p = client.getConfiguration().getProperty(property);
+      Assert.assertEquals(null, p);
+   }
 
    public static void inner() throws Exception
    {

@@ -2363,7 +2363,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    @Override
    public ResteasyProviderFactory property(String name, Object value)
    {
-      properties.put(name, value);
+      if (value == null)
+         properties.remove(name);
+      else
+         properties.put(name, value);
       return this;
    }
 
