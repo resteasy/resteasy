@@ -12,6 +12,7 @@ import org.jboss.resteasy.spi.InternalDispatcher;
 import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -26,6 +27,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Providers;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -47,7 +49,9 @@ public class SynchronousDispatcher implements Dispatcher
    protected List<HttpRequestPreprocessor> requestPreprocessors = new ArrayList<HttpRequestPreprocessor>();
    protected Map<Class, Object> defaultContextObjects = new HashMap<Class, Object>();
    protected Set<String> unwrappedExceptions = new HashSet<String>();
-
+   protected boolean bufferExceptionEntityRead = false;
+   protected boolean bufferExceptionEntity = true;
+   
    private final static Logger logger = Logger.getLogger(SynchronousDispatcher.class);
 
    public SynchronousDispatcher(ResteasyProviderFactory providerFactory)
@@ -145,9 +149,26 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void writeException(HttpRequest request, HttpResponse response, Throwable e)
    {
+      if (!bufferExceptionEntityRead)
+      {
+         bufferExceptionEntityRead = true;
+         ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+         if (context != null)
+         {
+            String s = context.getParameter("resteasy.buffer.exception.entity");
+            if (s != null)
+            {
+               bufferExceptionEntity = Boolean.parseBoolean(s);
+            }
+         }
+      }
       if (response.isCommitted()) throw new UnhandledException("Response is committed, can't handle exception", e);
       Response handledResponse = new ExceptionHandler(providerFactory, unwrappedExceptions).handleException(request, e);
       if (handledResponse == null) throw new UnhandledException(e);
+      if (!bufferExceptionEntity)
+      {
+         response.getOutputHeaders().add("resteasy.buffer.exception.entity", "false");
+      }
       try
       {
          ServerResponseWriter.writeNomapResponse(((BuiltResponse) handledResponse), request, response, providerFactory);

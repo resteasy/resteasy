@@ -1,6 +1,8 @@
 package org.jboss.resteasy.plugins.providers.jackson;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 import javax.ws.rs.ConstrainedTo;
@@ -17,6 +19,7 @@ import javax.ws.rs.ext.WriterInterceptorContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.util.CommitHeaderOutputStream;
 
 /**
  * <p>
@@ -94,7 +97,23 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
      * The {@link Providers} used to retrieve the {@link #objectMapper} from. 
      */
     protected Providers providers;
-    
+
+    /**
+     * This subclass of {@link CommitHeaderOutputStream} overrides the {@link #close()} method so it would commit
+     * the headers only, without actually calling the {@link #close()} method of the delegate {@link OutputStream}
+     */
+    private static class DoNotCloseDelegateOutputStream extends BufferedOutputStream {
+
+        public DoNotCloseDelegateOutputStream(OutputStream delegate) {
+            super(delegate);
+        }
+
+        @Override
+        public void close() throws IOException {
+            flush();
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -102,13 +121,25 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
     public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException {
         String function = uri.getQueryParameters().getFirst(callbackQueryParameter);
         if (function != null && !function.trim().isEmpty() && !jsonpCompatibleMediaTypes.getPossible(context.getMediaType()).isEmpty()){
+
             OutputStreamWriter writer = new OutputStreamWriter(context.getOutputStream());
-            
+
             writer.write(function + "(");
             writer.flush();
-            context.proceed();
-            writer.write(")");
-            writer.flush();
+
+            // Disable the close method before calling context.proceed()
+            OutputStream old = context.getOutputStream();
+            DoNotCloseDelegateOutputStream wrappedOutputStream = new DoNotCloseDelegateOutputStream(old);
+            context.setOutputStream(wrappedOutputStream);
+
+            try {
+                context.proceed();
+                wrappedOutputStream.flush();
+                writer.write(")");
+                writer.flush();
+            } finally {
+                context.setOutputStream(old);
+            }
         } else {
             context.proceed();
         }
