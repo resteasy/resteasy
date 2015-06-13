@@ -86,6 +86,7 @@ public class TestCharsetNoExpand extends TestCharsetParent
    public static void after() throws Exception
    {
       process.destroy();
+      Thread.sleep(5000);
       System.out.println("Process destroyed.");
    }
 }
