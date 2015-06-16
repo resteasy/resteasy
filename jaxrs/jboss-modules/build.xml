@@ -96,7 +96,7 @@
         </module-def>
 
         <module-def name="javax.ws.rs.api">
-            <maven-resource group="org.jboss.resteasy" artifact="jaxrs-api"/>
+            <maven-resource group="org.jboss.spec.javax.ws.rs" artifact="jboss-jaxrs-api_2.0_spec"/>
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-atom-provider">

@@ -58,6 +58,12 @@
             <groupId>org.jboss.as</groupId>
             <artifactId>jboss-as-web</artifactId>
             <version>7.1.2.Final</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.picketbox</groupId>
