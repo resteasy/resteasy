@@ -17,6 +17,8 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.plugins.providers.multipart.InputPart;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartInput;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartOutput;
 import org.jboss.resteasy.security.PemUtils;
 import org.jboss.resteasy.security.smime.EnvelopedInput;
@@ -124,6 +126,17 @@ public class VerifyDecryptTest
          }
          final EnvelopedInput<String> envelop = inner.getEntity();
          String secret = envelop.getEntity(privateKey, cert);
+         System.out.println("secret: " + secret);
+         return secret;
+      }
+      
+      @Path("multipartEncrypted")
+      @POST
+      public String post(EnvelopedInput<MultipartInput> input) throws Exception
+      {
+         MultipartInput multipart = input.getEntity(privateKey, cert);
+         InputPart inputPart = multipart.getParts().iterator().next();
+         String secret = inputPart.getBody(String.class, null);
          System.out.println("secret: " + secret);
          return secret;
       }
