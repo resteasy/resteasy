@@ -66,37 +66,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
          if (tempFile == null)
             return bis;
          InputStream fis = new FileInputStream(tempFile);
-         return new SequenceInputStream(bis, fis) {
-            @Override
-            public int read(byte[] b, int off, int len) throws IOException 
-            {
-               int r = super.read(b, off, len);
-               if(r == -1)
-               {
-                  deleteTempFile();
-               }
-               return r;
-            }
-
-            @Override
-            public int read() throws IOException 
-            {
-               int r = super.read();
-               if(r == -1)
-               {
-                  deleteTempFile();
-               }
-               return r;
-            }
-         };
-      }
-
-      private void deleteTempFile()
-      {
-         if(tempFile.exists())
-         {
-            tempFile.delete();
-         }
+         return new SequenceInputStream(bis, fis);
       }
 
       @Override
@@ -111,6 +81,21 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
          throw new IOException(Messages.MESSAGES.noOutputStreamAllowed());
       }
 
+      private void deleteTempFile() {
+          if(tempFile.exists())
+          {
+             tempFile.delete();
+          }
+        }
+
+       @Override
+       protected void finalize() throws Throwable {
+           try {
+               deleteTempFile();
+           } finally {
+               super.finalize();
+           }
+       }
    }
 
 
