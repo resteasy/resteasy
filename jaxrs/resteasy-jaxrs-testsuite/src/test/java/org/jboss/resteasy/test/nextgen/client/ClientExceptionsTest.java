@@ -1,24 +1,17 @@
 package org.jboss.resteasy.test.nextgen.client;
 
 import org.jboss.resteasy.test.BaseResourceTest;
+import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.*;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.MessageBodyReader;
-
+import javax.ws.rs.client.*;
+import javax.ws.rs.core.*;
+import javax.ws.rs.ext.ReaderInterceptor;
+import javax.ws.rs.ext.ReaderInterceptorContext;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -27,25 +20,31 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  * "When a provider method throws an exception, the JAX-RS client runtime will map it to an instance of
  * ProcessingException if thrown while processing a request, and to a ResponseProcessingException
  * if thrown while processing a response."
- * "Note that the client runtime will only throw an instance of WebApplicationException (or any of its
- *  subclasses) as a result of a response from the server with status codes 3xx, 4xx or 5xx."
  */
 public class ClientExceptionsTest extends BaseResourceTest {
 
     @Path("/")
-    //@Produces("text/plain")
-    //@Consumes("text/plain")
     public static class Resource {
         @POST
         @Path("post")
-        public Data post(Data data) {
+        public Response post(Data data) {
             System.out.println("HERE!: " + data);
-            return data;
+            return Response.ok().entity(data).build();
         }
 
         @GET
         @Path("get")
-        public String nothing() { return "OK"; }
+        public String get() { return "OK"; }
+
+        @Path("empty")
+        @GET
+        public Response getEmpty(@Context HttpHeaders headers) {
+            return Response.ok().type(headers.getAcceptableMediaTypes().get(0)).header(HttpHeaders.CONTENT_LENGTH, 0).entity(new Data("test", "test")).build();
+        }
+
+        @GET
+        @Path("error")
+        public Response error() { throw new WebApplicationException(HttpResponseCodes.SC_FORBIDDEN); }
     }
 
     static Client client;
@@ -74,38 +73,88 @@ public class ClientExceptionsTest extends BaseResourceTest {
             this.data = data;
             this.type = type;
         }
-
-        @Override
-        public String toString()
-        {
-            return "Data{" +
-                    "data='" + data + '\'' +
-                    ", type='" + type + '\'' +
-                    '}';
-        }
     }
 
     /*
      * Send a request for entity which requires special MessageBodyReader which is not available.
      */
-    @Test
+    @Test(expected = ProcessingException.class)
     public void noMessageBodyReaderExistsTest()
     {
-        Data data = new Data("test", "something");
-        WebTarget base = client.target(generateURL("/") + "/post");
-        try {
-            Response response = base.request().post(Entity.entity("data", MediaType.WILDCARD_TYPE));
-        } catch (ProcessingException e) {
-            System.out.println(e.getCause().toString());
+        WebTarget base = client.target(generateURL("/") + "/empty");
+
+        base.request().get(Data.class);
+    }
+
+    /*
+     * Send a request and try to read Response for entity which requires special MessageBodyReader which is not available.
+     */
+    @Test(expected = ProcessingException.class)
+    public void noMessageBodyReaderExistsReadEntityTest() {
+        WebTarget base = client.target(generateURL("/") + "/empty");
+
+        Response response = base.request().get();
+        response.readEntity(Data.class);
+    }
+
+    public static class IOExceptionReaderInterceptor implements ReaderInterceptor
+    {
+        @Override
+        public Object aroundReadFrom(final ReaderInterceptorContext context) throws IOException, WebApplicationException {
+            throw new IOException("client io");
         }
+    }
 
+    /*
+     * WebTarget registers ReaderInterceptor and sends entity to a server. Then tries to read the response, but gets
+     * interrupted by exception happening in ReaderInterceptor.
+     */
+    @Test(expected = ProcessingException.class)
+    public void interceptorThrowsExceptionTest()
+    {
+        WebTarget base = client.target(generateURL("/") + "/post");
 
+        Response response = base.register(IOExceptionReaderInterceptor.class).request("text/plain").post(Entity.text("data"));
+        response.readEntity(Data.class);
+    }
+
+    public static class CustomClientResponseFilter implements ClientResponseFilter
+    {
+
+        @Override
+        public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
+            throw new IOException("client io");
+        }
+    }
+
+    /*
+     * WebTarget registers ClientResponseFilter and sends request to a server. The processing of the response gets
+     * interrupted in the ClientResponseFilter and processing ends with ResponseProcessingException.
+     */
+    @Test(expected = ResponseProcessingException.class)
+    public void responseFilterThrowsExceptionTest()
+    {
+        WebTarget base = client.target(generateURL("/") + "/get");
+        base.register(CustomClientResponseFilter.class).request("text/plain").get();
 
     }
 
-    //@Test
-    public void noMessageBodyWriterExistsTest()
+    public static class CustomClientRequestFilter implements ClientRequestFilter
     {
+        @Override
+        public void filter(ClientRequestContext requestContext) throws IOException {
+            throw new IOException("client io");
+        }
+    }
 
+    /*
+     * WebTarget registers ClientRequestFilter and sends request to a server. The processing of the request gets
+     * interrupted in the ClientRequestFilter and processing ends with ProcessingException.
+     */
+    @Test(expected = ProcessingException.class)
+    public void requestFilterThrowsException()
+    {
+        WebTarget base = client.target(generateURL("/") + "/get");
+        base.register(CustomClientRequestFilter.class).request("text/plain").get();
     }
 }
