@@ -162,7 +162,7 @@ processStuffResponse(&lt;nomal JSON body&gt;)
 <programlisting>
 try{processStuffResponse(&lt;nomal JSON body&gt;)}catch(e){}
 </programlisting>
-            You can enable this feture be setting the resteasy.jsonp.silent property to true
+            You can enable this feature be setting the resteasy.jsonp.silent property to true
         </para>
     </sect1>
     <sect1 id="Jackson_JSON_Decorator">
