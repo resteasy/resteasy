@@ -160,9 +160,9 @@ processStuffResponse(&lt;nomal JSON body&gt;)
         <para>
             JacksonJsonpInterceptor can wrap the response into a try-catch block:
 <programlisting>
-try{processStuffResponse(&lt;nomal JSON body&gt;)}catch(e){}
+try{processStuffResponse(&lt;normal JSON body&gt;)}catch(e){}
 </programlisting>
-            You can enable this feature be setting the resteasy.jsonp.silent property to true
+            You can enable this feature by setting the resteasy.jsonp.silent property to true
         </para>
     </sect1>
     <sect1 id="Jackson_JSON_Decorator">
