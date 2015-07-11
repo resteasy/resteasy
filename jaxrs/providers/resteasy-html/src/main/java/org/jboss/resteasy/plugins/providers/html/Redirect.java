@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -42,8 +43,9 @@ public class Redirect implements Renderable
       return this.path;
    }
 
-   public void render(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException,
-         WebApplicationException
+   @Override
+   public void render(HttpServletRequest request, HttpServletResponse response, OutputStream entityStream)
+      throws IOException, ServletException, WebApplicationException
    {
       response.setStatus(Status.SEE_OTHER.getStatusCode());
       response.setHeader(HttpHeaderNames.LOCATION, this.path.toString());
