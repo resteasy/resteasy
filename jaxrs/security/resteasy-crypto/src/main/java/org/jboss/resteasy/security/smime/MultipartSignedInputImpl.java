@@ -2,6 +2,7 @@ package org.jboss.resteasy.security.smime;
 
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
+import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.mail.smime.SMIMESigned;
 import org.jboss.resteasy.util.GenericType;
 
@@ -157,7 +158,7 @@ public class MultipartSignedInputImpl implements SignedInput
 
       SignerInformationStore signers = signed.getSignerInfos();
       SignerInformation signer = (SignerInformation) signers.getSigners().iterator().next();
-      return signer.verify(publicKey, "BC");
+      return (signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider("BC").build(publicKey)));
 
    }
 
