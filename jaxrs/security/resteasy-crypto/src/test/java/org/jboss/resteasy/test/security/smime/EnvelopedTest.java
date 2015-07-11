@@ -6,9 +6,7 @@ import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.RecipientId;
 import org.bouncycastle.cms.RecipientInformation;
 import org.bouncycastle.cms.RecipientInformationStore;
-import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
-import org.bouncycastle.cms.jcajce.JceKeyTransRecipientId;
-import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
+import org.bouncycastle.cms.jcajce.*;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.mail.smime.SMIMEEnveloped;
 import org.bouncycastle.mail.smime.SMIMEEnvelopedGenerator;
@@ -129,7 +127,8 @@ public class EnvelopedTest
       OutputEncryptor encryptor = new JceCMSContentEncryptorBuilder(CMSAlgorithm.DES_EDE3_CBC)
               .setProvider("BC")
               .build();
-      gen.addKeyTransRecipient(cert);
+
+      gen.addRecipientInfoGenerator(new JceKeyTransRecipientInfoGenerator(cert).setProvider("BC"));
 
       //
       // generate a MimeBodyPart object which encapsulates the content
@@ -218,8 +217,9 @@ public class EnvelopedTest
 
       RecipientInformationStore recipients = m.getRecipientInfos();
       RecipientInformation recipient = recipients.get(recId);
+      JceKeyTransRecipient pKeyRecp = new JceKeyTransEnvelopedRecipient(privateKey);
 
-      return SMIMEUtil.toMimeBodyPart(recipient.getContent(privateKey, "BC"));
+      return SMIMEUtil.toMimeBodyPart(recipient.getContent(pKeyRecp));
    }
 
 

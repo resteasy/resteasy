@@ -4,6 +4,7 @@ import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoGeneratorBuilder;
+import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.mail.smime.SMIMESigned;
 import org.bouncycastle.mail.smime.SMIMESignedGenerator;
@@ -135,7 +136,7 @@ public class SignedTest
       SignerInformationStore signers = signed.getSignerInfos();
       Assert.assertEquals(1, signers.size());
       SignerInformation signer = (SignerInformation) signers.getSigners().iterator().next();
-      Assert.assertTrue(signer.verify(cert.getPublicKey(), "BC"));
+      Assert.assertTrue(signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider("BC").build(cert.getPublicKey())));
    }
 
    @Test

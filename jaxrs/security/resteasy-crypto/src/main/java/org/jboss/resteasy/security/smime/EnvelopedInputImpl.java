@@ -2,6 +2,8 @@ package org.jboss.resteasy.security.smime;
 
 import org.bouncycastle.cms.RecipientInformation;
 import org.bouncycastle.cms.RecipientInformationStore;
+import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
+import org.bouncycastle.cms.jcajce.JceKeyTransRecipient;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientId;
 import org.bouncycastle.mail.smime.SMIMEEnveloped;
 import org.bouncycastle.mail.smime.SMIMEUtil;
@@ -158,8 +160,9 @@ public class EnvelopedInputImpl implements EnvelopedInput
 
          RecipientInformationStore recipients = m.getRecipientInfos();
          RecipientInformation recipient = recipients.get(recId);
+         JceKeyTransRecipient pKeyRecp = new JceKeyTransEnvelopedRecipient(pKey);
 
-         decrypted = SMIMEUtil.toMimeBodyPart(recipient.getContent(pKey, "BC"));
+         decrypted = SMIMEUtil.toMimeBodyPart(recipient.getContent(pKeyRecp));
       }
       catch (Exception e1)
       {
