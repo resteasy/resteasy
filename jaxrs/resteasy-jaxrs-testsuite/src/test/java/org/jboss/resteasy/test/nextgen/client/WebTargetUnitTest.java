@@ -66,7 +66,7 @@ public class WebTargetUnitTest {
         WebTarget created = base.path("{id}");
 
         String r = created.resolveTemplateFromEncoded("username", a).resolveTemplateFromEncoded("id", b).getUri().toString();
-        Assert.assertEquals(generateURL("/") + "users/a%20%3F/*///b/", r);
+        Assert.assertEquals(generateURL("/") + "users/a%20%3F%2F*%2F/%2Fb%2F", r);
     }
 
     /*

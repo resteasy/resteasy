@@ -23,7 +23,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  * @author <a href="mailto:kanovotn@redhat.com">Katerina Novotna</a>
  * @version $Revision: 1 $
  */
-public class WebTargetResolveTest extends BaseResourceTest
+public class WebTargetTest extends BaseResourceTest
 {
     @Path("/")
     public static class TestResource
@@ -159,9 +159,6 @@ public class WebTargetResolveTest extends BaseResourceTest
 
         WebTarget base = client.target(generateURL("/") + "users/{username}");
         WebTarget created = base.path("{id}");
-
-        String r = created.resolveTemplateFromEncoded("username", a).resolveTemplateFromEncoded("id", b).getUri().toString();
-        Assert.assertEquals(generateURL("/") + "users/a%20%3F/*///b/", r);
 
         String result_encoded = created.resolveTemplateFromEncoded("id", b).resolveTemplateFromEncoded("username", a).request().get(String.class);
         Assert.assertEquals("username: a ?/*/, /b/", result_encoded);
