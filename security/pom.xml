@@ -17,4 +17,18 @@
         <module>resteasy-crypto</module>
         <module>resteasy-oauth</module>
     </modules>
+
+    <build>
+        <plugins>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-surefire-plugin</artifactId>
+		<configuration>
+	            <excludes combine.children="append">
+                        <exclude>/**org/jboss/resteasy/test/security/smime/**/*.java</exclude>
+		    </excludes>
+		</configuration>
+	    </plugin>
+	</plugins>
+    </build>
 </project>
