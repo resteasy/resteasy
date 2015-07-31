@@ -80,7 +80,7 @@ public class URLConnectionEngine implements ClientHttpEngine
             }
 
             @Override
-            protected void releaseConnection() throws IOException
+            public void releaseConnection() throws IOException
             {
                 getInputStream().close();
                 connection.disconnect();

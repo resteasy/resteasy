@@ -21,6 +21,7 @@ import org.apache.james.mime4j.storage.DefaultStorageProvider;
 import org.apache.james.mime4j.storage.StorageProvider;
 import org.apache.james.mime4j.util.CharsetUtil;
 import org.apache.james.mime4j.util.MimeUtil;
+import org.jboss.resteasy.core.ProvidersContextRetainer;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
@@ -54,7 +55,7 @@ import java.util.Stack;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class MultipartInputImpl implements MultipartInput
+public class MultipartInputImpl implements MultipartInput, ProvidersContextRetainer
 {
    protected MediaType contentType;
    protected Providers workers;
@@ -63,6 +64,7 @@ public class MultipartInputImpl implements MultipartInput
    protected static final Annotation[] empty = {};
    protected MediaType defaultPartContentType = MultipartConstants.TEXT_PLAIN_WITH_CHARSET_US_ASCII_TYPE;
    protected String defaultPartCharset = null;
+   protected Providers savedProviders;
 
    // We hack MIME4j so that it always returns a BinaryBody so we don't have to deal with Readers and their charset conversions
    private static class BinaryOnlyMessageBuilder extends MessageBuilder
@@ -191,6 +193,13 @@ public class MultipartInputImpl implements MultipartInput
          this.defaultPartContentType = getMediaTypeWithDefaultCharset(this.defaultPartContentType);
       }
    }
+   
+   public MultipartInputImpl(Multipart multipart, Providers workers) throws IOException
+   {
+      for (BodyPart bodyPart : multipart.getBodyParts())
+         parts.add(extractPart(bodyPart));
+      this.workers = workers;
+   }
 
    public void parse(InputStream is) throws IOException
    {
@@ -280,15 +289,34 @@ public class MultipartInputImpl implements MultipartInput
       public <T> T getBody(Class<T> type, Type genericType)
               throws IOException
       {
-         MessageBodyReader<T> reader = workers.getMessageBodyReader(type,
-                 genericType, empty, contentType);
-         if (reader == null)
+         if (MultipartInput.class.equals(type))
          {
-            throw new RuntimeException("Unable to find a MessageBodyReader for media type: " + contentType + " and class type " + type.getName());
+            if (bodyPart.getBody() instanceof Multipart)
+            {
+               return (T) new MultipartInputImpl(Multipart.class.cast(bodyPart.getBody()), workers);
+            }
          }
+         try
+         {
+            if (savedProviders != null)
+            {
+               ResteasyProviderFactory.pushContext(Providers.class, savedProviders);  
+            }
+            MessageBodyReader<T> reader = workers.getMessageBodyReader(type, genericType, empty, contentType);
+            if (reader == null)
+            {
+               throw new RuntimeException("Unable to find a MessageBodyReader for media type: " + contentType + " and class type " + type.getName());
+            }
 
-         return reader.readFrom(type, genericType, empty, contentType, headers, getBody());
-
+            return reader.readFrom(type, genericType, empty, contentType, headers, getBody());
+         }
+         finally
+         {
+            if (savedProviders != null)
+            {
+               ResteasyProviderFactory.popContextData(Providers.class);
+            }
+         }
       }
 
       public <T> T getBody(GenericType<T> type) throws IOException
@@ -440,6 +468,12 @@ public class MultipartInputImpl implements MultipartInput
          }
       }
       return new MediaType(mediaType.getType(), mediaType.getSubtype(), newParams);
+   }
+
+   @Override
+   public void setProviders(Providers providers)
+   {
+      savedProviders = providers;
    }
 
 }

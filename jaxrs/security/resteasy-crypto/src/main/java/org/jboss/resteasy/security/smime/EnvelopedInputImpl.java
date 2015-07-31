@@ -201,7 +201,15 @@ public class EnvelopedInputImpl implements EnvelopedInput
       ResteasyProviderFactory.pushContext(Providers.class, providers);
       try
       {
-         InputStream inputStream = decrypted.getInputStream();
+         InputStream inputStream = null;
+         if (EnvelopedInput.class.isAssignableFrom(t))
+         {
+            inputStream = decrypted.getRawInputStream();
+         }
+         else
+         {
+            inputStream = decrypted.getInputStream();  
+         }
          return reader.readFrom(t, gt, ann, mediaType, mimeHeaders, inputStream);
       }
       catch (Exception e1)
