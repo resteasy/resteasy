@@ -9,15 +9,13 @@ RESTEasy integrates with Spring 3.0.x.  We are interested in other forms of Spri
    <title>Basic Integration</title>
 <para>For Maven users, you must use the resteasy-spring artifact.  Otherwise, the jar is available in the downloaded distribution.
 </para>
-<programlisting>
-<![CDATA[
+<programlisting><![CDATA[
 <dependency>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-spring</artifactId>
     <version>whatever version you are using</version>
 </dependency>
-]]>
-</programlisting>
+]]></programlisting>
 <para>
 RESTeasy comes with its own Spring ContextLoaderListener that registers a RESTeasy specific BeanPostProcessor that processes JAX-RS annotations when a bean is created by a BeanFactory.  What does this mean?  RESTeasy will automatically scan for @Provider and JAX-RS resource annotations on your bean class and register them as JAX-RS resources.
 </para>
@@ -43,7 +41,6 @@ RESTeasy comes with its own Spring ContextLoaderListener that registers a RESTea
       &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
       &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
    &lt;/servlet-mapping&gt;
-
 
 &lt;/web-app&gt;
 </programlisting>
@@ -83,32 +80,31 @@ NOTE: You can only use auto-proxied beans with our base Spring integration.   Yo
       &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
    &lt;/servlet-mapping&gt;
 
-
 &lt;/web-app&gt;
 </programlisting>
 <para>Then within your main Spring beans xml, import the springmvc-resteasy.xml file</para>
-<programlisting>
-<![CDATA[
+<programlisting><![CDATA[
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
-http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 ">
 
     <!-- Import basic SpringMVC Resteasy integration -->
     <import resource="classpath:springmvc-resteasy.xml"/>
-....
-]]>
-</programlisting>
+
+    ...
+    
+</beans>
+]]></programlisting>
     <para>
         You can specify resteasy configuration options by overriding the resteasy.deployment bean which is an instance
         of org.jboss.resteasy.spi.ResteasyDeployment.  Here's an example of adding media type suffix mappings as well
         as enabling the Resteasy asynchronous job service.
     </para>
-<programlisting>
-<![CDATA[
+<programlisting><![CDATA[
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
     xmlns:util="http://www.springframework.org/schema/util"
@@ -131,9 +127,10 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             </map>
         </property>
     </bean>
-...
 
-]]>
-</programlisting>
+    ...
+    
+</beans>
+]]></programlisting>
 </sect2>
 </chapter>

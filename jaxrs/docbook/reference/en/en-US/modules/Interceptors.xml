@@ -20,35 +20,35 @@
         So given all that, here's some pseudo
         code to give some understanding of how things work.
     </para>
-    <programlisting>
-        // execute pre match filters
-        for (ContainerRequestFilter filter : preMatchFilters) {
-            filter.filter(requestContext);
-            if (isAborted(requestContext)) {
-               sendAbortionToClient(requestContext);
-               return;
-            }
-        }
-        // match the HTTP request to a resource class and method
-        JaxrsMethod method = matchMethod(requestContext);
+<programlisting>
+// execute pre match filters
+for (ContainerRequestFilter filter : preMatchFilters) {
+    filter.filter(requestContext);
+    if (isAborted(requestContext)) {
+        sendAbortionToClient(requestContext);
+        return;
+    }
+}
+// match the HTTP request to a resource class and method
+JaxrsMethod method = matchMethod(requestContext);
 
-        // Execute post match filters
-        for (ContainerRequestFilter filter : postMatchFilters) {
-           filter.filter(requestContext);
-           if (isAborted(requestContext)) {
-              sendAbortionToClient(requestContext);
-              return;
-           }
-        }
+// Execute post match filters
+for (ContainerRequestFilter filter : postMatchFilters) {
+    filter.filter(requestContext);
+    if (isAborted(requestContext)) {
+        sendAbortionToClient(requestContext);
+        return;
+    }
+}
 
-        // execute resource class method
-        method.execute(request);
+// execute resource class method
+method.execute(request);
 
-        // execute response filters
-        for (ContainerResponseFilter filter : responseFilters) {
-           filter.filter(requestContext, responseContext);
-        }
-    </programlisting>
+// execute response filters
+for (ContainerResponseFilter filter : responseFilters) {
+    filter.filter(requestContext, responseContext);
+}
+</programlisting>
     </sect1>
     <sect1>
         <title>Client Side Filters</title>
@@ -60,23 +60,23 @@
             wire to the server.  ClientResponseFilters can modfiy the Response object before it is handed back to
             application code.  Here's some pseudo code to illustrate things.
         </para>
-        <programlisting>
-            // execute request filters
-            for (ClientRequestFilter filter : requestFilters) {
-               filter.filter(requestContext);
-               if (isAborted(requestContext)) {
-                  return requestContext.getAbortedResponseObject();
-               }
-            }
+<programlisting>
+// execute request filters
+for (ClientRequestFilter filter : requestFilters) {
+    filter.filter(requestContext);
+    if (isAborted(requestContext)) {
+        return requestContext.getAbortedResponseObject();
+    }
+}
 
-            // send request over the wire
-            response = sendRequest(request);
+// send request over the wire
+response = sendRequest(request);
 
-            // execute response filters
-            for (ClientResponseFilter filter : responseFilters) {
-               filter.filter(requestContext, responseContext);
-            }
-        </programlisting>
+// execute response filters
+for (ClientResponseFilter filter : responseFilters) {
+    filter.filter(requestContext, responseContext);
+}
+</programlisting>
     </sect1>
     <sect1>
         <title>Reader and Writer Interceptors</title>
@@ -98,21 +98,21 @@
             like CDI interceptors.  You annotate a custom annotation with @NameBinding and then apply that custom annotation
             to your filter and resource method
         </para>
-        <programlisting>
-            @NameBinding
-            public @interface DoIt {}
+<programlisting>
+@NameBinding
+public @interface DoIt {}
 
-            @DoIt
-            public class MyFilter implements ContainerRequestFilter {...}
+@DoIt
+public class MyFilter implements ContainerRequestFilter {...}
 
-            @Path("/root")
-            public class MyResource {
+@Path("/root")
+public class MyResource {
 
-               @GET
-               @DoIt
-               public String get() {...}
-            }
-        </programlisting>
+    @GET
+    @DoIt
+    public String get() {...}
+}
+</programlisting>
     </sect1>
     <sect1>
         <title>Ordering</title>

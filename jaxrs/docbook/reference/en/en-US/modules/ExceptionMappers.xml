@@ -10,31 +10,30 @@
    </para>
    <para>
 
-      <programlisting>
-         package javax.ws.rs.ext;
+<programlisting>
+package javax.ws.rs.ext;
 
-         import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response;
 
-         /**
-         * Contract for a provider that maps Java exceptions to
-         * {@link javax.ws.rs.core.Response}. An implementation of this interface must
-         * be annotated with {@link Provider}.
-         *
-         * @see Provider
-         * @see javax.ws.rs.core.Response
-         */
-         public interface ExceptionMapper&lt;E&gt;
-         {
-
-         /**
-         * Map an exception to a {@link javax.ws.rs.core.Response}.
-         *
-         * @param exception the exception to map to a response
-         * @return a response mapped from the supplied exception
-         */
-         Response toResponse(E exception);
-         }
-      </programlisting>
+/**
+* Contract for a provider that maps Java exceptions to
+* {@link javax.ws.rs.core.Response}. An implementation of this interface must
+* be annotated with {@link Provider}.
+*
+* @see Provider
+* @see javax.ws.rs.core.Response
+*/
+public interface ExceptionMapper&lt;E&gt;
+{
+    /**
+    * Map an exception to a {@link javax.ws.rs.core.Response}.
+    *
+    * @param exception the exception to map to a response
+    * @return a response mapped from the supplied exception
+    */
+    Response toResponse(E exception);
+}
+</programlisting>
    </para>
    <para>
 
@@ -44,18 +43,15 @@
    </para>
    <para>
 
-      <programlisting>
-
-         @Provider
-         public class EJBExceptionMapper implements ExceptionMapper&lt;javax.ejb.EJBException&gt;
-         {
-
-         Response toResponse(EJBException exception) {
-         return Response.status(500).build();
-         }
-
-         }
-      </programlisting>
+<programlisting>
+@Provider
+public class EJBExceptionMapper implements ExceptionMapper&lt;javax.ejb.EJBException&gt;
+{
+    Response toResponse(EJBException exception) {
+        return Response.status(500).build();
+    }
+}
+</programlisting>
    </para>
    <para>
 

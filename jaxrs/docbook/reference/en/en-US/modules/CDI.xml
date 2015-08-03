@@ -138,12 +138,12 @@
             maven, this can be achieve by defining the
             following
             dependency.
-            <programlisting language="xml"><![CDATA[<dependency>
+        </para>
+        <programlisting language="xml"><![CDATA[<dependency>
 	<groupId>org.jboss.resteasy</groupId>
 	<artifactId>resteasy-cdi</artifactId>
 	<version>${project.version}</version>
 </dependency>]]></programlisting>
-        </para>
         <para>
             Furthermore, when running a pre-Servlet 3 container, the
             following context parameter needs to be specified in web.xml. (This

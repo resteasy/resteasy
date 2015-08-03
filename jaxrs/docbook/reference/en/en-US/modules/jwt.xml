@@ -2,8 +2,8 @@
   <title>JSON Web Signature and Encryption (JOSE-JWT)</title>
 
   <para>JSON Web Signature and Encryption (JOSE JWT) is a new specification that can be used
-  to encode content as a string and either digitally sign or encrypt it.  I won't go over the spec here
-  Do a Google search on it ifyou're interested</para>
+  to encode content as a string and either digitally sign or encrypt it. I won't go over the spec here.
+  Do a Google search on it if you're interested.</para>
 
   <section>
       <title>JSON Web Signature (JWS)</title>
@@ -11,29 +11,26 @@
           To unpack and verify a JWS, use the <literal>org.jboss.resteasy.jose.jws.JWSInput</literal> class. (TODO, write
           more doco here!)
       Here's an example:</para>
-      <programlisting>
-          <![CDATA[
-   @Test
-   public void testRSAWithContentType() throws Exception
-   {
-      KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
-
-      String encoded = new JWSBuilder()
-              .contentType(MediaType.TEXT_PLAIN_TYPE)
-              .content("Hello World", MediaType.TEXT_PLAIN_TYPE)
-              .rsa256(keyPair.getPrivate());
-
-      System.out.println(encoded);
-
-      JWSInput input = new JWSInput(encoded, ResteasyProviderFactory.getInstance());
-      System.out.println(input.getHeader());
-      String msg = (String)input.readContent(String.class);
-      Assert.assertEquals("Hello World", msg);
-      Assert.assertTrue(RSAProvider.verify(input, keyPair.getPublic()));
-
-   }
-]]>
-      </programlisting>
+<programlisting><![CDATA[
+@Test
+public void testRSAWithContentType() throws Exception
+{
+    KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
+    
+    String encoded = new JWSBuilder()
+          .contentType(MediaType.TEXT_PLAIN_TYPE)
+          .content("Hello World", MediaType.TEXT_PLAIN_TYPE)
+          .rsa256(keyPair.getPrivate());
+    
+    System.out.println(encoded);
+    
+    JWSInput input = new JWSInput(encoded, ResteasyProviderFactory.getInstance());
+    System.out.println(input.getHeader());
+    String msg = (String)input.readContent(String.class);
+    Assert.assertEquals("Hello World", msg);
+    Assert.assertTrue(RSAProvider.verify(input, keyPair.getPublic()));
+}
+]]></programlisting>
   </section>
     <section>
         <title>JSON Web Encryption (JWE)</title>

@@ -550,7 +550,7 @@ public interface GeneralValidatorCDI extends GeneralValidator
     */
    public void checkForConstraintViolations(HttpRequest request, Exception e);
 }
-   ]]></programlisting>
+]]></programlisting>
 
    <para>
    Both supplied validators implement GeneralValidatorCDI.

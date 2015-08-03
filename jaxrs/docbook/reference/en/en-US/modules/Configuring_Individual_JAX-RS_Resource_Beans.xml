@@ -7,18 +7,16 @@
 </para>
 <para>
 
-If you are scanning your path for JAX-RS annotated resource beans, your beans will be registered in per-request mode.  This means an instance will be created per HTTP request served.  Generally, you will need information from your environment.  If you are running within a servlet container using the WAR-file distribution, in Beta-2 and lower, you can only use the JNDI lookups to obtain references to Java EE resources and configuration information.  In this case, define your EE configuration (i.e. ejb-ref, env-entry, persistence-context-ref, etc...) within web.xml of the resteasy WAR file.  Then within your code do jndi lookups in the java:comp namespace.  For example:
+If you are scanning your path for JAX-RS annotated resource beans, your beans will be registered in per-request mode.  This means an instance will be created per HTTP request served.  Generally, you will need information from your environment.  If you are running within a servlet container using the WAR-file distribution, in Beta-2 and lower, you can only use the JNDI lookups to obtain references to Java EE resources and configuration information.  In this case, define your EE configuration (i.e. ejb-ref, env-entry, persistence-context-ref, etc...) within web.xml of the resteasy WAR file.  Then within your code do JNDI lookups in the java:comp namespace.  For example:
 </para>
 <para>
 
 web.xml
 <programlisting>
-
 &lt;ejb-ref&gt;
-  &lt;ejb-ref-name&gt;ejb/foo&lt;/ejb-ref-name&gt;
+    &lt;ejb-ref-name&gt;ejb/foo&lt;/ejb-ref-name&gt;
   ...
 &lt;/ejb-ref&gt;
-
 </programlisting>
 </para>
 <para>
@@ -28,9 +26,9 @@ resource code:
 @Path("/")
 public class MyBean {
 
-   public Object getSomethingFromJndi() {
-      new InitialContext.lookup("java:comp/ejb/foo");
-   }
+    public Object getSomethingFromJndi() {
+        new InitialContext.lookup("java:comp/ejb/foo");
+    }
 ...
 }
 </programlisting>
@@ -46,18 +44,14 @@ You can also manually configure and register your beans through the Registry.  T
 <para>
 
 <programlisting>
-
 public class MyManualConfig implements ServletContextListener
 {
-   public void contextInitialized(ServletContextEvent event)
-   {
-
-      Registry registry = (Registry) event.getServletContext().getAttribute(Registry.class.getName());
-
-   }
+    public void contextInitialized(ServletContextEvent event)
+    {
+        Registry registry = (Registry) event.getServletContext().getAttribute(Registry.class.getName());
+    }
 ...
 }
-
 </programlisting>
 </para>
 <para>

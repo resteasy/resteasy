@@ -36,8 +36,7 @@ configure Resteasy to turn on role-based security by setting a context parameter
 functionality instead of Resteasy.
 
 </para>
-<programlisting>
-<![CDATA[
+<programlisting><![CDATA[
 <web-app>
 ...
    <context-param>
@@ -60,7 +59,6 @@ So, here's an example of a modified RESTEasy WAR file.  You'll notice that every
 <para>
 
 <programlisting>
-
 &lt;web-app&gt;
 
    &lt;context-param&gt;
@@ -105,10 +103,7 @@ So, here's an example of a modified RESTEasy WAR file.  You'll notice that every
       &lt;role-name&gt;user&lt;/role-name&gt;
    &lt;/security-role&gt;
 
-
 &lt;/web-app&gt;
-
-
 </programlisting>
 </para>
 <para>

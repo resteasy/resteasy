@@ -41,7 +41,6 @@
                 x=0023423111111;
                 bh=2342322111;
                 b=M232234=
-
 </programlisting></para>
 
   <para>As you can see it is a set of name value pairs delimited by a ';'.
@@ -169,12 +168,13 @@
     <para>You must include the resteasy-crypto project to use the digital
     signature framework.</para>
 
-    <para><programlisting>        &lt;dependency&gt;
-            &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
-            &lt;artifactId&gt;resteasy-crypto&lt;/artifactId&gt;
-            &lt;version&gt;3.0.12.Final-SNAPSHOT&lt;/version&gt;
-        &lt;/dependency&gt;
-
+    <para>
+<programlisting>
+&lt;dependency&gt;
+    &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
+    &lt;artifactId&gt;resteasy-crypto&lt;/artifactId&gt;
+    &lt;version&gt;3.0.12.Final-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;
 </programlisting></para>
   </section>
 
@@ -188,9 +188,10 @@
     then set the "DKIM-Signature" header of the request or response. Here's an
     example of using it on the server-side:</para>
 
-    <para><programlisting>import org.jboss.resteasy.security.doseta.DKIMSignature;
+    <para>
+<programlisting>
+import org.jboss.resteasy.security.doseta.DKIMSignature;
 import java.security.PrivateKey;
-
 
 @Path("/signed")
 public static class SignedResource
@@ -246,20 +247,23 @@ ClientResponse response = request.put();
       required that you configure a KeyRepository as described later in this
       chapter. Here's an example:</para>
 
-      <para><programlisting>   @GET
-   @Produces("text/plain")
-   @Path("signedresource")
-   @Signed(selector="burke", domain="sample.com", timestamped=true, expires=@After(hours=24))
-   public String getSigned()
-   {
-      return "hello world";
-   }
-
+      <para>
+<programlisting>
+@GET
+@Produces("text/plain")
+@Path("signedresource")
+@Signed(selector="burke", domain="sample.com", timestamped=true, expires=@After(hours=24))
+public String getSigned()
+{
+    return "hello world";
+}
 </programlisting>The above example using a bunch of the optional annotation
       attributes of @Signed to create the following Content-Signature
       header:</para>
 
-      <para><programlisting>DKIM-Signature: v=1;
+      <para>
+<programlisting>
+DKIM-Signature: v=1;
                 a=rsa-sha256;
                 c=simple/simple;
                 domain=sample.com;
@@ -268,7 +272,6 @@ ClientResponse response = request.put();
                 x=02342342322;
                 bh=m0234fsefasf==;
                 b=mababaddbb==
-   
 </programlisting><parameter>This annotation also works with the client proxy
       framework.</parameter></para>
     </section>
@@ -284,8 +287,9 @@ ClientResponse response = request.put();
     bytes by using a org.jboss.resteasy.spi.MarshalledEntity injection. Here's
     an example of doing this on the server side:</para>
 
-    <para><programlisting>import org.jboss.resteasy.spi.MarshalledEntity;
-
+    <para>
+<programlisting>
+import org.jboss.resteasy.spi.MarshalledEntity;
 
 @POST
 @Consumes("text/plain")
@@ -295,16 +299,16 @@ public void verifyManual(@HeaderParam("Content-Signature") DKIMSignature signatu
                          @Context HttpHeaders headers, 
                          MarshalledEntity&lt;String&gt; input) throws Exception
 {
-      Verifier verifier = new Verifier();
-      Verification verification = verifier.addNew();
-      verification.setRepository(repository);
-      verification.setStaleCheck(true);
-      verification.setStaleSeconds(100);
-      try {
-          verifier.verifySignature(headers.getRequestHeaders(), input.getMarshalledBytes, signature);
-      } catch (SignatureException ex) {
-      }
-      System.out.println("The text message posted is: " + input.getEntity());
+    Verifier verifier = new Verifier();
+    Verification verification = verifier.addNew();
+    verification.setRepository(repository);
+    verification.setStaleCheck(true);
+    verification.setStaleSeconds(100);
+    try {
+        verifier.verifySignature(headers.getRequestHeaders(), input.getMarshalledBytes, signature);
+    } catch (SignatureException ex) {
+    }
+    System.out.println("The text message posted is: " + input.getEntity());
 }
 </programlisting>MarshalledEntity is a generic interface. The template
     parameter should be the Java type you want the message body to be
@@ -338,13 +342,14 @@ String entity = response.getEntity();
       @Verifications which is used to verify multiple signatures). Here's an
       example:</para>
 
-      <para><programlisting>      @POST
-      @Consumes("text/plain")
-      @Verify
-      public void post(String input)
-      {
-      }
-
+      <para>
+<programlisting>
+@POST
+@Consumes("text/plain")
+@Verify
+public void post(String input)
+{
+}
 </programlisting>In the above example, any DKIM-Signature headers attached to
       the posted message body will be verified. The public key to verify is
       discovered using the configured KeyRepository (discussed later in this
@@ -410,19 +415,20 @@ public void post(String input) {...}
       resteasy.context.objects is used to create the instance of the
       repository. For example:</para>
 
-      <para><programlisting>    &lt;context-param&gt;
-        &lt;param-name&gt;resteasy.doseta.keystore.classpath&lt;/param-name&gt;
-        &lt;param-value&gt;test.jks&lt;/param-value&gt;
-    &lt;/context-param&gt;
-    &lt;context-param&gt;
-        &lt;param-name&gt;resteasy.doseta.keystore.password&lt;/param-name&gt;
-        &lt;param-value&gt;geheim&lt;/param-value&gt;
-    &lt;/context-param&gt;
-    &lt;context-param&gt;
-        &lt;param-name&gt;resteasy.context.objects&lt;/param-name&gt;
-        &lt;param-value&gt;org.jboss.resteasy.security.doseta.KeyRepository : org.jboss.resteasy.security.doseta.ConfiguredDosetaKeyRepository&lt;/param-value&gt;
-    &lt;/context-param&gt;
-
+      <para>
+<programlisting>
+&lt;context-param&gt;
+    &lt;param-name&gt;resteasy.doseta.keystore.classpath&lt;/param-name&gt;
+    &lt;param-value&gt;test.jks&lt;/param-value&gt;
+&lt;/context-param&gt;
+&lt;context-param&gt;
+    &lt;param-name&gt;resteasy.doseta.keystore.password&lt;/param-name&gt;
+    &lt;param-value&gt;geheim&lt;/param-value&gt;
+&lt;/context-param&gt;
+&lt;context-param&gt;
+    &lt;param-name&gt;resteasy.context.objects&lt;/param-name&gt;
+    &lt;param-value&gt;org.jboss.resteasy.security.doseta.KeyRepository : org.jboss.resteasy.security.doseta.ConfiguredDosetaKeyRepository&lt;/param-value&gt;
+&lt;/context-param&gt;
 </programlisting></para>
 
       <para>You can also manually register your own instance of a
@@ -459,7 +465,6 @@ public class SignatureApplication extends Application
       return classes;
    }
 }
-
 </programlisting></para>
 
       <para>On the client side, you can load a KeyStore manually, by
@@ -490,15 +495,16 @@ request.header("DKIM-Signature", signatures);
       <para>Public keys can also be discover by a DNS text record lookup. You
       must configure web.xml to turn this feature:</para>
 
-      <para><programlisting>    &lt;context-param&gt;
-        &lt;param-name&gt;resteasy.doseta.use.dns&lt;/param-name&gt;
-        &lt;param-value&gt;true&lt;/param-value&gt;
-    &lt;/context-param&gt;
-    &lt;context-param&gt;
-        &lt;param-name&gt;resteasy.doseta.dns.uri&lt;/param-name&gt;
-        &lt;param-value&gt;dns://localhost:9095&lt;/param-value&gt;
-    &lt;/context-param&gt;
-
+      <para>
+<programlisting>
+&lt;context-param&gt;
+    &lt;param-name&gt;resteasy.doseta.use.dns&lt;/param-name&gt;
+    &lt;param-value&gt;true&lt;/param-value&gt;
+&lt;/context-param&gt;
+&lt;context-param&gt;
+    &lt;param-name&gt;resteasy.doseta.dns.uri&lt;/param-name&gt;
+    &lt;param-value&gt;dns://localhost:9095&lt;/param-value&gt;
+&lt;/context-param&gt;
 </programlisting>The resteasy.doseta.dns.uri context-param is optional and
       allows you to point to a specific DNS server to locate text
       records.</para>
@@ -512,9 +518,12 @@ request.header("DKIM-Signature", signatures);
         keystore, then using a tool like openssl to get the text-based format.
         For example:</para>
 
-        <para><programlisting>$ keytool -export -alias bill._domainKey.client.com -keystore client.jks -file bill.der 
-$ openssl x509 -noout -pubkey -in bill.der -inform der &gt; bill.pem</programlisting>The
-        output will look something like: </para>
+        <para>
+<programlisting>
+$ keytool -export -alias bill._domainKey.client.com -keystore client.jks -file bill.der 
+$ openssl x509 -noout -pubkey -in bill.der -inform der &gt; bill.pem
+</programlisting>
+        The output will look something like: </para>
 
         <programlisting>-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCKxct5GHz8dFw0mzAMfvNju2b3
