@@ -22,11 +22,10 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.test.xxe.TestXXE.FavoriteMovieXmlRootElement;
 import org.junit.After;
 import org.junit.Test;
 
-/**b
+/**
  * Unit tests for RESTEASY-1103.
  * 
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
@@ -54,6 +53,18 @@ public class TestSecureProcessingFeature
      public void setTitle(String title) {
        _title = title;
      }
+   }
+   
+   protected static boolean jdk18plus;
+   static
+   {
+      String s = Runtime.class.getPackage().getImplementationVersion();
+      int start = s.indexOf('.');
+      int end = s.indexOf('.', start + 1);
+      String versionString = s.substring(start + 1, end);
+      int version = Integer.parseInt(versionString);
+      jdk18plus = version >= 8;
+      System.out.println("using jdk " + s);
    }
    
    protected static ResteasyDeployment deployment;
@@ -109,7 +120,7 @@ public class TestSecureProcessingFeature
                                 "</map>";
    
    String bar = "<!DOCTYPE bar SYSTEM \"src/test/java/org/jboss/resteasy/test/xxe/external.dtd\"><bar><s>junk</s></bar>";
-
+   
    @Path("/")
    public static class TestResource
    {
@@ -235,7 +246,7 @@ public class TestSecureProcessingFeature
    public void testSecurityDefaultDTDsFalseExpansionDefault() throws Exception
    {
       before(getParameterMap(MapInclusion.DEFAULT, MapInclusion.FALSE, MapInclusion.DEFAULT));
-      doDTDPasses();
+      doTestDTD(MapInclusion.DEFAULT);
       doMaxEntitiesFails();
       doMaxAttributesFails();
    }
@@ -244,7 +255,7 @@ public class TestSecureProcessingFeature
    public void testSecurityDefaultDTDsFalseExpansionFalse() throws Exception
    {
       before(getParameterMap(MapInclusion.DEFAULT, MapInclusion.FALSE, MapInclusion.FALSE));
-      doDTDPasses();
+      doTestDTD(MapInclusion.FALSE);
       doMaxEntitiesFails();
       doMaxAttributesFails();
    }
@@ -253,7 +264,7 @@ public class TestSecureProcessingFeature
    public void testSecurityDefaultDTDsFalseExpansionTrue() throws Exception
    {
       before(getParameterMap(MapInclusion.DEFAULT, MapInclusion.FALSE, MapInclusion.TRUE));
-      doDTDPasses();
+      doTestDTD(MapInclusion.TRUE);
       doMaxEntitiesFails();
       doMaxAttributesFails();
    }
@@ -310,7 +321,7 @@ public class TestSecureProcessingFeature
    public void testSecurityFalseDTDsFalseExpansionDefault() throws Exception
    {
       before(getParameterMap(MapInclusion.FALSE, MapInclusion.FALSE, MapInclusion.DEFAULT));
-      doDTDPasses();
+      doDTDPasses(); // SPF is off
       doMaxEntitiesPasses();
       doMaxAttributesPasses();
    }
@@ -319,7 +330,7 @@ public class TestSecureProcessingFeature
    public void testSecurityFalseDTDsFalseExpansionFalse() throws Exception
    {
       before(getParameterMap(MapInclusion.FALSE, MapInclusion.FALSE, MapInclusion.FALSE));
-      doDTDPasses();
+      doDTDPasses(); // SPF is off
       doMaxEntitiesPasses();
       doMaxAttributesPasses();
    }
@@ -385,7 +396,7 @@ public class TestSecureProcessingFeature
    public void testSecurityTrueDTDsFalseExpansionDefault() throws Exception
    {
       before(getParameterMap(MapInclusion.TRUE, MapInclusion.FALSE, MapInclusion.DEFAULT));
-      doDTDPasses();
+      doTestDTD(MapInclusion.DEFAULT);
       doMaxEntitiesFails();
       doMaxAttributesFails();
    }
@@ -394,7 +405,7 @@ public class TestSecureProcessingFeature
    public void testSecurityTrueDTDsFalseExpansionFalse() throws Exception
    {
       before(getParameterMap(MapInclusion.TRUE, MapInclusion.FALSE, MapInclusion.FALSE));
-      doDTDPasses();
+      doTestDTD(MapInclusion.FALSE);
       doMaxEntitiesFails();
       doMaxAttributesFails();
    }
@@ -403,7 +414,7 @@ public class TestSecureProcessingFeature
    public void testSecurityTrueDTDsFalseExpansionTrue() throws Exception
    {
       before(getParameterMap(MapInclusion.TRUE, MapInclusion.FALSE, MapInclusion.TRUE));
-      doDTDPasses();
+      doTestDTD(MapInclusion.TRUE);
       doMaxEntitiesFails();
       doMaxAttributesFails();
    }
@@ -432,6 +443,25 @@ public class TestSecureProcessingFeature
       doMaxAttributesFails();
    }
    
+   void doTestDTD(MapInclusion expand) throws Exception
+   {
+      if (jdk18plus)
+      {
+         if (MapInclusion.TRUE.equals(expand))
+         {
+            doDTDPasses();
+         }
+         else
+         {
+            doDTDFailsExternal();
+         }
+      }
+      else
+      {
+         doDTDPasses();
+      }
+   }
+   
    void doDTDFails() throws Exception
    {
       ClientRequest request = new ClientRequest(generateURL("/DTD"));
@@ -439,7 +469,7 @@ public class TestSecureProcessingFeature
       ClientResponse<?> response = request.post();
       System.out.println("status: " + response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("doExternalDTDFails(): result: " + entity);
+      System.out.println("doDTDFails(): result: " + entity);
       Assert.assertEquals(400, response.getStatus());
       Assert.assertTrue(entity.startsWith("javax.xml.bind.UnmarshalException"));
       Assert.assertTrue(entity.contains("DOCTYPE is disallowed"));  
@@ -452,9 +482,22 @@ public class TestSecureProcessingFeature
       ClientResponse<?> response = request.post();
       System.out.println("status: " + response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("doExternalDTDPasses() result: " + entity);
+      System.out.println("doDTDPasses() result: " + entity);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("junk", entity);
+   }
+   
+   void doDTDFailsExternal() throws Exception
+   {
+      ClientRequest request = new ClientRequest(generateURL("/DTD"));
+      request.body("application/xml", bar);
+      ClientResponse<?> response = request.post();
+      System.out.println("status: " + response.getStatus());
+      String entity = response.getEntity(String.class);
+      System.out.println("doExternalDTDFails(): result: " + entity);
+      Assert.assertEquals(400, response.getStatus());
+      Assert.assertTrue(entity.startsWith("javax.xml.bind.UnmarshalException"));
+      Assert.assertTrue(entity.contains("External DTD: Failed to read external DTD "));  
    }
    
    void doMaxEntitiesFails() throws Exception

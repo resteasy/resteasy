@@ -12,26 +12,4 @@
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>asynch-http-servlet-3.0-pom</artifactId>
     <packaging>pom</packaging>
-
-    <profiles>
-        <profile>
-            <id>redhat-prod</id>
-            <modules>
-                <module>async-http-servlet-3.0</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <modules>
-                <module>async-http-servlet-3.0</module>
-                <module>async-http-servlet-3.0-test</module>
-                <module>callback-test</module>
-            </modules>
-        </profile>
-    </profiles>
-
-
 </project>
