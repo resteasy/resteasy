@@ -37,7 +37,7 @@ import java.lang.reflect.Type;
 @Consumes({"text/*+xml", "application/*+xml"})
 public class DocumentProvider extends AbstractEntityProvider<Document>
 {
-   private static final Logger logger = Logger.getLogger(DocumentProvider.class);
+   private static final Logger logger = Logger.getLogger(DocumentProvider.class.getName());
    
    private final TransformerFactory transformerFactory;
    private final DocumentBuilderFactory documentBuilder;
