@@ -7,12 +7,16 @@ import org.junit.Test;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 import java.io.ByteArrayOutputStream;
+import javax.ws.rs.core.Response;
 import java.lang.reflect.Modifier;
 import java.util.logging.*;
+
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -56,6 +60,23 @@ public class ClientBuilderTest
       }
       p = client.getConfiguration().getProperty(property);
       Assert.assertEquals(null, p);
+   }
+
+   @Test(expected=IllegalStateException.class)
+   public void closeClientSendRequestTest() throws Exception
+   {
+      Client client = ClientBuilder.newClient();
+      client.close();
+      client.target(generateURL("/"));
+   }
+
+   @Test(expected=IllegalStateException.class)
+   public void closeClientWebTargetTest() throws Exception
+   {
+      Client client = ClientBuilder.newClient();
+      WebTarget base = client.target(generateURL("/") + "/test");
+      client.close();
+      Response response = base.request().get();
    }
 
    public static void inner() throws Exception
