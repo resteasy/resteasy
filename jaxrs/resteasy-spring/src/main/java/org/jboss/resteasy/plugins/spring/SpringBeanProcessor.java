@@ -119,9 +119,9 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
             SpringResourceFactory resourceFactory = new SpringResourceFactory(registeredBeanName, beanFactory, beanClass);
             resourceFactory.setContext(registration.getContext());
             resourceFactories.put(registeredBeanName, resourceFactory);
-         } 
+         }
 
-         else 
+         else
          {
             SpringResourceFactory resourceFactory = resourceFactories.get(beanName);
             if (resourceFactory != null)
@@ -306,7 +306,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
    }
 
    public String getPropertyValue(
-      MutablePropertyValues registrationPropertyValues, String propertyName) 
+      MutablePropertyValues registrationPropertyValues, String propertyName)
    {
       if(registrationPropertyValues == null)
       {
@@ -389,35 +389,33 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
          return getBeanClass(beanDef.getBeanClassName());
       }
 
-      if (factoryMethodName != null)
-      {
-         String factoryClassName = null;
 
-         if (beanDef instanceof AnnotatedBeanDefinition)
-         {
-            factoryClassName = ((AnnotatedBeanDefinition) beanDef).getMetadata().getClassName();
-         }
-         else
-         {
-            // Checks if beanDefinition has a factorybean defined. If so, lookup the classname of that bean
-            // definition and use that as the factory class name.
-            if (beanDef.getFactoryBeanName() != null)
-            {
-               factoryClassName = beanFactory.getBeanDefinition(beanDef.getFactoryBeanName()).getBeanClassName();
-            }
-            else
-            {
-               factoryClassName = beanDef.getBeanClassName();
-            }
-         }
+      if (factoryMethodName != null) {
+		  String factoryClassName = null;
 
-          final Class<?> beanClass = getBeanClass(factoryClassName);
-          final Method[] methods = beanClass.getDeclaredMethods();
-          for (Method method : methods) {
-              if (method.getName().equals(factoryMethodName)) {
-                  return method.getReturnType();
-              }
-          }
+		  if (beanDef instanceof AnnotatedBeanDefinition) {
+			  factoryClassName = ((AnnotatedBeanDefinition) beanDef).getMetadata().getClassName();
+		  } else {
+			  // Checks if beanDefinition has a factorybean defined. If so, lookup the classname of that bean
+			  // definition and use that as the factory class name.
+			  if (beanDef.getFactoryBeanName() != null) {
+				  factoryClassName = beanFactory.getBeanDefinition(beanDef.getFactoryBeanName()).getBeanClassName();
+			  } else {
+				  factoryClassName = beanDef.getBeanClassName();
+			  }
+		  }
+
+		  Class<?> factoryClass = getBeanClass(factoryClassName);
+		  while (factoryClass != Object.class) {
+			  for (Method method : factoryClass.getDeclaredMethods()) {
+				  if (method.getName().equals(factoryMethodName)) {
+					  return method.getReturnType();
+				  }
+			  }
+			  factoryClass = factoryClass.getSuperclass();
+		  }
+		  final Class<?> beanClass = getBeanClass(factoryClassName);
+		  final Method[] methods = beanClass.getDeclaredMethods();
 
          /*
             https://github.com/resteasy/Resteasy/issues/585
@@ -436,23 +434,22 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
             As a fix for this, we retrieve the return type for Bean A from the FactoryBean, which later on can be used to retrieve the other beans.
 
          */
-          if (FactoryBean.class.isAssignableFrom(beanClass)) {
-              String defaultFactoryMethod = "getObject";
-              Class<?> returnType = null;
-              for (Method method : methods) {
-                  if (method.getName().equals(defaultFactoryMethod)) {
-                      returnType = method.getReturnType();
-                      if (returnType != Object.class) {
-                          break;
-                      }
-                  }
-              }
-              if (returnType != null) {
-                  return returnType;
-              }
-          }
-      }
-
+		  if (FactoryBean.class.isAssignableFrom(beanClass)) {
+			  String defaultFactoryMethod = "getObject";
+			  Class<?> returnType = null;
+			  for (Method method : methods) {
+				  if (method.getName().equals(defaultFactoryMethod)) {
+					  returnType = method.getReturnType();
+					  if (returnType != Object.class) {
+						  break;
+					  }
+				  }
+			  }
+			  if (returnType != null) {
+				  return returnType;
+			  }
+		  }
+	  }
       throw new IllegalStateException("could not find the type for bean named " + name);
    }
 
@@ -492,7 +489,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
       {
          getRegistry().removeRegistrations(resourceFactory.getScannableClass());
       }
-      
+
 //  The following code would re-process the bean factory, in case the configuration changed.
 //  However, it needs work.
 //      if (event.getSource() instanceof XmlWebApplicationContext)

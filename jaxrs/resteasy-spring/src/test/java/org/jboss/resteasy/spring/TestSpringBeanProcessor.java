@@ -1,8 +1,6 @@
 package org.jboss.resteasy.spring;
 
-import static org.jboss.resteasy.test.TestPortProvider.createClientRequest;
 import junit.framework.Assert;
-
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.plugins.spring.SpringBeanProcessor;
 import org.jboss.resteasy.spring.beanprocessor.MyInterceptor;
@@ -11,15 +9,17 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.jboss.resteasy.test.TestPortProvider.createClientRequest;
+
 /**
  * This class tests a gamut of Spring related functionality including @Configuration
  * beans, @Autowired, scanned beans, interceptors and overall integration
  * between RESTEasy and the Spring ApplicationContext.
- * 
+ *
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * 
+ *
  * @see SpringBeanProcessor
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -56,7 +56,17 @@ public class TestSpringBeanProcessor
       Assert.assertEquals(404, createClientRequest("/count").post().getStatus());
    }
 
-   @Test
+
+	@Test
+	public void testRegistrationViaSuper() throws Exception {
+		ClientResponse<String> resp = createClientRequest("/registered/super/count").post(
+				String.class);
+		check(resp, 200, "0");
+		Assert.assertEquals(404, createClientRequest("/count").post().getStatus());
+	}
+
+
+	@Test
    public void testScanned() throws Exception
    {
       checkGet("/scanned", "Hello");
