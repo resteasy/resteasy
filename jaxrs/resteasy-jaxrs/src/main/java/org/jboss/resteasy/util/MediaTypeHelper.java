@@ -35,16 +35,23 @@ public class MediaTypeHelper
    {
 	   return getProduces(declaring, method, null);
    }
-   
+
    public static MediaType getProduces(Class declaring, Method method, MediaType defaultProduces)
    {
-      Produces consume = method.getAnnotation(Produces.class);
-      if (consume == null)
+      Produces produce = method.getAnnotation(Produces.class);
+      if (produce == null)
       {
-         consume = (Produces) declaring.getAnnotation(Produces.class);
+         produce = (Produces) declaring.getAnnotation(Produces.class);
       }
-      if (consume == null) return defaultProduces;
-      return MediaType.valueOf(consume.value()[0]);
+      if (produce == null) return defaultProduces;
+      for (String type : produce.value())
+      {
+         if (defaultProduces.isCompatible(MediaType.valueOf(type)))
+         {
+            return defaultProduces;
+         }
+      }
+      return MediaType.valueOf(produce.value()[0]);
    }
 
    public static float getQ(MediaType type)
