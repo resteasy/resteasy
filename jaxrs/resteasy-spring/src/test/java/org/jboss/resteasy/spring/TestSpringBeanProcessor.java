@@ -58,7 +58,9 @@ public class TestSpringBeanProcessor
 
 
 	@Test
-	public void testRegistrationViaSuper() throws Exception {
+   // test for https://issues.jboss.org/browse/RESTEASY-1212
+	public void testRegistrationViaSuper() throws Exception
+   {
 		ClientResponse<String> resp = createClientRequest("/registered/super/count").post(
 				String.class);
 		check(resp, 200, "0");
