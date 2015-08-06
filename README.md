@@ -1,4 +1,7 @@
 # Resteasy
+
+[![Build Status](https://travis-ci.org/resteasy/Resteasy.svg?branch=master)](https://travis-ci.org/resteasy/Resteasy)
+
 Resteasy is a JBoss.org project aimed at providing productivity frameworks for developing client and server RESTful applications and services in Java.  It is mainly a JAX-RS implementation but you'll find some other experimental code in the repository.
 
 The project page can be found at http://resteasy.jboss.org
