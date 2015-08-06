@@ -108,10 +108,42 @@
             </modules>
         </profile>
         <profile>
-            <id>default</id>
+            <id>travis-ci</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <modules>
+                <module>tjws</module>
+                <module>jaxrs-api</module>
+                <module>resteasy-test-data</module>
+                <module>resteasy-jaxrs</module>
+                <module>resteasy-client</module>
+                <module>resteasy-jaxrs-testsuite</module>
+                <module>providers</module>
+                <module>resteasy-bom</module>
+                <module>resteasy-cache</module>
+                <module>resteasy-guice</module>
+                <!-- <module>eagledns</module> -->
+                <module>security</module>
+                <module>resteasy-links</module>
+                <module>resteasy-spring</module>
+                <module>resteasy-jsapi</module>
+                <!-- <module>resteasy-jsapi-testing</module> -->
+                <module>resteasy-cdi</module>
+                <module>resteasy-servlet-initializer</module>
+                <module>server-adapters</module>
+                <module>war-tests</module>
+                <!-- <module>as8-integration-testing/ejb-singleton-test</module> -->
+                <module>async-http-servlet-3.0</module>
+                <!--<module>examples</module>-->
+                <module>jboss-modules</module>
+                <module>profiling-tests</module>
+                <!-- <module>arquillian</module> -->
+                <!-- <module>as7-integration-testing/modules-test</module> -->
+            </modules>
+        </profile>
+        <profile>
+            <id>all</id>
             <modules>
                 <module>tjws</module>
                 <module>jaxrs-api</module>
