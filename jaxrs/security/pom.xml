@@ -23,10 +23,23 @@
             </modules>
         </profile>
         <profile>
-            <id>default</id>
+            <id>travis-ci</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <modules>
+                <module>resteasy-crypto</module>
+                <module>resteasy-oauth</module>
+                <module>jose-jwt</module>
+                <module>login-module-authenticator</module>
+                <module>skeleton-key-idm</module>
+                <module>keystone/keystone-core</module>
+                <module>keystone/keystone-as7</module>
+                <module>keystone/keystone-as7-modules</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>all</id>
             <modules>
                 <module>resteasy-crypto</module>
                 <module>resteasy-oauth</module>
