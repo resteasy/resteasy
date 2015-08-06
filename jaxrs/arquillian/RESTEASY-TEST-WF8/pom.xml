@@ -68,7 +68,7 @@
             <phase>process-test-classes</phase>
             <configuration>
               <target>
-                <unzip src="${basedir}/src/test/resources/1186/resteasy-jboss-modules-wf8-${project.version}.zip"
+                <unzip src="../../jboss-modules/target/resteasy-jboss-modules-wf8-${project.version}.zip"
                        dest="${project.build.directory}/wildfly-${as-version}/modules/system/layers/base"
                        overwrite="true" />
               </target>
@@ -77,32 +77,6 @@
               <goal>run</goal>
             </goals>
           </execution>
-         <!--execution>
-            <id>update resteasy-cdi jar</id>
-            <phase>process-test-classes</phase>
-            <configuration>
-              <target>
-                <copy file="${basedir}/src/test/resources/1186/resteasy-cdi-3.0.12.Final.jar"
-                      todir="${project.build.directory}/wildfly-${as-version}/modules/system/layers/base/org/jboss/resteasy/resteasy-cdi/main" />
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-         <execution>
-            <id>update resteasy-cdi module.xml</id>
-            <phase>process-test-classes</phase>
-            <configuration>
-              <target>
-                <copy file="${basedir}/src/test/resources/1186/module.xml"
-                      todir="${project.build.directory}/wildfly-${as-version}/modules/system/layers/base/org/jboss/resteasy/resteasy-cdi/main" />
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution-->
         </executions>
       </plugin>
     </plugins>
