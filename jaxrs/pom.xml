@@ -36,6 +36,7 @@
         <version.io.undertow>1.0.1.Final</version.io.undertow>
         <version.com.fasterxml.jackson>2.4.1</version.com.fasterxml.jackson>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <version.org.apache.httpcomponents>4.3.6</version.org.apache.httpcomponents>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -97,6 +98,7 @@
                 <module>async-http-servlet-3.0</module>
                 <module>jaxrs-api</module>
                 <module>resteasy-jaxrs</module>
+                <module>resteasy-jaxrs-testsuite</module>
                 <module>security</module>
                 <module>providers</module>
                 <module>resteasy-jsapi</module>
@@ -229,7 +231,7 @@
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
-                <version>4.2.6</version>
+                <version>${version.org.apache.httpcomponents}</version>
             </dependency>
             <dependency>
                 <groupId>net.jcip</groupId>
