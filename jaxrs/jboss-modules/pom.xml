@@ -215,7 +215,7 @@
                         <goals>
                             <goal>run</goal>
                         </goals>
-                        <phase>compile</phase>
+                        <phase>package</phase>
                         <configuration>
                             <target>
                                 <ant antfile="build.xml" inheritRefs="true">
@@ -229,7 +229,7 @@
                         <goals>
                             <goal>run</goal>
                         </goals>
-                        <phase>compile</phase>
+                        <phase>package</phase>
                         <configuration>
                             <target>
                                 <ant antfile="build-wf8.xml" inheritRefs="true">
