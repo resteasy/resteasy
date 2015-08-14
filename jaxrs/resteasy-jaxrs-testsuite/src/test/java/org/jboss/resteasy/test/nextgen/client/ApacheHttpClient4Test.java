@@ -329,7 +329,7 @@ public class ApacheHttpClient4Test extends BaseResourceTest
    {
       HttpParams params = new BasicHttpParams();
       ConnManagerParams.setMaxTotalConnections(params, 3);
-      ConnManagerParams.setTimeout(params, 1000);
+      ConnManagerParams.setTimeout(params, 5000);
 
       // Create and initialize scheme registry
       SchemeRegistry schemeRegistry = new SchemeRegistry();

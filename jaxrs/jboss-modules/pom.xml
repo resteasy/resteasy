@@ -215,7 +215,7 @@
                         <goals>
                             <goal>run</goal>
                         </goals>
-                        <phase>compile</phase>
+                        <phase>package</phase>
                         <configuration>
                             <target>
                                 <ant antfile="build.xml" inheritRefs="true">
@@ -229,7 +229,7 @@
                         <goals>
                             <goal>run</goal>
                         </goals>
-                        <phase>compile</phase>
+                        <phase>package</phase>
                         <configuration>
                             <target>
                                 <ant antfile="build-wf8.xml" inheritRefs="true">
@@ -240,6 +240,21 @@
                     </execution>
                 </executions>
                 <dependencies>
+                    <dependency>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant-apache-bsf</artifactId>
+                        <version>1.9.3</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.bsf</groupId>
+                        <artifactId>bsf-api</artifactId>
+                        <version>3.1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>rhino</groupId>
+                        <artifactId>js</artifactId>
+                        <version>1.7R2</version>
+                    </dependency>
                     <dependency>
                         <groupId>org.jboss</groupId>
                         <artifactId>jandex</artifactId>

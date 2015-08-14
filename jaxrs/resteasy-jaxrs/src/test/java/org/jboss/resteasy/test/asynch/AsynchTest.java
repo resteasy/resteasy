@@ -8,6 +8,7 @@ import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.servlet.ServletConfig;
@@ -28,6 +29,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Ignore("https://issues.jboss.org/browse/RESTEASY-1217")
 public class AsynchTest
 {
    private static CountDownLatch latch;

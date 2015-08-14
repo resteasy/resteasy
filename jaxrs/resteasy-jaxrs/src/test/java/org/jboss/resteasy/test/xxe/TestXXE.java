@@ -8,6 +8,7 @@ import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -24,6 +25,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
  * @date Jan 6, 2012
  */
+@Ignore("https://issues.jboss.org/browse/RESTEASY-1216")
 public class TestXXE
 {
    protected static ResteasyDeployment deployment;
