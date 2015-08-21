@@ -29,7 +29,6 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Ignore("https://issues.jboss.org/browse/RESTEASY-1217")
 public class AsynchTest
 {
    private static CountDownLatch latch;
@@ -96,6 +95,7 @@ public class AsynchTest
    public static void after() throws Exception
    {
       EmbeddedContainer.stop();
+      Thread.sleep(1000);
    }
 
    @Test
@@ -150,11 +150,13 @@ public class AsynchTest
          URI newURI = new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(), query, uri.getFragment());
          request = new ClientRequest(newURI.toString());
          response = request.get();
+         Thread.sleep(1000);
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
          Assert.assertEquals(response.getEntity(String.class), "content");
 
          // test its still there
          response = request.get();
+         Thread.sleep(1000);
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
          Assert.assertEquals(response.getEntity(String.class), "content");
 
@@ -163,6 +165,7 @@ public class AsynchTest
          response = request.delete();
          Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
          response = request.get();
+         Thread.sleep(1000);
          Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
          response.releaseConnection();
       }
@@ -188,12 +191,14 @@ public class AsynchTest
 
          request = new ClientRequest(jobUrl1);
          response = request.get();
+         Thread.sleep(1000);
          Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
          response.releaseConnection();
 
          // test its still there
          request = new ClientRequest(jobUrl2);
          response = request.get();
+         Thread.sleep(1000);
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
          Assert.assertEquals(response.getEntity(String.class), "content");
 
@@ -224,6 +229,7 @@ public class AsynchTest
          Assert.assertEquals(response.getEntity(String.class), "content");         
 
          response = request.get();
+         Thread.sleep(1000);
          Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
          response.releaseConnection();
       }
