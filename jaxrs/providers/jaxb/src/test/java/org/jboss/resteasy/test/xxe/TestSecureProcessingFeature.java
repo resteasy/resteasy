@@ -214,6 +214,7 @@ public class TestSecureProcessingFeature
    public void after() throws Exception
    {
       EmbeddedContainer.stop();
+      Thread.sleep(1000);
       dispatcher = null;
       deployment = null;
    }
