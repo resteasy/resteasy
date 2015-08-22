@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.Failure;
@@ -15,6 +16,7 @@ import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 
 import javax.ws.rs.WebApplicationException;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -101,7 +103,7 @@ public class MethodInjectorImpl implements MethodInjector
       }
       catch (Exception e)
       {
-         BadRequestException badRequest = new BadRequestException("Failed processing arguments of " + method.toString(), e);
+         BadRequestException badRequest = new BadRequestException(Messages.MESSAGES.failedProcessingArguments(method.toString()), e);
          badRequest.setLoggable(true);
          throw badRequest;
       }
@@ -138,7 +140,7 @@ public class MethodInjectorImpl implements MethodInjector
       }
       catch (IllegalAccessException e)
       {
-         throw new InternalServerErrorException("Not allowed to reflect on method: " + method.toString(), e);
+         throw new InternalServerErrorException(Messages.MESSAGES.notAllowedToReflectOnMethod(method.toString()), e);
       }
       catch (InvocationTargetException e)
       {
@@ -151,7 +153,7 @@ public class MethodInjectorImpl implements MethodInjector
       }
       catch (IllegalArgumentException e)
       {
-         String msg = "Bad arguments passed to " + method.toString() + "  (";
+         String msg = Messages.MESSAGES.badArguments(method.toString() + "  (");
          if (args != null)
          {
             boolean first = false;

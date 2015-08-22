@@ -2,7 +2,7 @@ package org.jboss.resteasy.util;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 
 import java.io.IOException;
 import java.net.URI;
@@ -17,7 +17,6 @@ import java.net.URISyntaxException;
  */
 public class HttpClient4xUtils
 {
-   private final static Logger log = Logger.getLogger(HttpClient4xUtils.class);
 
    static public void consumeEntity(HttpResponse response)
    {
@@ -26,7 +25,7 @@ public class HttpClient4xUtils
          EntityUtils.consume(response.getEntity());
       } catch (IOException e)
       {
-         log.info("unable to close entity stream", e);
+         LogMessages.LOGGER.unableToCloseEntityStream(e);
       }
    }
    

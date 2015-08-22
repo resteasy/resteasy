@@ -1,6 +1,6 @@
 package org.jboss.resteasy.core.interception;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -11,6 +11,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NoContentException;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.ReaderInterceptor;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -25,7 +26,6 @@ import java.util.Enumeration;
  */
 public class ServerReaderInterceptorContext extends AbstractReaderInterceptorContext
 {
-   private final static Logger logger = Logger.getLogger(ServerReaderInterceptorContext.class);
    private HttpRequest request;
 
    public ServerReaderInterceptorContext(ReaderInterceptor[] interceptors, ResteasyProviderFactory providerFactory, Class type,
@@ -49,9 +49,7 @@ public class ServerReaderInterceptorContext extends AbstractReaderInterceptorCon
    @Override
    protected void throwReaderNotFound()
    {
-      throw new NotSupportedException(
-              "Could not find message body reader for type: "
-                      + genericType + " of content type: " + mediaType);
+      throw new NotSupportedException(Messages.MESSAGES.couldNotFindMessageBodyReader(genericType, mediaType));
    }
 
    @Override

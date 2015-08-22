@@ -4,6 +4,7 @@ import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.client.core.ClientInterceptorRepositoryImpl;
 import org.jboss.resteasy.core.interception.ClientExecutionContextImpl;
 import org.jboss.resteasy.core.interception.ClientWriterInterceptorContext;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.Link;
@@ -784,7 +785,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
       catch (CloneNotSupportedException e)
       {
          // this shouldn't happen
-         throw new RuntimeException("ClientRequest doesn't implement Clonable.  Notify the RESTEasy staff right away.");
+         throw new RuntimeException(Messages.MESSAGES.clientRequestDoesntSupportClonable());
       }
    }
 }

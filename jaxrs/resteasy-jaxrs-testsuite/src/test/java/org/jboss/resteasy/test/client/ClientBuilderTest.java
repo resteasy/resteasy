@@ -1,7 +1,9 @@
 package org.jboss.resteasy.test.client;
 
 import junit.framework.Assert;
+
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.ws.rs.client.Client;
@@ -11,8 +13,12 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
+
 import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 import javax.ws.rs.core.Response;
+
 import java.lang.reflect.Modifier;
 import java.util.logging.*;
 
@@ -126,6 +132,7 @@ public class ClientBuilderTest
    }
 
    @Test
+   @Ignore // Subsumed by testDoubleRegistration()
    public void testDoubleClassRegistration()
    {
       Logger logger = Logger.getLogger(ResteasyProviderFactory.class.getName());
@@ -157,30 +164,25 @@ public class ClientBuilderTest
    @Test
    public void testDoubleRegistration()
    {
-      Logger logger = Logger.getLogger(ResteasyProviderFactory.class.getName());
-
-      Formatter formatter = new SimpleFormatter();
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      Handler handler = new StreamHandler(out, formatter);
-      logger.addHandler(handler);
-
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      PrintStream err = new PrintStream(baos);
+      System.setErr(err);
+      
       Client client = ClientBuilder.newClient();
       int count = client.getConfiguration().getInstances().size();
       Object reg = new FeatureReturningFalse();
-      try {
-         client.register(reg).register(reg);
-         handler.flush();
-         String logMsg = out.toString();
+      client.register(reg).register(reg);
+      client.register(FeatureReturningFalse.class).register(FeatureReturningFalse.class);
+      err.flush();
+      String logMsg = baos.toString();
 
-         Assert.assertNotNull(logMsg);
-         Assert.assertTrue(logMsg.contains("Provider instance"));
-         Assert.assertTrue(logMsg.contains("is already registered."));
-      } finally {
-         logger.removeHandler(handler);
-      }
+      Assert.assertNotNull(logMsg);
+      Assert.assertTrue(logMsg.contains("Provider instance"));
+      Assert.assertTrue(logMsg.contains("is already registered."));
+      Assert.assertTrue(logMsg.contains("Provider class"));
+      int i = logMsg.indexOf("is already registered") + 1;
+      Assert.assertTrue(logMsg.substring(i).indexOf("is already registered") > -1); 
       Assert.assertEquals(count + 1, client.getConfiguration().getInstances().size());
-
       client.close();
-
    }
 }

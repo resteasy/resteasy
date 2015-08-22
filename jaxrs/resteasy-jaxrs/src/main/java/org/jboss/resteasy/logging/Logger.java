@@ -3,6 +3,8 @@ package org.jboss.resteasy.logging;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+
 /**
  * Logging abstraction.  Call setLoggerType() to the logging framework you want to use.
  *
@@ -41,7 +43,7 @@ public abstract class Logger
             loggerClass = Logger.class.getClassLoader().loadClass("org.jboss.resteasy.logging.impl.Slf4jLogger");
          }
          if (loggerClass == null)
-            throw new RuntimeException("Could not match up an implementation for LoggerType: " + loggerType);
+            throw new RuntimeException(Messages.MESSAGES.couldNotMatchUpLoggerTypeImplementation(loggerType));
          loggerConstructor = loggerClass.getDeclaredConstructor(String.class);
       }
       catch (ClassNotFoundException e)

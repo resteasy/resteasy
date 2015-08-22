@@ -1,6 +1,5 @@
 package org.jboss.resteasy.plugins.providers;
 
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -41,7 +40,6 @@ import java.util.Map;
 @ConstrainedTo(RuntimeType.CLIENT)
 public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>, MessageBodyWriter<MultivaluedMap>
 {
-   private final static Logger logger = Logger.getLogger(FormUrlEncodedProvider.class);
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return MultivaluedMap.class.equals(type);

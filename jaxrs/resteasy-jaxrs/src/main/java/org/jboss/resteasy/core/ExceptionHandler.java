@@ -1,6 +1,6 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -15,6 +15,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,7 +25,6 @@ import java.util.Set;
  */
 public class ExceptionHandler
 {
-   private final static Logger logger = Logger.getLogger(ExceptionHandler.class);
    protected ResteasyProviderFactory providerFactory;
    protected Set<String> unwrappedExceptions = new HashSet<String>();
    protected boolean mapperExecuted;
@@ -147,8 +147,8 @@ public class ExceptionHandler
    protected Response handleFailure(HttpRequest request, Failure failure)
    {
       if (failure.isLoggable())
-         logger.error("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), failure);
-      else logger.debug("Failed executing " + request.getHttpMethod() + " " + request.getUri().getPath(), failure);
+         LogMessages.LOGGER.failedExecutingError(request.getHttpMethod(), request.getUri().getPath(), failure);
+      else LogMessages.LOGGER.failedExecutingDebug(request.getHttpMethod(), request.getUri().getPath(), failure);
 
       if (failure.getResponse() != null) {
          return failure.getResponse();
@@ -196,7 +196,7 @@ public class ExceptionHandler
 
    protected Response handleWebApplicationException(WebApplicationException wae)
    {
-      if (!(wae instanceof NoLogWebApplicationException)) logger.error("failed to execute", wae);
+      if (!(wae instanceof NoLogWebApplicationException)) LogMessages.LOGGER.failedToExecute(wae);
       return wae.getResponse();
    }
 
@@ -243,7 +243,7 @@ public class ExceptionHandler
          return handleFailure(request, (Failure) e);
       }
       else {
-         logger.error("Unknown exception while executing " + request.getHttpMethod() + " " + request.getUri().getPath(), e);
+         LogMessages.LOGGER.unknownException(request.getHttpMethod(), request.getUri().getPath(), e);
          throw new UnhandledException(e);
       }
    }

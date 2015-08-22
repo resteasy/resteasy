@@ -6,9 +6,11 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.EntityTypeFactory;
 import org.jboss.resteasy.client.core.BaseClientResponse;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.core.Response;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -110,15 +112,12 @@ public class DefaultEntityExtractorFactory implements EntityExtractorFactory
                   }
                   catch (InstantiationException e)
                   {
-                     throw (context.getClientResponse())
-                             .createResponseFailure("Could not create a default entity type factory of type "
-                                     + entityTypeFactory.getClass().getName());
+                     throw context.getClientResponse().createResponseFailure(Messages.MESSAGES.couldNotCreateEntityFactory(entityTypeFactory.getClass().getName()));
                   }
                   catch (IllegalAccessException e)
                   {
-                     throw ((BaseClientResponse<?>) context.getClientResponse())
-                             .createResponseFailure("Could not create a default entity type factory of type "
-                                     + entityTypeFactory.getClass().getName() + ". " + e.getMessage());
+                     throw ((BaseClientResponse<?>)context.getClientResponse())
+                           .createResponseFailure(Messages.MESSAGES.couldNotCreateEntityFactoryMessage(entityTypeFactory.getClass().getName(), e.getMessage()));
                   }
                   context.getClientResponse().setReturnType(
                           factory.getEntityType(((BaseClientResponse<?>) context.getClientResponse()).getStatus(),

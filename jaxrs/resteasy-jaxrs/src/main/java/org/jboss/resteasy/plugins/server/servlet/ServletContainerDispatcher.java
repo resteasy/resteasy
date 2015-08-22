@@ -3,7 +3,8 @@ package org.jboss.resteasy.plugins.server.servlet;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -21,6 +22,7 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
@@ -35,7 +37,6 @@ public class ServletContainerDispatcher
 {
    protected Dispatcher dispatcher;
    protected ResteasyProviderFactory providerFactory;
-   private final static Logger logger = Logger.getLogger(ServletContainerDispatcher.class);
    private String servletMappingPrefix = "";
    protected ResteasyDeployment deployment = null;
    protected HttpRequestFactory requestFactory;
@@ -67,7 +68,7 @@ public class ServletContainerDispatcher
          dispatcher = globalDispatcher;
          if ((providerFactory != null && dispatcher == null) || (providerFactory == null && dispatcher != null))
          {
-            throw new ServletException("Unknown state.  You have a Listener messing up what resteasy expects");
+            throw new ServletException(Messages.MESSAGES.unknownStateListener());
          }
          // We haven't been initialized by an external entity so bootstrap ourselves
          if (providerFactory == null)
@@ -129,7 +130,8 @@ public class ServletContainerDispatcher
 
    protected void processApplication(Application config)
    {
-      logger.info("Deploying " + Application.class.getName() + ": " + config.getClass());
+      LogMessages.LOGGER.deployingApplication(Application.class.getName(), config.getClass());
+      
       ArrayList<Class> actualResourceClasses = new ArrayList<Class>();
       ArrayList<Class> actualProviderClasses = new ArrayList<Class>();
       ArrayList resources = new ArrayList();
@@ -140,12 +142,12 @@ public class ServletContainerDispatcher
          {
             if (GetRestful.isRootResource(clazz))
             {
-               logger.info("Adding class resource " + clazz.getName() + " from Application " + config.getClass());
+               LogMessages.LOGGER.addingClassResource(clazz.getName(), config.getClass());
                actualResourceClasses.add(clazz);
             }
             else
             {
-               logger.info("Adding provider class " + clazz.getName() + " from Application " + config.getClass());
+               LogMessages.LOGGER.addingProviderClass(clazz.getName(), config.getClass());
                actualProviderClasses.add(clazz);
             }
          }
@@ -156,12 +158,13 @@ public class ServletContainerDispatcher
          {
             if (GetRestful.isRootResource(obj.getClass()))
             {
-               logger.info("Adding singleton resource " + obj.getClass().getName() + " from Application " + config.getClass());
+               LogMessages.LOGGER.addingSingletonResource(obj.getClass().getName(), config.getClass());
                resources.add(obj);
             }
             else
             {
-               logger.info("Adding singleton provider " + obj.getClass().getName() + " from Application " + config.getClass());
+               LogMessages.LOGGER.addingSingletonProvider(obj.getClass().getName(), config.getClass());
+//               
                providers.add(obj);
             }
          }
@@ -202,7 +205,7 @@ public class ServletContainerDispatcher
          {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             // made it warn so that people can filter this.
-            logger.warn("Failed to parse request.", e);
+            LogMessages.LOGGER.failedToParseRequest(e);
             return;
          }
 

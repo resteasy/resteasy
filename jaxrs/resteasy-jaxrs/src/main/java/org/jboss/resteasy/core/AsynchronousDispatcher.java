@@ -1,8 +1,8 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InternalServerErrorException;
@@ -19,6 +19,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
@@ -68,7 +69,6 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
    private Cache cache;
    private String basePath = "/asynch/jobs";
    private AtomicLong counter = new AtomicLong(0);
-   private final static Logger logger = Logger.getLogger(AsynchronousDispatcher.class);
    private long maxWaitMilliSeconds = 300000;
    private int maxCacheSize = 100;
 
@@ -295,7 +295,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
 
    public void oneway(HttpRequest request, HttpResponse response, final ResourceInvoker invoker)
    {
-      logger.debug("IN ONE WAY!!!!!");
+      LogMessages.LOGGER.inOneWay();
       final MockHttpRequest in;
       try
       {
@@ -310,7 +310,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
 
          public void run()
          {
-            logger.debug("RUNNING JOB!!!!");
+            LogMessages.LOGGER.runningJob();
             MockHttpResponse theResponse = new MockHttpResponse();
 
 
@@ -321,7 +321,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
             }
             catch (Exception ignored)
             {
-               logger.error("Failed to invoke asynchronously", ignored);
+               LogMessages.LOGGER.failedToInvokeAsynchronously(ignored);
             }
             finally
             {

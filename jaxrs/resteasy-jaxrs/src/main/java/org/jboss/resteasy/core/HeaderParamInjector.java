@@ -1,10 +1,12 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.HeaderParam;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
@@ -30,6 +32,6 @@ public class HeaderParamInjector extends StringParameterInjector implements Valu
 
    public Object inject()
    {
-      throw new RuntimeException("It is illegal to inject a @HeaderParam into a singleton");
+      throw new RuntimeException(Messages.MESSAGES.illegalToInjectHeaderParam());
    }
 }
