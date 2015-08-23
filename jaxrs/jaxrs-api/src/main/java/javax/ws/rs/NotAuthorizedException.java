@@ -45,6 +45,9 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
+
+import org.jboss.resteasy.jaxrs_api.i18n.Messages;
+
 import static javax.ws.rs.core.HttpHeaders.WWW_AUTHENTICATE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
@@ -197,7 +200,7 @@ public class NotAuthorizedException extends ClientErrorException {
 
     private static Response createUnauthorizedResponse(Object challenge, Object[] otherChallenges) {
         if (challenge == null) {
-            throw new NullPointerException("Primary challenge parameter must not be null.");
+           throw new NullPointerException(Messages.MESSAGES.primaryChallengeParameterNull());
         }
 
         Response.ResponseBuilder builder = Response.status(UNAUTHORIZED)

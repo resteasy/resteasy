@@ -46,6 +46,8 @@ import java.util.Set;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
+import org.jboss.resteasy.jaxrs_api.i18n.Messages;
+
 /**
  * A runtime exception indicating a client requesting a resource method that is
  * {@link javax.ws.rs.core.Response.Status#METHOD_NOT_ALLOWED not allowed}.
@@ -83,7 +85,7 @@ public class NotAllowedException extends ClientErrorException {
 
     private static Response createNotAllowedResponse(String allowed, String... moreAllowed) {
         if (allowed == null) {
-            throw new NullPointerException("No allowed method specified.");
+           throw new NullPointerException(Messages.MESSAGES.noAllowedMethodSpecified());
         }
         Set<String> methods;
         if (moreAllowed != null && moreAllowed.length > 0) {
@@ -187,7 +189,7 @@ public class NotAllowedException extends ClientErrorException {
 
     private static Response validateAllow(final Response response) {
         if (!response.getHeaders().containsKey(HttpHeaders.ALLOW)) {
-            throw new IllegalArgumentException("Response does not contain required 'Allow' HTTP header.");
+           throw new IllegalArgumentException(Messages.MESSAGES.responseDoesContainAllowHeader());
         }
 
         return response;

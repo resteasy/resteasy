@@ -48,7 +48,9 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Properties;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.jboss.resteasy.jaxrs_api.i18n.LogMessages;
+import org.jboss.resteasy.jaxrs_api.i18n.Messages;
 
 /**
  * Factory finder utility class.
@@ -58,8 +60,6 @@ import java.util.logging.Logger;
  * @since 1.0
  */
 final class FactoryFinder {
-
-    private static final Logger LOGGER = Logger.getLogger(FactoryFinder.class.getName());
 
     private FactoryFinder() {
         // prevents instantiation
@@ -75,10 +75,7 @@ final class FactoryFinder {
                         try {
                             cl = Thread.currentThread().getContextClassLoader();
                         } catch (SecurityException ex) {
-                            LOGGER.log(
-                                    Level.WARNING,
-                                    "Unable to get context classloader instance.",
-                                    ex);
+                           LogMessages.LOGGER.warn(Messages.MESSAGES.unableToGetContextClassloader(), ex);
                         }
                         return cl;
                     }
@@ -104,12 +101,7 @@ final class FactoryFinder {
                 try {
                     spiClass = Class.forName(className, false, classLoader);
                 } catch (ClassNotFoundException ex) {
-                    LOGGER.log(
-                            Level.FINE,
-                            "Unable to load provider class " + className
-                                    + " using custom classloader " + classLoader.getClass().getName()
-                                    + " trying again with current classloader.",
-                            ex);
+                    LogMessages.LOGGER.trace(Messages.MESSAGES.unableToLoadProviderClass(className, classLoader.getClass().getName()), ex);
                     spiClass = Class.forName(className);
                 }
             }
@@ -117,7 +109,7 @@ final class FactoryFinder {
         } catch (ClassNotFoundException x) {
             throw x;
         } catch (Exception x) {
-            throw new ClassNotFoundException("Provider " + className + " could not be instantiated: " + x, x);
+           throw new ClassNotFoundException(Messages.MESSAGES.providerCouldNotBeInstantiated(className, x), x);
         }
     }
 
@@ -165,7 +157,7 @@ final class FactoryFinder {
                 }
             }
         } catch (Exception ex) {
-            LOGGER.log(Level.FINER, "Failed to load service " + factoryId + " from " + serviceId, ex);
+           LogMessages.LOGGER.trace(Messages.MESSAGES.failedToLoadServiceFromServiceId(factoryId, serviceId), ex);
         }
 
 
@@ -182,8 +174,7 @@ final class FactoryFinder {
                 return newInstance(factoryClassName, classLoader);
             }
         } catch (Exception ex) {
-            LOGGER.log(Level.FINER, "Failed to load service " + factoryId
-                    + " from $java.home/lib/jaxrs.properties", ex);
+           LogMessages.LOGGER.trace(Messages.MESSAGES.failedToLoadServiceFromJaxrsProperties(factoryId), ex);
         }
 
 
@@ -194,13 +185,11 @@ final class FactoryFinder {
                 return newInstance(systemProp, classLoader);
             }
         } catch (SecurityException se) {
-            LOGGER.log(Level.FINER, "Failed to load service " + factoryId
-                    + " from a system property", se);
+           LogMessages.LOGGER.trace(Messages.MESSAGES.failedToLoadServiceFromSystemProperty(factoryId), se);
         }
 
         if (fallbackClassName == null) {
-            throw new ClassNotFoundException(
-                    "Provider for " + factoryId + " cannot be found", null);
+           throw new ClassNotFoundException(Messages.MESSAGES.providerCouldNotBeFound(factoryId), null);
         }
 
         return newInstance(fallbackClassName, classLoader);

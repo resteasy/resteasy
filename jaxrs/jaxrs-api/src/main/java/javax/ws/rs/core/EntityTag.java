@@ -42,6 +42,8 @@ package javax.ws.rs.core;
 import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
+import org.jboss.resteasy.jaxrs_api.i18n.Messages;
+
 /**
  * An abstraction for the value of a HTTP Entity Tag, used as the value
  * of an ETag response header.
@@ -77,7 +79,7 @@ public class EntityTag {
      */
     public EntityTag(final String value, final boolean weak) {
         if (value == null) {
-            throw new IllegalArgumentException("value==null");
+           throw new IllegalArgumentException(Messages.MESSAGES.valueIsNull());
         }
         this.value = value;
         this.weak = weak;

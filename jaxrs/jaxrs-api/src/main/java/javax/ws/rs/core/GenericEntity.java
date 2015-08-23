@@ -61,6 +61,8 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import org.jboss.resteasy.jaxrs_api.i18n.Messages;
+
 /**
  * Represents a message entity of a generic type {@code T}.
  * <p>
@@ -122,7 +124,7 @@ public class GenericEntity<T> {
      */
     protected GenericEntity(final T entity) {
         if (entity == null) {
-            throw new IllegalArgumentException("The entity must not be null");
+           throw new IllegalArgumentException(Messages.MESSAGES.entityMustNotBeNull());
         }
         this.entity = entity;
         this.type = GenericType.getTypeArgument(getClass(), GenericEntity.class);
@@ -145,7 +147,7 @@ public class GenericEntity<T> {
      */
     public GenericEntity(final T entity, final Type genericType) {
         if (entity == null || genericType == null) {
-            throw new IllegalArgumentException("Arguments must not be null.");
+           throw new IllegalArgumentException(Messages.MESSAGES.argumentsMustNotBeNull());
         }
         this.entity = entity;
         this.rawType = entity.getClass();
@@ -170,7 +172,7 @@ public class GenericEntity<T> {
             checkTypeCompatibility(c.getComponentType(), rt);
             return;
         }
-        throw new IllegalArgumentException("The type is incompatible with the class of the entity.");
+        throw new IllegalArgumentException(Messages.MESSAGES.typeIsIncompatible());
     }
 
     /**

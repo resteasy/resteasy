@@ -45,6 +45,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jboss.resteasy.jaxrs_api.i18n.Messages;
+
 /**
  * Abstract skeleton implementation of a {@link MultivaluedMap} that is backed
  * by a [key, multi-value] store represented as a {@link Map Map&lt;K, List&lt;V&gt;&gt;}.
@@ -71,7 +73,7 @@ public abstract class AbstractMultivaluedMap<K, V> implements MultivaluedMap<K, 
      */
     public AbstractMultivaluedMap(Map<K, List<V>> store) {
         if (store == null) {
-            throw new NullPointerException("Underlying store must not be 'null'.");
+           throw new NullPointerException(Messages.MESSAGES.underlyingStoreMustNotBeNull());
         }
         this.store = store;
     }
@@ -173,7 +175,7 @@ public abstract class AbstractMultivaluedMap<K, V> implements MultivaluedMap<K, 
     @Override
     public final void addAll(K key, V... newValues) {
         if (newValues == null) {
-            throw new NullPointerException("Supplied array of values must not be null.");
+           throw new NullPointerException(Messages.MESSAGES.suppliedArrayMustNotBeNull());
         }
         if (newValues.length == 0) {
             return;
@@ -208,7 +210,7 @@ public abstract class AbstractMultivaluedMap<K, V> implements MultivaluedMap<K, 
     @Override
     public final void addAll(K key, List<V> valueList) {
         if (valueList == null) {
-            throw new NullPointerException("Supplied list of values must not be null.");
+           throw new NullPointerException(Messages.MESSAGES.suppliedListMustNotBeNull());
         }
         if (valueList.isEmpty()) {
             return;

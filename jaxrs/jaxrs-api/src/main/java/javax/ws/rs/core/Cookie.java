@@ -42,6 +42,8 @@ package javax.ws.rs.core;
 import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
+import org.jboss.resteasy.jaxrs_api.i18n.Messages;
+
 /**
  * Represents the value of a HTTP cookie, transferred in a request.
  * RFC 2109 specifies the legal characters for name,
@@ -79,7 +81,7 @@ public class Cookie {
     public Cookie(final String name, final String value, final String path, final String domain, final int version)
             throws IllegalArgumentException {
         if (name == null) {
-            throw new IllegalArgumentException("name==null");
+           throw new IllegalArgumentException(Messages.MESSAGES.nameIsNull());
         }
         this.name = name;
         this.value = value;

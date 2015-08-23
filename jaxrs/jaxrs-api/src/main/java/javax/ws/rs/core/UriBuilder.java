@@ -45,6 +45,8 @@ import java.util.Map;
 
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import org.jboss.resteasy.jaxrs_api.i18n.Messages;
+
 /**
  * URI template-aware utility class for building URIs from their components. See
  * {@link javax.ws.rs.Path#value} for an explanation of URI templates.
@@ -130,7 +132,7 @@ public abstract class UriBuilder {
      */
     public static UriBuilder fromLink(Link link) {
         if (link == null) {
-            throw new IllegalArgumentException("The provider 'link' parameter value is 'null'.");
+           throw new IllegalArgumentException(Messages.MESSAGES.linkParameterValueNull());
         }
         return UriBuilder.fromUri(link.getUri());
     }

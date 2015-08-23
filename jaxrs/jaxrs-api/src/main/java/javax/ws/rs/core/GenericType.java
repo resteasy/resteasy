@@ -47,6 +47,8 @@ import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.Stack;
 
+import org.jboss.resteasy.jaxrs_api.i18n.Messages;
+
 /**
  * Represents a generic message entity type {@code T}.
  *
@@ -129,7 +131,7 @@ public class GenericType<T> {
      */
     public GenericType(Type genericType) {
         if (genericType == null) {
-            throw new IllegalArgumentException("Type must not be null");
+           throw new IllegalArgumentException(Messages.MESSAGES.typeMustNotBeNull());
         }
 
         type = genericType;
@@ -176,8 +178,7 @@ public class GenericType<T> {
             final Class<?> componentRawType = getClass(array.getGenericComponentType());
             return getArrayClass(componentRawType);
         }
-        throw new IllegalArgumentException("Type parameter " + type.toString() + " not a class or " +
-                "parameterized type whose raw type is a class");
+        throw new IllegalArgumentException(Messages.MESSAGES.typeParameterNotAClass(type.toString()));
     }
 
     /**
@@ -243,7 +244,7 @@ public class GenericType<T> {
             // needed type argument not supplied - break and throw exception
             break;
         }
-        throw new IllegalArgumentException(currentType + " does not specify the type parameter T of GenericType<T>");
+        throw new IllegalArgumentException(Messages.MESSAGES.currentTypeNoTypeParameter(currentType));
     }
 
     @Override

@@ -48,6 +48,8 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant.VariantListBuilder;
 
+import org.jboss.resteasy.jaxrs_api.i18n.Messages;
+
 /**
  * Implementations of JAX-RS provide a concrete subclass of RuntimeDelegate and
  * various JAX-RS API methods defer to methods of RuntimeDelegate for their
@@ -143,9 +145,7 @@ public abstract class RuntimeDelegate {
                     loader = ClassLoader.getSystemClassLoader();
                 }
                 URL targetTypeURL = loader.getResource(classnameAsResource);
-                throw new LinkageError("ClassCastException: attempting to cast"
-                        + delegate.getClass().getClassLoader().getResource(classnameAsResource)
-                        + " to " + targetTypeURL);
+                throw new LinkageError(Messages.MESSAGES.classCastException(delegate.getClass().getClassLoader().getResource(classnameAsResource), targetTypeURL));
             }
             return (RuntimeDelegate) delegate;
         } catch (Exception ex) {

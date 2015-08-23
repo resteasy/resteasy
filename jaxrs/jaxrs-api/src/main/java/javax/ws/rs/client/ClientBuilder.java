@@ -44,9 +44,10 @@ import java.security.KeyStore;
 
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Configuration;
-
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+
+import org.jboss.resteasy.jaxrs_api.i18n.Messages;
 
 /**
  * Main entry point to the client API used to bootstrap {@link javax.ws.rs.client.Client}
@@ -94,9 +95,7 @@ public abstract class ClientBuilder implements Configurable<ClientBuilder> {
                     loader = ClassLoader.getSystemClassLoader();
                 }
                 URL targetTypeURL = loader.getResource(classnameAsResource);
-                throw new LinkageError("ClassCastException: attempting to cast"
-                        + delegate.getClass().getClassLoader().getResource(classnameAsResource)
-                        + " to " + targetTypeURL);
+                throw new LinkageError(Messages.MESSAGES.classCastException(delegate.getClass().getClassLoader().getResource(classnameAsResource), targetTypeURL));
             }
             return (ClientBuilder) delegate;
         } catch (Exception ex) {

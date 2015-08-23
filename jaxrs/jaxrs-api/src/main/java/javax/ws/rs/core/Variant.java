@@ -45,6 +45,8 @@ import java.util.Locale;
 
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import org.jboss.resteasy.jaxrs_api.i18n.Messages;
+
 /**
  * Abstraction for a resource representation variant.
  *
@@ -73,7 +75,7 @@ public class Variant {
      */
     public Variant(MediaType mediaType, String language, String encoding) {
         if (mediaType == null && language == null && encoding == null) {
-            throw new IllegalArgumentException("mediaType, language, encoding all null");
+           throw new IllegalArgumentException(Messages.MESSAGES.mediaTypeLanguageEncodingNull());
         }
         this.encoding = encoding;
         this.language = (language == null) ? null : new Locale(language);
@@ -95,7 +97,7 @@ public class Variant {
      */
     public Variant(MediaType mediaType, String language, String country, String encoding) {
         if (mediaType == null && language == null && encoding == null) {
-            throw new IllegalArgumentException("mediaType, language, encoding all null");
+           throw new IllegalArgumentException(Messages.MESSAGES.mediaTypeLanguageEncodingNull());
         }
         this.encoding = encoding;
         this.language = (language == null) ? null : new Locale(language, country);
@@ -121,7 +123,7 @@ public class Variant {
      */
     public Variant(MediaType mediaType, String language, String country, String languageVariant, String encoding) {
         if (mediaType == null && language == null && encoding == null) {
-            throw new IllegalArgumentException("mediaType, language, encoding all null");
+           throw new IllegalArgumentException(Messages.MESSAGES.mediaTypeLanguageEncodingNull());
         }
         this.encoding = encoding;
         this.language = (language == null) ? null : new Locale(language, country, languageVariant);
@@ -139,7 +141,7 @@ public class Variant {
      */
     public Variant(MediaType mediaType, Locale language, String encoding) {
         if (mediaType == null && language == null && encoding == null) {
-            throw new IllegalArgumentException("mediaType, language, encoding all null");
+           throw new IllegalArgumentException(Messages.MESSAGES.mediaTypeLanguageEncodingNull());
         }
         this.encoding = encoding;
         this.language = language;
