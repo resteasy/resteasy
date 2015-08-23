@@ -131,7 +131,6 @@ public class ServletContainerDispatcher
    protected void processApplication(Application config)
    {
       LogMessages.LOGGER.deployingApplication(Application.class.getName(), config.getClass());
-      
       ArrayList<Class> actualResourceClasses = new ArrayList<Class>();
       ArrayList<Class> actualProviderClasses = new ArrayList<Class>();
       ArrayList resources = new ArrayList();
@@ -164,7 +163,6 @@ public class ServletContainerDispatcher
             else
             {
                LogMessages.LOGGER.addingSingletonProvider(obj.getClass().getName(), config.getClass());
-//               
                providers.add(obj);
             }
          }

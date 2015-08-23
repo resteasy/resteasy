@@ -130,12 +130,10 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
       }
       if (major.length() < 1 || subtype.length() < 1)
       {
-//         throw new IllegalArgumentException("Failure parsing MediaType string: " + type);
          throw new IllegalArgumentException(Messages.MESSAGES.failureParsingMediaType(type));
       }
       if (!isValid(major) || !isValid(subtype))
       {
-//         throw new IllegalArgumentException("Failure parsing MediaType string: " + type);
          throw new IllegalArgumentException(Messages.MESSAGES.failureParsingMediaType(type));
       }
       String params = null;

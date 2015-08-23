@@ -404,7 +404,6 @@ public class ResteasyUriBuilder extends UriBuilder
    {
       if (method == null)
       {
-//         throw new IllegalArgumentException("method was null");
          throw new IllegalArgumentException(Messages.MESSAGES.methodNull());
       }
       Path ann = method.getAnnotation(Path.class);
@@ -514,7 +513,6 @@ public class ResteasyUriBuilder extends UriBuilder
       }
       catch (Exception e)
       {
-//         throw new RuntimeException("Failed to create URI: " + buf, e);
          throw new RuntimeException(Messages.MESSAGES.failedToCreateUri(buf), e);
       }
    }
@@ -748,7 +746,6 @@ public class ResteasyUriBuilder extends UriBuilder
       }
       catch (Exception e)
       {
-//         throw new UriBuilderException("Failed to create URI: " + buf, e);
          throw new UriBuilderException(Messages.MESSAGES.failedToCreateUri(buf), e);
       }
    }

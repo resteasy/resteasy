@@ -6,16 +6,9 @@ import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.Provider;
-
-import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Create a deployment from String-based configuration data
@@ -30,14 +23,6 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
 
    public ResteasyDeployment createDeployment()
    {
-//      String loggerTypeString = getParameter("resteasy.logger.type");
-//      if (loggerTypeString != null)
-//      {
-//         Logger.LoggerType loggerType = Logger.LoggerType.valueOf(loggerTypeString);
-//         Logger.setLoggerType(loggerType);
-//
-//      }
-//      logger = Logger.getLogger(ConfigurationBootstrap.class);
       String deploymentSensitive = getParameter("resteasy.use.deployment.sensitive.factory");
       if (deploymentSensitive != null)
          deployment.setDeploymentSensitiveFactoryEnabled(Boolean.valueOf(deploymentSensitive.trim()));
@@ -120,13 +105,11 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
       String scanAll = getParameter(ResteasyContextParameters.RESTEASY_SCAN);
       if (scanAll != null)
       {
-//         logger.warn(ResteasyContextParameters.RESTEASY_SCAN + " is no longer supported.  Use a servlet 3.0 container and the ResteasyServletInitializer");
          LogMessages.LOGGER.noLongerSupported(ResteasyContextParameters.RESTEASY_SCAN);
       }
       String sResources = getParameter(ResteasyContextParameters.RESTEASY_SCAN_RESOURCES);
       if (sResources != null)
       {
-//         logger.warn(ResteasyContextParameters.RESTEASY_SCAN_RESOURCES + " is no longer supported.  Use a servlet 3.0 container and the ResteasyServletInitializer");
          LogMessages.LOGGER.noLongerSupported(ResteasyContextParameters.RESTEASY_SCAN_RESOURCES);
       }
 

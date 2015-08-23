@@ -76,8 +76,6 @@ public class AcceptHeaders
       }
       ;
 
-//      if (logger.isDebugEnabled())
-//         logger.debug(result.toString());
       LogMessages.LOGGER.debug(result.toString());
       
       return result;
@@ -125,8 +123,6 @@ public class AcceptHeaders
          result.put(locale, quality);
       }
 
-//      if (logger.isDebugEnabled())
-//         logger.debug(result.toString());
       LogMessages.LOGGER.debug(result.toString());
       return result;
    }
@@ -183,8 +179,6 @@ public class AcceptHeaders
          result.put(new MediaType(type.trim(), subtype.trim(), parameters), qualityValue);
       }
 
-//      if (logger.isDebugEnabled())
-//         logger.debug(result.toString());
       LogMessages.LOGGER.debug(result.toString());
       return result;
    }
@@ -231,7 +225,6 @@ public class AcceptHeaders
             else
             {
                if (header.substring(offset, parameterEndIndex).trim().length() != 0)
-//                  throw new BadRequestException("Garbage after quoted string: " + header);
                   throw new BadRequestException(Messages.MESSAGES.garbageAfterQuotedString(header));
                offset = parameterEndIndex + 1;
             }

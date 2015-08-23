@@ -246,8 +246,6 @@ public class ResponseObjectEntityExtractorFactory extends DefaultEntityExtractor
       }
       catch (MalformedURLException e)
       {
-//         throw new RuntimeException(String.format("Could not create a URL for %s in %s.%s", uri
-//                 .toASCIIString(), method.getClass().getName(), method.getName()), e);
          throw new RuntimeException(Messages.MESSAGES.couldNotCreateURI(uri.toASCIIString(), method.getClass().getName(), method.getName()), e);
       }
    }

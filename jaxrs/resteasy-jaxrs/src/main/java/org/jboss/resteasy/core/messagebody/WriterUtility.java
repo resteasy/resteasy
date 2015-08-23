@@ -55,8 +55,6 @@ public abstract class WriterUtility
          public RuntimeException createWriterNotFound(Type genericType,
                                                       MediaType mediaType)
          {
-//            throw new RuntimeException("Could not read type " + genericType
-//                    + " for media type " + mediaType);
             throw new RuntimeException(Messages.MESSAGES.couldNotReadType(genericType, mediaType));
          }
       }.doWrite(toOutput, mt, os);
