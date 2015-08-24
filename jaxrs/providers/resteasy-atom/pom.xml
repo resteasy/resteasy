@@ -125,6 +125,7 @@
                                             </includes>
                                         </resource>
                                     </resources>
+                                    <overwrite>true</overwrite>
                                 </configuration>
                             </execution>
                         </executions>
