@@ -25,9 +25,10 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.cdi.CdiInjectorFactory;
 import org.jboss.resteasy.cdi.ResteasyCdiExtension;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
+import org.jboss.resteasy.plugins.validation.hibernate.i18n.LogMessages;
+import org.jboss.resteasy.plugins.validation.hibernate.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
@@ -44,9 +45,7 @@ import org.jboss.resteasy.util.FindAnnotation;
  */
 @SuppressWarnings("serial")
 public class GeneralValidatorImpl implements GeneralValidatorCDI
-{
-   private static final Logger log = Logger.getLogger(GeneralValidatorImpl.class);
-   
+{  
    private Validator validator;
    private MethodValidator methodValidator;
    private ConstraintTypeUtil util = new ConstraintTypeUtil10();
@@ -105,7 +104,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       catch (Throwable t)
       {
          // In case ResteasyCdiExtension is not on the classpath.
-         log.debug("ResteasyCdiExtension is not on the classpath. Assuming CDI is not active");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.cdiExtensionNotOnClasspath());
       }
       
       ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
