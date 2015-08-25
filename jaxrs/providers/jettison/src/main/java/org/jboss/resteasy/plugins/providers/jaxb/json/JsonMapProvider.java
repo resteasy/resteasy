@@ -4,6 +4,7 @@ import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException;
 import org.jboss.resteasy.plugins.providers.jaxb.MapProvider;
+import org.jboss.resteasy.plugins.providers.jaxb.json.i18n.Messages;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.Consumes;
@@ -14,6 +15,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -54,7 +56,7 @@ public class JsonMapProvider extends MapProvider
 
 
       char c = JsonParsing.eatWhitspace(reader, false);
-      if (c != '{') throw new JAXBUnmarshalException("Expecting a json array as input");
+      if (c != '{') throw new JAXBUnmarshalException(Messages.MESSAGES.expectingJsonArray());
       c = JsonParsing.eatWhitspace(reader, true);
       HashMap map = new HashMap();
       if (c != '}')
@@ -68,7 +70,7 @@ public class JsonMapProvider extends MapProvider
 
             if (c != ':')
             {
-               throw new JAXBUnmarshalException("Was expecting a ':' in json map");
+               throw new JAXBUnmarshalException(Messages.MESSAGES.expectingColonMap());
             }
 
             c = JsonParsing.eatWhitspace(reader, true);
@@ -84,7 +86,7 @@ public class JsonMapProvider extends MapProvider
 
             if (c != ',')
             {
-               throw new JAXBUnmarshalException("Was expecting a ',' in json array");
+               throw new JAXBUnmarshalException(Messages.MESSAGES.expectingCommaJsonArray());
             }
             c = JsonParsing.eatWhitspace(reader, true);
          } while (c != -1);
@@ -107,7 +109,7 @@ public class JsonMapProvider extends MapProvider
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
-         throw new JAXBMarshalException("Unable to find JAXBContext for media type: " + mediaType);
+         throw new JAXBMarshalException(Messages.MESSAGES.unableToFindJAXBContext(mediaType));
       }
       Class valueType = Types.getMapValueType(genericType);
       OutputStreamWriter writer = new OutputStreamWriter(entityStream, getCharset(mediaType));
