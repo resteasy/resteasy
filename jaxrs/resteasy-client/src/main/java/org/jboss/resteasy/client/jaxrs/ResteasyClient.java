@@ -1,5 +1,6 @@
 package org.jboss.resteasy.client.jaxrs;
 
+import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
@@ -14,6 +15,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.UriBuilder;
+
 import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -54,7 +56,7 @@ public class ResteasyClient implements Client
 
    public void abortIfClosed()
    {
-      if (isClosed()) throw new IllegalStateException("Client is closed.");
+      if (isClosed()) throw new IllegalStateException(Messages.MESSAGES.clientIsClosed());
    }
 
    public boolean isClosed()
@@ -177,7 +179,7 @@ public class ResteasyClient implements Client
    public ResteasyWebTarget target(String uri) throws IllegalArgumentException, NullPointerException
    {
       abortIfClosed();
-      if (uri == null) throw new NullPointerException("uri was null");
+      if (uri == null) throw new NullPointerException(Messages.MESSAGES.uriWasNull());
       return new ClientWebTarget(this, uri, configuration);
    }
 
@@ -185,7 +187,7 @@ public class ResteasyClient implements Client
    public ResteasyWebTarget target(URI uri) throws NullPointerException
    {
       abortIfClosed();
-      if (uri == null) throw new NullPointerException("uri was null");
+      if (uri == null) throw new NullPointerException(Messages.MESSAGES.uriWasNull());
       return new ClientWebTarget(this, uri, configuration);
    }
 
@@ -193,7 +195,7 @@ public class ResteasyClient implements Client
    public ResteasyWebTarget target(UriBuilder uriBuilder) throws NullPointerException
    {
       abortIfClosed();
-      if (uriBuilder == null) throw new NullPointerException("uriBuilder was null");
+      if (uriBuilder == null) throw new NullPointerException(Messages.MESSAGES.uriBuilderWasNull());
       return new ClientWebTarget(this, uriBuilder, configuration);
    }
 
@@ -201,7 +203,7 @@ public class ResteasyClient implements Client
    public ResteasyWebTarget target(Link link) throws NullPointerException
    {
       abortIfClosed();
-      if (link == null) throw new NullPointerException("link was null");
+      if (link == null) throw new NullPointerException(Messages.MESSAGES.linkWasNull());
       URI uri = link.getUri();
       return new ClientWebTarget(this, uri, configuration);
    }
@@ -210,7 +212,7 @@ public class ResteasyClient implements Client
    public Invocation.Builder invocation(Link link) throws NullPointerException, IllegalArgumentException
    {
       abortIfClosed();
-      if (link == null) throw new NullPointerException("link was null");
+      if (link == null) throw new NullPointerException(Messages.MESSAGES.linkWasNull());
       WebTarget target = target(link);
       if (link.getType() != null) return target.request(link.getType());
       else return target.request();

@@ -23,6 +23,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.client.ClientURI;
+import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation.CookieParamProcessor;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation.FormParamProcessor;
@@ -146,8 +147,7 @@ public class ProcessorFactory
         	 mediaType = defaultConsumes;
          if (mediaType == null)
          {
-            throw new RuntimeException(
-                    "You must define a @Consumes type on your client method or interface, or supply a default");
+            throw new RuntimeException(Messages.MESSAGES.mustDefineConsumesType());
          }
          processor = new MessageBodyParameterProcessor(mediaType, type,
                  genericType, annotations);
@@ -187,7 +187,7 @@ public class ProcessorFactory
          // needed type argument not supplied - break and throw exception
          break;
       }
-      throw new IllegalArgumentException(var + " does not specify the type parameter T of GenericType<T>");
+      throw new IllegalArgumentException(Messages.MESSAGES.doesNotSpecifyTypeParameter(var));
    }
 
    static void recursivePush(Type t, Class<?> baseInterface, Stack<Type> superinterfaces) {

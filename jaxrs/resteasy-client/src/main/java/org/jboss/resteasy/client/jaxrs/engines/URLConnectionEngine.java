@@ -1,6 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.engines;
 
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
+import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
@@ -9,6 +10,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.MultivaluedMap;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,7 +49,7 @@ public class URLConnectionEngine implements ClientHttpEngine
             status = connection.getResponseCode();
         } catch (IOException e)
         {
-            throw new ProcessingException("Unable to invoke request", e);
+           throw new ProcessingException(Messages.MESSAGES.unableToInvokeRequest(), e);
         }
 
         //Creating response with stream content
@@ -151,7 +153,7 @@ public class URLConnectionEngine implements ClientHttpEngine
 
         if (request.getEntity() != null)
         {
-            if (request.getMethod().equals("GET")) throw new ProcessingException("A GET request cannot have a body.");
+           if (request.getMethod().equals("GET")) throw new ProcessingException(Messages.MESSAGES.getRequestCannotHaveBody());
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             request.getDelegatingOutputStream().setDelegate(baos);
