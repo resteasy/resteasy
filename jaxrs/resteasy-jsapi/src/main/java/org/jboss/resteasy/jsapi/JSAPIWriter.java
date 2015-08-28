@@ -1,11 +1,13 @@
 package org.jboss.resteasy.jsapi;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.jsapi.i18n.LogMessages;
+import org.jboss.resteasy.jsapi.i18n.Messages;
 import org.jboss.resteasy.util.PathHelper;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.*;
 import java.util.HashSet;
 import java.util.List;
@@ -22,12 +24,10 @@ public class JSAPIWriter
 
    private static final long serialVersionUID = -1985015444704126795L;
 
-   private final static Logger logger = Logger.getLogger(JSAPIWriter.class);
-
    public void writeJavaScript(String base, HttpServletRequest req, HttpServletResponse resp,
                                Map<String, ServiceRegistry> serviceRegistries) throws IOException
    {
-      logger.debug("// start RESTEasy client API");
+      LogMessages.LOGGER.debug(Messages.MESSAGES.startResteasyClient());
 
       // RESTEASY-776
       // before writing generated javascript, we generate Etag and compare it with client request.
@@ -96,8 +96,8 @@ public class JSAPIWriter
                                ServiceRegistry serviceRegistry) throws IOException
    {
       copyResource("/resteasy-client.js", writer);
-      logger.debug("// start JAX-RS API");
-      logger.debug("REST.apiURL = '" + uri + "';");
+      LogMessages.LOGGER.debug(Messages.MESSAGES.startJaxRsApi());
+      LogMessages.LOGGER.debug(Messages.MESSAGES.restApiUrl(uri));
       writer.println("REST.apiURL = '" + uri + "';");
       Set<String> declaredPrefixes = new HashSet<String>();
       printService(writer, serviceRegistry, declaredPrefixes);
@@ -137,8 +137,8 @@ public class JSAPIWriter
 
       for (MethodMetaData methodMetaData : serviceRegistry.getMethodMetaData())
       {
-         logger.debug("Path: " + methodMetaData.getUri());
-         logger.debug(" Invoker: " + methodMetaData.getResource());
+         LogMessages.LOGGER.debug(Messages.MESSAGES.path(methodMetaData.getUri()));
+         LogMessages.LOGGER.debug(Messages.MESSAGES.invoker(methodMetaData.getResource()));
          String declaringPrefix = methodMetaData.getFunctionPrefix();
          declarePrefix(writer, declaringPrefix, declaredPrefixes);
 

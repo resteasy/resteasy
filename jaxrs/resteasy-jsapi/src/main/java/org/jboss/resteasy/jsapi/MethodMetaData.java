@@ -3,11 +3,13 @@ package org.jboss.resteasy.jsapi;
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.jsapi.MethodParamMetaData.MethodParamType;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.jsapi.i18n.LogMessages;
+import org.jboss.resteasy.jsapi.i18n.Messages;
 import org.jboss.resteasy.util.FindAnnotation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -18,8 +20,6 @@ import java.util.Map;
 
 public class MethodMetaData
 {
-	private final static Logger logger = Logger
-    .getLogger(MethodMetaData.class);
 
 	private ResourceMethodInvoker resource;
 	private Method method;
@@ -72,7 +72,7 @@ public class MethodMetaData
 		// this must be after we scan the params in case of @Form
 		this.consumesMIMEType = getConsumes(consumes);
 		if(wantsForm && !"application/x-www-form-urlencoded".equals(consumesMIMEType)){
-         logger.warn("Overriding @Consumes annotation in favour of application/x-www-form-urlencoded due to the presence of @FormParam");
+		   LogMessages.LOGGER.warn(Messages.MESSAGES.overridingConsumes());
 			this.consumesMIMEType = "application/x-www-form-urlencoded";
 		}
 	}
