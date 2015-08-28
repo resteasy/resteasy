@@ -8,6 +8,7 @@ import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -68,6 +69,7 @@ public class TestXXE
    public void after() throws Exception
    {
       EmbeddedContainer.stop();
+      Thread.sleep(1000);
       dispatcher = null;
       deployment = null;
    }

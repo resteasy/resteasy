@@ -62,9 +62,9 @@ public class TestIIOImageProvider extends BaseResourceTest
    {
       ClientRequest request = new ClientRequest(TEST_URI);
       //File file = new File(SRC_ROOT + "harper.jpg");
-      File file = LocateTestData.getTestData("harper.jpg");
+      File file = LocateTestData.getTestData("harper.png");
       Assert.assertTrue(file.exists());
-      request.body("image/jpeg", file);
+      request.body("image/png", file);
       ClientResponse<InputStream> response = request.post(InputStream.class);
       Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus()); 
       String contentType = response.getResponseHeaders().getFirst("content-type");

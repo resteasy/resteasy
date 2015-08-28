@@ -3,6 +3,8 @@ package org.jboss.resteasy.security.smime;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.SignerInformationVerifier;
+import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.Base64;
 import org.jboss.resteasy.util.GenericType;
@@ -206,7 +208,9 @@ public class PKCS7SignatureInput<T>
       for (Object info : data.getSignerInfos().getSigners())
       {
          SignerInformation signer = (SignerInformation)info;
-         if (signer.verify(certificate, "BC"))
+
+
+         if (signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider("BC").build(certificate)))
          {
             return true;
          }
@@ -218,7 +222,7 @@ public class PKCS7SignatureInput<T>
       for (Object info : data.getSignerInfos().getSigners())
       {
          SignerInformation signer = (SignerInformation)info;
-         if (signer.verify(publicKey, "BC"))
+         if (signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider("BC").build(publicKey)))
          {
             return true;
          }

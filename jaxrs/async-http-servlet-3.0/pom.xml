@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0.11.Final-SNAPSHOT</version>
+        <version>3.0.13.Final-SNAPSHOT</version>
     </parent>
     <name>Async Http JBossWeb</name>
     <description/>
@@ -13,9 +13,29 @@
     <artifactId>asynch-http-servlet-3.0-pom</artifactId>
     <packaging>pom</packaging>
 
-    <modules>
-        <module>async-http-servlet-3.0</module>
-        <module>async-http-servlet-3.0-test</module>
-        <module>callback-test</module>
-    </modules>
+    <profiles>
+        <profile>
+            <id>redhat-prod</id>
+            <modules>
+                <module>async-http-servlet-3.0</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>travis-ci</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>async-http-servlet-3.0</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>all</id>
+            <modules>
+                <module>async-http-servlet-3.0</module>
+                <module>async-http-servlet-3.0-test</module>
+                <module>callback-test</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>

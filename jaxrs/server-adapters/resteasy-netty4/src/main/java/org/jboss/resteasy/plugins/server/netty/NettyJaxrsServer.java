@@ -1,9 +1,13 @@
 package org.jboss.resteasy.plugins.server.netty;
 
+import static org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol.HTTPS;
+import static org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol.HTTP;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -53,6 +57,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    private List<ChannelHandler> channelHandlers = Collections.emptyList();
    private Map<ChannelOption, Object> channelOptions = Collections.emptyMap();
    private Map<ChannelOption, Object> childChannelOptions = Collections.emptyMap();
+   private List<ChannelHandler> httpChannelHandlers = Collections.emptyList();
 
    public void setSSLContext(SSLContext sslContext)
    {
@@ -125,6 +130,16 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
     }
 
     /**
+     * Add additional {@link io.netty.channel.ChannelHandler}s to the {@link io.netty.bootstrap.ServerBootstrap}.
+     * <p>The additional channel handlers are being added <em>after</em> the HTTP handling.</p>
+     *
+     * @param httpChannelHandlers the additional {@link io.netty.channel.ChannelHandler}s.
+     */
+    public void setHttpChannelHandlers(final List<ChannelHandler> httpChannelHandlers) {
+        this.httpChannelHandlers = httpChannelHandlers == null ? Collections.<ChannelHandler>emptyList() : httpChannelHandlers;
+    }
+
+    /**
      * Add Netty {@link io.netty.channel.ChannelOption}s to the {@link io.netty.bootstrap.ServerBootstrap}.
      *
      * @param channelOptions the additional {@link io.netty.channel.ChannelOption}s.
@@ -175,71 +190,69 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
                deployment.getProviderFactory(), domain);
    }
 
-   @Override
-   public void start()
-   {
-      eventLoopGroup = new NioEventLoopGroup(ioWorkerCount);
-      eventExecutor = new NioEventLoopGroup(executorThreadCount);
-      deployment.start();
-      final RequestDispatcher dispatcher = this.createRequestDispatcher();
-       // Configure the server.
-       if (sslContext == null) {
-           bootstrap.group(eventLoopGroup)
-                   .channel(NioServerSocketChannel.class)
-                   .childHandler(new ChannelInitializer<SocketChannel>() {
-                       @Override
-                       public void initChannel(SocketChannel ch) throws Exception {
-                           ch.pipeline().addLast(channelHandlers.toArray(new ChannelHandler[channelHandlers.size()]));
-                           ch.pipeline().addLast(new HttpRequestDecoder());
-                           ch.pipeline().addLast(new HttpObjectAggregator(maxRequestSize));
-                           ch.pipeline().addLast(new HttpResponseEncoder());
-                           ch.pipeline().addLast(new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, RestEasyHttpRequestDecoder.Protocol.HTTP));
-                           ch.pipeline().addLast(new RestEasyHttpResponseEncoder());
-                           ch.pipeline().addLast(eventExecutor, new RequestHandler(dispatcher));
-                       }
-                   })
-                   .option(ChannelOption.SO_BACKLOG, backlog)
-                   .childOption(ChannelOption.SO_KEEPALIVE, true);
-       } else {
-           final SSLEngine engine = sslContext.createSSLEngine();
-           engine.setUseClientMode(false);
-           bootstrap.group(eventLoopGroup)
-                   .channel(NioServerSocketChannel.class)
-                   .childHandler(new ChannelInitializer<SocketChannel>() {
-                       @Override
-                       public void initChannel(SocketChannel ch) throws Exception {
-                           ch.pipeline().addFirst(new SslHandler(engine));
-                           ch.pipeline().addLast(channelHandlers.toArray(new ChannelHandler[channelHandlers.size()]));
-                           ch.pipeline().addLast(new HttpRequestDecoder());
-                           ch.pipeline().addLast(new HttpObjectAggregator(maxRequestSize));
-                           ch.pipeline().addLast(new HttpResponseEncoder());
-                           ch.pipeline().addLast(new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, RestEasyHttpRequestDecoder.Protocol.HTTPS));
-                           ch.pipeline().addLast(new RestEasyHttpResponseEncoder());
-                           ch.pipeline().addLast(eventExecutor, new RequestHandler(dispatcher));
+    @Override
+    public void start() {
+        eventLoopGroup = new NioEventLoopGroup(ioWorkerCount);
+        eventExecutor = new NioEventLoopGroup(executorThreadCount);
+        deployment.start();
+        // Configure the server.
+        bootstrap.group(eventLoopGroup)
+                .channel(NioServerSocketChannel.class)
+                .childHandler(createChannelInitializer())
+                .option(ChannelOption.SO_BACKLOG, backlog)
+                .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-                       }
-                   })
-                   .option(ChannelOption.SO_BACKLOG, backlog)
-                   .childOption(ChannelOption.SO_KEEPALIVE, true);
+        for (Map.Entry<ChannelOption, Object> entry : channelOptions.entrySet()) {
+            bootstrap.option(entry.getKey(), entry.getValue());
+        }
 
-           for(Map.Entry<ChannelOption, Object> entry : channelOptions.entrySet()) {
-               bootstrap.option(entry.getKey(), entry.getValue());
-           }
+        for (Map.Entry<ChannelOption, Object> entry : childChannelOptions.entrySet()) {
+            bootstrap.childOption(entry.getKey(), entry.getValue());
+        }
 
-           for(Map.Entry<ChannelOption, Object> entry : childChannelOptions.entrySet()) {
-               bootstrap.childOption(entry.getKey(), entry.getValue());
-           }
-       }
+        final InetSocketAddress socketAddress;
+        if (null == hostname || hostname.isEmpty()) {
+            socketAddress = new InetSocketAddress(port);
+        } else {
+            socketAddress = new InetSocketAddress(hostname, port);
+        }
 
-       final InetSocketAddress socketAddress;
-       if(null == hostname || hostname.isEmpty()) {
-           socketAddress = new InetSocketAddress(port);
-       } else {
-           socketAddress = new InetSocketAddress(hostname, port);
-       }
+        bootstrap.bind(socketAddress).syncUninterruptibly();
+    }
 
-       bootstrap.bind(socketAddress).syncUninterruptibly();
-   }
+    private ChannelInitializer<SocketChannel> createChannelInitializer() {
+        final RequestDispatcher dispatcher = createRequestDispatcher();
+        if (sslContext == null) {
+            return new ChannelInitializer<SocketChannel>() {
+                @Override
+                public void initChannel(SocketChannel ch) throws Exception {
+                    setupHandlers(ch, dispatcher, HTTP);
+                }
+            };
+        } else {
+            final SSLEngine engine = sslContext.createSSLEngine();
+            engine.setUseClientMode(false);
+            return new ChannelInitializer<SocketChannel>() {
+                @Override
+                public void initChannel(SocketChannel ch) throws Exception {
+                    ch.pipeline().addFirst(new SslHandler(engine));
+                    setupHandlers(ch, dispatcher, HTTPS);
+                }
+            };
+        }
+    }
+
+    private void setupHandlers(SocketChannel ch, RequestDispatcher dispatcher, RestEasyHttpRequestDecoder.Protocol protocol) {
+        ChannelPipeline channelPipeline = ch.pipeline();
+        channelPipeline.addLast(channelHandlers.toArray(new ChannelHandler[channelHandlers.size()]));
+        channelPipeline.addLast(new HttpRequestDecoder());
+        channelPipeline.addLast(new HttpObjectAggregator(maxRequestSize));
+        channelPipeline.addLast(new HttpResponseEncoder());
+        channelPipeline.addLast(httpChannelHandlers.toArray(new ChannelHandler[httpChannelHandlers.size()]));
+        channelPipeline.addLast(new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, protocol));
+        channelPipeline.addLast(new RestEasyHttpResponseEncoder());
+        channelPipeline.addLast(eventExecutor, new RequestHandler(dispatcher));
+    }
 
    @Override
    public void stop()

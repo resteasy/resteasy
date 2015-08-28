@@ -114,7 +114,6 @@ public class ServletUtil
          while (headerValues.hasMoreElements())
          {
             String headerValue = headerValues.nextElement();
-            //System.out.println("ADDING HEADER: " + headerName + " value: " + headerValue);
             requestHeaders.add(headerName, headerValue);
          }
       }

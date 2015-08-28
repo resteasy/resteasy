@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>3.0.11.Final-SNAPSHOT</version>
+    <version>3.0.13.Final-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
@@ -16,7 +16,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <as-version>7.4.0.Final-redhat-19</as-version>
+    <as-version>7.4.0.Final-redhat-4</as-version>
     <eap-version>6.3</eap-version>
   </properties>
 

@@ -17,9 +17,8 @@ The basic idea of matrix parameters is that it represents resources that are add
 <para>
 
 <programlisting>
-
-   @GET
-   public String getBook(@MatrixParam("name") String name, @MatrixParam("author") String author) {...}
+@GET
+public String getBook(@MatrixParam("name") String name, @MatrixParam("author") String author) {...}
 </programlisting>
 </para>
 <para>

@@ -38,33 +38,30 @@ import org.jboss.resteasy.plugins.providers.atom.Person;
 @Path("atom")
 public class MyAtomService
 {
-
-   @GET
-   @Path("feed")
-   @Produces("application/atom+xml")
-   public Feed getFeed() throws URISyntaxException
-   {
-      Feed feed = new Feed();
-      feed.setId(new URI("http://example.com/42"));
-      feed.setTitle("My Feed");
-      feed.setUpdated(new Date());
-      Link link = new Link();
-      link.setHref(new URI("http://localhost"));
-      link.setRel("edit");
-      feed.getLinks().add(link);
-      feed.getAuthors().add(new Person("Bill Burke"));
-      Entry entry = new Entry();
-      entry.setTitle("Hello World");
-      Content content = new Content();
-      content.setType(MediaType.TEXT_HTML_TYPE);
-      content.setText("Nothing much");
-      entry.setContent(content);
-      feed.getEntries().add(entry);
-      return feed;
-   }
-}
-]]>
-      </programlisting>
+    @GET
+    @Path("feed")
+    @Produces("application/atom+xml")
+    public Feed getFeed() throws URISyntaxException
+    {
+        Feed feed = new Feed();
+        feed.setId(new URI("http://example.com/42"));
+        feed.setTitle("My Feed");
+        feed.setUpdated(new Date());
+        Link link = new Link();
+        link.setHref(new URI("http://localhost"));
+        link.setRel("edit");
+        feed.getLinks().add(link);
+        feed.getAuthors().add(new Person("Bill Burke"));
+        Entry entry = new Entry();
+        entry.setTitle("Hello World");
+        Content content = new Content();
+        content.setType(MediaType.TEXT_HTML_TYPE);
+        content.setText("Nothing much");
+        entry.setContent(content);
+        feed.getEntries().add(entry);
+        return feed;
+    }
+}]]></programlisting>
       <para>Because Resteasy's atom provider is JAXB based, you are not limited to sending atom objects using XML.
          You can automatically re-use all the other JAXB providers that Resteasy has like JSON and fastinfoset.
          All you have to do is have "atom+" in front of the main subtype. i.e. @Produces("application/atom+json") or
@@ -83,41 +80,40 @@ public class MyAtomService
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Customer
 {
-   @XmlElement
-   private String name;
+    @XmlElement
+    private String name;
 
-   public Customer()
-   {
-   }
+    public Customer()
+    {
+    }
 
-   public Customer(String name)
-   {
-      this.name = name;
-   }
+    public Customer(String name)
+    {
+        this.name = name;
+    }
 
-   public String getName()
-   {
-      return name;
-   }
+    public String getName()
+    {
+        return name;
+    }
 }
 
 @Path("atom")
 public static class AtomServer
 {
-   @GET
-   @Path("entry")
-   @Produces("application/atom+xml")
-   public Entry getEntry()
-   {
-      Entry entry = new Entry();
-      entry.setTitle("Hello World");
-      Content content = new Content();
-      content.setJAXBObject(new Customer("bill"));
-      entry.setContent(content);
-      return entry;
-   }
-}
-]]></programlisting>
+    @GET
+    @Path("entry")
+    @Produces("application/atom+xml")
+    public Entry getEntry()
+    {
+        Entry entry = new Entry();
+        entry.setTitle("Hello World");
+        Content content = new Content();
+        content.setJAXBObject(new Customer("bill"));
+        entry.setContent(content);
+        return entry;
+    }
+}]]></programlisting>
       <para>
          The Content.setJAXBObject() method is used to tell the content object you are sending back
          a Java JAXB object and want it marshalled appropriately. If you are using a different base
@@ -133,14 +129,14 @@ public static class AtomServer
 @Path("atom")
 public static class AtomServer
 {
-   @PUT
-   @Path("entry")
-   @Produces("application/atom+xml")
-   public void putCustomer(Entry entry)
-   {
-      Content content = entry.getContent();
-      Customer cust = content.getJAXBObject(Customer.class);
-   }
+    @PUT
+    @Path("entry")
+    @Produces("application/atom+xml")
+    public void putCustomer(Entry entry)
+    {
+        Content content = entry.getContent();
+        Customer cust = content.getJAXBObject(Customer.class);
+    }
 }
 ]]></programlisting>
    </sect1>

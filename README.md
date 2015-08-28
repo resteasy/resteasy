@@ -1,4 +1,7 @@
 # Resteasy
+
+[![Build Status](https://travis-ci.org/resteasy/Resteasy.svg?branch=master)](https://travis-ci.org/resteasy/Resteasy)
+
 Resteasy is a JBoss.org project aimed at providing productivity frameworks for developing client and server RESTful applications and services in Java.  It is mainly a JAX-RS implementation but you'll find some other experimental code in the repository.
 
 The project page can be found at http://resteasy.jboss.org
@@ -22,12 +25,14 @@ To read the documentation you can [read it online](http://resteasy.jboss.org/doc
 A wiki exists. You can find it [here](http://wiki.jboss.org/wiki/RESTeasyJAXRS)
 
 ## Issues
-Issues are kept both as a [JIRA](http://jira.jboss.org/jira/browse/RESTEASY) and on [Github](https://github.com/resteasy/Resteasy/issues)
+Issues are kept in [JIRA](http://jira.jboss.org/jira/browse/RESTEASY)
 
 ## Build
 After pulling down a clone of the Resteasy repository run
 
 	mvn install
+
+Currently it can be built only with JDK 1.7. JDK 1.8 breaks ant scriptlets because script engine changed from `rhino` to `nashorn`.
 
 ### Requirements
 - Java Cryptography Extension [JCE](http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html)

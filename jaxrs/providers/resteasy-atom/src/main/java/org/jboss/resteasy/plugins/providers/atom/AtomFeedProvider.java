@@ -64,6 +64,7 @@ public class AtomFeedProvider implements MessageBodyReader<Feed>, MessageBodyWri
          Feed feed = (Feed) ctx.createUnmarshaller().unmarshal(entityStream);
          for (Entry entry : feed.getEntries())
          {
+            entry.setFinder(finder);
             if (entry.getContent() != null) entry.getContent().setFinder(finder);
          }
          return feed;

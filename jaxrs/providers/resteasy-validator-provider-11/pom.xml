@@ -4,7 +4,7 @@
 <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0.11.Final-SNAPSHOT</version>
+        <version>3.0.13.Final-SNAPSHOT</version>
 <relativePath>../../pom.xml</relativePath>
     </parent>
   <groupId>org.jboss.resteasy</groupId>
@@ -68,7 +68,14 @@
             <groupId>org.jboss.spec.javax.servlet</groupId>
             <artifactId>jboss-servlet-api_3.1_spec</artifactId>
         </dependency>
-        
+
+        <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>tjws</artifactId>

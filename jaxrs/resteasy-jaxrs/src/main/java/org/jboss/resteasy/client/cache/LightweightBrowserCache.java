@@ -15,9 +15,14 @@ import java.util.concurrent.atomic.AtomicLong;
  * With high concurrent access, because this is not a sophisticated cache,
  * sometimes a cache entry may be lost. It is consistent though.
  *
- * @deprecated
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @deprecated Caching in the Resteasy client framework in resteasy-jaxrs is replaced by 
+ * caching in the JAX-RS 2.0 compliant resteasy-client module.
+ * 
+ * @see resteasy-client
+ * @see org.jboss.resteasy.client.jaxrs.cache.LightweightBrowserCache
  */
 @Deprecated
 public class LightweightBrowserCache implements BrowserCache

@@ -4,15 +4,20 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.bind.api.ClassResolver;
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+
 import org.jboss.resteasy.plugins.providers.atom.Content;
+import org.jboss.resteasy.plugins.providers.atom.Entry;
 import org.jboss.resteasy.plugins.providers.atom.Feed;
 import org.jboss.resteasy.plugins.providers.atom.Link;
 import org.jboss.resteasy.plugins.providers.atom.Person;
+import org.jboss.resteasy.plugins.providers.atom.Text;
 import org.junit.Test;
 
+import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
@@ -119,6 +124,18 @@ public class ModelTest
       feed.getLinks().add(link);
       feed.getAuthors().add(new Person("Bill Burke"));
 
+      Entry entry = new Entry();
+      Text summary = new Text("<h1>Ho ho ho</h1>", "html");
+      entry.setSummaryElement(summary);
+      
+      Text rights = new Text("(c) no rights");
+      entry.setRightsElement(rights);
+      
+      entry.setTitle("<p>This is the <i>title</i></p>");
+      entry.getTitleElement().setType(MediaType.APPLICATION_XHTML_XML_TYPE);
+      
+      feed.getEntries().add(entry);
+      
       JAXBContext ctx = JAXBContext.newInstance(Feed.class);
 
 

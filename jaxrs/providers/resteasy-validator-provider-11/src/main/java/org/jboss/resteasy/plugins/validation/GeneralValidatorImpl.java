@@ -3,8 +3,6 @@ package org.jboss.resteasy.plugins.validation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -23,15 +21,13 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.cdi.CdiInjectorFactory;
 import org.jboss.resteasy.cdi.ResteasyCdiExtension;
-import org.jboss.resteasy.cdi.Utils;
 import org.jboss.resteasy.logging.Logger;
-import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
-import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
+
 import com.fasterxml.classmate.Filter;
 import com.fasterxml.classmate.MemberResolver;
 import com.fasterxml.classmate.ResolvedType;
@@ -57,7 +53,6 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
     */
    private TypeResolver typeResolver = new TypeResolver();
    private ValidatorFactory validatorFactory;
-   private ConstraintTypeUtil util = new ConstraintTypeUtil11();
    private boolean isExecutableValidationEnabled;
    private ExecutableType[] defaultValidatedExecutableTypes;
    private boolean suppressPath;
@@ -95,35 +90,28 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    public void validate(HttpRequest request, Object object, Class<?>... groups)
    {
       Validator validator = getValidator(request);
-      Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
+      Set<ConstraintViolation<Object>> cvs = null;
+      
       try
       {
-         Set<ConstraintViolation<Object>> cvs = validator.validate(object, groups);
-         for (Iterator<ConstraintViolation<Object>> it = cvs.iterator(); it.hasNext(); )
-         {
-            ConstraintViolation<Object> cv = it.next();
-            Type ct = util.getConstraintType(cv);
-            Object o = cv.getInvalidValue();
-            String value = (o == null ? "" : o.toString());
-            String path = (suppressPath ? "*" : cv.getPropertyPath().toString());
-            rcvs.add(new ResteasyConstraintViolation(ct, path, cv.getMessage(), value));
-         }
+         cvs = validator.validate(object, groups);
       }
       catch (Exception e)
       {
-         ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, object);
+         SimpleViolationsContainer violationsContainer = getViolationsContainer(request, object);
          violationsContainer.setException(e);
          throw new ResteasyViolationException(violationsContainer);
       }
-      ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, object);
-      violationsContainer.addViolations(rcvs);
+      
+      SimpleViolationsContainer violationsContainer = getViolationsContainer(request, object);
+      violationsContainer.addViolations(cvs);
    }
 
    @Override
    public void checkViolations(HttpRequest request)
    {
       // Called from resteasy-jaxrs only if two argument version of isValidatable() returns true.
-      ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, null);
+      SimpleViolationsContainer violationsContainer = getViolationsContainer(request, null);
       Object target = violationsContainer.getTarget();
       if (target != null && !isWeldProxy(target.getClass()))
       {
@@ -142,8 +130,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          return;
       }
       
-      @SuppressWarnings("unchecked")
-      ViolationsContainer<Object> violationsContainer = ViolationsContainer.class.cast(request.getAttribute(ViolationsContainer.class.getName()));
+      SimpleViolationsContainer violationsContainer = SimpleViolationsContainer.class.cast(request.getAttribute(SimpleViolationsContainer.class.getName()));
       if (violationsContainer != null && violationsContainer.size() > 0)
       {
          throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
@@ -154,7 +141,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    public void validateAllParameters(HttpRequest request, Object object, Method method, Object[] parameterValues, Class<?>... groups)
    {
       Validator validator = getValidator(request);
-      ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, object);
+      SimpleViolationsContainer violationsContainer = getViolationsContainer(request, object);
 
       if (method.getParameterTypes().length == 0)
       {
@@ -162,24 +149,18 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          return;
       }
 
-      Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
+      Set<ConstraintViolation<Object>> cvs = null;
+      
       try
       {
-         Set<ConstraintViolation<Object>> cvs = validator.forExecutables().validateParameters(object, method, parameterValues, groups);
-         for (Iterator<ConstraintViolation<Object>> it = cvs.iterator(); it.hasNext(); )
-         {
-            ConstraintViolation<Object> cv = it.next();
-            Type ct = util.getConstraintType(cv);
-            String path = (suppressPath ? "*" : cv.getPropertyPath().toString());
-            rcvs.add(new ResteasyConstraintViolation(ct, path, cv.getMessage(), convertArrayToString(cv.getInvalidValue())));
-         }
+         cvs = validator.forExecutables().validateParameters(object, method, parameterValues, groups);
       }
       catch (Exception e)
       {
          violationsContainer.setException(e);
          throw new ResteasyViolationException(violationsContainer);
       }
-      violationsContainer.addViolations(rcvs);
+      violationsContainer.addViolations(cvs);
       if (!isWeldProxy(object.getClass()) && violationsContainer.size() > 0)
       {
          throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
@@ -190,27 +171,19 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    public void validateReturnValue(HttpRequest request, Object object, Method method, Object returnValue, Class<?>... groups)
    {
       Validator validator = getValidator(request);
-      Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
-      ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, object);
+      SimpleViolationsContainer violationsContainer = getViolationsContainer(request, object);
+      Set<ConstraintViolation<Object>> cvs = null;
+      
       try
       {
-         Set<ConstraintViolation<Object>> cvs = validator.forExecutables().validateReturnValue(object, method, returnValue, groups);
-         for (Iterator<ConstraintViolation<Object>> it = cvs.iterator(); it.hasNext(); )
-         {
-            ConstraintViolation<Object> cv = it.next();
-            Type ct = util.getConstraintType(cv);
-            Object o = cv.getInvalidValue();
-            String value = (o == null ? "" : o.toString());
-            String path = (suppressPath ? "*" : cv.getPropertyPath().toString());
-            rcvs.add(new ResteasyConstraintViolation(ct, path, cv.getMessage(), value));
-         }
+         cvs = validator.forExecutables().validateReturnValue(object, method, returnValue, groups);
       }
       catch (Exception e)
       {
          violationsContainer.setException(e);
          throw new ResteasyViolationException(violationsContainer);
       }
-      violationsContainer.addViolations(rcvs);
+      violationsContainer.addViolations(cvs);
       if (violationsContainer.size() > 0)
       {
          throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
@@ -525,6 +498,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    }
    
    @Override
+   @SuppressWarnings({"rawtypes", "unchecked"})
    public void checkForConstraintViolations(HttpRequest request, Exception e)
    {
       if (e instanceof InvocationTargetException)
@@ -538,29 +512,12 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       
       if (e instanceof ConstraintViolationException)
       {
+         SimpleViolationsContainer violationsContainer = getViolationsContainer(request, null);
          ConstraintViolationException cve = ConstraintViolationException.class.cast(e);
-         Set<ConstraintViolation<?>> cvs = cve.getConstraintViolations();
-         Set<ResteasyConstraintViolation> rcvs = new HashSet<ResteasyConstraintViolation>();
-         try
+         Set cvs = cve.getConstraintViolations();
+         violationsContainer.addViolations(cvs);
+         if (violationsContainer.size() > 0)
          {
-            for (Iterator<ConstraintViolation<?>> it = cvs.iterator(); it.hasNext(); )
-            {
-               ConstraintViolation<?> cv = it.next();
-               Type ct = util.getConstraintType(cv);
-               String path = (suppressPath ? "*" : cv.getPropertyPath().toString());
-               rcvs.add(new ResteasyConstraintViolation(ct, path, cv.getMessage(), (cv.getInvalidValue() == null ? "null" :cv.getInvalidValue().toString())));
-            }
-         }
-         catch (Exception e1)
-         {
-            ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, null);
-            violationsContainer.setException(e);
-            throw new ResteasyViolationException(violationsContainer);
-         }
-         if (rcvs.size() > 0)
-         {
-            ViolationsContainer<Object> violationsContainer = getViolationsContainer(request, null);
-            violationsContainer.addViolations(rcvs);
             throw new ResteasyViolationException(violationsContainer);
          }
       }
@@ -588,19 +545,18 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       return validatorFactory.usingContext().messageInterpolator(interpolator).getValidator();
    }
 
-   protected ViolationsContainer<Object> getViolationsContainer(HttpRequest request, Object target)
+   protected SimpleViolationsContainer getViolationsContainer(HttpRequest request, Object target)
    {
       if (request == null)
       {
-         return new ViolationsContainer<Object>(target);
+         return new SimpleViolationsContainer(target);
       }
-      
-      @SuppressWarnings("unchecked")
-      ViolationsContainer<Object> violationsContainer = ViolationsContainer.class.cast(request.getAttribute(ViolationsContainer.class.getName()));
+
+      SimpleViolationsContainer violationsContainer = SimpleViolationsContainer.class.cast(request.getAttribute(SimpleViolationsContainer.class.getName()));
       if (violationsContainer == null)
       {
-         violationsContainer = new ViolationsContainer<Object>(target);
-         request.setAttribute(ViolationsContainer.class.getName(), violationsContainer);
+         violationsContainer = new SimpleViolationsContainer(target);
+         request.setAttribute(SimpleViolationsContainer.class.getName(), violationsContainer);
       }
       return violationsContainer;
    }
@@ -685,5 +641,12 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       {
          return interpolator.interpolate(messageTemplate, context, locale);
       }
+   }
+   
+   ResteasyConstraintViolation createResteasyConstraintViolation(ConstraintViolation<?> cv, Type ct)
+   {
+      String path = (suppressPath ? "*" : cv.getPropertyPath().toString());
+      ResteasyConstraintViolation rcv = new ResteasyConstraintViolation(ct, path, cv.getMessage(), (cv.getInvalidValue() == null ? "null" :cv.getInvalidValue().toString()));
+      return rcv;
    }
 }

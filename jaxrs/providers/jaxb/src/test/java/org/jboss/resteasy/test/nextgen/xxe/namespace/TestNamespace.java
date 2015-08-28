@@ -277,13 +277,12 @@ public class TestNamespace
       Assert.assertEquals(200, response.getStatus());
       String entity = response.readEntity(String.class);
       System.out.println("Result: " + entity);
-      if (entity.indexOf("Cage") < entity.indexOf("Règle"))
-      {
-         Assert.assertEquals("/La Cage Aux Folles/La Regle du Jeu", entity);
-      }
-      else
-      {
-         Assert.assertEquals("/La Regle du Jeu/La Cage Aux Folles", entity);
-      }
+            boolean result = false;
+            if ("/La Cage Aux Folles/La Regle du Jeu".equals(entity))
+                result = true;
+            else if ("/La Regle du Jeu/La Cage Aux Folles".equals(entity))
+                result = true;
+
+       Assert.assertTrue(result);
    }
 }

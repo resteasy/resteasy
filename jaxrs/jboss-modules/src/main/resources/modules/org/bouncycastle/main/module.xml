@@ -24,10 +24,15 @@
 
 <module xmlns="urn:jboss:module:1.1" name="org.bouncycastle">
     <resources>
+        <resource-root path="bcprov-jdk15on-1.52.jar"/>
+        <resource-root path="bcmail-jdk15on-1.52.jar"/>
+        <resource-root path="bcpkix-jdk15on-1.52.jar"/>
         <!-- Insert resources here -->
     </resources>
     <dependencies>
         <module name="javax.api"/>
+        <module name="javax.mail.api" optional="true"/>
+        <module name="javax.activation.api" optional="true"/>
     </dependencies>
 
 </module>

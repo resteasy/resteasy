@@ -12,16 +12,13 @@ GET /books?num=5
 <para>
 
 <programlisting>
-   
+@GET
+public String getBooks(@CookieParam("sessionid") int id) {
+...
+}
 
-
-   @GET
-   public String getBooks(@CookieParam("sessionid") int id) {
-   ...
-   }
-
-   @GET
-   publi cString getBooks(@CookieParam("sessionid") javax.ws.rs.core.Cookie id) {...}
+@GET
+public String getBooks(@CookieParam("sessionid") javax.ws.rs.core.Cookie id) {...}
 </programlisting>
 </para>
 <para>

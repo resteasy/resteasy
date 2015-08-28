@@ -17,10 +17,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class OAuthUtils {
 	
@@ -90,7 +89,7 @@ public class OAuthUtils {
 	 */
 	public static OAuthMessage readMessage(HttpServletRequest req) {
 		String authorizationHeader = req.getHeader(AUTHORIZATION_HEADER);
-		Set<OAuth.Parameter> parameters = new HashSet<OAuth.Parameter>();
+		List<OAuth.Parameter> parameters = new ArrayList<OAuth.Parameter>();
 		
 		// first read the Authorization header
 		if(authorizationHeader != null){

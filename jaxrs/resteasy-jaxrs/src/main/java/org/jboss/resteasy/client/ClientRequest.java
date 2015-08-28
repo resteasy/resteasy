@@ -41,10 +41,13 @@ import static org.jboss.resteasy.util.HttpHeaderNames.ACCEPT;
  * After an execution of a request, the internal state remains the same.  You can invoke the request again.
  * You can clear the request with the clear() method.
  *
- * @deprecated
+ * @deprecated The Resteasy client framework in resteasy-jaxrs is replaced by the JAX-RS 2.0 compliant resteasy-client module.
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @see jaxrs-api
+ * @see javax.ws.rs.client.Invocation
  */
 @Deprecated
 @SuppressWarnings("unchecked")

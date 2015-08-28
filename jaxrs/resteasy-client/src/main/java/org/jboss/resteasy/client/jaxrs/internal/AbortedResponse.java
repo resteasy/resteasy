@@ -98,7 +98,7 @@ public class AbortedResponse extends ClientResponse
    }
 
    @Override
-   protected void releaseConnection()
+   public void releaseConnection()
    {
       try {
          if (is != null) is.close();
