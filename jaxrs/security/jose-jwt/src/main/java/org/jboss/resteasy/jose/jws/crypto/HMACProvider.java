@@ -1,12 +1,14 @@
 package org.jboss.resteasy.jose.jws.crypto;
 
 import org.jboss.resteasy.jose.Base64Url;
+import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jws.Algorithm;
 import org.jboss.resteasy.jose.jws.JWSInput;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+
 import java.security.NoSuchAlgorithmException;
 
 /**
@@ -26,7 +28,7 @@ public class HMACProvider
          case HS512:
             return "HMACSHA512";
          default:
-            throw new IllegalArgumentException("Not a MAC Algorithm");
+            throw new IllegalArgumentException(Messages.MESSAGES.notAMACalgorithm());
       }
    }
 
@@ -41,7 +43,7 @@ public class HMACProvider
       catch (NoSuchAlgorithmException e)
       {
 
-         throw new RuntimeException("Unsupported HMAC algorithm: " + e.getMessage(), e);
+         throw new RuntimeException(Messages.MESSAGES.unsupportedHMACalgorithm(e.getLocalizedMessage()), e);
       }
    }
 
