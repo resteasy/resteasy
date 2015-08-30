@@ -5,6 +5,7 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
+import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.Base64;
 import org.jboss.resteasy.util.GenericType;
@@ -12,6 +13,7 @@ import org.jboss.resteasy.util.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Providers;
+
 import java.io.ByteArrayInputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -200,7 +202,7 @@ public class PKCS7SignatureInput<T>
    {
       if (certificate != null) return verify(certificate);
       else if (publicKey != null) return verify(publicKey);
-      else throw new NullPointerException("Certificate nor public key properties set");
+      else throw new NullPointerException(Messages.MESSAGES.certificateNorPublicKeySet());
    }
 
    public boolean verify(X509Certificate certificate) throws Exception

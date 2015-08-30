@@ -9,6 +9,7 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.util.Store;
 import org.jboss.resteasy.security.BouncyIntegration;
+import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.WriterException;
 
@@ -20,6 +21,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -79,7 +81,7 @@ public class PKCS7SignatureWriter implements MessageBodyWriter<SignedOutput>
       MessageBodyWriter writer = providers.getMessageBodyWriter(out.getType(), out.getGenericType(), null, out.getMediaType());
       if (writer == null)
       {
-         throw new WriterException("Failed to find writer for type: " + out.getType().getName());
+         throw new WriterException(Messages.MESSAGES.failedToFindWriter(out.getType().getName()));
       }
       MultivaluedMapImpl<String, Object> bodyHeaders = new MultivaluedMapImpl<String, Object>();
       bodyHeaders.add("Content-Type",  out.getMediaType().toString());
