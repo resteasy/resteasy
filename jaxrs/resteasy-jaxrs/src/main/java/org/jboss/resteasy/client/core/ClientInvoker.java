@@ -134,7 +134,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl implements Me
    {
       ClientRequest request = new ClientRequest(uri, executor, providerFactory);
       request.getAttributes().putAll(attributes);
-      if (accepts != null) request.header(HttpHeaders.ACCEPT, accepts.toString());
+      if (accepts != null) request.accept(accepts);
       this.copyClientInterceptorsTo(request);
 
       boolean isClientResponseResult = ClientResponse.class.isAssignableFrom(method.getReturnType());
