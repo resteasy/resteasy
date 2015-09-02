@@ -47,11 +47,11 @@
                   projects that depend on this project.-->
             <scope>provided</scope>
             <optional>true</optional>
-        </dependency> 
+        </dependency>
+        
         <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs-testsuite</artifactId>
-            <version>${project.version}</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
