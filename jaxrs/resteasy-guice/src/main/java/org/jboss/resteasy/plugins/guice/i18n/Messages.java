@@ -15,7 +15,7 @@ import org.jboss.logging.annotations.Message.Format;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 9000;
+   int BASE = 11000;
 
    @Message(id = BASE + 0, value = "Cannot execute expected module {0}''s @{1} method {2} because it has unexpected parameters: skipping.", format=Format.MESSAGE_FORMAT)
    String cannotExecute(String className, String annotation, String methodName);
