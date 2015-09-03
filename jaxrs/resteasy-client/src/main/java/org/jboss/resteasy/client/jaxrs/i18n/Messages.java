@@ -20,7 +20,7 @@ import org.jboss.logging.annotations.Message.Format;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 7500;
+   int BASE = 4500;
    
    @Message(id = BASE + 0, value = "You can only set one of LinkHeaderParam.rel() and LinkHeaderParam.title() for on {0}.{1}", format=Format.MESSAGE_FORMAT)
    String canOnlySetOneLinkHeaderParam(String className, String methodName);

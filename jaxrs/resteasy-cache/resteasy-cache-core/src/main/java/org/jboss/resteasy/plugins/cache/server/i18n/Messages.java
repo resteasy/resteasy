@@ -14,7 +14,7 @@ import org.jboss.logging.annotations.MessageBundle;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 7500;
+   int BASE = 10000;
 
    @Message(id = BASE + 0, value = "need to specify server.request.cache.infinispan.cache.name")
    String needToSpecifyCacheName();

@@ -15,7 +15,7 @@ import org.jboss.resteasy.api.validation.ConstraintType;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 6000;
+   int BASE = 8000;
    
    @Message(id = BASE + 0, value = "ResteasyCdiExtension is not on the classpath. Assuming CDI is not active")
    String cdiExtensionNotOnClasspath();

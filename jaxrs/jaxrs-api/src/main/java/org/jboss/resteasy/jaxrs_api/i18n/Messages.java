@@ -20,7 +20,7 @@ import org.jboss.logging.annotations.MessageBundle;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 2500;
+   int BASE = 1000;
    
    @Message(id = BASE + 0, value = "Arguments must not be null")
    String argumentsMustNotBeNull();

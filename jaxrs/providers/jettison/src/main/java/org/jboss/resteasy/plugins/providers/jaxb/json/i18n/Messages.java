@@ -16,7 +16,7 @@ import org.jboss.logging.annotations.MessageBundle;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 5000;
+   int BASE = 7000;
    
    @Message(id = BASE + 00, value = "Was expecting a ':' in json map")
    String expectingColonMap();

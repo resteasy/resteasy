@@ -14,7 +14,7 @@ import org.jboss.logging.annotations.MessageBundle;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 7500;
+   int BASE = 6000;
 
    @Message(id = BASE + 0, value = "No dispatcher found for path '%s'")
    String noDispatcherFound(String path);

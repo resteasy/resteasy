@@ -17,7 +17,7 @@ import org.junit.Test;
  */
 abstract public class TestMessagesAbstract extends TestMessagesParent
 {
-   protected static final String BASE = String.format("00%4s", Messages.BASE).substring(0, 3);
+   protected static final String BASE = String.format("0%5s", Messages.BASE).substring(0, 4);
 
    @Test
    public void testLocale() throws Exception
@@ -30,11 +30,11 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
          return;
       }
       
-      Assert.assertEquals(getExpected(BASE + "000", "codeParameterWasNull"), Messages.MESSAGES.codeParameterWasNull());
-      Assert.assertEquals(getExpected(BASE + "020", "mustSetRealmInConfig"), Messages.MESSAGES.mustSetRealmInConfig());
-      Assert.assertEquals(getExpected(BASE + "030", "oAuthError", "error"), Messages.MESSAGES.oAuthError("error"));
-      Assert.assertEquals(getExpected(BASE + "055", "tokenAudienceDoesntMatchDomain"), Messages.MESSAGES.tokenAudienceDoesntMatchDomain());
-      Assert.assertEquals(getExpected(BASE + "075", "unknownErrorGettingAccessToken"), Messages.MESSAGES.unknownErrorGettingAccessToken());      
+      Assert.assertEquals(getExpected(BASE + "00", "codeParameterWasNull"), Messages.MESSAGES.codeParameterWasNull());
+      Assert.assertEquals(getExpected(BASE + "20", "mustSetRealmInConfig"), Messages.MESSAGES.mustSetRealmInConfig());
+      Assert.assertEquals(getExpected(BASE + "30", "oAuthError", "error"), Messages.MESSAGES.oAuthError("error"));
+      Assert.assertEquals(getExpected(BASE + "55", "tokenAudienceDoesntMatchDomain"), Messages.MESSAGES.tokenAudienceDoesntMatchDomain());
+      Assert.assertEquals(getExpected(BASE + "75", "unknownErrorGettingAccessToken"), Messages.MESSAGES.unknownErrorGettingAccessToken());      
    }
    
    @Override

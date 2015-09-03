@@ -15,7 +15,7 @@ import org.jboss.logging.annotations.Message.Format;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 10500;
+   int BASE = 12000;
 
    @Message(id = BASE + 0, value = "Cannot guess collection type for service discovery")
    String cannotGuessCollectionType();

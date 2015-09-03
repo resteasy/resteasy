@@ -14,7 +14,7 @@ import org.jboss.logging.annotations.MessageBundle;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 7000;
+   int BASE = 17000;
    
    @Message(id = BASE + 0, value = "Your account is not enabled")
    String accountIsNotEnabled(); 

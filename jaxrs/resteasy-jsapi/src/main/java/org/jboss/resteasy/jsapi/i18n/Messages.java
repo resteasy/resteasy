@@ -16,7 +16,7 @@ import org.jboss.resteasy.core.ResourceMethodInvoker;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 10000;
+   int BASE = 11500;
 
    @Message(id = BASE + 0, value = "Impossible to generate JSAPI for subresource returned by method {0}.{1} since return type is not a static JAXRS resource type", format=Format.MESSAGE_FORMAT)
    String impossibleToGenerateJsapi(String className, String methodName);

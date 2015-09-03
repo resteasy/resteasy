@@ -17,7 +17,7 @@ import org.junit.Test;
  */
 abstract public class TestMessagesAbstract extends TestMessagesParent
 {
-   protected static final String BASE = String.format("00%4s", Messages.BASE).substring(0, 3);
+   protected static final String BASE = String.format("0%5s", Messages.BASE).substring(0, 3);
 
    @Test
    public void testLocale() throws Exception
@@ -30,11 +30,11 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
          return;
       }
       
-      Assert.assertEquals(getExpected(BASE + "000", "accessToken"), Messages.MESSAGES.accessToken());
-      Assert.assertEquals(getExpected(BASE + "010", "addingParameter", "x", "y"), Messages.MESSAGES.addingParameter("x", "y"));
-      Assert.assertEquals(getExpected(BASE + "065", "errorHttpCode", "333", "wha?"), Messages.MESSAGES.errorHttpCode(333, "wha?"));
-      Assert.assertEquals(getExpected(BASE + "090", "invalidTimestampLong", 1357), Messages.MESSAGES.invalidTimestampLong(1357));
-      Assert.assertEquals(getExpected(BASE + "200", "wrongURIScope"), Messages.MESSAGES.wrongURIScope());   
+      Assert.assertEquals(getExpected(BASE + "500", "accessToken"), Messages.MESSAGES.accessToken());
+      Assert.assertEquals(getExpected(BASE + "510", "addingParameter", "x", "y"), Messages.MESSAGES.addingParameter("x", "y"));
+      Assert.assertEquals(getExpected(BASE + "565", "errorHttpCode", "333", "wha?"), Messages.MESSAGES.errorHttpCode(333, "wha?"));
+      Assert.assertEquals(getExpected(BASE + "590", "invalidTimestampLong", 1357), Messages.MESSAGES.invalidTimestampLong(1357));
+      Assert.assertEquals(getExpected(BASE + "700", "wrongURIScope"), Messages.MESSAGES.wrongURIScope());   
    }
    
    @Override

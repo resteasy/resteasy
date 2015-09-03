@@ -18,7 +18,7 @@ import org.jboss.resteasy.api.validation.ConstraintType;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 8000;
+   int BASE = 8500;
    
    @Message(id = BASE + 0, value = "ResteasyViolationException has invalid format: %s")
    String exceptionHasInvalidFormat(String line);

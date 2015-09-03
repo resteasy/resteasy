@@ -14,7 +14,7 @@ import org.jboss.logging.annotations.MessageBundle;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 5500;
+   int BASE = 9000;
 
    @Message(id = BASE + 0, value = "Failed to decode Yaml")
    String failedToDecodeYaml();

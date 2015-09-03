@@ -14,7 +14,7 @@ import org.jboss.logging.annotations.MessageBundle;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 6000;
+   int BASE = 9500;
    
    @Message(id = BASE + 0, value = "-- already canceled")
    String alreadyCanceled();

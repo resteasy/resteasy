@@ -17,7 +17,7 @@ import org.jboss.logging.annotations.MessageBundle;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 4500;
+   int BASE = 6500;
 
    @Message(id = BASE + 00, value = "Collection wrapping failed, expected root element name of {0} got {1}", format=Format.MESSAGE_FORMAT)
    String collectionWrappingFailedLocalPart(String element, String localPart);

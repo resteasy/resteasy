@@ -25,7 +25,7 @@ import org.jboss.resteasy.util.WeightedLanguage;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 1000;
+   int BASE = 3000;
    
    @Message(id = BASE + 00, value = "SelfExpandingBufferredInputStream is always marked at index 0.")
    String alwaysMarkedAtIndex0();

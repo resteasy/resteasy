@@ -17,7 +17,7 @@ import org.jboss.resteasy.jose.jwe.EncryptionMethod;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 10500;
+   int BASE = 14000;
 
    @Message(id = BASE + 0, value = "The algorithm of the shared symmetric key must be AES")
    String algorithmOfSharedSymmetricKey();

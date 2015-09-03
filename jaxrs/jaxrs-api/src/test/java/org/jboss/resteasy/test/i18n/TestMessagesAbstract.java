@@ -53,7 +53,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
       Assert.assertEquals(getExpected(BASE + "05", "classCastException", testURL, testURL), Messages.MESSAGES.classCastException(testURL, testURL));
       Assert.assertEquals(getExpected(BASE + "70", "providerCouldNotBeInstantiated", "class", testException), Messages.MESSAGES.providerCouldNotBeInstantiated("class", testException));
       Assert.assertEquals(getExpected(BASE + "80", "statusNotFromRequiredFamily", 7, Response.Status.Family.OTHER), Messages.MESSAGES.statusNotFromRequiredFamily(7, Response.Status.Family.OTHER));
-      Assert.assertEquals(getExpected(BASE3 + "625", "valueIsNull"), Messages.MESSAGES.valueIsNull());      
+      Assert.assertEquals(getExpected(BASE3 + "125", "valueIsNull"), Messages.MESSAGES.valueIsNull());      
    }
    
    @Override

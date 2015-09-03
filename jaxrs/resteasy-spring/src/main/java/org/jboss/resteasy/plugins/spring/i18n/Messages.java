@@ -19,7 +19,7 @@ import org.jboss.logging.annotations.Message.Format;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 11000;
+   int BASE = 13000;
 
    @Message(id = BASE + 0, value = "You cannot use resteasy.scan, resteasy.scan.resources, or resteasy.scan.providers with the SpringContextLoaderLister as this may cause serious deployment errors in your application")
    String cannotUseScanParameters();

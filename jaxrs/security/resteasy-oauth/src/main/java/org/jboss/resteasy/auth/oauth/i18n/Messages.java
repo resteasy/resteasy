@@ -15,7 +15,7 @@ import org.jboss.logging.annotations.MessageBundle;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 7000;
+   int BASE = 15500;
 
    @Message(id = BASE + 0, value = "Access token")
    String accessToken();

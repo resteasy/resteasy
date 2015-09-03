@@ -16,7 +16,7 @@ import org.junit.Test;
  */
 abstract public class TestMessagesAbstract extends TestMessagesParent
 {  
-   protected static final String BASE = String.format("00%4s", Messages.BASE).substring(0, 3);
+   protected static final String BASE = String.format("00%4s", Messages.BASE).substring(0, 4);
    
    @Test
    public void testLocale() throws Exception
@@ -29,9 +29,9 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
          return;
       }
       
-      Assert.assertEquals(getExpected(BASE + "000", "alreadyCanceled"), Messages.MESSAGES.alreadyCanceled());
-      Assert.assertEquals(getExpected(BASE + "020", "cancellingWith503"), Messages.MESSAGES.cancellingWith503());
-      Assert.assertEquals(getExpected(BASE + "045", "schedulingTimeout"), Messages.MESSAGES.schedulingTimeout());
+      Assert.assertEquals(getExpected(BASE + "00", "alreadyCanceled"), Messages.MESSAGES.alreadyCanceled());
+      Assert.assertEquals(getExpected(BASE + "20", "cancellingWith503"), Messages.MESSAGES.cancellingWith503());
+      Assert.assertEquals(getExpected(BASE + "45", "schedulingTimeout"), Messages.MESSAGES.schedulingTimeout());
    }
    
    @Override

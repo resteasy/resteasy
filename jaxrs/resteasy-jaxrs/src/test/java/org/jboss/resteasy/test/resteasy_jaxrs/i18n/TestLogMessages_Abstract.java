@@ -22,7 +22,7 @@ import org.junit.Test;
 public abstract class TestLogMessages_Abstract extends TestMessagesParent
 {
    static protected Locale savedLocale;
-   protected static final String BASE = "000";
+   protected static final String BASE = "002";
    protected ByteArrayOutputStream baos = new ByteArrayOutputStream();
    
    public void before(Level level, Locale locale, String filename) throws Exception
@@ -77,7 +77,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
       // ERROR
       LogMessages.LOGGER.failedExecutingError("method", "path", new Exception("oh no mr bill"));
       System.out.println("actual: " + baos.toString());
-      String expected = getExpected(BASE + "105", "failedExecutingError", "method", "path");
+      String expected = getExpected(BASE + "005", "failedExecutingError", "method", "path");
       Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("oh no mr bill"));
@@ -94,7 +94,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
 
       // ERROR
       LogMessages.LOGGER.failedExecutingError("method", "path", new Exception("oh no mr bill"));
-      String expected = getExpected(BASE + "105", "failedExecutingError", "method", "path");
+      String expected = getExpected(BASE + "005", "failedExecutingError", "method", "path");
       Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("oh no mr bill"));
@@ -102,7 +102,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
 
       // WARN
       LogMessages.LOGGER.couldNotDeleteFile("file", new Exception("Sluggo says"));
-      expected = getExpected(BASE + "225", "couldNotDeleteFile", "file");
+      expected = getExpected(BASE + "125", "couldNotDeleteFile", "file");
       Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("Sluggo says"));
@@ -119,7 +119,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
 
       // ERROR
       LogMessages.LOGGER.failedExecutingError("method", "path", new Exception("oh no mr bill"));
-      String expected = getExpected(BASE + "105", "failedExecutingError", "method", "path");
+      String expected = getExpected(BASE + "005", "failedExecutingError", "method", "path");
       Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("oh no mr bill"));
@@ -127,7 +127,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
 
       // WARN
       LogMessages.LOGGER.couldNotDeleteFile("file", new Exception("Sluggo says"));
-      expected = getExpected(BASE + "225", "couldNotDeleteFile", "file");
+      expected = getExpected(BASE + "125", "couldNotDeleteFile", "file");
       Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("Sluggo says"));
@@ -135,7 +135,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
 
       // INFO
       LogMessages.LOGGER.deployingApplication("className", getClass());
-      expected = getExpected(BASE + "325", "deployingApplication", "className", getClass());
+      expected = getExpected(BASE + "225", "deployingApplication", "className", getClass());
       Assert.assertTrue(baos.toString().contains(expected));
       baos.reset();
 
@@ -150,7 +150,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
 
       // ERROR
       LogMessages.LOGGER.failedExecutingError("method", "path", new Exception("oh no mr bill"));
-      String expected = getExpected(BASE + "105", "failedExecutingError", "method", "path");
+      String expected = getExpected(BASE + "005", "failedExecutingError", "method", "path");
       Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("oh no mr bill"));
@@ -158,7 +158,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
 
       // WARN
       LogMessages.LOGGER.couldNotDeleteFile("file", new Exception("Sluggo says"));
-      expected = getExpected(BASE + "225", "couldNotDeleteFile", "file");
+      expected = getExpected(BASE + "125", "couldNotDeleteFile", "file");
       Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("Sluggo says"));
@@ -166,13 +166,13 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
 
       // INFO
       LogMessages.LOGGER.deployingApplication("className", getClass());
-      expected = getExpected(BASE + "325", "deployingApplication", "className", getClass());
+      expected = getExpected(BASE + "225", "deployingApplication", "className", getClass());
       Assert.assertTrue(baos.toString().contains(expected));
       baos.reset();
 
       // DEBUG
       LogMessages.LOGGER.creatingContextObject("key", "value");
-      expected = getExpected(BASE + "400", "creatingContextObject", "key", "value");
+      expected = getExpected(BASE + "300", "creatingContextObject", "key", "value");
       Assert.assertTrue(baos.toString().contains(expected));
    }
 
@@ -182,7 +182,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
 
       // ERROR
       LogMessages.LOGGER.failedExecutingError("method", "path", new Exception("oh no mr bill"));
-      String expected = getExpected(BASE + "105", "failedExecutingError", "method", "path");
+      String expected = getExpected(BASE + "005", "failedExecutingError", "method", "path");
       Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("oh no mr bill"));
@@ -190,7 +190,7 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
 
       // WARN
       LogMessages.LOGGER.couldNotDeleteFile("file", new Exception("Sluggo says"));
-      expected = getExpected(BASE + "225", "couldNotDeleteFile", "file");
+      expected = getExpected(BASE + "125", "couldNotDeleteFile", "file");
       Assert.assertTrue(baos.toString().contains(expected));
       Assert.assertTrue(baos.toString().contains("java.lang.Exception"));
       Assert.assertTrue(baos.toString().contains("Sluggo says"));
@@ -198,13 +198,13 @@ public abstract class TestLogMessages_Abstract extends TestMessagesParent
 
       // INFO
       LogMessages.LOGGER.deployingApplication("className", getClass());
-      expected = getExpected(BASE + "325", "deployingApplication", "className", getClass());
+      expected = getExpected(BASE + "225", "deployingApplication", "className", getClass());
       Assert.assertTrue(baos.toString().contains(expected));
       baos.reset();
 
       // DEBUG
       LogMessages.LOGGER.creatingContextObject("key", "value");
-      expected = getExpected(BASE + "400", "creatingContextObject", "key", "value");
+      expected = getExpected(BASE + "300", "creatingContextObject", "key", "value");
       Assert.assertTrue(baos.toString().contains(expected));
    }
    

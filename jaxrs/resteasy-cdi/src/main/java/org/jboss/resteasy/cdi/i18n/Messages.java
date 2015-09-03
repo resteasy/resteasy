@@ -21,7 +21,7 @@ import org.jboss.logging.annotations.Message.Format;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 6000;
+   int BASE = 10500;
 
    @Message(id = BASE + 0, value = "ProcessInjectionTarget.getAnnotatedType() returned null. As a result, JAX-RS property injection will not work.")
    String annotatedTypeNull();

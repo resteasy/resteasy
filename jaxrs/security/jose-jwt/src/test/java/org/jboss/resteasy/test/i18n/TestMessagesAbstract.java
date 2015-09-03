@@ -19,8 +19,7 @@ import org.junit.Test;
  */
 abstract public class TestMessagesAbstract extends TestMessagesParent
 {
-   protected static final String BASE = String.format("0%5s", Messages.BASE).substring(0, 4);
-   protected static final String BASE3 = BASE.substring(0, 3);
+   protected static final String BASE = String.format("0%5s", Messages.BASE).substring(0, 3);
 
    @Test
    public void testLocale() throws Exception
@@ -33,11 +32,11 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
          return;
       }
       
-      Assert.assertEquals(getExpected(BASE + "00", "algorithmOfSharedSymmetricKey"), Messages.MESSAGES.algorithmOfSharedSymmetricKey());
-      Assert.assertEquals(getExpected(BASE + "15", "cekKeyLengthMismatch", 3, 7), Messages.MESSAGES.cekKeyLengthMismatch(3, 7));
-      Assert.assertEquals(getExpected(BASE + "25", "contentEncryptionKeyLength", 11, EncryptionMethod.A256GCM), Messages.MESSAGES.contentEncryptionKeyLength(11, EncryptionMethod.A256GCM));
-      Assert.assertEquals(getExpected(BASE3 + "655", "unsupportedCompressionAlgorithm", CompressionAlgorithm.DEF), Messages.MESSAGES.unsupportedCompressionAlgorithm(CompressionAlgorithm.DEF));
-      Assert.assertEquals(getExpected(BASE3 + "675", "unsupportedKeyLength"), Messages.MESSAGES.unsupportedKeyLength());
+      Assert.assertEquals(getExpected(BASE + "000", "algorithmOfSharedSymmetricKey"), Messages.MESSAGES.algorithmOfSharedSymmetricKey());
+      Assert.assertEquals(getExpected(BASE + "015", "cekKeyLengthMismatch", 3, 7), Messages.MESSAGES.cekKeyLengthMismatch(3, 7));
+      Assert.assertEquals(getExpected(BASE + "025", "contentEncryptionKeyLength", 11, EncryptionMethod.A256GCM), Messages.MESSAGES.contentEncryptionKeyLength(11, EncryptionMethod.A256GCM));
+      Assert.assertEquals(getExpected(BASE + "155", "unsupportedCompressionAlgorithm", CompressionAlgorithm.DEF), Messages.MESSAGES.unsupportedCompressionAlgorithm(CompressionAlgorithm.DEF));
+      Assert.assertEquals(getExpected(BASE + "175", "unsupportedKeyLength"), Messages.MESSAGES.unsupportedKeyLength());
    }
    
    @Override

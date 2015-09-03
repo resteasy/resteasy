@@ -16,7 +16,7 @@ import org.jboss.resteasy.security.doseta.DKIMSignature;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 6500;
+   int BASE = 13500;
 
    @Message(id = BASE + 0, value = "Body hashes do not match.")
    String bodyHashesDoNotMatch();

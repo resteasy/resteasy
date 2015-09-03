@@ -47,7 +47,8 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
    
    protected static final Set beanSet = new HashSet<Bean<String>>();
    
-   protected static final String BASE = String.format("00%4s", Messages.BASE).substring(0, 3);
+   protected static final String BASE = String.format("0%5s", Messages.BASE).substring(0, 4);
+   protected static final String BASE3 = BASE.substring(0, 3);
    
    static
    {
@@ -65,10 +66,10 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
          return;
       }
       
-      Assert.assertEquals(getExpected(BASE + "000", "annotatedTypeNull"), Messages.MESSAGES.annotatedTypeNull());
-      Assert.assertEquals(getExpected(BASE + "005", "beanDoesNotHaveScopeDefined", getClass(), testAnnotation), Messages.MESSAGES.beanDoesNotHaveScopeDefined(getClass(), testAnnotation));
-      Assert.assertEquals(getExpected(BASE + "020", "beansFound", getClass().getGenericSuperclass(), beanSet), Messages.MESSAGES.beansFound(getClass().getGenericSuperclass(), beanSet));
-      Assert.assertEquals(getExpected(BASE + "130", "usingInterfaceForLookup", getClass().getGenericSuperclass(), getClass()), Messages.MESSAGES.usingInterfaceForLookup(getClass().getGenericSuperclass(), getClass())); 
+      Assert.assertEquals(getExpected(BASE + "00", "annotatedTypeNull"), Messages.MESSAGES.annotatedTypeNull());
+      Assert.assertEquals(getExpected(BASE + "05", "beanDoesNotHaveScopeDefined", getClass(), testAnnotation), Messages.MESSAGES.beanDoesNotHaveScopeDefined(getClass(), testAnnotation));
+      Assert.assertEquals(getExpected(BASE + "20", "beansFound", getClass().getGenericSuperclass(), beanSet), Messages.MESSAGES.beansFound(getClass().getGenericSuperclass(), beanSet));
+      Assert.assertEquals(getExpected(BASE3 + "630", "usingInterfaceForLookup", getClass().getGenericSuperclass(), getClass()), Messages.MESSAGES.usingInterfaceForLookup(getClass().getGenericSuperclass(), getClass())); 
    }
    
    @Override

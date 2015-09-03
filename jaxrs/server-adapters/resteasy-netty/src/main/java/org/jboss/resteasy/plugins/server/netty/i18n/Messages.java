@@ -14,7 +14,7 @@ import org.jboss.logging.annotations.MessageBundle;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 8500;
+   int BASE = 18000;
 
    @Message(id = BASE + 0, value = "Already committed")
    String alreadyCommitted();

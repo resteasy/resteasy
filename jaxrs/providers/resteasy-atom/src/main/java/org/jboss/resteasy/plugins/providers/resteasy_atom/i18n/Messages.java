@@ -16,7 +16,7 @@ import org.jboss.logging.annotations.MessageBundle;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 3000;
+   int BASE = 5000;
    
    @Message(id = BASE + 0, value = "This constructor must be called in the context of a JAX-RS request")
    String consructorMustBeCalled();

@@ -14,7 +14,7 @@ import org.jboss.logging.annotations.MessageBundle;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 3500;
+   int BASE = 5500;
 
    @Message(id = BASE + 0, value = "Expecting a StreamSource")
    String expectingStreamSource();

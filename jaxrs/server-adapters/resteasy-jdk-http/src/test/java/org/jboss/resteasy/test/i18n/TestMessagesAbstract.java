@@ -17,7 +17,7 @@ import org.junit.Test;
  */
 abstract public class TestMessagesAbstract extends TestMessagesParent
 {
-   protected static final String BASE = String.format("00%4s", Messages.BASE).substring(0, 4);
+   protected static final String BASE = String.format("0%5s", Messages.BASE).substring(0, 4);
 
    @Test
    public void testLocale() throws Exception

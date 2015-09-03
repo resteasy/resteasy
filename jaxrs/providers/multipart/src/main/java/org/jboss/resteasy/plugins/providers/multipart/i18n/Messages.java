@@ -23,7 +23,7 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartOutput;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 5500;
+   int BASE = 7500;
 
    @Message(id = BASE + 0, value = "Could find no Content-Disposition header within part")
    String couldFindNoContentDispositionHeader();
