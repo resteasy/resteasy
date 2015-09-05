@@ -175,6 +175,7 @@ public class ClientBuilderTest
       client.register(FeatureReturningFalse.class).register(FeatureReturningFalse.class);
       err.flush();
       String logMsg = baos.toString();
+      System.out.println("logMsg: '" + logMsg + "'");
 
       Assert.assertNotNull(logMsg);
       Assert.assertTrue(logMsg.contains("Provider instance"));
