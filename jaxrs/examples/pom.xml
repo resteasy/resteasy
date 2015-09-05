@@ -42,5 +42,6 @@
         <module>digital-signatures</module>
         <module>jaxrs-2.0/simple-client</module>
         <module>jaxrs-2.0/server-async-http</module>
+        <module>wadl-example</module>
     </modules>
 </project>

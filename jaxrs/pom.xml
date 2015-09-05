@@ -157,6 +157,7 @@
                 <module>async-http-servlet-3.0</module>
                 <module>jboss-modules</module>
                 <module>profiling-tests</module>
+                <module>resteasy-wadl</module>
             </modules>
         </profile>
         <profile>
@@ -187,6 +188,7 @@
                 <module>examples</module>
                 <module>jboss-modules</module>
                 <module>profiling-tests</module>
+                <module>resteasy-wadl</module>
                 <!-- <module>arquillian</module> -->
                 <!-- <module>as7-integration-testing/modules-test</module> -->
             </modules>
@@ -346,7 +348,6 @@
                 <artifactId>javax.json</artifactId>
                 <version>1.0.3</version>
             </dependency>
-
             <dependency>
                 <groupId>org.jboss.spec.javax.servlet</groupId>
                 <artifactId>jboss-servlet-api_3.1_spec</artifactId>
