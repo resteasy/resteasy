@@ -13,8 +13,8 @@ public class TestApplication extends javax.ws.rs.core.Application {
     HashSet<Object> singletons = new HashSet<Object>();
 
     public TestApplication() {
-        singletons.add(new HelloMartianResource());
-        singletons.add(new Smoke());
+//        singletons.add(new HelloMartianResource());
+//        singletons.add(new Smoke());
         singletons.add(new FormResource());
         singletons.add(new Parent());
     }

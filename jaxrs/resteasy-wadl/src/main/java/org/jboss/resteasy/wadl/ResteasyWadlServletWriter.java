@@ -226,6 +226,8 @@ public class ResteasyWadlServletWriter {
             param.setType(new QName("http://www.w3.org/2001/XMLSchema", "float", "xs"));
         } else if (paramMetaData.getType().equals(double.class) || paramMetaData.getType().equals(Double.class)) {
             param.setType(new QName("http://www.w3.org/2001/XMLSchema", "double", "xs"));
+        } else if (paramMetaData.getType().equals(Map.class) || paramMetaData.getType().equals(List.class)) {
+            param.setType(new QName("http://www.w3.org/2001/XMLSchema", "complex", "xs"));
         } else {
             param.setType(new QName("http://www.w3.org/2001/XMLSchema", "string", "xs"));
         }
