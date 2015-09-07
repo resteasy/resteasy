@@ -157,6 +157,13 @@ processStuffResponse(&lt;nomal JSON body&gt;)
         <para>
             You can change the name of the callback parameter by setting the callbackQueryParameter property.
         </para>
+        <para>
+            JacksonJsonpInterceptor can wrap the response into a try-catch block:
+<programlisting>
+try{processStuffResponse(&lt;normal JSON body&gt;)}catch(e){}
+</programlisting>
+            You can enable this feature by setting the resteasy.jsonp.silent property to true
+        </para>
     </sect1>
     <sect1 id="Jackson_JSON_Decorator">
         <title>Jackson JSON Decorator</title>

@@ -19,6 +19,8 @@ import javax.ws.rs.ext.WriterInterceptorContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
 
 /**
@@ -33,6 +35,19 @@ import org.jboss.resteasy.util.CommitHeaderOutputStream;
  *  parameter with the method name. The default name of this query parameter is "callback". So this interceptor is compatible with 
  *  <a href="http://api.jquery.com/jQuery.ajax/">jQuery</a>.
  * </p>
+ * <p>
+ *  It is possible to wrap the generated javascript function call in a try-catch block.
+ *  You can enable it either by setting the {@link #wrapInTryCatch} property of the provider instance to {@code true}
+ *  or by setting the {@code resteasy.jsonp.silent} context-param to true:
+ * </p>
+ * <pre>
+ *  {@code
+ *  <context-param>
+ *   <param-name>resteasy.jsonp.silent</param-name>
+ *   <param-value>true</param-value>
+ *  </context-param>
+ *  }
+ * </pre>
  *
  * @author <a href="mailto:holger.morch@nokia.com">Holger Morch</a>
  * @version $Revision: 1 $
@@ -88,6 +103,15 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
     
     private String callbackQueryParameter = DEFAULT_CALLBACK_QUERY_PARAMETER;
 
+    private boolean wrapInTryCatch = false;
+
+    public Jackson2JsonpInterceptor() {
+        ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+        if (context != null) {
+            wrapInTryCatch = Boolean.parseBoolean(context.getParameter("resteasy.jsonp.silent"));
+        }
+    }
+
     /**
      * The {@link ObjectMapper} used to create typing information. 
      */
@@ -124,6 +148,7 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
 
             OutputStreamWriter writer = new OutputStreamWriter(context.getOutputStream());
 
+            if (wrapInTryCatch) writer.write("try{");
             writer.write(function + "(");
             writer.flush();
 
@@ -136,6 +161,7 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
                 context.proceed();
                 wrappedOutputStream.flush();
                 writer.write(")");
+                if (wrapInTryCatch) writer.write("}catch(e){}");
                 writer.flush();
             } finally {
                 context.setOutputStream(old);
@@ -218,6 +244,24 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
      */
     public void setCallbackQueryParameter(String callbackQueryParameter) {
         this.callbackQueryParameter = callbackQueryParameter;
+    }
+
+    /**
+     * Check is the JSONP callback will be wrapped with try-catch block
+     *
+     * @return true if try-catch block is generated; false otherwise
+     */
+    public boolean isWrapInTryCatch() {
+        return wrapInTryCatch;
+    }
+
+    /**
+     * Enables or disables wrapping the JSONP callback try try-catch block
+     *
+     * @param wrapInTryCatch true if you want to wrap the result with try-catch block; false otherwise
+     */
+    public void setWrapInTryCatch(boolean wrapInTryCatch) {
+        this.wrapInTryCatch = wrapInTryCatch;
     }
 
 }
