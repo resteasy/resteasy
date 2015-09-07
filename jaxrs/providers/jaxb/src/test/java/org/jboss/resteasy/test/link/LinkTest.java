@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.link;
 
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.ws.rs.GET;
@@ -93,6 +94,7 @@ public class LinkTest  extends BaseResourceTest
 
 
    @Test
+   @Ignore
    public void testLinks() throws Exception
    {
       JAXBContext context = JAXBContext.newInstance(LinksList.class);

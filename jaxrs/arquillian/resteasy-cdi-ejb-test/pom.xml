@@ -278,9 +278,8 @@
         <scope>test</scope>
     </dependency>
     <dependency>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>jaxrs-api</artifactId>
-        <version>${project.version}</version>
+      <groupId>org.jboss.spec.javax.ws.rs</groupId>
+      <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
     </dependency>
     <dependency>
         <groupId>org.jboss.resteasy</groupId>
@@ -329,11 +328,6 @@
     <dependency>
 	   <groupId>org.jboss.resteasy</groupId>
 	   <artifactId>resteasy-cdi</artifactId>
-	   <version>${project.version}</version>
-    </dependency>
-    <dependency>
-	   <groupId>org.jboss.resteasy</groupId>
-	   <artifactId>resteasy-hibernatevalidator-provider</artifactId>
 	   <version>${project.version}</version>
     </dependency>
     <dependency>

@@ -40,13 +40,11 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-        <!--
         <dependency>
-           <groupId>tjws</groupId>
-           <artifactId>webserver</artifactId>
-           <scope>test</scope>
+            <groupId>org.jboss.spec.javax.annotation</groupId>
+            <artifactId>jboss-annotations-api_1.2_spec</artifactId>
+            <scope>test</scope>
         </dependency>
-        -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

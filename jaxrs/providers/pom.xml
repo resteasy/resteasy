@@ -4,6 +4,7 @@
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
         <version>3.0.13.Final-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <name>Resteasy Providers</name>
     <description/>
