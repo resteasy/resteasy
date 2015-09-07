@@ -1,7 +1,9 @@
 package org.jboss.resteasy.test.client;
 
 import junit.framework.Assert;
+
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.junit.Test;
 
 import javax.ws.rs.client.Client;
@@ -14,6 +16,8 @@ import javax.ws.rs.core.FeatureContext;
 import java.io.ByteArrayOutputStream;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.Modifier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.*;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
@@ -183,4 +187,14 @@ public class ClientBuilderTest
       client.close();
 
    }
+
+   @Test
+   public void testExecutorClose()
+   {
+      ExecutorService exec = Executors.newSingleThreadExecutor();
+      Client client = ((ResteasyClientBuilder)ClientBuilder.newBuilder()).asyncExecutor(exec, true).build();
+      client.close();
+      Assert.assertTrue(exec.isShutdown());
+   }
+
 }

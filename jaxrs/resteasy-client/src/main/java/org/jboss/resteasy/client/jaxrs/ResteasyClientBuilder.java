@@ -72,6 +72,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    protected HostnameVerificationPolicy policy = HostnameVerificationPolicy.WILDCARD;
    protected ResteasyProviderFactory providerFactory;
    protected ExecutorService asyncExecutor;
+   protected boolean cleanupExecutor;
    protected SSLContext sslContext;
    protected Map<String, Object> properties = new HashMap<String, Object>();
    protected ClientHttpEngine httpEngine;
@@ -108,7 +109,20 @@ public class ResteasyClientBuilder extends ClientBuilder
     */
    public ResteasyClientBuilder asyncExecutor(ExecutorService asyncExecutor)
    {
+      return asyncExecutor(asyncExecutor, false);
+   }
+
+   /**
+    * Executor to use to run AsyncInvoker invocations
+    *
+    * @param asyncExecutor
+    * @param cleanupExecutor true if the Client should close the executor when it is closed
+    * @return
+    */
+   public ResteasyClientBuilder asyncExecutor(ExecutorService asyncExecutor, boolean cleanupExecutor)
+   {
       this.asyncExecutor = asyncExecutor;
+      this.cleanupExecutor = cleanupExecutor;
       return this;
    }
 
@@ -336,7 +350,6 @@ public class ResteasyClientBuilder extends ClientBuilder
 
       ExecutorService executor = asyncExecutor;
 
-      boolean cleanupExecutor = false;
       if (executor == null)
       {
          cleanupExecutor = true;
