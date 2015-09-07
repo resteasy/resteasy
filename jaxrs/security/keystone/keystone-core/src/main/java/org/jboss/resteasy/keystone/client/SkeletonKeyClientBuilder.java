@@ -2,6 +2,7 @@ package org.jboss.resteasy.keystone.client;
 
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.keystone.core.i18n.Messages;
 import org.jboss.resteasy.keystone.model.Access;
 import org.jboss.resteasy.keystone.model.Authentication;
 import org.jboss.resteasy.keystone.model.Mappers;
@@ -9,6 +10,7 @@ import org.jboss.resteasy.keystone.model.Mappers;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.WebTarget;
+
 import java.io.IOException;
 
 /**
@@ -45,9 +47,9 @@ public class SkeletonKeyClientBuilder
 
    public Access authenticateTarget(final String projectName, WebTarget target)
    {
-      if (username == null) throw new NullPointerException("username is null");
-      if (password == null) throw new NullPointerException("password is null");
-      if (tokenFactory == null) throw new NullPointerException("idp is null");
+      if (username == null) throw new NullPointerException(Messages.MESSAGES.usernameNull());
+      if (password == null) throw new NullPointerException(Messages.MESSAGES.passwordNull());
+      if (tokenFactory == null) throw new NullPointerException(Messages.MESSAGES.idpNull());
 
       final Access access = obtainToken(projectName);
       ClientRequestFilter tokenFilter = new ClientRequestFilter() {
@@ -78,9 +80,9 @@ public class SkeletonKeyClientBuilder
 
    public String signed(final String projectName, WebTarget target)
    {
-      if (username == null) throw new NullPointerException("username is null");
-      if (password == null) throw new NullPointerException("password is null");
-      if (tokenFactory == null) throw new NullPointerException("idp is null");
+      if (username == null) throw new NullPointerException(Messages.MESSAGES.usernameNull());
+      if (password == null) throw new NullPointerException(Messages.MESSAGES.passwordNull());
+      if (tokenFactory == null) throw new NullPointerException(Messages.MESSAGES.idpNull());
 
       final String access = obtainSignedToken(projectName);
       ClientRequestFilter tokenFilter = new ClientRequestFilter() {

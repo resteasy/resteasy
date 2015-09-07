@@ -1,17 +1,19 @@
 package org.jboss.resteasy.skeleton.key.as7;
 
 import org.apache.catalina.connector.Request;
-import org.jboss.logging.Logger;
 import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyPrincipal;
 import org.jboss.resteasy.skeleton.key.SkeletonKeySession;
 import org.jboss.resteasy.skeleton.key.VerificationException;
+import org.jboss.resteasy.skeleton.key.as7.i18n.LogMessages;
+import org.jboss.resteasy.skeleton.key.as7.i18n.Messages;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
@@ -25,7 +27,6 @@ public class CatalinaBearerTokenAuthenticator
 {
    protected ResourceMetadata resourceMetadata;
    protected boolean challenge;
-   protected Logger log = Logger.getLogger(CatalinaBearerTokenAuthenticator.class);
    protected String tokenString;
    protected SkeletonKeyToken token;
    private Principal principal;
@@ -87,7 +88,7 @@ public class CatalinaBearerTokenAuthenticator
       }
       catch (VerificationException e)
       {
-         log.error("Failed to verify token", e);
+         LogMessages.LOGGER.error(Messages.MESSAGES.failedToVerifyToken(), e);
          challengeResponse(response, "invalid_token", e.getMessage());
       }
       boolean verifyCaller = false;
@@ -110,7 +111,7 @@ public class CatalinaBearerTokenAuthenticator
          if (token.getTrustedCertificates() == null || token.getTrustedCertificates().size() == 0)
          {
             response.sendError(400);
-            throw new LoginException("No trusted certificates in token");
+            throw new LoginException(Messages.MESSAGES.noTrustedCertificates());
          }
          // for now, we just make sure JBoss Web did two-way SSL
          // assume JBoss Web verifies the client cert
@@ -118,7 +119,7 @@ public class CatalinaBearerTokenAuthenticator
          if (chain == null || chain.length == 0)
          {
             response.sendError(400);
-            throw new LoginException("No certificates provided by jboss web to verify the caller");
+            throw new LoginException(Messages.MESSAGES.noCertificatesProvidedByJBossWeb());
          }
          surrogate = chain[0].getSubjectX500Principal().getName();
       }
@@ -158,6 +159,6 @@ public class CatalinaBearerTokenAuthenticator
       {
          throw new RuntimeException(e);
       }
-      throw new LoginException("Challenged");
+      throw new LoginException(Messages.MESSAGES.challenged());
    }
 }

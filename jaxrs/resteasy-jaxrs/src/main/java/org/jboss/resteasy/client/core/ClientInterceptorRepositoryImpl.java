@@ -2,12 +2,14 @@ package org.jboss.resteasy.client.core;
 
 import org.jboss.resteasy.core.interception.ReaderInterceptorRegistry;
 import org.jboss.resteasy.core.interception.WriterInterceptorRegistry;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
 import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
 
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.WriterInterceptor;
+
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
@@ -192,8 +194,7 @@ public class ClientInterceptorRepositoryImpl implements ClientInterceptorReposit
 
       if (!registered)
       {
-         throw new RuntimeException(
-                 "The object you supplied to registerInterceptor is not of an understood type");
+         throw new RuntimeException(Messages.MESSAGES.entityNotOfUnderstoodType());
       }
    }
 

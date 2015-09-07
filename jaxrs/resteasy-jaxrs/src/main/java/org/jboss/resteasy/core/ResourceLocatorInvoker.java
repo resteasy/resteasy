@@ -1,6 +1,6 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
@@ -20,6 +20,7 @@ import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.GetRestful;
 
 import javax.ws.rs.NotFoundException;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -35,9 +36,6 @@ import java.util.regex.Pattern;
 @SuppressWarnings("unchecked")
 public class ResourceLocatorInvoker implements ResourceInvoker
 {
-
-   final static Logger logger = Logger.getLogger(ResourceLocatorInvoker.class);
-
    protected InjectorFactory injector;
    protected MethodInjector methodInjector;
    protected ResourceFactory resource;
@@ -113,7 +111,7 @@ public class ResourceLocatorInvoker implements ResourceInvoker
    {
       if (target == null)
       {
-         NotFoundException notFound = new NotFoundException("Null subresource for path: " + request.getUri().getAbsolutePath());
+         NotFoundException notFound = new NotFoundException(Messages.MESSAGES.nullSubresource(request.getUri().getAbsolutePath()));
          throw notFound;
       }
       Class<? extends Object> clazz = target.getClass();
@@ -122,7 +120,7 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       {
          if (!GetRestful.isSubResourceClass(clazz))
          {
-            String msg = "Subresource for target class has no jax-rs annotations.: " + clazz.getName();
+            String msg = Messages.MESSAGES.subresourceHasNoJaxRsAnnotations(clazz.getName());
             throw new InternalServerErrorException(msg);
          }
          registry = new LocatorRegistry(clazz, providerFactory);

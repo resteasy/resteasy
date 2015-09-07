@@ -5,6 +5,8 @@ package org.jboss.resteasy.jose.jwe.crypto;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.jboss.resteasy.jose.i18n.Messages;
+
 
 /**
  * Composite key used in AES/CBC/PKCS5Padding/HMAC-SHA2 encryption. This class
@@ -78,7 +80,7 @@ final class CompositeKey
 
 		} else {
 
-			throw new RuntimeException("Unsupported AES/CBC/PKCS5Padding/HMAC-SHA2 key length, must be 256 or 512 bits");
+		   throw new RuntimeException(Messages.MESSAGES.unsupportedKeyLength());
 		}
 	}
 

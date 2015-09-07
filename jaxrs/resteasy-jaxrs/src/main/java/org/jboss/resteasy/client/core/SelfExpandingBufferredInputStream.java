@@ -4,6 +4,8 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+
 /**
  * Extension of {@link BufferedInputStream} enforcing the contract where reset()
  * always returns to the beginning of the stream, and the internal buffer
@@ -34,7 +36,7 @@ public class SelfExpandingBufferredInputStream extends BufferedInputStream
    @Override
    public synchronized void mark(int readlimit)
    {
-      throw new UnsupportedOperationException("ExpandoBufferredInputStream is always marked at index 0.");
+      throw new UnsupportedOperationException(Messages.MESSAGES.alwaysMarkedAtIndex0());
    }
 
    @Override

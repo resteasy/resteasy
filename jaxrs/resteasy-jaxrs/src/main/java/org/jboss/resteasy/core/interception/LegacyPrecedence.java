@@ -1,9 +1,11 @@
 package org.jboss.resteasy.core.interception;
 
 import org.jboss.resteasy.annotations.interception.Precedence;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +37,7 @@ public class LegacyPrecedence
       {
          String value = precedence.value();
          Integer o = precedenceOrder.get(value);
-         if (o == null) throw new RuntimeException("Unknown interceptor precedence: " + value);
+         if (o == null) throw new RuntimeException(Messages.MESSAGES.unknownInterceptorPrecedence(value));
          return o;
       }
       else
@@ -47,7 +49,7 @@ public class LegacyPrecedence
             {
                String value = precedence.value();
                Integer o = precedenceOrder.get(value);
-               if (o == null) throw new RuntimeException("Unknown interceptor precedence: " + value);
+               if (o == null) throw new RuntimeException(Messages.MESSAGES.unknownInterceptorPrecedence(value));
                return o;
             }
          }

@@ -6,8 +6,10 @@ import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.modes.GCMBlockCipher;
 import org.bouncycastle.crypto.params.AEADParameters;
 import org.bouncycastle.crypto.params.KeyParameter;
+import org.jboss.resteasy.jose.i18n.Messages;
 
 import javax.crypto.SecretKey;
+
 import java.security.SecureRandom;
 
 
@@ -128,7 +130,7 @@ class AESGCM
 
 		} catch (InvalidCipherTextException e) {
 
-			throw new RuntimeException("Couldn't generate GCM authentication tag: " + e.getMessage(), e);
+		   throw new RuntimeException(Messages.MESSAGES.couldntGenerateGCMAuthentication(e.getLocalizedMessage()), e);
 		}
 
 		// Split output into cipher text and authentication tag
@@ -189,7 +191,7 @@ class AESGCM
 				
 		} catch (InvalidCipherTextException e) {
 
-			throw new RuntimeException("Couldn't validate GCM authentication tag: " + e.getMessage(), e);
+		   throw new RuntimeException(Messages.MESSAGES.couldntValidateGCMAuthentication(e.getLocalizedMessage()), e);
 		}
 
 		return output;

@@ -2,11 +2,13 @@ package org.jboss.resteasy.jose.jwe.crypto;
 
 
 import org.jboss.resteasy.jose.Base64Url;
+import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jwe.Algorithm;
 import org.jboss.resteasy.jose.jwe.EncryptionMethod;
 import org.jboss.resteasy.jose.jwe.JWEHeader;
 
 import javax.crypto.SecretKey;
+
 import java.nio.charset.Charset;
 
 
@@ -48,19 +50,19 @@ public class DirectDecrypter
       if (encryptedKey != null)
       {
 
-         throw new RuntimeException("Unexpected encrypted key, must be omitted");
+         throw new RuntimeException(Messages.MESSAGES.unexpectedEncryptedKey());
       }
 
       if (encodedIv == null)
       {
 
-         throw new RuntimeException("The initialization vector (IV) must not be null");
+         throw new RuntimeException(Messages.MESSAGES.initializationVectorMustNotBeNull());
       }
 
       if (encodedAuthTag == null)
       {
 
-         throw new RuntimeException("The authentication tag must not be null");
+         throw new RuntimeException(Messages.MESSAGES.authenticationTagMustNotBeNull());
       }
 
 
@@ -69,7 +71,7 @@ public class DirectDecrypter
       if (!alg.equals(Algorithm.dir))
       {
 
-         throw new RuntimeException("Unsupported algorithm, must be \"dir\"");
+         throw new RuntimeException(Messages.MESSAGES.unsupportedAlgorithm());
       }
 
       // Compose the AAD

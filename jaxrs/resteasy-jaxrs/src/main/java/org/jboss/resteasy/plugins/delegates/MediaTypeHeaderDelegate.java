@@ -1,9 +1,11 @@
 package org.jboss.resteasy.plugins.delegates;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.util.HeaderParameterParser;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.RuntimeDelegate;
+
 import java.util.HashMap;
 
 /**
@@ -14,7 +16,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 {
    public Object fromString(String type) throws IllegalArgumentException
    {
-      if (type == null) throw new IllegalArgumentException("MediaType value is null");
+      if (type == null) throw new IllegalArgumentException(Messages.MESSAGES.mediaTypeValueNull());
       return parse(type);
    }
 
@@ -110,7 +112,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
          }
          if (!MediaType.MEDIA_TYPE_WILDCARD.equals(major))
          {
-            throw new IllegalArgumentException("Failure parsing MediaType string: " + type);
+            throw new IllegalArgumentException(Messages.MESSAGES.failureParsingMediaType(type));
          }
          subtype = MediaType.MEDIA_TYPE_WILDCARD;
       }
@@ -128,11 +130,11 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
       }
       if (major.length() < 1 || subtype.length() < 1)
       {
-         throw new IllegalArgumentException("Failure parsing MediaType string: " + type);
+         throw new IllegalArgumentException(Messages.MESSAGES.failureParsingMediaType(type));
       }
       if (!isValid(major) || !isValid(subtype))
       {
-         throw new IllegalArgumentException("Failure parsing MediaType string: " + type);
+         throw new IllegalArgumentException(Messages.MESSAGES.failureParsingMediaType(type));
       }
       String params = null;
       if (paramIndex > -1) params = type.substring(paramIndex + 1);
@@ -167,7 +169,7 @@ public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 
    public String toString(Object o)
    {
-      if (o == null) throw new IllegalArgumentException("param was null");
+      if (o == null) throw new IllegalArgumentException(Messages.MESSAGES.paramNull());
       MediaType type = (MediaType) o;
       StringBuffer buf = new StringBuffer();
 

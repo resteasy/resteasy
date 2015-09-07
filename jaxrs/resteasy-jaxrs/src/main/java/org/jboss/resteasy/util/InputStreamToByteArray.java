@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -88,7 +90,7 @@ public class InputStreamToByteArray extends InputStream
    public void reset()
            throws IOException
    {
-      throw new RuntimeException("Stream wrapped by Signature, cannot reset the stream without destroying signature");
+      throw new RuntimeException(Messages.MESSAGES.streamWrappedBySignature());
    }
 
    @Override

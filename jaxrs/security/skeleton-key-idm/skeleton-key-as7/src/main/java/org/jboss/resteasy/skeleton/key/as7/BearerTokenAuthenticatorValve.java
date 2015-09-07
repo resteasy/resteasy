@@ -9,7 +9,6 @@ import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.deploy.LoginConfig;
-import org.jboss.logging.Logger;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.as7.config.CatalinaManagedResourceConfigLoader;
 import org.jboss.resteasy.skeleton.key.config.ManagedResourceConfig;
@@ -30,7 +29,6 @@ import java.io.IOException;
  */
 public class BearerTokenAuthenticatorValve extends AuthenticatorBase implements LifecycleListener
 {
-   private static final Logger log = Logger.getLogger(BearerTokenAuthenticatorValve.class);
    protected ManagedResourceConfig remoteSkeletonKeyConfig;
    protected ResourceMetadata resourceMetadata;
 

@@ -5,13 +5,15 @@ import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
+import org.jboss.resteasy.keystone.core.i18n.LogMessages;
+import org.jboss.resteasy.keystone.core.i18n.Messages;
 import org.jboss.resteasy.keystone.model.Mappers;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Context;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,8 +42,6 @@ public class SkeletonKeyApplication
    protected UsersService users;
    protected TokenService tokenService;
    protected Cache cache;
-   protected Logger logger = Logger.getLogger(SkeletonKeyApplication.class);
-
    public SkeletonKeyApplication(@Context Configurable confgurable)
    {
       this.configurable = confgurable;
@@ -81,13 +81,13 @@ public class SkeletonKeyApplication
             String path = getConfigProperty("skeleton.key.keyStorePath");
             if (path == null)
             {
-               logger.warn("No key store provided.");
+               LogMessages.LOGGER.warn(Messages.MESSAGES.noKeystoreProvided());
                return;
             }
             InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
             if (is == null)
             {
-               throw new RuntimeException("Keystore path invalid: " + path);
+               throw new RuntimeException(Messages.MESSAGES.keystorePathInvalid(path));
             }
             keyStore = KeyStore.getInstance("jks");
             keyStore.load(is, keyStorePassword.toCharArray());
@@ -99,9 +99,9 @@ public class SkeletonKeyApplication
          }
 
          privateKey = (PrivateKey)keyStore.getKey(alias, keyStorePassword.toCharArray());
-         if (privateKey == null) throw new RuntimeException("Private Key is null");
+         if (privateKey == null) throw new RuntimeException(Messages.MESSAGES.privateKeyNull());
          certificate = (X509Certificate)keyStore.getCertificate(alias);
-         if (certificate == null) throw new RuntimeException("Certificate is null");
+         if (certificate == null) throw new RuntimeException(Messages.MESSAGES.certificateNull());
          tokenService.setPrivateKey(privateKey);
          tokenService.setCertificate(certificate);
       }
@@ -180,8 +180,8 @@ public class SkeletonKeyApplication
       if (path == null) return null;
 
       String name = getConfigProperty(SKELETON_KEY_INFINISPAN_CACHE_NAME);
-      if (name == null) throw new RuntimeException("need to specify skeleton.key.infinispan.cache.name");
-
+      if (name == null) throw new RuntimeException(Messages.MESSAGES.needToSpecifyCacheName());
+      
       try
       {
          return new DefaultCacheManager(path).getCache(name);

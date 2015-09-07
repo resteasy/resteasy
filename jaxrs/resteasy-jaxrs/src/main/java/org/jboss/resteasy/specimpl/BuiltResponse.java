@@ -2,6 +2,7 @@ package org.jboss.resteasy.specimpl;
 
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.plugins.delegates.LocaleDelegate;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HeaderValueProcessor;
 import org.jboss.resteasy.spi.LinkHeaders;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -19,6 +20,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.RuntimeDelegate;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -225,7 +227,7 @@ public class BuiltResponse extends Response
 
    public <T> T readEntity(Class<T> type, Type genericType, Annotation[] anns)
    {
-      throw new IllegalStateException("Entity is not backed by an input stream");
+      throw new IllegalStateException(Messages.MESSAGES.entityNotBackedByInputStream());
    }
 
 
@@ -251,7 +253,7 @@ public class BuiltResponse extends Response
 
    public void abortIfClosed()
    {
-      if (isClosed()) throw new IllegalStateException("Response is closed.");
+      if (isClosed()) throw new IllegalStateException(Messages.MESSAGES.responseIsClosed());
    }
 
    @Override

@@ -10,7 +10,8 @@ import org.jboss.resteasy.links.LinkResource;
 import org.jboss.resteasy.links.LinkResources;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.links.ResourceFacade;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.links.i18n.LogMessages;
+import org.jboss.resteasy.links.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -27,6 +28,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -39,9 +41,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class RESTUtils {
-
-	private final static Logger logger = Logger
-	.getLogger(RESTUtils.class);
 
 	public static <T> T addDiscovery(T entity, UriInfo uriInfo, ResourceMethodRegistry registry) {
 		// find the field to inject first
@@ -61,7 +60,7 @@ public class RESTUtils {
 		try {
 			injectionField.set(entity, ret);
 		} catch (Exception e) {
-				logger.error("Failed to inject links in "+entity, e);
+		   LogMessages.LOGGER.error(Messages.MESSAGES.failedToInjectLinks(entity), e);
 		}
 		injectionField.setAccessible(false);
 		return entity;
@@ -140,11 +139,11 @@ public class RESTUtils {
 			type = m.getReturnType();
 		}
 		if(Void.TYPE == type)
-			throw new ServiceDiscoveryException(m, "Cannot guess resource type for service discovery");
+		   throw new ServiceDiscoveryException(m, Messages.MESSAGES.cannotGuessResourceType());
 		if(Collection.class.isAssignableFrom(type))
-			throw new ServiceDiscoveryException(m, "Cannot guess collection type for service discovery");
+		   throw new ServiceDiscoveryException(m, Messages.MESSAGES.cannotGuessCollectionType());
 		if(Response.class.isAssignableFrom(type))
-			throw new ServiceDiscoveryException(m, "Cannot guess type for Response");
+		   throw new ServiceDiscoveryException(m, Messages.MESSAGES.cannotGuessType());
 		return type;
 	}
 
@@ -260,7 +259,7 @@ public class RESTUtils {
 		// if we have too many, ignore the last ones
 		if(params.size() > paramNames.size())
 			return uriBuilder.build(params.subList(0, paramNames.size()).toArray());
-		throw new ServiceDiscoveryException(m, "Not enough URI parameters: expecting "+paramNames.size()+" but only found "+params.size());
+		throw new ServiceDiscoveryException(m, Messages.MESSAGES.notEnoughtUriParameters(paramNames.size(), params.size()));
 	}
 
 	private static List<Object> findURIParamsFromResource(Object entity) {
@@ -292,8 +291,8 @@ public class RESTUtils {
 		try{
 			return elProviderClass.newInstance();
 		}catch(Exception x){
-				logger.error("Could not instantiate ELProvider class "+elProviderClass.getName(), x);
-			throw new ServiceDiscoveryException(m, "Failed to instantiate ELProvider: "+elProviderClass.getName(), x);
+		   LogMessages.LOGGER.error(Messages.MESSAGES.couldNotInstantiateELProviderClass(elProviderClass.getName()), x);
+		   throw new ServiceDiscoveryException(m, Messages.MESSAGES.failedToInstantiateELProvider(elProviderClass.getName()), x);
 		}
 	}
 
@@ -319,8 +318,7 @@ public class RESTUtils {
 			return EL.EXPRESSION_FACTORY.createValueExpression(context, expression,
 					Object.class).getValue(context);
 		}catch(Exception x){
-			throw new ServiceDiscoveryException(m, "Failed to evaluate EL expression: "+expression, x);
-
+		   throw new ServiceDiscoveryException(m, Messages.MESSAGES.failedToEvaluateELExpression(expression), x);
 		}
 	}
 
@@ -329,7 +327,7 @@ public class RESTUtils {
 			return (Boolean) EL.EXPRESSION_FACTORY.createValueExpression(context, expression,
 					Boolean.class).getValue(context);
 		}catch(Exception x){
-			throw new ServiceDiscoveryException(m, "Failed to evaluate EL expression: "+expression, x);
+		   throw new ServiceDiscoveryException(m, Messages.MESSAGES.failedToEvaluateELExpression(expression), x);
 
 		}
 	}

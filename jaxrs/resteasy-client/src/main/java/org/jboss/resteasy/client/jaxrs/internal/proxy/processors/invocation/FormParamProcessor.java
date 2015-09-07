@@ -1,5 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation;
 
+import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 
 import javax.ws.rs.client.Entity;
@@ -30,7 +31,7 @@ public class FormParamProcessor extends AbstractInvocationCollectionProcessor
          }
          else
          {
-            throw new RuntimeException("Cannot set a form parameter if entity body already set");
+            throw new RuntimeException(Messages.MESSAGES.cannotSetFormParameter());
          }
       }
       else

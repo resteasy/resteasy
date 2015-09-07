@@ -1,6 +1,8 @@
 package org.jboss.resteasy.keystone.server;
 
 import org.infinispan.Cache;
+import org.jboss.resteasy.keystone.core.i18n.LogMessages;
+import org.jboss.resteasy.keystone.core.i18n.Messages;
 import org.jboss.resteasy.keystone.model.Access;
 import org.jboss.resteasy.keystone.model.Authentication;
 import org.jboss.resteasy.keystone.model.Project;
@@ -8,7 +10,6 @@ import org.jboss.resteasy.keystone.model.Role;
 import org.jboss.resteasy.keystone.model.Roles;
 import org.jboss.resteasy.keystone.model.StoredUser;
 import org.jboss.resteasy.keystone.model.UrlToken;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.security.smime.SignedOutput;
 import org.jboss.resteasy.util.Base64;
 
@@ -21,6 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+
 import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -45,7 +47,6 @@ public class TokenService
 
    private ProjectsService projects;
    private UsersService users;
-   private static Logger log = Logger.getLogger(TokenService.class);
 
    public TokenService(Cache cache, long expiration, TimeUnit expirationUnit, ProjectsService projects, UsersService users)
    {
@@ -79,7 +80,7 @@ public class TokenService
    {
       if (privateKey == null || certificate == null)
       {
-         log.warn("privateKey or certificate not set for this operation");
+         LogMessages.LOGGER.warn(Messages.MESSAGES.privateKeyOrCertificateNotSet());
          throw new WebApplicationException(500);
       }
       Access access = create(auth);

@@ -1,9 +1,9 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
+import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.core.ProvidersContextRetainer;
 import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HeaderValueProcessor;
 import org.jboss.resteasy.spi.MarshalledEntity;
@@ -21,6 +21,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.ReaderInterceptor;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +40,6 @@ import static java.lang.String.format;
  */
 public abstract class ClientResponse extends BuiltResponse
 {
-   private final static Logger logger = Logger.getLogger(ClientResponse.class);
    // One thing to note, I don't cache header objects because I was too lazy to proxy the headers multivalued map
    protected Map<String, Object> properties;
    protected ClientConfiguration configuration;
@@ -132,7 +132,7 @@ public abstract class ClientResponse extends BuiltResponse
    protected InputStream getEntityStream()
    {
       if (bufferedEntity != null) return new ByteArrayInputStream(bufferedEntity);
-      if (isClosed()) throw new ProcessingException("Stream is closed");
+      if (isClosed()) throw new ProcessingException(Messages.MESSAGES.streamIsClosed());
       return getInputStream();
    }
 
@@ -163,8 +163,7 @@ public abstract class ClientResponse extends BuiltResponse
          }
          else if (bufferedEntity == null)
          {
-            throw new RuntimeException("The entity was already read, and it was of type "
-                    + entity.getClass());
+            throw new RuntimeException(Messages.MESSAGES.entityAlreadyRead(entity.getClass()));
          }
          else
          {
@@ -237,7 +236,7 @@ public abstract class ClientResponse extends BuiltResponse
          InputStream is = getEntityStream();
          if (is == null)
          {
-            throw new IllegalStateException("Input stream was empty, there is no entity");
+            throw new IllegalStateException(Messages.MESSAGES.inputStreamWasEmpty());
          }
          if (isMarshalledEntity)
          {

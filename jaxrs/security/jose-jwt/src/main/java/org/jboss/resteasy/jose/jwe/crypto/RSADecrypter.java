@@ -2,11 +2,13 @@ package org.jboss.resteasy.jose.jwe.crypto;
 
 
 import org.jboss.resteasy.jose.Base64Url;
+import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jwe.Algorithm;
 import org.jboss.resteasy.jose.jwe.EncryptionMethod;
 import org.jboss.resteasy.jose.jwe.JWEHeader;
 
 import javax.crypto.SecretKey;
+
 import java.nio.charset.Charset;
 import java.security.interfaces.RSAPrivateKey;
 
@@ -52,19 +54,19 @@ public class RSADecrypter
       if (encodedEncryptedKey == null)
       {
 
-         throw new RuntimeException("The encrypted key must not be null");
+         throw new RuntimeException(Messages.MESSAGES.encryptedKeyMustNotBeNull());
       }
 
       if (encodedIv == null)
       {
 
-         throw new RuntimeException("The initialization vector (IV) must not be null");
+         throw new RuntimeException(Messages.MESSAGES.initializationVectorMustNotBeNull());
       }
 
       if (encodedAuthTag == null)
       {
 
-         throw new RuntimeException("The authentication tag must not be null");
+         throw new RuntimeException(Messages.MESSAGES.authenticationTagMustNotBeNull());
       }
 
 
@@ -108,7 +110,7 @@ public class RSADecrypter
       else
       {
 
-         throw new RuntimeException("Unsupported JWE algorithm, must be RSA1_5 or RSA_OAEP");
+         throw new RuntimeException(Messages.MESSAGES.unsupportedJWEalgorithm());
       }
 
 
@@ -132,7 +134,7 @@ public class RSADecrypter
       else
       {
 
-         throw new RuntimeException("Unsupported encryption method, must be A128CBC_HS256, A256CBC_HS512, A128GCM or A128GCM");
+         throw new RuntimeException(Messages.MESSAGES.unsupportedEncryptionMethod());
       }
 
 

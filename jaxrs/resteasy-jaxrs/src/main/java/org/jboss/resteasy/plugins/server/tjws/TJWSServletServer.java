@@ -2,9 +2,11 @@ package org.jboss.resteasy.plugins.server.tjws;
 
 import Acme.Serve.SSLAcceptor;
 import Acme.Serve.Serve;
-import org.jboss.resteasy.logging.Logger;
+
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 import javax.servlet.http.HttpServlet;
+
 import java.io.File;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -22,7 +24,6 @@ import java.util.Properties;
  */
 public class TJWSServletServer
 {
-   private final static Logger logger = Logger.getLogger(TJWSServletServer.class);
 
    public static class FileMappingServe extends Serve
    {
@@ -168,9 +169,9 @@ public class TJWSServletServer
    {
       if (this.props == null) this.props = new Properties();
       if (!props.containsKey(Serve.ARG_PORT) && !props.containsKey(SSLAcceptor.ARG_PORT))
-         throw new RuntimeException("You must set the port or ssl port");
+         throw new RuntimeException(Messages.MESSAGES.mustSetPort());
       if (props.containsKey(Serve.ARG_PORT) && props.containsKey(SSLAcceptor.ARG_PORT))
-         throw new RuntimeException("You must set either the port or ssl port, not both");
+         throw new RuntimeException(Messages.MESSAGES.mustSetEitherPortOrSSLPort());
       if (props.containsKey(SSLAcceptor.ARG_PORT)) props.put(Serve.ARG_ACCEPTOR_CLASS, SSLAcceptor.class.getName());
       props.setProperty(Serve.ARG_NOHUP, "nohup");
       server.arguments = props;

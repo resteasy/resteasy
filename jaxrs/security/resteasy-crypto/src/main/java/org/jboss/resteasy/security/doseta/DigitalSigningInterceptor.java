@@ -2,6 +2,7 @@ package org.jboss.resteasy.security.doseta;
 
 import org.jboss.resteasy.annotations.interception.DecoderPrecedence;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.ClientExecutionContext;
 import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
@@ -19,6 +20,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.WriterInterceptor;
 import javax.ws.rs.ext.WriterInterceptorContext;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -164,7 +166,7 @@ public class DigitalSigningInterceptor implements WriterInterceptor, ClientExecu
       }
       catch (Exception e)
       {
-         throw new RuntimeException("Failed to sign", e);
+         throw new RuntimeException(Messages.MESSAGES.failedToSign(), e);
       }
       finally
       {
@@ -184,14 +186,14 @@ public class DigitalSigningInterceptor implements WriterInterceptor, ClientExecu
 
          if (repository == null)
          {
-            throw new InvalidKeyException("Unable to locate a private key to sign message, repository is null.");
-
+            throw new InvalidKeyException(Messages.MESSAGES.unableToLocatePrivateKey());
+            
          }
 
          privateKey = repository.findPrivateKey(dosetaSignature);
          if (privateKey == null)
          {
-            throw new InvalidKeyException("Unable to find key to sign message. Repository returned null. ");
+            throw new InvalidKeyException(Messages.MESSAGES.unableToFindKey());
          }
       }
       dosetaSignature.sign(headers, body, privateKey);

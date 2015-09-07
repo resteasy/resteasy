@@ -19,6 +19,7 @@ import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.plugins.validation.ConstraintTypeUtil11;
 import org.jboss.resteasy.plugins.validation.GeneralValidatorImpl;
 import org.jboss.resteasy.plugins.validation.SimpleViolationsContainer;
+import org.jboss.resteasy.plugins.validation.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -277,7 +278,7 @@ public class ResteasyViolationException extends ConstraintViolationException
                   break;
                   
                default:
-                  throw new RuntimeException("unexpected violation type: " + type);
+                  throw new RuntimeException(Messages.MESSAGES.unexpectedViolationType(type));
             }
             line = br.readLine(); // consume ending '\r'
             line = br.readLine();
@@ -285,7 +286,7 @@ public class ResteasyViolationException extends ConstraintViolationException
       }
       catch (IOException e)
       {
-         throw new RuntimeException("Unable to parse ResteasyViolationException");
+         throw new RuntimeException(Messages.MESSAGES.unableToParseException());
       }
       
       violationLists = new ArrayList<List<ResteasyConstraintViolation>>();
@@ -301,7 +302,7 @@ public class ResteasyViolationException extends ConstraintViolationException
       int beginning = line.indexOf('[', start);
       if (beginning == -1)
       {
-         throw new RuntimeException("ResteasyViolationException has invalid format: " + line);
+         throw new RuntimeException(Messages.MESSAGES.exceptionHasInvalidFormat(line));
       }
       int index = beginning;
       int bracketCount = 1;
@@ -323,7 +324,7 @@ public class ResteasyViolationException extends ConstraintViolationException
       }
       if (bracketCount != 0)
       {
-         throw new RuntimeException("ResteasyViolationException has invalid format: " + line);
+         throw new RuntimeException(Messages.MESSAGES.exceptionHasInvalidFormat(line));
       }
       return index;
    }
@@ -382,7 +383,7 @@ public class ResteasyViolationException extends ConstraintViolationException
                   break;
 
                default:
-                  throw new RuntimeException("unexpected violation type: " + rcv.getConstraintType());
+                  throw new RuntimeException(Messages.MESSAGES.unexpectedViolationType(rcv.getConstraintType()));
             }
          }
       }
