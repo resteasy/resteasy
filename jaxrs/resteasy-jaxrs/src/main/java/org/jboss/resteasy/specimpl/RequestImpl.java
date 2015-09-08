@@ -23,11 +23,11 @@ import java.util.List;
  */
 public class RequestImpl implements Request
 {
-   private HttpHeaders headers;
+   private final HttpHeaders headers;
    private String varyHeader;
-   private String httpMethod;
-   private HttpRequest request;
-   private HttpResponse response;
+   private final String httpMethod;
+   private final HttpRequest request;
+   private final HttpResponse response;
 
    public RequestImpl(HttpRequest request, HttpResponse response)
    {
@@ -37,21 +37,21 @@ public class RequestImpl implements Request
       this.response = response;
    }
 
+   @Override
    public String getMethod()
    {
       return httpMethod;
    }
-
-
 
    public MultivaluedMap<String, String> getFormParameters()
    {
       return request.getDecodedFormParameters();
    }
 
+   @Override
    public Variant selectVariant(List<Variant> variants) throws IllegalArgumentException
    {
-      if (variants == null || variants.size() == 0) throw new IllegalArgumentException("Variant list must not be zero");
+      if (variants == null || variants.isEmpty()) throw new IllegalArgumentException("Variant list must not be zero");
 
       ServerDrivenNegotiation negotiation = new ServerDrivenNegotiation();
       MultivaluedMap<String, String> requestHeaders = headers.getRequestHeaders();
@@ -63,6 +63,11 @@ public class RequestImpl implements Request
       varyHeader = ResponseBuilderImpl.createVaryHeader(variants);
       response.getOutputHeaders().add(HttpHeaderNames.VARY, varyHeader);
       return negotiation.getBestMatch(variants);
+   }
+
+   private Response.ResponseBuilder addVariant(Response.ResponseBuilder builder) {
+      if (builder != null && varyHeader != null) builder.header(HttpHeaderNames.VARY, varyHeader);
+      return builder;
    }
 
    public List<EntityTag> convertEtag(List<String> tags)
@@ -79,10 +84,17 @@ public class RequestImpl implements Request
       return result;
    }
 
-   public Response.ResponseBuilder ifMatch(List<EntityTag> ifMatch, EntityTag eTag)
+   public Response.ResponseBuilder ifMatch(EntityTag eTag)
    {
       boolean match = false;
-      for (EntityTag tag : ifMatch)
+
+      List<String> values = headers.getRequestHeaders().get(HttpHeaderNames.IF_MATCH);
+      if (values == null || values.isEmpty())
+      {
+         return null;
+      }
+
+      for (EntityTag tag : convertEtag(values))
       {
          if (tag.equals(eTag) || tag.getValue().equals("*"))
          {
@@ -90,15 +102,23 @@ public class RequestImpl implements Request
             break;
          }
       }
-      if (match) return null;
-      return Response.status(HttpResponseCodes.SC_PRECONDITION_FAILED).tag(eTag);
 
+      if (match) return null;
+
+      return Response.status(HttpResponseCodes.SC_PRECONDITION_FAILED).tag(eTag);
    }
 
-   public Response.ResponseBuilder ifNoneMatch(List<EntityTag> ifMatch, EntityTag eTag)
+   public Response.ResponseBuilder ifNoneMatch(EntityTag eTag)
    {
       boolean match = false;
-      for (EntityTag tag : ifMatch)
+
+      List<String> values = headers.getRequestHeaders().get(HttpHeaderNames.IF_NONE_MATCH);
+      if (values == null || values.isEmpty())
+      {
+         return null;
+      }
+
+      for (EntityTag tag : convertEtag(values))
       {
          if (tag.equals(eTag) || tag.getValue().equals("*"))
          {
@@ -106,6 +126,7 @@ public class RequestImpl implements Request
             break;
          }
       }
+
       if (match)
       {
          if ("GET".equals(httpMethod) || "HEAD".equals(httpMethod))
@@ -115,105 +136,124 @@ public class RequestImpl implements Request
 
          return Response.status(HttpResponseCodes.SC_PRECONDITION_FAILED).tag(eTag);
       }
+
       return null;
    }
 
-
-   public Response.ResponseBuilder evaluatePreconditions(EntityTag eTag)
+   public Response.ResponseBuilder ifModifiedSince(Date lastModified)
    {
-      if (eTag == null) throw new IllegalArgumentException("eTag param null");
-      Response.ResponseBuilder builder = null;
-      List<String> ifMatch = headers.getRequestHeaders().get(HttpHeaderNames.IF_MATCH);
-      if (ifMatch != null && ifMatch.size() > 0)
+      String ifModifiedSince = headers.getRequestHeaders().getFirst(HttpHeaderNames.IF_MODIFIED_SINCE);
+      if (ifModifiedSince == null)
       {
-         builder = ifMatch(convertEtag(ifMatch), eTag);
+         return null;
       }
-      if (builder == null)
-      {
-         List<String> ifNoneMatch = headers.getRequestHeaders().get(HttpHeaderNames.IF_NONE_MATCH);
-         if (ifNoneMatch != null && ifNoneMatch.size() > 0)
-         {
-            builder = ifNoneMatch(convertEtag(ifNoneMatch), eTag);
-         }
-      }
-      if (builder != null)
-      {
-         builder.tag(eTag);
-      }
-      if (builder != null && varyHeader != null) builder.header(HttpHeaderNames.VARY, varyHeader);
-      return builder;
-   }
 
-   public Response.ResponseBuilder ifModifiedSince(String strDate, Date lastModified)
-   {
-      Date date = DateUtil.parseDate(strDate);
+      Date date = DateUtil.parseDate(ifModifiedSince);
 
       if (date.getTime() >= lastModified.getTime())
       {
          return Response.notModified();
       }
-      return null;
 
+      return null;
    }
 
-   public Response.ResponseBuilder ifUnmodifiedSince(String strDate, Date lastModified)
+   public Response.ResponseBuilder ifUnmodifiedSince(Date lastModified)
    {
-      Date date = DateUtil.parseDate(strDate);
+      String ifUnmodifiedSince = headers.getRequestHeaders().getFirst(HttpHeaderNames.IF_UNMODIFIED_SINCE);
+      if (ifUnmodifiedSince == null)
+      {
+         return null;
+      }
+
+      Date date = DateUtil.parseDate(ifUnmodifiedSince);
 
       if (date.getTime() >= lastModified.getTime())
       {
          return null;
       }
-      return Response.status(HttpResponseCodes.SC_PRECONDITION_FAILED).lastModified(lastModified);
 
+      return Response.status(HttpResponseCodes.SC_PRECONDITION_FAILED).lastModified(lastModified);
    }
 
-   public Response.ResponseBuilder evaluatePreconditions(Date lastModified)
+   private boolean hasIfMatchHeader()
    {
-      if (lastModified == null) throw new IllegalArgumentException("lastModified param null");
-      Response.ResponseBuilder builder = null;
-      String ifModifiedSince = headers.getRequestHeaders().getFirst(HttpHeaderNames.IF_MODIFIED_SINCE);
-      if (ifModifiedSince != null)
-      {
-         builder = ifModifiedSince(ifModifiedSince, lastModified);
-      }
+      return headers.getRequestHeaders().getFirst(HttpHeaderNames.IF_MATCH) != null;
+   }
+
+   private boolean hasIfNoneMatchHeader()
+   {
+      return headers.getRequestHeaders().getFirst(HttpHeaderNames.IF_NONE_MATCH) != null;
+   }
+
+   @Override
+   public Response.ResponseBuilder evaluatePreconditions(EntityTag eTag)
+   {
+      if (eTag == null) throw new IllegalArgumentException("eTag param null");
+      Response.ResponseBuilder builder;
+
+      builder = ifMatch(eTag);
       if (builder == null)
       {
-         //System.out.println("ifModified returned null");
-         String ifUnmodifiedSince = headers.getRequestHeaders().getFirst(HttpHeaderNames.IF_UNMODIFIED_SINCE);
-         if (ifUnmodifiedSince != null)
-         {
-            builder = ifUnmodifiedSince(ifUnmodifiedSince, lastModified);
-         }
+        builder = ifNoneMatch(eTag);
       }
-      if (builder != null && varyHeader != null) builder.header(HttpHeaderNames.VARY, varyHeader);
 
+      builder = addVariant(builder);
       return builder;
    }
 
+   @Override
+   public Response.ResponseBuilder evaluatePreconditions(Date lastModified)
+   {
+      if (lastModified == null) throw new IllegalArgumentException("lastModified param null");
+      Response.ResponseBuilder builder;
+
+      builder = ifModifiedSince(lastModified);
+      if (builder == null)
+      {
+         builder = ifUnmodifiedSince(lastModified);
+      }
+
+      builder = addVariant(builder);
+      return builder;
+   }
+
+   @Override
    public Response.ResponseBuilder evaluatePreconditions(Date lastModified, EntityTag eTag)
    {
       if (lastModified == null) throw new IllegalArgumentException("lastModified param null");
       if (eTag == null) throw new IllegalArgumentException("eTag param null");
-      Response.ResponseBuilder rtn = null;
-      Response.ResponseBuilder lastModifiedBuilder = evaluatePreconditions(lastModified);
-      Response.ResponseBuilder etagBuilder = evaluatePreconditions(eTag);
-      if (lastModifiedBuilder == null && etagBuilder == null) rtn = null;
-      else if (lastModifiedBuilder != null && etagBuilder == null) rtn = lastModifiedBuilder;
-      else if (lastModifiedBuilder == null && etagBuilder != null) rtn = etagBuilder;
+      Response.ResponseBuilder builder;
+
+      if (hasIfMatchHeader()) {
+         builder = ifMatch(eTag);
+      }
       else
       {
-         rtn = lastModifiedBuilder;
-         rtn.tag(eTag);
+         builder = ifUnmodifiedSince(lastModified);
+         if (builder != null) builder.tag(eTag);
       }
-      if (rtn != null && varyHeader != null) rtn.header(HttpHeaderNames.VARY, varyHeader);
-      return rtn;
+      if (builder != null) return addVariant(builder);
+
+
+      if (hasIfNoneMatchHeader())
+      {
+         builder = ifNoneMatch(eTag);
+      }
+      else if ("GET".equals(httpMethod) || "HEAD".equals(httpMethod))
+      {
+         builder = ifModifiedSince(lastModified);
+         if (builder != null) builder.tag(eTag);
+      }
+      return addVariant(builder);
+
    }
 
+   @Override
    public Response.ResponseBuilder evaluatePreconditions()
    {
       List<String> ifMatch = headers.getRequestHeaders().get(HttpHeaderNames.IF_MATCH);
-      if (ifMatch == null || ifMatch.size() == 0)
+      if (ifMatch == null || ifMatch.isEmpty())
       {
          return null;
       }
