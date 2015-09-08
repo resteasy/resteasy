@@ -154,6 +154,7 @@ public class AsyncJaxrsResource
    @Produces("text/plain")
    public void cancel(@Suspended final AsyncResponse response) throws Exception
    {
+      System.out.println("entering cancel()");
       response.setTimeout(10000, TimeUnit.MILLISECONDS);
       final CountDownLatch sync = new CountDownLatch(1);
       final CountDownLatch ready = new CountDownLatch(1);
@@ -164,6 +165,7 @@ public class AsyncJaxrsResource
          {
             try
             {
+               System.out.println("cancel(): starting thread");
                sync.countDown();
                ready.await();
                Response jaxrs = Response.ok("hello").type(MediaType.TEXT_PLAIN).build();
@@ -180,6 +182,7 @@ public class AsyncJaxrsResource
       t.start();
 
       sync.await();
+      System.out.println("cancel(): cancelling response");
       response.cancel();
       Thread.sleep(1000);
       ready.countDown();
