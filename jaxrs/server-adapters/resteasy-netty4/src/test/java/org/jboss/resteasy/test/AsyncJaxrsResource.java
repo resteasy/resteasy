@@ -167,7 +167,9 @@ public class AsyncJaxrsResource
                sync.countDown();
                ready.await();
                Response jaxrs = Response.ok("hello").type(MediaType.TEXT_PLAIN).build();
+               System.out.println("SETTING CANCELLED");
                cancelled = !response.resume(jaxrs);
+               System.out.println("cancelled: " + cancelled);
             }
             catch (Exception e)
             {
@@ -179,6 +181,7 @@ public class AsyncJaxrsResource
 
       sync.await();
       response.cancel();
+      Thread.sleep(1000);
       ready.countDown();
    }
 
