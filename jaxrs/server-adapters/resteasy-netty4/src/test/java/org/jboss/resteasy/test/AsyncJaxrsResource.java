@@ -184,8 +184,8 @@ public class AsyncJaxrsResource
       sync.await();
       System.out.println("cancel(): cancelling response");
       response.cancel();
-      Thread.sleep(1000);
       ready.countDown();
+      Thread.sleep(1000);
    }
 
 }
