@@ -192,7 +192,8 @@ public class ClientInvocation implements Invocation
    {
       final int status = response.getStatus();
       response.bufferEntity();      // Store entity for later because of close in BodyEntityExtractor.extractEntity(ClientContext, Object...)
-      
+      response.close();
+
       switch (status)
       {
          case 400:

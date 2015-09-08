@@ -45,8 +45,6 @@ public class DefaultEntityExtractorFactory implements EntityExtractorFactory
             int status = response.getStatus();
             if (status >= 400)
             {
-               response.bufferEntity();
-               response.close();
                ClientInvocation.handleErrorStatus(response);
             }
             response.close();
