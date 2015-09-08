@@ -38,5 +38,6 @@
         <module name="javax.enterprise.api"/>
         <module name="javax.xml.bind.api"/>
         <module name="com.sun.xml.bind"/>
+        <module name="org.jboss.logging"/
     </dependencies>
 </module>
