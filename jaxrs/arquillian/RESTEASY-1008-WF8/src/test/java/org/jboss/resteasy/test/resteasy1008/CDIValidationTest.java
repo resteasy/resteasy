@@ -16,6 +16,7 @@ import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.resteasy1008.SumConstraint;
 import org.jboss.resteasy.resteasy1008.SumValidator;
 import org.jboss.resteasy.resteasy1008.TestApplication;
@@ -64,8 +65,8 @@ public class CDIValidationTest
    {
       ResteasyClient client = new ResteasyClientBuilder().build();
       Invocation.Builder request = client.target("http://localhost:8080/RESTEASY-1008/input/11/13/17").request();
-      Response response = request.get();
-      int answer = response.readEntity(int.class);
+      ClientResponse response = (ClientResponse) request.get();
+      int answer = response.readEntity(Integer.class);
       log.info("status: " + response.getStatus());
       log.info("entity: " + answer);
       assertEquals(200, response.getStatus());
@@ -77,7 +78,7 @@ public class CDIValidationTest
    {
       ResteasyClient client = new ResteasyClientBuilder().build();
       Invocation.Builder request = client.target("http://localhost:8080/RESTEASY-1008/input/1/2/3").request();
-      Response response = request.get();
+      ClientResponse response = (ClientResponse) request.get();
       String answer = response.readEntity(String.class);
       log.info("status: " + response.getStatus());
       log.info("entity: " + answer);
@@ -99,7 +100,7 @@ public class CDIValidationTest
    {
       ResteasyClient client = new ResteasyClientBuilder().build();
       Invocation.Builder request = client.target("http://localhost:8080/RESTEASY-1008/input/5/7/9").request();
-      Response response = request.get();
+      ClientResponse response = (ClientResponse) request.get();
       String answer = response.readEntity(String.class);
       log.info("status: " + response.getStatus());
       log.info("entity: " + answer);
@@ -115,7 +116,7 @@ public class CDIValidationTest
    {
       ResteasyClient client = new ResteasyClientBuilder().build();
       Invocation.Builder request = client.target("http://localhost:8080/RESTEASY-1008/locator/5/7/17/19").request();
-      Response response = request.get();
+      ClientResponse response = (ClientResponse) request.get();
       int result = response.readEntity(int.class);
       log.info("status: " + response.getStatus());
       log.info("entity: " + result);
@@ -129,7 +130,7 @@ public class CDIValidationTest
    {
       ResteasyClient client = new ResteasyClientBuilder().build();
       Invocation.Builder request = client.target("http://localhost:8080/RESTEASY-1008/locator/5/7/0/15").request();
-      Response response = request.get();
+      ClientResponse response = (ClientResponse) request.get();
       String answer = response.readEntity(String.class);
       log.info("status: " + response.getStatus());
       log.info("entity: " + answer);
@@ -146,7 +147,7 @@ public class CDIValidationTest
    {
       ResteasyClient client = new ResteasyClientBuilder().build();
       Invocation.Builder request = client.target("http://localhost:8080/RESTEASY-1008/locator/5/7/13/0").request();
-      Response response = request.get();
+      ClientResponse response = (ClientResponse) request.get();
       String answer = response.readEntity(String.class);
       log.info("status: " + response.getStatus());
       log.info("entity: " + answer);
@@ -162,7 +163,7 @@ public class CDIValidationTest
    {
       ResteasyClient client = new ResteasyClientBuilder().build();
       Invocation.Builder request = client.target("http://localhost:8080/RESTEASY-1008/locator/5/7/13/15").request();
-      Response response = request.get();
+      ClientResponse response = (ClientResponse) request.get();
       String answer = response.readEntity(String.class);
       log.info("status: " + response.getStatus());
       log.info("entity: " + answer);
@@ -178,7 +179,7 @@ public class CDIValidationTest
    {
       ResteasyClient client = new ResteasyClientBuilder().build();
       Invocation.Builder request = client.target("http://localhost:8080/RESTEASY-1008/none/1/2/3").request();
-      Response response = request.get();
+      ClientResponse response = (ClientResponse) request.get();
       String answer = response.readEntity(String.class);
       log.info("status: " + response.getStatus());
       log.info("entity: " + answer);
@@ -198,7 +199,7 @@ public class CDIValidationTest
    {
       ResteasyClient client = new ResteasyClientBuilder().build();
       Invocation.Builder request = client.target("http://localhost:8080/RESTEASY-1008/noParams/1/2").request();
-      Response response = request.get();
+      ClientResponse response = (ClientResponse) request.get();
       String answer = response.readEntity(String.class);
       log.info("status: " + response.getStatus());
       log.info("entity: " + answer);

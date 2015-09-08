@@ -109,7 +109,7 @@ public class TestPathSuppression
       ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-945-" + suppress + "/all/a/b/c");
       ClientResponse<?>  response = request.get();
       System.out.println("status: " + response.getStatus());
-      Object header = response.getHeaders().getFirst(Validation.VALIDATION_HEADER);
+      Object header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
       Assert.assertTrue(header instanceof String);
       Assert.assertTrue(Boolean.valueOf(String.class.cast(header)));
       String answer = response.getEntity(String.class);
@@ -137,7 +137,7 @@ public class TestPathSuppression
       ClientRequest request = new ClientRequest("http://localhost:8080/RESTEASY-945-" + suppress + "/all/aa/bbb/cccc");
       ClientResponse<?>  response = request.get();
       System.out.println("status: " + response.getStatus());
-      Object header = response.getHeaders().getFirst(Validation.VALIDATION_HEADER);
+      Object header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
       Assert.assertTrue(header instanceof String);
       Assert.assertTrue(Boolean.valueOf(String.class.cast(header)));
       String answer = response.getEntity(String.class);
