@@ -65,7 +65,7 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
 
       private ClassAnnotationKey(Class<?> clazz, Annotation[] annotations)
       {
-         this.annotations = new AnnotationBundleKey(annotations);
+         this.annotations = new AnnotationBundleKey(annotations, clazz);
          this.classKey = new ClassKey(clazz);
          hash = this.annotations.hashCode();
          hash = 31 * hash + classKey.hashCode();
@@ -105,7 +105,7 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       // not yet resolved (or not cached any more)? Resolve!
       if (endpoint == null) {
          ObjectMapper mapper = locateMapper(type, mediaType);
-         endpoint = _configForReading(mapper, annotations);
+         endpoint = _configForReading(mapper, annotations, type);
          _readers.put(key, endpoint);
       }
       ObjectReader reader = endpoint.getReader();
@@ -143,7 +143,7 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       // not yet resolved (or not cached any more)? Resolve!
       if (endpoint == null) {
           ObjectMapper mapper = locateMapper(type, mediaType);
-          endpoint = _configForWriting(mapper, annotations);
+          endpoint = _configForWriting(mapper, annotations, type);
 
           // and cache for future reuse
          _writers.put(key, endpoint);
