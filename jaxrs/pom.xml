@@ -27,7 +27,7 @@
         <dep.javax.persistence.version>1.0.1.Final</dep.javax.persistence.version>
         <dep.javax.activation.version>1.1.1</dep.javax.activation.version>
         <dep.spring-webmvc.version>3.0.6.RELEASE</dep.spring-webmvc.version>
-        <dep.snakeyaml.version>1.8</dep.snakeyaml.version>
+        <dep.snakeyaml.version>1.15</dep.snakeyaml.version>
         <dep.cdi-api.version>1.1</dep.cdi-api.version>
         <dep.jboss-ejb-api_3.1_spec.version>1.0.0.Final</dep.jboss-ejb-api_3.1_spec.version>
         <dep.guice.version>3.0</dep.guice.version>

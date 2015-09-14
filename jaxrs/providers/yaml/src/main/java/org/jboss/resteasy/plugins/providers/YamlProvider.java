@@ -5,7 +5,7 @@ import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.WriterException;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.error.YAMLException;
+import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -55,14 +55,15 @@ public class YamlProvider extends AbstractEntityProvider<Object>
 
       try
       {
+         if(isValidInternalType(type))
+         {
+            return new Yaml().load(entityStream);
+         }
+         else {
+            CustomClassLoaderConstructor customClassLoaderConstructor = new CustomClassLoaderConstructor(type.getClassLoader());
+            return new Yaml(customClassLoaderConstructor).loadAs(entityStream, type);
+         }
 
-         return new Yaml().load(entityStream);
-
-      }
-      catch (YAMLException ye)
-      {
-         logger.debug("Failed to decode Yaml: {0}", ye.getMessage());
-         throw new ReaderException("Failed to decode Yaml", ye);
       }
       catch (Exception e)
       {
@@ -75,12 +76,24 @@ public class YamlProvider extends AbstractEntityProvider<Object>
 
    // MessageBodyWriter
 
-   protected boolean isValidType(Class type)
+   protected boolean isValidInternalType(Class type)
    {
       if (List.class.isAssignableFrom(type)
               || Set.class.isAssignableFrom(type)
               || Map.class.isAssignableFrom(type)
               || type.isArray())
+      {
+         return true;
+      }
+      else
+      {
+         return false;
+      }
+   }
+
+   protected boolean isValidType(Class type)
+   {
+      if(isValidInternalType(type))
       {
          return true;
       }
