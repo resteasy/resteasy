@@ -1,6 +1,7 @@
 package org.jboss.resteasy.jose.jws;
 
 import org.jboss.resteasy.jose.Base64Url;
+import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jws.crypto.HMACProvider;
 import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -11,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Providers;
+
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
@@ -119,7 +121,7 @@ public class JWSBuilder
       if (genericType == null) genericType = type;
 
       MessageBodyWriter writer = providers.getMessageBodyWriter(type, genericType, null, marshalTo);
-      if (writer == null) throw new IllegalStateException("Unable to find MessageBodyWriter");
+      if (writer == null) throw new IllegalStateException(Messages.MESSAGES.unableToFindMessageBodyWriter());
       try
       {
          writer.writeTo(obj, type, genericType, null, marshalTo, new MultivaluedHashMap<String, Object>(), baos);

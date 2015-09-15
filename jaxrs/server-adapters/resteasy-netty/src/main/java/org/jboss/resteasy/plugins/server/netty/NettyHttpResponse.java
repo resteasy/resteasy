@@ -8,12 +8,14 @@ import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Values;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.HttpResponse;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -127,7 +129,7 @@ public class NettyHttpResponse implements HttpResponse
    {
       if (committed) 
       {
-          throw new IllegalStateException("Already committed");
+         throw new IllegalStateException(Messages.MESSAGES.alreadyCommitted());
       }
       outputHeaders.clear();
       underlyingOutputStream.buffer().clear();

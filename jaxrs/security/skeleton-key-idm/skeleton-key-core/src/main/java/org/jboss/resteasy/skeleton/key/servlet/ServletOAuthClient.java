@@ -2,6 +2,7 @@ package org.jboss.resteasy.skeleton.key.servlet;
 
 import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
 import org.jboss.resteasy.skeleton.key.AbstractOAuthClient;
+import org.jboss.resteasy.skeleton.key.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 
 import javax.servlet.http.Cookie;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.UriBuilder;
+
 import java.io.IOException;
 import java.net.URI;
 
@@ -106,20 +108,20 @@ public class ServletOAuthClient extends AbstractOAuthClient
    public String getBearerToken(HttpServletRequest request) throws BadRequestException, InternalServerErrorException
    {
       String error = request.getParameter("error");
-      if (error != null) throw new BadRequestException(new Exception("OAuth error: " + error));
+      if (error != null) throw new BadRequestException(new Exception(Messages.MESSAGES.oAuthError(error)));
       String redirectUri = request.getRequestURL().append("?").append(request.getQueryString()).toString();
       String stateCookie = getCookieValue(stateCookieName, request);
-      if (stateCookie == null) throw new BadRequestException(new Exception("state cookie not set"));
+      if (stateCookie == null) throw new BadRequestException(new Exception(Messages.MESSAGES.stateCookieNotSet()));
       // we can call get parameter as this should be a redirect
       String state = request.getParameter("state");
       String code = request.getParameter("code");
 
-      if (state == null) throw new BadRequestException(new Exception("state parameter was null"));
+      if (state == null) throw new BadRequestException(new Exception(Messages.MESSAGES.stateParameterWasNull()));
       if (!state.equals(stateCookie))
       {
-         throw new BadRequestException(new Exception("state parameter invalid"));
+         throw new BadRequestException(new Exception(Messages.MESSAGES.stateParameterInvalid()));
       }
-      if (code == null) throw new BadRequestException(new Exception("code parameter was null"));
+      if (code == null) throw new BadRequestException(new Exception(Messages.MESSAGES.codeParameterWasNull()));
       return resolveBearerToken(redirectUri, code);
    }
 

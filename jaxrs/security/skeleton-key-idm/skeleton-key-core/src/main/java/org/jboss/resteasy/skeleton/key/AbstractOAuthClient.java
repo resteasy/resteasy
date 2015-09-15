@@ -1,6 +1,7 @@
 package org.jboss.resteasy.skeleton.key;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.skeleton.key.i18n.Messages;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
 import org.jboss.resteasy.util.BasicAuthHelper;
 
@@ -12,6 +13,7 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+
 import java.security.KeyStore;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
@@ -139,7 +141,7 @@ public class AbstractOAuthClient
          }
          else if (res.getStatus() != 200)
          {
-            throw new InternalServerErrorException(new Exception("Unknown error when getting acess token"));
+            throw new InternalServerErrorException(new Exception(Messages.MESSAGES.unknownErrorGettingAccessToken()));
          }
          AccessTokenResponse tokenResponse = res.readEntity(AccessTokenResponse.class);
          return tokenResponse.getToken();
@@ -152,7 +154,7 @@ public class AbstractOAuthClient
 
    protected String stripOauthParametersFromRedirect(String uri)
    {
-      System.out.println("******************** redirect_uri: " + uri);
+      System.out.println(Messages.MESSAGES.redirectUri(uri));
       UriBuilder builder = UriBuilder.fromUri(uri)
               .replaceQueryParam("code", null)
               .replaceQueryParam("state", null);

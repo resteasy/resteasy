@@ -12,7 +12,8 @@ import io.netty.handler.codec.http.HttpHeaders;
 import java.util.List;
 
 import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.plugins.server.netty.i18n.LogMessages;
+import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 
@@ -28,7 +29,6 @@ import org.jboss.resteasy.spi.ResteasyUriInfo;
 @Sharable
 public class RestEasyHttpRequestDecoder extends MessageToMessageDecoder<io.netty.handler.codec.http.HttpRequest>
 {
-    private final static Logger logger = Logger.getLogger(RestEasyHttpRequestDecoder.class);
     private final SynchronousDispatcher dispatcher;
     private final String servletMappingPrefix;
     private final String proto;
@@ -84,7 +84,7 @@ public class RestEasyHttpRequestDecoder extends MessageToMessageDecoder<io.netty
         {
            response.sendError(400);
            // made it warn so that people can filter this.
-           logger.warn("Failed to parse request.", e);
+           LogMessages.LOGGER.warn(Messages.MESSAGES.failedToParseRequest(), e);
         }
     }
 }

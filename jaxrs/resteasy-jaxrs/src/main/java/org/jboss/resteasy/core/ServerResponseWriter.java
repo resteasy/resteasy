@@ -5,7 +5,7 @@ import org.jboss.resteasy.core.interception.ContainerResponseContextImpl;
 import org.jboss.resteasy.core.interception.ResponseContainerRequestContext;
 import org.jboss.resteasy.core.interception.ServerWriterInterceptorContext;
 import org.jboss.resteasy.core.registry.SegmentNode;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -22,6 +22,7 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.WriterInterceptor;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -35,8 +36,6 @@ import java.util.List;
  */
 public class ServerResponseWriter
 {
-   private final static Logger logger = Logger.getLogger(ServerResponseWriter.class);
-
    public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, final ResteasyProviderFactory providerFactory) throws IOException
    {
       ResourceMethodInvoker method =(ResourceMethodInvoker) request.getAttribute(ResourceMethodInvoker.class.getName());
@@ -181,7 +180,7 @@ public class ServerResponseWriter
       }
       else if (chosen.isWildcardSubtype())
       {
-         throw new NotAcceptableException("Illegal response media type: " + chosen.toString());
+         throw new NotAcceptableException(Messages.MESSAGES.illegalResponseMediaType(chosen.toString()));
       }
       jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, chosen);
    }

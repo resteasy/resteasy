@@ -21,7 +21,8 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.cdi.CdiInjectorFactory;
 import org.jboss.resteasy.cdi.ResteasyCdiExtension;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.plugins.validation.i18n.LogMessages;
+import org.jboss.resteasy.plugins.validation.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
@@ -46,7 +47,6 @@ import com.fasterxml.classmate.members.ResolvedMethod;
 public class GeneralValidatorImpl implements GeneralValidatorCDI
 {
    public static final String SUPPRESS_VIOLATION_PATH = "resteasy.validation.suppress.path";
-   private static final Logger log = Logger.getLogger(GeneralValidatorImpl.class);
    
    /**
     * Used for resolving type parameters. Thread-safe.
@@ -67,12 +67,12 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       try
       {
          cdiActive = ResteasyCdiExtension.isCDIActive();
-         log.debug("ResteasyCdiExtension is on the classpath.");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.resteasyCdiExtensionOnClasspath());
       }
       catch (Throwable t)
       {
          // In case ResteasyCdiExtension is not on the classpath.
-         log.debug("ResteasyCdiExtension is not on the classpath. Assuming CDI is not active");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.resteasyCdiExtensionNotOnClasspath());
       }
       
       ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
@@ -238,7 +238,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       List<ExecutableType[]> typesList = getExecutableTypesOnMethodInHierarchy(m);
       if (typesList.size() > 1)
       {
-         throw new ValidationException("@ValidateOnExecution found on multiple overridden methods");
+         throw new ValidationException(Messages.MESSAGES.validateOnExceptionOnMultipleMethod());
       }
       if (typesList.size() == 1)
       {
@@ -438,7 +438,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    {
       if (subTypeMethod == null || superTypeMethod == null)
       {
-         throw new RuntimeException("Expect two non-null methods");
+         throw new RuntimeException(Messages.MESSAGES.expectTwoNonNullMethods());
       }
 
       if (!subTypeMethod.getName().equals(superTypeMethod.getName()))

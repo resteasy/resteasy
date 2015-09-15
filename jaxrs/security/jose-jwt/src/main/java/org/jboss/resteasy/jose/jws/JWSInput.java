@@ -3,11 +3,13 @@ package org.jboss.resteasy.jose.jws;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jboss.resteasy.jose.Base64Url;
+import org.jboss.resteasy.jose.i18n.Messages;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Providers;
+
 import java.io.ByteArrayInputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -44,7 +46,7 @@ public class JWSInput
       this.providers = providers;
       this.wireString = wire;
       String[] parts = wire.split("\\.");
-      if (parts.length < 2 || parts.length > 3) throw new IllegalArgumentException("Parsing error");
+      if (parts.length < 2 || parts.length > 3) throw new IllegalArgumentException(Messages.MESSAGES.parsingError());
       encodedHeader = parts[0];
       encodedContent = parts[1];
       try
@@ -114,8 +116,8 @@ public class JWSInput
    public Object readContent(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       MessageBodyReader reader = providers.getMessageBodyReader(type, genericType, annotations, mediaType);
-      if (reader == null) throw new RuntimeException("Unable to find reader for content type");
-
+      if (reader == null) throw new RuntimeException(Messages.MESSAGES.unableToFindReaderForContentType());
+      
       try
       {
          ByteArrayInputStream bais = new ByteArrayInputStream(content);

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.Failure;
@@ -12,6 +13,7 @@ import org.jboss.resteasy.spi.metadata.MethodParameter;
 import org.jboss.resteasy.spi.metadata.ResourceConstructor;
 
 import javax.ws.rs.WebApplicationException;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -91,7 +93,7 @@ public class ConstructorInjectorImpl implements ConstructorInjector
       }
       catch (Exception e)
       {
-         throw new InternalServerErrorException("Failed processing arguments of " + constructor.toString(), e);
+         throw new InternalServerErrorException(Messages.MESSAGES.failedProcessingArguments(constructor.toString()), e);
       }
       try
       {
@@ -99,11 +101,11 @@ public class ConstructorInjectorImpl implements ConstructorInjector
       }
       catch (InstantiationException e)
       {
-         throw new InternalServerErrorException("Failed to construct " + constructor.toString(), e);
+         throw new InternalServerErrorException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e);
       }
       catch (IllegalAccessException e)
       {
-         throw new InternalServerErrorException("Failed to construct " + constructor.toString(), e);
+         throw new InternalServerErrorException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e);
       }
       catch (InvocationTargetException e)
       {
@@ -112,11 +114,11 @@ public class ConstructorInjectorImpl implements ConstructorInjector
          {
             throw (WebApplicationException) cause;
          }
-         throw new ApplicationException("Failed to construct " + constructor.toString(), e.getCause());
+         throw new ApplicationException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e.getCause());
       }
       catch (IllegalArgumentException e)
       {
-         String msg = "Bad arguments passed to " + constructor.toString() + "  (";
+         String msg = Messages.MESSAGES.badArguments(constructor.toString() + "  (");
          boolean first = false;
          for (Object arg : args)
          {
@@ -149,19 +151,19 @@ public class ConstructorInjectorImpl implements ConstructorInjector
       }
       catch (InstantiationException e)
       {
-         throw new RuntimeException("Failed to construct " + constructor.toString(), e);
+         throw new RuntimeException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e);
       }
       catch (IllegalAccessException e)
       {
-         throw new RuntimeException("Failed to construct " + constructor.toString(), e);
+         throw new RuntimeException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e);
       }
       catch (InvocationTargetException e)
       {
-         throw new RuntimeException("Failed to construct " + constructor.toString(), e.getCause());
+         throw new RuntimeException(Messages.MESSAGES.failedToConstruct(constructor.toString()), e.getCause());
       }
       catch (IllegalArgumentException e)
       {
-         String msg = "Bad arguments passed to " + constructor.toString() + "  (";
+         String msg = Messages.MESSAGES.badArguments(constructor.toString() + "  (");
          boolean first = false;
          for (Object arg : args)
          {

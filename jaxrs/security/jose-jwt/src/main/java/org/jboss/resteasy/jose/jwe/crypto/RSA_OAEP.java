@@ -5,9 +5,11 @@ import org.bouncycastle.crypto.AsymmetricBlockCipher;
 import org.bouncycastle.crypto.encodings.OAEPEncoding;
 import org.bouncycastle.crypto.engines.RSAEngine;
 import org.bouncycastle.crypto.params.RSAKeyParameters;
+import org.jboss.resteasy.jose.i18n.Messages;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+
 import java.math.BigInteger;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -59,7 +61,7 @@ class RSA_OAEP
 		} catch (Exception e) {
 
 			// org.bouncycastle.crypto.InvalidCipherTextException
-			throw new RuntimeException("Couldn't encrypt Content Encryption Key (CEK): " + e.getMessage(), e);
+		   throw new RuntimeException(Messages.MESSAGES.couldntEncryptCEK(e.getLocalizedMessage()), e);
 		}
 	}
 
@@ -94,7 +96,7 @@ class RSA_OAEP
 		} catch (Exception e) {
 
 			// org.bouncycastle.crypto.InvalidCipherTextException
-			throw new RuntimeException("Couldn't decrypt Content Encryption Key (CEK): " + e.getMessage(), e);
+		   throw new RuntimeException(Messages.MESSAGES.couldntDecryptCEK(e.getLocalizedMessage()), e);
 		}
 	}
 

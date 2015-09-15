@@ -530,6 +530,20 @@
                 <artifactId>maven-clover2-plugin</artifactId>
                 <version>${version.clover2.plugin}</version>
             </plugin>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                  <filesets>
+                    <fileset>
+                      <directory>src/main/resources</directory>
+                      <includes>
+                        <include>org/**</include>
+                      </includes>
+                    </fileset>
+                  </filesets>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>

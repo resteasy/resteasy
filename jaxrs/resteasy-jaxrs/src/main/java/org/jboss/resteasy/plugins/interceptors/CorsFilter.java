@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.interceptors;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.CorsHeaders;
 
 import javax.ws.rs.ForbiddenException;
@@ -9,6 +10,7 @@ import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.Response;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -191,7 +193,7 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
       if (!allowedOrigins.contains("*") && !allowedOrigins.contains(origin))
       {
          requestContext.setProperty("cors.failure", true);
-         throw new ForbiddenException("Origin not allowed: " + origin);
+         throw new ForbiddenException(Messages.MESSAGES.originNotAllowed(origin));
       }
    }
 }

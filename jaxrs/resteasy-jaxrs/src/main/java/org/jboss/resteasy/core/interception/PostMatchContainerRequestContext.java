@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core.interception;
 
 import org.jboss.resteasy.core.ResourceMethodInvoker;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 
 import java.net.URI;
@@ -27,18 +28,18 @@ public class PostMatchContainerRequestContext extends PreMatchContainerRequestCo
    @Override
    public void setMethod(String method)
    {
-      throw new IllegalStateException("Can't set method after match");
+      throw new IllegalStateException(Messages.MESSAGES.cantSetMethod());
    }
 
    @Override
    public void setRequestUri(URI requestUri) throws IllegalStateException
    {
-      throw new IllegalStateException("Can't set URI after match");
+      throw new IllegalStateException(Messages.MESSAGES.cantSetURI());
    }
 
    @Override
    public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
    {
-      throw new IllegalStateException("Can't set URI after match");
+      throw new IllegalStateException(Messages.MESSAGES.cantSetURI());
    }
 }

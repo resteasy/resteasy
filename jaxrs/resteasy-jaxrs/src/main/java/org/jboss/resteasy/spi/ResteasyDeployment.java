@@ -7,11 +7,12 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.interceptors.RoleBasedSecurityFeature;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.providers.ServerFormUrlEncodedProvider;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiComponentResourceFactory;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.util.GetRestful;
 
 import javax.ws.rs.container.ResourceContext;
@@ -20,6 +21,7 @@ import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,8 +73,6 @@ public class ResteasyDeployment
    protected ResteasyProviderFactory providerFactory;
    protected ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
    protected String paramMapping;
-
-   private final static Logger logger = Logger.getLogger(ResteasyDeployment.class);
 
    public void start()
    {
@@ -149,11 +149,11 @@ public class ResteasyDeployment
             }
             catch (ClassNotFoundException cnfe)
             {
-               throw new RuntimeException("Unable to find InjectorFactory implementation.", cnfe);
+               throw new RuntimeException(Messages.MESSAGES.unableToFindInjectorFactory(), cnfe);
             }
             catch (Exception e)
             {
-               throw new RuntimeException("Unable to instantiate InjectorFactory implementation.", e);
+               throw new RuntimeException(Messages.MESSAGES.unableToInstantiateInjectorFactory(), e);
             }
 
             providerFactory.setInjectorFactory(injectorFactory);
@@ -172,10 +172,10 @@ public class ResteasyDeployment
                }
                catch (ClassNotFoundException e)
                {
-                  throw new RuntimeException("Unable to instantiate context object " + entry.getKey(), e);
+                  throw new RuntimeException(Messages.MESSAGES.unableToInstantiateContextObject(entry.getKey()), e);
                }
                Object obj = createFromInjectorFactory(entry.getValue(), providerFactory);
-               logger.debug("Creating context object <" + entry.getKey() + " : " + entry.getValue() + ">");
+               LogMessages.LOGGER.creatingContextObject(entry.getKey(), entry.getValue());
                defaultContextObjects.put(key, obj);
                dispatcher.getDefaultContextObjects().put(key, obj);
                contextDataMap.put(key, obj);
@@ -441,7 +441,7 @@ public class ResteasyDeployment
       String[] config = resource.trim().split(";");
       if (config.length < 3)
       {
-         throw new RuntimeException("JNDI Component Resource variable is not set correctly: jndi;class;true|false comma delimited");
+         throw new RuntimeException(Messages.MESSAGES.jndiComponentResourceNotSetCorrectly());
       }
       String jndiName = config[0];
       Class clazz = null;
@@ -451,7 +451,7 @@ public class ResteasyDeployment
       }
       catch (ClassNotFoundException e)
       {
-         throw new RuntimeException("Could not find class " + config[1] + " provided to JNDI Component Resource", e);
+         throw new RuntimeException(Messages.MESSAGES.couldNotFindClassJndi(config[1]), e);
       }
       boolean cacheRefrence = Boolean.valueOf(config[2].trim());
       JndiComponentResourceFactory factory = new JndiComponentResourceFactory(jndiName, clazz, cacheRefrence);
@@ -476,7 +476,7 @@ public class ResteasyDeployment
     */
    protected boolean processApplication(Application config)
    {
-      logger.info("Deploying " + Application.class.getName() + ": " + config.getClass());
+      LogMessages.LOGGER.deployingApplication(Application.class.getName(), config.getClass());
       boolean registered = false;
       if (config.getClasses() != null)
       {
@@ -484,13 +484,13 @@ public class ResteasyDeployment
          {
             if (GetRestful.isRootResource(clazz))
             {
-               logger.info("Adding class resource " + clazz.getName() + " from Application " + config.getClass());
+               LogMessages.LOGGER.addingClassResource(clazz.getName(), config.getClass());
                actualResourceClasses.add(clazz);
                registered = true;
             }
             else
             {
-               logger.info("Adding provider class " + clazz.getName() + " from Application " + config.getClass());
+               LogMessages.LOGGER.addingProviderClass(clazz.getName(), config.getClass());
                actualProviderClasses.add(clazz);
                registered = true;
             }
@@ -502,13 +502,13 @@ public class ResteasyDeployment
          {
             if (GetRestful.isRootResource(obj.getClass()))
             {
-               logger.info("Adding singleton resource " + obj.getClass().getName() + " from Application " + config.getClass());
+               LogMessages.LOGGER.addingSingletonResource(obj.getClass().getName(), config.getClass());
                resources.add(obj);
                registered = true;
             }
             else
             {
-               logger.info("Adding provider singleton " + obj.getClass().getName() + " from Application " + config.getClass());
+               LogMessages.LOGGER.addingProviderSingleton(obj.getClass().getName(), config.getClass());
                providers.add(obj);
                registered = true;
             }

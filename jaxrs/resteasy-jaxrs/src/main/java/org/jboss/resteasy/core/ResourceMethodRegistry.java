@@ -2,10 +2,11 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.core.registry.RootClassNode;
 import org.jboss.resteasy.core.registry.RootNode;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiResourceFactory;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.InjectorFactory;
@@ -21,6 +22,7 @@ import org.jboss.resteasy.util.IsHttpMethod;
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.Path;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.List;
@@ -41,7 +43,6 @@ public class ResourceMethodRegistry implements Registry
    protected RootClassNode root = new RootClassNode();
    protected boolean widerMatching;
    protected RootNode rootNode = new RootNode();
-   private final static Logger logger = Logger.getLogger(ResourceMethodRegistry.class);
 
 
    public ResourceMethodRegistry(ResteasyProviderFactory providerFactory)
@@ -169,7 +170,7 @@ public class ResourceMethodRegistry implements Registry
       Class restful = GetRestful.getRootResourceClass(clazz);
       if (restful == null)
       {
-         String msg = "Class is not a root resource.  It, or one of its interfaces must be annotated with @Path: " + clazz.getName() + " implements: ";
+         String msg = Messages.MESSAGES.classIsNotRootResource(clazz.getName());
          for (Class intf : clazz.getInterfaces())
          {
             msg += " " + intf.getName();
@@ -230,7 +231,7 @@ public class ResourceMethodRegistry implements Registry
             Method _method = findAnnotatedMethod(clazz, method);
             if (_method != null && !java.lang.reflect.Modifier.isPublic(_method.getModifiers()))
             {
-               logger.warn("JAX-RS annotations found at non-public method: " + method.getDeclaringClass().getName() + "." + method.getName() + "(); Only public methods may be exposed as resource methods.");
+               LogMessages.LOGGER.JAXRSAnnotationsFoundAtNonPublicMethod(method.getDeclaringClass().getName(), method.getName());
             }
          }
       }
@@ -352,7 +353,7 @@ public class ResourceMethodRegistry implements Registry
             if (m != null)
             {
                if (method != null && !m.equals(method))
-                  throw new RuntimeException("Ambiguous inherited JAX-RS annotations applied to method: " + implementation);
+                  throw new RuntimeException(Messages.MESSAGES.ambiguousInheritedAnnotations(implementation));
                method = m;
             }
          }

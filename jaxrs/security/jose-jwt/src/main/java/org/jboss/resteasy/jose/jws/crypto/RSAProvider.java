@@ -1,5 +1,6 @@
 package org.jboss.resteasy.jose.jws.crypto;
 
+import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jws.Algorithm;
 import org.jboss.resteasy.jose.jws.JWSInput;
 
@@ -24,7 +25,7 @@ public class RSAProvider
          case RS512:
             return "SHA512withRSA";
          default:
-            throw new IllegalArgumentException("Not an RSA Algorithm");
+            throw new IllegalArgumentException(Messages.MESSAGES.notAnRSAalgorithm());
       }
    }
 

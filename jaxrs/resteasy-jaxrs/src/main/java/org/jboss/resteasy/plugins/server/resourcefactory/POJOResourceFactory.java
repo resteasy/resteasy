@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.server.resourcefactory;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -41,7 +42,7 @@ public class POJOResourceFactory implements ResourceFactory
       if (constructor == null) constructor = ResourceBuilder.constructor(resourceClass.getClazz());
       if (constructor == null)
       {
-         throw new RuntimeException("Unable to find a public constructor for class " + scannableClass.getName());
+         throw new RuntimeException(Messages.MESSAGES.unableToFindPublicConstructorForClass(scannableClass.getName()));
       }
       this.constructorInjector = factory.getInjectorFactory().createConstructor(constructor, factory);
       this.propertyInjector = factory.getInjectorFactory().createPropertyInjector(resourceClass, factory);

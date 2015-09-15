@@ -4,6 +4,9 @@ package org.jboss.resteasy.specimpl;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
+
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+
 import java.net.URI;
 
 /**
@@ -41,21 +44,21 @@ public class LinkBuilderImpl implements Link.Builder
 
    @Override
    public Link.Builder uri(URI uri) {
-      if (uri == null) throw new IllegalArgumentException("uri param was null");
+      if (uri == null) throw new IllegalArgumentException(Messages.MESSAGES.uriParamNull());
       uriBuilder = UriBuilder.fromUri(uri);
       return this;
    }
 
    @Override
    public Link.Builder uri(String uri) throws IllegalArgumentException {
-      if (uri == null) throw new IllegalArgumentException("uri param was null");
+      if (uri == null) throw new IllegalArgumentException(Messages.MESSAGES.uriParamNull());
       uriBuilder = UriBuilder.fromUri(uri);
       return this;
    }
 
    @Override
    public Link.Builder rel(String rel) {
-      if (rel == null) throw new IllegalArgumentException("rel param was null");
+      if (rel == null) throw new IllegalArgumentException(Messages.MESSAGES.relParamNull());
       final String rels = link.map.get(Link.REL);
       param(Link.REL, rels == null ? rel : rels + " " + rel);
       return this;
@@ -63,7 +66,7 @@ public class LinkBuilderImpl implements Link.Builder
 
    @Override
    public Link.Builder title(String title) {
-      if (title == null) throw new IllegalArgumentException("title param was null");
+      if (title == null) throw new IllegalArgumentException(Messages.MESSAGES.titleParamNull());
       param(Link.TITLE, title);
       return this;
 
@@ -71,15 +74,15 @@ public class LinkBuilderImpl implements Link.Builder
 
    @Override
    public Link.Builder type(String type) {
-      if (type == null) throw new IllegalArgumentException("type param was null");
+      if (type == null) throw new IllegalArgumentException(Messages.MESSAGES.typeParamNull());
       param(Link.TYPE, type);
       return this;
    }
 
    @Override
    public Link.Builder param(String name, String value) throws IllegalArgumentException {
-      if (name == null) throw new IllegalArgumentException("name param was null");
-      if (value == null) throw new IllegalArgumentException("value param was null");
+      if (name == null) throw new IllegalArgumentException(Messages.MESSAGES.nameParamWasNull());
+      if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.valueParamWasNull());
       link.map.put(name, value);
       return this;
    }
@@ -87,7 +90,7 @@ public class LinkBuilderImpl implements Link.Builder
    @Override
    public Link build(Object... values) throws UriBuilderException
    {
-      if (values == null) throw new IllegalArgumentException("values param was null");
+      if (values == null) throw new IllegalArgumentException(Messages.MESSAGES.valuesParamWasNull());
       link.uri = uriBuilder.build(values);
       return link;
    }
@@ -95,8 +98,8 @@ public class LinkBuilderImpl implements Link.Builder
    @Override
    public Link buildRelativized(URI uri, Object... values)
    {
-      if (uri == null) throw new IllegalArgumentException("uri param was null");
-      if (values == null) throw new IllegalArgumentException("values param was null");
+      if (uri == null) throw new IllegalArgumentException(Messages.MESSAGES.uriParamNull());
+      if (values == null) throw new IllegalArgumentException(Messages.MESSAGES.valuesParamWasNull());
       URI built = uriBuilder.build(values);
       URI with = built;
       if (baseUri != null) with = baseUri.resolve(built);

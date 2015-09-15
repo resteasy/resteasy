@@ -12,7 +12,6 @@ import org.apache.catalina.connector.Response;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.realm.GenericPrincipal;
-import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
@@ -21,6 +20,8 @@ import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyPrincipal;
 import org.jboss.resteasy.skeleton.key.SkeletonKeySession;
 import org.jboss.resteasy.skeleton.key.as7.config.CatalinaManagedResourceConfigLoader;
+import org.jboss.resteasy.skeleton.key.as7.i18n.LogMessages;
+import org.jboss.resteasy.skeleton.key.as7.i18n.Messages;
 import org.jboss.resteasy.skeleton.key.config.ManagedResourceConfig;
 import org.jboss.resteasy.skeleton.key.config.ManagedResourceConfigLoader;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
@@ -30,6 +31,7 @@ import javax.security.auth.login.LoginException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.UriBuilder;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
@@ -46,7 +48,6 @@ import java.util.Set;
 public class OAuthManagedResourceValve extends FormAuthenticator implements LifecycleListener
 {
    protected RealmConfiguration realmConfiguration;
-   private static final Logger log = Logger.getLogger(OAuthManagedResourceValve.class);
    protected UserSessionManagement userSessionManagement = new UserSessionManagement();
    protected ManagedResourceConfig remoteSkeletonKeyConfig;
    protected ResourceMetadata resourceMetadata;
@@ -74,18 +75,18 @@ public class OAuthManagedResourceValve extends FormAuthenticator implements Life
       String client_id = remoteSkeletonKeyConfig.getClientId();
       if (client_id == null)
       {
-         throw new IllegalArgumentException("Must set client-id to use with auth server");
+         throw new IllegalArgumentException(Messages.MESSAGES.mustSetClientId());
       }
       realmConfiguration = new RealmConfiguration();
       String authUrl = remoteSkeletonKeyConfig.getAuthUrl();
       if (authUrl == null)
       {
-         throw new RuntimeException("You must specify auth-url");
+         throw new RuntimeException(Messages.MESSAGES.mustSpecifyAuthUrl());
       }
       String tokenUrl = remoteSkeletonKeyConfig.getCodeUrl();
       if (tokenUrl == null)
       {
-         throw new RuntimeException("You mut specify code-url");
+         throw new RuntimeException(Messages.MESSAGES.mustSpecifyCodeUrl());
       }
       realmConfiguration.setMetadata(resourceMetadata);
       realmConfiguration.setClientId(client_id);
@@ -155,12 +156,12 @@ public class OAuthManagedResourceValve extends FormAuthenticator implements Life
             {
                if (restoreRequest(request, request.getSessionInternal()))
                {
-                  log.debug("restoreRequest");
+                  LogMessages.LOGGER.debug(Messages.MESSAGES.restoreRequest());
                   return (true);
                }
                else
                {
-                  log.debug("Restore of original request failed");
+                  LogMessages.LOGGER.debug(Messages.MESSAGES.restoreOfOriginalRequestFailed());
                   response.sendError(HttpServletResponse.SC_BAD_REQUEST);
                   return (false);
                }
@@ -184,16 +185,16 @@ public class OAuthManagedResourceValve extends FormAuthenticator implements Life
    {
       try
       {
-         log.debug("->> remoteLogout: ");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.remoteLogout());
          if (!bearer(true, request, response))
          {
-            log.debug("remoteLogout: bearer auth failed");
+            LogMessages.LOGGER.debug(Messages.MESSAGES.bearerAuthFailed());
             return;
          }
          GenericPrincipal gp = (GenericPrincipal) request.getPrincipal();
          if (!gp.hasRole(remoteSkeletonKeyConfig.getAdminRole()))
          {
-            log.debug("remoteLogout: role failure");
+            LogMessages.LOGGER.debug(Messages.MESSAGES.roleFailure());
             response.sendError(403);
             return;
          }
@@ -209,7 +210,7 @@ public class OAuthManagedResourceValve extends FormAuthenticator implements Life
       }
       catch (Exception e)
       {
-         log.error("failed to logout", e);
+         LogMessages.LOGGER.error(Messages.MESSAGES.failedToLogout(), e);
       }
       response.setStatus(204);
    }
@@ -228,7 +229,7 @@ public class OAuthManagedResourceValve extends FormAuthenticator implements Life
    {
       if (request.getSessionInternal() == null || request.getSessionInternal().getPrincipal() == null)
          return false;
-      log.debug("remote logged in already");
+      LogMessages.LOGGER.debug(Messages.MESSAGES.remoteLoggedInAlready());
       GenericPrincipal principal = (GenericPrincipal) request.getSessionInternal().getPrincipal();
       request.setUserPrincipal(principal);
       request.setAuthType("OAUTH");
@@ -258,7 +259,7 @@ public class OAuthManagedResourceValve extends FormAuthenticator implements Life
          String error = oauth.getError();
          if (error != null)
          {
-            response.sendError(400, "OAuth " + error);
+            response.sendError(400, Messages.MESSAGES.oAuthError(error));
             return;
          }
          else
@@ -296,7 +297,7 @@ public class OAuthManagedResourceValve extends FormAuthenticator implements Life
          }
 
          String username = token.getPrincipal();
-         log.debug("userSessionManage.login: " + username);
+         LogMessages.LOGGER.debug(Messages.MESSAGES.userSessionManageLogin(username));
          userSessionManagement.login(session, username);
       }
    }

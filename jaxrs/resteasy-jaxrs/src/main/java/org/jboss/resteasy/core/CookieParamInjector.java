@@ -1,11 +1,13 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.core.Cookie;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
@@ -48,6 +50,6 @@ public class CookieParamInjector extends StringParameterInjector implements Valu
 
    public Object inject()
    {
-      throw new RuntimeException("It is illegal to inject a @CookieParam into a singleton");
+      throw new RuntimeException(Messages.MESSAGES.illegalToInjectCookieParam());
    }
 }

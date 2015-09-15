@@ -7,6 +7,8 @@ import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
 import org.jboss.resteasy.jwt.JsonSerialization;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.skeleton.key.idm.IdentityManager;
+import org.jboss.resteasy.skeleton.key.idm.i18n.LogMessages;
+import org.jboss.resteasy.skeleton.key.idm.i18n.Messages;
 import org.jboss.resteasy.skeleton.key.idm.model.data.Realm;
 import org.jboss.resteasy.skeleton.key.idm.model.data.RequiredCredential;
 import org.jboss.resteasy.skeleton.key.idm.model.data.Resource;
@@ -40,6 +42,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Providers;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -179,22 +182,22 @@ public class TokenManagement
       Realm realm = identityManager.getRealm(realmName);
       if (realm == null)
       {
-         logger.debug("realm not found");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.realmNotFound());
          throw new NotFoundException();
       }
       if (!realm.isEnabled())
       {
-         return Response.ok("Realm not enabled").type("text/html").build();
+         return Response.ok(Messages.MESSAGES.realmNotEnabled()).type("text/html").build();
       }
       User client = identityManager.getUser(realm, clientId);
       if (client == null)
       {
-         logger.debug("client not found");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.clientNotFound());
          throw new ForbiddenException();
       }
       if (!client.isEnabled())
       {
-         return Response.ok("Requester not enabled").type("text/html").build();
+         return Response.ok(Messages.MESSAGES.requesterNotEnabled()).type("text/html").build();
       }
 
 
@@ -202,16 +205,16 @@ public class TokenManagement
       User user = identityManager.getUser(realm, username);
       if (user == null)
       {
-         logger.debug("user not found");
-         return loginForm("Not valid user", redirect, clientId, scopeParam, state, realm, client);
+         LogMessages.LOGGER.debug(Messages.MESSAGES.userNotFound());
+         return loginForm(Messages.MESSAGES.notValidUser(), redirect, clientId, scopeParam, state, realm, client);
       }
       if (!user.isEnabled())
       {
-         return Response.ok("Your account is not enabled").type("text/html").build();
+         return Response.ok(Messages.MESSAGES.accountIsNotEnabled()).type("text/html").build();
 
       }
       boolean authenticated = authenticate(realm, user, formData);
-      if (!authenticated) return loginForm("Unable to authenticate, try again", redirect, clientId, scopeParam, state, realm, client);
+      if (!authenticated) return loginForm(Messages.MESSAGES.unableToAuthenticate(), redirect, clientId, scopeParam, state, realm, client);
 
       SkeletonKeyToken token = createToken(scopeParam, realm, client, user);
       AccessCode code = new AccessCode();
@@ -269,12 +272,14 @@ public class TokenManagement
             {
                if (!scopeMapping.getRoles().contains(role))
                {
-                  throw new ForbiddenException(Response.status(403).entity("<h1>Security Alert</h1><p>Known client not authorized for the requested scope.</p>").type("text/html").build());
+                  String entity = "<h1>"+Messages.MESSAGES.securityAlert()+"</h1><p>"+Messages.MESSAGES.knownClientNotAuthorized()+"</p>";
+                  throw new ForbiddenException(Response.status(403).entity(entity).type("text/html").build());
                }
                if (!roleMapping.getRoles().contains(role))
                {
-                  throw new ForbiddenException(Response.status(403).entity("<h1>Security Alert</h1><p>You are not authorized for the requested scope.</p>").type("text/html").build());
-
+                  String entity = "<h1>"+Messages.MESSAGES.securityAlert()+"</h1><p>"+Messages.MESSAGES.youAreNotAuthorizedForRequestedScope()+"</p>";
+                  throw new ForbiddenException(Response.status(403).entity(entity).type("text/html").build());
+                  
                }
                access.addRole(role);
                if (roleMapping.getSurrogateIds() != null && roleMapping.getSurrogateIds().size() > 0)
@@ -289,7 +294,8 @@ public class TokenManagement
          ScopeMapping mapping = identityManager.getScopeMapping(realm, client);
          if (mapping == null || !mapping.getRoles().contains("login"))
          {
-            throw new ForbiddenException(Response.status(403).entity("<h1>Security Alert</h1><p>Known client not authorized to request a user login.</p>").type("text/html").build());
+            String entity = "<h1>"+Messages.MESSAGES.securityAlert()+"</h1><p>"+Messages.MESSAGES.knownClientNotAuthorizedToRequestUserLogin()+"</p>";
+            throw new ForbiddenException(Response.status(403).entity(entity).type("text/html").build());
          }
          token = createAccessToken(user, realm);
       }
@@ -308,38 +314,38 @@ public class TokenManagement
       String code = formData.getFirst("code");
       if (code == null)
       {
-         logger.debug("code not specified");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.codeNotSpecified());
          Map<String, String> error = new HashMap<String, String>();
          error.put("error", "invalid_request");
-         error.put("error_description", "code not specified");
+         error.put("error_description", Messages.MESSAGES.codeNotSpecified());
          return Response.status(Response.Status.BAD_REQUEST).entity(error).type("application/json").build();
 
       }
       String client_id = formData.getFirst("client_id");
       if (client_id == null)
       {
-         logger.debug("client_id not specified");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.clientIdNotSpecified());
          Map<String, String> error = new HashMap<String, String>();
          error.put("error", "invalid_request");
-         error.put("error_description", "client_id not specified");
+         error.put("error_description", Messages.MESSAGES.clientIdNotSpecified());
          return Response.status(Response.Status.BAD_REQUEST).entity(error).type("application/json").build();
       }
       User client = identityManager.getUser(realm, client_id);
       if (client == null)
       {
-         logger.debug("Could not find user");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.couldNotFindUser());
          Map<String, String> error = new HashMap<String, String>();
          error.put("error", "invalid_client");
-         error.put("error_description", "Could not find user");
+         error.put("error_description", Messages.MESSAGES.couldNotFindUser());
          return Response.status(Response.Status.BAD_REQUEST).entity(error).type("application/json").build();
       }
 
       if (!client.isEnabled())
       {
-         logger.debug("user is not enabled");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.userIsNotEnabled());
          Map<String, String> error = new HashMap<String, String>();
          error.put("error", "invalid_client");
-         error.put("error_description", "User is not enabled");
+         error.put("error_description", Messages.MESSAGES.userIsNotEnabled());
          return Response.status(Response.Status.BAD_REQUEST).entity(error).type("application/json").build();
       }
 
@@ -361,13 +367,13 @@ public class TokenManagement
       }
       catch (Exception ignored)
       {
-         logger.debug("Failed to verify signature", ignored);
+         LogMessages.LOGGER.debug(Messages.MESSAGES.failedToVerifySignature(), ignored);
       }
       if (!verifiedCode)
       {
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
-         res.put("error_description", "Unable to verify code signature");
+         res.put("error_description", Messages.MESSAGES.unableToVerifyCodeSignature());
          return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(res).build();
       }
       String key = input.readContent(String.class);
@@ -380,28 +386,28 @@ public class TokenManagement
       {
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
-         res.put("error_description", "Code not found");
+         res.put("error_description", Messages.MESSAGES.codeNotFound());
          return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(res).build();
       }
       if (accessCode.isExpired())
       {
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
-         res.put("error_description", "Code is expired");
+         res.put("error_description", Messages.MESSAGES.codeIsExpired());
          return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(res).build();
       }
       if (!accessCode.getToken().isActive())
       {
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
-         res.put("error_description", "Token expired");
+         res.put("error_description", Messages.MESSAGES.tokenExpired());
          return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(res).build();
       }
       if (!client.getId().equals(accessCode.getClient().getId()))
       {
          Map<String, String> res = new HashMap<String, String>();
          res.put("error", "invalid_grant");
-         res.put("error_description", "Auth error");
+         res.put("error_description", Messages.MESSAGES.authError());
          return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(res).build();
       }
       AccessTokenResponse res = accessTokenResponse(realm.getPrivateKey(), accessCode.getToken());
@@ -447,9 +453,10 @@ public class TokenManagement
       Realm realm = identityManager.getRealm(realmName);
       if (realm == null) throw new NotFoundException();
       User client = identityManager.getUser(realm, clientId);
-      if (client == null)
-         return Response.ok("<h1>Security Alert</h1><p>Unknown client trying to get access to your account.</p>").type("text/html").build();
-
+      if (client == null) {
+         String msg = "<h1>"+Messages.MESSAGES.securityAlert()+"</h1><p>"+Messages.MESSAGES.unknownClientTryingToAccess()+"</p>";
+         return Response.ok(msg).type("text/html").build();
+      }
       return loginForm(null, redirect, clientId, scopeParam, state, realm, client);
    }
 
@@ -458,7 +465,7 @@ public class TokenManagement
       StringBuffer html = new StringBuffer();
       if (scopeParam != null)
       {
-         html.append("<h1>Grant Request For ").append(realm.getName()).append(" Realm</h1>");
+         html.append("<h1>").append(Messages.MESSAGES.grantRequestFor()).append(realm.getName()).append(" ").append(Messages.MESSAGES.realm()).append("</h1>");
          if (validationError != null)
          {
             try
@@ -471,7 +478,7 @@ public class TokenManagement
             }
             html.append("<p/><p><b>").append(validationError).append("</b></p>");
          }
-         html.append("<p>A Third Party is requesting access to the following resources</p>");
+         html.append("<p>").append(Messages.MESSAGES.thirdPartyIsRequestingAccess()).append("</p>");
          html.append("<table>");
          SkeletonKeyScope scope = null;
          byte[] bytes = Base64Url.decode(scopeParam);
@@ -486,26 +493,27 @@ public class TokenManagement
          for (String res : scope.keySet())
          {
             Resource resource = identityManager.getResource(realm, res);
-            html.append("<tr><td><b>Resource: </b>").append(resource.getName()).append("</td><td><b>Roles:</b>");
+            html.append("<tr><td><b>").append(Messages.MESSAGES.resource()).append("</b>").append(resource.getName()).append("</td><td><b>").append(Messages.MESSAGES.roles()).append("</b>");
             ScopeMapping mapping = identityManager.getScopeMapping(realm, resource, client);
             for (String role : scope.get(res))
             {
                html.append(" ").append(role);
                if (!mapping.getRoles().contains(role))
                {
-                  return Response.ok("<h1>Security Alert</h1><p>Known client not authorized for the requested scope.</p>").type("text/html").build();
+                  String msg = "<h1>"+Messages.MESSAGES.securityAlert()+"</h1><p>"+Messages.MESSAGES.knownClientNotAuthorized()+"</p>";
+                  return Response.ok(msg).type("text/html").build();
                }
             }
             html.append("</td></tr>");
          }
-         html.append("</table><p>To Authorize, please login below</p>");
+         html.append("</table><p>"+Messages.MESSAGES.toAuthorizePleaseLogin()+"</p>");
       }
       else
       {
          ScopeMapping mapping = identityManager.getScopeMapping(realm, client);
          if (mapping != null && mapping.getRoles().contains("login"))
          {
-            html.append("<h1>Login For ").append(realm.getName()).append(" Realm</h1>");
+            html.append("<h1>").append(Messages.MESSAGES.loginFor()).append(realm.getName()).append(" ").append(Messages.MESSAGES.realm()).append("</h1>");
             if (validationError != null)
             {
                try
@@ -521,7 +529,7 @@ public class TokenManagement
          }
          else
          {
-            html.append("<h1>Grant Request For ").append(realm.getName()).append(" Realm</h1>");
+            html.append("<h1>").append(Messages.MESSAGES.grantRequestFor()).append(realm.getName()).append(" ").append(Messages.MESSAGES.realm()).append("</h1>");
             if (validationError != null)
             {
                try
@@ -545,10 +553,10 @@ public class TokenManagement
                if (!found)
                {
                   found = true;
-                  html.append("<p>A Third Party is requesting access to the following resources</p>");
+                  html.append("<p>").append(Messages.MESSAGES.thirdPartyIsRequestingAccess()).append("</p>");
                   html.append("<table>");
                }
-               html.append("<tr><td><b>Resource: </b>").append(resource.getName()).append("</td><td><b>Roles:</b>");
+               html.append("<tr><td><b>").append(Messages.MESSAGES.resource()).append("</b>").append(resource.getName()).append("</td><td><b>").append(Messages.MESSAGES.roles()).append("</b>");
                // todo add description of role
                for (String role : resourceScope.getRoles())
                {
@@ -558,7 +566,8 @@ public class TokenManagement
             }
             if (!found)
             {
-               return Response.ok("<h1>Security Alert</h1><p>Known client not authorized to access this realm.</p>").type("text/html").build();
+               String msg = "<h1>"+Messages.MESSAGES.securityAlert()+"</h1><p>"+Messages.MESSAGES.knownClientNotAuthorizedToAccessRealm()+"</p>";
+               return Response.ok(msg).type("text/html").build();
             }
             html.append("</table>");
             try
@@ -577,8 +586,8 @@ public class TokenManagement
       UriBuilder formActionUri = uriInfo.getBaseUriBuilder().path(TokenManagement.class).path(TokenManagement.class, "login");
       String action = formActionUri.build(realm.getId()).toString();
       html.append("<form action=\"").append(action).append("\" method=\"POST\">");
-      html.append("Username: <input type=\"text\" name=\"username\" size=\"20\"><br>");
-
+      html.append(Messages.MESSAGES.username()+"<input type=\"text\" name=\"username\" size=\"20\"><br>");
+      
       for (RequiredCredential credential : identityManager.getRequiredCredentials(realm))
       {
          if (!credential.isInput()) continue;
@@ -600,8 +609,8 @@ public class TokenManagement
       if (state != null) html.append("<input type=\"hidden\" name=\"state\" value=\"").append(state).append("\">");
       html.append("<input type=\"hidden\" name=\"redirect_uri\" value=\"").append(redirect).append("\">");
       html.append("<input type=\"submit\" value=\"");
-      if (scopeParam == null) html.append("Login");
-      else html.append("Grant Access");
+      if (scopeParam == null) html.append(Messages.MESSAGES.login());
+      else html.append(Messages.MESSAGES.grantAccess());
       html.append("\">");
       html.append("</form>");
       return Response.ok(html.toString()).type("text/html").build();
@@ -623,26 +632,26 @@ public class TokenManagement
       if (realm == null) throw new NotFoundException();
       if (!realm.isEnabled())
       {
-         logger.debug("realm is not enabled");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.realmIsNotEnabled());
          throw new NotFoundException();
       }
 
       User user = identityManager.getUser(realm, formParams.getFirst("client_id"));
       if (user == null)
       {
-         logger.debug("Could not find user");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.couldNotFindUser());
          Map<String, String> error = new HashMap<String, String>();
          error.put("error", "invalid_client");
-         error.put("error_description", "Could not find user");
+         error.put("error_description", Messages.MESSAGES.couldNotFindUser());
          return Response.status(Response.Status.BAD_REQUEST).entity(error).type("application/json").build();
      }
 
       if (!user.isEnabled())
       {
-         logger.debug("user is not enabled");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.userIsNotEnabled());
          Map<String, String> error = new HashMap<String, String>();
          error.put("error", "invalid_client");
-         error.put("error_description", "User is not enabled");
+         error.put("error_description", Messages.MESSAGES.userIsNotEnabled());
          return Response.status(Response.Status.BAD_REQUEST).entity(error).type("application/json").build();
       }
 
@@ -685,7 +694,7 @@ public class TokenManagement
             UserCredential userCredential = userCredentials.getFirst(credential.getType());
             if (userCredential == null)
             {
-               logger.warn("Missing required user credential");
+               LogMessages.LOGGER.warn(Messages.MESSAGES.missingRequiredUserCredential());
                return false;
             }
             if (userCredential.isHashed())
@@ -694,7 +703,7 @@ public class TokenManagement
             }
             if (!value.equals(userCredential.getValue()))
             {
-               logger.warn("Credential mismatch");
+               LogMessages.LOGGER.warn(Messages.MESSAGES.credentialMismatch());
                return false;
             }
          }
@@ -715,7 +724,7 @@ public class TokenManagement
                }
                if (!found)
                {
-                  logger.warn("caller principal not matched");
+                  LogMessages.LOGGER.warn(Messages.MESSAGES.callerPrincipalNotMatched());
                   return false;
                }
             }

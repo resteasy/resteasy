@@ -7,6 +7,8 @@ import io.netty.handler.codec.http.DefaultHttpContent;
 
 import java.io.IOException;
 import java.io.OutputStream;
+
+import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 /**
  * Class to help application that are built to write to an
  * OutputStream to chunk the content
@@ -34,7 +36,7 @@ public class ChunkOutputStream extends OutputStream {
    ChunkOutputStream(NettyHttpResponse response, ChannelHandlerContext ctx, int chunksize) {
       this.response = response;
       if (chunksize < 1) {
-         throw new IllegalArgumentException("Chunk size must be at least 1");
+         throw new IllegalArgumentException(Messages.MESSAGES.chunkSizeMustBeAtLeastOne());
       }
       this.buffer = Unpooled.buffer(0, chunksize);
       this.ctx = ctx;
@@ -50,7 +52,7 @@ public class ChunkOutputStream extends OutputStream {
 
    public void reset()
    {
-      if (response.isCommitted()) throw new IllegalStateException("response is committed");
+      if (response.isCommitted()) throw new IllegalStateException(Messages.MESSAGES.responseIsCommitted());
       buffer.clear();
    }
 

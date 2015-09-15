@@ -5,12 +5,14 @@ import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
+import org.jboss.resteasy.plugins.cache.server.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
+
 import java.io.IOException;
 
 /**
@@ -81,7 +83,7 @@ public class ServerCacheFeature implements Feature
 
       String name = (String)configurable.getConfiguration().getProperty("server.request.cache.infinispan.cache.name");
       if (name == null) name = getConfigProperty("server.request.cache.infinispan.cache.name");
-      if (name == null) throw new RuntimeException("need to specify server.request.cache.infinispan.cache.name");
+      if (name == null) throw new RuntimeException(Messages.MESSAGES.needToSpecifyCacheName());
 
       try
       {
