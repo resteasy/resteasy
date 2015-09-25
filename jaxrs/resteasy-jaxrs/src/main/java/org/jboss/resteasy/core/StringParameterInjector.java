@@ -277,7 +277,7 @@ public class StringParameterInjector
 
    public Object extractValue(String strVal)
    {
-      if (strVal == null)
+      if (strVal == null || strVal.isEmpty())
       {
          if (defaultValue == null)
          {
