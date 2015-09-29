@@ -413,7 +413,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
          }
 
           final Class<?> beanClass = getBeanClass(factoryClassName);
-          final Method[] methods = beanClass.getDeclaredMethods();
+          final Method[] methods = getAllDeclaredMethods(beanClass);
           for (Method method : methods) {
               if (method.getName().equals(factoryMethodName)) {
                   return method.getReturnType();
@@ -480,6 +480,16 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
       {
          throw new IllegalStateException(Messages.MESSAGES.couldNotConvertBeanToClass(beanClassName), e);
       }
+   }
+
+   private static Method[] getAllDeclaredMethods(final Class clazz) {
+      Class localClazz = clazz;
+      final List<Method> result = new ArrayList<Method>();
+      while (localClazz != null) {
+         Collections.addAll(result, localClazz.getDeclaredMethods());
+         localClazz = localClazz.getSuperclass();
+      }
+      return result.toArray(new Method[result.size()]);
    }
 
    /**
