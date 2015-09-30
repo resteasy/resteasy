@@ -3,9 +3,11 @@
  */
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.util.NoContent;
 
 import javax.xml.transform.stream.StreamSource;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -109,7 +111,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
       @Override
       public OutputStream getOutputStream() throws IOException
       {
-         throw new IOException("No output stream allowed");
+         throw new IOException(Messages.MESSAGES.noOutputStreamAllowed());
       }
 
    }

@@ -2,11 +2,13 @@ package org.jboss.resteasy.jose.jwe.crypto;
 
 
 import org.jboss.resteasy.jose.Base64Url;
+import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jwe.Algorithm;
 import org.jboss.resteasy.jose.jwe.CompressionAlgorithm;
 import org.jboss.resteasy.jose.jwe.EncryptionMethod;
 
 import javax.crypto.SecretKey;
+
 import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -74,7 +76,7 @@ public class DirectEncrypter
       if (enc.getCekBitLength() != key.getEncoded().length * 8)
       {
 
-         throw new RuntimeException("The Content Encryption Key (CEK) length must be " + enc.getCekBitLength() + " bits for " + enc + " encryption");
+         throw new RuntimeException(Messages.MESSAGES.contentEncryptionKeyLength(enc.getCekBitLength(), enc));
       }
 
 
@@ -110,7 +112,7 @@ public class DirectEncrypter
       else
       {
 
-         throw new RuntimeException("Unsupported encryption method, must be A128CBC_HS256, A256CBC_HS512, A128GCM or A128GCM");
+         throw new RuntimeException(Messages.MESSAGES.unsupportedEncryptionMethod());
       }
 
       StringBuilder builder = new StringBuilder(encodedJWEHeader)

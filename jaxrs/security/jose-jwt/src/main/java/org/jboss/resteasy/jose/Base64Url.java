@@ -1,6 +1,7 @@
 package org.jboss.resteasy.jose;
 
 
+import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.util.Base64;
 
 /**
@@ -27,8 +28,7 @@ public class Base64Url
          case 0: break; // No pad chars in this case
          case 2: s += "=="; break; // Two pad chars
          case 3: s += "="; break; // One pad char
-         default: throw new RuntimeException(
-                 "Illegal base64url string!");
+         default: throw new RuntimeException(Messages.MESSAGES.illegalBase64UrlString());
       }
       try
       {

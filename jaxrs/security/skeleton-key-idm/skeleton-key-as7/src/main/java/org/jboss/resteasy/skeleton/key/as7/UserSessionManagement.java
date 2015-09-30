@@ -4,7 +4,8 @@ import org.apache.catalina.Session;
 import org.apache.catalina.SessionEvent;
 import org.apache.catalina.SessionListener;
 import org.apache.catalina.realm.GenericPrincipal;
-import org.jboss.logging.Logger;
+import org.jboss.resteasy.skeleton.key.as7.i18n.LogMessages;
+import org.jboss.resteasy.skeleton.key.as7.i18n.Messages;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class UserSessionManagement implements SessionListener
 {
-   private static final Logger log = Logger.getLogger(UserSessionManagement.class);
    protected ConcurrentHashMap<String, Map<String, Session>> userSessionMap = new ConcurrentHashMap<String, Map<String, Session>>();
 
    protected void login(Session session, String username)
@@ -62,19 +62,19 @@ public class UserSessionManagement implements SessionListener
 
    public void logout(String user)
    {
-      log.debug("logoutUser: " + user);
+      LogMessages.LOGGER.debug(Messages.MESSAGES.logoutUser(user));
       Map<String, Session> map = userSessionMap.remove(user);
       if (map == null)
       {
-         log.debug("no session for user: " + user);
+         LogMessages.LOGGER.debug(Messages.MESSAGES.noSessionForUser(user));
          return;
       }
-      log.debug("found session for user");
+      LogMessages.LOGGER.debug(Messages.MESSAGES.foundSessionForUser());
       synchronized (map)
       {
          for (Session session : map.values())
          {
-            log.debug("invalidating session for user: " + user);
+            LogMessages.LOGGER.debug(Messages.MESSAGES.invalidatingSessionForUser(user));
             session.setPrincipal(null);
             session.setAuthType(null);
             session.getSession().invalidate();

@@ -1,11 +1,13 @@
 package org.jboss.resteasy.security.doseta;
 
 import org.jboss.resteasy.security.SigningAlgorithm;
+import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.Base64;
 import org.jboss.resteasy.util.ParameterParser;
 
 import javax.ws.rs.core.MultivaluedMap;
+
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.PrivateKey;
@@ -348,7 +350,7 @@ public class DKIMSignature
       PrivateKey key = privateKey == null ? defaultKey : privateKey;
       if (key == null)
       {
-         throw new SignatureException("private key is null, cannot sign");
+         throw new SignatureException(Messages.MESSAGES.privateKeyIsNull());
       }
       attributes.put(VERSION, "1");
       attributes.put(ALGORITHM, SigningAlgorithm.SHA256withRSA.getRfcNotation());
@@ -462,7 +464,7 @@ public class DKIMSignature
          Object v = transmittedHeaders.get(name);
          if (v == null)
          {
-            throw new SignatureException("Unable to find header " + name + (index > 0 ? "[" + index + "]" : "") + " to sign header with");
+            throw new SignatureException(Messages.MESSAGES.unableToFindHeader(name, (index > 0 ? "[" + index + "]" : "")));
          }
 
          if (v instanceof List)
@@ -471,13 +473,13 @@ public class DKIMSignature
             int i = l.size() - 1 - index;
             if (i < 0)
             {
-               throw new SignatureException("Unable to find header " + name + (index > 0 ? "[" + index + "]" : "") + " to sign header with");
+               throw new SignatureException(Messages.MESSAGES.unableToFindHeader(name, (index > 0 ? "[" + index + "]" : "")));
             }
             v = l.get(i);
          }
          else if (index > 0)
          {
-            throw new SignatureException("Unable to find header " + name + (index > 0 ? "[" + index + "]" : "") + " to sign header with");
+            throw new SignatureException(Messages.MESSAGES.unableToFindHeader(name, (index > 0 ? "[" + index + "]" : "")));
          }
          String entry = name + ":" + v.toString() + "\r\n";
          signature.update(entry.getBytes());
@@ -503,12 +505,12 @@ public class DKIMSignature
     */
    public MultivaluedMap<String, String> verify(boolean bodyHashRequired, Map headers, byte[] body, PublicKey key) throws SignatureException
    {
-      if (key == null) throw new SignatureException("No key to verify with.");
+      if (key == null) throw new SignatureException(Messages.MESSAGES.noKeyToVerifyWith());
 
       String algorithm = getAlgorithm();
       if (algorithm == null || !SigningAlgorithm.SHA256withRSA.getRfcNotation().toLowerCase().equals(algorithm.toLowerCase()))
       {
-         throw new SignatureException("Unsupported algorithm " + algorithm);
+         throw new SignatureException(Messages.MESSAGES.unsupportedAlgorithm(algorithm));
       }
 
       Signature verifier = null;
@@ -526,7 +528,7 @@ public class DKIMSignature
       String encodedBh = attributes.get("bh");
       if (encodedBh == null)
       {
-         if (body != null && bodyHashRequired) throw new SignatureException("There was no body hash (bh) in header");
+         if (body != null && bodyHashRequired) throw new SignatureException(Messages.MESSAGES.thereWasNoBodyHash());
       }
       else
       {
@@ -539,12 +541,12 @@ public class DKIMSignature
          }
          catch (IOException e)
          {
-            throw new SignatureException("Failed to parse body hash (bh)", e);
+            throw new SignatureException(Messages.MESSAGES.failedToParseBodyHash(), e);
          }
 
          if (Arrays.equals(bh, enclosedBh) == false)
          {
-            throw new SignatureException("Body hashes do not match.");
+            throw new SignatureException(Messages.MESSAGES.bodyHashesDoNotMatch());
          }
       }
       MultivaluedMap<String, String> verifiedHeaders = updateSignatureWithHeader(headers, verifier);
@@ -553,7 +555,7 @@ public class DKIMSignature
       verifier.update(strippedHeader.getBytes());
       if (verifier.verify(getSignature()) == false)
       {
-         throw new SignatureException("Failed to verify signature.");
+         throw new SignatureException(Messages.MESSAGES.failedToVerifySignature());
       }
 
       return verifiedHeaders;

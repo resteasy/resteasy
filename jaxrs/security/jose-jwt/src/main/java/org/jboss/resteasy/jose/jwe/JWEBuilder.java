@@ -1,6 +1,7 @@
 package org.jboss.resteasy.jose.jwe;
 
 import org.jboss.resteasy.jose.Base64Url;
+import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jwe.crypto.DirectEncrypter;
 import org.jboss.resteasy.jose.jwe.crypto.RSAEncrypter;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -12,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Providers;
+
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
@@ -119,7 +121,7 @@ public class JWEBuilder
       if (genericType == null) genericType = type;
 
       MessageBodyWriter writer = providers.getMessageBodyWriter(type, genericType, null, marshalTo);
-      if (writer == null) throw new IllegalStateException("Unable to find MessageBodyWriter");
+      if (writer == null) throw new IllegalStateException(Messages.MESSAGES.unableToFindMessageBodyWriter());
       try
       {
          writer.writeTo(obj, type, genericType, null, marshalTo, new MultivaluedHashMap<String, Object>(), baos);
@@ -203,12 +205,12 @@ public class JWEBuilder
 
       public String dir(SecretKey key)
       {
-         if (!key.getAlgorithm().equals("AES")) throw new IllegalArgumentException("The algorithm of the shared symmetric key must be AES");
+         if (!key.getAlgorithm().equals("AES")) throw new IllegalArgumentException(Messages.MESSAGES.algorithmOfSharedSymmetricKey());
          byte[] keyBytes = key.getEncoded();
 
          if (keyBytes.length != 16 && keyBytes.length != 32 && keyBytes.length != 64) {
 
-            throw new IllegalArgumentException("The length of the shared symmetric key must be 128 bits (16 bytes), 256 bits (32 bytes) or 512 bites (64 bytes)");
+            throw new IllegalArgumentException(Messages.MESSAGES.lengthOfSharedSymmetricKey());
          }
 
          String header = encodeHeader(Algorithm.dir);

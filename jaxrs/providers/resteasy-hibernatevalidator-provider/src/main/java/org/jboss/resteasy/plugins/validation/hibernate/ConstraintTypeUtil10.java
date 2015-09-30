@@ -9,6 +9,7 @@ import javax.validation.Path.Node;
 import org.hibernate.validator.method.MethodConstraintViolation;
 import org.jboss.resteasy.api.validation.ConstraintType.Type;
 import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
+import org.jboss.resteasy.plugins.validation.hibernate.i18n.Messages;
 
 /**
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
@@ -22,7 +23,7 @@ public class ConstraintTypeUtil10 implements ConstraintTypeUtil
    {
       if (!(o instanceof ConstraintViolation))
       {
-         throw new RuntimeException("unknown object passed as constraint violation: " + o);
+         throw new RuntimeException(Messages.MESSAGES.unknownObjectPassedAsConstraintViolation(o));
       }
       ConstraintViolation<?> v = ConstraintViolation.class.cast(o);
       if (v instanceof MethodConstraintViolation)

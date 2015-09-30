@@ -2,11 +2,14 @@ package org.jboss.resteasy.util;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.ws.rs.core.Cookie;
+
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 public class CookieParser {
    public static List<Cookie> parseCookies(String cookieHeader) {
-      if (cookieHeader == null) throw new IllegalArgumentException("Cookie header value was null");
+      if (cookieHeader == null) throw new IllegalArgumentException(Messages.MESSAGES.cookieHeaderValueNull());
       try
       {
          List<Cookie> cookies = new ArrayList<Cookie>();
@@ -56,7 +59,7 @@ public class CookieParser {
       }
       catch (Exception ex)
       {
-        throw new IllegalArgumentException("Failed to parse cookie string '" + cookieHeader + "'", ex);
+         throw new IllegalArgumentException(Messages.MESSAGES.failedToParseCookie(cookieHeader), ex);
       }
   }
 }

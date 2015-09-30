@@ -15,6 +15,7 @@ import javax.validation.ValidationException;
 import javax.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
+import org.jboss.resteasy.plugins.validation.hibernate.i18n.Messages;
 
 /**
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
@@ -219,7 +220,7 @@ public class ResteasyViolationException extends ValidationException
                   break;
                   
                default:
-                  throw new RuntimeException("unexpected violation type: " + type);
+                  throw new RuntimeException(Messages.MESSAGES.unexpectedViolationType(type));
             }
             index = 0;
             line = br.readLine(); // consume ending '\r'
@@ -228,7 +229,7 @@ public class ResteasyViolationException extends ValidationException
       }
       catch (IOException e)
       {
-         throw new RuntimeException("Unable to parse ResteasyViolationException");
+         throw new RuntimeException(Messages.MESSAGES.unableToParseException());
       }
       
       violationLists = new ArrayList<List<ResteasyConstraintViolation>>();
@@ -244,7 +245,7 @@ public class ResteasyViolationException extends ValidationException
       int beginning = line.indexOf('[', start);
       if (beginning == -1)
       {
-         throw new RuntimeException("ResteasyViolationException has invalid format: " + line);
+         throw new RuntimeException(Messages.MESSAGES.exceptionHasInvalidFormat(line));
       }
       int index = beginning;
       int bracketCount = 1;
@@ -266,7 +267,7 @@ public class ResteasyViolationException extends ValidationException
       }
       if (bracketCount != 0)
       {
-         throw new RuntimeException("ResteasyViolationException has invalid format: " + line);
+         throw new RuntimeException(Messages.MESSAGES.exceptionHasInvalidFormat(line));
       }
       return index;
    }

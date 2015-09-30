@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core.interception;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.NotSupportedException;
@@ -8,6 +9,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.ReaderInterceptor;
+
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -15,6 +17,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
+
 import static java.lang.String.format;
 
 /**
@@ -36,9 +39,7 @@ public class ClientReaderInterceptorContext extends AbstractReaderInterceptorCon
 
    protected void throwReaderNotFound()
    {
-      throw new ProcessingException(format(
-              "Unable to find a MessageBodyReader of content-type %s and type %s",
-              mediaType, type));
+      throw new ProcessingException(Messages.MESSAGES.clientResponseFailureMediaType(mediaType, type));
    }
 
    @Override

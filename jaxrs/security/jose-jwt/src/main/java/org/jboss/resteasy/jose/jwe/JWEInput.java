@@ -3,6 +3,7 @@ package org.jboss.resteasy.jose.jwe;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jboss.resteasy.jose.Base64Url;
+import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jwe.crypto.DirectDecrypter;
 import org.jboss.resteasy.jose.jwe.crypto.RSADecrypter;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -13,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Providers;
+
 import java.io.ByteArrayInputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -85,11 +87,11 @@ public class JWEInput
    public ContentReader decrypt(RSAPrivateKey privateKey)
    {
       Algorithm algorithm = header.getAlgorithm();
-      if (algorithm == null) throw new IllegalStateException("Algorithm was null");
+      if (algorithm == null) throw new IllegalStateException(Messages.MESSAGES.algorithmWasNull());
       if (algorithm != Algorithm.RSA1_5 && algorithm != Algorithm.RSA_OAEP)
-         throw new IllegalStateException("Not encrypted with RSA algorithm");
+         throw new IllegalStateException(Messages.MESSAGES.notEncryptedWithRSAalgorithm());
       EncryptionMethod enc = header.getEncryptionMethod();
-      if (algorithm == null) throw new IllegalStateException("EncryptionMethod was null");
+      if (algorithm == null) throw new IllegalStateException(Messages.MESSAGES.encryptionMethodWasNull());
       rawContent = RSADecrypter.decrypt(header, encodedHeader, encodedKey, encodedIv, encodedContent, encodedAuthTag, privateKey);
       return new ContentReader();
    }
@@ -97,7 +99,7 @@ public class JWEInput
    public ContentReader decrypt(String secret)
    {
       EncryptionMethod enc = header.getEncryptionMethod();
-      if (enc == null) throw new IllegalStateException("EncryptionMethod was null");
+      if (enc == null) throw new IllegalStateException(Messages.MESSAGES.encryptionMethodWasNull());
       MessageDigest digest = enc.createSecretDigester();
       byte[] hash = digest.digest(secret.getBytes(Charset.forName("UTF-8")));
       return decrypt(hash);
@@ -114,10 +116,10 @@ public class JWEInput
    public ContentReader decrypt(SecretKey key)
    {
       Algorithm algorithm = header.getAlgorithm();
-      if (algorithm == null) throw new IllegalStateException("Algorithm was null");
-      if (algorithm != Algorithm.dir) throw new IllegalStateException("Not encrypted with dir algorithm");
+      if (algorithm == null) throw new IllegalStateException(Messages.MESSAGES.algorithmWasNull());
+      if (algorithm != Algorithm.dir) throw new IllegalStateException(Messages.MESSAGES.notEncryptedWithDirAlgorithm());
       EncryptionMethod enc = header.getEncryptionMethod();
-      if (enc == null) throw new IllegalStateException("EncryptionMethod was null");
+      if (enc == null) throw new IllegalStateException(Messages.MESSAGES.encryptionMethodWasNull());
       rawContent = DirectDecrypter.decrypt(key, header, encodedHeader, null, encodedIv, encodedContent, encodedAuthTag);
       return new ContentReader();
    }
@@ -151,7 +153,7 @@ public class JWEInput
          Providers tmp = providers;
          if (tmp == null) tmp = ResteasyProviderFactory.getInstance();
          MessageBodyReader reader = tmp.getMessageBodyReader(type, genericType, annotations, mediaType);
-         if (reader == null) throw new RuntimeException("Unable to find reader for content type");
+         if (reader == null) throw new RuntimeException(Messages.MESSAGES.unableToFindReaderForContentType());
 
          try
          {

@@ -2,11 +2,13 @@ package org.jboss.resteasy.jose.jwe.crypto;
 
 
 import org.jboss.resteasy.jose.Base64Url;
+import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jwe.Algorithm;
 import org.jboss.resteasy.jose.jwe.CompressionAlgorithm;
 import org.jboss.resteasy.jose.jwe.EncryptionMethod;
 
 import javax.crypto.SecretKey;
+
 import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -92,7 +94,7 @@ public class RSAEncrypter
       else
       {
 
-         throw new RuntimeException("Unsupported JWE algorithm, must be RSA1_5 or RSA-OAEP");
+         throw new RuntimeException(Messages.MESSAGES.unsupportedJWEalgorithm());
       }
 
 
@@ -125,7 +127,7 @@ public class RSAEncrypter
       else
       {
 
-         throw new RuntimeException("Unsupported encryption method, must be A128CBC_HS256, A256CBC_HS512, A128GCM or A128GCM");
+         throw new RuntimeException(Messages.MESSAGES.unsupportedEncryptionMethod());
       }
       StringBuilder builder = new StringBuilder(encodedJWEHeader)
               .append('.').append(encryptedKey)

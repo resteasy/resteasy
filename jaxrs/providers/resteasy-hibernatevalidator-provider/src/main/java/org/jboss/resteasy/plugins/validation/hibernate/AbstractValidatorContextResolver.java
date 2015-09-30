@@ -7,7 +7,8 @@ import javax.validation.ValidatorFactory;
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.method.MethodValidator;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.plugins.validation.hibernate.i18n.LogMessages;
+import org.jboss.resteasy.plugins.validation.hibernate.i18n.Messages;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 
 /**
@@ -20,7 +21,6 @@ import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
  */
 public class AbstractValidatorContextResolver
 {
-   private final static Logger logger = Logger.getLogger(AbstractValidatorContextResolver.class);
    final Object RD_LOCK = new Object();
    private volatile ValidatorFactory validatorFactory;
 
@@ -55,7 +55,7 @@ public class AbstractValidatorContextResolver
       }
       catch (Exception e)
       {
-         logger.warn("Unable to load Validation support", e);
+         LogMessages.LOGGER.warn(Messages.MESSAGES.unableToLoadValidationSupport(), e);
       }
       return null;
    }

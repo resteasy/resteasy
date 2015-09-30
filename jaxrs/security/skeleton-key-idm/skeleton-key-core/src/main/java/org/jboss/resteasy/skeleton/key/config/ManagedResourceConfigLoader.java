@@ -5,6 +5,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.jboss.resteasy.skeleton.key.EnvUtil;
 import org.jboss.resteasy.skeleton.key.PemUtils;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
+import org.jboss.resteasy.skeleton.key.i18n.Messages;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,12 +49,12 @@ public class ManagedResourceConfigLoader
 
       String name = remoteSkeletonKeyConfig.getResource();
       String realm = remoteSkeletonKeyConfig.getRealm();
-      if (realm == null) throw new RuntimeException("Must set 'realm' in config");
+      if (realm == null) throw new RuntimeException(Messages.MESSAGES.mustSetRealmInConfig());
 
       String realmKeyPem = remoteSkeletonKeyConfig.getRealmKey();
       if (realmKeyPem == null)
       {
-         throw new IllegalArgumentException("You must set the realm-public-key");
+         throw new IllegalArgumentException(Messages.MESSAGES.mustSetRealmPublicKey());
       }
 
       PublicKey realmKey = null;
@@ -83,7 +84,7 @@ public class ManagedResourceConfigLoader
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Failed to load truststore", e);
+            throw new RuntimeException(Messages.MESSAGES.failedToLoadTruststore(), e);
          }
          resourceMetadata.setTruststore(trust);
       }
@@ -100,7 +101,7 @@ public class ManagedResourceConfigLoader
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Failed to load keystore", e);
+            throw new RuntimeException(Messages.MESSAGES.failedToLoadKeystore(), e);
          }
          resourceMetadata.setClientKeystore(serverKS);
          clientKeyPassword = remoteSkeletonKeyConfig.getClientKeyPassword();

@@ -1,11 +1,12 @@
 package org.jboss.resteasy.skeleton.key.jaxrs;
 
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.SkeletonKeyPrincipal;
 import org.jboss.resteasy.skeleton.key.SkeletonKeySession;
 import org.jboss.resteasy.skeleton.key.VerificationException;
+import org.jboss.resteasy.skeleton.key.i18n.LogMessages;
+import org.jboss.resteasy.skeleton.key.i18n.Messages;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -17,6 +18,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+
 import java.io.IOException;
 import java.security.Principal;
 
@@ -28,7 +30,6 @@ import java.security.Principal;
 public class JaxrsBearerTokenFilter implements ContainerRequestFilter
 {
    protected ResourceMetadata resourceMetadata;
-   private static Logger log = Logger.getLogger(JaxrsBearerTokenFilter.class);
 
    public JaxrsBearerTokenFilter(ResourceMetadata resourceMetadata)
    {
@@ -121,7 +122,7 @@ public class JaxrsBearerTokenFilter implements ContainerRequestFilter
       }
       catch (VerificationException e)
       {
-         log.error("Failed to verify token", e);
+         LogMessages.LOGGER.error(Messages.MESSAGES.failedToVerifyToken(), e);
          challengeResponse(request, "invalid_token", e.getMessage());
       }
    }

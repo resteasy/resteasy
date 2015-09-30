@@ -1,6 +1,8 @@
 package org.jboss.resteasy.jose.jwe.crypto;
 
 
+import org.jboss.resteasy.jose.i18n.Messages;
+
 import net.jcip.annotations.Immutable;
 
 
@@ -37,13 +39,13 @@ final class AuthenticatedCipherText
 	public AuthenticatedCipherText(final byte[] cipherText, final byte[] authenticationTag) {
 
 		if (cipherText == null)
-			throw new IllegalArgumentException("The cipher text must not be null");
+		   throw new IllegalArgumentException(Messages.MESSAGES.cipherTextMustNotBeNull());
 
 		this.cipherText = cipherText;
 
 
 		if (authenticationTag == null)
-			throw new IllegalArgumentException("The authentication tag must not be null");
+		   throw new IllegalArgumentException(Messages.MESSAGES.authenticationTagMustNotBeNull());
 
 		this.authenticationTag = authenticationTag;
 	}

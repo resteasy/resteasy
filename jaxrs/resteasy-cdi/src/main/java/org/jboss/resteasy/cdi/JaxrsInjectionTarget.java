@@ -8,8 +8,9 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 
+import org.jboss.resteasy.cdi.i18n.LogMessages;
+import org.jboss.resteasy.cdi.i18n.Messages;
 import org.jboss.resteasy.core.PropertyInjectorImpl;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.PropertyInjector;
@@ -26,7 +27,6 @@ import org.jboss.resteasy.util.GetRestful;
  */
 public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
 {
-   private static final Logger log = Logger.getLogger(JaxrsInjectionTarget.class);
    
    private InjectionTarget<T> delegate;
    private Class<T> clazz;
@@ -68,7 +68,7 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
       }
       else
       {
-         log.debug("JaxrsInjectionTarget skipping validation outside of Resteasy context");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.skippingValidationOutsideResteasyContext());
       }
    }
 

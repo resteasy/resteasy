@@ -1,10 +1,12 @@
 package org.jboss.resteasy.plugins.delegates;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.ParameterParser;
 
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.ext.RuntimeDelegate;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,8 +21,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate {
     private final static String OLD_COOKIE_PATTERN = "EEE, dd-MMM-yyyy HH:mm:ss z";
 
     public Object fromString(String newCookie) throws IllegalArgumentException {
-        if (newCookie == null) throw new IllegalArgumentException("NewCookie value is null");
-
+        if (newCookie == null) throw new IllegalArgumentException(Messages.MESSAGES.newCookieValueNull());
         String cookieName = null;
         String cookieValue = null;
         String comment = null;
@@ -83,7 +84,7 @@ public class NewCookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate {
     }
 
     public String toString(Object value) {
-        if (value == null) throw new IllegalArgumentException("param was null");
+       if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.paramNull());
         NewCookie cookie = (NewCookie) value;
         StringBuilder b = new StringBuilder();
 

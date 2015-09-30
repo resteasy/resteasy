@@ -1,11 +1,13 @@
 package org.jboss.resteasy.plugins.server.netty;
 
 import io.netty.channel.ChannelHandlerContext;
+
 import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.AbstractExecutionContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.plugins.server.BaseHttpRequest;
+import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
@@ -20,6 +22,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -219,7 +222,7 @@ public class NettyHttpRequest extends BaseHttpRequest
         public ResteasyAsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException {
             if (wasSuspended)
             {
-                throw new IllegalStateException("Already suspended");
+               throw new IllegalStateException(Messages.MESSAGES.alreadySuspended());
             }
             wasSuspended = true;
             return asyncResponse;

@@ -1,11 +1,13 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -24,7 +26,7 @@ public class AsynchronousResponseInjector implements ValueInjector
    @Override
    public Object inject()
    {
-      throw new IllegalStateException("You cannot inject AsynchronousResponse outside the scope of an HTTP request");
+      throw new IllegalStateException(Messages.MESSAGES.cannotInjectAsynchronousResponse());
    }
 
    @Override

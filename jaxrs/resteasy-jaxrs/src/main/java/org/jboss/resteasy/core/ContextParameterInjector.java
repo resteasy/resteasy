@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.LoggableFailure;
@@ -7,6 +8,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Providers;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -50,7 +52,7 @@ public class ContextParameterInjector implements ValueInjector
          {
             Object delegate = ResteasyProviderFactory.getContextData(type);
             if (delegate == null)
-               throw new LoggableFailure("Unable to find contextual data of type: " + type.getName());
+               throw new LoggableFailure(Messages.MESSAGES.unableToFindContextualData(type.getName()));
             return method.invoke(delegate, objects);
          }
          catch (IllegalAccessException e)
@@ -79,7 +81,7 @@ public class ContextParameterInjector implements ValueInjector
       {
          Object delegate = ResteasyProviderFactory.getContextData(type);
          if (delegate != null) return delegate;
-         throw new RuntimeException("Illegal to inject a non-interface type into a singleton");
+         throw new RuntimeException(Messages.MESSAGES.illegalToInjectNonInterfaceType());
       }
 
       return createProxy();

@@ -1,5 +1,7 @@
 package org.jboss.resteasy.jose.jwe.crypto;
 
+import org.jboss.resteasy.jose.i18n.Messages;
+
 
 
 /**
@@ -64,7 +66,7 @@ public final class JWECryptoParts
 
 		if (cipherText == null) {
 
-			throw new IllegalArgumentException("The cipher text must not be null");
+		   throw new IllegalArgumentException(Messages.MESSAGES.cipherTextMustNotBeNull());
 		}
 
 		this.cipherText = cipherText;

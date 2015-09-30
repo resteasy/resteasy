@@ -3,6 +3,7 @@ package org.jboss.resteasy.core.registry;
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceLocatorInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
@@ -16,6 +17,7 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -109,7 +111,7 @@ public class SegmentNode
       }
       if (matches.size() == 0)
       {
-         throw new NotFoundException("Could not find resource for full path: " + request.getUri().getRequestUri());
+         throw new NotFoundException(Messages.MESSAGES.couldNotFindResourceForFullPath(request.getUri().getRequestUri()));
       }
       Match match = match(matches, request.getHttpMethod(), request);
       match.expression.populatePathParams(request, match.matcher, path);
@@ -367,19 +369,19 @@ public class SegmentNode
             if (httpMethod.equals("OPTIONS"))
             {
                Response res = Response.ok(allowHeaderValue,  MediaType.TEXT_PLAIN_TYPE).header(HttpHeaderNames.ALLOW, allowHeaderValue).build();
-               throw new DefaultOptionsMethodException("No resource method found for options, return OK with Allow header", res);
+               throw new DefaultOptionsMethodException(Messages.MESSAGES.noResourceMethodFoundForOptions(), res);
             }
             else
             {
                Response res = Response.status(HttpResponseCodes.SC_METHOD_NOT_ALLOWED).header(HttpHeaderNames.ALLOW, allowHeaderValue).build();
-               throw new NotAllowedException("No resource method found for " + httpMethod + ", return 405 with Allow header", res);
+               throw new NotAllowedException(Messages.MESSAGES.noResourceMethodFoundForHttpMethod(httpMethod), res);
             }
          }
          else if (!consumeMatch)
          {
-            throw new NotSupportedException("Cannot consume content type");
+            throw new NotSupportedException(Messages.MESSAGES.cannotConsumeContentType());
          }
-         throw new NotAcceptableException("No match for accept header");
+         throw new NotAcceptableException(Messages.MESSAGES.noMatchForAcceptHeader());
       }
       //if (list.size() == 1) return list.get(0); //don't do this optimization as we need to set chosen accept
       List<SortEntry> sortList = new ArrayList<SortEntry>();

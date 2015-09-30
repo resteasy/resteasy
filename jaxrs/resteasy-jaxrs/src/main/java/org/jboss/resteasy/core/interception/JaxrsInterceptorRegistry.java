@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core.interception;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.AcceptedByMethod;
 
@@ -142,21 +143,21 @@ public class JaxrsInterceptorRegistry<T>
                // we matched all of them
                Object intercept = getInterceptor();
                if (intercept == null)
-                  throw new NullPointerException("interceptor null from class: " + this.getClass().getName());
+                  throw new NullPointerException(Messages.MESSAGES.interceptorNullFromClass(this.getClass().getName()));
                return new Match(intercept, order);
             }
             else
             {
                Object intercept = getInterceptor();
                if (intercept == null)
-                  throw new NullPointerException("interceptor null from class: " + this.getClass().getName());
+                  throw new NullPointerException(Messages.MESSAGES.interceptorNullFromClass(this.getClass().getName()));
                return new Match(intercept, order);
             }
          } else if (nameBound.size() == 0)
          {
             Object intercept = getInterceptor();
             if (intercept == null)
-               throw new NullPointerException("interceptor null from class: " + this.getClass().getName());
+               throw new NullPointerException(Messages.MESSAGES.interceptorNullFromClass(this.getClass().getName()));
             return new Match(intercept, order);
          } else
          {

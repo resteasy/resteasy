@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.spring;
 
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.plugins.spring.i18n.Messages;
 import org.jboss.resteasy.spi.*;
 import org.jboss.resteasy.util.GetRestful;
 import org.springframework.aop.support.AopUtils;
@@ -22,6 +23,7 @@ import org.springframework.util.ClassUtils;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -282,8 +284,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
       {
          if (!isSingleton(beanDef))
          {
-            throw new RuntimeException("Provider " + name
-                    + " is not a singleton.  That's not allowed");
+            throw new RuntimeException(Messages.MESSAGES.providerIsNotSingleton(name));
          }
 
          providerNames.add(name);
@@ -330,7 +331,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
       {
           return ((BeanReference)value).getBeanName();
       }
-      throw new IllegalStateException("ResteasyRegistration references must be String values or a reference to a bean name");
+      throw new IllegalStateException(Messages.MESSAGES.resteasyRegistrationReferences());
    }
 
    /**
@@ -453,7 +454,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
           }
       }
 
-      throw new IllegalStateException("could not find the type for bean named " + name);
+      throw new IllegalStateException(Messages.MESSAGES.couldNotFindTypeForBean(name));
    }
 
    private static boolean isSingleton(BeanDefinition beanDef)
@@ -477,7 +478,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
       }
       catch (final ClassNotFoundException e)
       {
-         throw new IllegalStateException("Could not convert '" + beanClassName + "' to a class.", e);
+         throw new IllegalStateException(Messages.MESSAGES.couldNotConvertBeanToClass(beanClassName), e);
       }
    }
 

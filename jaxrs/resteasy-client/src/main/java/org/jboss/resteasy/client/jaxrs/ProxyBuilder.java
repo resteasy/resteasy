@@ -1,5 +1,6 @@
 package org.jboss.resteasy.client.jaxrs;
 
+import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvoker;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientProxy;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.MethodInvoker;
@@ -9,6 +10,7 @@ import org.jboss.resteasy.util.IsHttpMethod;
 import javax.ws.rs.Path;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
@@ -73,7 +75,7 @@ public class ProxyBuilder<T>
       Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
       if (httpMethods == null || httpMethods.size() != 1)
       {
-         throw new RuntimeException("You must use at least one, but no more than one http method annotation on: " + method.toString());
+         throw new RuntimeException(Messages.MESSAGES.mustUseExactlyOneHttpMethod(method.toString()));
       }
       ClientInvoker invoker = new ClientInvoker(base, clazz, method, config);
       invoker.setHttpMethod(httpMethods.iterator().next());

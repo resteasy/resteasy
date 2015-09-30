@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core.interception;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.NotSupportedException;
@@ -9,6 +10,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.ReaderInterceptorContext;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -106,7 +108,7 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
    @Override
    public void setAnnotations(Annotation[] annotations)
    {
-      if (annotations == null) throw new NullPointerException("annotations param was null");
+      if (annotations == null) throw new NullPointerException(Messages.MESSAGES.annotationsParamNull());
       this.annotations = annotations;
    }
 

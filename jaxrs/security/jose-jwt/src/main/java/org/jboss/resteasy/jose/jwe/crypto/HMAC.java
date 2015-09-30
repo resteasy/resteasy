@@ -5,6 +5,9 @@ package org.jboss.resteasy.jose.jwe.crypto;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+
+import org.jboss.resteasy.jose.i18n.Messages;
+
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -66,11 +69,11 @@ class HMAC
 
 		} catch (NoSuchAlgorithmException e) {
 
-			throw new RuntimeException("Unsupported HMAC algorithm: " + e.getMessage(), e);
+		   throw new RuntimeException(Messages.MESSAGES.unsupportedHMACalgorithm(e.getLocalizedMessage()), e);
 
 		} catch (InvalidKeyException e) {
 
-			throw new RuntimeException("Invalid HMAC key: " + e.getMessage(), e);
+		   throw new RuntimeException(Messages.MESSAGES.invalidHMACkey(e.getLocalizedMessage()), e);
 		}
 
 		mac.update(message);
