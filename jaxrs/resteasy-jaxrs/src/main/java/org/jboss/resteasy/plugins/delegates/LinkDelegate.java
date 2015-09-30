@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.delegates;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.LinkBuilderImpl;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.LinkHeader;
@@ -7,6 +8,7 @@ import org.jboss.resteasy.spi.LinkHeader;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.RuntimeDelegate;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -48,7 +50,7 @@ public class LinkDelegate implements RuntimeDelegate.HeaderDelegate<Link>
             if (c == '<')
             {
                if (href != null)
-                  throw new IllegalArgumentException("Unable to parse Link header. Too many links in declaration: " + value);
+                  throw new IllegalArgumentException(Messages.MESSAGES.unableToParseLinkHeaderTooManyLinks(value));
                href = parseLink();
             }
             else if (c == ';' || c == ' ')
@@ -97,7 +99,7 @@ public class LinkDelegate implements RuntimeDelegate.HeaderDelegate<Link>
       public String parseLink()
       {
          int end = value.indexOf('>', curr);
-         if (end == -1) throw new IllegalArgumentException("Unable to parse Link header.  No end to link: " + value);
+         if (end == -1) throw new IllegalArgumentException(Messages.MESSAGES.unableToParseLinkHeaderNoEndToLink(value));
          String href = value.substring(curr + 1, end);
          curr = end + 1;
          return href;
@@ -107,7 +109,7 @@ public class LinkDelegate implements RuntimeDelegate.HeaderDelegate<Link>
       {
          int end = value.indexOf('=', curr);
          if (end == -1 || end + 1 >= value.length())
-            throw new IllegalArgumentException("Unable to parse Link header.  No end to parameter: " + value);
+            throw new IllegalArgumentException(Messages.MESSAGES.unableToParseLinkHeaderNoEndToParameter(value));
          String name = value.substring(curr, end);
          name = name.trim();
          curr = end + 1;
@@ -122,11 +124,11 @@ public class LinkDelegate implements RuntimeDelegate.HeaderDelegate<Link>
             if (value.charAt(curr) == '"')
             {
                if (curr + 1 >= value.length())
-                  throw new IllegalArgumentException("Unable to parse Link header.  No end to parameter: " + value);
+                  throw new IllegalArgumentException(Messages.MESSAGES.unableToParseLinkHeaderNoEndToParameter(value));
                curr++;
                end = value.indexOf('"', curr);
                if (end == -1)
-                  throw new IllegalArgumentException("Unable to parse Link header.  No end to parameter: " + value);
+                  throw new IllegalArgumentException(Messages.MESSAGES.unableToParseLinkHeaderNoEndToParameter(value));
                val = value.substring(curr, end);
                curr = end + 1;
             }
@@ -153,7 +155,7 @@ public class LinkDelegate implements RuntimeDelegate.HeaderDelegate<Link>
    @Override
    public Link fromString(String value) throws IllegalArgumentException
    {
-      if (value == null) throw new IllegalArgumentException("param was null");
+      if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.paramNull());
       Parser parser = new Parser(value);
       parser.parse();
       return parser.getLink();
@@ -162,7 +164,7 @@ public class LinkDelegate implements RuntimeDelegate.HeaderDelegate<Link>
    @Override
    public String toString(Link value) throws IllegalArgumentException
    {
-      if (value == null) throw new IllegalArgumentException("param was null");
+      if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.paramNull());
       StringBuffer buf = new StringBuffer("<");
       buf.append(value.getUri().toString()).append(">");
 

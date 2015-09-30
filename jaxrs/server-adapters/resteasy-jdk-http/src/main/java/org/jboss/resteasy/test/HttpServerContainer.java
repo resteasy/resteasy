@@ -2,6 +2,7 @@ package org.jboss.resteasy.test;
 
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.sun.http.SunHttpJaxrsServer;
+import org.jboss.resteasy.plugins.server.sun.http.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
 import java.util.Hashtable;
@@ -38,7 +39,7 @@ public class HttpServerContainer
    
    public static void start(ResteasyDeployment deployment) throws Exception
    {
-      System.out.println("[Embedded Container Start]");
+      System.out.println(Messages.MESSAGES.embeddedContainerStart());
       sun = new SunHttpJaxrsServer();
       sun.setDeployment(deployment);
       sun.setPort(TestPortProvider.getPort());
@@ -72,7 +73,7 @@ public class HttpServerContainer
 
    public static void stop() throws Exception
    {
-      System.out.println("[Embedded Container Stop]");
+      System.out.println(Messages.MESSAGES.embeddedContainerStop());
       if (sun != null)
       {
          try

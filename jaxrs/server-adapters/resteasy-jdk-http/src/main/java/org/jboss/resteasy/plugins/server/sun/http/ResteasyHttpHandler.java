@@ -3,10 +3,12 @@ package org.jboss.resteasy.plugins.server.sun.http;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.plugins.server.sun.http.i18n.LogMessages;
+import org.jboss.resteasy.plugins.server.sun.http.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -20,7 +22,6 @@ public class ResteasyHttpHandler implements HttpHandler
 {
    protected Dispatcher dispatcher;
    protected ResteasyProviderFactory providerFactory;
-   private final static Logger logger = Logger.getLogger(ResteasyHttpHandler.class);
 
    public void setDispatcher(Dispatcher dispatcher)
    {
@@ -43,7 +44,7 @@ public class ResteasyHttpHandler implements HttpHandler
       }
       catch (Exception e)
       {
-         logger.trace("Error parsing request", e);
+         LogMessages.LOGGER.trace(Messages.MESSAGES.errorParsingRequest(), e);
          httpExchange.sendResponseHeaders(400, -1);
          return;
       }
@@ -72,7 +73,7 @@ public class ResteasyHttpHandler implements HttpHandler
          }
          catch (Exception ex)
          {
-            logger.error("WTF!", ex);
+            LogMessages.LOGGER.error(Messages.MESSAGES.wtf(), ex);
             if (!response.isCommitted())
             {
                httpExchange.sendResponseHeaders(500, -1);

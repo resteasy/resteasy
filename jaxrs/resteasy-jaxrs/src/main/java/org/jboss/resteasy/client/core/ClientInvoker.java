@@ -11,6 +11,7 @@ import org.jboss.resteasy.client.core.extractors.EntityExtractorFactory;
 import org.jboss.resteasy.client.core.marshallers.ClientMarshallerFactory;
 import org.jboss.resteasy.client.core.marshallers.Marshaller;
 import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.MediaTypeHelper;
@@ -19,6 +20,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Providers;
+
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.HashMap;
@@ -100,7 +102,8 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl implements Me
 
       try
       {
-         if (uri == null) throw new RuntimeException("You have not set a base URI for the client proxy");
+         if (uri == null) throw new RuntimeException(Messages.MESSAGES.baseURINotSetForClientProxy());
+         
 
          ClientRequest request = createRequest(args);
 

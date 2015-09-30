@@ -4,6 +4,7 @@ import org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistryListener;
 import org.jboss.resteasy.core.interception.ServerReaderInterceptorContext;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -80,7 +81,7 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
       {
          if (genericType == null || !(genericType instanceof ParameterizedType))
          {
-            throw new RuntimeException("MarshalledEntity must have type information.");
+            throw new RuntimeException(Messages.MESSAGES.marshalledEntityMustHaveTypeInfo());
          }
          isMarshalledEntity = true;
          ParameterizedType param = (ParameterizedType) genericType;
@@ -187,6 +188,6 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
 
    public Object inject()
    {
-      throw new RuntimeException("Illegal to inject a message body into a singleton into " + this.target);
+      throw new RuntimeException(Messages.MESSAGES.illegalToInjectMessageBody(this.target));
    }
 }

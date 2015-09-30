@@ -3,6 +3,9 @@ package org.jboss.resteasy.util;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NoContentException;
+
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+
 import java.io.InputStream;
 
 /**
@@ -33,6 +36,6 @@ public class NoContent
 
    public static void contentLengthCheck(MultivaluedMap httpHeaders) throws NoContentException
    {
-      if (isContentLengthZero(httpHeaders)) throw new NoContentException("No content.  Content-Length is 0");
+      if (isContentLengthZero(httpHeaders)) throw new NoContentException(Messages.MESSAGES.noContentContentLength0());
    }
 }

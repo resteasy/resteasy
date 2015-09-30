@@ -1,6 +1,8 @@
 package org.jboss.resteasy.plugins.providers.jaxb.fastinfoset;
 
 import com.sun.xml.fastinfoset.stax.StAXDocumentParser;
+
+import org.jboss.resteasy.plugins.providers.fastinfoset.i18n.Messages;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
@@ -18,6 +20,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -106,7 +109,7 @@ public class FastinfoSetUnmarshaller implements Unmarshaller
    public Object unmarshal(Source source)
            throws JAXBException
    {
-      if (!(source instanceof StreamSource)) throw new UnsupportedOperationException("Expecting a StreamSource");
+      if (!(source instanceof StreamSource)) throw new UnsupportedOperationException(Messages.MESSAGES.expectingStreamSource());
       StreamSource stream = (StreamSource) source;
       XMLStreamReader reader = getFastinfoSetXMLStreamReader(stream.getInputStream());
       return unmarshal(reader);
@@ -115,7 +118,7 @@ public class FastinfoSetUnmarshaller implements Unmarshaller
    public <T> JAXBElement<T> unmarshal(Source source, Class<T> tClass)
            throws JAXBException
    {
-      if (!(source instanceof StreamSource)) throw new UnsupportedOperationException("Expecting a StreamSource");
+      if (!(source instanceof StreamSource)) throw new UnsupportedOperationException(Messages.MESSAGES.expectingStreamSource());
       StreamSource stream = (StreamSource) source;
       XMLStreamReader reader = getFastinfoSetXMLStreamReader(stream.getInputStream());
       return unmarshal(reader, tClass);

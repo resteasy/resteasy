@@ -1,9 +1,11 @@
 package org.jboss.resteasy.util;
 
 import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.LoggableFailure;
 
 import javax.ws.rs.core.MediaType;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -146,7 +148,7 @@ public class WeightedMediaType extends MediaType implements Comparable<WeightedM
       }
       catch (NumberFormatException e)
       {
-         throw new LoggableFailure("MediaType q parameter must be a float: " + type, HttpResponseCodes.SC_BAD_REQUEST);
+         throw new LoggableFailure(Messages.MESSAGES.mediaTypeQMustBeFloat(type), HttpResponseCodes.SC_BAD_REQUEST);
       }
       return 1.0f;
    }

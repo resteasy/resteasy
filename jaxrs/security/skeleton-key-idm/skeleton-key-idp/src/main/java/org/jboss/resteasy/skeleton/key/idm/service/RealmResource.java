@@ -1,7 +1,8 @@
 package org.jboss.resteasy.skeleton.key.idm.service;
 
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.skeleton.key.idm.IdentityManager;
+import org.jboss.resteasy.skeleton.key.idm.i18n.LogMessages;
+import org.jboss.resteasy.skeleton.key.idm.i18n.Messages;
 import org.jboss.resteasy.skeleton.key.idm.model.data.Realm;
 import org.jboss.resteasy.skeleton.key.representations.idm.PublishedRealmRepresentation;
 
@@ -17,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +29,6 @@ import java.util.List;
 @Path("/")
 public class RealmResource
 {
-   protected Logger logger = Logger.getLogger(RealmResource.class);
    protected IdentityManager identityManager;
    @Context
    protected UriInfo uriInfo;
@@ -45,7 +46,7 @@ public class RealmResource
       Realm realm = identityManager.getRealm(id);
       if (realm == null)
       {
-         logger.debug("realm not found");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.realmNotFound());
          throw new NotFoundException();
       }
       return realmRep(realm, uriInfo);
@@ -59,7 +60,7 @@ public class RealmResource
       Realm realm = identityManager.getRealm(id);
       if (realm == null)
       {
-         logger.debug("realm not found");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.realmNotFound());
          throw new NotFoundException();
       }
       return realmHtml(realm);
@@ -82,11 +83,11 @@ public class RealmResource
       grant.path(TokenManagement.class).path(TokenManagement.class, "accessTokenGrant");
       String grantUrl = grant.build(realm.getId()).toString();
 
-      html.append("<html><body><h1>Realm: ").append(realm.getName()).append("</h1>");
-      html.append("<p>auth: ").append(authUri).append("</p>");
-      html.append("<p>code: ").append(codeUri).append("</p>");
-      html.append("<p>grant: ").append(grantUrl).append("</p>");
-      html.append("<p>public key: ").append(realm.getPublicKeyPem()).append("</p>");
+      html.append("<html><body><h1> ").append(Messages.MESSAGES.realm()).append(": ").append(realm.getName()).append("</h1>");
+      html.append("<p>").append(Messages.MESSAGES.auth()).append(": ").append(authUri).append("</p>");
+      html.append("<p>").append(Messages.MESSAGES.code()).append(": ").append(codeUri).append("</p>");
+      html.append("<p>").append(Messages.MESSAGES.grant()).append(": ").append(grantUrl).append("</p>");
+      html.append("<p>").append(Messages.MESSAGES.publicKey()).append(": ").append(realm.getPublicKeyPem()).append("</p>");
       html.append("</body></html>");
 
       return html.toString();
@@ -116,13 +117,13 @@ public class RealmResource
    @Produces("text/html")
    public String getRealmsByNameHtml(@QueryParam("name") String name)
    {
-      if (name == null) return "<html><body><h1>No realms with that name</h1></body></html>";
+      if (name == null) return "<html><body><h1>"+Messages.MESSAGES.noRealmsWithThatName()+"</h1></body></html>";
       List<Realm> realms = identityManager.getRealmsByName(name);
-      if (realms.size() == 0) return "<html><body><h1>No realms with that name</h1></body></html>";
+      if (realms.size() == 0) return "<html><body><h1>"+Messages.MESSAGES.noRealmsWithThatName()+"</h1></body></html>";
       if (realms.size() == 1) return realmHtml(realms.get(0));
 
       StringBuffer html = new StringBuffer();
-      html.append("<html><body><h1>Realms</h1>");
+      html.append("<html><body><h1>"+Messages.MESSAGES.realms()+"</h1>");
       for (Realm realm : realms)
       {
          html.append("<p><a href=\"").append(uriInfo.getBaseUriBuilder().path("realms").path(realm.getId() + ".html"))

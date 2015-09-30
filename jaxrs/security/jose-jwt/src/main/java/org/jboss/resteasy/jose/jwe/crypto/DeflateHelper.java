@@ -1,6 +1,7 @@
 package org.jboss.resteasy.jose.jwe.crypto;
 
 
+import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jwe.CompressionAlgorithm;
 
 /**
@@ -41,12 +42,12 @@ class DeflateHelper
 
 			} catch (Exception e) {
 
-				throw new RuntimeException("Couldn't compress plain text: " + e.getMessage(), e);
+	         throw new RuntimeException(Messages.MESSAGES.couldntCompressPlainText(e.getLocalizedMessage()), e);
 			}
 
 		} else {
 
-			throw new RuntimeException("Unsupported compression algorithm: " + compressionAlg);
+		   throw new RuntimeException(Messages.MESSAGES.unsupportedCompressionAlgorithm(compressionAlg));
 		}
 	}
 
@@ -78,12 +79,12 @@ class DeflateHelper
 
 			} catch (Exception e) {
 
-				throw new RuntimeException("Couldn't decompress plain text: " + e.getMessage(), e);
+			   throw new RuntimeException(Messages.MESSAGES.couldntDecompressPlainText(e.getLocalizedMessage()), e);
 			}
 
 		} else {
 
-			throw new RuntimeException("Unsupported compression algorithm: " + compressionAlg);
+		   throw new RuntimeException(Messages.MESSAGES.unsupportedCompressionAlgorithm(compressionAlg));
 		}
 	}
 }

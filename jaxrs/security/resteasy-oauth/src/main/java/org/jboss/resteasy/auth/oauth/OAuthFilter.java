@@ -3,7 +3,9 @@ package org.jboss.resteasy.auth.oauth;
 import net.oauth.OAuth;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
-import org.jboss.resteasy.logging.Logger;
+
+import org.jboss.resteasy.auth.oauth.i18n.LogMessages;
+import org.jboss.resteasy.auth.oauth.i18n.Messages;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -14,6 +16,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
@@ -26,13 +29,11 @@ public class OAuthFilter implements Filter {
 
 	public static final String OAUTH_AUTH_METHOD = "OAuth";
 
-	private final static Logger logger = Logger.getLogger(OAuthFilter.class);
-
 	private OAuthProvider provider;
 	private OAuthValidator validator;
 
 	public void init(FilterConfig config) throws ServletException {
-		logger.info("Loading OAuth Filter");
+	   LogMessages.LOGGER.info(Messages.MESSAGES.loadingOAuthFilter());
 		ServletContext context = config.getServletContext();
 		provider = OAuthUtils.getOAuthProvider(context);
 		validator = OAuthUtils.getValidator(context, provider);
@@ -49,7 +50,7 @@ public class OAuthFilter implements Filter {
 	protected void _doFilter(HttpServletRequest request, HttpServletResponse response,
 			FilterChain filterChain) throws IOException, ServletException {
 	    
-	    logger.debug("Filtering " + request.getMethod() + " " + request.getRequestURL().toString());
+	   LogMessages.LOGGER.debug(Messages.MESSAGES.filteringMethod(request.getMethod(), request.getRequestURL().toString()));
 
 		OAuthMessage message = OAuthUtils.readMessage(request);
         try{
@@ -78,15 +79,15 @@ public class OAuthFilter implements Filter {
             request = createSecurityContext(request, consumer, accessToken);
             
             // let the request through with the new credentials
-            logger.debug("doFilter");
+            LogMessages.LOGGER.debug(Messages.MESSAGES.doFilter());
             filterChain.doFilter(request, response);
             
         } catch (OAuthException x) {
-            OAuthUtils.makeErrorResponse(response, x.getMessage(), x.getHttpCode(), provider);
+            OAuthUtils.makeErrorResponse(response, x.getLocalizedMessage(), x.getHttpCode(), provider);
         } catch (OAuthProblemException x) {
             OAuthUtils.makeErrorResponse(response, x.getProblem(), OAuthUtils.getHttpCode(x), provider);
         } catch (Exception x) {
-            OAuthUtils.makeErrorResponse(response, x.getMessage(), HttpURLConnection.HTTP_INTERNAL_ERROR, provider);
+            OAuthUtils.makeErrorResponse(response, x.getLocalizedMessage(), HttpURLConnection.HTTP_INTERNAL_ERROR, provider);
         }
 		
 	}

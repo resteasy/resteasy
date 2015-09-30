@@ -1,9 +1,11 @@
 package org.jboss.resteasy.plugins.delegates;
 
 import org.jboss.resteasy.core.ExtendedCacheControl;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.ext.RuntimeDelegate;
+
 import java.util.List;
 
 /**
@@ -14,7 +16,7 @@ public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<Cach
 {
    public CacheControl fromString(String value) throws IllegalArgumentException
    {
-      if (value == null) throw new IllegalArgumentException("Cache-Control value is null");
+      if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.cacheControlValueNull());
       ExtendedCacheControl result = new ExtendedCacheControl();
       result.setNoTransform(false);
 
@@ -57,13 +59,13 @@ public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<Cach
          else if ("max-age".equals(lowercase))
          {
             if (val == null)
-               throw new IllegalArgumentException("CacheControl max-age header does not have a value: " + value);
+               throw new IllegalArgumentException(Messages.MESSAGES.cacheControlMaxAgeHeader(value));
             result.setMaxAge(Integer.valueOf(val));
          }
          else if ("s-maxage".equals(lowercase))
          {
             if (val == null)
-               throw new IllegalArgumentException("CacheControl s-maxage header does not have a value: " + value);
+               throw new IllegalArgumentException(Messages.MESSAGES.cacheControlSMaxAgeHeader(value));
             result.setSMaxAge(Integer.valueOf(val));
          }
          else if ("no-transform".equals(lowercase))
@@ -100,7 +102,7 @@ public class CacheControlDelegate implements RuntimeDelegate.HeaderDelegate<Cach
 
    public String toString(CacheControl value)
    {
-      if (value == null) throw new IllegalArgumentException("param was null");
+      if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.paramNull());
       StringBuffer buffer = new StringBuffer();
       if (value.isNoCache())
       {

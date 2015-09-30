@@ -4,6 +4,9 @@ package org.jboss.resteasy.jose.jwe.crypto;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+
+import org.jboss.resteasy.jose.i18n.Messages;
+
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
@@ -43,7 +46,7 @@ class RSA1_5
 			// java.security.NoSuchAlgorithmException
 			// java.security.InvalidKeyException
 			// javax.crypto.IllegalBlockSizeException
-			throw new RuntimeException("Couldn't encrypt Content Encryption Key (CEK): " + e.getMessage(), e);
+		   throw new RuntimeException(Messages.MESSAGES.couldntEncryptCEK(e.getLocalizedMessage()), e);
 		}
 	}
 
@@ -71,8 +74,7 @@ class RSA1_5
 
 			if (8 * secretKeyBytes.length != keyLength) {
 
-				throw new RuntimeException("CEK key length mismatch: " + 
-					                secretKeyBytes.length + " != " + keyLength);
+            throw new RuntimeException(Messages.MESSAGES.cekKeyLengthMismatch(secretKeyBytes.length, keyLength));
 			}
 
 			return new SecretKeySpec(secretKeyBytes, "AES");
@@ -82,7 +84,7 @@ class RSA1_5
 			// java.security.NoSuchAlgorithmException
 			// java.security.InvalidKeyException
 			// javax.crypto.IllegalBlockSizeException
-			throw new RuntimeException("Couldn't decrypt Content Encryption Key (CEK): " + e.getMessage(), e);
+		   throw new RuntimeException(Messages.MESSAGES.couldntDecryptCEK(e.getLocalizedMessage()), e);
 		}
 	}
 

@@ -3,6 +3,7 @@ package org.jboss.resteasy.spi.metadata;
 import org.jboss.resteasy.annotations.Body;
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.annotations.Suspend;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.util.IsHttpMethod;
 import org.jboss.resteasy.util.MethodHashing;
@@ -26,6 +27,7 @@ import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
@@ -680,7 +682,7 @@ public class ResourceBuilder
       Constructor constructor = PickConstructor.pickPerRequestConstructor(annotatedResourceClass);
       if (constructor == null)
       {
-         throw new RuntimeException("Could not find constructor for class: " + annotatedResourceClass.getName());
+         throw new RuntimeException(Messages.MESSAGES.couldNotFindConstructor(annotatedResourceClass.getName()));
       }
       ResourceConstructorBuilder builder = rootResource(annotatedResourceClass).constructor(constructor);
       if (constructor.getParameterTypes() != null)
@@ -832,7 +834,7 @@ public class ResourceBuilder
             if (m != null)
             {
                if(method != null && !m.equals(method))
-                  throw new RuntimeException("Ambiguous inherited JAX-RS annotations applied to method: " + implementation);
+                  throw new RuntimeException(Messages.MESSAGES.ambiguousInheritedAnnotations(implementation));
                method = m;
             }
          }

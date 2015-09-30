@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core.request;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.BadRequestException;
 
 
@@ -16,8 +17,7 @@ public final class QualityValue extends Number implements Comparable<QualityValu
    public static final QualityValue DEFAULT = HIGHEST;
 
    private static final long serialVersionUID = 1L;
-   private static final String MALFORMED_VALUE_MESSAGE = "Malformed quality value.";
-
+   private static final String MALFORMED_VALUE_MESSAGE = Messages.MESSAGES.malformedQualityValue();
    private final int WEIGHT;
 
 

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InternalServerErrorException;
@@ -10,6 +11,7 @@ import org.jboss.resteasy.util.Types;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.PathSegment;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
@@ -86,7 +88,7 @@ public class PathParamInjector implements ValueInjector
          }
          if (list == null)
          {
-            throw new InternalServerErrorException("Unknown @PathParam: " + paramName + " for path: " + uriInfo.getPath());
+            throw new InternalServerErrorException(Messages.MESSAGES.unknownPathParam(paramName, uriInfo.getPath()));
          }
          PathSegment[] segments = list.get(list.size() - 1);
          if (pathSegmentArray)
@@ -112,7 +114,7 @@ public class PathParamInjector implements ValueInjector
          List<String> list = request.getUri().getPathParameters(!encode).get(paramName);
          if (list == null)
          {
-            if (extractor.defaultValue == null) throw new InternalServerErrorException("Unknown @PathParam: " + paramName + " for path: " + request.getUri().getPath());
+            if (extractor.defaultValue == null) throw new InternalServerErrorException(Messages.MESSAGES.unknownPathParam(paramName, request.getUri().getPath()));
             if (extractor.isCollectionOrArray())
             {
                return extractor.extractValues(null);
@@ -135,7 +137,7 @@ public class PathParamInjector implements ValueInjector
 
    public Object inject()
    {
-      throw new RuntimeException("It is illegal to inject a @PathParam into a singleton");
+      throw new RuntimeException(Messages.MESSAGES.illegalToInjectPathParam());
    }
 
 }

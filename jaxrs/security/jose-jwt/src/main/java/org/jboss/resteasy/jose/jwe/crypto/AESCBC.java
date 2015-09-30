@@ -5,6 +5,9 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import org.jboss.resteasy.jose.i18n.Messages;
+
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -267,7 +270,7 @@ class AESCBC
 
 		if (! macCheckPassed) {
 
-			throw new RuntimeException("MAC check failed");
+		   throw new RuntimeException(Messages.MESSAGES.macCheckFailed());
 		}
 
 		return plainText;

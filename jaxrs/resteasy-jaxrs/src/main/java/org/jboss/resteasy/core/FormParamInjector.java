@@ -1,11 +1,13 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.Encode;
 
 import javax.ws.rs.FormParam;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
@@ -48,6 +50,6 @@ public class FormParamInjector extends StringParameterInjector implements ValueI
 
    public Object inject()
    {
-      throw new RuntimeException("It is illegal to inject a @FormParam into a singleton");
+      throw new RuntimeException(Messages.MESSAGES.illegalToInjectFormParam());
    }
 }

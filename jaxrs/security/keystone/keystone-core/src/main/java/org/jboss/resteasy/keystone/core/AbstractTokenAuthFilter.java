@@ -1,8 +1,9 @@
 package org.jboss.resteasy.keystone.core;
 
+import org.jboss.resteasy.keystone.core.i18n.LogMessages;
+import org.jboss.resteasy.keystone.core.i18n.Messages;
 import org.jboss.resteasy.keystone.model.Access;
 import org.jboss.resteasy.keystone.model.Role;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
 
 import javax.ws.rs.WebApplicationException;
@@ -12,6 +13,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Providers;
+
 import java.io.IOException;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
@@ -26,7 +28,6 @@ public abstract class AbstractTokenAuthFilter implements ContainerRequestFilter
 {
    protected X509Certificate certificate;
 
-   protected Logger logger = Logger.getLogger(AbstractTokenAuthFilter.class);
    protected AbstractTokenAuthFilter(X509Certificate certificate)
    {
       this.certificate = certificate;
@@ -59,7 +60,7 @@ public abstract class AbstractTokenAuthFilter implements ContainerRequestFilter
       }
       catch (Exception e)
       {
-         logger.error("Failed to unmarshall", e);
+         LogMessages.LOGGER.error(Messages.MESSAGES.failedToUnmarshall(), e);
          throw new WebApplicationException(403);
       }
    }

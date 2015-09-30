@@ -3,12 +3,12 @@ package org.jboss.resteasy.keystone.as7;
 import org.apache.catalina.connector.Request;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.keystone.as7.i18n.Messages;
 import org.jboss.resteasy.keystone.client.SkeletonKeyAdminClient;
 import org.jboss.resteasy.keystone.client.SkeletonKeyClientBuilder;
 import org.jboss.resteasy.keystone.core.UserPrincipal;
 import org.jboss.resteasy.keystone.model.Access;
 import org.jboss.resteasy.keystone.model.Role;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.security.SimpleGroup;
@@ -19,6 +19,7 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.WebTarget;
+
 import java.security.Principal;
 import java.security.acl.Group;
 import java.util.Map;
@@ -33,8 +34,6 @@ public class SkeletonKeyStoneLoginModule extends JBossWebAuthLoginModule
 {
    static ResteasyClient client;
    static volatile SkeletonKeyAdminClient admin;
-
-   private static final Logger log = Logger.getLogger(SkeletonKeyStoneLoginModule.class);
 
    static
    {
@@ -96,11 +95,11 @@ public class SkeletonKeyStoneLoginModule extends JBossWebAuthLoginModule
       access = admin.tokens().get(tokenHeader);
       if (access.getToken().expired())
       {
-         throw new LoginException("Token expired");
+         throw new LoginException(Messages.MESSAGES.tokenExpired());
       }
       if (!projectId.equals(access.getToken().getProject().getId()))
       {
-         throw new LoginException("Token project id doesn't match");
+         throw new LoginException(Messages.MESSAGES.tokenProjectIdDoesntMatch());
       }
 
       this.loginOk = true;

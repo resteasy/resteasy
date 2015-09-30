@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core.interception;
 
 import org.jboss.resteasy.annotations.interception.Precedence;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.AcceptedByMethod;
@@ -49,7 +50,7 @@ public class InterceptorRegistry<T>
          {
             this.precedence = precedence.value();
             Integer o = precedenceOrder.get(this.precedence);
-            if (o == null) throw new RuntimeException("Unknown interceptor precedence: " + this.precedence);
+            if (o == null) throw new RuntimeException(Messages.MESSAGES.unknownInterceptorPrecedence(this.precedence));
             this.order = o;
          }
          else
@@ -61,7 +62,7 @@ public class InterceptorRegistry<T>
                {
                   this.precedence = precedence.value();
                   Integer o = precedenceOrder.get(this.precedence);
-                  if (o == null) throw new RuntimeException("Unknown interceptor precedence: " + this.precedence);
+                  if (o == null) throw new RuntimeException(Messages.MESSAGES.unknownInterceptorPrecedence(this.precedence));
                   this.order = o;
                   break;
                }

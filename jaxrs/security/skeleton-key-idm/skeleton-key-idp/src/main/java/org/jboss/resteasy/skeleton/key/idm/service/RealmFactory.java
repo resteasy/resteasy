@@ -1,6 +1,7 @@
 package org.jboss.resteasy.skeleton.key.idm.service;
 
 import org.jboss.resteasy.skeleton.key.idm.IdentityManager;
+import org.jboss.resteasy.skeleton.key.idm.i18n.Messages;
 import org.jboss.resteasy.skeleton.key.idm.model.data.Realm;
 import org.jboss.resteasy.skeleton.key.idm.model.data.RequiredCredential;
 import org.jboss.resteasy.skeleton.key.idm.model.data.Resource;
@@ -26,6 +27,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -221,20 +223,20 @@ public class RealmFactory
       if (rep.getUsers() == null)
       {
          throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                 .entity("No realm admin users defined for realm").type("text/plain").build());
+               .entity(Messages.MESSAGES.noRealmAdminUsersDefined()).type("text/plain").build());
       }
 
       if (rep.getRequiredCredentials() == null)
       {
          throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                 .entity("Realm credential requirements not defined").type("text/plain").build());
+               .entity(Messages.MESSAGES.realmCredentialRequirementsNotDefined()).type("text/plain").build());
 
       }
 
       if (rep.getRoleMappings() == null)
       {
          throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                 .entity("No realm admin users defined for realm").type("text/plain").build());
+               .entity(Messages.MESSAGES.noRealmAdminUsersDefined()).type("text/plain").build());
       }
 
       HashMap<String, UserRepresentation> userReps = new HashMap<String, UserRepresentation>();
@@ -247,7 +249,7 @@ public class RealmFactory
          if (!userReps.containsKey(mapping.getUsername()))
          {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                    .entity("No users declared for role mapping").type("text/plain").build());
+                  .entity(Messages.MESSAGES.noUsersDeclaredForRoleMapping()).type("text/plain").build());
 
          }
          for (String role : mapping.getRoles())
@@ -255,7 +257,7 @@ public class RealmFactory
             if (!role.equals("admin"))
             {
                throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                       .entity("There is only an 'admin' role for realms").type("text/plain").build());
+                     .entity(Messages.MESSAGES.thereIsOnlyAdminRole()).type("text/plain").build());
 
             } else
             {
@@ -266,7 +268,7 @@ public class RealmFactory
       if (admins.size() == 0)
       {
          throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                 .entity("No realm admin users defined for realm").type("text/plain").build());
+               .entity(Messages.MESSAGES.noRealmAdminUsersDefined()).type("text/plain").build());
       }
 
       // override enabled to false if user does not have at least all of browser or client credentials
@@ -313,7 +315,7 @@ public class RealmFactory
       if (admins.size() == 0)
       {
          throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                 .entity("No realm admin users are enabled or have appropriate credentials").type("text/plain").build());
+               .entity(Messages.MESSAGES.noRealmAdminUsersEnabled()).type("text/plain").build());
       }
 
       if (rep.getResources() != null)
@@ -328,7 +330,7 @@ public class RealmFactory
                   if (!userReps.containsKey(mapping.getUsername()))
                   {
                      throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                             .entity("No users declared for role mapping").type("text/plain").build());
+                           .entity(Messages.MESSAGES.noUsersDeclaredForRoleMapping()).type("text/plain").build());
 
                   }
                   if (mapping.getSurrogates() != null)
@@ -338,7 +340,7 @@ public class RealmFactory
                         if (!userReps.containsKey(surrogate))
                         {
                            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                                   .entity("No users declared for role mapping surrogate").type("text/plain").build());
+                                 .entity(Messages.MESSAGES.noUsersDeclaredForRoleMappingSurrogate()).type("text/plain").build());
                         }
                      }
                   }
@@ -347,7 +349,7 @@ public class RealmFactory
                      if (!resourceRep.getRoles().contains(role))
                      {
                         throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-                                .entity("No resource role for role mapping").type("text/plain").build());
+                              .entity(Messages.MESSAGES.noResourceRoleForRoleMapping()).type("text/plain").build());
                      }
                   }
                }

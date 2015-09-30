@@ -4,7 +4,7 @@ import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistryListener;
 import org.jboss.resteasy.core.interception.PostMatchContainerRequestContext;
 import org.jboss.resteasy.core.registry.SegmentNode;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.Failure;
@@ -30,6 +30,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.WriterInterceptor;
+
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -46,8 +47,6 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorRegistryListener
 {
-   final static Logger logger = Logger.getLogger(ResourceMethodInvoker.class);
-
    protected MethodInjector methodInjector;
    protected InjectorFactory injector;
    protected ResourceFactory resource;
@@ -305,7 +304,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
             }
             catch (Exception e)
             {
-               logger.error("Error resuming failed async operation", e);
+               LogMessages.LOGGER.errorResumingFailedAsynchOperation(e);
             }
             return null;
          }

@@ -2,6 +2,7 @@ package org.jboss.resteasy.client.core;
 
 import org.jboss.resteasy.client.ProxyBuilder;
 import org.jboss.resteasy.client.ProxyConfig;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -83,7 +84,7 @@ public class ClientProxy implements InvocationHandler
 
       if (clientInvoker == null)
       {
-         throw new RuntimeException("Could not find a method for: " + method);
+         throw new RuntimeException(Messages.MESSAGES.couldNotFindMethod(method));
       }
       return clientInvoker.invoke(args);
    }

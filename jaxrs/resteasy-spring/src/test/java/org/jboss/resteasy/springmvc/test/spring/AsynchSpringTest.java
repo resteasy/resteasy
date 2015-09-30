@@ -156,6 +156,7 @@ public class AsynchSpringTest
          response.releaseConnection();
 
          // test its still there
+         Thread.sleep(1000);
          request = new ClientRequest(jobUrl2);
          response = request.get();
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());

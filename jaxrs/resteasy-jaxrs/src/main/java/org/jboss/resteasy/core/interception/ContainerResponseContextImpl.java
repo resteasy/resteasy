@@ -1,6 +1,5 @@
 package org.jboss.resteasy.core.interception;
 
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -29,8 +28,6 @@ import java.util.Set;
  */
 public class ContainerResponseContextImpl implements ContainerResponseContext
 {
-   private final static Logger logger = Logger.getLogger(ContainerResponseContextImpl.class);
-
    protected final HttpRequest request;
    protected final HttpResponse httpResponse;
    protected final BuiltResponse jaxrsResponse;

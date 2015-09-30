@@ -1,9 +1,10 @@
 package org.jboss.resteasy.skeleton.key.as7;
 
-import org.jboss.logging.Logger;
 import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
 import org.jboss.resteasy.skeleton.key.RealmConfiguration;
 import org.jboss.resteasy.skeleton.key.VerificationException;
+import org.jboss.resteasy.skeleton.key.as7.i18n.LogMessages;
+import org.jboss.resteasy.skeleton.key.as7.i18n.Messages;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
 import org.jboss.resteasy.skeleton.key.representations.SkeletonKeyToken;
 import org.jboss.resteasy.util.BasicAuthHelper;
@@ -16,6 +17,7 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+
 import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
@@ -27,7 +29,6 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class ServletOAuthLogin
 {
-   private static final Logger log = Logger.getLogger(ServletOAuthLogin.class);
    protected HttpServletRequest request;
    protected HttpServletResponse response;
    protected boolean codePresent;
@@ -205,7 +206,7 @@ public class ServletOAuthLogin
       if (stateCookie == null)
       {
          sendError(400);
-         log.warn("No state cookie");
+         LogMessages.LOGGER.warn(Messages.MESSAGES.noStateCookie());
          return false;
       }
       // reset the cookie
@@ -220,15 +221,15 @@ public class ServletOAuthLogin
       if (state == null)
       {
          sendError(400);
-         log.warn("state parameter was null");
+         LogMessages.LOGGER.warn(Messages.MESSAGES.stateParameterWasNull());
          return false;
       }
       if (!state.equals(stateCookieValue))
       {
          sendError(400);
-         log.warn("state parameter invalid");
-         log.warn("cookie: " + stateCookieValue);
-         log.warn("queryParam: " + state);
+         LogMessages.LOGGER.warn(Messages.MESSAGES.stateParameterInvalid());
+         LogMessages.LOGGER.warn(Messages.MESSAGES.cookie(stateCookieValue));
+         LogMessages.LOGGER.warn(Messages.MESSAGES.queryParam(state));
          return false;
       }
       return true;
@@ -252,7 +253,7 @@ public class ServletOAuthLogin
       // abort if not HTTPS
       if (realmInfo.isSslRequired() && !isRequestSecure())
       {
-         log.error("SSL is required");
+         LogMessages.LOGGER.error(Messages.MESSAGES.sslIsRequired());
          sendError(Response.Status.FORBIDDEN.getStatusCode());
          return false;
       }
@@ -274,12 +275,12 @@ public class ServletOAuthLogin
       {
          if (res.getStatus() != 200)
          {
-            log.error("failed to turn code into token");
+            LogMessages.LOGGER.error(Messages.MESSAGES.failedToTurnCodeIntoToken());
             sendError(Response.Status.FORBIDDEN.getStatusCode());
             return false;
          }
-         log.debug("media type: " + res.getMediaType());
-         log.debug("Content-Type header: " + res.getHeaderString("Content-Type"));
+         LogMessages.LOGGER.debug(Messages.MESSAGES.mediaType(res.getMediaType()));
+         LogMessages.LOGGER.debug(Messages.MESSAGES.contentTypeHeader(res.getHeaderString("Content-Type")));
          tokenResponse = res.readEntity(AccessTokenResponse.class);
       }
       finally
@@ -291,11 +292,11 @@ public class ServletOAuthLogin
       try
       {
          token = RSATokenVerifier.verifyToken(tokenString, realmInfo.getMetadata());
-         log.debug("Verification succeeded!");
+         LogMessages.LOGGER.debug(Messages.MESSAGES.verificationSucceeded());
       }
       catch (VerificationException e)
       {
-         log.error("failed verification of token");
+         LogMessages.LOGGER.error(Messages.MESSAGES.failedVerificationOfToken());
          sendError(Response.Status.FORBIDDEN.getStatusCode());
          return false;
       }

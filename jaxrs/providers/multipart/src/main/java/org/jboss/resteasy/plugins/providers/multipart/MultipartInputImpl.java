@@ -22,6 +22,7 @@ import org.apache.james.mime4j.storage.StorageProvider;
 import org.apache.james.mime4j.util.CharsetUtil;
 import org.apache.james.mime4j.util.MimeUtil;
 import org.jboss.resteasy.core.ProvidersContextRetainer;
+import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
@@ -32,6 +33,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Providers;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -305,7 +307,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
             MessageBodyReader<T> reader = workers.getMessageBodyReader(type, genericType, empty, contentType);
             if (reader == null)
             {
-               throw new RuntimeException("Unable to find a MessageBodyReader for media type: " + contentType + " and class type " + type.getName());
+               throw new RuntimeException(Messages.MESSAGES.unableToFindMessageBodyReader(contentType, type.getName()));
             }
 
             return reader.readFrom(type, genericType, empty, contentType, headers, getBody());

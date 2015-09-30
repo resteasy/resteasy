@@ -5,6 +5,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import org.jboss.resteasy.client.jaxrs.i18n.Messages;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -57,7 +59,7 @@ public class ClientProxy implements InvocationHandler
 
       if (clientInvoker == null)
       {
-         throw new RuntimeException("Could not find a method for: " + method);
+         throw new RuntimeException(Messages.MESSAGES.couldNotFindMethod(method));
       }
       return clientInvoker.invoke(args);
    }
@@ -83,6 +85,6 @@ public class ClientProxy implements InvocationHandler
 
 	public String toString()
 	{
-		return "Resteasy Client Proxy for :" + clazz.getName();
+	   return Messages.MESSAGES.resteasyClientProxyFor(clazz.getName());
 	}
 }

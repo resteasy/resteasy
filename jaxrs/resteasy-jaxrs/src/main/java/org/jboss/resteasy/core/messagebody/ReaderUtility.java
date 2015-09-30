@@ -2,6 +2,7 @@ package org.jboss.resteasy.core.messagebody;
 
 import org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext;
 import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -10,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.ReaderInterceptor;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,8 +61,7 @@ public abstract class ReaderUtility
          public RuntimeException createReaderNotFound(Type genericType,
                                                       MediaType mediaType)
          {
-            throw new RuntimeException("Could not read type " + genericType
-                    + " for media type " + mediaType);
+            throw new RuntimeException(Messages.MESSAGES.couldNotReadType(genericType, mediaType));
          }
       }.doRead(type, mt, is);
    }

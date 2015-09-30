@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -11,6 +12,7 @@ import javax.ws.rs.container.TimeoutHandler;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.WriterInterceptor;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,7 +48,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
    @Override
    public Collection<Class<?>> register(Class<?> callback) throws NullPointerException
    {
-      if (callback == null) throw new NullPointerException("Callback was null");
+      if (callback == null) throw new NullPointerException(Messages.MESSAGES.callbackWasNull());
       Object cb = dispatcher.getProviderFactory().createProviderInstance(callback);
       return register(cb);
    }
@@ -54,7 +56,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
    @Override
    public Collection<Class<?>> register(Object callback) throws NullPointerException
    {
-      if (callback == null) throw new NullPointerException("Callback was null");
+      if (callback == null) throw new NullPointerException(Messages.MESSAGES.callbackWasNull());
       ArrayList<Class<?>> registered = new ArrayList<Class<?>>();
       if (callback instanceof CompletionCallback)
       {
@@ -163,7 +165,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
       }
       else
       {
-         if (method == null) throw new IllegalStateException("Unknown media type for response entity");
+         if (method == null) throw new IllegalStateException(Messages.MESSAGES.unknownMediaTypeResponseEntity());
          MediaType type = method.resolveContentType(request, entity);
          BuiltResponse jaxrsResponse = (BuiltResponse)Response.ok(entity, type).build();
          jaxrsResponse.setGenericType(method.getGenericReturnType());
