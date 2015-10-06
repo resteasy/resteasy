@@ -1,7 +1,15 @@
 package org.jboss.resteasy.plugins.server.netty;
 
-import static org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol.HTTPS;
 import static org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol.HTTP;
+import static org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol.HTTPS;
+
+import java.net.InetSocketAddress;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelHandler;
@@ -21,13 +29,6 @@ import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import java.net.InetSocketAddress;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 /**
  * An HTTP server that sends back the content of the received HTTP request
@@ -53,6 +54,9 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    private int executorThreadCount = 16;
    private SSLContext sslContext;
    private int maxRequestSize = 1024 * 1024 * 10;
+   private int maxInitialLineLength = 4096;
+   private int maxHeaderSize = 8192;
+   private int maxChunkSize = 8192;
    private int backlog = 128;
    private List<ChannelHandler> channelHandlers = Collections.emptyList();
    private Map<ChannelOption, Object> channelOptions = Collections.emptyMap();
@@ -86,33 +90,42 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
        this.executorThreadCount = executorThreadCount;
    }
 
-   /**
-    * Set the max. request size in bytes. If this size is exceed we will send a "413 Request Entity Too Large" to the client.
-    *
-    * @param maxRequestSize the max request size. This is 10mb by default.
-    */
-   public void setMaxRequestSize(int maxRequestSize)
-   {
-       this.maxRequestSize  = maxRequestSize;
-   }
+    /**
+     * Set the max. request size in bytes. If this size is exceed we will send a "413 Request Entity Too Large" to the client.
+     *
+     * @param maxRequestSize the max request size. This is 10mb by default.
+     */
+    public void setMaxRequestSize(int maxRequestSize) {
+        this.maxRequestSize = maxRequestSize;
+    }
 
-   public String getHostname() {
-       return hostname;
-   }
+    public void setMaxInitialLineLength(int maxInitialLineLength) {
+        this.maxInitialLineLength = maxInitialLineLength;
+    }
 
-   public void setHostname(String hostname) {
-       this.hostname = hostname;
-   }
+    public void setMaxHeaderSize(int maxHeaderSize) {
+        this.maxHeaderSize = maxHeaderSize;
+    }
 
-   public int getPort()
-   {
-      return port;
-   }
+    public void setMaxChunkSize(int maxChunkSize) {
+        this.maxChunkSize = maxChunkSize;
+    }
 
-   public void setPort(int port)
-   {
-      this.port = port;
-   }
+    public String getHostname() {
+        return hostname;
+    }
+
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
 
     public void setBacklog(int backlog)
     {
@@ -245,7 +258,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
     private void setupHandlers(SocketChannel ch, RequestDispatcher dispatcher, RestEasyHttpRequestDecoder.Protocol protocol) {
         ChannelPipeline channelPipeline = ch.pipeline();
         channelPipeline.addLast(channelHandlers.toArray(new ChannelHandler[channelHandlers.size()]));
-        channelPipeline.addLast(new HttpRequestDecoder());
+        channelPipeline.addLast(new HttpRequestDecoder(maxInitialLineLength, maxHeaderSize, maxChunkSize));
         channelPipeline.addLast(new HttpObjectAggregator(maxRequestSize));
         channelPipeline.addLast(new HttpResponseEncoder());
         channelPipeline.addLast(httpChannelHandlers.toArray(new ChannelHandler[httpChannelHandlers.size()]));
