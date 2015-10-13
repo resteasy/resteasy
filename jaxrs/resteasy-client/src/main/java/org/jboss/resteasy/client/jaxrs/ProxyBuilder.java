@@ -43,17 +43,21 @@ public class ProxyBuilder<T>
 		HashMap<Method, MethodInvoker> methodMap = new HashMap<Method, MethodInvoker>();
 		for (Method method : iface.getMethods())
 		{
-         MethodInvoker invoker;
-         Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
-         if ((httpMethods == null || httpMethods.size() == 0) && method.isAnnotationPresent(Path.class) && method.getReturnType().isInterface())
-         {
-            invoker = new SubResourceInvoker((ResteasyWebTarget)base, method, config);
-         }
-         else
-         {
-            invoker = createClientInvoker(iface, method, (ResteasyWebTarget)base, config);
-         }
-         methodMap.put(method, invoker);
+			// ignore the as method to allow declaration in client interfaces
+			if (!("as".equals(method.getName())))
+			{
+				MethodInvoker invoker;
+				Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
+				if ((httpMethods == null || httpMethods.size() == 0) && method.isAnnotationPresent(Path.class) && method.getReturnType().isInterface())
+				{
+					invoker = new SubResourceInvoker((ResteasyWebTarget)base, method, config);
+				}
+				else
+				{
+					invoker = createClientInvoker(iface, method, (ResteasyWebTarget)base, config);
+				}
+				methodMap.put(method, invoker);
+			}
 		}
 
 		Class<?>[] intfs =
