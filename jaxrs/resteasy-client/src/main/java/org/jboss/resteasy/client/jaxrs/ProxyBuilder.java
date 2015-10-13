@@ -43,7 +43,8 @@ public class ProxyBuilder<T>
 		HashMap<Method, MethodInvoker> methodMap = new HashMap<Method, MethodInvoker>();
 		for (Method method : iface.getMethods())
 		{
-			if (!("as".equals(method.getName())) && !method.isDefault())
+			// ignore the as method to allow declaration in client interfaces
+			if (!("as".equals(method.getName())))
 			{
 				MethodInvoker invoker;
 				Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
