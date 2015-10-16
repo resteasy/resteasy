@@ -202,7 +202,7 @@ public class DosetaKeyRepository implements KeyRepository
       if (entry == null) return null;
       if (entry.isStale())
       {
-         privateCache.remove(entry, entry);
+         privateCache.remove(alias, entry);
          return null;
       }
       return entry.key;
@@ -214,7 +214,7 @@ public class DosetaKeyRepository implements KeyRepository
       if (entry == null) return null;
       if (entry.isStale())
       {
-         publicCache.remove(entry, entry);
+         publicCache.remove(alias, entry);
          return null;
       }
       return entry.key;

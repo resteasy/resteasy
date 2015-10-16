@@ -60,7 +60,7 @@ public class MapCache implements BrowserCache
    {
       Map<String, Entry> data = cache.get(key);
       if (data == null) return null;
-      Entry removed = data.remove(type);
+      Entry removed = data.remove(type.toString());
       if (data.isEmpty())
       {
          cache.remove(key);
