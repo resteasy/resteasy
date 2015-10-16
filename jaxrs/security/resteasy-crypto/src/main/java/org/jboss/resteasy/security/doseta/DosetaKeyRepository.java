@@ -78,6 +78,14 @@ public class DosetaKeyRepository implements KeyRepository
                InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(keyStorePath.trim());
                if (is == null) throw new RuntimeException(Messages.MESSAGES.unableToFindKeyStore(keyStorePath));
                keyStore = new KeyStoreKeyRepository(is, keyStorePassword);
+               try
+               {
+                  is.close();
+               }
+               catch (IOException e)
+               {
+                  throw new RuntimeException(e);
+               }
             }
          }
       }
