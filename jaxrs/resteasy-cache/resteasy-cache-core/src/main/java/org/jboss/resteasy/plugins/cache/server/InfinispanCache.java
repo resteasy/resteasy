@@ -44,7 +44,7 @@ public class InfinispanCache implements ServerCache
 
       public boolean isExpired()
       {
-         return System.currentTimeMillis() - timestamp >= expires * 1000;
+         return System.currentTimeMillis() - timestamp >= expires * 1000L;
       }
 
       public String getEtag()

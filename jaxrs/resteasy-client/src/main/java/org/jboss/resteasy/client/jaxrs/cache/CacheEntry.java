@@ -63,7 +63,7 @@ public class CacheEntry implements Entry, Serializable
 
    public boolean expired()
    {
-      return System.currentTimeMillis() - timestamp >= expires * 1000;
+      return System.currentTimeMillis() - timestamp >= expires * 1000L;
    }
 
    public Header[] getValidationHeaders()
