@@ -291,6 +291,7 @@ public class DosetaKeyRepository implements KeyRepository
          Attributes attrs1 = dnsContext.getAttributes(alias, new String[]{"TXT"});
          javax.naming.directory.Attribute txtrecord = attrs1.get("txt");
          String record = txtrecord.get().toString();
+         dnsContext.close();
          if (LogMessages.LOGGER.isDebugEnabled()) LogMessages.LOGGER.debug(Messages.MESSAGES.dnsRecordFound(record));
          ParameterParser parser = new ParameterParser();
          parser.setLowerCaseNames(true);
