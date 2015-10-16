@@ -23,7 +23,7 @@ public class KeyStoreKeyRepository
    private String password;
 
 
-   public KeyStoreKeyRepository(InputStream is, String password)
+   public void init(InputStream is, String password)
    {
       if (password != null) password = password.trim();
       this.password = password;
@@ -50,9 +50,16 @@ public class KeyStoreKeyRepository
       }
    }
 
+   public KeyStoreKeyRepository(InputStream is, String password)
+   {
+      init(is, password);
+   }
+
    public KeyStoreKeyRepository(String filename, String password) throws IOException
    {
-      this(new FileInputStream(filename), password);
+      InputStream is = new FileInputStream(filename);
+      init(is, password);
+      is.close();
    }
 
    public PrivateKey getPrivateKey(Object identity)
