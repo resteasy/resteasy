@@ -33,7 +33,7 @@ public class ModuleProcessor
       List<Binding<?>> rootResourceBindings = new ArrayList<Binding<?>>();
       for (final Binding<?> binding : injector.getBindings().values())
       {
-         final Type type = binding.getKey().getTypeLiteral().getType();
+         final Type type = binding.getKey().getTypeLiteral().getRawType();
          if (type instanceof Class)
          {
             final Class<?> beanClass = (Class) type;
