@@ -403,14 +403,14 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
 
    protected void loadHttpMethod(final ClientInvocation request, HttpRequestBase httpMethod) throws Exception
    {
-      if (httpMethod instanceof HttpGet && false) // todo  && request.followRedirects())
-      {
-         HttpClientParams.setRedirecting(httpMethod.getParams(), true);
-      }
-      else
-      {
-         HttpClientParams.setRedirecting(httpMethod.getParams(), false);
-      }
+//      if (httpMethod instanceof HttpGet && false) // todo  && request.followRedirects())
+//      {
+//         HttpClientParams.setRedirecting(httpMethod.getParams(), true);
+//      }
+//      else
+//      {
+//         HttpClientParams.setRedirecting(httpMethod.getParams(), false);
+//      }
 
       if (request.getEntity() != null)
       {
