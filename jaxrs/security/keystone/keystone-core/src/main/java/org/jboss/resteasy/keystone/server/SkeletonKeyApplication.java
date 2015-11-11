@@ -91,11 +91,14 @@ public class SkeletonKeyApplication
             }
             keyStore = KeyStore.getInstance("jks");
             keyStore.load(is, keyStorePassword.toCharArray());
+            is.close();
          }
          else
          {
             keyStore = KeyStore.getInstance("jks");
-            keyStore.load(new FileInputStream(keyStoreFile), keyStorePassword.toCharArray());
+            InputStream is = new FileInputStream(keyStoreFile);
+            keyStore.load(is, keyStorePassword.toCharArray());
+            is.close();
          }
 
          privateKey = (PrivateKey)keyStore.getKey(alias, keyStorePassword.toCharArray());
