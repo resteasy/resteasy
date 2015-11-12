@@ -312,7 +312,6 @@ public class Serve implements ServletContext, Serializable
       });
       setAccessLogged();
       keepAlive = arguments.get(ARG_KEEPALIVE) == null || ((Boolean) arguments.get(ARG_KEEPALIVE)).booleanValue();
-      System.out.println("KEEPALIVE!: " + keepAlive);
       int timeoutKeepAliveSec;
       try
       {
@@ -852,8 +851,6 @@ public class Serve implements ServletContext, Serializable
       }
       if (sessions == null)
          sessions = new HttpSessionContextImpl();
-      // TODO: display address as name and as ip
-      System.out.println("[" + new Date() + "] TJWS httpd " + hostName + " - " + acceptor + " is listening.");
    }
 
    /**
