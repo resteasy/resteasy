@@ -42,12 +42,12 @@ public class PathSegmentImpl implements PathSegment
             {
                String name = namevalue[0];
                if (decode) name = Encode.decodePath(name);
-               String value = "";
+               String value = null;
                if (namevalue.length > 1)
                {
                   value = namevalue[1];
                }
-               if (decode) value = Encode.decodePath(value);
+               if (decode && value != null) value = Encode.decodePath(value);
                matrixParameters.add(name, value);
             }
          }
