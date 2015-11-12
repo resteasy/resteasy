@@ -30,38 +30,35 @@ public class ResteasyWadlServletWriter {
     public void writeWadl(String base, HttpServletRequest req, HttpServletResponse resp, Map<String, ResteasyWadlServiceRegistry> serviceRegistries)
             throws IOException {
 
-        ServletOutputStream output = resp.getOutputStream();
+        try {
+            ServletOutputStream output = resp.getOutputStream();
 
-        for (Map.Entry<String, ResteasyWadlServiceRegistry> entry : serviceRegistries.entrySet()) {
-            String uri = base;
-            if (entry.getKey() != null) uri += entry.getKey();
+            ObjectFactory factory = new ObjectFactory();
+            Application app = factory.createApplication();
+            JAXBContext context = JAXBContext.newInstance(Application.class);
+            Marshaller marshaller = context.createMarshaller();
 
-            StringWriter stringWriter = new StringWriter();
-            PrintWriter writer = new PrintWriter(stringWriter);
-
-            try {
-                ObjectFactory factory = new ObjectFactory();
-                Application app = factory.createApplication();
-                JAXBContext context = JAXBContext.newInstance(Application.class);
-
-                Marshaller marshaller = context.createMarshaller();
+            for (Map.Entry<String, ResteasyWadlServiceRegistry> entry : serviceRegistries.entrySet()) {
+                String uri = base;
+                if (entry.getKey() != null) uri += entry.getKey();
                 Resources resources = new Resources();
                 resources.setBase(uri);
                 app.getResources().add(resources);
-
                 processWadl(entry.getValue(), resources);
-
-                marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-                marshaller.marshal(app, writer);
-            } catch (JAXBException e) {
-                throw new IOException(e);
             }
+
+            StringWriter stringWriter = new StringWriter();
+            PrintWriter writer = new PrintWriter(stringWriter);
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshaller.marshal(app, writer);
 
             byte[] bytes = stringWriter.toString().getBytes();
             resp.setContentLength(bytes.length);
             output.write(bytes);
             output.flush();
             output.close();
+        } catch (JAXBException e) {
+            throw new IOException(e);
         }
     }
 
