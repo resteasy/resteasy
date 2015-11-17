@@ -1,6 +1,8 @@
 package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.core.interception.PreMatchContainerRequestContext;
+import org.jboss.resteasy.plugins.server.servlet.Cleanable;
+import org.jboss.resteasy.plugins.server.servlet.Cleanables;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
@@ -34,6 +36,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -286,6 +289,7 @@ public class SynchronousDispatcher implements Dispatcher
       contextDataMap.put(ResourceContext.class, resourceContext);
 
       contextDataMap.putAll(defaultContextObjects);
+      contextDataMap.put(Cleanables.class, new Cleanables());
    }
 
    public Response internalInvocation(HttpRequest request, HttpResponse response, Object entity)
@@ -321,7 +325,22 @@ public class SynchronousDispatcher implements Dispatcher
 
    public void clearContextData()
    {
-      ResteasyProviderFactory.clearContextData();
+	  Cleanables cleanables = ResteasyProviderFactory.getContextData(Cleanables.class);
+	  if (cleanables != null)
+	  {
+		  for (Iterator<Cleanable> it = cleanables.getCleanables().iterator(); it.hasNext(); )
+		  {
+			  try
+			  {
+				  it.next().clean();
+			  }
+			  catch(Exception e)
+			  {
+				// Empty
+			  }
+		  }
+	  }
+	  ResteasyProviderFactory.clearContextData();
       // just in case there were internalDispatches that need to be cleaned up
       MessageBodyParameterInjector.clearBodies();
    }
