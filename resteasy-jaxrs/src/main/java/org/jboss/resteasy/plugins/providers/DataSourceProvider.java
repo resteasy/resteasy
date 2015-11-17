@@ -22,7 +22,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
+import org.jboss.resteasy.plugins.server.servlet.Cleanable;
+import org.jboss.resteasy.plugins.server.servlet.Cleanables;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 /**
  * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a>
@@ -66,37 +69,13 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
          if (tempFile == null)
             return bis;
          InputStream fis = new FileInputStream(tempFile);
-         return new SequenceInputStream(bis, fis) {
-            @Override
-            public int read(byte[] b, int off, int len) throws IOException 
-            {
-               int r = super.read(b, off, len);
-               if(r == -1)
-               {
-                  deleteTempFile();
-               }
-               return r;
-            }
-
-            @Override
-            public int read() throws IOException 
-            {
-               int r = super.read();
-               if(r == -1)
-               {
-                  deleteTempFile();
-               }
-               return r;
-            }
-         };
-      }
-
-      private void deleteTempFile()
-      {
-         if(tempFile.exists())
+         CleanableSequenceInputStream csis = new CleanableSequenceInputStream(bis, fis, tempFile);
+         Cleanables cleanables = ResteasyProviderFactory.getContextData(Cleanables.class);
+         if (cleanables != null)
          {
-            tempFile.delete();
+             cleanables.addCleanable(csis);
          }
+         return csis;
       }
 
       @Override
@@ -246,5 +225,27 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
       }
 
    }
+   private static class CleanableSequenceInputStream extends SequenceInputStream implements Cleanable
+   {
+	   private File tempFile;
+	   public CleanableSequenceInputStream(InputStream is1, InputStream is2, File tempFile)
+	   {
+		   super(is1, is2);
+		   this.tempFile = tempFile;
+	   }
 
+	   @Override
+	   public void clean() throws Exception
+	   {
+		   deleteTempFile();
+	   }
+
+	   private void deleteTempFile()
+	   {
+		   if(tempFile.exists())
+		   {
+			   tempFile.delete();
+		   }
+	   }
+   }
 }
