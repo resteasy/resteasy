@@ -180,7 +180,7 @@ public class Encode
     */
    public static String encodeFragment(String value)
    {
-      return encodeValue(value, queryNameValueEncoding);
+      return encodeValue(value, queryStringEncoding);
    }
 
    /**
