@@ -18,6 +18,7 @@ import org.jboss.resteasy.util.GetRestful;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Configurable;
+import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
@@ -130,6 +131,7 @@ public class ResteasyDeployment
 
       dispatcher.getDefaultContextObjects().putAll(defaultContextObjects);
       dispatcher.getDefaultContextObjects().put(Configurable.class, providerFactory);
+      dispatcher.getDefaultContextObjects().put(Configuration.class, providerFactory);
       dispatcher.getDefaultContextObjects().put(Providers.class, providerFactory);
       dispatcher.getDefaultContextObjects().put(Registry.class, registry);
       dispatcher.getDefaultContextObjects().put(Dispatcher.class, dispatcher);
