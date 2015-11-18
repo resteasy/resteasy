@@ -54,11 +54,6 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jdk-http</artifactId>
-            <version>3.0.13.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-undertow</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -68,6 +63,15 @@
             <artifactId>undertow-servlet</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jdk-http</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-wadl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
-
 </project>

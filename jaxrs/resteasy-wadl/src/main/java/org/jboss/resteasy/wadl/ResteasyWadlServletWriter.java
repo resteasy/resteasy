@@ -27,32 +27,12 @@ public class ResteasyWadlServletWriter {
 
     private final static Logger logger = Logger.getLogger(ResteasyWadlServletWriter.class);
 
-    public void writeWadl(String base, HttpServletRequest req, HttpServletResponse resp, Map<String, ResteasyWadlServiceRegistry> serviceRegistries)
+    public void writeWadl(String base, HttpServletResponse resp, Map<String, ResteasyWadlServiceRegistry> serviceRegistries)
             throws IOException {
-
         try {
             ServletOutputStream output = resp.getOutputStream();
 
-            ObjectFactory factory = new ObjectFactory();
-            Application app = factory.createApplication();
-            JAXBContext context = JAXBContext.newInstance(Application.class);
-            Marshaller marshaller = context.createMarshaller();
-
-            for (Map.Entry<String, ResteasyWadlServiceRegistry> entry : serviceRegistries.entrySet()) {
-                String uri = base;
-                if (entry.getKey() != null) uri += entry.getKey();
-                Resources resources = new Resources();
-                resources.setBase(uri);
-                app.getResources().add(resources);
-                processWadl(entry.getValue(), resources);
-            }
-
-            StringWriter stringWriter = new StringWriter();
-            PrintWriter writer = new PrintWriter(stringWriter);
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            marshaller.marshal(app, writer);
-
-            byte[] bytes = stringWriter.toString().getBytes();
+            byte[] bytes = getBytes(base, serviceRegistries);
             resp.setContentLength(bytes.length);
             output.write(bytes);
             output.flush();
@@ -60,6 +40,39 @@ public class ResteasyWadlServletWriter {
         } catch (JAXBException e) {
             throw new IOException(e);
         }
+    }
+
+    public byte[] getBytes(String base, Map<String, ResteasyWadlServiceRegistry> serviceRegistries) throws JAXBException {
+        StringWriter stringWriter = getStringWriter(base, serviceRegistries);
+        return stringWriter.toString().getBytes();
+    }
+
+    public StringWriter getStringWriter(String base, Map<String, ResteasyWadlServiceRegistry> serviceRegistries) throws JAXBException {
+        ObjectFactory factory = new ObjectFactory();
+        Application app = factory.createApplication();
+        JAXBContext context = JAXBContext.newInstance(Application.class);
+        Marshaller marshaller = context.createMarshaller();
+
+        for (Map.Entry<String, ResteasyWadlServiceRegistry> entry : serviceRegistries.entrySet()) {
+            String uri = base;
+            if (entry.getKey() != null) uri += entry.getKey();
+            Resources resources = new Resources();
+            resources.setBase(uri);
+            app.getResources().add(resources);
+            processWadl(entry.getValue(), resources);
+        }
+
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter writer = new PrintWriter(stringWriter);
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        marshaller.marshal(app, writer);
+        return stringWriter;
+    }
+
+
+    public void writeWadl(String base, HttpServletRequest req, HttpServletResponse resp, Map<String, ResteasyWadlServiceRegistry> serviceRegistries)
+            throws IOException {
+        writeWadl(base, resp, serviceRegistries);
     }
 
 
