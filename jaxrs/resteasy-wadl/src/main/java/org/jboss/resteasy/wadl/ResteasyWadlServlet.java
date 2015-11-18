@@ -1,10 +1,8 @@
 package org.jboss.resteasy.wadl;
 
-import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -70,10 +68,7 @@ public class ResteasyWadlServlet extends HttpServlet {
         synchronized (this) {
             services = new HashMap<String, ResteasyWadlServiceRegistry>();
             for (Map.Entry<String, ResteasyDeployment> entry : deployments.entrySet()) {
-                ResourceMethodRegistry registry = (ResourceMethodRegistry) entry.getValue().getRegistry();
-                ResteasyProviderFactory providerFactory = entry.getValue().getProviderFactory();
-                ResteasyWadlServiceRegistry service = new ResteasyWadlServiceRegistry(null, registry, providerFactory, null);
-                services.put(entry.getKey(), service);
+                services.put(entry.getKey(), ResteasyWadlGenerator.generateServiceRegistry(entry.getValue()));
             }
         }
     }
