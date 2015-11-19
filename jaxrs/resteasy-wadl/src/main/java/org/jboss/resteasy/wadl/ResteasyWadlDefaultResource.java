@@ -13,7 +13,7 @@ import java.util.Map;
 @Path("/application.xml")
 public class ResteasyWadlDefaultResource {
 
-    private final static ResteasyWadlServletWriter apiWriter = new ResteasyWadlServletWriter();
+    private final static ResteasyWadlWriter apiWriter = new ResteasyWadlServletWriter();
     private final static Map<String, ResteasyWadlServiceRegistry> services = new HashMap<String, ResteasyWadlServiceRegistry>();
 
     public static Map<String, ResteasyWadlServiceRegistry> getServices() {
