@@ -11,28 +11,29 @@ public class BasicResource {
     private String name;
 
     @GET
-    public String hello(@PathParam("name") String name) {
+    public String get(@PathParam("name") String name) {
         return "Hello, " + name;
     }
 
     @POST
-    public void input(@PathParam("name2") String name2) {
+    public void post(@PathParam("name2") String name2) {
         this.name = name2;
     }
 
-
     @GET
-    @Path("ab/{a}")
+    @Path("composite/{pathParam}")
     @Produces("text/plain")
-    public String abc(@PathParam("a") String a, @CookieParam("b") int b) {
-        return a + b;
-    }
-
-    @GET
-    @Path("intr/{foo}")
-    @Produces("text/plain")
-    public int integerReturn(@PathParam("foo") int foo) {
-        return foo;
+    public String composite(@PathParam("pathParam") String pathParam,
+                            @HeaderParam("headerParam") String headerParam,
+                            @QueryParam("queryParam") String queryParam,
+                            @MatrixParam("matrixParam") String matrixParam,
+                            @CookieParam("cookieParam") String cookieParam) {
+        return "p:P;h:H;q:Q;m:M;c:C"
+                .replaceAll("P", pathParam)
+                .replaceAll("H", headerParam)
+                .replaceAll("Q", queryParam)
+                .replaceAll("M", matrixParam)
+                .replaceAll("C", cookieParam);
     }
 
 }
