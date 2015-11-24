@@ -6,24 +6,13 @@ import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.test.nextgen.wadl.resources.BasicResource;
 import org.jboss.resteasy.wadl.ResteasyWadlDefaultResource;
 import org.jboss.resteasy.wadl.ResteasyWadlGenerator;
-import org.jboss.resteasy.wadl.jaxb.Application;
-import org.jboss.resteasy.wadl.jaxb.Param;
-import org.jboss.resteasy.wadl.jaxb.Resource;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
@@ -31,7 +20,8 @@ import static org.junit.Assert.assertTrue;
 public class TestAllResources {
     private static HttpServer httpServer;
     private static HttpContextBuilder contextBuilder;
-    private static int port = TestPortProvider.getPort();
+    private static int port = TestPortProvider.getPort() + 1;
+    private static Client client = ClientBuilder.newClient();
 
     @BeforeClass
     public static void before() throws Exception {
@@ -46,63 +36,20 @@ public class TestAllResources {
 
     @AfterClass
     public static void after() throws Exception {
+        try {
+            client.close();
+        } catch (Exception e) {
+
+        }
+
         contextBuilder.cleanup();
         httpServer.stop(0);
+        Thread.sleep(100);
     }
 
     @Test
-    public void testBasicResource() throws InterruptedException {
-        Client client = ClientBuilder.newClient();
-        String url = "http://127.0.0.1:${port}/application.xml".replaceAll("\\$\\{port\\}",
-                Integer.valueOf(port).toString());
-        WebTarget target = client.target(url);
-        Response response = target.request().get();
-
-        // get Application
-        org.jboss.resteasy.wadl.jaxb.Application application = response.readEntity(org.jboss.resteasy.wadl.jaxb.Application.class);
-        assertNotNull(application);
-        assertEquals(1, application.getResources().size());
-
-        // get BasicResource
-        String resourceName = "/basic";
-        org.jboss.resteasy.wadl.jaxb.Resource basicResource = findResourceByName(application, resourceName);
-        assertNotNull(basicResource);
-
-        // verify params
-        Map<String, Boolean> verifier = new HashMap<>();
-        verifier.put("name", false);
-        verifier.put("name2", false);
-
-        for (Param param : basicResource.getParam()) {
-            if ("name".equals(param.getName()))
-                verifier.put("name", true);
-            else if ("name2".equals(param.getName()))
-                verifier.put("name2", true);
-        }
-
-        assertTrue(allTrue(verifier));
-
-//        while (true);
+    public void testBasicResource() throws Exception {
+        BasicTest basicTest = new BasicTest(port, client);
+        basicTest.testBasicResource();
     }
-
-    private boolean allTrue(Map<String, Boolean> verifier) {
-        boolean flag = true;
-        for (Boolean value: verifier.values()) {
-            if (value.booleanValue() == false) {
-                flag = false;
-                break;
-            }
-        }
-        return flag;
-    }
-
-    private Resource findResourceByName(Application application, String resourceName) {
-        for (Resource resource : application.getResources().get(0).getResource()) {
-            if (resource.getPath().equals(resourceName)) {
-                return resource;
-            }
-        }
-        return null;
-    }
-
 }

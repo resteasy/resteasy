@@ -120,9 +120,15 @@ public class JaxrsAsyncTest
       response = client.target(BASE_URI).path("jaxrs/cancelled").request().put(null);
       Assert.assertEquals(204, response.getStatus());
       response.close();
+
+      Thread.sleep(100);
+
       response = client.target(BASE_URI).path("jaxrs/cancelled").request().get();
       Assert.assertEquals(500, response.getStatus());
       response.close();
+
+      Thread.sleep(100);
+
    }
 
    @Test
@@ -133,18 +139,25 @@ public class JaxrsAsyncTest
       Assert.assertEquals(204, response.getStatus());
       response.close();
 
+      Thread.sleep(100);
+
       response = client.target(BASE_URI).path("jaxrs/cancelled").request().get();
       Assert.assertEquals(500, response.getStatus());
       response.close();
+
+      Thread.sleep(100);
 
       response = client.target(BASE_URI).path("jaxrs/cancel").request().get();
       Assert.assertEquals(503, response.getStatus());
       response.close();
 
+      Thread.sleep(100);
+
       response = client.target(BASE_URI).path("jaxrs/cancelled").request().get();
       Assert.assertEquals(204, response.getStatus());
-
       response.close();
+
+      Thread.sleep(100);
    }
 
    @Test(timeout=REQUEST_TIMEOUT)

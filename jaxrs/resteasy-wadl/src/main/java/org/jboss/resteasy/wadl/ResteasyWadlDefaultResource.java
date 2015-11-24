@@ -14,7 +14,7 @@ import java.util.Map;
 public class ResteasyWadlDefaultResource {
 
     private final static ResteasyWadlWriter apiWriter = new ResteasyWadlServletWriter();
-    private final static Map<String, ResteasyWadlServiceRegistry> services = new HashMap<String, ResteasyWadlServiceRegistry>();
+    private final static Map<String, ResteasyWadlServiceRegistry> services = new HashMap<>();
 
     public static Map<String, ResteasyWadlServiceRegistry> getServices() {
         return services;
