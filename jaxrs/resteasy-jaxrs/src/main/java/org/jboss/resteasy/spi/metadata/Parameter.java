@@ -28,6 +28,7 @@ abstract public class Parameter
       UNKNOWN,
       // resteasy specific
       FORM,
+      QUERY,
       SUSPEND // deprecated
    }
 
