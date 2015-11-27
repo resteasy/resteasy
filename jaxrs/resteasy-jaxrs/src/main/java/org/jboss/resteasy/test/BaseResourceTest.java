@@ -38,6 +38,8 @@ public abstract class BaseResourceTest
       EmbeddedContainer.stop();
       dispatcher = null;
       deployment = null;
+
+      Thread.sleep(100);
    }
 
    public Registry getRegistry()
