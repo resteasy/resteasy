@@ -23,6 +23,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -131,6 +132,12 @@ public class HttpServletInputMessage extends BaseHttpRequest
       {
          return getPutFormParameters();
       }
+      Map<String, String[]> parameterMap = request.getParameterMap();
+      MultivaluedMap<String, String> queryMap = uri.getQueryParameters();
+      if (request.getMethod().equals("PUT") && mapEquals(parameterMap, queryMap))
+      {
+         return getPutFormParameters();
+      }
       formParameters = Encode.encode(getDecodedFormParameters());
       return formParameters;
    }
@@ -142,6 +149,12 @@ public class HttpServletInputMessage extends BaseHttpRequest
       // Tomcat does not set getParameters() if it is a PUT request
       // so pull it out manually
       if (request.getMethod().equals("PUT") && (request.getParameterMap() == null || request.getParameterMap().isEmpty()))
+      {
+         return getPutDecodedFormParameters();
+      }
+      Map<String, String[]> parameterMap = request.getParameterMap();
+      MultivaluedMap<String, String> queryMap = uri.getQueryParameters();
+      if (request.getMethod().equals("PUT") && mapEquals(parameterMap, queryMap))
       {
          return getPutDecodedFormParameters();
       }
@@ -169,7 +182,6 @@ public class HttpServletInputMessage extends BaseHttpRequest
          }
       }
       return decodedFormParameters;
-
    }
 
    @Override
@@ -238,5 +250,31 @@ public class HttpServletInputMessage extends BaseHttpRequest
    public boolean wasForwarded()
    {
       return wasForwarded;
+   }
+
+   protected boolean mapEquals(Map<String, String[]> parameterMap,  MultivaluedMap<String, String> queryMap)
+   {
+      if (parameterMap.size() != queryMap.size())
+      {
+         return false;
+      }
+      for (Iterator<String> it = parameterMap.keySet().iterator(); it.hasNext(); )
+      {
+         String key = it.next();
+         String[] parameterValues = parameterMap.get(key);
+         List<String> queryValues = queryMap.get(key);
+         if (parameterValues.length != queryValues.size())
+         {
+            return false;
+         }
+         for (int i = 0; i < parameterValues.length; i++)
+         {
+            if (!queryValues.contains(parameterValues[i]))
+            {
+               return false;
+            }
+         }
+      }
+      return true;
    }
 }
