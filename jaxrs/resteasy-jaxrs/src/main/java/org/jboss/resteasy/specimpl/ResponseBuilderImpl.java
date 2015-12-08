@@ -243,7 +243,7 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
          metadata.remove(HttpHeaderNames.LAST_MODIFIED);
          return this;
       }
-      metadata.putSingle(HttpHeaderNames.LAST_MODIFIED, lastModified);
+      metadata.putSingle(HttpHeaderNames.LAST_MODIFIED, getDateFormatRFC822().format(lastModified));
       return this;
    }
 
