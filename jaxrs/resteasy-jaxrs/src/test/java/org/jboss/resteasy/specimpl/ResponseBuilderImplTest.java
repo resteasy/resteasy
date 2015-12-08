@@ -19,7 +19,7 @@ public class ResponseBuilderImplTest
    {
       ResponseBuilderImpl impl = new ResponseBuilderImpl();
 
-      Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse("2015-12-08 16:50:00");
+      Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").parse("2015-12-08 15:50:00 GMT");
       impl.lastModified(date);
       assertEquals(impl.build().getLastModified(), date);
       assertEquals(impl.build().getHeaderString("Last-Modified"), "Tue, 08 Dec 2015 15:50:00 GMT");
