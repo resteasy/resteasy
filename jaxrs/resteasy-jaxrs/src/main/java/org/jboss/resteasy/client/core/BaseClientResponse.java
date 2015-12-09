@@ -30,6 +30,7 @@ import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.ReaderInterceptor;
 
 import java.io.ByteArrayInputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -437,7 +438,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
          }
 
          final Object finalObj = new ClientReaderInterceptorContext(readerInterceptors, providerFactory, useType,
-               useGeneric, annotations, media, getResponseHeaders(), is, attributes)
+               useGeneric, annotations, media, getResponseHeaders(), new InputStreamWrapper(is), attributes)
                .proceed();
          obj = finalObj;
          if (isMarshalledEntity)
@@ -484,6 +485,16 @@ public class BaseClientResponse<T> extends ClientResponse<T>
          {
             ((ProvidersContextRetainer) obj).setProviders(providerFactory);
          }
+      }
+   }
+
+   private static class InputStreamWrapper extends FilterInputStream {
+      protected InputStreamWrapper(InputStream in) {
+         super(in);
+      }
+
+      @Override
+      public void close() throws IOException {
       }
    }
 
