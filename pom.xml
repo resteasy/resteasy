@@ -5,7 +5,7 @@
     <name>RESTEasy</name>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-pom</artifactId>
-    <version>3.0.13.Final</version>
+    <version>3.0.14.Final-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <url>http://rest-easy.org</url>
