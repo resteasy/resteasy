@@ -11,6 +11,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.ReaderInterceptorContext;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -58,9 +59,19 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
 
    protected Object readFrom(MessageBodyReader reader) throws IOException
    {
-      return reader.readFrom(type, genericType, annotations, mediaType, headers, inputStream);
+      return reader.readFrom(type, genericType, annotations, mediaType, headers, new InputStreamWrapper(inputStream));
    }
 
+    private static class InputStreamWrapper extends FilterInputStream {
+
+        protected InputStreamWrapper(InputStream in) {
+            super(in);
+        }
+        @Override
+        public void close() throws IOException {
+        }
+    }
+    
    protected MessageBodyReader getReader()
    {
       MediaType mediaType = this.mediaType;
