@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.net.URI;
 import java.util.ArrayList;
 
@@ -99,10 +100,43 @@ public class RESTServiceDiscovery extends ArrayList<RESTServiceDiscovery.AtomLin
 		public void setLength(String length) {
 			this.length = length;
 		}
+		
+		@Override
+		public int hashCode() {
+			int code = 17;
+			code = 31 * code + ((rel == null)?0:rel.hashCode());
+			code = 31 * code + ((href == null)?0:href.hashCode());
+			code = 31 * code + ((type == null)?0:type.hashCode());
+			code = 31 * code + ((hreflang == null)?0:hreflang.hashCode());
+			code = 31 * code + ((title == null)?0:title.hashCode());
+			code = 31 * code + ((length == null)?0:length.hashCode());
+			return code;
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == null || obj.getClass() != AtomLink.class) return false;
+			AtomLink l = (AtomLink)obj;
+			return equals(rel, l.rel) && equals(href, l.href) &&
+					equals(type, l.type) && equals(hreflang, l.hreflang) &&
+						equals(title, l.title) && equals(length, l.length);
+		}
+		
+		/**
+		 * Determines whether two strings are both null or equal.
+		 * 
+		 * @param a A string.
+		 * @param b Another string.
+		 * @return True if a and b are both null or if they are equal.
+		 */
+		private static boolean equals(String a, String b) {
+			return (a == null && b == null) || (a != null && a.equals(b));
+		}
 	}
 
 	public void addLink(URI uri, String rel) {
-		add(new AtomLink(uri.toString(), rel));
+		AtomLink link = new AtomLink(uri.toString(), rel);
+		if (!contains(link)) add(link);
 	}
 	
 	public AtomLink getLinkForRel(String rel){

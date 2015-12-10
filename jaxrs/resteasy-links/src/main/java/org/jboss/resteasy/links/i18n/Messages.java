@@ -55,4 +55,7 @@ public interface Messages
    
    @Message(id = BASE + 60, value = "Not enough URI parameters: expecting {0} but only found {1}", format=Format.MESSAGE_FORMAT)
    String notEnoughtUriParameters(int expected, int actual);
+   
+   @Message(id = BASE + 65, value = "Failed to access links in %s")
+   String failedToAccessLinks(Object expression);
 }

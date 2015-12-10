@@ -48,7 +48,15 @@ public class RESTUtils {
 		if(injectionField == null)
 			return entity;
 		List<Method> methods = getServiceMethods(registry);
-		RESTServiceDiscovery ret = new RESTServiceDiscovery();
+		injectionField.setAccessible(true);
+		RESTServiceDiscovery ret = null;
+		try {
+			ret = (RESTServiceDiscovery)injectionField.get(entity);
+		} catch (Exception e) {
+			LogMessages.LOGGER.error(Messages.MESSAGES.failedToAccessLinks(entity), e);
+		}
+		injectionField.setAccessible(false);
+		if (ret == null) ret = new RESTServiceDiscovery();
 		for(Method m : methods){
 			processLinkResources(m, entity, uriInfo, ret);
 		}
@@ -98,17 +106,80 @@ public class RESTUtils {
 		}
 		return results;
 	}
+	
+
+	/**
+	 * A drop-in replacement for Method.findAnnotation(Class<T extends Annotation>) that also
+	 * searches through the inheritance hierarchy.
+	 * 
+	 * @param m The method to search from.
+	 * @param annotation The annotation.
+	 * @return The first annotation or null.
+	 */
+	private static <T extends Annotation> T findAnnotation(Method m, Class<T> annotation) {
+		Method method = findMethod(m, annotation);
+		if (method != null) {
+			return method.getAnnotation(annotation);			
+		}
+		return null;
+	}
+	
+	/**
+	 * A drop-in replacement for Method.isAnnotationPresent(Class<T extends Annotation>) that also
+	 * searches through the inheritance hierarchy.
+	 * 
+	 * @param m The method to search from.
+	 * @param annotation The annotation.
+	 * @return True if any method in the hierarchy has the annotation.
+	 */
+	private static <T extends Annotation> boolean hasAnnotation(Method m, Class<T> annotation) {
+		Method method = findMethod(m, annotation);
+		return method != null;
+	}
+	
+	/**
+	 * Returns the first method that contains the specified annotation or null, if there
+	 * is none. This method first searches through the inheritance hierarchy and then looks at 
+	 * interfaces.
+	 * 
+	 * @param m The method to search for and to start the search from.
+	 * @param annotation The annotation.
+	 * @return The method containing the annotation or null.
+	 */
+	private static <T extends Annotation> Method findMethod(Method m, Class<T> annotation) {
+		Class<?> c = m.getDeclaringClass();
+		while (c != null) {
+			try {
+				Method method = c.getDeclaredMethod(m.getName(), m.getParameterTypes());
+				T result = method.getAnnotation(annotation);
+				if (result != null) return method;
+			} catch (NoSuchMethodException e) { 
+				// method not contained
+			}
+			c = c.getSuperclass();
+		}
+		Class<?>[] interfaces = m.getDeclaringClass().getInterfaces();
+		for (Class<?> inter: interfaces) {
+			try {
+				Method method = inter.getDeclaredMethod(m.getName(), m.getParameterTypes());
+				T result = method.getAnnotation(annotation);
+				if (result != null) return method;
+			} catch (NoSuchMethodException e) { 
+				// method not contained
+			}
+		}
+		return null;
+	}
+
 
 	private static void processLinkResources(Method m, Object entity, UriInfo uriInfo,
 			RESTServiceDiscovery ret) {
 		// find a single service
-		LinkResource service = m
-		.getAnnotation(LinkResource.class);
+		LinkResource service = findAnnotation(m, LinkResource.class);
 		if(service != null)
 			processLinkResource(m, entity, uriInfo, ret, service);
 		// find a multi-service
-		LinkResources services = m
-		.getAnnotation(LinkResources.class);
+		LinkResources services = findAnnotation(m, LinkResources.class);
 		if(services != null)
 			for(LinkResource service2 : services.value())
 				processLinkResource(m, entity, uriInfo, ret, service2);
@@ -178,7 +249,7 @@ public class RESTUtils {
 		}
 		// From now on we can use this class since it's there. I (Stef Epardaud) don't think we need to 
 		// remove the reference here and use reflection.
-		RolesAllowed rolesAllowed = m.getAnnotation(RolesAllowed.class);
+		RolesAllowed rolesAllowed = findAnnotation(m, RolesAllowed.class);
 		if(rolesAllowed == null)
 			return true;
 		SecurityContext context = ResteasyProviderFactory.getContextData(SecurityContext.class);
@@ -193,8 +264,8 @@ public class RESTUtils {
 		Map<String, ? extends Object> pathParameters = entity.pathParameters();
 		// do we need any path parameters?
 		UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().path(m.getDeclaringClass());
-		if(m.isAnnotationPresent(Path.class))
-			uriBuilder.path(m);
+		if(hasAnnotation(m, Path.class))
+			uriBuilder.path(findMethod(m, Path.class));
 		URI uri;
 		List<String> paramNames = ((ResteasyUriBuilder)uriBuilder).getPathParamNamesInDeclarationOrder();
 		if(paramNames.isEmpty())
@@ -205,9 +276,9 @@ public class RESTUtils {
 			// just bail out since we don't have enough parameters, that must be an instance service
 			return;
 		if(rel.length() == 0){
-			if (m.isAnnotationPresent(GET.class))
+			if (hasAnnotation(m, GET.class))
 				rel = "list";
-			else if (m.isAnnotationPresent(POST.class))
+			else if (hasAnnotation(m, POST.class))
 				rel = "add";
 		}
 		ret.addLink(uri, rel);
@@ -217,22 +288,22 @@ public class RESTUtils {
 			UriInfo uriInfo, RESTServiceDiscovery ret, LinkResource service,
 			String rel) {
 		UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().path(m.getDeclaringClass());
-		if(m.isAnnotationPresent(Path.class))
-			uriBuilder.path(m);
+		if(hasAnnotation(m, Path.class))
+			uriBuilder.path(findMethod(m, Path.class));
 		URI uri = buildURI(uriBuilder, service, entity, m);
 
 		if (rel.length() == 0) {
-			if (m.isAnnotationPresent(GET.class)){
+			if (hasAnnotation(m, GET.class)){
 				Class<?> type = m.getReturnType();
 				if(Collection.class.isAssignableFrom(type))
 					rel = "list";
 				else
 					rel = "self";
-			}else if (m.isAnnotationPresent(PUT.class))
+			}else if (hasAnnotation(m, PUT.class))
 				rel = "update";
-			else if (m.isAnnotationPresent(POST.class))
+			else if (hasAnnotation(m, POST.class))
 				rel = "add";
-			else if (m.isAnnotationPresent(DELETE.class))
+			else if (hasAnnotation(m, DELETE.class))
 				rel = "remove";
 		}
 		ret.addLink(uri, rel);
@@ -272,8 +343,8 @@ public class RESTUtils {
 	}
 
 	private static LinkELProvider findLinkELProvider(Method m){
-		if(m.isAnnotationPresent(LinkELProvider.class))
-			return m.getAnnotation(LinkELProvider.class);
+		if(hasAnnotation(m, LinkELProvider.class))
+			return findAnnotation(m, LinkELProvider.class);
 		Class<?> c = m.getDeclaringClass();
 		if(c.isAnnotationPresent(LinkELProvider.class))
 			return c.getAnnotation(LinkELProvider.class);
