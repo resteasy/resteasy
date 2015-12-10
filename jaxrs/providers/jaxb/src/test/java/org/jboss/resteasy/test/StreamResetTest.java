@@ -9,6 +9,10 @@ import org.junit.Test;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -71,6 +75,34 @@ public class StreamResetTest extends BaseResourceTest
    public void setUp() throws Exception
    {
       addPerRequestResource(SimpleResource.class);
+   }
+
+   @Test
+   public void testJBEAP2138() throws Exception {
+      Client client = ClientBuilder.newClient();
+      WebTarget target = client.target(TestPortProvider.generateURL("/test"));
+      Response response = target.request().get();
+
+      response.bufferEntity();
+
+      try {
+         response.readEntity(Place.class);
+      } catch (Exception e) {}
+
+      response.readEntity(Person.class);
+   }
+
+   @Test(expected = IllegalStateException.class)
+   public void testJBEAP2138WithoutBufferedEntity() throws Exception {
+      Client client = ClientBuilder.newClient();
+      WebTarget target = client.target(TestPortProvider.generateURL("/test"));
+      Response response = target.request().get();
+
+      try {
+         response.readEntity(Place.class);
+      } catch (Exception e) {}
+
+      response.readEntity(Person.class);
    }
 
    @Test
