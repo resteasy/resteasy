@@ -165,7 +165,7 @@ public class TestValidation
       request.accept(MediaType.APPLICATION_XML);
       response = request.post(Foo.class);
       Assert.assertEquals(400, response.getStatus());
-      Object header = response.getHeaders().getFirst(Validation.VALIDATION_HEADER);
+      Object header = response.getResponseHeaders().getFirst(Validation.VALIDATION_HEADER);
       Assert.assertTrue(header instanceof String);
       Assert.assertTrue(Boolean.valueOf(String.class.cast(header)));
       ViolationReport r = response.getEntity(ViolationReport.class);

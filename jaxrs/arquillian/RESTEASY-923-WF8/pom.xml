@@ -146,7 +146,6 @@
     <dependency>
         <groupId>org.jboss.spec.javax.ws.rs</groupId>
         <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
-        <version>${project.version}</version>
     </dependency>
     <dependency>
         <groupId>org.jboss.resteasy</groupId>

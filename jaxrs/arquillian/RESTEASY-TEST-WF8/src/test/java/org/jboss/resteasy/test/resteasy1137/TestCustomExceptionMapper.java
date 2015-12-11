@@ -8,6 +8,7 @@ import javax.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.resteasy1137.TestApplication;
 import org.jboss.resteasy.resteasy1137.TestClassConstraint;
 import org.jboss.resteasy.resteasy1137.TestClassValidator;
@@ -52,7 +53,7 @@ public class TestCustomExceptionMapper
       Client client = ClientBuilder.newClient();
       Builder builder = client.target("http://localhost:8080/RESTEASY-1137/test/all/a/b/c").request();
       builder.accept(MediaType.APPLICATION_XML);
-      Response response = builder.get();
+      ClientResponse response = (ClientResponse) builder.get();
       System.out.println("status: " + response.getStatus());
       Assert.assertEquals(444, response.getStatus());
       TestReport report = response.readEntity(TestReport.class);
@@ -65,7 +66,7 @@ public class TestCustomExceptionMapper
       Client client = ClientBuilder.newClient();
       Builder builder = client.target("http://localhost:8080/RESTEASY-1137/test/all/abc/defg/hijkl").request();
       builder.accept(MediaType.APPLICATION_XML);
-      Response response = builder.get();
+      ClientResponse response = (ClientResponse) builder.get();
       System.out.println("status: " + response.getStatus());
       Assert.assertEquals(444, response.getStatus());
       TestReport report = response.readEntity(TestReport.class);

@@ -15,6 +15,7 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.resteasy1161.StdQueryBeanParam;
 import org.jboss.resteasy.resteasy1161.TestApplication;
 import org.jboss.resteasy.resteasy1161.TestResource;
@@ -57,7 +58,7 @@ public class TestSubresourceValidation
    {
       ResteasyClient client = new ResteasyClientBuilder().build();
       Invocation.Builder request = client.target("http://localhost:8080/RESTEASY-1161/sub/17?limit=abcdef").request();
-      Response response = request.get();
+      ClientResponse response = (ClientResponse) request.get();
       System.out.println("status: " + response.getStatus());
       String answer = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(answer);
@@ -74,7 +75,7 @@ public class TestSubresourceValidation
    {
       ResteasyClient client = new ResteasyClientBuilder().build();
       Invocation.Builder request = client.target("http://localhost:8080/RESTEASY-1161/sub/return/abcd").request();
-      Response response = request.get();
+      ClientResponse response = (ClientResponse) request.get();
       System.out.println("status: " + response.getStatus());
       String answer = response.readEntity(String.class);
       ViolationReport r = new ViolationReport(answer);

@@ -36,5 +36,6 @@
         <module name="org.jboss.resteasy.resteasy-jaxrs"/>
         <module name="org.bouncycastle"/>
         <module name="javax.activation.api"/>
+        <module name="org.jboss.logging"/>
     </dependencies>
 </module>
