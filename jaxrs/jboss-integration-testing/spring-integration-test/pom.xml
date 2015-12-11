@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-jboss-integration-testing</artifactId>
-        <version>3.0.14.Final</version>
+        <version>3.0.15.Final-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>spring-integration-test</artifactId>
