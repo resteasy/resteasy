@@ -30,7 +30,7 @@ public class AbstractMultipartWriter
       httpHeaders.putSingle(HttpHeaderNames.CONTENT_TYPE, mediaType.toString() + "; boundary=" + multipartOutput.getBoundary());
       byte[] boundaryBytes = ("--" + boundary).getBytes();
 
-      writeParts(multipartOutput, entityStream, boundaryBytes);
+      writeParts(multipartOutput, new FilterOutputStream(entityStream), boundaryBytes);
       entityStream.write(boundaryBytes);
       entityStream.write("--".getBytes());
    }
