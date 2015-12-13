@@ -8,6 +8,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Providers;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
@@ -30,7 +31,13 @@ public class AbstractMultipartWriter
       httpHeaders.putSingle(HttpHeaderNames.CONTENT_TYPE, mediaType.toString() + "; boundary=" + multipartOutput.getBoundary());
       byte[] boundaryBytes = ("--" + boundary).getBytes();
 
-      writeParts(multipartOutput, entityStream, boundaryBytes);
+      writeParts(multipartOutput, new FilterOutputStream(entityStream) {
+         @Override
+         public void close() throws IOException {
+            // no close
+            //super.close();
+         }
+      }, boundaryBytes);
       entityStream.write(boundaryBytes);
       entityStream.write("--".getBytes());
    }
