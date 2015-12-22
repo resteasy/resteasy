@@ -4,7 +4,7 @@
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
         <version>19</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -13,6 +13,14 @@
     <description>
         Resteasy
     </description>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
     <version>3.0.15.Final-SNAPSHOT</version>
@@ -36,11 +44,16 @@
         <dep.slf4j.version>1.7.5</dep.slf4j.version>
         <dep.bc.version>1.52</dep.bc.version>
         <dep.com.sun.mail.version>1.5.3</dep.com.sun.mail.version>
-        <version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.2_spec>1.0.0.Final</version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.2_spec>
-        <version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>1.0.0.Final</version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>
-        <version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>1.0.0.Final</version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>
-        <version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>1.0.0.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>
-        <version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec>1.0.0.Final</version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec>
+        <version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.2_spec>1.0.0.Final
+        </version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.2_spec>
+        <version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>1.0.0.Final
+        </version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>
+        <version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>1.0.0.Final
+        </version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>
+        <version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>1.0.0.Final
+        </version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>
+        <version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec>1.0.0.Final
+        </version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec>
         <version.org.glassfish.javax.el>3.0.0</version.org.glassfish.javax.el>
         <version.io.undertow>1.2.8.Final</version.io.undertow>
         <version.com.fasterxml.jackson>2.6.3</version.com.fasterxml.jackson>
@@ -198,6 +211,38 @@
                 <module>profiling-tests</module>
                 <module>resteasy-wadl</module>
                 <!-- <module>arquillian</module> -->
+                <!-- <module>as7-integration-testing/modules-test</module> -->
+            </modules>
+        </profile>
+        <profile>
+            <id>arquillian-tests</id>
+            <modules>
+                <module>tjws</module>
+                <module>resteasy-test-data</module>
+                <module>resteasy-jaxrs</module>
+                <module>resteasy-client</module>
+                <module>resteasy-jaxrs-testsuite</module>
+                <module>providers</module>
+                <module>resteasy-bom</module>
+                <module>resteasy-cache</module>
+                <module>resteasy-guice</module>
+                <!-- <module>eagledns</module> -->
+                <module>security</module>
+                <module>resteasy-links</module>
+                <module>resteasy-spring</module>
+                <module>resteasy-jsapi</module>
+                <!-- <module>resteasy-jsapi-testing</module> -->
+                <module>resteasy-cdi</module>
+                <module>resteasy-servlet-initializer</module>
+                <module>server-adapters</module>
+                <module>war-tests</module>
+                <!-- <module>as8-integration-testing/ejb-singleton-test</module> -->
+                <module>async-http-servlet-3.0</module>
+                <!--<module>examples</module>-->
+                <module>jboss-modules</module>
+                <module>profiling-tests</module>
+                <module>resteasy-wadl</module>
+                <module>arquillian</module>
                 <!-- <module>as7-integration-testing/modules-test</module> -->
             </modules>
         </profile>
@@ -534,14 +579,14 @@
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                  <filesets>
-                    <fileset>
-                      <directory>src/main/resources</directory>
-                      <includes>
-                        <include>org/**</include>
-                      </includes>
-                    </fileset>
-                  </filesets>
+                    <filesets>
+                        <fileset>
+                            <directory>src/main/resources</directory>
+                            <includes>
+                                <include>org/**</include>
+                            </includes>
+                        </fileset>
+                    </filesets>
                 </configuration>
             </plugin>
         </plugins>
