@@ -9,14 +9,16 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>RESTEASY-1141-WF8</artifactId>
+    <artifactId>RESTEASY-1141-jetty</artifactId>
     <packaging>jar</packaging>
-    <name>RESTEASY-1141-WF8</name>
+    <name>RESTEASY-1141-jetty</name>
     <url>http://maven.apache.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <as-version>8.0.0.Final</as-version>
+        <jetty.version>8.1.1.v20120215</jetty.version>
+        <resteasy.version>3.0.15.Final-SNAPSHOT</resteasy.version>
+
     </properties>
 
     <build>
@@ -35,52 +37,6 @@
                 <version>2.12</version>
             </plugin>
             <plugin>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack</id>
-                        <phase>process-test-classes</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.wildfly</groupId>
-                                    <artifactId>wildfly-dist</artifactId>
-                                    <version>${as-version}</version>
-                                    <type>zip</type>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>target</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.6</version>
-                <executions>
-                    <execution>
-                        <id>unpack resteasy</id>
-                        <phase>process-test-classes</phase>
-                        <configuration>
-                            <target>
-                                <unzip src="../../jboss-modules/target/resteasy-jboss-modules-wf8-${project.version}.zip"
-                                       dest="${project.build.directory}/wildfly-${as-version}/modules/system/layers/base"
-                                       overwrite="true" />
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
@@ -93,8 +49,12 @@
                     </archive>
                 </configuration>
             </plugin>
-
         </plugins>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
     </build>
 
     <dependencyManagement>
@@ -122,14 +82,27 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.wildfly</groupId>
-            <artifactId>wildfly-arquillian-container-managed</artifactId>
-            <version>8.0.0.Alpha1</version>
+            <groupId>org.jboss.arquillian.protocol</groupId>
+            <artifactId>arquillian-protocol-servlet</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jboss.arquillian.protocol</groupId>
-            <artifactId>arquillian-protocol-servlet</artifactId>
+            <groupId>org.jboss.arquillian.container</groupId>
+            <artifactId>arquillian-jetty-embedded-7</artifactId>
+            <version>1.0.0.CR1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-webapp</artifactId>
+            <version>${jetty.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- plus and naming requires for using JNDI -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-plus</artifactId>
+            <version>${jetty.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
