@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.providers.yaml;
 
 import java.util.Date;
+import java.util.Map;
 
 public class MyObject
 {
@@ -10,6 +11,8 @@ public class MyObject
    private Date date;
 
    private MyNestedObject nested = new MyNestedObject();
+
+   private Map<String,MyNestedObject> data;
 
    public MyNestedObject getNested()
    {
@@ -41,11 +44,22 @@ public class MyObject
       this.date = date;
    }
 
-
-   @Override
-   public String toString()
-   {
-      return "MyObject[" + nested + "," + date + "," + nested + "]";
+   public Map<String, MyNestedObject> getData() {
+      return data;
    }
 
+   public void setData(Map<String, MyNestedObject> data) {
+      this.data = data;
+   }
+
+   @Override
+   public String toString() {
+      final StringBuilder sb = new StringBuilder("MyObject{");
+      sb.append("someText='").append(someText).append('\'');
+      sb.append(", date=").append(date);
+      sb.append(", nested=").append(nested);
+      sb.append(", data=").append(data);
+      sb.append('}');
+      return sb.toString();
+   }
 }

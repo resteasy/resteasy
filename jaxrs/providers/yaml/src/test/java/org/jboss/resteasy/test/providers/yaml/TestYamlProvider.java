@@ -8,6 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 public class TestYamlProvider extends BaseResourceTest {
@@ -32,7 +35,7 @@ public class TestYamlProvider extends BaseResourceTest {
        
        Assert.assertEquals("text/x-yaml", response.getResponseHeaders().getFirst("Content-Type"));
        
-       String s = response.getEntity();       
+       String s = response.getEntity();
        
        MyObject o1 = YamlResource.createMyObject();
 
@@ -49,7 +52,7 @@ public class TestYamlProvider extends BaseResourceTest {
        
        MyObject o1 = YamlResource.createMyObject();
 
-       String s1 = new Yaml().dump(o1); new String();
+       String s1 = new Yaml().dump(o1);
        
        request.body("text/x-yaml", s1);
        
@@ -72,10 +75,31 @@ public class TestYamlProvider extends BaseResourceTest {
        
        ClientResponse<?> response = request.post();
        
-       Assert.assertEquals(500, response.getStatus());
+       Assert.assertEquals(400, response.getStatus());
        
        response.releaseConnection();
        
+    }
+
+    @Test
+    public void testPostList() throws Exception {
+
+        ClientRequest request = new ClientRequest(TEST_URI + "/list");
+
+        List<String> data = Arrays.asList("a", "b", "c");
+
+        String s1 = new Yaml().dump(data).trim();
+
+        request.body("text/x-yaml", s1);
+
+        ClientResponse<String> response = request.post(String.class);
+
+        Assert.assertEquals(200, response.getStatus());
+
+        Assert.assertEquals("text/plain", response.getResponseHeaders().getFirst("Content-Type"));
+
+        Assert.assertEquals(s1, response.getEntity().trim());
+
     }
 
 }
