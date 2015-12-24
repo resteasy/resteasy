@@ -180,6 +180,7 @@
                 <module>jboss-modules</module>
                 <module>profiling-tests</module>
                 <module>resteasy-wadl</module>
+                <module>arquillian</module>
             </modules>
         </profile>
         <profile>
