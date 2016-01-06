@@ -31,7 +31,7 @@ public class TestCDIResource
    public void testCDIResourceFromServlet() throws Exception
    {
       Path from = FileSystems.getDefault().getPath("target/RESTEASY-1082.war").toAbsolutePath();
-      Path to = FileSystems.getDefault().getPath("target/wildfly-8.1.0.Final/standalone/deployments/RESTEASY-1082.war").toAbsolutePath();
+      Path to = FileSystems.getDefault().getPath("target/wildfly/standalone/deployments/RESTEASY-1082.war").toAbsolutePath();
 
       try
       {

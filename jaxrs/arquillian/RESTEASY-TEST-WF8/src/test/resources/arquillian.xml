@@ -13,7 +13,7 @@
    
    <container qualifier="jbossas-managed" default="true">
      <configuration>
-       <property name="jbossHome">target/wildfly-8.1.0.Final</property>
+       <property name="jbossHome">target/wildfly</property>
        <property name="serverConfig">standalone-full.xml</property>
        <property name="javaVmArguments">-Xmx4096m -XX:MaxPermSize=1024m</property>
        <!-- Uncomment next line to run server in debug mode.  -->
