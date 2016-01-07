@@ -13,7 +13,7 @@ public class ForwardServlet extends HttpServlet
 
    public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException
    {
-      System.out.println("enterng ForwardServlet.service()");
+      System.out.println("entering ForwardServlet.service()");
       res.getOutputStream().write("forward".getBytes());
    }
 }

@@ -15,7 +15,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <!--jetty.version>7.0.2.v20100331</jetty.version-->
       <jetty.version>8.1.1.v20120215</jetty.version>
-      <resteasy.version>3.0.15.Final-SNAPSHOT</resteasy.version>
   </properties>
   
   <dependencyManagement>
@@ -62,12 +61,12 @@
     <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs</artifactId>
-        <version>${resteasy.version}</version>
+        <version>${project.version}</version>
     </dependency>
     <dependency>
        <groupId>org.jboss.resteasy</groupId>
        <artifactId>async-http-servlet-3.0</artifactId>
-       <version>${resteasy.version}</version>
+       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

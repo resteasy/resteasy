@@ -1,6 +1,8 @@
 package org.jboss.resteasy.resteasy903;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletRequestWrapper;
+import javax.servlet.ServletResponseWrapper;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
@@ -46,7 +48,7 @@ public class TestResource
 
       try
       {
-         dispatcher.forward( request, response );
+         dispatcher.forward( new ServletRequestWrapper(request), new ServletResponseWrapper(response) );
       }
       catch (Exception e )
       {
