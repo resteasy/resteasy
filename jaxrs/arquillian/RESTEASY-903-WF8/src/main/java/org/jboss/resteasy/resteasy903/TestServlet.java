@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServlet;
 public class TestServlet extends HttpServlet
 {
    private static final long serialVersionUID = 1L;
-   
+
    public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException
    {
       System.out.println("entering TestServlet.service()");
