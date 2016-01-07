@@ -16,7 +16,6 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <as-version>8.1.0.Final</as-version>
   </properties>
 
   <build>
@@ -72,7 +71,7 @@
                             <artifactItem>
                                 <groupId>org.wildfly</groupId>
                                 <artifactId>wildfly-dist</artifactId>
-                                <version>${as-version}</version>
+                                <version>${dep.arquillian-wildfly.version}</version>
                                 <type>zip</type>
                                 <overWrite>false</overWrite>
                                 <outputDirectory>target</outputDirectory>
@@ -91,11 +90,16 @@
             <id>unpack resteasy</id>
             <phase>process-test-classes</phase>
             <configuration>
-              <target>
-                <unzip src="../../jboss-modules/target/resteasy-jboss-modules-wf8-${project.version}.zip"
-                       dest="${project.build.directory}/wildfly-${as-version}/modules/system/layers/base"
-                       overwrite="true" />
-              </target>
+                <target>
+                    <move todir="${project.build.directory}/wildfly">
+                        <fileset
+                                dir="${project.build.directory}/wildfly-${dep.arquillian-wildfly.version}"/>
+                    </move>
+                    <unzip src="../../jboss-modules/target/resteasy-jboss-modules-wf8-${project.version}.zip"
+                           dest="${project.build.directory}/wildfly/modules/system/layers/base"
+                           overwrite="true"/>
+                    <delete dir="target/dependency-maven-plugin-markers"/>
+                </target>
             </configuration>
             <goals>
               <goal>run</goal>

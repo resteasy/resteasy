@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -16,7 +17,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <as-version>8.0.0.Final</as-version>
     </properties>
 
     <build>
@@ -48,7 +48,7 @@
                                 <artifactItem>
                                     <groupId>org.wildfly</groupId>
                                     <artifactId>wildfly-dist</artifactId>
-                                    <version>${as-version}</version>
+                                    <version>${dep.arquillian-wildfly.version}</version>
                                     <type>zip</type>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>target</outputDirectory>
@@ -68,9 +68,14 @@
                         <phase>process-test-classes</phase>
                         <configuration>
                             <target>
+                                <move todir="${project.build.directory}/wildfly">
+                                    <fileset
+                                            dir="${project.build.directory}/wildfly-${dep.arquillian-wildfly.version}"/>
+                                </move>
                                 <unzip src="../../jboss-modules/target/resteasy-jboss-modules-wf8-${project.version}.zip"
-                                       dest="${project.build.directory}/wildfly-${as-version}/modules/system/layers/base"
-                                       overwrite="true" />
+                                       dest="${project.build.directory}/wildfly/modules/system/layers/base"
+                                       overwrite="true"/>
+                                <delete dir="target/dependency-maven-plugin-markers"/>
                             </target>
                         </configuration>
                         <goals>
@@ -102,7 +107,7 @@
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
                 <artifactId>arquillian-bom</artifactId>
-                <version>1.0.3.Final</version>
+                <version>${dep.arquillian-bom.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -124,7 +129,7 @@
         <dependency>
             <groupId>org.wildfly</groupId>
             <artifactId>wildfly-arquillian-container-managed</artifactId>
-            <version>8.0.0.Alpha1</version>
+            <version>${dep.arquillian-wildfly.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -135,7 +140,6 @@
         <dependency>
             <groupId>org.jboss.spec.javax.ws.rs</groupId>
             <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
-            <version>1.0.0.Final</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
