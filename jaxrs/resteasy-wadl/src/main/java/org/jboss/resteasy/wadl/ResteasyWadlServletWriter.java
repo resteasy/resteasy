@@ -1,6 +1,5 @@
 package org.jboss.resteasy.wadl;
 
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.wadl.jaxb.*;
 
 import javax.servlet.ServletOutputStream;

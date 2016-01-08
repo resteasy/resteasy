@@ -1,6 +1,7 @@
 package org.jboss.resteasy.wadl;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.wadl.i18n.LogMessages;
+import org.jboss.resteasy.wadl.i18n.Messages;
 import org.jboss.resteasy.wadl.jaxb.*;
 
 import javax.ws.rs.core.MediaType;
@@ -20,7 +21,6 @@ import static org.jboss.resteasy.wadl.ResteasyWadlMethodParamMetaData.MethodPara
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
 public class ResteasyWadlWriter {
-    private final static Logger logger = Logger.getLogger(ResteasyWadlWriter.class);
 
     public byte[] getBytes(String base, Map<String, ResteasyWadlServiceRegistry> serviceRegistries) throws JAXBException {
         StringWriter stringWriter = getStringWriter(base, serviceRegistries);
@@ -52,7 +52,7 @@ public class ResteasyWadlWriter {
     private void processWadl(ResteasyWadlServiceRegistry serviceRegistry, Resources root) throws JAXBException {
 
         for (Map.Entry<String, ResteasyWadlResourceMetaData> resourceMetaDataEntry : serviceRegistry.getResources().entrySet()) {
-            logger.debug("Path: " + resourceMetaDataEntry.getKey());
+            LogMessages.LOGGER.debug(Messages.MESSAGES.path(resourceMetaDataEntry.getKey()));
             Resource resourceClass = new Resource();
 
             resourceClass.setPath(resourceMetaDataEntry.getKey());

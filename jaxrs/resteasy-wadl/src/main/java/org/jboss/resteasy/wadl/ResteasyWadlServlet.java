@@ -1,8 +1,9 @@
 package org.jboss.resteasy.wadl;
 
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.wadl.i18n.LogMessages;
+import org.jboss.resteasy.wadl.i18n.Messages;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -20,7 +21,6 @@ import java.util.Map;
  */
 public class ResteasyWadlServlet extends HttpServlet {
 
-    private final static Logger logger = Logger.getLogger(ResteasyWadlServlet.class);
     private Map<String, ResteasyWadlServiceRegistry> services;
 
     private ResteasyWadlServletWriter apiWriter = new ResteasyWadlServletWriter();
@@ -28,13 +28,11 @@ public class ResteasyWadlServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        if (logger.isDebugEnabled())
-            logger.info("Loading ResteasyWadlServlet");
+        LogMessages.LOGGER.debug(Messages.MESSAGES.loadingResteasyWadlServlet());
 
         scanResources();
 
-        if (logger.isDebugEnabled())
-            logger.debug("ResteasyWadlServlet loaded");
+        LogMessages.LOGGER.debug(Messages.MESSAGES.resteasyWadlServletLoaded());
 
         // make it possible to get to us for rescanning
         ServletContext servletContext = config.getServletContext();
@@ -47,13 +45,11 @@ public class ResteasyWadlServlet extends HttpServlet {
         String pathInfo = req.getPathInfo();
         String uri = req.getRequestURL().toString();
         uri = uri.substring(0, uri.length() - req.getServletPath().length());
-        if (logger.isDebugEnabled()) {
-            logger.debug("Serving " + pathInfo);
-            logger.debug("Query " + req.getQueryString());
-        }
+        LogMessages.LOGGER.debug(Messages.MESSAGES.servingPathInfo(pathInfo));
+        LogMessages.LOGGER.debug(Messages.MESSAGES.query(req.getQueryString()));
         if (this.services == null) scanResources();
         if (this.services == null) {
-            resp.sendError(503, "There are no Resteasy deployments initialized yet to scan from. Either set the load-on-startup on each Resteasy servlet, or, if in an EE environment like JBoss or Wildfly, you'll have to do an invocation on each of your REST services to get the servlet loaded.");
+            resp.sendError(503, Messages.MESSAGES.noResteasyDeployments());
         }
         resp.setContentType(MediaType.APPLICATION_XML);
         this.apiWriter.writeWadl(uri, req, resp, services);

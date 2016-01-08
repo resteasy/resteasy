@@ -3,10 +3,11 @@ package org.jboss.resteasy.wadl;
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.util.GetRestful;
+import org.jboss.resteasy.wadl.i18n.LogMessages;
+import org.jboss.resteasy.wadl.i18n.Messages;
 
 import javax.ws.rs.Path;
 import java.lang.reflect.Method;
@@ -19,9 +20,6 @@ import java.util.Map;
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
 public class ResteasyWadlServiceRegistry {
-
-    private final static Logger logger = Logger
-            .getLogger(ResteasyWadlServiceRegistry.class);
 
     private ResourceMethodRegistry registry;
 
@@ -88,9 +86,7 @@ public class ResteasyWadlServiceRegistry {
                         if (locatorResourceType == null) {
                             // FIXME: we could generate an error for the client, which would be more informative than
                             // just logging this
-                            logger.warn("Impossible to generate WADL for subresource returned by method " +
-                                    method.getDeclaringClass().getName() + "." + method.getName() +
-                                    " since return type is not a static JAXRS resource type");                            // skip this
+                            LogMessages.LOGGER.warn(Messages.MESSAGES.impossibleToGenerateWADL(method.getDeclaringClass().getName(), method.getName())); // skip this
                             continue;
                         }
                         ResourceMethodRegistry locatorRegistry = new ResourceMethodRegistry(providerFactory);
