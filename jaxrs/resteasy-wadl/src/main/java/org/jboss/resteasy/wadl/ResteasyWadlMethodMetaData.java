@@ -2,8 +2,9 @@ package org.jboss.resteasy.wadl;
 
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.wadl.i18n.LogMessages;
+import org.jboss.resteasy.wadl.i18n.Messages;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -19,8 +20,6 @@ import java.util.Map;
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
 public class ResteasyWadlMethodMetaData {
-    private final static Logger logger = Logger
-            .getLogger(ResteasyWadlMethodMetaData.class);
 
     private ResourceMethodInvoker resourceInvoker;
     private Method method;
@@ -92,7 +91,7 @@ public class ResteasyWadlMethodMetaData {
         // this must be after we scan the params in case of @Form
         this.consumesMIMEType = getConsumes(consumes);
         if (wantsForm && !"application/x-www-form-urlencoded".equals(consumesMIMEType)) {
-            logger.warn("Overriding @Consumes annotation in favour of application/x-www-form-urlencoded due to the presence of @FormParam");
+            LogMessages.LOGGER.warn(Messages.MESSAGES.overridingConsumesAnnotation());
             this.consumesMIMEType = "application/x-www-form-urlencoded";
         }
     }
