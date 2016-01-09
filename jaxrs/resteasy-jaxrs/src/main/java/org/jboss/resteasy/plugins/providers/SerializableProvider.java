@@ -21,6 +21,17 @@ import java.lang.reflect.Type;
 
 
 /**
+ * MessageBodyReader+Writer for serialized java objects.<p/>
+ *
+ * This Provider has been disabled by default because deserializing java objects from untrusted sources is unsafe.
+ * (See http://foxglovesecurity.com/2015/11/06/what-do-weblogic-websphere-jboss-jenkins-opennms-and-your-application-have-in-common-this-vulnerability/
+ * or https://access.redhat.com/security/cve/cve-2015-7501). In case your application uses serialized objects and you trust
+ * your remote REST partners, then you may enable this provider: <ul>
+ *   <li>Either by providing a file &quot;META-INF/services/javax.ws.rs.ext.Providers&quot; with the fully qualified
+ *     classname in classpath (See src/main/resources/ for an example. Multiple files in different jars are additive.)</li>
+ *   <li>Or register() this Provider at ResteasyProviderFactory or at the jax-rs client.</li>
+ * </ul>
+ *
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
  * @version $Revision: 1.1 $
  *
