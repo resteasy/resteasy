@@ -1,7 +1,12 @@
 package org.jboss.resteasy.plugins.providers;
 
-import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.util.NoContent;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -10,15 +15,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-import javax.xml.transform.stream.StreamSource;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+
+import org.jboss.resteasy.util.HttpHeaderNames;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">BillBurke</a>
@@ -36,7 +34,6 @@ public class ReaderProvider implements MessageBodyReader<Reader>, MessageBodyWri
 
    public Reader readFrom(Class<Reader> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
-      if (NoContent.isContentLengthZero(httpHeaders)) return new InputStreamReader(new ByteArrayInputStream(new byte[0]));
       String charset = mediaType.getParameters().get("charset");
       if (charset == null) return new InputStreamReader(entityStream);
       else return new InputStreamReader(entityStream, charset);
