@@ -288,6 +288,7 @@ public class TestBeanValidationIntegrationSmoke {
 		Assert.assertEquals("bad numbers", resource.sumPost("a", "b"));
 		try {
 			resource.sumGet("c3", "2d");
+         Assert.fail("Expected ClientResponseFailure");
 		} catch (ClientResponseFailure e) {
 			Assert.assertEquals(400, e.getResponse().getStatus());
 			// should validate more things, not just status code
@@ -304,12 +305,14 @@ public class TestBeanValidationIntegrationSmoke {
 		
 		try {
 			resource.sumPost("a", "b");
+         Assert.fail("Expected ClientResponseFailure");
 		} catch (ClientResponseFailure e) {
 			Assert.assertEquals(400, e.getResponse().getStatus());
 			// should validate more things, not just status code
 		}
 		try {
 			resource.sumGet("c3", "2d");
+         Assert.fail("Expected ClientResponseFailure");
 		} catch (ClientResponseFailure e) {
 			Assert.assertEquals(400, e.getResponse().getStatus());
 			// should validate more things, not just status code
@@ -327,6 +330,7 @@ public class TestBeanValidationIntegrationSmoke {
 		Assert.assertEquals("bad numbers", resource.sumPost("a", "b"));
 		try {
 			resource.sumGet("c3", "2d");
+			Assert.fail("Expected ClientResponseFailure");
 		} catch (ClientResponseFailure e) {
 			Assert.assertEquals(400, e.getResponse().getStatus());
 			// should validate more things, not just status code
@@ -334,7 +338,7 @@ public class TestBeanValidationIntegrationSmoke {
 	}
 	
 	@Test
-//	@Ignore
+	@Ignore
 	public void shouldRespectInsertGroup() {
 		POJOResourceFactory noDefaults = new POJOResourceFactory(ShouldRespectGroups.Impl.class);
 		dispatcher.getRegistry().addResourceFactory(noDefaults);
@@ -351,6 +355,7 @@ public class TestBeanValidationIntegrationSmoke {
 		try {
 			input.setAge(1000);
 			resource.insert(input);
+         Assert.fail("Expected ClientResponseFailure");
 		} catch (ClientResponseFailure e) {
 			Assert.assertEquals(400, e.getResponse().getStatus());
 			// should validate more things, not just status code
@@ -360,6 +365,7 @@ public class TestBeanValidationIntegrationSmoke {
 			input.setId(123L);
 			input.setAge(27);
 			resource.insert(input);
+         Assert.fail("Expected ClientResponseFailure");
 		} catch (ClientResponseFailure e) {
 			Assert.assertEquals(400, e.getResponse().getStatus());
 			// should validate more things, not just status code
