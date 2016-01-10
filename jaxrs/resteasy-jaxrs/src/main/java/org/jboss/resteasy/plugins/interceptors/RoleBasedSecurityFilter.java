@@ -31,7 +31,11 @@ public class RoleBasedSecurityFilter implements ContainerRequestFilter
    @Override
    public void filter(ContainerRequestContext requestContext) throws IOException
    {
-      if (denyAll) requestContext.abortWith(Response.status(403).entity("Access forbidden: role not allowed").build());
+      if (denyAll) 
+      {
+         requestContext.abortWith(Response.status(403).entity("Access forbidden: role not allowed").build());
+         return;
+      }
       if (permitAll) return;
       if (rolesAllowed != null)
       {
@@ -43,6 +47,7 @@ public class RoleBasedSecurityFilter implements ContainerRequestFilter
                if (context.isUserInRole(role)) return;
             }
             requestContext.abortWith(Response.status(403).entity("Access forbidden: role not allowed").build());
+            return;
          }
       }
       return;
