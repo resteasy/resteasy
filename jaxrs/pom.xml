@@ -135,6 +135,8 @@
                 <module>tjws</module>
                 <module>resteasy-client</module>
                 <module>server-adapters/resteasy-undertow</module>
+                <module>resteasy-links</module>
+                <module>resteasy-servlet-initializer</module>
             </modules>
             <build>
                 <plugins>
