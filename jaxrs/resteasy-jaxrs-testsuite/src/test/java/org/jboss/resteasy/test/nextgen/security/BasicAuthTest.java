@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.security;
+package org.jboss.resteasy.test.nextgen.security;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -18,6 +18,11 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
+import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.embedded.SimpleSecurityDomain;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -30,17 +35,27 @@ import org.junit.Test;
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+
 import java.util.List;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 /**
+ * Based on org.jboss.resteasy.test.security.BasicAuthTest, but with JAX-RS 2.0
+ * client framework.
+ * 
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
+ * @author <a href="mailto:rsigal@redhat.com">Ron Sigal</a>
  * @version $Revision: 1 $
  */
 public class BasicAuthTest
@@ -190,68 +205,73 @@ public class BasicAuthTest
    @Test
    public void testProxyFailure() throws Exception
    {
-      BaseProxy proxy = ProxyFactory.create(BaseProxy.class, generateURL(""));
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyWebTarget target = client.target(generateURL(""));
+      BaseProxy proxy = target.proxy(BaseProxy.class);
+
       try
       {
          proxy.getFailure();
+         Assert.fail("Expected ClientErrorException");
       }
-      catch (ClientResponseFailure e)
+      catch (ClientErrorException e)
       {
          Assert.assertEquals(e.getResponse().getStatus(), 403);
-         Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, e.getResponse().getEntity(String.class));
+         try
+         {
+            Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, e.getResponse().readEntity(String.class));
+         }
+         catch (IllegalStateException e2)
+         {
+            // OK - response is closed.
+         }
       }
    }
 
    @Test
    public void testSecurity() throws Exception
    {
-      DefaultHttpClient client = new DefaultHttpClient();
+      DefaultHttpClient httpClient = new DefaultHttpClient();
       UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("bill", "password");
-      client.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY), credentials);
-      ClientExecutor executor = createAuthenticatingExecutor(client);
- 
-      {
-         ClientRequest request = new ClientRequest(generateURL("/secured"), executor);
-         ClientResponse<String> response = request.get(String.class);
-         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertEquals("hello", response.getEntity());
-         response.releaseConnection();
-      }
+      httpClient.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY), credentials);
+      ClientHttpEngine engine = createAuthenticatingEngine(httpClient);
+      ResteasyClient authorizedClient = new ResteasyClientBuilder().httpEngine(engine).build();
+      ResteasyClient unauthorizedClient = new ResteasyClientBuilder().build();
       
       {
-         ClientRequest request = new ClientRequest(generateURL("/secured/authorized"), executor);
-         ClientResponse<String> response = request.get(String.class);
+         WebTarget target = authorizedClient.target(generateURL("/secured"));
+         Response response = target.request().get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertEquals("authorized", response.getEntity());  
-         response.releaseConnection();
+         Assert.assertEquals("hello", response.readEntity(String.class));
       }
-      
       {
-         ClientRequest request = new ClientRequest(generateURL("/secured/deny"), executor);
-         ClientResponse<String> response = request.get(String.class);
+         WebTarget target = authorizedClient.target(generateURL("/secured/authorized"));
+         Response response = target.request().get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         Assert.assertEquals("authorized", response.readEntity(String.class));  
+      }
+      {
+         WebTarget target = authorizedClient.target(generateURL("/secured/deny"));
+         Response response = target.request().get();
          Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
-         Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.getEntity(String.class));
-         response.releaseConnection();
+         Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class));
       }
       {
-         ClientRequest request = new ClientRequest(generateURL("/secured3/authorized"), executor);
-         ClientResponse<String> response = request.get(String.class);
+         WebTarget target = authorizedClient.target(generateURL("/secured3/authorized"));
+         Response response = target.request().get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertEquals("authorized", response.getEntity());
-         response.releaseConnection();
+         Assert.assertEquals("authorized", response.readEntity(String.class));
       }
       {
-         ClientRequest request = new ClientRequest(generateURL("/secured3/authorized"));
-         ClientResponse<String> response = request.get(String.class);
+         WebTarget target = unauthorizedClient.target(generateURL("/secured3/authorized"));
+         Response response = target.request().get();
          Assert.assertEquals(403, response.getStatus());
-         Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.getEntity(String.class));
-         response.releaseConnection();
+         Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class));
       }
       {
-         ClientRequest request = new ClientRequest(generateURL("/secured3/anybody"));
-         ClientResponse<String> response = request.get(String.class);
+         WebTarget target = unauthorizedClient.target(generateURL("/secured3/anybody"));
+         Response response = target.request().get();
          Assert.assertEquals(200, response.getStatus());
-         response.releaseConnection();
       }
    }
 
@@ -268,11 +288,11 @@ public class BasicAuthTest
       DefaultHttpClient client = new DefaultHttpClient();
       UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("bill", "password");
       client.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY), credentials);
-      ClientExecutor executor = createAuthenticatingExecutor(client);
-      ClientRequest request = new ClientRequest(generateURL("/secured2"), executor);
-      ClientResponse<?> response = request.get();
+      ClientHttpEngine engine = createAuthenticatingEngine(client);
+      ResteasyClient authorizedClient = new ResteasyClientBuilder().httpEngine(engine).build();
+      WebTarget target = authorizedClient.target(generateURL("/secured2"));
+      Response response = target.request().get();
       Assert.assertEquals(404, response.getStatus());
-      response.releaseConnection();
    }
 
    @Test
@@ -287,25 +307,26 @@ public class BasicAuthTest
          EntityUtils.consume(response.getEntity());
       }
 
-      ClientExecutor executor = createAuthenticatingExecutor(client);
-      
       {
          UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("bill", "password");
          client.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY), credentials);
-         ClientRequest request = new ClientRequest(generateURL("/secured/authorized"), executor);
-         ClientResponse<String> response = request.get(String.class);
+         ClientHttpEngine engine = createAuthenticatingEngine(client);
+         ResteasyClient authorizedClient = new ResteasyClientBuilder().httpEngine(engine).build();
+         WebTarget target = authorizedClient.target(generateURL("/secured/authorized"));
+         Response response = target.request().get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         Assert.assertEquals("authorized", response.getEntity());  
+         Assert.assertEquals("authorized", response.readEntity(String.class));  
       }
       
       {
          UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("mo", "password");
          client.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY), credentials);
-         ClientRequest request = new ClientRequest(generateURL("/secured/authorized"), executor);
-         ClientResponse<?> response = request.get();
+         ClientHttpEngine engine = createAuthenticatingEngine(client);
+         ResteasyClient authorizedClient = new ResteasyClientBuilder().httpEngine(engine).build();
+         WebTarget target = authorizedClient.target(generateURL("/secured/authorized"));
+         Response response = target.request().get();
          Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
-         Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.getEntity(String.class));
-         response.releaseConnection();
+         Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class));
       }
    }
 
@@ -330,5 +351,24 @@ public class BasicAuthTest
       // Create ClientExecutor.
       ApacheHttpClient4Executor executor = new ApacheHttpClient4Executor(client, localContext);
       return executor;
+   }
+   
+   static private ClientHttpEngine createAuthenticatingEngine(DefaultHttpClient client)
+   {
+      // Create AuthCache instance
+      AuthCache authCache = new BasicAuthCache();
+      
+      // Generate BASIC scheme object and add it to the local auth cache
+      BasicScheme basicAuth = new BasicScheme();
+      HttpHost targetHost = new HttpHost("localhost", 8081);
+      authCache.put(targetHost, basicAuth);
+
+      // Add AuthCache to the execution context
+      BasicHttpContext localContext = new BasicHttpContext();
+      localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
+      
+      // Create ClientHttpEngine
+      ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(client, localContext);
+      return engine;
    }
 }
