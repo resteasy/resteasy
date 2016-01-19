@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import org.jboss.resteasy.util.GenericType;
-
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
