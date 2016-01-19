@@ -1,7 +1,6 @@
 package org.jboss.resteasy.security.smime;
 
-import org.jboss.resteasy.util.GenericType;
-
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import java.lang.reflect.Type;
 import java.security.cert.X509Certificate;
@@ -64,8 +63,8 @@ public class SMIMEOutput
 
    public void setType(GenericType t)
    {
-      type = t.getType();
-      genericType = t.getGenericType();
+      type = t.getRawType();
+      genericType = t.getType();
    }
 
    public MediaType getMediaType()

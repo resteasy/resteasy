@@ -5,11 +5,11 @@ import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.mail.smime.SMIMESigned;
 import org.jboss.resteasy.security.doseta.i18n.Messages;
-import org.jboss.resteasy.util.GenericType;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.ext.Providers;
 
 import java.lang.annotation.Annotation;
@@ -64,8 +64,8 @@ public class MultipartSignedInputImpl implements SignedInput
 
    public void setType(GenericType type)
    {
-      this.type = type.getType();
-      this.genericType = type.getGenericType();
+      this.type = type.getRawType();
+      this.genericType = type.getType();
    }
 
    public Type getGenericType()
@@ -120,11 +120,11 @@ public class MultipartSignedInputImpl implements SignedInput
 
    public Object getEntity(GenericType gt)
    {
-      return getEntity(gt.getType(),  gt.getGenericType(), annotations);
+      return getEntity(gt.getRawType(),  gt.getType(), annotations);
    }
    public Object getEntity(GenericType gt, Annotation[] ann)
    {
-      return getEntity(gt.getType(), gt.getGenericType(), ann);
+      return getEntity(gt.getRawType(), gt.getType(), ann);
    }
    public Object getEntity(Class t, Type gt, Annotation[] ann)
    {

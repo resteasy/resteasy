@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import org.jboss.resteasy.util.GenericType;
-
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -34,14 +33,14 @@ public class MultipartOutput
 
    public OutputPart addPart(Object entity, GenericType<?> type, MediaType mediaType)
    {
-      OutputPart outputPart = new OutputPart(entity, type.getType(), type.getGenericType(), mediaType);
+      OutputPart outputPart = new OutputPart(entity, type.getRawType(), type.getType(), mediaType);
       parts.add(outputPart);
       return outputPart;
    }
    
    public OutputPart addPart(Object entity, GenericType<?> type, MediaType mediaType, String filename)
    {
-      OutputPart outputPart = new OutputPart(entity, type.getType(), type.getGenericType(), mediaType, filename);
+      OutputPart outputPart = new OutputPart(entity, type.getRawType(), type.getType(), mediaType, filename);
       parts.add(outputPart);
       return outputPart;
    }   

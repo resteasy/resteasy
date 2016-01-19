@@ -10,11 +10,11 @@ import org.bouncycastle.mail.smime.SMIMEUtil;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.GenericType;
 
 import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -73,8 +73,8 @@ public class EnvelopedInputImpl implements EnvelopedInput
 
    public void setType(GenericType type)
    {
-      this.type = type.getType();
-      this.genericType = type.getGenericType();
+      this.type = type.getRawType();
+      this.genericType = type.getType();
    }
 
    public Type getGenericType()
@@ -139,7 +139,7 @@ public class EnvelopedInputImpl implements EnvelopedInput
 
    public Object getEntity(GenericType type)
    {
-      return getEntity(type.getType(), type.getGenericType(), annotations, privateKey,  certificate);
+      return getEntity(type.getRawType(), type.getType(), annotations, privateKey,  certificate);
    }
 
    public Object getEntity(GenericType type, PrivateKey key, X509Certificate cert)
@@ -149,7 +149,7 @@ public class EnvelopedInputImpl implements EnvelopedInput
 
    public Object getEntity(GenericType gt, Annotation[] ann, PrivateKey pKey, X509Certificate cert)
    {
-      return getEntity(gt.getType(), gt.getGenericType(), ann, pKey,  cert);
+      return getEntity(gt.getRawType(), gt.getType(), ann, pKey,  cert);
    }
    public Object getEntity(Class t, Type gt, Annotation[] ann, PrivateKey pKey, X509Certificate cert)
    {
