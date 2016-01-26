@@ -30,7 +30,6 @@ import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 public class TestBeanValidationIntegrationSmoke
 {
-
 	// GROUPS
 	public static interface UpdatePhase {
 	}
