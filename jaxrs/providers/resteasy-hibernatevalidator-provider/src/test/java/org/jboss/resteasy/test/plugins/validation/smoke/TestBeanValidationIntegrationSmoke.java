@@ -28,7 +28,8 @@ import javax.ws.rs.core.MediaType;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
-public class TestBeanValidationIntegrationSmoke {
+public class TestBeanValidationIntegrationSmoke
+{
 
 	// GROUPS
 	public static interface UpdatePhase {
