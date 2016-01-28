@@ -8,8 +8,8 @@ import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.Base64;
-import org.jboss.resteasy.util.GenericType;
 
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Providers;
@@ -118,8 +118,8 @@ public class PKCS7SignatureInput<T>
 
    public void setType(GenericType type)
    {
-      this.type = type.getType();
-      this.genericType = type.getGenericType();
+      this.type = type.getRawType();
+      this.genericType = type.getType();
    }
 
    public Type getGenericType()
@@ -174,11 +174,11 @@ public class PKCS7SignatureInput<T>
 
    public <T2> T2  getEntity(GenericType<T2> gt, MediaType mediaType)
    {
-      return getEntity(gt.getType(),  gt.getGenericType(), annotations, mediaType);
+      return getEntity((Class<T2>) gt.getRawType(),  gt.getType(), annotations, mediaType);
    }
    public <T2> T2   getEntity(GenericType<T2> gt, Annotation[] ann, MediaType mediaType)
    {
-      return getEntity(gt.getType(), gt.getGenericType(), ann, mediaType);
+      return getEntity((Class<T2>) gt.getRawType(), gt.getType(), ann, mediaType);
    }
    public <T2> T2  getEntity(Class<T2> t, Type gt, Annotation[] ann, MediaType mediaType)
    {

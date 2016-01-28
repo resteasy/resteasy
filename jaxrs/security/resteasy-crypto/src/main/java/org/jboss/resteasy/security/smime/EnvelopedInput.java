@@ -1,9 +1,9 @@
 package org.jboss.resteasy.security.smime;
 
-import org.jboss.resteasy.util.GenericType;
-
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+
+import javax.ws.rs.core.GenericType;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

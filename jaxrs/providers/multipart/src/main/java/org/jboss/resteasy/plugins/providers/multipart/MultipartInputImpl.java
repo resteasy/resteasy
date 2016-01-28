@@ -26,8 +26,8 @@ import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
-import org.jboss.resteasy.util.GenericType;
 
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -323,7 +323,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
 
       public <T> T getBody(GenericType<T> type) throws IOException
       {
-         return getBody(type.getType(), type.getGenericType());
+         return getBody((Class<T>) type.getRawType(), type.getType());
       }
 
       public InputStream getBody() throws IOException
