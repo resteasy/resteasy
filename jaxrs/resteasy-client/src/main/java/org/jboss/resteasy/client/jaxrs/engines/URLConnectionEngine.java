@@ -84,7 +84,11 @@ public class URLConnectionEngine implements ClientHttpEngine
             @Override
             public void releaseConnection() throws IOException
             {
-                getInputStream().close();
+                InputStream is = getInputStream();
+                if (is != null)
+                {
+                   is.close();
+                }
                 connection.disconnect();
             }
         };
