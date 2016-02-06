@@ -16,6 +16,7 @@
     <input type='button' onclick='testHeaderParam();' value='Test Header Param'/>
     <input type='button' onclick='testRESTEasy731False();' value='RESTEASY-731-false'/>
     <input type='button' onclick='testRESTEasy731Zero();' value='RESTEASY-731-zero'/>
+    <input type='button' onclick="testSublocator()" value="Test Subresource Locator"/>
 </form>
 
 <div id="path_result"></div>
@@ -31,6 +32,7 @@
 <div id="header_result"></div>
 <div id="testRESTEasy731FalseResult"></div>
 <div id="testRESTEasy731ZeroResult"></div>
+<div id="sublocatorResult"></div>
 
 <%
     javax.servlet.http.Cookie cookie = new Cookie("username", "Weinan");
@@ -39,6 +41,12 @@
 <script src="/resteasy-jsapi-testing/rest-js" type="text/javascript"></script>
 <script type="text/javascript">
     var global_order_id = 0;
+
+    function testSublocator() {
+        document.getElementById('sublocatorResult').innerHTML =
+                BookImpl.getChapter.getTitle({number:2})+BookImpl.getChapter.getBody({number:2});
+    }
+
     function testPathParam() {
         document.getElementById('path_result').innerHTML =
                 SmokeTestResource.testPathParam({id:global_order_id++});
