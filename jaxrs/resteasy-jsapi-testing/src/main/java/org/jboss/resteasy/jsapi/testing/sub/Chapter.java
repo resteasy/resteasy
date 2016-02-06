@@ -9,10 +9,10 @@ import javax.ws.rs.Produces;
  */
 @Path("")
 public interface Chapter {
-//    @GET
-//    @Path("title")
-//    @Produces("text/plain")
-//    String getTitle();
+    @GET
+    @Path("title")
+    @Produces("text/plain")
+    String getTitle();
 
     @GET
     @Path("body")

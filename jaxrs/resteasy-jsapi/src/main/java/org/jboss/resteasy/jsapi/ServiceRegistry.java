@@ -8,9 +8,8 @@ import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.jsapi.i18n.LogMessages;
 import org.jboss.resteasy.jsapi.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.util.GetRestful;
-
-import javax.ws.rs.Path;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -34,41 +33,41 @@ public class ServiceRegistry
 
 	private ArrayList<ServiceRegistry> locators;
 
-	private ResourceLocatorInvoker locator;
+	private ResourceLocatorInvoker invoker;
 
 	private String uri;
 
 	private String functionPrefix;
 
+	public ServiceRegistry getParent() {
+		return parent;
+	}
+
 	public ServiceRegistry(ServiceRegistry parent, ResourceMethodRegistry registry,
-			ResteasyProviderFactory providerFactory, ResourceLocatorInvoker locator)
-	{
+			ResteasyProviderFactory providerFactory, ResourceLocatorInvoker invoker) throws Exception {
 		this.parent = parent;
 		this.registry = registry;
 		this.providerFactory = providerFactory;
-		this.locator = locator;
-		if(locator != null){
-			Method method = locator.getMethod();
-			Path methodPath = method.getAnnotation(Path.class);
-			// TODO we should use invoker's ResourceMethod and ResourceClass to get more accurate info.
-			String methodPathVal = null;
-			if (methodPath != null)
-				methodPathVal = methodPath.value();
-			Class<?> declaringClass = method.getDeclaringClass();
-			Path classPath = declaringClass.getAnnotation(Path.class);
-			String classPathVal = null;
-			if (classPath != null)
-				classPathVal = classPath.value();
+		this.invoker = invoker;
+		if(invoker != null){
+			Method method = invoker.getMethod();
+
+			ResourceLocator resourceLocator = MethodMetaData.getResourceLocator(invoker);
+
+			String methodPathVal = resourceLocator.getPath();
+			String classPathVal = resourceLocator.getResourceClass().getPath();
+
 			this.uri = MethodMetaData.appendURIFragments(parent, classPathVal, methodPathVal);
+
 			if(parent.isRoot())
-				this.functionPrefix = declaringClass.getSimpleName() + "." + method.getName();
+				this.functionPrefix = method.getDeclaringClass().getSimpleName() + "." + method.getName();
 			else
 				this.functionPrefix = parent.getFunctionPrefix() + "." + method.getName();
 		}
 		scanRegistry();
 	}
 
-	private void scanRegistry() {
+	private void scanRegistry() throws Exception {
 		methods = new ArrayList<MethodMetaData>();
 		locators = new ArrayList<ServiceRegistry>();
 		for (Entry<String, List<ResourceInvoker>> entry : registry.getBounded().entrySet())
@@ -130,7 +129,7 @@ public class ServiceRegistry
 	public void collectResourceMethodsUntilRoot(List<Method> methods){
 		if(isRoot())
 			return;
-		methods.add(locator.getMethod());
+		methods.add(invoker.getMethod());
 		parent.collectResourceMethodsUntilRoot(methods);
 	}
 

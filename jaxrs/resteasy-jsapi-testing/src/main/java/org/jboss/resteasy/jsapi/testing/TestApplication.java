@@ -12,10 +12,10 @@ public class TestApplication extends javax.ws.rs.core.Application {
     HashSet<Object> singletons = new HashSet<Object>();
 
     public TestApplication() {
-//        singletons.add(new SmokeTestResource());
-//        singletons.add(new CachedResource());
-//        singletons.add(new AddImpl());
-//        singletons.add(new MinusImpl());
+        singletons.add(new SmokeTestResource());
+        singletons.add(new CachedResource());
+        singletons.add(new AddImpl());
+        singletons.add(new MinusImpl());
         singletons.add(new BookImpl());
     }
 

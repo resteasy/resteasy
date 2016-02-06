@@ -1,13 +1,14 @@
 package org.jboss.resteasy.jsapi;
 
 import org.jboss.resteasy.annotations.Form;
+import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.jsapi.MethodParamMetaData.MethodParamType;
 import org.jboss.resteasy.jsapi.i18n.LogMessages;
 import org.jboss.resteasy.jsapi.i18n.Messages;
+import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.util.FindAnnotation;
-import org.jboss.resteasy.util.GetRestful;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -37,24 +38,14 @@ public class MethodMetaData
 	private String functionPrefix;
 	private boolean wantsForm;
 
-	public MethodMetaData(ServiceRegistry serviceRegistry, ResourceMethodInvoker invoker)
-	{
+	public MethodMetaData(ServiceRegistry serviceRegistry, ResourceMethodInvoker invoker) throws Exception {
 		this.registry = serviceRegistry;
 		this.invoker = invoker;
 		this.method = invoker.getMethod();
-		Field resourceMethodField = null;
-		try {
-			resourceMethodField = invoker.getClass().getDeclaredField("method");
-			resourceMethodField.setAccessible(true);
-			this.resourceMethod = (ResourceMethod) resourceMethodField.get(invoker);
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace(); // TODO throw this properly
-		} catch (IllegalAccessException e) {
-			e.printStackTrace(); // TODO throw this properly
-		}
 
-
+		this.resourceMethod = (ResourceMethod) getResourceLocator(invoker);
 		this.klass = invoker.getResourceClass();
+
 		String methodPath = resourceMethod.getPath();
 		String klassPath = resourceMethod.getResourceClass().getPath();
 		Produces produces = method.getAnnotation(Produces.class);
@@ -65,7 +56,10 @@ public class MethodMetaData
 		Consumes consumes = method.getAnnotation(Consumes.class);
 		if (consumes == null)
 			consumes = klass.getAnnotation(Consumes.class);
+
+
 		this.uri = appendURIFragments(registry, klassPath, methodPath);
+
 		if(serviceRegistry.isRoot())
 			this.functionPrefix = klass.getSimpleName();
 		else
@@ -91,6 +85,13 @@ public class MethodMetaData
 		   LogMessages.LOGGER.warn(Messages.MESSAGES.overridingConsumes());
 			this.consumesMIMEType = "application/x-www-form-urlencoded";
 		}
+	}
+
+	public static ResourceLocator getResourceLocator(ResourceInvoker invoker) throws Exception {
+			Field resourceMethodField = null;
+			resourceMethodField = invoker.getClass().getDeclaredField("method");
+			resourceMethodField.setAccessible(true);
+			return (ResourceLocator) resourceMethodField.get(invoker);
 	}
 
 	protected void processMetaData(Class<?> type, Annotation[] annotations,
@@ -207,6 +208,12 @@ public class MethodMetaData
 		return "text/plain";
 	}
 
+	public static String appendURIFragments(ServiceRegistry registry, String classPath, String methodPath) {
+		return appendURIFragments(registry == null ? null : registry.getUri(),
+				notEmpty(classPath) ? classPath : null,
+				notEmpty(methodPath) ? methodPath : null);
+	}
+
 	public static String appendURIFragments(String... fragments)
 	{
 		StringBuilder str = new StringBuilder();
@@ -270,11 +277,6 @@ public class MethodMetaData
 		return httpMethods;
 	}
 
-	public static String appendURIFragments(ServiceRegistry registry, String classPath, String methodPath) {
-		return appendURIFragments(registry == null ? null : registry.getUri(), 
-				notEmpty(classPath) ? classPath : null,
-				notEmpty(methodPath) ? methodPath : null);
-	}
 
 	private static boolean notEmpty(String string) {
 		return string != null && !string.isEmpty();
