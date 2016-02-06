@@ -40,7 +40,7 @@ public class ServiceRegistry
 
 	private String functionPrefix;
 
-	public ServiceRegistry(ServiceRegistry parent, ResourceMethodRegistry registry, 
+	public ServiceRegistry(ServiceRegistry parent, ResourceMethodRegistry registry,
 			ResteasyProviderFactory providerFactory, ResourceLocatorInvoker locator)
 	{
 		this.parent = parent;
@@ -50,9 +50,16 @@ public class ServiceRegistry
 		if(locator != null){
 			Method method = locator.getMethod();
 			Path methodPath = method.getAnnotation(Path.class);
+			// TODO we should use invoker's ResourceMethod and ResourceClass to get more accurate info.
+			String methodPathVal = null;
+			if (methodPath != null)
+				methodPathVal = methodPath.value();
 			Class<?> declaringClass = method.getDeclaringClass();
 			Path classPath = declaringClass.getAnnotation(Path.class);
-			this.uri = MethodMetaData.appendURIFragments(parent, classPath, methodPath);
+			String classPathVal = null;
+			if (classPath != null)
+				classPathVal = classPath.value();
+			this.uri = MethodMetaData.appendURIFragments(parent, classPathVal, methodPathVal);
 			if(parent.isRoot())
 				this.functionPrefix = declaringClass.getSimpleName() + "." + method.getName();
 			else
@@ -60,7 +67,7 @@ public class ServiceRegistry
 		}
 		scanRegistry();
 	}
-	
+
 	private void scanRegistry() {
 		methods = new ArrayList<MethodMetaData>();
 		locators = new ArrayList<ServiceRegistry>();
@@ -119,7 +126,7 @@ public class ServiceRegistry
 	public String getFunctionPrefix() {
 		return functionPrefix;
 	}
-	
+
 	public void collectResourceMethodsUntilRoot(List<Method> methods){
 		if(isRoot())
 			return;
