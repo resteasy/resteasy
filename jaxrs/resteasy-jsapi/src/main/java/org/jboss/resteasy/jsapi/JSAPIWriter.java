@@ -138,8 +138,8 @@ public class JSAPIWriter
       for (MethodMetaData methodMetaData : serviceRegistry.getMethodMetaData())
       {
          LogMessages.LOGGER.debug(Messages.MESSAGES.path(methodMetaData.getUri()));
-         LogMessages.LOGGER.debug(Messages.MESSAGES.invoker(methodMetaData.getResource()));
-         String declaringPrefix = methodMetaData.getFunctionPrefix();
+         LogMessages.LOGGER.debug(Messages.MESSAGES.invoker(methodMetaData.getInvoker()));
+         String declaringPrefix = methodMetaData.getFunctionPrefix(); // TODO Add prefix path segment
          declarePrefix(writer, declaringPrefix, declaredPrefixes);
 
          for (String httpMethod : methodMetaData.getHttpMethods())

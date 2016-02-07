@@ -42,7 +42,9 @@ public class SmokingTest {
         selenium.click("//input[@value='Test Header Param']");
         selenium.click("//input[@value='RESTEASY-731-false']");
         selenium.click("//input[@value='RESTEASY-731-zero']");
+        selenium.click("//input[@value='Test Subresource Locator']");
 
+        assertTrue(selenium.isTextPresent("Chapter 2This is the content of chapter 2."));
         assertTrue(selenium.isTextPresent("0"));
         assertTrue(selenium.isTextPresent("exact:a::b::c::"));
         assertTrue(selenium.isTextPresent("exact:xyz"));
