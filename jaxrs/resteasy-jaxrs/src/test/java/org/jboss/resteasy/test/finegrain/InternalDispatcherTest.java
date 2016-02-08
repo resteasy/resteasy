@@ -45,6 +45,8 @@ public class InternalDispatcherTest
    private static Dispatcher dispatcher;
    private static ForwardingResource forwardingResource;
 
+   private static final String PATH = "/foo/bar";
+
    @Path("/")
    public interface Client
    {
@@ -94,6 +96,15 @@ public class InternalDispatcherTest
       @Path("/infinite-forward")
       int infiniteForward();
 
+      @GET
+      @Path(PATH + "/basic")
+      @Produces("text/plain")
+      String getComplexBasic();
+
+      @GET
+      @Path(PATH + "/forward/basic")
+      @Produces("text/plain")
+      String getComplexForwardBasic();
    }
 
    @Path("/")
@@ -188,6 +199,23 @@ public class InternalDispatcherTest
       {
          uriStack.push(uriInfo.getAbsolutePath().toString());
          return dispatcher.getResponse("/object/" + id);
+      }
+
+      @GET
+      @Path(PATH + "/basic")
+      @Produces("text/plain")
+      public String getComplexBasic() {
+         uriStack.push(uriInfo.getAbsolutePath().toString());
+         return PATH + basic;
+      }
+
+      @GET
+      @Produces("text/plain")
+      @Path(PATH + "/forward/basic")
+      public String complexForwardBasic(@Context InternalDispatcher dispatcher)
+      {
+         uriStack.push(uriInfo.getAbsolutePath().toString());
+         return (String) dispatcher.getEntity(PATH + "/basic");
       }
 
       @GET
@@ -294,6 +322,17 @@ public class InternalDispatcherTest
        Assert.assertEquals(baseUrl + "/basic", forwardingResource.uriStack.pop());
        Assert.assertEquals(baseUrl + "/forward/basic", forwardingResource.uriStack.pop());
        Assert.assertTrue(forwardingResource.uriStack.isEmpty());
+   }
+
+   @Test
+   public void testUriInfoForwardBasicComplexUri() {
+      String baseUrl = generateBaseUrl();
+      Client client = ProxyFactory.create(Client.class, baseUrl);
+
+      client.getComplexForwardBasic();
+      Assert.assertEquals(baseUrl + PATH + "/basic", forwardingResource.uriStack.pop());
+      Assert.assertEquals(baseUrl + PATH + "/forward/basic", forwardingResource.uriStack.pop());
+      Assert.assertTrue(forwardingResource.uriStack.isEmpty());
    }
 
 }
