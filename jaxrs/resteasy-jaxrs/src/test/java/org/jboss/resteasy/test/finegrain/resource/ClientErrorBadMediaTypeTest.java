@@ -19,8 +19,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -31,11 +29,6 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 public class ClientErrorBadMediaTypeTest
 {
    private static Dispatcher dispatcher;
-   private static Field delegateField;
-   private static MediaTypeHeaderDelegate originalDelegate;
-   private static Field modifiersField;
-   private static int originalModifiers;
-   private static boolean skipTest;
 
    @Path("/")
    public static class WebResourceUnsupportedMediaType
@@ -89,26 +82,7 @@ public class ClientErrorBadMediaTypeTest
 //      dispatcher = deployment.getDispatcher();
 //      dispatcher.getRegistry().addPerRequestResource(WebResourceUnsupportedMediaType.class);
       
-      try
-      {
-         delegateField = MediaType.class.getDeclaredField("delegate");
-         delegateField.setAccessible(true);
-         originalModifiers = delegateField.getModifiers();
-         System.out.println("original modifiers: " + originalModifiers);
-         originalDelegate = (MediaTypeHeaderDelegate) delegateField.get(null);
-         modifiersField = Field.class.getDeclaredField("modifiers");
-         modifiersField.setAccessible(true);
-         modifiersField.setInt(delegateField, originalModifiers & ~Modifier.FINAL);
-         System.out.println("new modifiers: " + delegateField.getModifiers());
-         TestMediaTypeHeaderDelegate delegate = new TestMediaTypeHeaderDelegate();
-         delegateField.set(null, delegate);
-         System.out.println("Set MediaType.delegate field to " + delegate);
-      }
-      catch (Exception e)
-      {
-         skipTest = true;
-         return;
-      }
+
       dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(WebResourceUnsupportedMediaType.class);
 
@@ -117,14 +91,7 @@ public class ClientErrorBadMediaTypeTest
    @AfterClass
    public static void after() throws Exception
    {
-      if (skipTest)
-      {
-         return;
-      }
       EmbeddedContainer.stop();
-      delegateField.set(null, originalDelegate);
-      System.out.println("Reset MediaType.delegate field to " + originalDelegate);
-      modifiersField.set(delegateField, originalModifiers);
    }
 
 
@@ -139,11 +106,7 @@ public class ClientErrorBadMediaTypeTest
    @Test
    public void testBadContentType() throws Exception
    {
-      if (skipTest)
-      {
-         System.out.println("Unable to change MediaType.delegate field.  Skipping test.");
-         return;
-      }
+
       // Configure use of TestMediaTypeHeaderDelegate.
 //      ResteasyProviderFactory factory = new ResteasyProviderFactory();
 //      factory.addHeaderDelegate(MediaType.class, new TestMediaTypeHeaderDelegate());
@@ -162,12 +125,12 @@ public class ClientErrorBadMediaTypeTest
 //      System.out.println("HeaderDelegate<MediaType>: " + MediaType.getDelegate());
       
       ClientRequest request = new ClientRequest(generateURL("/"));
-      request.body("text", "content");
+      request.body("foo/bar", "content");
       try
       {
          ClientResponse<?> response = request.post();
          System.out.println("status: " + response.getStatus());
-         Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+         Assert.assertEquals(HttpResponseCodes.SC_UNSUPPORTED_MEDIA_TYPE, response.getStatus());
       }
       catch (Exception e)
       {
