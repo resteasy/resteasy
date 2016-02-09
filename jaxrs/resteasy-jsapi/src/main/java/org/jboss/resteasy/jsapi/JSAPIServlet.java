@@ -43,7 +43,11 @@ public class JSAPIServlet extends HttpServlet
       if (LogMessages.LOGGER.isDebugEnabled())
          LogMessages.LOGGER.info(Messages.MESSAGES.loadingJSAPIServlet());
 
-      scanResources();
+      try {
+         scanResources();
+      } catch (Exception e) {
+         throw new ServletException(e);
+      }
 
       if (LogMessages.LOGGER.isDebugEnabled())
          LogMessages.LOGGER.debug(Messages.MESSAGES.jsapiServletLoaded());
@@ -65,7 +69,12 @@ public class JSAPIServlet extends HttpServlet
          LogMessages.LOGGER.debug(Messages.MESSAGES.serving(pathInfo));
          LogMessages.LOGGER.debug(Messages.MESSAGES.query(req.getQueryString()));
       }
-      if (this.services == null) scanResources();
+      if (this.services == null) try {
+         scanResources();
+      } catch (Exception e) {
+         resp.sendError(503, Messages.MESSAGES.thereAreNoResteasyDeployments()); // FIXME should return internal error
+      }
+
       if (this.services == null)
       {
          resp.sendError(503, Messages.MESSAGES.thereAreNoResteasyDeployments());
@@ -75,8 +84,7 @@ public class JSAPIServlet extends HttpServlet
 
    }
 
-   public void scanResources()
-   {
+   public void scanResources() throws Exception {
 
       ServletConfig config = getServletConfig();
       ServletContext servletContext = config.getServletContext();
