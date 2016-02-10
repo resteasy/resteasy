@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 @Configuration
-public class ResourceConfiguration
+public class ResourceConfiguration extends AbstractResourceConfiguration
 {
    @Bean
    public ResteasyRegistration singletonRegistration()
@@ -20,12 +20,17 @@ public class ResourceConfiguration
       return new ResteasyRegistration("/registered/prototype", "prototypeCounter");
    }
 
-   @Bean
+	@Bean
+	public ResteasyRegistration superRegistration() {
+		return new ResteasyRegistration("/registered/super", "superCounter");
+	}
+
+	@Bean
    Counter singletonCounter()
    {
       return new Counter();
    }
-   
+
    @Bean
    @Scope("prototype")
    public Counter prototypeCounter()
