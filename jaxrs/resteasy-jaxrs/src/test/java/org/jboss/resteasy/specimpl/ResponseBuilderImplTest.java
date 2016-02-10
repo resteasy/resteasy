@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * @author Michiel Meeuwissen
- * @since 3.0.14
+ * @since 3.0.15
  */
 public class ResponseBuilderImplTest
 {
