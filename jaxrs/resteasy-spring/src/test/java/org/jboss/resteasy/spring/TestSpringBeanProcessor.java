@@ -53,6 +53,19 @@ public class TestSpringBeanProcessor
       ClientResponse<String> resp = createClientRequest("/registered/singleton/count").post(
             String.class);
       check(resp, 200, "0");
+   }
+
+	@Test
+   // test for https://issues.jboss.org/browse/RESTEASY-1212
+	public void testRegistrationViaSuper() throws Exception
+   {
+		ClientResponse<String> resp = createClientRequest("/registered/super/count").post(
+				String.class);
+		check(resp, 200, "0");
+	}
+   
+   @Test
+   public void testNotRegisteredAtRoot() throws Exception {
       Assert.assertEquals(404, createClientRequest("/count").post().getStatus());
    }
 

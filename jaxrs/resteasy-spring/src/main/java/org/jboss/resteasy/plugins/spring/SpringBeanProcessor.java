@@ -19,7 +19,6 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
 
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -413,14 +412,20 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
             }
          }
 
-          final Class<?> beanClass = getBeanClass(factoryClassName);
-          final Method[] methods = ReflectionUtils.getAllDeclaredMethods(beanClass);
-          for (Method method : methods) {
-              if (method.getName().equals(factoryMethodName)) {
+         Class<?> factoryClass = getBeanClass(factoryClassName);
+         while (factoryClass != Object.class) 
+         {
+            for (Method method : factoryClass.getDeclaredMethods()) 
+            {
+               if (method.getName().equals(factoryMethodName)) {
                   return method.getReturnType();
-              }
-          }
-
+               }
+            }
+            factoryClass = factoryClass.getSuperclass();
+         }
+         final Class<?> beanClass = getBeanClass(factoryClassName);
+         final Method[] methods = beanClass.getDeclaredMethods();
+         
          /*
             https://github.com/resteasy/Resteasy/issues/585
 
