@@ -20,7 +20,9 @@ public class ProxyBuilder<T>
 	private final ResteasyWebTarget webTarget;
 	private ClassLoader loader = Thread.currentThread().getContextClassLoader();
 	private MediaType serverConsumes;
-	private MediaType serverProduces;
+   private MediaType serverProduces;
+   private MediaType preferredProduces;
+
 
    public static <T> ProxyBuilder<T> builder(Class<T> iface, WebTarget webTarget)
    {
@@ -98,6 +100,12 @@ public class ProxyBuilder<T>
 		return this;
 	}
 
+   public ProxyBuilder<T> preferredProduces(MediaType type)
+   {
+      this.preferredProduces = type;
+      return this;
+   }
+
 	public ProxyBuilder<T> defaultConsumes(MediaType type)
 	{
 		this.serverConsumes = type;
@@ -117,7 +125,7 @@ public class ProxyBuilder<T>
    }
 	public T build()
 	{
-      return proxy(iface, webTarget, new ProxyConfig(loader, serverConsumes, serverProduces));
+      return proxy(iface, webTarget, new ProxyConfig(loader, serverConsumes, serverProduces, preferredProduces));
 	}
 
 
