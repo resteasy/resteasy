@@ -518,7 +518,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          violationsContainer.addViolations(cvs);
          if (violationsContainer.size() > 0)
          {
-            throw new ResteasyViolationException(violationsContainer);
+            throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
          }
       }
       
