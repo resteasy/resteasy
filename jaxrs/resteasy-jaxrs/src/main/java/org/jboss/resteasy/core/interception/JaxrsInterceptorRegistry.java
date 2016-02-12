@@ -360,7 +360,15 @@ public class JaxrsInterceptorRegistry<T>
    {
       public int compare(Match match, Match match2)
       {
-         return match.order - match2.order;
+         if (match.order < match2.order)
+         {
+            return -1;
+         }
+         if (match.order == match2.order)
+         {
+            return 0;
+         }
+         return 1;
       }
    }
 
@@ -368,7 +376,15 @@ public class JaxrsInterceptorRegistry<T>
    {
       public int compare(Match match, Match match2)
       {
-         return match2.order - match.order;
+         if (match2.order < match.order)
+         {
+            return -1;
+         }
+         if (match2.order == match.order)
+         {
+            return 0;
+         }
+         return 1;
       }
    }
 
