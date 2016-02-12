@@ -20,6 +20,7 @@ public class SimpleViolationsContainer implements Serializable
    private Set<ConstraintViolation<Object>> violations = new HashSet<ConstraintViolation<Object>>();
    private Exception exception;
    private Object target;
+   private boolean fieldsValidated;
    
    public SimpleViolationsContainer(Object target)
    {
@@ -64,5 +65,15 @@ public class SimpleViolationsContainer implements Serializable
    public Set<ConstraintViolation<Object>> getViolations()
    {
       return violations;
+   }
+
+   public boolean isFieldsValidated()
+   {
+      return fieldsValidated;
+   }
+
+   public void setFieldsValidated(boolean fieldsValidated)
+   {
+      this.fieldsValidated = fieldsValidated;
    }
 }

@@ -100,11 +100,13 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       {
          SimpleViolationsContainer violationsContainer = getViolationsContainer(request, object);
          violationsContainer.setException(e);
+         violationsContainer.setFieldsValidated(true);
          throw new ResteasyViolationException(violationsContainer);
       }
       
       SimpleViolationsContainer violationsContainer = getViolationsContainer(request, object);
       violationsContainer.addViolations(cvs);
+      violationsContainer.setFieldsValidated(true);
    }
 
    @Override
@@ -113,7 +115,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       // Called from resteasy-jaxrs only if two argument version of isValidatable() returns true.
       SimpleViolationsContainer violationsContainer = getViolationsContainer(request, null);
       Object target = violationsContainer.getTarget();
-      if (target != null && !isWeldProxy(target.getClass()))
+      if (target != null && violationsContainer.isFieldsValidated())
       {
          if (violationsContainer != null && violationsContainer.size() > 0)
          {
@@ -161,7 +163,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          throw new ResteasyViolationException(violationsContainer);
       }
       violationsContainer.addViolations(cvs);
-      if (!isWeldProxy(object.getClass()) && violationsContainer.size() > 0)
+      if (violationsContainer.isFieldsValidated() && violationsContainer.size() > 0)
       {
          throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }
@@ -571,30 +573,6 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       return locale;
    }
    
-   private static final String WELD_PROXY_INTERFACE_NAME = "org.jboss.weld.bean.proxy.ProxyObject";
-
-   /**
-    * Whether the given class is a proxy created by Weld or not. This is
-    * the case if the given class implements the interface
-    * {@code org.jboss.weld.bean.proxy.ProxyObject}.
-    * 
-    * Borrowed from org.jboss.resteasy.spi.metadata.ResourceBuilder.
-    *
-    * @param clazz the class of interest
-    *
-    * @return {@code true} if the given class is a Weld proxy,
-    * {@code false} otherwise
-    */
-   private static boolean isWeldProxy(Class<?> clazz) {
-      for ( Class<?> implementedInterface : clazz.getInterfaces() ) {
-         if ( implementedInterface.getName().equals( WELD_PROXY_INTERFACE_NAME ) ) {
-            return true;
-         }
-      }
-
-      return false;
-   }
-
    /**
     * A filter implementation filtering methods matching given methods.
     * 
