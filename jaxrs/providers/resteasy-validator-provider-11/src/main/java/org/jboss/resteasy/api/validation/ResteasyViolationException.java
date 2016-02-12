@@ -48,7 +48,7 @@ public class ResteasyViolationException extends ConstraintViolationException
    private List<ResteasyConstraintViolation> allViolations; 
    private List<List<ResteasyConstraintViolation>> violationLists;
    
-   private ConstraintTypeUtil11 util = new ConstraintTypeUtil11();
+   transient private ConstraintTypeUtil11 util = new ConstraintTypeUtil11();
    private boolean suppressPath;
    
    /**
