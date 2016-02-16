@@ -2,7 +2,7 @@
  * This package (along with @see org.jboss.resteasy.test.resteasy1137) tests versioning compatibility
  * of the class org.jboss.resteasy.api.validation.ResteasyViolationException in module resteasy-validator-provider11.
  * 
- * As of release 3.0.15.Final-SNAPSHOT, ResteasyViolationException was changed from a subclass of javax.validation.ValidationException
+ * As of release 3.0.15.Final, ResteasyViolationException was changed from a subclass of javax.validation.ValidationException
  * to a subclass of javax.validation.ConstraintViolationException, which is a subclass of javax.validation.ValidationException.
  * 
  * The jar validation-versioning.jar in src/test/resources/1137 contains the class 
