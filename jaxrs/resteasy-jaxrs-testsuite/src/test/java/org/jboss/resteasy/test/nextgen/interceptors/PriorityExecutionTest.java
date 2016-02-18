@@ -311,6 +311,7 @@ public class PriorityExecutionTest extends BaseResourceTest
       client.register(ClientRequestFilterMax.class);
 
       Response response = client.target(generateURL("/test")).request().get();
+      response.bufferEntity();
       System.out.println(response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("test", response.getEntity());
