@@ -25,7 +25,6 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import junit.framework.Assert;
@@ -130,6 +129,7 @@ public class TestDefaultNumberWriter
    {
       Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/Byte")).request().get();
+      response.bufferEntity();
       System.out.println(response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("123", response.getEntity());
@@ -141,6 +141,7 @@ public class TestDefaultNumberWriter
    {
       Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/byte")).request().get();
+      response.bufferEntity();
       System.out.println(response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("123", response.getEntity());
@@ -152,6 +153,7 @@ public class TestDefaultNumberWriter
    {
       Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/Double")).request().get();
+      response.bufferEntity();
       System.out.println(response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("123.4", response.getEntity());
@@ -163,6 +165,7 @@ public class TestDefaultNumberWriter
    {
       Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/double")).request().get();
+      response.bufferEntity();
       System.out.println(response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("123.4", response.getEntity());
@@ -174,6 +177,7 @@ public class TestDefaultNumberWriter
    {
       Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/Float")).request().get();
+      response.bufferEntity();
       System.out.println(response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("123.4", response.getEntity());
@@ -185,6 +189,7 @@ public class TestDefaultNumberWriter
    {
       Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/float")).request().get();
+      response.bufferEntity();
       System.out.println(response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("123.4", response.getEntity());
@@ -196,6 +201,7 @@ public class TestDefaultNumberWriter
    {
       Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/Integer")).request().get();
+      response.bufferEntity();
       System.out.println(response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("123", response.getEntity());
@@ -207,6 +213,7 @@ public class TestDefaultNumberWriter
    {
       Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/integer")).request().get();
+      response.bufferEntity();
       System.out.println(response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("123", response.getEntity());
@@ -218,6 +225,7 @@ public class TestDefaultNumberWriter
    {
       Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/Long")).request().get();
+      response.bufferEntity();
       System.out.println(response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("123", response.getEntity());
@@ -229,6 +237,7 @@ public class TestDefaultNumberWriter
    {
       Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/long")).request().get();
+      response.bufferEntity();
       System.out.println(response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("123", response.getEntity());
@@ -240,6 +249,7 @@ public class TestDefaultNumberWriter
    {
       Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/Short")).request().get();
+      response.bufferEntity();
       System.out.println(response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("123", response.getEntity());
@@ -251,6 +261,7 @@ public class TestDefaultNumberWriter
    {
       Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/short")).request().get();
+      response.bufferEntity();
       System.out.println(response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("123", response.getEntity());
@@ -262,6 +273,7 @@ public class TestDefaultNumberWriter
    {
       Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/test/bigDecimal")).request().get();
+      response.bufferEntity();
       System.out.println(response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("123", response.getEntity());
@@ -274,6 +286,7 @@ public class TestDefaultNumberWriter
       Client client = ClientBuilder.newClient();
       client.register(MyDefaultNumberWriter.class);
       Response response = client.target(generateURL("/test/bigDecimal")).request().get();
+      response.bufferEntity();
       System.out.println(response.readEntity(String.class));
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("123", response.getEntity());

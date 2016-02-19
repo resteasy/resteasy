@@ -186,7 +186,7 @@ public abstract class ClientResponse extends BuiltResponse
             {
                try
                {
-            	   releaseConnection();
+            	   close();
                }
                catch (Exception ignored)
                {
