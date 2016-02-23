@@ -8,9 +8,12 @@ import java.util.Collection;
 /**
  * implemented by every generated proxy
  *
+ * @deprecated The Resteasy client framework in resteasy-jaxrs is replaced by the JAX-RS 2.0 compliant resteasy-client module.
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Deprecated
 public interface ResteasyClientProxy
 {
    Collection<ClientInvoker> getResteasyClientInvokers();
