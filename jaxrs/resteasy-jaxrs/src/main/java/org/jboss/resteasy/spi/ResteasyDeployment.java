@@ -118,9 +118,11 @@ public class ResteasyDeployment
       }
       else
       {
-         SynchronousDispatcher dis = new SynchronousDispatcher(providerFactory);
-         dis.getUnwrappedExceptions().addAll(unwrappedExceptions);
-         dispatcher = dis;
+         if(dispatcher == null) {
+            SynchronousDispatcher dis = new SynchronousDispatcher(providerFactory);
+            dis.getUnwrappedExceptions().addAll(unwrappedExceptions);
+            dispatcher = dis;
+         }
       }
       registry = dispatcher.getRegistry();
       if (widerRequestMatching)
