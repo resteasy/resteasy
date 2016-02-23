@@ -118,6 +118,9 @@ public class ResteasyDeployment
       }
       else
       {
+         // If dispatcher is NOT null, that means it has already been set
+         // previously, so we don' want to do it again, otherwise the original
+         // one will be replaced
          if(dispatcher == null) {
             SynchronousDispatcher dis = new SynchronousDispatcher(providerFactory);
             dis.getUnwrappedExceptions().addAll(unwrappedExceptions);
