@@ -12,6 +12,8 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -20,6 +22,7 @@ import junit.framework.Assert;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.After;
@@ -64,7 +67,7 @@ public class TestSecureProcessingFeature
       String versionString = s.substring(start + 1, end);
       int version = Integer.parseInt(versionString);
       jdk18plus = version >= 8;
-      System.out.println("using jdk " + s);
+      //System.out.println("using jdk " + s);
    }
    
    protected static ResteasyDeployment deployment;
@@ -121,6 +124,15 @@ public class TestSecureProcessingFeature
    
    String bar = "<!DOCTYPE bar SYSTEM \"src/test/java/org/jboss/resteasy/test/xxe/external.dtd\"><bar><s>junk</s></bar>";
    
+   public static class TestExceptionMapper implements ExceptionMapper<ReaderException>
+   {
+      @Override
+      public Response toResponse(ReaderException exception)
+      {  
+         return Response.status(400).entity(exception.getMessage()).build();
+      } 
+   }
+   
    @Path("/")
    public static class TestResource
    {
@@ -129,7 +141,7 @@ public class TestSecureProcessingFeature
       @Consumes({"application/xml"})
       public String addFavoriteMovie(FavoriteMovieXmlRootElement movie)
       {
-         System.out.println("TestResource(xmlRootElment): title = " + movie.getTitle().substring(0, 30));
+         //System.out.println("TestResource(xmlRootElment): title = " + movie.getTitle().substring(0, 30));
          return movie.getTitle();
       }
       
@@ -138,7 +150,7 @@ public class TestSecureProcessingFeature
       @Consumes({"application/xml"})
       public String addFavoriteMovie(FavoriteMovieXmlType movie)
       {
-         System.out.println("TestResource(xmlType): title = " + movie.getTitle().substring(0, 30));
+         //System.out.println("TestResource(xmlType): title = " + movie.getTitle().substring(0, 30));
          return movie.getTitle();
       }
       
@@ -147,7 +159,7 @@ public class TestSecureProcessingFeature
       @Consumes("application/xml")
       public String addFavoriteMovie(JAXBElement<FavoriteMovie> value)
       {
-         System.out.println("TestResource(JAXBElement): title = " + value.getValue().getTitle().substring(0, 30));
+         //System.out.println("TestResource(JAXBElement): title = " + value.getValue().getTitle().substring(0, 30));
          return value.getValue().getTitle();
       }
     
@@ -161,7 +173,7 @@ public class TestSecureProcessingFeature
          while (it.hasNext())
          {
             String title = it.next().getTitle();
-            System.out.println("TestResource(collection): title = " + title.substring(0, 30));
+            //System.out.println("TestResource(collection): title = " + title.substring(0, 30));
             titles += title;
          }
          return titles;
@@ -177,7 +189,7 @@ public class TestSecureProcessingFeature
          while (it.hasNext())
          {
             String title = map.get(it.next()).getTitle();
-            System.out.println("TestResource(map): title = " + title.substring(0, 30));
+            //System.out.println("TestResource(map): title = " + title.substring(0, 30));
             titles += title;
          }
          return titles;
@@ -188,7 +200,7 @@ public class TestSecureProcessingFeature
       @Consumes(MediaType.APPLICATION_XML)
       public String DTD(Bar bar)
       {
-         System.out.println("bar: " + bar.getS());
+         //System.out.println("bar: " + bar.getS());
          return bar.getS();
       }
       
@@ -197,7 +209,7 @@ public class TestSecureProcessingFeature
       @Consumes(MediaType.APPLICATION_XML)
       public String maxAttributes(Bar bar)
       {
-         System.out.println("bar: " + bar.getS());
+         //System.out.println("bar: " + bar.getS());
          return "bar";
       }
    }
@@ -208,6 +220,7 @@ public class TestSecureProcessingFeature
       deployment = EmbeddedContainer.start(initParams, contextParams);
       dispatcher = deployment.getDispatcher();
       deployment.getRegistry().addPerRequestResource(TestResource.class);
+      deployment.getProviderFactory().register(TestExceptionMapper.class);
    }
    
    @After
@@ -468,9 +481,9 @@ public class TestSecureProcessingFeature
       ClientRequest request = new ClientRequest(generateURL("/DTD"));
       request.body("application/xml", bar);
       ClientResponse<?> response = request.post();
-      System.out.println("status: " + response.getStatus());
+      //System.out.println("status: " + response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("doDTDFails(): result: " + entity);
+      //System.out.println("doDTDFails(): result: " + entity);
       Assert.assertEquals(400, response.getStatus());
       Assert.assertTrue(entity.startsWith("javax.xml.bind.UnmarshalException"));
       Assert.assertTrue(entity.contains("DOCTYPE is disallowed"));  
@@ -481,9 +494,9 @@ public class TestSecureProcessingFeature
       ClientRequest request = new ClientRequest(generateURL("/DTD"));
       request.body("application/xml", bar);
       ClientResponse<?> response = request.post();
-      System.out.println("status: " + response.getStatus());
+      //System.out.println("status: " + response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("doDTDPasses() result: " + entity);
+      //System.out.println("doDTDPasses() result: " + entity);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("junk", entity);
    }
@@ -493,9 +506,9 @@ public class TestSecureProcessingFeature
       ClientRequest request = new ClientRequest(generateURL("/DTD"));
       request.body("application/xml", bar);
       ClientResponse<?> response = request.post();
-      System.out.println("status: " + response.getStatus());
+      //System.out.println("status: " + response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("doExternalDTDFails(): result: " + entity);
+      //System.out.println("doExternalDTDFails(): result: " + entity);
       Assert.assertEquals(400, response.getStatus());
       Assert.assertTrue(entity.startsWith("javax.xml.bind.UnmarshalException"));
       Assert.assertTrue(entity.contains("External DTD: Failed to read external DTD "));  
@@ -507,9 +520,9 @@ public class TestSecureProcessingFeature
          ClientRequest request = new ClientRequest(generateURL("/entityExpansion/xmlRootElement"));
          request.body("application/xml", bigXmlRootElement);
          ClientResponse<?> response = request.post();
-         System.out.println("status: " + response.getStatus());
+         //System.out.println("status: " + response.getStatus());
          String entity = response.getEntity(String.class);
-         System.out.println("doMaxEntitiesFails() result: " + entity);
+         //System.out.println("doMaxEntitiesFails() result: " + entity);
          Assert.assertEquals(400, response.getStatus());
          Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException"));
       }
@@ -517,9 +530,9 @@ public class TestSecureProcessingFeature
          ClientRequest request = new ClientRequest(generateURL("/entityExpansion/xmlType"));
          request.body("application/xml", bigXmlType);
          ClientResponse<?> response = request.post();
-         System.out.println("status: " + response.getStatus());
+         //System.out.println("status: " + response.getStatus());
          String entity = response.getEntity(String.class);
-         System.out.println("doMaxEntitiesFails() result: " + entity);
+         //System.out.println("doMaxEntitiesFails() result: " + entity);
          Assert.assertEquals(400, response.getStatus());
          Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException")); 
       }
@@ -527,9 +540,9 @@ public class TestSecureProcessingFeature
          ClientRequest request = new ClientRequest(generateURL("/entityExpansion/JAXBElement"));
          request.body("application/xml", bigJAXBElement);
          ClientResponse<?> response = request.post();
-         System.out.println("status: " + response.getStatus());
+         //System.out.println("status: " + response.getStatus());
          String entity = response.getEntity(String.class);
-         System.out.println("doMaxEntitiesFails() result: " + entity);
+         //System.out.println("doMaxEntitiesFails() result: " + entity);
          Assert.assertEquals(400, response.getStatus());
          Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException")); 
       }
@@ -537,9 +550,9 @@ public class TestSecureProcessingFeature
          ClientRequest request = new ClientRequest(generateURL("/entityExpansion/collection"));
          request.body("application/xml", bigCollection);
          ClientResponse<?> response = request.post();
-         System.out.println("status: " + response.getStatus());
+         //System.out.println("status: " + response.getStatus());
          String entity = response.getEntity(String.class);
-         System.out.println("doMaxEntitiesFails() result: " + entity);
+         //System.out.println("doMaxEntitiesFails() result: " + entity);
          Assert.assertEquals(400, response.getStatus());
          Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException")); 
       }
@@ -547,9 +560,9 @@ public class TestSecureProcessingFeature
          ClientRequest request = new ClientRequest(generateURL("/entityExpansion/map"));
          request.body("application/xml", bigMap);
          ClientResponse<?> response = request.post();
-         System.out.println("status: " + response.getStatus());
+         //System.out.println("status: " + response.getStatus());
          String entity = response.getEntity(String.class);
-         System.out.println("doMaxEntitiesFails() result: " + entity);
+         //System.out.println("doMaxEntitiesFails() result: " + entity);
          Assert.assertEquals(400, response.getStatus());
          Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException")); 
       }
@@ -557,14 +570,14 @@ public class TestSecureProcessingFeature
    
    void doMaxEntitiesPasses() throws Exception
    {
-      System.out.println("entering doEntityExpansionPasses()");
+      //System.out.println("entering doEntityExpansionPasses()");
       {
          ClientRequest request = new ClientRequest(generateURL("/entityExpansion/xmlRootElement"));
          request.body("application/xml", bigXmlRootElement);
          ClientResponse<?> response = request.post();
-         System.out.println("status: " + response.getStatus());
+         //System.out.println("status: " + response.getStatus());
          String entity = response.getEntity(String.class);
-         System.out.println("doMaxEntitiesPasses() result: " + entity.substring(0, 30) + "...");
+         //System.out.println("doMaxEntitiesPasses() result: " + entity.substring(0, 30) + "...");
          Assert.assertEquals(200, response.getStatus());
          Assert.assertEquals(100000, countFoos(entity));
       }
@@ -572,9 +585,9 @@ public class TestSecureProcessingFeature
          ClientRequest request = new ClientRequest(generateURL("/entityExpansion/xmlType"));
          request.body("application/xml", bigXmlType);
          ClientResponse<?> response = request.post();
-         System.out.println("status: " + response.getStatus());
+         //System.out.println("status: " + response.getStatus());
          String entity = response.getEntity(String.class);
-         System.out.println("doMaxEntitiesPasses() result: " + entity.substring(0, 30) + "...");
+         //System.out.println("doMaxEntitiesPasses() result: " + entity.substring(0, 30) + "...");
          Assert.assertEquals(200, response.getStatus());
          Assert.assertEquals(100000, countFoos(entity));
       }
@@ -582,9 +595,9 @@ public class TestSecureProcessingFeature
          ClientRequest request = new ClientRequest(generateURL("/entityExpansion/JAXBElement"));
          request.body("application/xml", bigJAXBElement);
          ClientResponse<?> response = request.post();
-         System.out.println("status: " + response.getStatus());
+         //System.out.println("status: " + response.getStatus());
          String entity = response.getEntity(String.class);
-         System.out.println("doMaxEntitiesPasses() result: " + entity.substring(0, 30) + "...");
+         //System.out.println("doMaxEntitiesPasses() result: " + entity.substring(0, 30) + "...");
          Assert.assertEquals(200, response.getStatus());
          Assert.assertEquals(100000, countFoos(entity));
       }
@@ -592,9 +605,9 @@ public class TestSecureProcessingFeature
          ClientRequest request = new ClientRequest(generateURL("/entityExpansion/collection"));
          request.body("application/xml", bigCollection);
          ClientResponse<?> response = request.post();
-         System.out.println("status: " + response.getStatus());
+         //System.out.println("status: " + response.getStatus());
          String entity = response.getEntity(String.class);
-         System.out.println("doMaxEntitiesPasses() result: " + entity.substring(0, 30) + "...");
+         //System.out.println("doMaxEntitiesPasses() result: " + entity.substring(0, 30) + "...");
          Assert.assertEquals(200, response.getStatus());
          Assert.assertEquals(200000, countFoos(entity));
       }
@@ -602,9 +615,9 @@ public class TestSecureProcessingFeature
          ClientRequest request = new ClientRequest(generateURL("/entityExpansion/map"));
          request.body("application/xml", bigMap);
          ClientResponse<?> response = request.post();
-         System.out.println("status: " + response.getStatus());
+         //System.out.println("status: " + response.getStatus());
          String entity = response.getEntity(String.class);
-         System.out.println("doEntityExpansionPasses() result: " + entity.substring(0, 30) + "...");
+         //System.out.println("doEntityExpansionPasses() result: " + entity.substring(0, 30) + "...");
          Assert.assertEquals(200, response.getStatus());
          Assert.assertEquals(200000, countFoos(entity));
       }
@@ -615,9 +628,9 @@ public class TestSecureProcessingFeature
       ClientRequest request = new ClientRequest(generateURL("/maxAttributes"));
       request.body("application/xml", bigAttributeDoc);
       ClientResponse<?> response = request.post();
-      System.out.println("status: " + response.getStatus());
+      //System.out.println("status: " + response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("doMaxAttributesFails() result: " + entity);
+      //System.out.println("doMaxAttributesFails() result: " + entity);
       Assert.assertEquals(400, response.getStatus());
       Assert.assertTrue(entity.startsWith("javax.xml.bind.UnmarshalException"));
       Assert.assertTrue(entity.contains("has more than \"10,000\" attributes")); 
@@ -628,9 +641,9 @@ public class TestSecureProcessingFeature
       ClientRequest request = new ClientRequest(generateURL("/maxAttributes"));
       request.body("application/xml", bigAttributeDoc);
       ClientResponse<?> response = request.post();
-      System.out.println("status: " + response.getStatus());
+      //System.out.println("status: " + response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("doMaxAttributesPasses() result: " + entity);
+      //System.out.println("doMaxAttributesPasses() result: " + entity);
       Assert.assertEquals(200, response.getStatus()); 
       Assert.assertEquals("bar", entity);
    }
