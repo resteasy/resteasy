@@ -1856,8 +1856,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(this);
          }
-         containerRequestFilterRegistry.registerSingleton((ContainerRequestFilter) provider);
          int priority = getPriority(priorityOverride, contracts, ContainerRequestFilter.class, provider.getClass());
+         containerRequestFilterRegistry.registerSingleton((ContainerRequestFilter) provider, priority);
          newContracts.put(ContainerRequestFilter.class, priority);
       }
       if (isA(provider, PostProcessInterceptor.class, contracts))
@@ -1875,8 +1875,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
          }
-         containerResponseFilterRegistry.registerSingleton((ContainerResponseFilter) provider);
          int priority = getPriority(priorityOverride, contracts, ContainerResponseFilter.class, provider.getClass());
+         containerResponseFilterRegistry.registerSingleton((ContainerResponseFilter) provider, priority);
          newContracts.put(ContainerResponseFilter.class, priority);
       }
       if (isA(provider, ReaderInterceptor.class, contracts))
