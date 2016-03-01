@@ -7,7 +7,7 @@ Resteasy is a JBoss.org project aimed at providing productivity frameworks for d
 The project page can be found at http://resteasy.jboss.org
 
 ## JAX-RS
-RESTEasy is a JBoss project that provides various frameworks to help you build RESTful Web Services and RESTful Java applications. It is a fully certified and portable implementation of the JAX-RS specification. JAX-RS is a new JCP specification that provides a Java API for RESTful Web Services over the HTTP protocol.
+RESTEasy is a JBoss project that provides various frameworks to help you build RESTful Web Services and RESTful Java applications. It is a portable implementation of the JAX-RS specification. JAX-RS is a new JCP specification that provides a Java API for RESTful Web Services over the HTTP protocol.
 
 Read the entire specification [here](https://jax-rs-spec.java.net/)
 
