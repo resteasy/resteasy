@@ -99,6 +99,10 @@ public interface LogMessages extends BasicLogger
    void JAXRSAnnotationsFoundAtNonPublicMethod(String className, String method);  
 
    @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 142, value = "Multiple resource methods match request. Selecting one.")
+   void multipleMethodsMatch();
+   
+   @LogMessage(level = Level.WARN)
    @Message(id = BASE + 145, value = "NoClassDefFoundError: Unable to load builtin provider: %s")
    void noClassDefFoundErrorError(String line, @Cause Throwable cause);
    

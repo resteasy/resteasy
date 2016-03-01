@@ -1,7 +1,12 @@
 package org.jboss.resteasy.test.resteasy1103;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 import junit.framework.Assert;
 
@@ -16,9 +21,11 @@ import org.jboss.resteasy.resteasy1103.FavoriteMovieXmlType;
 import org.jboss.resteasy.resteasy1103.ObjectFactory;
 import org.jboss.resteasy.resteasy1103.TestApplication;
 import org.jboss.resteasy.resteasy1103.TestResource;
+import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.asset.FileAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -204,8 +211,10 @@ public class TestSecureProcessing
             .addClasses(TestApplication.class, TestResource.class)
             .addClasses(Bar.class, FavoriteMovie.class, FavoriteMovieXmlRootElement.class)
             .addClasses(FavoriteMovieXmlType.class, ObjectFactory.class)
+            .addClasses(TestExceptionMapper.class)
             .addAsWebInfResource("1103/external.dtd", "external.dtd")
             .addAsWebInfResource("1103/web_" + webXmlExt + ".xml", "web.xml")
+            .add(new FileAsset(new File("src/test/resources/1103/META-INF/services/javax.ws.rs.ext.Providers")), "META-INF/services", "javax.ws.rs.ext.Providers")
             ;
       System.out.println(war.toString(true));
       return war;

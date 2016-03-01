@@ -44,7 +44,7 @@ public class TestXXE
      @Consumes({"application/xml"})
      public String addFavoriteMovie(FavoriteMovieXmlRootElement movie)
      {
-        System.out.println("MovieResource(xmlRootElment): title = " + movie.getTitle());
+        //System.out.println("MovieResource(xmlRootElment): title = " + movie.getTitle());
         return movie.getTitle();
      }
      
@@ -53,7 +53,7 @@ public class TestXXE
      @Consumes({"application/xml"})
      public String addFavoriteMovie(FavoriteMovieXmlType movie)
      {
-        System.out.println("MovieResource(xmlType): title = " + movie.getTitle());
+        //System.out.println("MovieResource(xmlType): title = " + movie.getTitle());
         return movie.getTitle();
      }
      
@@ -62,7 +62,7 @@ public class TestXXE
      @Consumes("application/xml")
      public String addFavoriteMovie(JAXBElement<FavoriteMovie> value)
      {
-        System.out.println("MovieResource(JAXBElement): title = " + value.getValue().getTitle());
+        //System.out.println("MovieResource(JAXBElement): title = " + value.getValue().getTitle());
         return value.getValue().getTitle();
      }
      
@@ -76,7 +76,7 @@ public class TestXXE
         while (it.hasNext())
         {
            String title = it.next().getTitle();
-           System.out.println("MovieResource(list): title = " + title);
+           //System.out.println("MovieResource(list): title = " + title);
            titles += title;
         }
         return titles;
@@ -92,7 +92,7 @@ public class TestXXE
         while (it.hasNext())
         {
            String title = it.next().getTitle();
-           System.out.println("MovieResource(list): title = " + title);
+           //System.out.println("MovieResource(list): title = " + title);
            titles += title;
         }
         return titles;
@@ -107,7 +107,7 @@ public class TestXXE
         for (int i = 0; i < array.length; i++)
         {
            String title = array[i].getTitle();
-           System.out.println("MovieResource(list): title = " + title);
+           //System.out.println("MovieResource(list): title = " + title);
            titles += title;
         }
         return titles;
@@ -123,7 +123,7 @@ public class TestXXE
         while (it.hasNext())
         {
            String title = map.get(it.next()).getTitle();
-           System.out.println("MovieResource(map): title = " + title);
+           //System.out.println("MovieResource(map): title = " + title);
            titles += title;
         }
         return titles;
@@ -190,12 +190,12 @@ public class TestXXE
                    "]>\r" + 
                    "<favoriteMovieXmlRootElement><title>&xxe;</title></favoriteMovieXmlRootElement>";
       
-      System.out.println(str);
+      //System.out.println(str);
       request.body("application/xml", str);
       ClientResponse<?> response = request.post();
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("Result: " + entity);
+      //System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
       after();
    }
@@ -218,12 +218,12 @@ public class TestXXE
                    "]>\r" + 
                    "<favoriteMovieXmlRootElement><title>&xxe;</title></favoriteMovieXmlRootElement>";
       
-      System.out.println(str);
+      //System.out.println(str);
       request.body("application/xml", str);
       ClientResponse<?> response = request.post();
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("Result: " + entity);
+      //System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
       after();
    }
@@ -246,12 +246,12 @@ public class TestXXE
                    "]>\r" + 
                    "<favoriteMovieXmlRootElement><title>&xxe;</title></favoriteMovieXmlRootElement>";
 
-      System.out.println(str);
+      //System.out.println(str);
       request.body("application/xml", str);
       ClientResponse<?> response = request.post();
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("result: " + entity);
+      //System.out.println("result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0);
       after();
    }
@@ -274,12 +274,12 @@ public class TestXXE
                    "]>\r" + 
                    "<favoriteMovie><title>&xxe;</title></favoriteMovie>";
       
-      System.out.println(str);
+      //System.out.println(str);
       request.body("application/xml", str);
       ClientResponse<?> response = request.post();
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("Result: " + entity);
+      //System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
       after();
    }
@@ -302,12 +302,12 @@ public class TestXXE
                    "]>\r" + 
                    "<favoriteMovie><title>&xxe;</title></favoriteMovie>";
       
-      System.out.println(str);
+      //System.out.println(str);
       request.body("application/xml", str);
       ClientResponse<?> response = request.post();
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("Result: " + entity);
+      //System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
       after();
    }
@@ -330,12 +330,12 @@ public class TestXXE
                    "]>\r" + 
                    "<favoriteMovie><title>&xxe;</title></favoriteMovie>";
 
-      System.out.println(str);
+      //System.out.println(str);
       request.body("application/xml", str);
       ClientResponse<?> response = request.post();
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("result: " + entity);
+      //System.out.println("result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0);  
       after();
    }
@@ -358,12 +358,12 @@ public class TestXXE
                    "]>\r" + 
                    "<favoriteMovieXmlType><title>&xxe;</title></favoriteMovieXmlType>";
       
-      System.out.println(str);
+      //System.out.println(str);
       request.body("application/xml", str);
       ClientResponse<?> response = request.post();
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("Result: " + entity);
+      //System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
       after();
    }
@@ -386,12 +386,12 @@ public class TestXXE
                    "]>\r" + 
                    "<favoriteMovieXmlType><title>&xxe;</title></favoriteMovieXmlType>";
       
-      System.out.println(str);
+      //System.out.println(str);
       request.body("application/xml", str);
       ClientResponse<?> response = request.post();
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("Result: " + entity);
+      //System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
       after();
    }
@@ -414,12 +414,12 @@ public class TestXXE
                    "]>\r" + 
                    "<favoriteMovieXmlType><title>&xxe;</title></favoriteMovieXmlType>";
       
-      System.out.println(str);
+      //System.out.println(str);
       request.body("application/xml", str);
       ClientResponse<?> response = request.post();
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("Result: " + entity);
+      //System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0);  
       after();
    }
@@ -530,12 +530,12 @@ public class TestXXE
                    "<favoriteMovieXmlRootElement><title>Le Regle de Jeu</title></favoriteMovieXmlRootElement>" +
                    "</collection>";
       
-      System.out.println(str);
+      //System.out.println(str);
       request.body("application/xml", str);
       ClientResponse<?> response = request.post();
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("Result: " + entity);
+      //System.out.println("Result: " + entity);
       if (expand)
       {
          Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0);
@@ -573,12 +573,12 @@ public class TestXXE
                       "</entry>" +
                    "</map>";
       
-      System.out.println(str);
+      //System.out.println(str);
       request.body("application/xml", str);
       ClientResponse<?> response = request.post();
       Assert.assertEquals(200, response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("Result: " + entity);
+      //System.out.println("Result: " + entity);
       if (expand)
       {
          Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") >= 0);

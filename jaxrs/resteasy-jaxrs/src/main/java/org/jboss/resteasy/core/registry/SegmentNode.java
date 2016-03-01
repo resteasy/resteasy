@@ -3,6 +3,7 @@ package org.jboss.resteasy.core.registry;
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceLocatorInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -429,6 +430,10 @@ public class SegmentNode
       }
       Collections.sort(sortList);
       SortEntry sortEntry = sortList.get(0);
+      if (sortList.size() > 1)
+      {
+         LogMessages.LOGGER.multipleMethodsMatch();
+      }
       request.setAttribute(RESTEASY_CHOSEN_ACCEPT, sortEntry.getAcceptType());
       return sortEntry.match;
    }

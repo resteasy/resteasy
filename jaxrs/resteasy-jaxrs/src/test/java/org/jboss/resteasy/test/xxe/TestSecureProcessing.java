@@ -7,6 +7,8 @@ import java.util.Hashtable;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import junit.framework.Assert;
@@ -15,6 +17,7 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.After;
 import org.junit.Test;
@@ -70,6 +73,15 @@ public class TestSecureProcessing
          "]>\r" + 
          "<element>&xxe;</element>";
    
+   public static class TestExceptionMapper implements ExceptionMapper<ReaderException>
+   {
+      @Override
+      public Response toResponse(ReaderException exception)
+      {  
+         return Response.status(400).entity(exception.getMessage()).build();
+      } 
+   }
+   
    ///////////////////////////////////////////////////////////////////////////////////////////////
    @Path("/")
    public static class TestResource
@@ -80,13 +92,13 @@ public class TestSecureProcessing
       public String doPost(Document doc)
       {
          Node node = doc.getDocumentElement();
-         System.out.println("name: " + node.getNodeName());
+         //System.out.println("name: " + node.getNodeName());
          NodeList children = doc.getDocumentElement().getChildNodes();
          node = children.item(0);
-         System.out.println("name: " + node.getNodeName());
+         //System.out.println("name: " + node.getNodeName());
          String text = node.getTextContent();
          int len = Math.min(text.length(), 30);
-         System.out.println("text: " + text.substring(0, len));
+         //System.out.println("text: " + text.substring(0, len));
          return text;
       }
    }
@@ -98,6 +110,7 @@ public class TestSecureProcessing
       deployment = EmbeddedContainer.start(initParams, contextParams);
       dispatcher = deployment.getDispatcher();
       deployment.getRegistry().addPerRequestResource(TestResource.class);
+      deployment.getProviderFactory().register(TestExceptionMapper.class);
    }
    
    @After
@@ -346,27 +359,27 @@ public class TestSecureProcessing
    
    void doEntityExpansionFails() throws Exception
    {
-      System.out.println("entering doEntityExpansionFails()");
+      //System.out.println("entering doEntityExpansionFails()");
       ClientRequest request = new ClientRequest(generateURL("/test"));
       request.body("application/xml", bigExpansionDoc);
       ClientResponse<?> response = request.post();
-      System.out.println("status: " + response.getStatus());
+      //System.out.println("status: " + response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("doEntityExpansionFails() result: " + entity);
+      //System.out.println("doEntityExpansionFails() result: " + entity);
       Assert.assertEquals(400, response.getStatus());
       Assert.assertTrue(entity.contains("org.xml.sax.SAXParseException"));
    }
    
    void doEntityExpansionPasses() throws Exception
    {
-      System.out.println("entering doEntityExpansionFails()");
+      //System.out.println("entering doEntityExpansionFails()");
       ClientRequest request = new ClientRequest(generateURL("/test"));
       request.body("application/xml", bigExpansionDoc);
       ClientResponse<?> response = request.post();
-      System.out.println("status: " + response.getStatus());
+      //System.out.println("status: " + response.getStatus());
       String entity = response.getEntity(String.class);
       int len = Math.min(entity.length(), 30);
-      System.out.println("doEntityExpansionPasses() result: " + entity.substring(0, len) + "...");
+      //System.out.println("doEntityExpansionPasses() result: " + entity.substring(0, len) + "...");
       Assert.assertEquals(200, response.getStatus());
       Assert.assertTrue(countFoos(entity) > 64000);
    }
@@ -374,19 +387,19 @@ public class TestSecureProcessing
    void doMaxAttributesFails() throws Exception
    {
       DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-      System.out.println("dbf.getClass(): " + dbf.getClass());
+      //System.out.println("dbf.getClass(): " + dbf.getClass());
       if ("org.apache.xerces.jaxp.DocumentBuilderFactoryImpl".equals(dbf.getClass().getName()))
       {
-         System.out.println("Testing with Red Hat version of Xerces, skipping max attributes test");
+         //System.out.println("Testing with Red Hat version of Xerces, skipping max attributes test");
          return;
       }
-      System.out.println("entering doMaxAttributesFails()");
+      //System.out.println("entering doMaxAttributesFails()");
       ClientRequest request = new ClientRequest(generateURL("/test"));
       request.body("application/xml", bigAttributeDoc);
       ClientResponse<?> response = request.post();
-      System.out.println("doMaxAttributesFails() status: " + response.getStatus());
+      //System.out.println("doMaxAttributesFails() status: " + response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("doMaxAttributesFails() result: " + entity);
+      //System.out.println("doMaxAttributesFails() result: " + entity);
       Assert.assertEquals(400, response.getStatus());
       Assert.assertTrue(entity.contains("org.xml.sax.SAXParseException"));
       Assert.assertTrue(entity.contains("has more than \"10,00"));
@@ -396,26 +409,26 @@ public class TestSecureProcessing
 
    void doMaxAttributesPasses() throws Exception
    {
-      System.out.println("entering doMaxAttributesPasses()");
+      //System.out.println("entering doMaxAttributesPasses()");
       ClientRequest request = new ClientRequest(generateURL("/test"));
       request.body("application/xml", bigAttributeDoc);
       ClientResponse<?> response = request.post();
-      System.out.println("doMaxAttributesPasses() status: " + response.getStatus());
+      //System.out.println("doMaxAttributesPasses() status: " + response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("doMaxAttributesPasses() result: " + entity);
+      //System.out.println("doMaxAttributesPasses() result: " + entity);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bar", entity);
    }
    
    void doDTDFails() throws Exception
    {
-      System.out.println("entering doDTDFails()");
+      //System.out.println("entering doDTDFails()");
       ClientRequest request = new ClientRequest(generateURL("/test"));
       request.body("application/xml", smallDtd);
       ClientResponse<?> response = request.post();
-      System.out.println("status: " + response.getStatus());
+      //System.out.println("status: " + response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("doDTDFails(): result: " + entity);
+      //System.out.println("doDTDFails(): result: " + entity);
       Assert.assertEquals(400, response.getStatus());
       Assert.assertTrue(entity.contains("org.xml.sax.SAXParseException"));
       Assert.assertTrue(entity.contains("DOCTYPE is disallowed"));  
@@ -423,40 +436,40 @@ public class TestSecureProcessing
    
    void doDTDPasses() throws Exception
    {
-      System.out.println("entering doDTDPasses()");
+      //System.out.println("entering doDTDPasses()");
       ClientRequest request = new ClientRequest(generateURL("/test"));
       request.body("application/xml", smallDtd);
       ClientResponse<?> response = request.post();
-      System.out.println("status: " + response.getStatus());
+      //System.out.println("status: " + response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("doDTDPasses() result: " + entity);
+      //System.out.println("doDTDPasses() result: " + entity);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bar", entity);
    }
    
    void doExternalEntityExpansionFails() throws Exception
    {
-      System.out.println("entering doExternalEntityExpansionFails()");
+      //System.out.println("entering doExternalEntityExpansionFails()");
       ClientRequest request = new ClientRequest(generateURL("/test"));
       request.body("application/xml", externalEntityDoc);
       ClientResponse<?> response = request.post();
-      System.out.println("status: " + response.getStatus());
+      //System.out.println("status: " + response.getStatus());
       String entity = response.getEntity(String.class);
-      System.out.println("doExternalEntityExpansionFails() result: " + entity);
+      //System.out.println("doExternalEntityExpansionFails() result: " + entity);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("", entity);
    }
    
    void doExternalEntityExpansionPasses() throws Exception
    {
-      System.out.println("entering doExternalEntityExpansionPasses()");
+      //System.out.println("entering doExternalEntityExpansionPasses()");
       ClientRequest request = new ClientRequest(generateURL("/test"));
       request.body("application/xml", externalEntityDoc);
       ClientResponse<?> response = request.post();
-      System.out.println("status: " + response.getStatus());
+      //System.out.println("status: " + response.getStatus());
       String entity = response.getEntity(String.class);
       int len = Math.min(entity.length(), 30);
-      System.out.println("doExternalEntityExpansionPasses() result: " + entity.substring(0, len) + "...");
+      //System.out.println("doExternalEntityExpansionPasses() result: " + entity.substring(0, len) + "...");
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("xx:xx:xx:xx:xx:xx:xx", entity);
    }
