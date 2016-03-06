@@ -43,7 +43,7 @@
         <dep.netty4.version>4.0.7.Final</dep.netty4.version>
         <dep.slf4j.version>1.7.5</dep.slf4j.version>
         <dep.bc.version>1.52</dep.bc.version>
-        <dep.com.sun.mail.version>1.5.3</dep.com.sun.mail.version>
+        <dep.com.sun.mail.version>1.5.5</dep.com.sun.mail.version>
         <dep.arquillian-bom.version>1.0.3.Final</dep.arquillian-bom.version>
         <dep.arquillian-wildfly.version>8.1.0.Final</dep.arquillian-wildfly.version>
         <version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.2_spec>1.0.0.Final
@@ -399,12 +399,6 @@
                 <groupId>javax.activation</groupId>
                 <artifactId>activation</artifactId>
                 <version>${dep.javax.activation.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>javax.mail</groupId>
-                <artifactId>mail</artifactId>
-                <version>1.5.0-b01</version>
             </dependency>
 
             <!--
