@@ -2,6 +2,7 @@ package org.jboss.resteasy.links.test;
 
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.links.ResourceFacade;
+import org.jboss.resteasy.links.ResourceID;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -16,10 +17,12 @@ import java.util.Map;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
 public class ScrollableCollection implements ResourceFacade<Comment> {
-
+	@ResourceID
 	private String id;
 	@XmlAttribute
 	private int start;
+	@XmlAttribute
+	private int limit;
 	@XmlAttribute
 	private int totalRecords;
 	@XmlElement
@@ -29,10 +32,11 @@ public class ScrollableCollection implements ResourceFacade<Comment> {
 
 	public ScrollableCollection() {}
 	
-	public ScrollableCollection(String id, int start, int totalRecords,
+	public ScrollableCollection(String id, int start, int limit, int totalRecords,
 			List<Comment> comments) {
 		this.id = id;
 		this.start = start;
+		this.limit = limit;
 		this.totalRecords = totalRecords;
 		this.comments.addAll(comments);
 	}
@@ -53,6 +57,14 @@ public class ScrollableCollection implements ResourceFacade<Comment> {
 
 	public void setStart(int start) {
 		this.start = start;
+	}
+
+	public int getLimit() {
+		return limit;
+	}
+
+	public void setLimit(int limit) {
+		this.limit = limit;
 	}
 
 	public int getTotalRecords() {

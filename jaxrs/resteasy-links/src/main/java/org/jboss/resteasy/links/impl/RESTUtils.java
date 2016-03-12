@@ -8,6 +8,7 @@ import org.jboss.resteasy.links.ELProvider;
 import org.jboss.resteasy.links.LinkELProvider;
 import org.jboss.resteasy.links.LinkResource;
 import org.jboss.resteasy.links.LinkResources;
+import org.jboss.resteasy.links.ParamBinding;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.links.ResourceFacade;
 import org.jboss.resteasy.links.i18n.LogMessages;
@@ -240,7 +241,13 @@ public class RESTUtils {
 
 	private static URI buildURI(UriBuilder uriBuilder, LinkResource service,
 			Object entity, Method m) {
-		// see if we need parameters
+		for (ParamBinding binding : service.queryParameters()) {
+			uriBuilder.queryParam(binding.name(), evaluateEL(m, getELContext(m, entity), entity, binding.value()));
+		}
+		for (ParamBinding binding : service.matrixParameters()) {
+			uriBuilder.matrixParam(binding.name(), evaluateEL(m, getELContext(m, entity), entity, binding.value()));
+		}
+		
 		String[] uriTemplates = service.pathParameters();
 		if (uriTemplates.length > 0) {
 			Object[] values = new Object[uriTemplates.length];

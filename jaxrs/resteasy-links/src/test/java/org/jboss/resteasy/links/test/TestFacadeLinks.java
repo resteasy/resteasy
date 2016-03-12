@@ -1,5 +1,11 @@
 package org.jboss.resteasy.links.test;
 
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.jboss.resteasy.client.ProxyFactory;
@@ -18,12 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 @RunWith(Parameterized.class)
 public class TestFacadeLinks
@@ -89,7 +89,7 @@ public class TestFacadeLinks
 		Assert.assertNotNull(comments);
 		RESTServiceDiscovery links = comments.getRest();
 		Assert.assertNotNull(links);
-		Assert.assertEquals(3, links.size());
+		Assert.assertEquals(4, links.size());
 		// list
 		AtomLink atomLink = links.getLinkForRel("list");
 		Assert.assertNotNull(atomLink);
@@ -102,6 +102,10 @@ public class TestFacadeLinks
 		atomLink = links.getLinkForRel("collection");
 		Assert.assertNotNull(atomLink);
 		Assert.assertEquals(url+"/book/foo/comment-collection", atomLink.getHref());
+		// next
+		atomLink = links.getLinkForRel("next");
+		Assert.assertNotNull(atomLink);
+		Assert.assertEquals(url+"/book/foo/comment-collection?start=1&limit=1", atomLink.getHref());
 	}
 
 	private void checkCommentLinks(String url, Comment comment) {
