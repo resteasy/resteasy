@@ -1,0 +1,84 @@
+package org.jboss.resteasy.test.nextgen.producers;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.Response;
+
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.test.EmbeddedContainer;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import junit.framework.Assert;
+
+/**
+ * RESTEASY-1134
+ * 
+ * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
+ * @date March 12, 2016
+ */
+public class MissingProducerTest
+{
+   protected static ResteasyDeployment deployment;
+   protected static Dispatcher dispatcher;
+   protected File providers;
+   protected PrintStream out_orig;
+   protected PrintStream err_orig;
+   protected ByteArrayOutputStream baos;
+   protected PrintStream print_tmp;
+   
+   @Before
+   public void before() throws Exception
+   {
+      new File("src/main/resources/META-INF/services/").mkdirs();
+      providers = new File("src/main/resources/META-INF/services/javax.ws.rs.ext.Providers");
+      providers.createNewFile();
+      PrintWriter writer = new PrintWriter(providers);
+      writer.print("org.jboss.resteasy.Missing");
+      writer.flush();
+      writer.close();
+      out_orig = System.out;
+      err_orig = System.err;
+      baos = new ByteArrayOutputStream();
+      print_tmp = new PrintStream(baos);
+      System.setOut(print_tmp);
+      System.setErr(print_tmp);
+      deployment = EmbeddedContainer.start();
+      dispatcher = deployment.getDispatcher();
+   }
+   
+   @After
+   public void after() throws Exception
+   {
+      EmbeddedContainer.stop();
+      System.setOut(out_orig);
+      System.setErr(err_orig);
+      providers.delete();
+      new File("src/main/resources/META-INF/services").delete();
+      new File("src/main/resources/META-INF").delete();
+      new File("src/main/resources").delete();
+      dispatcher = null;
+      deployment = null;
+   }
+   
+   
+   @Test
+   public void readEntityClassAnnotationCloseIsCalledTest()
+   {
+      System.out.println("print_tmp: " + new String(baos.toByteArray()));
+      Assert.assertTrue(new String(baos.toByteArray()).contains("RESTEASY002120: ClassNotFoundException: "));
+      Assert.assertTrue(new String(baos.toByteArray()).contains("Unable to load builtin provider org.jboss.resteasy.Missing from "));
+      Assert.assertTrue(new String(baos.toByteArray()).contains("file:/home/rsigal/git.master/Resteasy/jaxrs/resteasy-jaxrs-testsuite/target/classes/META-INF/services/javax.ws.rs.ext.Providers"));
+   }
+}

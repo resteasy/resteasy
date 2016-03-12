@@ -1,5 +1,7 @@
 package org.jboss.resteasy.resteasy_jaxrs.i18n;
 
+import java.net.URL;
+
 import javax.ws.rs.core.MediaType;
 
 import org.jboss.logging.BasicLogger;
@@ -79,8 +81,8 @@ public interface LogMessages extends BasicLogger
    void attemptingToRegisterUnassignableContract(String className);   
    
    @LogMessage(level = Level.WARN)
-   @Message(id = BASE + 120, value = "ClassNotFoundException: Unable to load builtin provider: %s")
-   void classNotFoundException(String line);
+   @Message(id = BASE + 120, value = "ClassNotFoundException: Unable to load builtin provider {0} from {1}", format=Format.MESSAGE_FORMAT)
+   void classNotFoundException(String line, URL url, @Cause Throwable cause);
    
    @LogMessage(level = Level.WARN)
    @Message(id = BASE + 125, value = "Could not delete file '%s' for request: ")
@@ -103,8 +105,8 @@ public interface LogMessages extends BasicLogger
    void multipleMethodsMatch();
    
    @LogMessage(level = Level.WARN)
-   @Message(id = BASE + 145, value = "NoClassDefFoundError: Unable to load builtin provider: %s")
-   void noClassDefFoundErrorError(String line, @Cause Throwable cause);
+   @Message(id = BASE + 145, value = "NoClassDefFoundError: Unable to load builtin provider {0} from {1}", format=Format.MESSAGE_FORMAT)
+   void noClassDefFoundErrorError(String line, URL url, @Cause Throwable cause);
    
    @LogMessage(level = Level.WARN)
    @Message(id = BASE + 150, value = "%s is no longer supported.  Use a servlet 3.0 container and the ResteasyServletInitializer")
