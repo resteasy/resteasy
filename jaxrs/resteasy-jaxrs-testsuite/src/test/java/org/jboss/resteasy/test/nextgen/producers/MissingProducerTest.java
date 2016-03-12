@@ -2,16 +2,8 @@ package org.jboss.resteasy.test.nextgen.producers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
@@ -74,11 +66,10 @@ public class MissingProducerTest
    
    
    @Test
-   public void readEntityClassAnnotationCloseIsCalledTest()
+   public void testMissingProducer()
    {
-      System.out.println("print_tmp: " + new String(baos.toByteArray()));
       Assert.assertTrue(new String(baos.toByteArray()).contains("RESTEASY002120: ClassNotFoundException: "));
       Assert.assertTrue(new String(baos.toByteArray()).contains("Unable to load builtin provider org.jboss.resteasy.Missing from "));
-      Assert.assertTrue(new String(baos.toByteArray()).contains("file:/home/rsigal/git.master/Resteasy/jaxrs/resteasy-jaxrs-testsuite/target/classes/META-INF/services/javax.ws.rs.ext.Providers"));
+      Assert.assertTrue(new String(baos.toByteArray()).contains("resteasy-jaxrs-testsuite/target/classes/META-INF/services/javax.ws.rs.ext.Providers"));
    }
 }
