@@ -619,7 +619,7 @@ public class PreconditionTest
       try
       {
          ClientResponse<?> response = request.get();
-         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         Assert.assertEquals(HttpResponseCodes.SC_NOT_MODIFIED, response.getStatus());
          shutdownConnections(request);
       }
       catch (Exception e)
