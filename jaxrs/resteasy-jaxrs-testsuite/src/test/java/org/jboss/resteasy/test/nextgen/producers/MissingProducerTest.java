@@ -24,17 +24,15 @@ public class MissingProducerTest
 {
    protected static ResteasyDeployment deployment;
    protected static Dispatcher dispatcher;
-   protected File providers;
    protected PrintStream out_orig;
    protected PrintStream err_orig;
    protected ByteArrayOutputStream baos;
-   protected PrintStream print_tmp;
    
    @Before
    public void before() throws Exception
    {
-      new File("src/main/resources/META-INF/services/").mkdirs();
-      providers = new File("src/main/resources/META-INF/services/javax.ws.rs.ext.Providers");
+      new File("target/classes/META-INF/services/").mkdirs();
+      File providers = new File("target/classes/META-INF/services/javax.ws.rs.ext.Providers");
       providers.createNewFile();
       PrintWriter writer = new PrintWriter(providers);
       writer.print("org.jboss.resteasy.Missing");
@@ -43,7 +41,7 @@ public class MissingProducerTest
       out_orig = System.out;
       err_orig = System.err;
       baos = new ByteArrayOutputStream();
-      print_tmp = new PrintStream(baos);
+      PrintStream print_tmp = new PrintStream(baos);
       System.setOut(print_tmp);
       System.setErr(print_tmp);
       deployment = EmbeddedContainer.start();
@@ -56,10 +54,6 @@ public class MissingProducerTest
       EmbeddedContainer.stop();
       System.setOut(out_orig);
       System.setErr(err_orig);
-      providers.delete();
-      new File("src/main/resources/META-INF/services").delete();
-      new File("src/main/resources/META-INF").delete();
-      new File("src/main/resources").delete();
       dispatcher = null;
       deployment = null;
    }
@@ -68,8 +62,9 @@ public class MissingProducerTest
    @Test
    public void testMissingProducer()
    {
-      Assert.assertTrue(new String(baos.toByteArray()).contains("RESTEASY002120: ClassNotFoundException: "));
-      Assert.assertTrue(new String(baos.toByteArray()).contains("Unable to load builtin provider org.jboss.resteasy.Missing from "));
-      Assert.assertTrue(new String(baos.toByteArray()).contains("resteasy-jaxrs-testsuite/target/classes/META-INF/services/javax.ws.rs.ext.Providers"));
+      String output = new String(baos.toByteArray());
+      Assert.assertTrue(output.contains("RESTEASY002120: ClassNotFoundException: "));
+      Assert.assertTrue(output.contains("Unable to load builtin provider org.jboss.resteasy.Missing from "));
+      Assert.assertTrue(output.contains("resteasy-jaxrs-testsuite/target/classes/META-INF/services/javax.ws.rs.ext.Providers"));
    }
 }
