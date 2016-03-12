@@ -8,8 +8,8 @@ import java.io.PrintWriter;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import junit.framework.Assert;
@@ -24,16 +24,16 @@ public class MissingProducerTest
 {
    protected static ResteasyDeployment deployment;
    protected static Dispatcher dispatcher;
-   protected PrintStream out_orig;
-   protected PrintStream err_orig;
-   protected ByteArrayOutputStream baos;
+   protected static PrintStream out_orig;
+   protected static PrintStream err_orig;
+   protected static ByteArrayOutputStream baos;
    
-   @Before
-   public void before() throws Exception
+   @BeforeClass
+   public static void before() throws Exception
    {
-      new File("target/classes/META-INF/services/").mkdirs();
+      System.out.println(new File("target/classes/META-INF/services/").mkdirs());
       File providers = new File("target/classes/META-INF/services/javax.ws.rs.ext.Providers");
-      providers.createNewFile();
+      System.out.println(providers.createNewFile());
       PrintWriter writer = new PrintWriter(providers);
       writer.print("org.jboss.resteasy.Missing");
       writer.flush();
@@ -48,9 +48,12 @@ public class MissingProducerTest
       dispatcher = deployment.getDispatcher();
    }
    
-   @After
-   public void after() throws Exception
+   @AfterClass
+   public static void after() throws Exception
    {
+      new File("target/classes/META-INF/services/javax.ws.rs.ext.Providers").delete();
+      new File("target/classes/META-INF/services").delete();
+      new File("target/classes/META-INF").delete();
       EmbeddedContainer.stop();
       System.setOut(out_orig);
       System.setErr(err_orig);
