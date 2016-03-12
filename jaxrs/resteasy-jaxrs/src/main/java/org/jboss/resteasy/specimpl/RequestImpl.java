@@ -4,6 +4,8 @@ import org.jboss.resteasy.core.request.ServerDrivenNegotiation;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -18,6 +20,9 @@ import javax.ws.rs.core.Variant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static org.jboss.resteasy.util.HttpHeaderNames.IF_MATCH;
+import static org.jboss.resteasy.util.HttpHeaderNames.IF_NONE_MATCH;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -44,7 +49,10 @@ public class RequestImpl implements Request
       return httpMethod;
    }
 
-
+   private boolean isRfc7232preconditions() {
+      ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+      return context != null && Boolean.parseBoolean(context.getParameter("resteasy.rfc7232preconditions"));
+   }
 
    public MultivaluedMap<String, String> getFormParameters()
    {
@@ -125,14 +133,14 @@ public class RequestImpl implements Request
    {
       if (eTag == null) throw new IllegalArgumentException(Messages.MESSAGES.eTagParamNull());
       Response.ResponseBuilder builder = null;
-      List<String> ifMatch = headers.getRequestHeaders().get(HttpHeaderNames.IF_MATCH);
+      List<String> ifMatch = headers.getRequestHeaders().get(IF_MATCH);
       if (ifMatch != null && ifMatch.size() > 0)
       {
          builder = ifMatch(convertEtag(ifMatch), eTag);
       }
       if (builder == null)
       {
-         List<String> ifNoneMatch = headers.getRequestHeaders().get(HttpHeaderNames.IF_NONE_MATCH);
+         List<String> ifNoneMatch = headers.getRequestHeaders().get(IF_NONE_MATCH);
          if (ifNoneMatch != null && ifNoneMatch.size() > 0)
          {
             builder = ifNoneMatch(convertEtag(ifNoneMatch), eTag);
@@ -174,16 +182,17 @@ public class RequestImpl implements Request
    {
       if (lastModified == null) throw new IllegalArgumentException(Messages.MESSAGES.lastModifiedParamNull());
       Response.ResponseBuilder builder = null;
-      String ifModifiedSince = headers.getRequestHeaders().getFirst(HttpHeaderNames.IF_MODIFIED_SINCE);
-      if (ifModifiedSince != null)
+      MultivaluedMap<String, String> headers = this.headers.getRequestHeaders();
+      String ifModifiedSince = headers.getFirst(HttpHeaderNames.IF_MODIFIED_SINCE);
+      if (ifModifiedSince != null && (!isRfc7232preconditions() || (isRfc7232preconditions() && !headers.containsKey(IF_NONE_MATCH))))
       {
          builder = ifModifiedSince(ifModifiedSince, lastModified);
       }
       if (builder == null)
       {
          //System.out.println("ifModified returned null");
-         String ifUnmodifiedSince = headers.getRequestHeaders().getFirst(HttpHeaderNames.IF_UNMODIFIED_SINCE);
-         if (ifUnmodifiedSince != null)
+         String ifUnmodifiedSince = headers.getFirst(HttpHeaderNames.IF_UNMODIFIED_SINCE);
+         if (ifUnmodifiedSince != null && (!isRfc7232preconditions() || (isRfc7232preconditions() && !headers.containsKey(IF_MATCH))))
          {
             builder = ifUnmodifiedSince(ifUnmodifiedSince, lastModified);
          }
@@ -214,7 +223,7 @@ public class RequestImpl implements Request
 
    public Response.ResponseBuilder evaluatePreconditions()
    {
-      List<String> ifMatch = headers.getRequestHeaders().get(HttpHeaderNames.IF_MATCH);
+      List<String> ifMatch = headers.getRequestHeaders().get(IF_MATCH);
       if (ifMatch == null || ifMatch.size() == 0)
       {
          return null;
