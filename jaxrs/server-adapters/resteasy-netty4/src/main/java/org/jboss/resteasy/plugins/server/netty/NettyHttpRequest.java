@@ -343,7 +343,9 @@ public class NettyHttpRequest extends BaseHttpRequest
               }
               finally
               {
-                 ctx.close();
+            	  if(!isKeepAlive()) {
+            		  ctx.close();
+            	  }
               }
            }
 
