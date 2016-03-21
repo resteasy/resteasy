@@ -102,6 +102,9 @@ public class ResteasyUriInfo implements UriInfo
 
    public void setUri(URI base, URI relative)
    {
+      clearQueryParameters(true);
+      clearQueryParameters(false);
+
       URI rel = base.resolve(relative);
       String absoluteUri = UriBuilder.fromUri(rel).replaceQuery(null).toTemplate();
       initialize(absoluteUri, rel.getRawQuery(), base.getRawPath());
@@ -307,6 +310,23 @@ public class ResteasyUriInfo implements UriInfo
    {
       if (decode) return getQueryParameters();
       else return getEncodedQueryParameters();
+   }
+
+   public void clearQueryParameters(boolean decode) {
+      if (decode) clearQueryParameters();
+      else clearEncodedQueryParameters();
+   }
+
+   private void clearQueryParameters() {
+      if (queryParameters != null) {
+         queryParameters.clear();
+      }
+   }
+
+   private void clearEncodedQueryParameters() {
+      if (encodedQueryParameters != null) {
+         encodedQueryParameters.clear();
+      }
    }
 
    protected void extractParameters(String queryString)
