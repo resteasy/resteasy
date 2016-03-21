@@ -10,7 +10,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -39,7 +41,7 @@ public class RegisterBuiltin
    public static void registerProviders(ResteasyProviderFactory factory) throws Exception
    {
       Enumeration<URL> en = Thread.currentThread().getContextClassLoader().getResources("META-INF/services/" + Providers.class.getName());
-      LinkedHashSet<String> set = new LinkedHashSet<String>();
+      Map<String, URL> origins = new HashMap<String, URL>();
       while (en.hasMoreElements())
       {
          URL url = en.nextElement();
@@ -52,7 +54,7 @@ public class RegisterBuiltin
             {
                line = line.trim();
                if (line.equals("")) continue;
-               set.add(line);
+               origins.put(line, url);
             }
          }
          finally
@@ -60,8 +62,9 @@ public class RegisterBuiltin
             is.close();
          }
       }
-      for (String line : set)
+      for (Entry<String, URL> entry : origins.entrySet())
       {
+         String line = entry.getKey();
          try
          {
             Class clazz = Thread.currentThread().getContextClassLoader().loadClass(line);
@@ -69,11 +72,11 @@ public class RegisterBuiltin
          }
          catch (NoClassDefFoundError e)
          {
-            LogMessages.LOGGER.noClassDefFoundErrorError(line, e);
+            LogMessages.LOGGER.noClassDefFoundErrorError(line, entry.getValue(), e);
          }
          catch (ClassNotFoundException e)
          {
-            LogMessages.LOGGER.classNotFoundException(line);
+            LogMessages.LOGGER.classNotFoundException(line, entry.getValue(), e);
          }
       }
    }
