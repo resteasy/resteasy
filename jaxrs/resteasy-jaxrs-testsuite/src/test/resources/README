@@ -1,0 +1,4 @@
+keytool -genkey -v -alias server -keyalg RSA -keystore ./server_ks -dname "CN=localhost,OU=cn,O=cn,L=cn,ST=cn,C=cn" -storepass 123123 -keypass 123123 
+keytool -genkey -v -alias client -keyalg RSA -keystore ./client_ks -dname "CN=localhost,OU=cn,O=cn,L=cn,ST=cn,C=cn" -storepass 123123 -keypass 123123  
+keytool -export -alias server -keystore ./server_ks -file server_key.cer  
+keytool -import -trustcacerts -alias server -file ./server_key.cer -keystore ./client_ks

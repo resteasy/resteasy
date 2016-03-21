@@ -69,7 +69,7 @@ public class TJWSServletServer
       }
    }
 
-   protected FileMappingServe server = new FileMappingServe();
+   public FileMappingServe server = new FileMappingServe();
 
    protected Properties props = new Properties();
 
@@ -143,6 +143,11 @@ public class TJWSServletServer
    public void setSSLKeyStorePass(String passwd)
    {
       props.put(SSLAcceptor.ARG_KEYSTOREPASS, passwd);
+   }
+
+   public void setSSLKeyPass(String passwd)
+   {
+      props.put(SSLAcceptor.ARG_KEYPASS, passwd);
    }
 
    public void setSSLKeyStoreType(String type)
