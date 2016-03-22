@@ -40,6 +40,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.util.Map;
 
@@ -175,21 +176,32 @@ public class SSLAcceptor implements Acceptor
       try
       {
 
-         // Register the JSSE security Provider (if it is not already there)
+         String protocol = getWithDefault(inProperties, ARG_PROTOCOL, TLS);
+
+         SSLContext context;
+
          try
          {
-            Security.addProvider((java.security.Provider) Class.forName("com.sun.net.ssl.internal.ssl.Provider")
-                    .newInstance());
+            // Create an SSL context used to create an SSL socket factory
+            context = SSLContext.getInstance(protocol);
          }
-         catch (Throwable t)
+         catch (NoSuchAlgorithmException e)
          {
-            t.printStackTrace();
-            throw new IOException(t.toString());
-         }
+            // Register the JSSE security Provider (if it is not already there)
+            try
+            {
+               Security.addProvider((java.security.Provider) Class.forName("com.sun.net.ssl.internal.ssl.Provider")
+                       .newInstance());
+            }
+            catch (Throwable t)
+            {
+               t.printStackTrace();
+               throw new IOException(t.toString());
+            }
 
-         // Create an SSL context used to create an SSL socket factory
-         String protocol = getWithDefault(inProperties, ARG_PROTOCOL, TLS);
-         SSLContext context = SSLContext.getInstance(protocol);
+            // Create an SSL context used to create an SSL socket factory
+            context = SSLContext.getInstance(protocol);
+         }
 
          // Create the key manager factory used to extract the server key
          String algorithm = getWithDefault(inProperties, ARG_ALGORITHM, SUNX509);

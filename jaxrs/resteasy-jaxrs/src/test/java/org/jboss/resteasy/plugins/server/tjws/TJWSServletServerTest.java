@@ -74,4 +74,6 @@ public class TJWSServletServerTest
       ClientRequest request = TestPortProvider.createClientRequest(uri);
       Assert.assertEquals(text, request.get(String.class).getEntity());
    }
+
+
 }
