@@ -11,6 +11,7 @@ import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.spi.WriterException;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -196,7 +197,14 @@ public class ExceptionHandler
 
    protected Response handleWebApplicationException(WebApplicationException wae)
    {
-      if (!(wae instanceof NoLogWebApplicationException)) LogMessages.LOGGER.failedToExecute(wae);
+      if (wae instanceof NotFoundException) 
+      {
+         LogMessages.LOGGER.failedToExecuteDebug(wae);
+      }
+      else if (!(wae instanceof NoLogWebApplicationException))
+      {
+         LogMessages.LOGGER.failedToExecute(wae);
+      }
       return wae.getResponse();
    }
 
