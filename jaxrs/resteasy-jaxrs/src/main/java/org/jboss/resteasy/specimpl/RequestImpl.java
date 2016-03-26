@@ -176,15 +176,14 @@ public class RequestImpl implements Request
       Response.ResponseBuilder builder = null;
       MultivaluedMap<String, String> headers = this.headers.getRequestHeaders();
       String ifModifiedSince = headers.getFirst(IF_MODIFIED_SINCE);
-      if (ifModifiedSince != null && (!isRfc7232preconditions() || (isRfc7232preconditions() && !headers.containsKey(IF_NONE_MATCH))))
+      if (ifModifiedSince != null && (!isRfc7232preconditions() || (!headers.containsKey(IF_NONE_MATCH))))
       {
          builder = ifModifiedSince(ifModifiedSince, lastModified);
       }
       if (builder == null)
       {
-         //System.out.println("ifModified returned null");
          String ifUnmodifiedSince = headers.getFirst(IF_UNMODIFIED_SINCE);
-         if (ifUnmodifiedSince != null && (!isRfc7232preconditions() || (isRfc7232preconditions() && !headers.containsKey(IF_MATCH))))
+         if (ifUnmodifiedSince != null && (!isRfc7232preconditions() || (!headers.containsKey(IF_MATCH))))
          {
             builder = ifUnmodifiedSince(ifUnmodifiedSince, lastModified);
          }
