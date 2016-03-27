@@ -1,15 +1,16 @@
 package org.jboss.resteasy.util;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 /**
  * Type conversions and generic type manipulations
@@ -218,6 +219,14 @@ public class Types
          if (typeVar.getBounds() != null && typeVar.getBounds().length > 0)
          {
             return getRawType(typeVar.getBounds()[0]);
+         }
+      }
+      else if (type instanceof WildcardType)
+      {
+         final WildcardType wildcardType = (WildcardType) type;
+         if (wildcardType.getUpperBounds() != null && wildcardType.getUpperBounds().length > 0)
+         {
+            return getRawType(wildcardType.getUpperBounds()[0]);
          }
       }
       throw new RuntimeException(Messages.MESSAGES.unableToDetermineBaseClass());
