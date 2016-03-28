@@ -178,6 +178,10 @@ public interface LogMessages extends BasicLogger
    void failedExecutingDebug(String method, String path, @Cause Throwable cause);
    
    @LogMessage(level = Level.DEBUG)
+   @Message(id = BASE + 307, value = "Failed to execute")
+   void failedToExecuteDebug(@Cause Throwable cause);
+   
+   @LogMessage(level = Level.DEBUG)
    @Message(id = BASE + 310, value = "IN ONE WAY!!!!!")
    void inOneWay();
    
