@@ -49,8 +49,8 @@ public @interface NoCache
         Response.ResponseBuilder rb = request.evaluatePreconditions(lastModified, etag);
     </programlisting>
     <para>
-        By default Resteasy will return status code 304 (Not modified) or 412 (Precondition failed) if any of conditions is satisfied
-        However it is not compliant with RFC 7232 which states that headers <literal>"If-Match"</literal>, <literal>"If-None-Match"</literal> MUST have higher precedence
+        By default Resteasy will return status code 304 (Not modified) or 412 (Precondition failed) if any of conditions is satisfied.
+        However it is not compliant with RFC 7232 which states that headers <literal>"If-Match"</literal>, <literal>"If-None-Match"</literal> MUST have higher precedence.
         You can enable RFC 7232 compatible mode by setting <literal>resteasy.rfc7232preconditions</literal> property to <literal>true</literal>
     </para>
    </sect1>
