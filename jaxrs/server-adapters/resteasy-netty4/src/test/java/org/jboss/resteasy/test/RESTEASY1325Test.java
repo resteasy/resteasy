@@ -99,7 +99,6 @@ public class RESTEASY1325Test
                     HttpVersion.HTTP_1_1, HttpMethod.GET, url.getFile());
             request.headers().set(HttpHeaderNames.HOST, url.getHost());
             request.headers().set(HttpHeaderNames.CONNECTION, "keep-alive");
-
             // Send the HTTP request.
             ch.writeAndFlush(request);
 
