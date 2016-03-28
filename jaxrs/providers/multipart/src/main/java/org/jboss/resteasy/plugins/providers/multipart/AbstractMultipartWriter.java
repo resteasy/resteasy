@@ -33,6 +33,7 @@ public class AbstractMultipartWriter
       writeParts(multipartOutput, entityStream, boundaryBytes);
       entityStream.write(boundaryBytes);
       entityStream.write("--".getBytes());
+      entityStream.write("\r\n".getBytes());
    }
 
    protected void writeParts(MultipartOutput multipartOutput, OutputStream entityStream, byte[] boundaryBytes)
