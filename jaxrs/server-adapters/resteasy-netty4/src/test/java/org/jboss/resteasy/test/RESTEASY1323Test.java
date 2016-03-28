@@ -51,7 +51,7 @@ public class RESTEASY1323Test
    {
    }
 
-   @Test(timeout=REQUEST_TIMEOUT*2)
+   @Test(timeout=REQUEST_TIMEOUT*5)
    public void testAsyncKeepConnection() throws Exception
    {
       callAsyncTwiceWithKeepAlive();
