@@ -120,10 +120,7 @@ public class ResponseObjectEntityExtractorFactory extends DefaultEntityExtractor
                if (uri == null)
                   return null;
 
-               return new ClientInvoker((ResteasyWebTarget)(context.getInvocation().getClient().target(uri)),
-                       method.getDeclaringClass(),
-                       method,
-                       new ProxyConfig(Thread.currentThread().getContextClassLoader(), null, null)).invoke(args);
+               return createClientInvoker(context, uri, method).invoke(args);
             }
          };
       }
@@ -183,6 +180,17 @@ public class ResponseObjectEntityExtractorFactory extends DefaultEntityExtractor
          };
       }
       return null;
+   }
+
+   private ClientInvoker createClientInvoker(ClientContext context, URI uri, Method method) {
+      ClientInvoker clientInvoker = new ClientInvoker((ResteasyWebTarget)(context.getInvocation().getClient().target(uri)),
+              method.getDeclaringClass(),
+              method,
+              new ProxyConfig(Thread.currentThread().getContextClassLoader(), null, null));
+
+      Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
+      clientInvoker.setHttpMethod(httpMethods.iterator().next());
+      return clientInvoker;
    }
 
    private static boolean isInvokerMethod(Method method)
