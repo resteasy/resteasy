@@ -12,6 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @See org.jboss.resteasy.plugins.cache.server.InfinispanCache
  */
 @Deprecated
 public class SimpleServerCache implements ServerCache

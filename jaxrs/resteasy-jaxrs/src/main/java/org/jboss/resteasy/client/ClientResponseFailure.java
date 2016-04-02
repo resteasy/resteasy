@@ -7,7 +7,7 @@ import org.jboss.resteasy.client.core.BaseClientResponse;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  * 
- * @see jaxrs-api
+ * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
  * @see javax.ws.rs.client.ResponseProcessingException
  * @see javax.ws.rs.client.ProcessingException
  * @see javax.ws.rs.client.WebApplicationException

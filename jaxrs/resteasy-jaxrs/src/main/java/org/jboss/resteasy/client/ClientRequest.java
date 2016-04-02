@@ -47,7 +47,7 @@ import static org.jboss.resteasy.util.HttpHeaderNames.ACCEPT;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  * 
- * @see jaxrs-api
+ * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
  * @see javax.ws.rs.client.Invocation
  */
 @Deprecated

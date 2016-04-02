@@ -19,6 +19,8 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @see javax.ws.rs.core.GenericType
  */
 @Deprecated
 public class GenericType<T>

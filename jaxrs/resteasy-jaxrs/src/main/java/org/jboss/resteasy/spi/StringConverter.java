@@ -11,7 +11,7 @@ package org.jboss.resteasy.spi;
  * 
  * @deprecated
  * 
- * @see jaxrs-api
+ * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
  * @see javax.ws.rs.ext.ParamConverter
  */
 @Deprecated
