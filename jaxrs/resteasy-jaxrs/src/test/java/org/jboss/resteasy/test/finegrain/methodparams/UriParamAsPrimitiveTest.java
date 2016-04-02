@@ -135,7 +135,7 @@ public class UriParamAsPrimitiveTest
       @GET
       public String doGet(@PathParam("arg") float v)
       {
-         Assert.assertEquals(3.14159265f, v);
+         Assert.assertEquals(3.14159265f, v, 0.0000000001f);
          return "content";
       }
    }
@@ -146,7 +146,7 @@ public class UriParamAsPrimitiveTest
       @GET
       public String doGet(@PathParam("arg") double v)
       {
-         Assert.assertEquals(3.14159265358979d, v);
+         Assert.assertEquals(3.14159265358979d, v, 0.0000000000000001d);
          return "content";
       }
    }
@@ -212,7 +212,7 @@ public class UriParamAsPrimitiveTest
       @GET
       public String doGet(@PathParam("arg") Float v)
       {
-         Assert.assertEquals(3.14159265f, v.floatValue());
+         Assert.assertEquals(3.14159265f, v.floatValue(), 0.0000000001f);
          return "content";
       }
    }
@@ -223,7 +223,7 @@ public class UriParamAsPrimitiveTest
       @GET
       public String doGet(@PathParam("arg") Double v)
       {
-         Assert.assertEquals(3.14159265358979d, v.doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.doubleValue(), 0.0000000000000001d);
          return "content";
       }
    }
