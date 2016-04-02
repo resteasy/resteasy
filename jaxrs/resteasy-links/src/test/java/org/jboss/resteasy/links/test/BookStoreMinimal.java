@@ -9,6 +9,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -16,6 +17,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -99,16 +101,21 @@ public class BookStoreMinimal {
 		@LinkResource(value = ScrollableCollection.class, rel = "next", constraint = "${this.start + this.limit < this.totalRecords}", queryParameters = {
 				@ParamBinding(name = "start", value = "${this.start + this.limit}"),
 				@ParamBinding(name = "limit", value = "${this.limit}")
-		})
+		}, matrixParameters = {@ParamBinding(name = "query", value = "${this.query}")})
 	})
 	@GET
 	@Path("book/{id}/comment-collection")
-	public ScrollableCollection getScrollableComments(@PathParam("id") String id, @QueryParam("start") int start, @QueryParam("limit") @DefaultValue("1") int limit){
-		List<Comment> comments = books.get(id).getComments();
+	public ScrollableCollection getScrollableComments(@PathParam("id") String id, @QueryParam("start") int start, @QueryParam("limit") @DefaultValue("1") int limit, @MatrixParam("query") String query){
+		List<Comment> comments = new ArrayList<Comment>();
+		for (Comment comment : books.get(id).getComments()) {
+			if (comment.getText().contains(query)) {
+				comments.add(comment);
+			}
+		}
 		start = start < 0 ? 0 : start;
 		limit = limit < 1 ? 1 : limit;
 		limit = (start + limit) > comments.size() ? comments.size() - start : limit;
-		return new ScrollableCollection(id, start, limit, comments.size(), comments.subList(start, start + limit));
+		return new ScrollableCollection(id, start, limit, comments.size(), comments.subList(start, start + limit), query);
 	}
 
 	@Produces({"application/xml", "application/json"})

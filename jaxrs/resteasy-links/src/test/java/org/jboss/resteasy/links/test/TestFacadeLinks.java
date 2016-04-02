@@ -79,9 +79,9 @@ public class TestFacadeLinks
 	@Test
 	public void testLinks() throws Exception
 	{
-		ScrollableCollection comments = client.getScrollableCommentsXML("foo");
+		ScrollableCollection comments = client.getScrollableCommentsXML("foo", "book");
 		checkCommentsLinks(url, comments);
-		comments = client.getScrollableCommentsJSON("foo");
+		comments = client.getScrollableCommentsJSON("foo", "book");
 		checkCommentsLinks(url, comments);
 	}
 
@@ -105,7 +105,7 @@ public class TestFacadeLinks
 		// next
 		atomLink = links.getLinkForRel("next");
 		Assert.assertNotNull(atomLink);
-		Assert.assertEquals(url+"/book/foo/comment-collection?start=1&limit=1", atomLink.getHref());
+		Assert.assertEquals(url+"/book/foo/comment-collection;query=book?start=1&limit=1", atomLink.getHref());
 	}
 
 	private void checkCommentLinks(String url, Comment comment) {
