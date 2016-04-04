@@ -5,6 +5,10 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import javax.ws.rs.client.WebTarget;
+
+import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
+import org.jboss.resteasy.client.jaxrs.ProxyConfig;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 
 /**
@@ -15,11 +19,15 @@ public class ClientProxy implements InvocationHandler
 {
 	private Map<Method, MethodInvoker> methodMap;
 	private Class<?> clazz;
+	private final WebTarget target;
+	private final ProxyConfig config;
 
-	public ClientProxy(Map<Method, MethodInvoker> methodMap)
+	public ClientProxy(Map<Method, MethodInvoker> methodMap, WebTarget target, ProxyConfig config)
 	{
-		super();
-		this.methodMap = methodMap;
+	   super();
+	   this.methodMap = methodMap;
+	   this.target = target;
+	   this.config = config;
 	}
 
 	public Class<?> getClazz()
@@ -54,6 +62,10 @@ public class ClientProxy implements InvocationHandler
          else if (method.getName().equals("toString") && (args == null || args.length == 0))
          {
             return this.toString();
+         }
+         else if(method.getName().equals("as") && args.length == 1 && args[0] instanceof Class)
+         {
+          return ProxyBuilder.proxy((Class<?>)args[0], target, config);
          }
       }
 
