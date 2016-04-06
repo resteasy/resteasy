@@ -341,7 +341,6 @@ public class ClientWebTarget implements ResteasyWebTarget
    {
       client.abortIfClosed();
       if (name == null) throw new NullPointerException(Messages.MESSAGES.nameWasNull());
-      if (value == null) throw new NullPointerException(Messages.MESSAGES.valueWasNull());
       configuration.property(name, value);
       return this;
    }
