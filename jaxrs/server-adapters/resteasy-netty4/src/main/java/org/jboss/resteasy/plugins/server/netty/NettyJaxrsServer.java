@@ -20,6 +20,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
@@ -58,6 +59,8 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    private int maxHeaderSize = 8192;
    private int maxChunkSize = 8192;
    private int backlog = 128;
+   // default no idle timeout.
+   private int idleTimeout = -1;
    private List<ChannelHandler> channelHandlers = Collections.emptyList();
    private Map<ChannelOption, Object> channelOptions = Collections.emptyMap();
    private Map<ChannelOption, Object> childChannelOptions = Collections.emptyMap();
@@ -130,6 +133,20 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
     public void setBacklog(int backlog)
     {
         this.backlog = backlog;
+    }
+
+    public int getIdleTimeout() {
+        return idleTimeout;
+    }
+
+    /**
+     * Set the idle timeout.
+     * Set this value to turn on idle connection cleanup.
+     * If there is no traffic within idleTimeoutSeconds, it'll close connection.
+     * @param idleTimeoutSeconds - How many seconds to cleanup client connection. default value -1 meaning no idle timeout.
+     */
+    public void setIdleTimeout(int idleTimeoutSeconds) {
+        this.idleTimeout = idleTimeoutSeconds;
     }
 
     /**
@@ -264,6 +281,9 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
         channelPipeline.addLast(httpChannelHandlers.toArray(new ChannelHandler[httpChannelHandlers.size()]));
         channelPipeline.addLast(new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, protocol));
         channelPipeline.addLast(new RestEasyHttpResponseEncoder());
+        if (idleTimeout > 0) {
+            channelPipeline.addLast("idleStateHandler", new IdleStateHandler(0, 0, idleTimeout));
+        }
         channelPipeline.addLast(eventExecutor, new RequestHandler(dispatcher));
     }
 
