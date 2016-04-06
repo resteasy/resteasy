@@ -162,4 +162,18 @@ public static void main(String[] args) throws Exception
        is the name of the cache you want to reference that is declared in the config file.
    </para>
    </sect1>
+   <sect1 id="Http_Precondition">
+        <title>HTTP preconditions</title>
+        <para>
+            JAX-RS provides an API for evaluating HTTP preconditions based on <literal>"If-Match"</literal>, <literal>"If-None-Match"</literal>, <literal>"If-Modified-Since"</literal> and <literal>"If-Unmodified-Since"</literal> headers.
+        </para>
+        <programlisting>
+            Response.ResponseBuilder rb = request.evaluatePreconditions(lastModified, etag);
+        </programlisting>
+        <para>
+            By default Resteasy will return status code 304 (Not modified) or 412 (Precondition failed) if any of conditions fails.
+            However it is not compliant with RFC 7232 which states that headers <literal>"If-Match"</literal>, <literal>"If-None-Match"</literal> MUST have higher precedence.
+            You can enable RFC 7232 compatible mode by setting <literal>resteasy.rfc7232preconditions</literal> context parameter to <literal>true</literal>
+        </para>
+   </sect1>
 </chapter>

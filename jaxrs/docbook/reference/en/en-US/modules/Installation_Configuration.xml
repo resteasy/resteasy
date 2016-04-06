@@ -524,6 +524,17 @@ public class MyApplication extends Application
                                 the input stream within the filter.
                             </entry>
                         </row>
+                        <row>
+                            <entry>
+                                resteasy.rfc7232preconditions
+                            </entry>
+                            <entry>
+                                false
+                            </entry>
+                            <entry>
+                                Enables <link linkend='Http_Precondition'>RFC7232 compliant HTTP preconditions handling</link>.
+                            </entry>
+                        </row>
                     </tbody>
                 </tgroup>
             </table>
