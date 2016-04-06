@@ -240,7 +240,7 @@ public class JAXBContextWrapper extends JAXBContext
     * @return
     * @throws JAXBException
     * @see javax.xml.bind.JAXBContext#createValidator()
-    * @deprecated
+    * @deprecated See javax.xml.bind.JAXBContext#createValidator().
     */
    public Validator createValidator() throws JAXBException
    {

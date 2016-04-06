@@ -31,7 +31,7 @@ public class MultipartFormDataInputImpl extends MultipartInputImpl implements
 	}
 
    /**
-    * Will be removed in the future. Use
+    * @deprecated Will be removed in the future. Use
     * {@link MultipartFormDataInputImpl#getFormDataMap()} instead.
     * 
     * @return A parameter map containing only one value per name.

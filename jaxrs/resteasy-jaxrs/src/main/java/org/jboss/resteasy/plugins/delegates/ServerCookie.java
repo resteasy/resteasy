@@ -75,7 +75,7 @@ public class ServerCookie implements Serializable
    }
 
    /**
-    * @deprecated - Not used
+    * @deprecated Not used: Deprecated in the orginal org.apache.tomcat.util.http.ServerCookie class.
     */
    public static boolean checkName(String name)
    {
@@ -245,7 +245,7 @@ public class ServerCookie implements Serializable
    }
 
    /**
-    * @deprecated - Not used
+    * @deprecated Not used: Deprecated in the orginal org.apache.tomcat.util.http.ServerCookie class.
     */
    @Deprecated
    public static void maybeQuote(int version, StringBuffer buf, String value)

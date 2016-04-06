@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  * 
+ * @deprecated See org.jboss.resteasy.plugins.cache.server.InfinispanCache.
  * @See org.jboss.resteasy.plugins.cache.server.InfinispanCache
  */
 @Deprecated
