@@ -196,11 +196,26 @@ public class Types
    public static Class<?> getRawType(Type type)
    {
       Class<?> rawType = getRawTypeNoException(type);
-      if (rawType == null)
-      {
-         throw new RuntimeException(Messages.MESSAGES.unableToDetermineBaseClass());
+      if (rawType != null) {
+         return rawType;
       }
-      return rawType;
+      if (type instanceof TypeVariable)
+      {
+         final TypeVariable typeVar = (TypeVariable) type;
+         if (typeVar.getBounds() != null && typeVar.getBounds().length > 0)
+         {
+            return getRawType(typeVar.getBounds()[0]);
+         }
+      }
+      else if (type instanceof WildcardType)
+      {
+         final WildcardType wildcardType = (WildcardType) type;
+         if (wildcardType.getUpperBounds() != null && wildcardType.getUpperBounds().length > 0)
+         {
+            return getRawType(wildcardType.getUpperBounds()[0]);
+         }
+      }
+      throw new RuntimeException(Messages.MESSAGES.unableToDetermineBaseClass());
    }
 
 
@@ -223,22 +238,6 @@ public class Types
          final GenericArrayType genericArrayType = (GenericArrayType) type;
          final Class<?> componentRawType = getRawType(genericArrayType.getGenericComponentType());
          return Array.newInstance(componentRawType, 0).getClass();
-      }
-      else if (type instanceof TypeVariable)
-      {
-         final TypeVariable typeVar = (TypeVariable) type;
-         if (typeVar.getBounds() != null && typeVar.getBounds().length > 0)
-         {
-            return getRawType(typeVar.getBounds()[0]);
-         }
-      }
-      else if (type instanceof WildcardType)
-      {
-         final WildcardType wildcardType = (WildcardType) type;
-         if (wildcardType.getUpperBounds() != null && wildcardType.getUpperBounds().length > 0)
-         {
-            return getRawType(wildcardType.getUpperBounds()[0]);
-         }
       }
       return null;
    }
