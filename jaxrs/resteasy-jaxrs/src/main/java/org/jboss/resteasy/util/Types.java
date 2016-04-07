@@ -195,6 +195,17 @@ public class Types
 
    public static Class<?> getRawType(Type type)
    {
+      Class<?> rawType = getRawTypeNoException(type);
+      if (rawType == null)
+      {
+         throw new RuntimeException(Messages.MESSAGES.unableToDetermineBaseClass());
+      }
+      return rawType;
+   }
+
+
+   public static Class<?> getRawTypeNoException(Type type)
+   {
       if (type instanceof Class<?>)
       {
          // type is a normal class.
@@ -228,30 +239,6 @@ public class Types
          {
             return getRawType(wildcardType.getUpperBounds()[0]);
          }
-      }
-      throw new RuntimeException(Messages.MESSAGES.unableToDetermineBaseClass());
-   }
-
-
-   public static Class<?> getRawTypeNoException(Type type)
-   {
-      if (type instanceof Class<?>)
-      {
-         // type is a normal class.
-         return (Class<?>) type;
-
-      }
-      else if (type instanceof ParameterizedType)
-      {
-         ParameterizedType parameterizedType = (ParameterizedType) type;
-         Type rawType = parameterizedType.getRawType();
-         return (Class<?>) rawType;
-      }
-      else if (type instanceof GenericArrayType)
-      {
-         final GenericArrayType genericArrayType = (GenericArrayType) type;
-         final Class<?> componentRawType = getRawType(genericArrayType.getGenericComponentType());
-         return Array.newInstance(componentRawType, 0).getClass();
       }
       return null;
    }

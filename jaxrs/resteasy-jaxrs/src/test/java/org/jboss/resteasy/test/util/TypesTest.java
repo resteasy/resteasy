@@ -42,14 +42,30 @@ public class TypesTest
    }
 
    @Test
-   public void testGenericWildcardTypesSupported() throws Exception
+   public void testWildcardLowerBound() throws Exception
    {
-      List<List<? extends Number>> numberLists = new ArrayList<List<? extends Number>>() {};
-      ParameterizedType arrayListType = (ParameterizedType) numberLists.getClass().getGenericSuperclass();
-      ParameterizedType listType = (ParameterizedType) arrayListType.getActualTypeArguments()[0];
-      WildcardType wildcardType = (WildcardType) listType.getActualTypeArguments()[0];
-
+      WildcardType wildcardType = TypesTest.getWildcardType(new ArrayList<List<? extends Number>>() {});
       assertEquals(Number.class, Types.getRawType(wildcardType));
+   }
 
+   @Test
+   public void testWildcardUpperBound() throws Exception
+   {
+      WildcardType wildcardType = TypesTest.getWildcardType(new ArrayList<List<? super Number>>() {});
+      assertEquals(Object.class, Types.getRawType(wildcardType));
+   }
+
+   @Test
+   public void testNestedWildcardTypesSupported() throws Exception
+   {
+      WildcardType wildcardType = TypesTest.getWildcardType(new ArrayList<List<? extends List<? extends Number>>>() {});
+      assertEquals(List.class, Types.getRawType(wildcardType));
+   }
+
+
+   private static <T> WildcardType getWildcardType(List<T> typeHolder) {
+      ParameterizedType listType = (ParameterizedType) typeHolder.getClass().getGenericSuperclass();
+      ParameterizedType typeArg = (ParameterizedType) listType.getActualTypeArguments()[0];
+      return (WildcardType) typeArg.getActualTypeArguments()[0];
    }
 }
