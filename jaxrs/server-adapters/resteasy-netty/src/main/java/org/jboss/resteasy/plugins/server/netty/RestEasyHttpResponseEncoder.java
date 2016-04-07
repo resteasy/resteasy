@@ -56,11 +56,11 @@ public class RestEasyHttpResponseEncoder extends OneToOneEncoder
                   RuntimeDelegate.HeaderDelegate delegate = dispatcher.providerFactory.getHeaderDelegate(value.getClass());
                   if (delegate != null)
                   {
-                     response.addHeader(key, delegate.toString(value));
+                     response.headers().add(key, delegate.toString(value));
                   }
                   else
                   {
-                     response.setHeader(key, value.toString());
+                     response.headers().set(key, value.toString());
                   }
                }
             }
@@ -71,8 +71,9 @@ public class RestEasyHttpResponseEncoder extends OneToOneEncoder
             if (nettyResponse.isKeepAlive()) 
             {
                 // Add content length and connection header if needed
-                response.setHeader(Names.CONTENT_LENGTH, response.getContent().readableBytes());
-                response.setHeader(Names.CONNECTION, Values.KEEP_ALIVE);
+                response.headers()
+                   .set(Names.CONTENT_LENGTH, response.getContent().readableBytes())
+                   .set(Names.CONNECTION, Values.KEEP_ALIVE);
             }
             return response;
         }
