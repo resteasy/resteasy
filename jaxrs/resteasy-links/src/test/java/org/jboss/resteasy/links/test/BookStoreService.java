@@ -1,6 +1,7 @@
 package org.jboss.resteasy.links.test;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -32,11 +33,11 @@ public interface BookStoreService {
 	@Produces({"application/xml"})
 	@GET
 	@Path("book/{id}/comment-collection")
-	public ScrollableCollection getScrollableCommentsXML(@PathParam("id") String id);
+	public ScrollableCollection getScrollableCommentsXML(@PathParam("id") String id, @MatrixParam("query") String query);
 
 	@Produces({"application/json"})
 	@GET
 	@Path("book/{id}/comment-collection")
-	public ScrollableCollection getScrollableCommentsJSON(@PathParam("id") String id);
+	public ScrollableCollection getScrollableCommentsJSON(@PathParam("id") String id, @MatrixParam("query") String query);
 
 }
