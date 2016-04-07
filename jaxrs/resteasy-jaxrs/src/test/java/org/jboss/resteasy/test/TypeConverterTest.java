@@ -57,8 +57,8 @@ public class TypeConverterTest
    @Test
    public void testDoubleTypes()
    {
-      assertEquals(20.15d, (double)TypeConverter.getType(double.class, "20.15"));
-      assertEquals(20.15d, (double)TypeConverter.getType(Double.class, "20.15"));
+      assertEquals(20.15d, (double)TypeConverter.getType(double.class, "20.15"), 0.00001d);
+      assertEquals(20.15d, (double)TypeConverter.getType(Double.class, "20.15"), 0.00001d);
    }
 
    /**
@@ -67,8 +67,8 @@ public class TypeConverterTest
    @Test
    public void testFloatTypes()
    {
-      assertEquals(23.44f, (float)TypeConverter.getType(float.class, "23.44"));
-      assertEquals(23.44f, (float)TypeConverter.getType(Float.class, "23.44"));
+      assertEquals(23.44f, (float)TypeConverter.getType(float.class, "23.44"), 0.00001f);
+      assertEquals(23.44f, (float)TypeConverter.getType(Float.class, "23.44"), 0.00001f);
    }
 
    /**
