@@ -196,9 +196,11 @@ public class Types
    public static Class<?> getRawType(Type type)
    {
       Class<?> rawType = getRawTypeNoException(type);
-      if (rawType != null) {
+      if (rawType != null)
+      {
          return rawType;
       }
+
       if (type instanceof TypeVariable)
       {
          final TypeVariable typeVar = (TypeVariable) type;
