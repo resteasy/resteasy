@@ -1,15 +1,16 @@
 package org.jboss.resteasy.util;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 /**
  * Type conversions and generic type manipulations
@@ -194,30 +195,26 @@ public class Types
 
    public static Class<?> getRawType(Type type)
    {
-      if (type instanceof Class<?>)
+      Class<?> rawType = getRawTypeNoException(type);
+      if (rawType != null)
       {
-         // type is a normal class.
-         return (Class<?>) type;
+         return rawType;
+      }
 
-      }
-      else if (type instanceof ParameterizedType)
-      {
-         ParameterizedType parameterizedType = (ParameterizedType) type;
-         Type rawType = parameterizedType.getRawType();
-         return (Class<?>) rawType;
-      }
-      else if (type instanceof GenericArrayType)
-      {
-         final GenericArrayType genericArrayType = (GenericArrayType) type;
-         final Class<?> componentRawType = getRawType(genericArrayType.getGenericComponentType());
-         return Array.newInstance(componentRawType, 0).getClass();
-      }
-      else if (type instanceof TypeVariable)
+      if (type instanceof TypeVariable)
       {
          final TypeVariable typeVar = (TypeVariable) type;
          if (typeVar.getBounds() != null && typeVar.getBounds().length > 0)
          {
             return getRawType(typeVar.getBounds()[0]);
+         }
+      }
+      else if (type instanceof WildcardType)
+      {
+         final WildcardType wildcardType = (WildcardType) type;
+         if (wildcardType.getUpperBounds() != null && wildcardType.getUpperBounds().length > 0)
+         {
+            return getRawType(wildcardType.getUpperBounds()[0]);
          }
       }
       throw new RuntimeException(Messages.MESSAGES.unableToDetermineBaseClass());
