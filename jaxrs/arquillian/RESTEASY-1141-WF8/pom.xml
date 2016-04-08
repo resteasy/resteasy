@@ -129,7 +129,7 @@
         <dependency>
             <groupId>org.wildfly</groupId>
             <artifactId>wildfly-arquillian-container-managed</artifactId>
-            <version>8.0.0.Alpha1</version>
+            <version>${dep.arquillian-wildfly.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
