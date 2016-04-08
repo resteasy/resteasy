@@ -9,6 +9,7 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.core.executors.InMemoryClientExecutor;
 import org.jboss.resteasy.spi.Link;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -100,6 +101,7 @@ public class ResponseObjectTest
    @BeforeClass
    public static void setup()
    {
+      ResteasyProviderFactory.setInstance(null);
       executor = new InMemoryClientExecutor();
       executor.getRegistry().addPerRequestResource(ResponseObjectResource.class);
       client = ProxyFactory.create(ResponseObjectClient.class, "", executor);
