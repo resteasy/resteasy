@@ -26,7 +26,7 @@ public class OAuthValidator extends SimpleOAuthValidator {
 	}
 
 	/**
-	 * Overridden to deprecate it since we cannot hide it. at least make sure we won't use it
+	 * @deprecated Overridden to deprecate it since we cannot hide it. at least make sure we won't use it
 	 */
 	@Override
 	@Deprecated

@@ -13,7 +13,7 @@ import javax.ws.rs.core.GenericType;
  */
 public interface MultipartFormDataInput extends MultipartInput {
 	/**
-	 * Will be removed in the future. Use
+	 * @deprecated Will be removed in the future. Use
 	 * {@link MultipartFormDataInput#getFormDataMap()} instead.
 	 * 
 	 * @return A parameter map containing only one value per name.

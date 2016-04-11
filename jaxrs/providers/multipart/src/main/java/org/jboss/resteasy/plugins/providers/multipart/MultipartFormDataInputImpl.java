@@ -30,6 +30,12 @@ public class MultipartFormDataInputImpl extends MultipartInputImpl implements
 		super(contentType, workers);
 	}
 
+   /**
+    * @deprecated Will be removed in the future. Use
+    * {@link MultipartFormDataInputImpl#getFormDataMap()} instead.
+    * 
+    * @return A parameter map containing only one value per name.
+    */
 	@Deprecated
 	public Map<String, InputPart> getFormData() {
 		return formData;

@@ -17,7 +17,7 @@ import java.util.Map;
  * 
  * @deprecated Replaced by javax.ws.rs.core.Link in jaxrs-api module.
  * 
- * @see jaxrs-api
+ * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
  * @see javax.ws.rs.core.Link
  */
 @Deprecated

@@ -83,17 +83,14 @@ public class SecureUnmarshaller implements Unmarshaller {
    }
 
    /**
-    * @deprecated since 2.0
+    * @deprecated This method is deprecated as of JAXB 2.0 - please use the new
+     * {@link #getSchema()} API.
     */
    @Deprecated
    public boolean isValidating() throws JAXBException {
       return delegate.isValidating();
    }
 
-   /**
-    * @deprecated since 2.0
-    */
-   @Deprecated
    @SuppressWarnings("unchecked")
    public void setAdapter(XmlAdapter adapter) {
       delegate.setAdapter(adapter);
@@ -125,7 +122,7 @@ public class SecureUnmarshaller implements Unmarshaller {
    }
 
    /**
-    * @deprecated since 2.0
+    * @deprecated since JAXB2.0, please see {@link #getSchema()}
     */
    @Deprecated
    public void setValidating(boolean validating) throws JAXBException {
