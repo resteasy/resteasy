@@ -115,7 +115,7 @@
         <dependency>
             <groupId>org.jboss.arquillian</groupId>
             <artifactId>arquillian-bom</artifactId>
-            <version>1.0.3.Final</version>
+            <version>${dep.arquillian-bom.version}</version>
             <scope>import</scope>
             <type>pom</type>
         </dependency>
@@ -144,7 +144,7 @@
     <dependency>
         <groupId>org.wildfly</groupId>
         <artifactId>wildfly-arquillian-container-managed</artifactId>
-        <version>8.0.0.Final</version>
+        <version>${dep.arquillian-wildfly.version}</version>
         <scope>test</scope>
     </dependency>
     <dependency>

@@ -44,8 +44,8 @@
         <dep.slf4j.version>1.7.5</dep.slf4j.version>
         <dep.bc.version>1.52</dep.bc.version>
         <dep.com.sun.mail.version>1.5.5</dep.com.sun.mail.version>
-        <dep.arquillian-bom.version>1.0.3.Final</dep.arquillian-bom.version>
-        <dep.arquillian-wildfly.version>8.1.0.Final</dep.arquillian-wildfly.version>
+        <dep.arquillian-bom.version>1.1.11.Final</dep.arquillian-bom.version>
+        <dep.arquillian-wildfly.version>8.2.1.Final</dep.arquillian-wildfly.version>
         <version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.2_spec>1.0.0.Final
         </version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.2_spec>
         <version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>1.0.0.Final
