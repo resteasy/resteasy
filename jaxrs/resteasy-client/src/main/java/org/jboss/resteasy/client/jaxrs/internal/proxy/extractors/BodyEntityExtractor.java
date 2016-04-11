@@ -12,6 +12,7 @@ import javax.ws.rs.core.GenericType;
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Method;
+import java.lang.reflect.TypeVariable;
 
 /**
  * BodyEntityExtractor extract body objects from responses. This ends up calling
@@ -48,7 +49,7 @@ public class BodyEntityExtractor implements EntityExtractor
             throw new RuntimeException(Messages.MESSAGES.noTypeInformation());
          }
          GenericType gt = null;
-         if (method.getGenericReturnType() != null)
+         if (method.getGenericReturnType() != null && !(method.getGenericReturnType() instanceof TypeVariable))
          {
             gt = new GenericType(method.getGenericReturnType());
          }
