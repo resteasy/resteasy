@@ -288,12 +288,12 @@ public class ResteasyUriInfo implements UriInfo
 
    public MultivaluedMap<String, String> getQueryParameters()
    {
-      return UnmodifiableMultivaluedMap.unmodifiableMultiValuedMap(queryParameters);
+      return new UnmodifiableMultivaluedMap<>(queryParameters);
    }
 
    protected MultivaluedMap<String, String> getEncodedQueryParameters()
    {
-      return UnmodifiableMultivaluedMap.unmodifiableMultiValuedMap(encodedQueryParameters);
+      return new UnmodifiableMultivaluedMap<>(encodedQueryParameters);
    }
 
 

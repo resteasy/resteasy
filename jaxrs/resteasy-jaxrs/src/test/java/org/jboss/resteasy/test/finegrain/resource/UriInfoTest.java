@@ -304,13 +304,6 @@ public class UriInfoTest
       }
 
       try {
-         params.get(key).add(param);
-         Assert.fail("mutable UriInfo");
-      } catch (UnsupportedOperationException uoe) {
-         //OK
-      }
-
-      try {
          params.add(param, param);
          Assert.fail("mutable UriInfo");
       } catch (UnsupportedOperationException uoe) {
@@ -409,99 +402,5 @@ public class UriInfoTest
          //OK
       }
 
-      try {
-         params.compute(key, new BiFunction<String, List<String>, List<String>>() {
-            @Override
-            public List<String> apply(String key, List<String> value) {
-               return Collections.emptyList();
-            }
-         });
-         Assert.fail("mutable UriInfo");
-      } catch (UnsupportedOperationException uoe) {
-         //OK
-      }
-
-      try {
-         params.computeIfAbsent(param, new Function<String, List<String>>() {
-            @Override
-            public List<String> apply(String s) {
-               return Collections.emptyList();
-            }
-         });
-         Assert.fail("mutable UriInfo");
-      } catch (UnsupportedOperationException uoe) {
-         //OK
-      }
-
-      try {
-         params.computeIfPresent(key, new BiFunction<String, List<String>, List<String>>() {
-            @Override
-            public List<String> apply(String s, List<String> strings) {
-               return Collections.emptyList();
-            }
-         });
-         Assert.fail("mutable UriInfo");
-      } catch (UnsupportedOperationException uoe) {
-         //OK
-      }
-
-      try {
-         params.merge(key, Collections.singletonList(param), new BiFunction<List<String>, List<String>, List<String>>() {
-            @Override
-            public List<String> apply(List<String> strings, List<String> strings2) {
-               return Collections.emptyList();
-            }
-         });
-         Assert.fail("mutable UriInfo");
-      } catch (UnsupportedOperationException uoe) {
-         //OK
-      }
-
-      try {
-         params.getOrDefault(key, null).add(param);
-         Assert.fail("mutable UriInfo");
-      } catch (UnsupportedOperationException uoe) {
-         //OK
-      }
-
-      try {
-         params.putIfAbsent(param, Collections.singletonList(param));
-         Assert.fail("mutable UriInfo");
-      } catch (UnsupportedOperationException uoe) {
-         //OK
-      }
-
-      try {
-         params.replace(key, Collections.singletonList(param));
-         Assert.fail("mutable UriInfo");
-      } catch (UnsupportedOperationException uoe) {
-         //OK
-      }
-
-      try {
-         params.replace(key, new ArrayList<String>(), Collections.singletonList(param));
-         Assert.fail("mutable UriInfo");
-      } catch (UnsupportedOperationException uoe) {
-         //OK
-      }
-
-      try {
-         params.replaceAll(new BiFunction<String, List<String>, List<String>>() {
-            @Override
-            public List<String> apply(String s, List<String> strings) {
-               return Collections.emptyList();
-            }
-         });
-         Assert.fail("mutable UriInfo");
-      } catch (UnsupportedOperationException uoe) {
-         //OK
-      }
-
-      try {
-         params.remove(key, params.getFirst("a"));
-         Assert.fail("mutable UriInfo");
-      } catch (UnsupportedOperationException uoe) {
-         //OK
-      }
    }
 }
