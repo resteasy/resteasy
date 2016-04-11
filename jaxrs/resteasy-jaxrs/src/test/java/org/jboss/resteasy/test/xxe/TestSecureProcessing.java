@@ -402,9 +402,12 @@ public class TestSecureProcessing
       //System.out.println("doMaxAttributesFails() result: " + entity);
       Assert.assertEquals(400, response.getStatus());
       Assert.assertTrue(entity.contains("org.xml.sax.SAXParseException"));
-      Assert.assertTrue(entity.contains("has more than \"10,00"));
-      int pos = entity.indexOf("has more than \"10,00");
-      Assert.assertTrue(entity.substring(pos).contains("attributes"));
+      Assert.assertTrue(entity.contains("JAXP00010002:"));
+      if ("en".equals(System.getProperty("user.language"))) {
+         Assert.assertTrue(entity.contains("has more than \"10,00"));
+         int pos = entity.indexOf("has more than \"10,00");
+         Assert.assertTrue(entity.substring(pos).contains("attributes"));
+      }
    }
 
    void doMaxAttributesPasses() throws Exception
@@ -431,7 +434,9 @@ public class TestSecureProcessing
       //System.out.println("doDTDFails(): result: " + entity);
       Assert.assertEquals(400, response.getStatus());
       Assert.assertTrue(entity.contains("org.xml.sax.SAXParseException"));
-      Assert.assertTrue(entity.contains("DOCTYPE is disallowed"));  
+      Assert.assertTrue(entity.contains("DOCTYPE"));
+      Assert.assertTrue(entity.contains("http://apache.org/xml/features/disallow-doctype-decl"));
+      Assert.assertTrue(entity.contains("true"));
    }
    
    void doDTDPasses() throws Exception
