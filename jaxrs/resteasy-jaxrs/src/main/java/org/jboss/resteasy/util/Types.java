@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -219,6 +220,15 @@ public class Types
          {
             return getRawType(typeVar.getBounds()[0]);
          }
+      }
+      else if (type instanceof WildcardType)
+      {
+          WildcardType wildcardType = (WildcardType) type;
+          Type[] upperBounds = wildcardType.getUpperBounds();
+          if (upperBounds != null && upperBounds.length > 0)
+          {
+              return getRawType(upperBounds[0]);
+          }
       }
       throw new RuntimeException(Messages.MESSAGES.unableToDetermineBaseClass());
    }
