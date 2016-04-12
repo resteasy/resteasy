@@ -1728,6 +1728,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void registerProviderInstance(Object provider, Map<Class<?>, Integer> contracts, Integer priorityOverride, boolean builtIn)
    {
+      if (getClasses().contains(provider.getClass()))
+      {
+         LogMessages.LOGGER.providerClassAlreadyRegistered(provider.getClass().getName());
+         return;
+      }
       for (Object registered : getInstances())
       {
          if (registered == provider)
@@ -2057,6 +2062,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
       }
       providerInstances.add(provider);
+      providerClasses.add(provider.getClass());
       getClassContracts().put(provider.getClass(), newContracts);
    }
 
