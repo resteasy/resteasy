@@ -3,19 +3,21 @@ package org.jboss.resteasy.spi;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.PathSegmentImpl;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
+import org.jboss.resteasy.specimpl.UnmodifiableMultivaluedMap;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.PathHelper;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 
 /**
  * UriInfo implementation with some added extra methods to help process requests
@@ -28,8 +30,8 @@ public class ResteasyUriInfo implements UriInfo
    private String path;
    private String encodedPath;
    private String matchingPath;
-   private MultivaluedMap<String, String> queryParameters;
-   private MultivaluedMap<String, String> encodedQueryParameters;
+   private MultivaluedMap<String, String> queryParameters = new MultivaluedMapImpl<>();
+   private MultivaluedMap<String, String> encodedQueryParameters = new MultivaluedMapImpl<>();
    private MultivaluedMap<String, String> pathParameters;
    private MultivaluedMap<String, String> encodedPathParameters;
    private MultivaluedMap<String, PathSegment[]> pathParameterPathSegments;
@@ -289,20 +291,12 @@ public class ResteasyUriInfo implements UriInfo
 
    public MultivaluedMap<String, String> getQueryParameters()
    {
-      if (queryParameters == null)
-      {
-         queryParameters = new MultivaluedMapImpl<String, String>();
-      }
-      return queryParameters;
+      return new UnmodifiableMultivaluedMap<>(queryParameters);
    }
 
    protected MultivaluedMap<String, String> getEncodedQueryParameters()
    {
-      if (encodedQueryParameters == null)
-      {
-         this.encodedQueryParameters = new MultivaluedMapImpl<String, String>();
-      }
-      return encodedQueryParameters;
+      return new UnmodifiableMultivaluedMap<>(encodedQueryParameters);
    }
 
 
@@ -344,8 +338,8 @@ public class ResteasyUriInfo implements UriInfo
             {
                String name = URLDecoder.decode(nv[0], "UTF-8");
                String val = nv.length > 1 ? nv[1] : "";
-               getEncodedQueryParameters().add(name, val);
-               getQueryParameters().add(name, URLDecoder.decode(val, "UTF-8"));
+               encodedQueryParameters.add(name, val);
+               queryParameters.add(name, URLDecoder.decode(val, "UTF-8"));
             }
             catch (UnsupportedEncodingException e)
             {
@@ -357,8 +351,8 @@ public class ResteasyUriInfo implements UriInfo
             try
             {
                String name = URLDecoder.decode(param, "UTF-8");
-               getEncodedQueryParameters().add(name, "");
-               getQueryParameters().add(name, "");
+               encodedQueryParameters.add(name, "");
+               queryParameters.add(name, "");
             }
             catch (UnsupportedEncodingException e)
             {
