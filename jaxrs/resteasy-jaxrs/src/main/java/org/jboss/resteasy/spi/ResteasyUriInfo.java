@@ -67,9 +67,9 @@ public class ResteasyUriInfo implements UriInfo
          if (!tmpContextPath.endsWith("/")) tmpContextPath += "/";
          baseURI = absoluteBuilder.clone().replacePath(tmpContextPath).replaceQuery(null).build();
       }
-      // make sure there is no trailing '/'
-      if (encodedPath.length() > 1 && encodedPath.endsWith("/"))
-         encodedPath = encodedPath.substring(0, encodedPath.length() - 1);
+//      // make sure there is no trailing '/'
+//      if (encodedPath.length() > 1 && encodedPath.endsWith("/"))
+//         encodedPath = encodedPath.substring(0, encodedPath.length() - 1);
 
       // make sure path starts with '/'
       if (encodedPath.length() == 0 || encodedPath.charAt(0) != '/')
@@ -123,7 +123,14 @@ public class ResteasyUriInfo implements UriInfo
       }
       extractParameters(requestURI.getRawQuery());
       if (parse.hasMatrixParams) extractMatchingPath(encodedPathSegments);
-      else matchingPath = encodedPath;
+      else 
+      {
+         matchingPath = encodedPath;
+         if (matchingPath.length() > 1 && matchingPath.endsWith("/"))
+         {
+            matchingPath = matchingPath.substring(0, matchingPath.length() - 1);
+         }
+      }
 
    }
 
