@@ -40,6 +40,7 @@
         <module>RESTEASY-1141-WF8</module>
         <module>RESTEASY-1141-jetty</module>
         <module>RESTEASY-1223-WF8</module>
+        <module>RESTEASY-TEST-WF10</module>
         
         <!-- Wildfly 10 requires jdk 1.8, so the travis execution with jdk 1.7 fails -->
         <!--module>RESTEASY-TEST-WF10</module-->
