@@ -4,6 +4,8 @@ import org.jboss.resteasy.links.AddLinks;
 import org.jboss.resteasy.links.LinkResource;
 import org.jboss.resteasy.links.LinkResources;
 import org.jboss.resteasy.links.ParamBinding;
+import org.jboss.resteasy.links.RESTServiceDiscovery;
+import org.jboss.resteasy.links.RESTServiceDiscovery.AtomLink;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -16,6 +18,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -105,7 +109,7 @@ public class BookStoreMinimal {
 	})
 	@GET
 	@Path("book/{id}/comment-collection")
-	public ScrollableCollection getScrollableComments(@PathParam("id") String id, @QueryParam("start") int start, @QueryParam("limit") @DefaultValue("1") int limit, @MatrixParam("query") String query){
+	public ScrollableCollection getScrollableComments(@Context UriInfo uriInfo, @PathParam("id") String id, @QueryParam("start") int start, @QueryParam("limit") @DefaultValue("1") int limit, @MatrixParam("query") String query){
 		List<Comment> comments = new ArrayList<Comment>();
 		for (Comment comment : books.get(id).getComments()) {
 			if (comment.getText().contains(query)) {
@@ -115,7 +119,13 @@ public class BookStoreMinimal {
 		start = start < 0 ? 0 : start;
 		limit = limit < 1 ? 1 : limit;
 		limit = (start + limit) > comments.size() ? comments.size() - start : limit;
-		return new ScrollableCollection(id, start, limit, comments.size(), comments.subList(start, start + limit), query);
+		ScrollableCollection result = new ScrollableCollection(id, start, limit, comments.size(), comments.subList(start, start + limit), query);
+		
+		RESTServiceDiscovery discovery = new RESTServiceDiscovery();
+		discovery.addLink(uriInfo.getBaseUriBuilder().build(), "home");
+		result.setRest(discovery);
+		
+		return result;
 	}
 
 	@Produces({"application/xml", "application/json"})

@@ -89,7 +89,7 @@ public class TestFacadeLinks
 		Assert.assertNotNull(comments);
 		RESTServiceDiscovery links = comments.getRest();
 		Assert.assertNotNull(links);
-		Assert.assertEquals(4, links.size());
+		Assert.assertEquals(5, links.size());
 		// list
 		AtomLink atomLink = links.getLinkForRel("list");
 		Assert.assertNotNull(atomLink);
@@ -106,6 +106,10 @@ public class TestFacadeLinks
 		atomLink = links.getLinkForRel("next");
 		Assert.assertNotNull(atomLink);
 		Assert.assertEquals(url+"/book/foo/comment-collection;query=book?start=1&limit=1", atomLink.getHref());
+		// home
+		atomLink = links.getLinkForRel("home");
+		Assert.assertNotNull(atomLink);
+		Assert.assertEquals(url+"/", atomLink.getHref());
 	}
 
 	private void checkCommentLinks(String url, Comment comment) {
