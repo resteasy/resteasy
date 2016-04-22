@@ -5,6 +5,7 @@ import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.container.CompletionCallback;
 import javax.ws.rs.container.ContainerResponseFilter;
@@ -35,12 +36,14 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
    protected Annotation[] annotations;
    protected TimeoutHandler timeoutHandler;
    protected List<CompletionCallback> completionCallbacks = new ArrayList<CompletionCallback>();
+   protected Map<Class<?>, Object> contextDataMap;
 
    protected AbstractAsynchronousResponse(SynchronousDispatcher dispatcher, HttpRequest request, HttpResponse response)
    {
       this.dispatcher = dispatcher;
       this.request = request;
       this.response = response;
+      contextDataMap = ResteasyProviderFactory.getContextDataMap();
    }
 
 
@@ -154,6 +157,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
 
    protected boolean internalResume(Object entity)
    {
+      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
       Response response = null;
       if (entity == null)
       {
@@ -186,6 +190,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
 
    protected boolean internalResume(Throwable exc)
    {
+      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
       try
       {
          dispatcher.asynchronousExceptionDelivery(request, response, exc);
