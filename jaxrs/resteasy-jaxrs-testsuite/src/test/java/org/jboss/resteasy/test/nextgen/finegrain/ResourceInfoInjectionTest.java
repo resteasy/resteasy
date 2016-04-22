@@ -24,6 +24,7 @@ import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
@@ -32,8 +33,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -51,6 +50,7 @@ public class ResourceInfoInjectionTest
    protected static UndertowJaxrsServer server;
    protected static ResteasyDeployment deployment;
    protected static Dispatcher dispatcher;
+   protected static Client client;
 
    @Path("")
    public static class TestResource
@@ -109,9 +109,13 @@ public class ResourceInfoInjectionTest
       {
          Method method = resourceInfo.getResourceMethod();
          System.out.println("method on response : " + method);
-         if (resourceInfo.getResourceClass() == null && resourceInfo.getResourceMethod() == null)
+         if (method == null)
          {
-            responseContext.setStatus(2 * responseContext.getStatus());
+            responseContext.setStatus(responseContext.getStatus() * 2);
+         }
+         else
+         {
+            responseContext.setEntity(method.getName(), null, MediaType.TEXT_PLAIN_TYPE);
          }
       }
    }
@@ -134,36 +138,37 @@ public class ResourceInfoInjectionTest
    {
       server = new UndertowJaxrsServer().start();
       server.deploy(TestApp.class);
+      client = ResteasyClientBuilder.newClient();
    }
 
    @AfterClass
    public static void stop() throws Exception
    {
       server.stop();
+      client.close();
    }
 
    @Test
    public void testNotFound() throws Exception
    {
-      Client client = ResteasyClientBuilder.newClient();
       WebTarget target = client.target("http://localhost:8081/app/bogus");
       Response response = target.request().get();
+      String entity = response.readEntity(String.class);
       System.out.println("status: " + response.getStatus());
-      System.out.println("response: " + response.readEntity(String.class));
+      System.out.println("response: " + entity);
       Assert.assertEquals(808, response.getStatus());
+      Assert.assertEquals("", entity);
    }
 
    @Test
    public void testAsync() throws Exception
    {
-      Client client = ResteasyClientBuilder.newClient();
       WebTarget target = client.target("http://localhost:8081/app/async");
       Response response = target.request().post(Entity.entity("hello", "text/plain"));
       String val = response.readEntity(String.class);
       System.out.println("status: " + response.getStatus());
       System.out.println("response: " + val);
-      Assert.assertEquals(400, response.getStatus());
-      Assert.assertEquals("hello", val);
-      client.close();
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("async", val);
    }
 }
