@@ -122,7 +122,15 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
          boolean result = false;
          try
          {
-            result = syncLatch.await(timeout, timeoutUnit);
+            if (timeout <= 0)
+            {
+               syncLatch.await();
+               result = true;
+            }
+            else
+            {
+               result = syncLatch.await(timeout, timeoutUnit);
+            }
          }
          catch (InterruptedException e)
          {
