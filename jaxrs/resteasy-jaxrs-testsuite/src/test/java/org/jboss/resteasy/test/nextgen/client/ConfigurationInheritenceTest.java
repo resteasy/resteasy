@@ -251,49 +251,6 @@ public class ConfigurationInheritenceTest
       }
    }
    
-//   @Test
-//   public void testClientConfigurationSnapshot()
-//   {
-//      Client client = ClientBuilder.newClient();
-//      try
-//      {
-//
-//         WebTarget webTarget1 = client.target("http://www.google.fr");
-//
-//         // Register MyFirstFilter (the same if registered as a class or
-//         // singleton)
-//         webTarget1.register(TestFilter1.class);
-//         // Register a property
-//         webTarget1.property("property1", "value1");
-//
-//         // According to the documentation following instance must inherit of
-//         // webTarget1 snapshoted configuration
-//         WebTarget webTarget2 = webTarget1.path("");
-//         // webTarget2Configuration inherits of webTarget1 snapshoted
-//         // configuration => OK
-//         Configuration webTarget2Configuration = webTarget2.getConfiguration();
-//         checkConfiguration(webTarget2Configuration);
-//         // Only MyFirstFilter is used => OK
-//         webTarget2.request().get().close();
-//
-//         // Register MySecondFilter
-//         webTarget1.register(TestFilter2.class);
-//         // Register another property
-//         webTarget1.property("property2", "value2");
-//
-//         // webTarget2Configuration actually inherits of more than the
-//         // snapshot of webTarget1 configuration => NOK
-//         checkConfiguration(webTarget2Configuration);
-//         // Both MyFirstFilter and MySecondFilter are used => NOK
-//         webTarget2.request().get().close();
-//
-//      }
-//      finally
-//      {
-//         client.close();
-//      }
-//   }
-   
    @Test
    public void testClientBuilderToClient()
    {
