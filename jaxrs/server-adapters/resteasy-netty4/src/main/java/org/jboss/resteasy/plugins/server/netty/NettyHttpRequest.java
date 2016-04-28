@@ -341,10 +341,6 @@ public class NettyHttpRequest extends BaseHttpRequest
               {
                  throw new RuntimeException(e);
               }
-              finally
-              {
-                 ctx.close();
-              }
            }
 
            @Override
