@@ -120,8 +120,66 @@
          you annotate a class
          with @Provider and specify the @Produces types for a writer and @Consumes types for a reader. You must
          also implement
-         a MessageBodyReader/Writer interface respectively. Here is an example.
+         a MessageBodyReader/Writer interface respectively. Here is an example:
       </para>
+      
+      <programlisting>
+@Provider
+@Produces("application/x-java-serialized-object")
+@Consumes("application/x-java-serialized-object")
+public class SerializableProvider implements MessageBodyReader&lt;Serializable&gt;, MessageBodyWriter&lt;Serializable&gt;
+{
+   public static final MediaType APPLICATION_SERIALIZABLE_TYPE = new MediaType("application", "x-java-serialized-object");
+   public static final String APPLICATION_SERIALIZABLE = APPLICATION_SERIALIZABLE_TYPE.toString();
+   
+   public boolean isWriteable(Class&lt;?&gt; type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   {
+      return Serializable.class.isAssignableFrom(type)
+            &amp;&amp; APPLICATION_SERIALIZABLE_TYPE.getType().equals(mediaType.getType())
+            &amp;&amp; APPLICATION_SERIALIZABLE_TYPE.getSubtype().equals(mediaType.getSubtype());
+   }
+
+   public long getSize(Serializable t, Class&lt;?&gt; type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   {
+      return -1;
+   }
+
+   public void writeTo(Serializable t, Class&lt;?&gt; type, Type genericType,
+         Annotation[] annotations, MediaType mediaType,
+         MultivaluedMap&lt;String, Object&gt; httpHeaders, OutputStream entityStream)
+         throws IOException, WebApplicationException
+   {
+      BufferedOutputStream bos = new BufferedOutputStream(entityStream);
+      ObjectOutputStream oos = new ObjectOutputStream(bos);
+      oos.writeObject(t);
+      oos.close();
+   }
+
+   public boolean isReadable(Class&lt;?&gt; type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   {
+      return Serializable.class.isAssignableFrom(type)
+            &amp;&amp; APPLICATION_SERIALIZABLE_TYPE.getType().equals(mediaType.getType())
+            &amp;&amp; APPLICATION_SERIALIZABLE_TYPE.getSubtype().equals(mediaType.getSubtype());
+   }
+
+   public Serializable readFrom(Class&lt;Serializable&gt; type, Type genericType,
+         Annotation[] annotations, MediaType mediaType,
+         MultivaluedMap&lt;String, String&gt; httpHeaders, InputStream entityStream)
+         throws IOException, WebApplicationException
+   {
+      BufferedInputStream bis = new BufferedInputStream(entityStream);
+      ObjectInputStream ois = new ObjectInputStream(bis);
+      try
+      {
+         return Serializable.class.cast(ois.readObject());
+      }
+      catch (ClassNotFoundException e)
+      {
+         throw new WebApplicationException(e);
+      }
+   }
+}
+      </programlisting>
       <para>
 
 
