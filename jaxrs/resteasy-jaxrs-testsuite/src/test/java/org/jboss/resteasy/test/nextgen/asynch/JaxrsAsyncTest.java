@@ -78,6 +78,60 @@ public class JaxrsAsyncTest extends BaseResourceTest
          };
          t.start();
       }
+      
+      @GET
+      @Path("negative")
+      @Produces("text/plain")
+      public void negative(@Suspended final AsyncResponse response)
+      {
+         response.setTimeout(-1, TimeUnit.MILLISECONDS);
+         Thread t = new Thread()
+         {
+            @Override
+            public void run()
+            {
+               try
+               {
+                  System.out.println("STARTED!!!!");
+                  Thread.sleep(1000);
+                  Response jaxrs = Response.ok("hello").type(MediaType.TEXT_PLAIN).build();
+                  response.resume(jaxrs);
+               }
+               catch (Exception e)
+               {
+                  e.printStackTrace();
+               }
+            }
+         };
+         t.start();
+      }
+      
+      @GET
+      @Path("zero")
+      @Produces("text/plain")
+      public void zero(@Suspended final AsyncResponse response)
+      {
+         response.setTimeout(0, TimeUnit.MILLISECONDS);
+         Thread t = new Thread()
+         {
+            @Override
+            public void run()
+            {
+               try
+               {
+                  System.out.println("STARTED!!!!");
+                  Thread.sleep(1000);
+                  Response jaxrs = Response.ok("hello").type(MediaType.TEXT_PLAIN).build();
+                  response.resume(jaxrs);
+               }
+               catch (Exception e)
+               {
+                  e.printStackTrace();
+               }
+            }
+         };
+         t.start();
+      }
    }
 
    @Test
@@ -104,4 +158,35 @@ public class JaxrsAsyncTest extends BaseResourceTest
       client.close();
    }
 
+   /**
+    * RESTEASY-1194
+    * @throws Exception
+    */
+   @Test
+   public void testNegativeTimeout() throws Exception
+   {
+      addPerRequestResource(MyResource.class);
+      Client client = ClientBuilder.newClient();
+      Response response = client.target(generateURL("/negative")).request().get();
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("hello", response.readEntity(String.class));
+      response.close();
+      client.close();
+   }
+   
+   /**
+    * RESTEASY-1194
+    * @throws Exception
+    */
+   @Test
+   public void testZeroTimeout() throws Exception
+   {
+      addPerRequestResource(MyResource.class);
+      Client client = ClientBuilder.newClient();
+      Response response = client.target(generateURL("/zero")).request().get();
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("hello", response.readEntity(String.class));
+      response.close();
+      client.close();
+   }
 }
