@@ -3,6 +3,13 @@
 .idea
 *.iml
 
+# Eclipse
+###################
+**/.settings
+**/.project
+**/.classpath
+**/.checkstyle
+
 # Compiled source #
 ###################
 *.com
