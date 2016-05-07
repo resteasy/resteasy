@@ -1,11 +1,14 @@
 package org.jboss.resteasy.test.internal;
 
 import java.io.ByteArrayOutputStream;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.AsyncInvoker;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.MediaType;
@@ -93,6 +96,40 @@ public class ClientInvocationBuilderTest {
 			Assert.assertEquals("default", getInvocation.invoke(String.class));
 			Assert.assertTrue(postInvocation.getConfiguration().getProperties().containsKey("property1"));
 			Assert.assertEquals("test", postInvocation.invoke(String.class));
+		} finally {
+			client.close();
+		}
+	}
+
+	@Test
+	public void test_build_method_reset_entity() throws InterruptedException, ExecutionException {
+		ResteasyClient client = new ResteasyClientBuilder().build();
+		try {
+			ResteasyWebTarget webTarget = client.target("http://localhost:8081");
+			Builder invocationBuilder = webTarget.request().accept(MediaType.TEXT_PLAIN_TYPE);
+
+			// POST invocation
+			ClientInvocation postInvocation = (ClientInvocation) invocationBuilder.build("POST", Entity.text("test"));
+			Assert.assertEquals("test", postInvocation.invoke(String.class));
+
+			// GET invocation
+			ClientInvocation getInvocation = (ClientInvocation) invocationBuilder.build("GET");
+			// In order the request to be OK, invocation instance built from
+			// invocationBuilder must not contain the previous entity used for
+			// post request.
+			Assert.assertNull(getInvocation.getEntity());
+			Assert.assertEquals("default", getInvocation.invoke(String.class));
+			
+			//Same test for async request
+			AsyncInvoker async = invocationBuilder.async();
+			
+			// POST invocation
+			Future<String> postFuture = async.post(Entity.text("test"), String.class);
+			Assert.assertEquals("test",postFuture.get());
+			
+			// GET invocation
+			Future<String> getFuture = async.get(String.class);
+			Assert.assertEquals("default",getFuture.get());
 		} finally {
 			client.close();
 		}
