@@ -111,8 +111,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
    @Override
    public Invocation build(String method)
    {
-	  invocation.setMethod(method);
-      return new ClientInvocation(this.invocation);
+      return build(method, null);
    }
 
    @Override

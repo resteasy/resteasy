@@ -24,191 +24,157 @@ public class AsynchronousInvoke implements AsyncInvoker
    @Override
    public Future<Response> get()
    {
-      invocation.setMethod(HttpMethod.GET);
-      return invocation.submit();
+      return method(HttpMethod.GET);
    }
 
    @Override
    public <T> Future<T> get(Class<T> responseType)
    {
-      invocation.setMethod(HttpMethod.GET);
-      return invocation.submit(responseType);
+      return method(HttpMethod.GET, responseType);
    }
 
    @Override
    public <T> Future<T> get(GenericType<T> responseType)
    {
-      invocation.setMethod(HttpMethod.GET);
-      return invocation.submit(responseType);
+      return method(HttpMethod.GET, responseType);
    }
 
    @Override
    public <T> Future<T> get(InvocationCallback<T> callback)
    {
-      invocation.setMethod(HttpMethod.GET);
-      return invocation.submit(callback);
+      return method(HttpMethod.GET, callback);
    }
 
    @Override
    public Future<Response> trace()
    {
-      invocation.setMethod("TRACE");
-      return invocation.submit();
+      return method("TRACE");
    }
 
    @Override
    public <T> Future<T> trace(Class<T> responseType)
    {
-      invocation.setMethod("TRACE");
-      return invocation.submit(responseType);
+      return method("TRACE", responseType);
    }
 
    @Override
    public <T> Future<T> trace(GenericType<T> responseType)
    {
-      invocation.setMethod("TRACE");
-      return invocation.submit(responseType);
+      return method("TRACE", responseType);
    }
 
    @Override
    public <T> Future<T> trace(InvocationCallback<T> callback)
    {
-      invocation.setMethod("TRACE");
-      return invocation.submit(callback);
+      return method("TRACE", callback);
    }
 
    @Override
    public Future<Response> put(Entity<?> entity)
    {
-      invocation.setMethod(HttpMethod.PUT);
-      invocation.setEntity(entity);
-      return invocation.submit();
+      return method(HttpMethod.PUT, entity);
    }
 
    @Override
    public <T> Future<T> put(Entity<?> entity, Class<T> responseType)
    {
-      invocation.setMethod(HttpMethod.PUT);
-      invocation.setEntity(entity);
-      return invocation.submit(responseType);
+      return method(HttpMethod.PUT, entity, responseType);
    }
 
    @Override
    public <T> Future<T> put(Entity<?> entity, GenericType<T> responseType)
    {
-      invocation.setMethod(HttpMethod.PUT);
-      invocation.setEntity(entity);
-      return invocation.submit(responseType);
+      return method(HttpMethod.PUT, entity, responseType);
    }
 
    @Override
    public <T> Future<T> put(Entity<?> entity, InvocationCallback<T> callback)
    {
-      invocation.setMethod(HttpMethod.PUT);
-      invocation.setEntity(entity);
-      return invocation.submit(callback);
+      return method(HttpMethod.PUT, entity, callback);
    }
 
    @Override
    public Future<Response> post(Entity<?> entity)
    {
-      invocation.setMethod(HttpMethod.POST);
-      invocation.setEntity(entity);
-      return invocation.submit();
+      return method(HttpMethod.POST, entity);
    }
 
    @Override
    public <T> Future<T> post(Entity<?> entity, Class<T> responseType)
    {
-      invocation.setMethod(HttpMethod.POST);
-      invocation.setEntity(entity);
-      return invocation.submit(responseType);
+      return method(HttpMethod.POST, entity, responseType);
    }
 
    @Override
    public <T> Future<T> post(Entity<?> entity, GenericType<T> responseType)
    {
-      invocation.setMethod(HttpMethod.POST);
-      invocation.setEntity(entity);
-      return invocation.submit(responseType);
+      return method(HttpMethod.POST, entity, responseType);
    }
 
    @Override
    public <T> Future<T> post(Entity<?> entity, InvocationCallback<T> callback)
    {
-      invocation.setMethod(HttpMethod.POST);
-      invocation.setEntity(entity);
-      return invocation.submit(callback);
+      return method(HttpMethod.POST, entity, callback);
    }
 
    @Override
    public Future<Response> delete()
    {
-      invocation.setMethod(HttpMethod.DELETE);
-      return invocation.submit();
+      return method(HttpMethod.DELETE);
    }
 
    @Override
    public <T> Future<T> delete(Class<T> responseType)
    {
-      invocation.setMethod(HttpMethod.DELETE);
-      return invocation.submit(responseType);
+      return method(HttpMethod.DELETE, responseType);
    }
 
    @Override
    public <T> Future<T> delete(GenericType<T> responseType)
    {
-      invocation.setMethod(HttpMethod.DELETE);
-      return invocation.submit(responseType);
+      return method(HttpMethod.DELETE, responseType);
    }
 
    @Override
    public <T> Future<T> delete(InvocationCallback<T> callback)
    {
-      invocation.setMethod(HttpMethod.DELETE);
-      return invocation.submit(callback);
+      return method(HttpMethod.DELETE, callback);
    }
 
    @Override
    public Future<Response> head()
    {
-      invocation.setMethod(HttpMethod.HEAD);
-      return invocation.submit();
+      return method(HttpMethod.HEAD);
    }
 
    @Override
    public Future<Response> head(InvocationCallback<Response> callback)
    {
-      invocation.setMethod(HttpMethod.HEAD);
-      return invocation.submit(callback);
+      return method(HttpMethod.HEAD,callback);
    }
 
    @Override
    public Future<Response> options()
    {
-      invocation.setMethod(HttpMethod.OPTIONS);
-      return invocation.submit();
+      return method(HttpMethod.OPTIONS);
    }
 
    @Override
    public <T> Future<T> options(Class<T> responseType)
    {
-      invocation.setMethod(HttpMethod.OPTIONS);
-      return invocation.submit(responseType);
+      return method(HttpMethod.OPTIONS, responseType);
    }
 
    @Override
    public <T> Future<T> options(GenericType<T> responseType)
    {
-      invocation.setMethod(HttpMethod.OPTIONS);
-      return invocation.submit(responseType);
+      return method(HttpMethod.OPTIONS, responseType);
    }
 
    @Override
    public <T> Future<T> options(InvocationCallback<T> callback)
    {
-      invocation.setMethod(HttpMethod.OPTIONS);
-      return invocation.submit(callback);
+      return method(HttpMethod.OPTIONS, callback);
    }
 
 
@@ -216,6 +182,7 @@ public class AsynchronousInvoke implements AsyncInvoker
    public Future<Response> method(String name)
    {
       invocation.setMethod(name);
+      invocation.setEntity(null);
       return invocation.submit();
    }
 
@@ -223,6 +190,7 @@ public class AsynchronousInvoke implements AsyncInvoker
    public <T> Future<T> method(String name, Class<T> responseType)
    {
       invocation.setMethod(name);
+      invocation.setEntity(null);
       return invocation.submit(responseType);
    }
 
@@ -230,6 +198,7 @@ public class AsynchronousInvoke implements AsyncInvoker
    public <T> Future<T> method(String name, GenericType<T> responseType)
    {
       invocation.setMethod(name);
+      invocation.setEntity(null);
       return invocation.submit(responseType);
    }
 
@@ -237,6 +206,7 @@ public class AsynchronousInvoke implements AsyncInvoker
    public <T> Future<T> method(String name, InvocationCallback<T> callback)
    {
       invocation.setMethod(name);
+      invocation.setEntity(null);
       return invocation.submit(callback);
    }
 
