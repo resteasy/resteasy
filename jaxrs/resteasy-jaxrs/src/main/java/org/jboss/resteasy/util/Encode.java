@@ -210,8 +210,6 @@ public class Encode
     	 builder.append(path, start, matcher.start());
          decoder.reset();
          String decoded = decodeBytes(matcher.group(1), decoder);
-         decoded = decoded.replace("\\", "\\\\");
-         decoded = decoded.replace("$", "\\$");
          builder.append(decoded);
          start = matcher.end();
       }
@@ -458,9 +456,6 @@ public class Encode
       {
     	 newSegment.append(segment, start, matcher.start());
          String replacement = params.get(i++);
-         // double encode slashes, so that slashes stay where they are 
-         replacement = replacement.replace("\\", "\\\\");
-         replacement = replacement.replace("$", "\\$");
      	 newSegment.append(replacement);
 		 start = matcher.end();
       }

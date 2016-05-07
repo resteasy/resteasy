@@ -622,8 +622,6 @@ public class ResteasyUriBuilder extends UriBuilder
          {
             value = Encode.encodeNonCodes(value);
          }
-         // if there is a $ then we must backslash it or it will screw up regex group substitution
-         value = value.replace("$", "\\$");
 		 builder.append(value);
 		 start = matcher.end();
       }
@@ -674,7 +672,7 @@ public class ResteasyUriBuilder extends UriBuilder
                if (encodeSlash) stringValue = Encode.encodePathSegmentSaveEncodings(stringValue);
                else stringValue = Encode.encodePathSaveEncodings(stringValue);
             }
-			builder.append(Matcher.quoteReplacement(stringValue));
+			builder.append(stringValue);
 			start = matcher.end();
          }
          else
