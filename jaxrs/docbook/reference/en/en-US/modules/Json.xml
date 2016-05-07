@@ -8,7 +8,7 @@
         described
         at this url: http://jackson.codehaus.org/Tutorial.
     </para>
-    <para>While Jackson does come with its own JAX-RS integration. Resteasy expanded it a little. To include
+    <para>While Jackson does come with its own JAX-RS integration, Resteasy expanded it a little. To include
         it within your project, just add this maven dependency to your build.  Resteasy supports both Jackson 1.9.x
         and Jackson 2.2.x.  Read further on how to use each.
     </para>

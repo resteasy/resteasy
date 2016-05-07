@@ -25,14 +25,13 @@
          */
          public interface ExceptionMapper&lt;E&gt;
          {
-
-         /**
-         * Map an exception to a {@link javax.ws.rs.core.Response}.
-         *
-         * @param exception the exception to map to a response
-         * @return a response mapped from the supplied exception
-         */
-         Response toResponse(E exception);
+            /**
+            * Map an exception to a {@link javax.ws.rs.core.Response}.
+            *
+            * @param exception the exception to map to a response
+            * @return a response mapped from the supplied exception
+            */
+            Response toResponse(E exception);
          }
       </programlisting>
    </para>
@@ -49,11 +48,9 @@
          @Provider
          public class EJBExceptionMapper implements ExceptionMapper&lt;javax.ejb.EJBException&gt;
          {
-
-         Response toResponse(EJBException exception) {
-         return Response.status(500).build();
-         }
-
+            public Response toResponse(EJBException exception) {
+               return Response.status(500).build();
+            }
          }
       </programlisting>
    </para>
