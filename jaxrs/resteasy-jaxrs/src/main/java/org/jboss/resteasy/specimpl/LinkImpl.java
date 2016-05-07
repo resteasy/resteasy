@@ -16,12 +16,12 @@ import java.util.Map;
  */
 public class LinkImpl extends Link
 {
-   protected URI uri;
+   protected final URI uri;
 
    /**
     * A map for all the link parameters such as "rel", "type", etc.
     */
-   protected Map<String, String> map = new HashMap<String, String>();
+   protected final Map<String, String> map;
 
    protected static final RuntimeDelegate.HeaderDelegate<Link> delegate =
            RuntimeDelegate.getInstance().createHeaderDelegate(Link.class);
@@ -30,6 +30,13 @@ public class LinkImpl extends Link
    {
       return delegate.fromString(value);
    }
+   
+   LinkImpl(URI uri, Map<String, String> map) 
+   {
+	  this.uri = uri;
+	  this.map = map.isEmpty() ? Collections.<String, String> emptyMap() : Collections
+		.unmodifiableMap(new HashMap<String, String>(map));
+	}
 
    @Override
    public URI getUri() {
