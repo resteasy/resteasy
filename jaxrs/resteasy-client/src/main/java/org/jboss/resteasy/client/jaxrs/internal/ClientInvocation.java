@@ -79,6 +79,20 @@ public class ClientInvocation implements Invocation
       this.configuration = new ClientConfiguration(parent);
       this.headers = headers;
    }
+   
+   ClientInvocation(ClientInvocation clientInvocation)
+   {
+      this.client = clientInvocation.client;
+      this.configuration = new ClientConfiguration(clientInvocation.configuration);
+      this.headers =  new ClientRequestHeaders(this.configuration);
+      this.headers.setHeaders(clientInvocation.headers.getHeaders());
+      this.method = clientInvocation.method;
+      this.entity = clientInvocation.entity;
+      this.entityGenericType = clientInvocation.entityGenericType;
+      this.entityClass = clientInvocation.entityClass;
+      this.entityAnnotations = clientInvocation.entityAnnotations;
+      this.uri = clientInvocation.uri;
+   }
 
    /**
     * Extracts result from response throwing an appropriate exception if not a successful response.
