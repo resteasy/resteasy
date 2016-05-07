@@ -30,8 +30,10 @@ public class BasicAuthHelper
       if (!type.equalsIgnoreCase("Basic")) return null;
       String val = header.substring(6);
       val = new String(org.apache.commons.codec.binary.Base64.decodeBase64(val.getBytes()));
-      String[] split = val.split(":");
-      if (split.length != 2) return null;
+      int pos = val.indexOf(':');
+      String[] split = new String[2];
+      split[0] = val.substring(0, pos);
+      split[1] = val.substring(pos + 1);
       return split;
    }
 }
