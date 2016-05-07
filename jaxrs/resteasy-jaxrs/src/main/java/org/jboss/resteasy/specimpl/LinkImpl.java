@@ -71,7 +71,7 @@ public class LinkImpl extends Link
 
    @Override
    public Map<String, String> getParams() {
-      return new HashMap<String, String>(map);
+      return map;
    }
 
    @Override
