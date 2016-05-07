@@ -3,6 +3,7 @@ package org.jboss.resteasy.client.jaxrs.internal;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.core.interception.AbstractWriterInterceptorContext;
 import org.jboss.resteasy.core.interception.ClientWriterInterceptorContext;
+import org.jboss.resteasy.specimpl.MultivaluedTreeMap;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.DelegatingOutputStream;
 import org.jboss.resteasy.util.Types;
@@ -34,6 +35,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.WriterInterceptor;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,7 +43,10 @@ import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
@@ -81,7 +86,7 @@ public class ClientInvocation implements Invocation
       this.client = clientInvocation.client;
       this.configuration = new ClientConfiguration(clientInvocation.configuration);
       this.headers =  new ClientRequestHeaders(this.configuration);
-      this.headers.setHeaders(clientInvocation.headers.getHeaders());
+      MultivaluedTreeMap.copy(clientInvocation.headers.getHeaders(), this.headers.headers);
       this.method = clientInvocation.method;
       this.entity = clientInvocation.entity;
       this.entityGenericType = clientInvocation.entityGenericType;
