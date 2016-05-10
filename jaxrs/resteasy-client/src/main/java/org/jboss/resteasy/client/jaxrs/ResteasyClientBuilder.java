@@ -567,7 +567,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    @Override
    public ResteasyClientBuilder withConfig(Configuration config)
    {
-      providerFactory = new ResteasyProviderFactory();
+      providerFactory = new LocalResteasyProviderFactory(new ResteasyProviderFactory());
       providerFactory.setProperties(config.getProperties());
       for (Class clazz : config.getClasses())
       {
