@@ -1752,11 +1752,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public void registerProviderInstance(Object provider, Map<Class<?>, Integer> contracts, Integer priorityOverride, boolean builtIn)
    {
-      if (getClasses().contains(provider.getClass()))
-      {
-         LogMessages.LOGGER.providerClassAlreadyRegistered(provider.getClass().getName());
-         return;
-      }
       for (Object registered : getInstances())
       {
          if (registered == provider)
@@ -1764,6 +1759,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             LogMessages.LOGGER.providerInstanceAlreadyRegistered(provider.getClass().getName());
             return;
          }
+      }
+      if (getClasses().contains(provider.getClass()))
+      {
+         LogMessages.LOGGER.providerClassAlreadyRegistered(provider.getClass().getName());
+         return;
       }
       Map<Class<?>, Integer> newContracts = new HashMap<Class<?>, Integer>();
       if (isA(provider, ParamConverterProvider.class, contracts))
