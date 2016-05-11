@@ -196,8 +196,26 @@
             </if>
         </sequential>
     </macrodef>
+	
+    <macrodef name="maven-resource-bundle" >
+        <attribute name="group"/>
+        <attribute name="artifact"/>
+        <attribute name="subdir"/>
 
-
+        <sequential>
+            <if>
+               <equals arg1="${mavenized.modules}" arg2="true"/>
+            <then/>
+            <else>
+               <!-- Copy the jar to the module dir -->
+               <copy todir="${module.repo.output.dir}/${current.module.path}/@{subdir}" failonerror="true">
+                  <fileset file="${@{group}:@{artifact}:jar}"/>
+                  <mapper type="flatten" />
+               </copy>
+            </else>
+            </if>
+        </sequential>
+    </macrodef>
 
     <macrodef name="maven-resource-with-classifier" >
         <attribute name="group"/>
