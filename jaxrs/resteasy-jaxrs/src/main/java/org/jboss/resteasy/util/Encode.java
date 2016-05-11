@@ -492,6 +492,38 @@ public class Encode
       }
       return decoded;
    }
+   
+   /**
+    * decode an encoded map
+    *
+    * @param map
+    * @param charset
+    * @return
+    */
+   public static MultivaluedMap<String, String> decode(MultivaluedMap<String, String> map, String charset)
+   {
+      if (charset == null)
+      {
+         charset = UTF_8;
+      }
+      MultivaluedMapImpl<String, String> decoded = new MultivaluedMapImpl<String, String>();
+      for (Map.Entry<String, List<String>> entry : map.entrySet())
+      {
+         List<String> values = entry.getValue();
+         for (String value : values)
+         {
+            try
+            {
+               decoded.add(URLDecoder.decode(entry.getKey(), charset), URLDecoder.decode(value, charset));
+            }
+            catch (UnsupportedEncodingException e)
+            {
+               throw new RuntimeException(e);
+            }
+         }
+      }
+      return decoded;
+   }
 
    public static MultivaluedMap<String, String> encode(MultivaluedMap<String, String> map)
    {

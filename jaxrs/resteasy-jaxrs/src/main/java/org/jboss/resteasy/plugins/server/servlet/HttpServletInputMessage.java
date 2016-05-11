@@ -72,11 +72,12 @@ public class HttpServletInputMessage extends BaseHttpRequest
    public MultivaluedMap<String, String> getPutFormParameters()
    {
       if (formParameters != null) return formParameters;
-      if (MediaType.APPLICATION_FORM_URLENCODED_TYPE.isCompatible(getHttpHeaders().getMediaType()))
+      MediaType mt = getHttpHeaders().getMediaType();
+      if (MediaType.APPLICATION_FORM_URLENCODED_TYPE.isCompatible(mt))
       {
          try
          {
-            formParameters = FormUrlEncodedProvider.parseForm(getInputStream());
+            formParameters = FormUrlEncodedProvider.parseForm(getInputStream(), mt.getParameters().get(MediaType.CHARSET_PARAMETER));
          }
          catch (IOException e)
          {
