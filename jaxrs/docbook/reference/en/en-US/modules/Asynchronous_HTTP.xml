@@ -65,6 +65,10 @@ public class SimpleResource
         AsyncResponse also has other methods to cancel the execution.  See javadoc for more details.
     </para>
     <para>
-        NOTE: The old Resteasy proprietary API for async http has been deprecated and may be removed as soon as Resteasy 3.1.
+        <emphasis role="bold">NOTE:</emphasis> The old Resteasy proprietary API for async http has been deprecated and may be removed as soon as Resteasy 3.1.
+        In particular, the Resteasy @Suspend annotation is replaced by <classname>javax.ws.rs.container.Suspended</classname>, and
+        <classname>org.jboss.resteasy.spi.AsynchronousResponse</classname> is replaced by
+        <classname>javax.ws.rs.container.AsyncResponse</classname>. Note that @Suspended does not have a value field,
+        which represented a timeout limit. Instead, <methodname>AsyncResponse.setTimeout()</methodname> may be called.
     </para>
 </chapter>

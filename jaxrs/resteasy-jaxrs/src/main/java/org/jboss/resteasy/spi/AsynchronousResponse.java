@@ -9,7 +9,12 @@ import javax.ws.rs.core.Response;
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ *
+ * @deprecated Replaced by javax.ws.rs.container.AsyncResponse
+ * 
+ * @see javax.ws.rs.container.AsyncResponse
  */
+@Deprecated
 public interface AsynchronousResponse
 {
    void setResponse(Response response);
