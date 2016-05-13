@@ -8,13 +8,17 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 
-import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Response;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @deprecated Replaced by org.jboss.resteasy.core.AsynchronousResponseInjector
+ * 
+ * @see org.jboss.resteasy.core.AsynchronousResponseInjector
  */
+@Deprecated
 public class SuspendInjector implements ValueInjector
 {
    private long suspend;
