@@ -28,8 +28,8 @@
     <properties>
         <jboss.home>/Users/billburke/jboss/WildFly-8.2.0.Final</jboss.home>
         <dep.jaxb-impl.version>2.2.7</dep.jaxb-impl.version>
-        <dep.jettison.version>1.3.2</dep.jettison.version>
-        <dep.commons-io.version>2.1</dep.commons-io.version>
+        <dep.jettison.version>1.3.7</dep.jettison.version>
+        <dep.commons-io.version>2.4</dep.commons-io.version>
         <dep.servlet.version>2.5</dep.servlet.version>
         <dep.hibernate-validator.version>5.1.3.Final</dep.hibernate-validator.version>
         <dep.javax.persistence.version>1.0.1.Final</dep.javax.persistence.version>
@@ -41,7 +41,7 @@
         <dep.guice.version>4.0</dep.guice.version>
         <dep.netty.version>3.6.4.Final</dep.netty.version>
         <dep.netty4.version>4.0.7.Final</dep.netty4.version>
-        <dep.slf4j.version>1.7.5</dep.slf4j.version>
+        <dep.slf4j.version>1.7.21</dep.slf4j.version>
         <dep.bc.version>1.52</dep.bc.version>
         <dep.com.sun.mail.version>1.5.5</dep.com.sun.mail.version>
         <dep.arquillian-bom.version>1.1.11.Final</dep.arquillian-bom.version>
@@ -58,7 +58,7 @@
         </version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec>
         <version.org.glassfish.javax.el>3.0.0</version.org.glassfish.javax.el>
         <version.io.undertow>1.2.8.Final</version.io.undertow>
-        <version.com.fasterxml.jackson>2.6.3</version.com.fasterxml.jackson>
+        <version.com.fasterxml.jackson>2.7.3</version.com.fasterxml.jackson>
         <version.org.apache.httpcomponents>4.3.6</version.org.apache.httpcomponents>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -312,7 +312,7 @@
             <dependency>
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
-                <version>1.2.14</version>
+                <version>1.2.17</version>
             </dependency>
 
             <dependency>
@@ -433,7 +433,7 @@
             <dependency>
                 <groupId>org.glassfish</groupId>
                 <artifactId>javax.json</artifactId>
-                <version>1.0.3</version>
+                <version>1.0.4</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.spec.javax.servlet</groupId>
