@@ -39,7 +39,7 @@ public interface Messages
    String failedToFindBeanProperty(String property);
 
    @Message(id = BASE + 35, value = "Failed to inject links in %s")
-   String failedToInjectLinks(Object expression);
+   String failedToInjectLinks(Object entity);
    
    @Message(id = BASE + 40, value = "Failed to instantiate ELProvider: %s")
    String failedToInstantiateELProvider(String className);
@@ -55,4 +55,7 @@ public interface Messages
    
    @Message(id = BASE + 60, value = "Not enough URI parameters: expecting {0} but only found {1}", format=Format.MESSAGE_FORMAT)
    String notEnoughtUriParameters(int expected, int actual);
+
+   @Message(id = BASE + 65, value = "Failed to access/reuse user-created service discovery in %s")
+   String failedToReuseServiceDiscovery(Object entity);
 }

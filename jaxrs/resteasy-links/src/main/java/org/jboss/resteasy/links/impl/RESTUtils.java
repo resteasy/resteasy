@@ -46,10 +46,20 @@ public class RESTUtils {
 	public static <T> T addDiscovery(T entity, UriInfo uriInfo, ResourceMethodRegistry registry) {
 		// find the field to inject first
 		Field injectionField = findInjectionField(entity);
-		if(injectionField == null)
+		if (injectionField == null)
 			return entity;
 		List<Method> methods = getServiceMethods(registry);
-		RESTServiceDiscovery ret = new RESTServiceDiscovery();
+		
+		RESTServiceDiscovery ret = null;
+		try {
+			injectionField.setAccessible(true);
+			ret = (RESTServiceDiscovery) injectionField.get(entity);
+		} catch (Exception e) {
+			LogMessages.LOGGER.error(Messages.MESSAGES.failedToReuseServiceDiscovery(entity), e);
+		}
+		if (ret == null) {
+			ret = new RESTServiceDiscovery();
+		}
 		for(Method m : methods){
 			processLinkResources(m, entity, uriInfo, ret);
 		}
@@ -57,13 +67,12 @@ public class RESTUtils {
 		if(ret.isEmpty())
 			return entity;
 		// now inject
-		injectionField.setAccessible(true);
 		try {
 			injectionField.set(entity, ret);
+			injectionField.setAccessible(false);
 		} catch (Exception e) {
 		   LogMessages.LOGGER.error(Messages.MESSAGES.failedToInjectLinks(entity), e);
 		}
-		injectionField.setAccessible(false);
 		return entity;
 	}
 
