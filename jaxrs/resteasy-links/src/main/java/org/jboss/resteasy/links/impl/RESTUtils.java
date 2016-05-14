@@ -55,7 +55,7 @@ public class RESTUtils {
 			injectionField.setAccessible(true);
 			ret = (RESTServiceDiscovery) injectionField.get(entity);
 		} catch (Exception e) {
-			LogMessages.LOGGER.error(Messages.MESSAGES.failedToInjectLinks(entity), e);
+			LogMessages.LOGGER.error(Messages.MESSAGES.failedToReuseServiceDiscovery(entity), e);
 		}
 		if (ret == null) {
 			ret = new RESTServiceDiscovery();
