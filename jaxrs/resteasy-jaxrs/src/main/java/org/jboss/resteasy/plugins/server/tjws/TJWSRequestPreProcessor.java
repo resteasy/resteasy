@@ -60,11 +60,16 @@ public class TJWSRequestPreProcessor
                }
                catch (SecurityException e)
                {
-                  response.sendError(HttpResponseCodes.SC_UNAUTHORIZED);
+                  response.sendError(HttpResponseCodes.SC_FORBIDDEN);
                   return null;
                }
                request = new AuthenticatedHttpServletRequest(request, domain, user, "BASIC", contextPath);
             }
+         }
+         else
+         {
+            response.sendError(HttpResponseCodes.SC_UNAUTHORIZED);
+            return null;
          }
       }
       else
