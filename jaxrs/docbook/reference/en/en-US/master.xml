@@ -64,7 +64,7 @@
    <bookinfo>
       <title>RESTEasy JAX-RS</title>
       <subtitle>RESTFul Web Services for Java</subtitle>
-      <releaseinfo>3.0.17.Final-SNAPSHOT</releaseinfo>
+      <releaseinfo>3.1.0-SNAPSHOT</releaseinfo>
    </bookinfo>
 
    <toc/>
