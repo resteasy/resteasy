@@ -2,6 +2,9 @@ package org.jboss.resteasy.specimpl;
 
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.net.URI;
 
 import org.junit.Test;
 
@@ -31,4 +34,14 @@ public class ResteasyUriBuilderTest {
     builder = ResteasyUriBuilder.fromTemplate("http://domain.com/path#fragment%with[forbidden}special<chars");
     assertEquals("http://domain.com/path#fragment%25with%5Bforbidden%7Dspecial%3Cchars", builder.build().toString());
   }
+  
+  @Test
+  public void testFromPathWithMissingValues() {
+    try {
+        URI uri = ResteasyUriBuilder.fromPath("").path("{v}/{w}").build(new Object[] { "first" }, false);
+        fail("IllegalArgumentException expected, uri:" + uri);
+    } catch (IllegalArgumentException e) {
+        //OK
+    }
+}
 }
