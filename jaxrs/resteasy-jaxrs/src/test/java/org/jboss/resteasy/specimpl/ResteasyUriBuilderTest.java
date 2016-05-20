@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -35,13 +37,34 @@ public class ResteasyUriBuilderTest {
     assertEquals("http://domain.com/path#fragment%25with%5Bforbidden%7Dspecial%3Cchars", builder.build().toString());
   }
   
-  @Test
-  public void testFromPathWithMissingValues() {
-    try {
-        URI uri = ResteasyUriBuilder.fromPath("").path("{v}/{w}").build(new Object[] { "first" }, false);
-        fail("IllegalArgumentException expected, uri:" + uri);
-    } catch (IllegalArgumentException e) {
-        //OK
-    }
-}
+   @Test
+   public void testFromPathWithMissingValues()
+   {
+      try
+      {
+         URI uri = ResteasyUriBuilder.fromPath("").path("{v}/{w}").build(new Object[] {"first"}, false);
+         fail("IllegalArgumentException expected, uri:" + uri);
+      }
+      catch (IllegalArgumentException e)
+      {
+         //OK
+      }
+   }
+   
+   @Test
+   public void testTemplateWithNullName()
+   {
+      Map<String, Object> map = new HashMap<String, Object>();
+      map.put(null, "aa");
+      UriBuilder builder = ResteasyUriBuilder.fromPath("").path("{v}/{w}/{x}/{y}/{w}");
+      try
+      {
+         builder.resolveTemplatesFromEncoded(map);
+         fail("Exception expected!");
+      }
+      catch (IllegalArgumentException e)
+      {
+         //OK
+      }
+   }
 }
