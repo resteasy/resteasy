@@ -1081,6 +1081,7 @@ public class ResteasyUriBuilder extends UriBuilder
    public UriBuilder resolveTemplates(Map<String, Object> templateValues) throws IllegalArgumentException
    {
       if (templateValues == null) throw new IllegalArgumentException(Messages.MESSAGES.templateValuesParamNull());
+      if (templateValues.containsKey(null)) throw new IllegalArgumentException(Messages.MESSAGES.mapKeyNull());
       String str = buildString(templateValues, false, true, true);
       return fromTemplate(str);
    }
@@ -1111,6 +1112,7 @@ public class ResteasyUriBuilder extends UriBuilder
    public UriBuilder resolveTemplates(Map<String, Object> templateValues, boolean encodeSlashInPath) throws IllegalArgumentException
    {
       if (templateValues == null) throw new IllegalArgumentException(Messages.MESSAGES.templateValuesParamNull());
+      if (templateValues.containsKey(null)) throw new IllegalArgumentException(Messages.MESSAGES.mapKeyNull());
       String str = buildString(templateValues, false, true, encodeSlashInPath);
       return fromTemplate(str);
    }
@@ -1119,6 +1121,7 @@ public class ResteasyUriBuilder extends UriBuilder
    public UriBuilder resolveTemplatesFromEncoded(Map<String, Object> templateValues) throws IllegalArgumentException
    {
       if (templateValues == null) throw new IllegalArgumentException(Messages.MESSAGES.templateValuesParamNull());
+      if (templateValues.containsKey(null)) throw new IllegalArgumentException(Messages.MESSAGES.mapKeyNull());
       String str = buildString(templateValues, true, true, true);
       return fromTemplate(str);
    }
