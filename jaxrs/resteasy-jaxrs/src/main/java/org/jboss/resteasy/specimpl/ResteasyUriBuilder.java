@@ -24,6 +24,39 @@ import java.util.regex.Pattern;
  */
 public class ResteasyUriBuilder extends UriBuilder
 {
+	
+	private static final class URITemplateParametersMap extends HashMap<String, Object> {
+
+		private final Object[] parameterValues;
+		private int index;
+		
+		private URITemplateParametersMap(Object...parameterValues) {
+			this.parameterValues=parameterValues;
+		}
+
+		@Override
+		public Object get(Object key) {
+			Object object = null;
+			if ( !super.containsKey(key) && this.index != this.parameterValues.length) {
+				object = this.parameterValues[this.index++];
+				super.put((String) key, object);
+			}else{
+				object = super.get(key);
+			}
+			return object;
+		}
+
+		@Override
+		public boolean containsKey(Object key) {
+			boolean containsKey = super.containsKey(key);
+			if (!containsKey && this.index != this.parameterValues.length) {
+				super.put((String) key, this.parameterValues[this.index++]);
+				containsKey = true;
+			}
+			return containsKey;
+		}
+
+	}
 
    private String host;
    private String scheme;
@@ -476,9 +509,9 @@ public class ResteasyUriBuilder extends UriBuilder
    {
       if (path != null)
       {
-         StringBuffer buffer = new StringBuffer();
-         replacePathParameter(name, value.toString(), isEncoded, path, buffer, false);
-         path = buffer.toString();
+         StringBuilder builder = new StringBuilder();
+         replacePathParameter(name, value.toString(), isEncoded, path, builder, false);
+         path = builder.toString();
       }
       return this;
    }
@@ -519,65 +552,66 @@ public class ResteasyUriBuilder extends UriBuilder
 
    private String buildString(Map<String, ? extends Object> paramMap, boolean fromEncodedMap, boolean isTemplate, boolean encodeSlash)
    {
-      for (Map.Entry<String, ? extends Object> entry : paramMap.entrySet())
-      {
-         if (entry.getKey() == null) throw new IllegalArgumentException(Messages.MESSAGES.mapKeyNull());
-         if (entry.getValue() == null) throw new IllegalArgumentException(Messages.MESSAGES.mapValueNull());
-      }
-      StringBuffer buffer = new StringBuffer();
+      StringBuilder builder = new StringBuilder();
 
-      if (scheme != null) replaceParameter(paramMap, fromEncodedMap, isTemplate, scheme, buffer, encodeSlash).append(":");
+      if (scheme != null) replaceParameter(paramMap, fromEncodedMap, isTemplate, scheme, builder, encodeSlash).append(":");
       if (ssp != null)
       {
-         buffer.append(ssp);
+         builder.append(ssp);
       }
       else if (userInfo != null || host != null || port != -1)
       {
-         buffer.append("//");
-         if (userInfo != null) replaceParameter(paramMap, fromEncodedMap, isTemplate, userInfo, buffer, encodeSlash).append("@");
+         builder.append("//");
+         if (userInfo != null) replaceParameter(paramMap, fromEncodedMap, isTemplate, userInfo, builder, encodeSlash).append("@");
          if (host != null)
          {
             if ("".equals(host)) throw new UriBuilderException(Messages.MESSAGES.emptyHostName());
-            replaceParameter(paramMap, fromEncodedMap, isTemplate, host, buffer, encodeSlash);
+            replaceParameter(paramMap, fromEncodedMap, isTemplate, host, builder, encodeSlash);
          }
-         if (port != -1) buffer.append(":").append(Integer.toString(port));
+         if (port != -1) builder.append(":").append(Integer.toString(port));
       }
       else if (authority != null)
       {
-         buffer.append("//");
-         replaceParameter(paramMap, fromEncodedMap, isTemplate, authority, buffer, encodeSlash);
+         builder.append("//");
+         replaceParameter(paramMap, fromEncodedMap, isTemplate, authority, builder, encodeSlash);
       }
       if (path != null)
       {
-         StringBuffer tmp = new StringBuffer();
+    	 StringBuilder tmp = new StringBuilder();
          replaceParameter(paramMap, fromEncodedMap, isTemplate, path, tmp, encodeSlash);
          String tmpPath = tmp.toString();
          if (userInfo != null || host != null)
          {
-            if (!tmpPath.startsWith("/")) buffer.append("/");
+            if (!tmpPath.startsWith("/")) builder.append("/");
          }
-         buffer.append(tmpPath);
+         builder.append(tmpPath);
       }
       if (query != null)
       {
-         buffer.append("?");
-         replaceQueryStringParameter(paramMap, fromEncodedMap, isTemplate, query, buffer);
+         builder.append("?");
+         replaceQueryStringParameter(paramMap, fromEncodedMap, isTemplate, query, builder);
       }
       if (fragment != null)
       {
-         buffer.append("#");
-         replaceParameter(paramMap, fromEncodedMap, isTemplate, fragment, buffer, encodeSlash);
+         builder.append("#");
+         replaceParameter(paramMap, fromEncodedMap, isTemplate, fragment, builder, encodeSlash);
       }
-      return buffer.toString();
+      return builder.toString();
    }
 
-   protected StringBuffer replacePathParameter(String name, String value, boolean isEncoded, String string, StringBuffer buffer, boolean encodeSlash)
+   protected StringBuilder replacePathParameter(String name, String value, boolean isEncoded, String string, StringBuilder builder, boolean encodeSlash)
    {
+	  if (string.indexOf('{') == -1) 
+	  {
+		 return builder.append(string);
+	  }
       Matcher matcher = createUriParamMatcher(string);
+      int start = 0;
       while (matcher.find())
       {
          String param = matcher.group(1);
          if (!param.equals(name)) continue;
+         builder.append(string, start, matcher.start());
          if (!isEncoded)
          {
             if (encodeSlash) value = Encode.encodePath(value);
@@ -588,12 +622,11 @@ public class ResteasyUriBuilder extends UriBuilder
          {
             value = Encode.encodeNonCodes(value);
          }
-         // if there is a $ then we must backslash it or it will screw up regex group substitution
-         value = value.replace("$", "\\$");
-         matcher.appendReplacement(buffer, value);
+		 builder.append(value);
+		 start = matcher.end();
       }
-      matcher.appendTail(buffer);
-      return buffer;
+      builder.append(string, start, string.length());
+      return builder;
    }
 
    public static Matcher createUriParamMatcher(String string)
@@ -602,82 +635,100 @@ public class ResteasyUriBuilder extends UriBuilder
       return matcher;
    }
 
-   protected StringBuffer replaceParameter(Map<String, ? extends Object> paramMap, boolean fromEncodedMap, boolean isTemplate, String string, StringBuffer buffer, boolean encodeSlash)
+   protected StringBuilder replaceParameter(Map<String, ? extends Object> paramMap, boolean fromEncodedMap, boolean isTemplate, String string, StringBuilder builder, boolean encodeSlash)
    {
+	  if (string.indexOf('{') == -1) 
+	  {
+		return builder.append(string);
+	  }
       Matcher matcher = createUriParamMatcher(string);
+      int start = 0;
       while (matcher.find())
       {
+    	 builder.append(string, start, matcher.start());
          String param = matcher.group(1);
-         Object valObj = paramMap.get(param);
-         if (valObj == null  && !isTemplate)
-         {
-            throw new IllegalArgumentException(Messages.MESSAGES.templateParameterNull(param));
-         }
-         else if (valObj == null && isTemplate)
-         {
-            matcher.appendReplacement(buffer, matcher.group());
-            continue;
-         }
-         String value = valObj.toString();
-         if (value != null)
+		 boolean containsValueForParam = paramMap.containsKey(param);
+		 if (!containsValueForParam)
+		 {
+			if (isTemplate) 
+			{
+				builder.append(matcher.group());
+				start = matcher.end();
+				continue;
+			}
+            throw new IllegalArgumentException(Messages.MESSAGES.pathParameterNotProvided(param));
+		 }
+		 Object value = paramMap.get(param);
+		 String stringValue = value != null ? value.toString() : null;
+         if (stringValue != null)
          {
             if (!fromEncodedMap)
             {
-               if (encodeSlash) value = Encode.encodePathSegmentAsIs(value);
-               else value = Encode.encodePathAsIs(value);
+               if (encodeSlash) stringValue = Encode.encodePathSegmentAsIs(stringValue);
+               else stringValue = Encode.encodePathAsIs(stringValue);
             }
             else
             {
-               if (encodeSlash) value = Encode.encodePathSegmentSaveEncodings(value);
-               else value = Encode.encodePathSaveEncodings(value);
+               if (encodeSlash) stringValue = Encode.encodePathSegmentSaveEncodings(stringValue);
+               else stringValue = Encode.encodePathSaveEncodings(stringValue);
             }
-            matcher.appendReplacement(buffer, Matcher.quoteReplacement(value));
+			builder.append(stringValue);
+			start = matcher.end();
          }
          else
          {
-            throw new IllegalArgumentException(Messages.MESSAGES.pathParameterNotProvided(param));
+            throw new IllegalArgumentException(Messages.MESSAGES.templateParameterNull(param));
          }
       }
-      matcher.appendTail(buffer);
-      return buffer;
+      builder.append(string, start, string.length());
+      return builder;
    }
 
-   protected StringBuffer replaceQueryStringParameter(Map<String, ? extends Object> paramMap, boolean fromEncodedMap, boolean isTemplate, String string, StringBuffer buffer)
+   protected StringBuilder replaceQueryStringParameter(Map<String, ? extends Object> paramMap, boolean fromEncodedMap, boolean isTemplate, String string, StringBuilder builder)
    {
+	  if (string.indexOf('{') == -1) 
+	  {
+		return builder.append(string);
+	  }
       Matcher matcher = createUriParamMatcher(string);
+      int start = 0;
       while (matcher.find())
       {
+    	 builder.append(string, start, matcher.start());
          String param = matcher.group(1);
-         Object valObj = paramMap.get(param);
-         if (valObj == null  && !isTemplate)
-         {
-            throw new IllegalArgumentException(Messages.MESSAGES.templateParameterNull(param));
-         }
-         else if (valObj == null && isTemplate)
-         {
-            matcher.appendReplacement(buffer, matcher.group());
-            continue;
-         }
-         String value = valObj.toString();
-         if (value != null)
+		 boolean containsValueForParam = paramMap.containsKey(param);
+		 if (!containsValueForParam)
+		 {
+			if (isTemplate)
+			{
+				builder.append(matcher.group());
+				start = matcher.end();
+				continue;
+			}
+			throw new IllegalArgumentException(Messages.MESSAGES.pathParameterNotProvided(param));
+		 }
+		 Object value = paramMap.get(param);
+		 String stringValue = value != null ? value.toString() : null;
+         if (stringValue != null)
          {
             if (!fromEncodedMap)
             {
-               value = Encode.encodeQueryParamAsIs(value);
+            	stringValue = Encode.encodeQueryParamAsIs(stringValue);
             }
             else
             {
-               value = Encode.encodeQueryParamSaveEncodings(value);
+            	stringValue = Encode.encodeQueryParamSaveEncodings(stringValue);
             }
-            matcher.appendReplacement(buffer, value);
+			builder.append(stringValue);
+			start = matcher.end();
          }
          else
          {
-            throw new IllegalArgumentException(Messages.MESSAGES.pathParameterNotProvided(param));
+            throw new IllegalArgumentException(Messages.MESSAGES.templateParameterNull(param));
          }
       }
-      matcher.appendTail(buffer);
-      return buffer;
+      builder.append(string, start, string.length());
+      return builder;
    }
 
    /**
@@ -723,26 +774,16 @@ public class ResteasyUriBuilder extends UriBuilder
 
    protected URI buildFromValues(boolean encodeSlash, boolean encoded, Object... values)
    {
-      List<String> params = getPathParamNamesInDeclarationOrder();
-      if (values.length < params.size())
-         throw new IllegalArgumentException(Messages.MESSAGES.notEnoughPathParameters());
-
-      Map<String, Object> pathParams = new HashMap<String, Object>();
-
-
-      for (int i = 0; i < params.size(); i++)
-      {
-         String pathParam = params.get(i);
-         Object val = values[i];
-         if (val == null) throw new IllegalArgumentException(Messages.MESSAGES.valueNull());
-         pathParams.put(pathParam, val.toString());
-      }
       String buf = null;
       try
       {
-         buf = buildString(pathParams, encoded, false, encodeSlash);
+         buf = buildString(new URITemplateParametersMap(values), encoded, false, encodeSlash);
          return new URI(buf);
          //return URI.create(buf);
+      }
+      catch (IllegalArgumentException iae)
+      {
+         throw iae;
       }
       catch (Exception e)
       {
@@ -780,16 +821,20 @@ public class ResteasyUriBuilder extends UriBuilder
       ArrayList<String> pathParams = new ArrayList<String>();
       boolean foundParam = false;
 
-      Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(PathHelper.replaceEnclosedCurlyBraces(path));
-      StringBuffer newSegment = new StringBuffer();
+      String pathWithoutEnclosedCurlyBraces = PathHelper.replaceEnclosedCurlyBraces(this.path);
+      Matcher matcher = PathHelper.URI_TEMPLATE_PATTERN.matcher(pathWithoutEnclosedCurlyBraces);
+      StringBuilder newSegment = new StringBuilder();
+      int from = 0;
       while (matcher.find())
       {
+    	 newSegment.append(pathWithoutEnclosedCurlyBraces, from, matcher.start());
          foundParam = true;
          String group = matcher.group();
          pathParams.add(PathHelper.recoverEnclosedCurlyBraces(group));
-         matcher.appendReplacement(newSegment, "_resteasy_uri_parameter");
+		 newSegment.append("_resteasy_uri_parameter");
+		 from = matcher.end();
       }
-      matcher.appendTail(newSegment);
+      newSegment.append(pathWithoutEnclosedCurlyBraces, from, pathWithoutEnclosedCurlyBraces.length());
       path = newSegment.toString();
 
       // Find last path segment
@@ -837,13 +882,16 @@ public class ResteasyUriBuilder extends UriBuilder
       if (foundParam)
       {
          matcher = PARAM_REPLACEMENT.matcher(path);
-         newSegment = new StringBuffer();
+         newSegment = new StringBuilder();
          int i = 0;
+         from = 0;
          while (matcher.find())
          {
-            matcher.appendReplacement(newSegment, pathParams.get(i++));
+			newSegment.append(this.path, from, matcher.start());
+			newSegment.append(pathParams.get(i++));
+			from = matcher.end();
          }
-         matcher.appendTail(newSegment);
+         newSegment.append(this.path, from, this.path.length());
          path = newSegment.toString();
       }
       return this;
@@ -1033,6 +1081,7 @@ public class ResteasyUriBuilder extends UriBuilder
    public UriBuilder resolveTemplates(Map<String, Object> templateValues) throws IllegalArgumentException
    {
       if (templateValues == null) throw new IllegalArgumentException(Messages.MESSAGES.templateValuesParamNull());
+      if (templateValues.containsKey(null)) throw new IllegalArgumentException(Messages.MESSAGES.mapKeyNull());
       String str = buildString(templateValues, false, true, true);
       return fromTemplate(str);
    }
@@ -1063,6 +1112,7 @@ public class ResteasyUriBuilder extends UriBuilder
    public UriBuilder resolveTemplates(Map<String, Object> templateValues, boolean encodeSlashInPath) throws IllegalArgumentException
    {
       if (templateValues == null) throw new IllegalArgumentException(Messages.MESSAGES.templateValuesParamNull());
+      if (templateValues.containsKey(null)) throw new IllegalArgumentException(Messages.MESSAGES.mapKeyNull());
       String str = buildString(templateValues, false, true, encodeSlashInPath);
       return fromTemplate(str);
    }
@@ -1071,6 +1121,7 @@ public class ResteasyUriBuilder extends UriBuilder
    public UriBuilder resolveTemplatesFromEncoded(Map<String, Object> templateValues) throws IllegalArgumentException
    {
       if (templateValues == null) throw new IllegalArgumentException(Messages.MESSAGES.templateValuesParamNull());
+      if (templateValues.containsKey(null)) throw new IllegalArgumentException(Messages.MESSAGES.mapKeyNull());
       String str = buildString(templateValues, true, true, true);
       return fromTemplate(str);
    }
