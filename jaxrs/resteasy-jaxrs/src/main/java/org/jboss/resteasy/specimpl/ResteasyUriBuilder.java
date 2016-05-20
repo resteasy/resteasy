@@ -656,7 +656,7 @@ public class ResteasyUriBuilder extends UriBuilder
 				start = matcher.end();
 				continue;
 			}
-            throw new IllegalArgumentException(Messages.MESSAGES.templateParameterNull(param));
+            throw new IllegalArgumentException(Messages.MESSAGES.pathParameterNotProvided(param));
 		 }
 		 Object value = paramMap.get(param);
 		 String stringValue = value != null ? value.toString() : null;
@@ -677,7 +677,7 @@ public class ResteasyUriBuilder extends UriBuilder
          }
          else
          {
-            throw new IllegalArgumentException(Messages.MESSAGES.pathParameterNotProvided(param));
+            throw new IllegalArgumentException(Messages.MESSAGES.templateParameterNull(param));
          }
       }
       builder.append(string, start, string.length());
