@@ -8,6 +8,8 @@ import javax.ws.rs.core.UriBuilderException;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -15,16 +17,19 @@ import java.net.URI;
  */
 public class LinkBuilderImpl implements Link.Builder
 {
-   protected LinkImpl link = new LinkImpl();
+   /**
+    * A map for all the link parameters such as "rel", "type", etc.	
+    */
+   protected final Map<String, String> map = new HashMap<String, String>();
    protected UriBuilder uriBuilder;
-   protected URI baseUri = null;
+   protected URI baseUri;
 
    @Override
    public Link.Builder link(Link link)
    {
       uriBuilder = UriBuilder.fromUri(link.getUri());
-      this.link.map.clear();
-      this.link.map.putAll(link.getParams());
+      this.map.clear();
+      this.map.putAll(link.getParams());
       return this;
    }
 
@@ -59,7 +64,7 @@ public class LinkBuilderImpl implements Link.Builder
    @Override
    public Link.Builder rel(String rel) {
       if (rel == null) throw new IllegalArgumentException(Messages.MESSAGES.relParamNull());
-      final String rels = link.map.get(Link.REL);
+      final String rels = this.map.get(Link.REL);
       param(Link.REL, rels == null ? rel : rels + " " + rel);
       return this;
    }
@@ -83,7 +88,7 @@ public class LinkBuilderImpl implements Link.Builder
    public Link.Builder param(String name, String value) throws IllegalArgumentException {
       if (name == null) throw new IllegalArgumentException(Messages.MESSAGES.nameParamWasNull());
       if (value == null) throw new IllegalArgumentException(Messages.MESSAGES.valueParamWasNull());
-      link.map.put(name, value);
+      this.map.put(name, value);
       return this;
    }
 
@@ -91,8 +96,7 @@ public class LinkBuilderImpl implements Link.Builder
    public Link build(Object... values) throws UriBuilderException
    {
       if (values == null) throw new IllegalArgumentException(Messages.MESSAGES.valuesParamWasNull());
-      link.uri = uriBuilder.build(values);
-      return link;
+      return new LinkImpl(this.uriBuilder.build(values), this.map);
    }
 
    @Override
@@ -103,8 +107,7 @@ public class LinkBuilderImpl implements Link.Builder
       URI built = uriBuilder.build(values);
       URI with = built;
       if (baseUri != null) with = baseUri.resolve(built);
-      link.uri = uri.relativize(with);
-      return link;
+      return new LinkImpl(uri.relativize(with), this.map);
    }
 
    @Override
