@@ -76,7 +76,7 @@ public class ClientInvoker implements MethodInvoker
 
 
       this.processors = ProcessorFactory.createProcessors(declaring, method, invokerConfig, config.getDefaultConsumes());
-      accepts = MediaTypeHelper.getProduces(declaring, method, config.getDefaultProduces());
+      accepts = MediaTypeHelper.getProduces(declaring, method, config.getDefaultProduces(), config.getPreferredProduces());
       entityExtractorFactory = new DefaultEntityExtractorFactory();
       this.extractor = entityExtractorFactory.createExtractor(method);
    }
