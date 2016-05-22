@@ -38,7 +38,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl implements Me
    protected ResteasyUriBuilder uri;
    protected Method method;
    protected Class declaring;
-   protected MediaType accepts;
+   protected MediaType[] accepts;
    protected Marshaller[] marshallers;
    protected ClientExecutor executor;
    protected boolean followRedirects;
@@ -75,7 +75,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl implements Me
       return attributes;
    }
 
-   public MediaType getAccepts()
+   public MediaType[] getAccepts()
    {
       return accepts;
    }
@@ -137,7 +137,7 @@ public class ClientInvoker extends ClientInterceptorRepositoryImpl implements Me
    {
       ClientRequest request = new ClientRequest(uri, executor, providerFactory);
       request.getAttributes().putAll(attributes);
-      if (accepts != null) request.header(HttpHeaders.ACCEPT, accepts.toString());
+      if (accepts != null) request.accept(accepts);
       this.copyClientInterceptorsTo(request);
 
       boolean isClientResponseResult = ClientResponse.class.isAssignableFrom(method.getReturnType());

@@ -179,6 +179,15 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
       return header(ACCEPT, accepts.toString());
    }
 
+   public ClientRequest accept(MediaType[] accepts)
+   {
+      ClientRequest target = this;
+      for (MediaType accept : accepts) {
+         target = target.header(ACCEPT, accept.toString());
+      }
+      return target;
+   }
+
    public ClientRequest accept(String accept)
    {
       String curr = (String) getHeadersAsObjects().getFirst(ACCEPT);

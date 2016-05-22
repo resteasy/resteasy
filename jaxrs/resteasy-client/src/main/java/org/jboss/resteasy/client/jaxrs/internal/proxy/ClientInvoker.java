@@ -32,7 +32,7 @@ public class ClientInvoker implements MethodInvoker
    protected String httpMethod;
    protected Method method;
    protected Class declaring;
-   protected MediaType accepts;
+   protected MediaType[] accepts;
    protected Object[] processors;
    protected ResteasyWebTarget webTarget;
    protected boolean followRedirects;
@@ -81,7 +81,7 @@ public class ClientInvoker implements MethodInvoker
       this.extractor = entityExtractorFactory.createExtractor(method);
    }
 
-   public MediaType getAccepts()
+   public MediaType[] getAccepts()
    {
       return accepts;
    }
