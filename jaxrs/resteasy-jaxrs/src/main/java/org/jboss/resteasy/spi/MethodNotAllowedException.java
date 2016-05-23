@@ -5,6 +5,11 @@ import javax.ws.rs.core.Response;
 /**
  * Thrown by RESTEasy when HTTP Method Not Allowed (405) is encountered
  * JAX-RS now has this exception
+ * 
+ * @deprecated Replaced by javax.ws.rs.NotAllowedException in jaxrs-api module.
+ * 
+ * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
+ * @see javax.ws.rs.NotAllowedException
  */
 @Deprecated
 public class MethodNotAllowedException extends LoggableFailure

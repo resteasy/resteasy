@@ -111,8 +111,8 @@ public class QualityValueTest
       QualityValue x = QualityValue.valueOf("0.08");
       assertEquals(80, x.intValue());
       assertEquals(80L, x.longValue());
-      assertEquals(0.08f, x.floatValue());
-      assertEquals(0.08d, x.doubleValue());
+      assertEquals(0.08f, x.floatValue(), 0.00001f);
+      assertEquals(0.08d, x.doubleValue(), 0.00001d);
    }
 
 }

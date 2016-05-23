@@ -8,10 +8,12 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import javax.xml.bind.annotation.*;
 
+import org.jboss.resteasy.annotations.providers.jackson.Formatted;
 import org.jboss.resteasy.annotations.providers.NoJackson;
 import org.jboss.resteasy.annotations.providers.jaxb.json.BadgerFish;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.plugins.providers.jackson.Jackson2JsonpInterceptor;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -148,7 +150,16 @@ public class JacksonTest extends BaseResourceTest
          return new Product(333, "Iphone");
       }
 
-      @GET
+       @GET
+       @Produces("application/json")
+       @Path("/formatted/{id}")
+       @Formatted
+       public Product getFormattedProduct()
+       {
+           return new Product(333, "Iphone");
+       }
+
+       @GET
       @Produces("application/json")
       public Product[] getProducts()
       {
@@ -196,12 +207,16 @@ public class JacksonTest extends BaseResourceTest
 
    private static ResteasyClient client;
 
+   private static Jackson2JsonpInterceptor jsonpInterceptor;
+
    @BeforeClass
    public static void setUp() throws Exception
    {
       dispatcher.getRegistry().addPerRequestResource(JacksonService.class);
       dispatcher.getRegistry().addPerRequestResource(XmlService.class);
       dispatcher.getRegistry().addPerRequestResource(JAXBService.class);
+      jsonpInterceptor = new Jackson2JsonpInterceptor();
+      dispatcher.getProviderFactory().register(jsonpInterceptor);
        client = new ResteasyClientBuilder().build();
    }
 
@@ -232,6 +247,52 @@ public class JacksonTest extends BaseResourceTest
       response2.close();
 
    }
+
+   @Test
+   public void testJacksonJsonp() throws Exception
+   {
+      jsonpInterceptor.setWrapInTryCatch(false);
+      WebTarget target = client.target(generateURL("/products/333?callback=foo"));
+      Response response = target.request().get();
+      String entity = response.readEntity(String.class);
+      System.out.println(entity);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("foo({\"name\":\"Iphone\",\"id\":333})", entity);
+      response.close();
+
+   }
+
+   @Test
+   public void testJacksonJsonpWrapInTryCatch() throws Exception
+   {
+      jsonpInterceptor.setWrapInTryCatch(true);
+      WebTarget target = client.target(generateURL("/products/333?callback=foo"));
+      Response response = target.request().get();
+      String entity = response.readEntity(String.class);
+      System.out.println(entity);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("try{foo({\"name\":\"Iphone\",\"id\":333})}catch(e){}", entity);
+      response.close();
+
+   }
+
+    @Test
+    public void testFormattedJacksonString() throws Exception
+    {
+        WebTarget target = client.target(generateURL("/products/formatted/333"));
+        Response response = target.request().get();
+        String entity = response.readEntity(String.class);
+        System.out.println(entity);
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertTrue(entity.contains("\n"));
+        /* Formatting is dependent on OS \r\n vs. \n so don't test it this way
+        Assert.assertEquals(("{\r\n" +
+                "  \"name\" : \"Iphone\",\r\n" +
+                "  \"id\" : 333\r\n" +
+                "}"), entity);
+                */
+         response.close();
+    }
 
    @Test
    public void testXmlString() throws Exception

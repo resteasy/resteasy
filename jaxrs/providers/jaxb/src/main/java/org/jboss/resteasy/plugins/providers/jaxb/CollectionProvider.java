@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -28,14 +29,19 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,7 +62,10 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
 {
    @Context
    protected Providers providers;
-   private boolean expandEntityReferences = true;
+   
+   private boolean disableExternalEntities = true;
+   private boolean enableSecureProcessingFeature = true;
+   private boolean disableDTDs = true;
    
    public CollectionProvider()
    {
@@ -66,7 +75,17 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
          String s = context.getParameter("resteasy.document.expand.entity.references");
          if (s != null)
          {
-            setExpandEntityReferences(Boolean.parseBoolean(s));
+            setDisableExternalEntities(!Boolean.parseBoolean(s));
+         }
+         s = context.getParameter("resteasy.document.secure.processing.feature");
+         if (s != null)
+         {
+            setEnableSecureProcessingFeature(Boolean.parseBoolean(s));
+         }
+         s = context.getParameter("resteasy.document.secure.disableDTDs");
+         if (s != null)
+         {
+            setDisableDTDs(Boolean.parseBoolean(s));
          }
       }
    }
@@ -89,6 +108,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       {
          Class baseType = Types.getCollectionBaseType(type, genericType);
          if (baseType == null) return false;
+         baseType = XmlAdapterWrapper.xmlAdapterValueType(baseType, annotations);
          return (baseType.isAnnotationPresent(XmlRootElement.class) || baseType.isAnnotationPresent(XmlType.class) || baseType.isAnnotationPresent(XmlSeeAlso.class) || JAXBElement.class.equals(baseType)) && (FindAnnotation.findAnnotation(baseType, annotations, DoNotUseJAXBProvider.class) == null) && !IgnoredMediaTypes.ignored(baseType, annotations, mediaType);
       }
       return false;
@@ -106,39 +126,56 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
-         throw new JAXBUnmarshalException("Unable to find JAXBContext for media type: " + mediaType);
+         throw new JAXBUnmarshalException(Messages.MESSAGES.unableToFindJAXBContext(mediaType));
       }
       Class baseType = Types.getCollectionBaseType(type, genericType);
+      XmlAdapterWrapper xmlAdapter = XmlAdapterWrapper.getXmlAdapter(baseType, annotations);
       JaxbCollection col = null;
       try
       {
          JAXBElement<JaxbCollection> ele = null;
          
-         if (suppressExpandEntityExpansion())
+         if (needsSecurity())
          {
-            SAXSource source = new SAXSource(new InputSource(entityStream));
+            SAXSource source = null;
+            if (getCharset(mediaType) == null)
+            {
+               source = new SAXSource(new InputSource(new InputStreamReader(entityStream, "UTF-8")));
+            }
+            else
+            {
+               source = new SAXSource(new InputSource(entityStream));
+            }
             JAXBContext ctx = finder.findCachedContext(JaxbCollection.class, mediaType, annotations);
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
-            unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);
+            unmarshaller = new SecureUnmarshaller(unmarshaller, disableExternalEntities, enableSecureProcessingFeature, disableDTDs);
             ele = unmarshaller.unmarshal(source, JaxbCollection.class);
          }
          else
          {  
-            StreamSource source = new StreamSource(entityStream);
+            StreamSource source = null;
+            if (getCharset(mediaType) == null)
+            {
+               source = new StreamSource(new InputStreamReader(entityStream, "UTF-8"));
+            }
+            else
+            {
+               source = new StreamSource(entityStream);
+            }
             JAXBContext ctx = finder.findCachedContext(JaxbCollection.class, mediaType, annotations);
             ele = ctx.createUnmarshaller().unmarshal(source, JaxbCollection.class);
          }
-      
+         
          Wrapped wrapped = FindAnnotation.findAnnotation(annotations, Wrapped.class);
          if (wrapped != null)
          {
             if (!wrapped.element().equals(ele.getName().getLocalPart()))
             {
-               throw new JAXBUnmarshalException("Collection wrapping failed, expected root element name of " + wrapped.element() + " got " + ele.getName().getLocalPart());
+               throw new JAXBUnmarshalException(Messages.MESSAGES.collectionWrappingFailedLocalPart(wrapped.element(), ele.getName().getLocalPart()));
             }
             if (!wrapped.namespace().equals(ele.getName().getNamespaceURI()))
             {
-               throw new JAXBUnmarshalException("Collection wrapping failed, expect namespace of " + wrapped.namespace() + " got " + ele.getName().getNamespaceURI());
+               throw new JAXBUnmarshalException(Messages.MESSAGES.collectionWrappingFailedNamespace(wrapped.namespace(), ele.getName().getNamespaceURI()));
             }
          }
 
@@ -151,7 +188,16 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
 
       try
       {
-         JAXBContext ctx = finder.findCachedContext(baseType, mediaType, null);
+         JAXBContext ctx = null;
+         if (xmlAdapter != null)
+         {
+            Class<?> adaptedType = xmlAdapter.getValueType();
+            ctx = finder.findCachedContext(adaptedType, mediaType, null);  
+         }
+         else
+         {
+            ctx = finder.findCachedContext(baseType, mediaType, null);  
+         }
          Unmarshaller unmarshaller = ctx.createUnmarshaller();
          unmarshaller = AbstractJAXBProvider.decorateUnmarshaller(baseType, annotations, mediaType, unmarshaller);
          if (type.isArray())
@@ -160,7 +206,19 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
             for (int i = 0; i < col.getValue().size(); i++)
             {
                Element val = (Element) col.getValue().get(i);
-               Array.set(array, i, unmarshaller.unmarshal(val));
+               Object o = unmarshaller.unmarshal(val);
+               if (xmlAdapter != null)
+               {
+                  try
+                  {
+                     o = xmlAdapter.unmarshal(o);
+                  }
+                  catch (Exception e)
+                  {
+                     throw new JAXBUnmarshalException(e);
+                  }
+               }
+               Array.set(array, i, o);
             }
             return array;
          }
@@ -188,7 +246,19 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
             for (Object obj : col.getValue())
             {
                Element val = (Element) obj;
-               outCol.add(unmarshaller.unmarshal(val));
+               Object o = unmarshaller.unmarshal(val);
+               if (xmlAdapter != null)
+               {
+                  try
+                  {
+                     o = xmlAdapter.unmarshal(o);
+                  }
+                  catch (Exception e)
+                  {
+                     throw new JAXBUnmarshalException(e);
+                  }
+               }
+               outCol.add(o);
             }
             return outCol;
          }
@@ -214,9 +284,15 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
-         throw new JAXBMarshalException("Unable to find JAXBContext for media type: " + mediaType);
+         throw new JAXBMarshalException(Messages.MESSAGES.unableToFindJAXBContext(mediaType));
       }
       Class baseType = Types.getCollectionBaseType(type, genericType);
+      XmlAdapterWrapper xmlAdapter = XmlAdapterWrapper.getXmlAdapter(baseType, annotations);
+      if (xmlAdapter != null)
+      {
+         baseType = xmlAdapter.getValueType();
+      }
+
       try
       {
          JAXBContext ctx = finder.findCacheContext(mediaType, annotations, JaxbCollection.class, baseType);
@@ -226,13 +302,38 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
             Object[] array = (Object[]) entry;
             for (Object obj : array)
             {
+               if (xmlAdapter != null)
+               {
+                  try
+                  {
+                     obj = xmlAdapter.marshal(obj);
+                  }
+                  catch (Exception e)
+                  {
+                     throw new JAXBUnmarshalException(e);
+                  }
+               }
                col.getValue().add(obj);
             }
          }
          else
          {
             Collection collection = (Collection) entry;
-            for (Object obj : collection) col.getValue().add(obj);
+            for (Object obj : collection)
+            {
+               if (xmlAdapter != null)
+               {
+                  try
+                  {
+                     obj = xmlAdapter.marshal(obj);
+                  } 
+                  catch (Exception e)
+                  {
+                     throw new JAXBUnmarshalException(e);
+                  }
+               }
+               col.getValue().add(obj);
+            }
          }
 
          String element = "collection";
@@ -258,19 +359,48 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
          throw new JAXBMarshalException(e);
       }
    }
-   
-   public boolean isExpandEntityReferences()
+
+   public boolean isDisableExternalEntities()
    {
-      return expandEntityReferences;
+      return disableExternalEntities;
    }
 
-   public void setExpandEntityReferences(boolean expandEntityReferences)
+   public void setDisableExternalEntities(boolean disableExternalEntities)
    {
-      this.expandEntityReferences = expandEntityReferences;
+      this.disableExternalEntities = disableExternalEntities;
+   }
+
+   public boolean isEnableSecureProcessingFeature()
+   {
+      return enableSecureProcessingFeature;
+   }
+
+   public void setEnableSecureProcessingFeature(boolean enableSecureProcessingFeature)
+   {
+      this.enableSecureProcessingFeature = enableSecureProcessingFeature;
+   }
+
+   public boolean isDisableDTDs()
+   {
+      return disableDTDs;
+   }
+
+   public void setDisableDTDs(boolean disableDTDs)
+   {
+      this.disableDTDs = disableDTDs;
+   }
+
+   public static String getCharset(final MediaType mediaType)
+   {
+      if (mediaType != null)
+      {
+         return mediaType.getParameters().get("charset");
+      }
+      return null;
    }
    
-   protected boolean suppressExpandEntityExpansion()
+   protected boolean needsSecurity()
    {
-      return !isExpandEntityReferences();
+      return true;
    }
 }

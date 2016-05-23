@@ -5,6 +5,7 @@ import org.jboss.resteasy.annotations.LinkHeaderParam;
 import org.jboss.resteasy.annotations.Status;
 import org.jboss.resteasy.client.jaxrs.ProxyConfig;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.ClientInvoker;
 import org.jboss.resteasy.util.IsHttpMethod;
 
@@ -13,6 +14,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.Response;
+
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -90,17 +92,11 @@ public class ResponseObjectEntityExtractorFactory extends DefaultEntityExtractor
    {
       if ("".equals(link.rel()) && "".equals(link.title()))
       {
-         throw new RuntimeException(String.format(
-                 "You must set either LinkHeaderParam.rel() or LinkHeaderParam.title() for on %s.%s",
-                 method.getClass().getName(), method.getName()));
+         throw new RuntimeException(Messages.MESSAGES.mustSetLinkHeaderParam(method.getClass().getName(), method.getName()));
       }
       if (!"".equals(link.rel()) && !"".equals(link.title()))
       {
-         throw new RuntimeException(
-                 String
-                         .format(
-                                 "You can only set one of  LinkHeaderParam.rel() and LinkHeaderParam.title() for on %s.%s",
-                                 method.getClass().getName(), method.getName()));
+         throw new RuntimeException(Messages.MESSAGES.canOnlySetOneLinkHeaderParam(method.getClass().getName(), method.getName()));
       }
 
       if (returnType == Link.class)
@@ -124,10 +120,7 @@ public class ResponseObjectEntityExtractorFactory extends DefaultEntityExtractor
                if (uri == null)
                   return null;
 
-               return new ClientInvoker((ResteasyWebTarget)(context.getInvocation().getClient().target(uri)),
-                       method.getDeclaringClass(),
-                       method,
-                       new ProxyConfig(Thread.currentThread().getContextClassLoader(), null, null)).invoke(args);
+               return createClientInvoker(context, uri, method).invoke(args);
             }
          };
       }
@@ -189,6 +182,17 @@ public class ResponseObjectEntityExtractorFactory extends DefaultEntityExtractor
       return null;
    }
 
+   private ClientInvoker createClientInvoker(ClientContext context, URI uri, Method method) {
+      ClientInvoker clientInvoker = new ClientInvoker((ResteasyWebTarget)(context.getInvocation().getClient().target(uri)),
+              method.getDeclaringClass(),
+              method,
+              new ProxyConfig(Thread.currentThread().getContextClassLoader(), null, null));
+
+      Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
+      clientInvoker.setHttpMethod(httpMethods.iterator().next());
+      return clientInvoker;
+   }
+
    private static boolean isInvokerMethod(Method method)
    {
       Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
@@ -223,8 +227,7 @@ public class ResponseObjectEntityExtractorFactory extends DefaultEntityExtractor
       }
       catch (MalformedURLException e)
       {
-         throw new RuntimeException(String.format("Could not create a URL for %s in %s.%s", uri
-                 .toASCIIString(), method.getClass().getName(), method.getName()), e);
+         throw new RuntimeException(Messages.MESSAGES.couldNotCreateURL(uri.toASCIIString(), method.getClass().getName(), method.getName()), e);
       }
    }
 }

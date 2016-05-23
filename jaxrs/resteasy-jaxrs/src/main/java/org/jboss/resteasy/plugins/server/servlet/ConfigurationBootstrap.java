@@ -1,19 +1,14 @@
 package org.jboss.resteasy.plugins.server.servlet;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
-import javax.ws.rs.ext.Provider;
-import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Create a deployment from String-based configuration data
@@ -23,20 +18,11 @@ import java.util.Set;
  */
 abstract public class ConfigurationBootstrap implements ResteasyConfiguration
 {
-   private static Logger logger = null;
    private ResteasyDeployment deployment = new ResteasyDeployment();
 
 
-    public ResteasyDeployment createDeployment()
+   public ResteasyDeployment createDeployment()
    {
-      String loggerTypeString = getParameter("resteasy.logger.type");
-      if (loggerTypeString != null)
-      {
-         Logger.LoggerType loggerType = Logger.LoggerType.valueOf(loggerTypeString);
-         Logger.setLoggerType(loggerType);
-
-      }
-      logger = Logger.getLogger(ConfigurationBootstrap.class);
       String deploymentSensitive = getParameter("resteasy.use.deployment.sensitive.factory");
       if (deploymentSensitive != null)
          deployment.setDeploymentSensitiveFactoryEnabled(Boolean.valueOf(deploymentSensitive.trim()));
@@ -79,7 +65,7 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
       }
       else
       {
-         logger.warn("The use of " + Application.class.getName() + " is deprecated, please use javax.ws.rs.Application as a context-param instead");
+         LogMessages.LOGGER.useOfApplicationClass(Application.class.getName());
       }
 
       String providers = getParameter(ResteasyContextParameters.RESTEASY_PROVIDERS);
@@ -95,7 +81,7 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
 
       if (resourceMethodInterceptors != null)
       {
-         throw new RuntimeException(ResteasyContextParameters.RESTEASY_RESOURCE_METHOD_INTERCEPTORS + " is no longer a supported context param.  See documentation for more details");
+         throw new RuntimeException(Messages.MESSAGES.noLongerASupportedContextParam(ResteasyContextParameters.RESTEASY_RESOURCE_METHOD_INTERCEPTORS));
       }
 
       String resteasySecurity = getParameter(ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY);
@@ -114,17 +100,17 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
       String sProviders = getParameter(ResteasyContextParameters.RESTEASY_SCAN_PROVIDERS);
       if (sProviders != null)
       {
-         logger.warn(ResteasyContextParameters.RESTEASY_SCAN_PROVIDERS + " is no longer supported.  Use a servlet 3.0 container and the ResteasyServletInitializer");
+         LogMessages.LOGGER.noLongerSupported(ResteasyContextParameters.RESTEASY_SCAN_PROVIDERS);
       }
       String scanAll = getParameter(ResteasyContextParameters.RESTEASY_SCAN);
       if (scanAll != null)
       {
-         logger.warn(ResteasyContextParameters.RESTEASY_SCAN + " is no longer supported.  Use a servlet 3.0 container and the ResteasyServletInitializer");
+         LogMessages.LOGGER.noLongerSupported(ResteasyContextParameters.RESTEASY_SCAN);
       }
       String sResources = getParameter(ResteasyContextParameters.RESTEASY_SCAN_RESOURCES);
       if (sResources != null)
       {
-         logger.warn(ResteasyContextParameters.RESTEASY_SCAN_RESOURCES + " is no longer supported.  Use a servlet 3.0 container and the ResteasyServletInitializer");
+         LogMessages.LOGGER.noLongerSupported(ResteasyContextParameters.RESTEASY_SCAN_RESOURCES);
       }
 
       // Check to see if scanning is being done by deployer (i.e. JBoss App Server)
@@ -273,7 +259,7 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
         } else if (value.equals("false") || value.equals("0")) {
             return false;
         } else {
-            throw new RuntimeException("The " + key + " config in web.xml could not be parsed, accepted values are true,false or 1,0");
+           throw new RuntimeException(Messages.MESSAGES.keyCouldNotBeParsed(key));
 
         }
     }

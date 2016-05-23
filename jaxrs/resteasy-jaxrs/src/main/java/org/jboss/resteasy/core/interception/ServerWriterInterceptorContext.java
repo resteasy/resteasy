@@ -1,7 +1,6 @@
 package org.jboss.resteasy.core.interception;
 
 import org.jboss.resteasy.core.NoMessageBodyWriterFoundFailure;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -23,7 +22,6 @@ import java.util.Enumeration;
  */
 public class ServerWriterInterceptorContext extends AbstractWriterInterceptorContext
 {
-   private final static Logger logger = Logger.getLogger(ServerWriterInterceptorContext.class);
    private HttpRequest request;
 
    public ServerWriterInterceptorContext(WriterInterceptor[] interceptors, ResteasyProviderFactory providerFactory,

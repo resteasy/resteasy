@@ -35,6 +35,9 @@ import static org.junit.Assert.fail;
  */
 public class HeaderParamsAsPrimitivesTest
 {
+   private static final float ASSERT_FLOAT_THRESHOLD = 0.000000001f;
+   private static final double ASSERT_DOUBLE_THRESHOLD = 0.000000000000001d;
+
    private static Dispatcher dispatcher;
 
    private static IResourceHeaderPrimitives resourceHeaderPrimitives;
@@ -194,7 +197,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/float")
       public String doGet(@HeaderParam("float") float v)
       {
-         Assert.assertEquals(3.14159265f, v);
+         Assert.assertEquals(3.14159265f, v, ASSERT_FLOAT_THRESHOLD);
          return "content";
       }
 
@@ -202,7 +205,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/double")
       public String doGet(@HeaderParam("double") double v)
       {
-         Assert.assertEquals(3.14159265358979d, v);
+         Assert.assertEquals(3.14159265358979d, v, ASSERT_DOUBLE_THRESHOLD);
          return "content";
       }
    }
@@ -254,7 +257,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/float")
       public String doGet(@HeaderParam("float") float v)
       {
-         Assert.assertEquals(0.0f, v);
+         Assert.assertEquals(0.0f, v, ASSERT_FLOAT_THRESHOLD);
          return "content";
       }
 
@@ -262,7 +265,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/double")
       public String doGet(@HeaderParam("double") double v)
       {
-         Assert.assertEquals(0.0d, v);
+         Assert.assertEquals(0.0d, v, ASSERT_DOUBLE_THRESHOLD);
          return "content";
       }
    }
@@ -314,7 +317,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/float")
       public String doGet(@HeaderParam("float") @DefaultValue("3.14159265") float v)
       {
-         Assert.assertEquals(3.14159265f, v);
+         Assert.assertEquals(3.14159265f, v, ASSERT_FLOAT_THRESHOLD);
          return "content";
       }
 
@@ -322,7 +325,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/double")
       public String doGet(@HeaderParam("double") @DefaultValue("3.14159265358979") double v)
       {
-         Assert.assertEquals(3.14159265358979d, v);
+         Assert.assertEquals(3.14159265358979d, v, ASSERT_DOUBLE_THRESHOLD);
          return "content";
       }
    }
@@ -374,7 +377,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/float")
       public String doGet(@HeaderParam("float") @DefaultValue("0.0") float v)
       {
-         Assert.assertEquals(3.14159265f, v);
+         Assert.assertEquals(3.14159265f, v, ASSERT_FLOAT_THRESHOLD);
          return "content";
       }
 
@@ -382,7 +385,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/double")
       public String doGet(@HeaderParam("double") @DefaultValue("0.0") double v)
       {
-         Assert.assertEquals(3.14159265358979d, v);
+         Assert.assertEquals(3.14159265358979d, v, ASSERT_DOUBLE_THRESHOLD);
          return "content";
       }
    }
@@ -435,7 +438,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/float")
       public String doGet(@HeaderParam("float") Float v)
       {
-         Assert.assertEquals(3.14159265f, v.floatValue());
+         Assert.assertEquals(3.14159265f, v.floatValue(), ASSERT_FLOAT_THRESHOLD);
          return "content";
       }
 
@@ -443,7 +446,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/double")
       public String doGet(@HeaderParam("double") Double v)
       {
-         Assert.assertEquals(3.14159265358979d, v.doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.doubleValue(), ASSERT_DOUBLE_THRESHOLD);
          return "content";
       }
    }
@@ -556,7 +559,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/float")
       public String doGet(@HeaderParam("float") @DefaultValue("3.14159265") Float v)
       {
-         Assert.assertEquals(3.14159265f, v.floatValue());
+         Assert.assertEquals(3.14159265f, v.floatValue(), ASSERT_FLOAT_THRESHOLD);
          return "content";
       }
 
@@ -564,7 +567,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/double")
       public String doGet(@HeaderParam("double") @DefaultValue("3.14159265358979") Double v)
       {
-         Assert.assertEquals(3.14159265358979d, v.doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.doubleValue(), ASSERT_DOUBLE_THRESHOLD);
          return "content";
       }
    }
@@ -618,7 +621,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/float")
       public String doGet(@HeaderParam("float") @DefaultValue("0.0") Float v)
       {
-         Assert.assertEquals(3.14159265f, v.floatValue());
+         Assert.assertEquals(3.14159265f, v.floatValue(), ASSERT_FLOAT_THRESHOLD);
          return "content";
       }
 
@@ -626,7 +629,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/double")
       public String doGet(@HeaderParam("double") @DefaultValue("0.0") Double v)
       {
-         Assert.assertEquals(3.14159265358979d, v.doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.doubleValue(), ASSERT_DOUBLE_THRESHOLD);
          return "content";
       }
    }
@@ -688,9 +691,9 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/float")
       public String doGetFloat(@HeaderParam("float") List<Float> v)
       {
-         Assert.assertEquals(3.14159265f, v.get(0).floatValue());
-         Assert.assertEquals(3.14159265f, v.get(1).floatValue());
-         Assert.assertEquals(3.14159265f, v.get(2).floatValue());
+         Assert.assertEquals(3.14159265f, v.get(0).floatValue(), ASSERT_FLOAT_THRESHOLD);
+         Assert.assertEquals(3.14159265f, v.get(1).floatValue(), ASSERT_FLOAT_THRESHOLD);
+         Assert.assertEquals(3.14159265f, v.get(2).floatValue(), ASSERT_FLOAT_THRESHOLD);
          return "content";
       }
 
@@ -698,9 +701,9 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/double")
       public String doGetDouble(@HeaderParam("double") List<Double> v)
       {
-         Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
-         Assert.assertEquals(3.14159265358979d, v.get(1).doubleValue());
-         Assert.assertEquals(3.14159265358979d, v.get(2).doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue(), ASSERT_DOUBLE_THRESHOLD);
+         Assert.assertEquals(3.14159265358979d, v.get(1).doubleValue(), ASSERT_DOUBLE_THRESHOLD);
+         Assert.assertEquals(3.14159265358979d, v.get(2).doubleValue(), ASSERT_DOUBLE_THRESHOLD);
          return "content";
       }
    }
@@ -812,7 +815,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/float")
       public String doGetFloat(@HeaderParam("float") @DefaultValue("3.14159265") List<Float> v)
       {
-         Assert.assertEquals(3.14159265f, v.get(0).floatValue());
+         Assert.assertEquals(3.14159265f, v.get(0).floatValue(), ASSERT_FLOAT_THRESHOLD);
          return "content";
       }
 
@@ -820,7 +823,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/double")
       public String doGetDouble(@HeaderParam("double") @DefaultValue("3.14159265358979") List<Double> v)
       {
-         Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue(), ASSERT_DOUBLE_THRESHOLD);
          return "content";
       }
    }
@@ -874,7 +877,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/float")
       public String doGetFloat(@HeaderParam("float") @DefaultValue("0.0") List<Float> v)
       {
-         Assert.assertEquals(3.14159265f, v.get(0).floatValue());
+         Assert.assertEquals(3.14159265f, v.get(0).floatValue(), ASSERT_FLOAT_THRESHOLD);
          return "content";
       }
 
@@ -882,7 +885,7 @@ public class HeaderParamsAsPrimitivesTest
       @Produces("application/double")
       public String doGetDouble(@HeaderParam("double") @DefaultValue("0.0") List<Double> v)
       {
-         Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.get(0).doubleValue(), ASSERT_DOUBLE_THRESHOLD);
          return "content";
       }
    }

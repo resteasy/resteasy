@@ -8,6 +8,11 @@ package org.jboss.resteasy.spi;
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @deprecated Replaced by javax.ws.rs.ext.ParamConverter
+ * 
+ * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
+ * @see javax.ws.rs.ext.ParamConverter
  */
 @Deprecated
 public interface StringConverter<T>

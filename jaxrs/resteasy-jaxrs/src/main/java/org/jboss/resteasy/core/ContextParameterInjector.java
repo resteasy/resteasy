@@ -1,13 +1,15 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.LoggableFailure;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
+import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Providers;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -51,7 +53,14 @@ public class ContextParameterInjector implements ValueInjector
          {
             Object delegate = ResteasyProviderFactory.getContextData(type);
             if (delegate == null)
-               throw new LoggableFailure("Unable to find contextual data of type: " + type.getName());
+            {
+               String name = method.getName();
+               if (o instanceof ResourceInfo && ("getResourceMethod".equals(name) || "getResourceClass".equals(name)))
+               {
+                  return null;
+               }
+               throw new LoggableFailure(Messages.MESSAGES.unableToFindContextualData(type.getName()));
+            }
             return method.invoke(delegate, objects);
          }
          catch (IllegalAccessException e)
@@ -80,29 +89,29 @@ public class ContextParameterInjector implements ValueInjector
       {
          Object delegate = ResteasyProviderFactory.getContextData(type);
          if (delegate != null) return delegate;
-         throw new RuntimeException("Illegal to inject a non-interface type into a singleton");
+         throw new RuntimeException(Messages.MESSAGES.illegalToInjectNonInterfaceType());
       }
 
       return createProxy();
    }
 
-   protected Object createProxy()
-   {
-      if (proxy != null)
-      {
-         try
-         {
-            return proxy.getConstructors()[0].newInstance(new GenericDelegatingProxy());
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException(e);
-         }
-      }
-      else
-      {
-         Class[] intfs = {type};
-         return Proxy.newProxyInstance(type.getClassLoader(), intfs, new GenericDelegatingProxy());
-      }
-   }
+    protected Object createProxy()
+    {
+        if (proxy != null)
+        {
+            try
+            {
+                return proxy.getConstructors()[0].newInstance(new GenericDelegatingProxy());
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+        else
+        {
+            Class[] intfs = {type};
+            return Proxy.newProxyInstance(type.getClassLoader(), intfs, new GenericDelegatingProxy());
+        }
+    }
 }

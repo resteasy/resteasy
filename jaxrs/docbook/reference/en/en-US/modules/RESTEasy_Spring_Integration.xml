@@ -136,4 +136,16 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 ]]>
 </programlisting>
 </sect2>
+
+<sect2>
+<title>Upgrading in WildFly</title>
+
+<para>
+<emphasis role="bold">Note.</emphasis>
+As noted in Chapter 3, the The Resteasy distribution comes with a zip file called resteasy-jboss-modules-wf8-&lt;version&gt;.zip,
+which can be unzipped into the modules/system/layers/base/ directory of Wildfly to upgrade to a new version of Resteasy.
+Because of the way resteasy-spring is used in WildFly, after unzipping the zip file, it is also necessary to remove the
+old resteasy-spring jar from modules/system/layers/base/org/jboss/resteasy/resteasy-spring/main/bundled/resteasy-spring-jar.
+</para>
+</sect2>
 </chapter>

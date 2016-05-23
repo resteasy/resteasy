@@ -31,6 +31,9 @@
       <copy todir="src/main/resources/modules/org/jboss/resteasy/resteasy-jaxrs" overwrite="true">
           <fileset dir="src/main/resources/modules/org/jboss/resteasy/resteasy-jaxrs-as7"/>
       </copy>
+      <copy todir="src/main/resources/modules/javax/annotation/api" overwrite="true">
+          <fileset dir="src/main/resources/modules/javax/annotation/api-as7"/>
+      </copy>
         <antcall target="modules">
             <!-- TODO add OSGI later when we can have maven repo references to those jars -->
             <param name="mavenized.modules" value="true"/>
@@ -53,8 +56,8 @@
           -->
 
         <module-def name="org.bouncycastle">
-            <maven-resource group="org.bouncycastle" artifact="bcprov-jdk16"/>
-            <maven-resource group="org.bouncycastle" artifact="bcmail-jdk16"/>
+            <maven-resource group="org.bouncycastle" artifact="bcprov-jdk15on"/>
+            <maven-resource group="org.bouncycastle" artifact="bcmail-jdk15on"/>
         </module-def>
 
         <module-def name="org.codehaus.jackson.jackson-core-asl">
@@ -95,8 +98,12 @@
            <maven-resource group="com.fasterxml.jackson.module" artifact="jackson-module-jaxb-annotations" />
         </module-def>
 
+        <module-def name="javax.annotation.api">
+            <maven-resource group="org.jboss.spec.javax.annotation" artifact="jboss-annotations-api_1.2_spec"/>
+        </module-def>
+        	
         <module-def name="javax.ws.rs.api">
-            <maven-resource group="org.jboss.resteasy" artifact="jaxrs-api"/>
+            <maven-resource group="org.jboss.spec.javax.ws.rs" artifact="jboss-jaxrs-api_2.0_spec"/>
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-atom-provider">

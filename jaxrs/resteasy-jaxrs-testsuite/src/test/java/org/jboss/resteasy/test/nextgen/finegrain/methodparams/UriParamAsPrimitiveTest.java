@@ -28,6 +28,9 @@ import static org.jboss.resteasy.util.HttpClient4xUtils.updateQuery;
  */
 public class UriParamAsPrimitiveTest
 {
+   private static final float ASSERT_FLOAT_THRESHOLD = 0.000000001f;
+   private static final double ASSERT_DOUBLE_THRESHOLD = 0.000000000000001d;
+
    private static ResteasyDeployment deployment;
 
    private static IResourceUriBoolean resourceUriBoolean;
@@ -140,7 +143,7 @@ public class UriParamAsPrimitiveTest
       @GET
       public String doGet(@PathParam("arg") float v)
       {
-         Assert.assertEquals(3.14159265f, v);
+         Assert.assertEquals(3.14159265f, v, ASSERT_FLOAT_THRESHOLD);
          return "content";
       }
    }
@@ -151,7 +154,7 @@ public class UriParamAsPrimitiveTest
       @GET
       public String doGet(@PathParam("arg") double v)
       {
-         Assert.assertEquals(3.14159265358979d, v);
+         Assert.assertEquals(3.14159265358979d, v, ASSERT_DOUBLE_THRESHOLD);
          return "content";
       }
    }
@@ -217,7 +220,7 @@ public class UriParamAsPrimitiveTest
       @GET
       public String doGet(@PathParam("arg") Float v)
       {
-         Assert.assertEquals(3.14159265f, v.floatValue());
+         Assert.assertEquals(3.14159265f, v.floatValue(), ASSERT_FLOAT_THRESHOLD);
          return "content";
       }
    }
@@ -228,7 +231,7 @@ public class UriParamAsPrimitiveTest
       @GET
       public String doGet(@PathParam("arg") Double v)
       {
-         Assert.assertEquals(3.14159265358979d, v.doubleValue());
+         Assert.assertEquals(3.14159265358979d, v.doubleValue(), ASSERT_DOUBLE_THRESHOLD);
          return "content";
       }
    }

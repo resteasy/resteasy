@@ -1,11 +1,15 @@
 package org.jboss.resteasy.security.smime;
 
-import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.CMSProcessable;
-import org.bouncycastle.cms.CMSProcessableByteArray;
-import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.cms.CMSSignedDataGenerator;
+import org.bouncycastle.cert.jcajce.JcaCertStore;
+import org.bouncycastle.cms.*;
+import org.bouncycastle.cms.jcajce.JcaSignerInfoGeneratorBuilder;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
+import org.bouncycastle.util.Store;
 import org.jboss.resteasy.security.BouncyIntegration;
+import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.spi.WriterException;
 
@@ -17,6 +21,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -24,6 +29,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 
 /**
@@ -70,23 +76,30 @@ public class PKCS7SignatureWriter implements MessageBodyWriter<SignedOutput>
       }
    }
 
-   public static byte[] sign(Providers providers, SignedOutput out) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, CMSException
-   {
+   public static byte[] sign(Providers providers, SignedOutput out) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, CMSException, OperatorCreationException, CertificateEncodingException {
       ByteArrayOutputStream bodyOs = new ByteArrayOutputStream();
       MessageBodyWriter writer = providers.getMessageBodyWriter(out.getType(), out.getGenericType(), null, out.getMediaType());
       if (writer == null)
       {
-         throw new WriterException("Failed to find writer for type: " + out.getType().getName());
+         throw new WriterException(Messages.MESSAGES.failedToFindWriter(out.getType().getName()));
       }
       MultivaluedMapImpl<String, Object> bodyHeaders = new MultivaluedMapImpl<String, Object>();
       bodyHeaders.add("Content-Type",  out.getMediaType().toString());
       writer.writeTo(out.getEntity(), out.getType(), out.getGenericType(), null, out.getMediaType(), bodyHeaders, bodyOs);
       CMSSignedDataGenerator signGen = new CMSSignedDataGenerator();
-      signGen.addSigner(out.getPrivateKey(), (X509Certificate)out.getCertificate(), CMSSignedDataGenerator.DIGEST_SHA1);
-      //signGen.addCertificatesAndCRLs(certs);
-      CMSProcessable content = new CMSProcessableByteArray(bodyOs.toByteArray());
 
-      CMSSignedData signedData = signGen.generate(content, true, "BC");
+
+      ContentSigner sha1Signer = new JcaContentSignerBuilder("SHA1withRSA").setProvider("BC").build(out.getPrivateKey());
+
+      signGen.addSignerInfoGenerator(
+                              new JcaSignerInfoGeneratorBuilder(
+                                   new JcaDigestCalculatorProviderBuilder().setProvider("BC").build())
+                           .build(sha1Signer, out.getCertificate()));
+
+      CMSTypedData content = new CMSProcessableByteArray(bodyOs.toByteArray());
+
+      CMSSignedData signedData = signGen.generate(content, true);
+
       return signedData.getEncoded();
    }
 }

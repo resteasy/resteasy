@@ -19,7 +19,6 @@ import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.LegacyPrecedence;
 import org.jboss.resteasy.core.interception.ReaderInterceptorRegistry;
 import org.jboss.resteasy.core.interception.WriterInterceptorRegistry;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
 import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.DateDelegate;
@@ -31,6 +30,8 @@ import org.jboss.resteasy.plugins.delegates.MediaTypeHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.NewCookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.UriHeaderDelegate;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.LinkBuilderImpl;
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
@@ -68,6 +69,7 @@ import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.WriterInterceptor;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -194,8 +196,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected Set<Class<?>> featureClasses;
    protected Set<Object> featureInstances;
 
-   private final static Logger logger = Logger.getLogger(ResteasyProviderFactory.class);
-
 
    public ResteasyProviderFactory()
    {
@@ -212,6 +212,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public ResteasyProviderFactory(ResteasyProviderFactory parent)
    {
+      this(parent, false);
+   }
+
+   /**
+    * If local is true, copies components needed by client configuration,
+    * so that parent is not referenced. 
+    * @param parent
+    * @param local
+    */
+   public ResteasyProviderFactory(ResteasyProviderFactory parent, boolean local)
+   {
       this.parent = parent;
       featureClasses = new CopyOnWriteArraySet<Class<?>>();
       featureInstances = new CopyOnWriteArraySet<Object>();
@@ -220,6 +231,19 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       properties = new ConcurrentHashMap<String, Object>();
       properties.putAll(parent.getProperties());
       enabledFeatures = new CopyOnWriteArraySet<Feature>();
+      
+      if (local)
+      {
+         classContracts = new ConcurrentHashMap<Class<?>, Map<Class<?>, Integer>>();
+         if (parent != null)
+         {
+            providerClasses.addAll(parent.providerClasses);
+            providerInstances.addAll(parent.providerInstances);
+            classContracts.putAll(parent.classContracts);
+            properties.putAll(parent.properties);
+            enabledFeatures.addAll(parent.enabledFeatures);
+         }
+      }
    }
 
    protected void initialize()
@@ -533,9 +557,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (getContextDataLevelCount() == maxForwards)
       {
-         throw new BadRequestException(
-                 "You have exceeded your maximum forwards ResteasyProviderFactory allows.  Last good uri: "
-                         + getContextData(UriInfo.class).getPath());
+         throw new BadRequestException(Messages.MESSAGES.excededMaximumForwards(getContextData(UriInfo.class).getPath()));
       }
       Map<Class<?>, Object> map = new HashMap<Class<?>, Object>();
       contextualData.push(map);
@@ -722,7 +744,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public <T> HeaderDelegate<T> createHeaderDelegate(Class<T> tClass)
    {
-      if (tClass == null) throw new IllegalArgumentException("tClass parameter is null");
+      if (tClass == null) throw new IllegalArgumentException(Messages.MESSAGES.tClassParameterNull());
       if (headerDelegates == null && parent != null) return parent.createHeaderDelegate(tClass);
       
       Class<?> clazz = tClass;
@@ -1032,7 +1054,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       Class<?> exceptionClass = Types.getRawType(exceptionType);
       if (!Throwable.class.isAssignableFrom(exceptionClass))
       {
-         throw new RuntimeException("Incorrect type parameter. ExceptionMapper requires a subclass of java.lang.Throwable as its type parameter.");
+         throw new RuntimeException(Messages.MESSAGES.incorrectTypeParameterExceptionMapper());
       }
       if (exceptionMappers == null)
       {
@@ -1067,7 +1089,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       Class<?> exceptionClass = Types.getRawType(exceptionType);
       if (!Throwable.class.isAssignableFrom(exceptionClass))
       {
-         throw new RuntimeException("Incorrect type parameter. ClientExceptionMapper requires a subclass of java.lang.Throwable as its type parameter.");
+         throw new RuntimeException(Messages.MESSAGES.incorrectTypeParameterClientExceptionMapper());
       }
       if (clientExceptionMappers == null)
       {
@@ -1379,7 +1401,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (getClasses().contains(provider))
       {
-         //logger.warn("Provider class " + provider.getName() + " is already registered.  2nd registration is being ignored.");
+         LogMessages.LOGGER.providerClassAlreadyRegistered(provider.getName());
          return;
       }
       Map<Class<?>, Integer> newContracts = new HashMap<Class<?>, Integer>();
@@ -1404,7 +1426,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate MessageBodyReader", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateMessageBodyReader(), e);
          }
       }
       if (isA(provider, MessageBodyWriter.class, contracts))
@@ -1416,7 +1438,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate MessageBodyWriter", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateMessageBodyWriter(), e);
          }
       }
       if (isA(provider, ExceptionMapper.class, contracts))
@@ -1428,7 +1450,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateExceptionMapper(), e);
          }
       }
       if (isA(provider, ClientExceptionMapper.class, contracts))
@@ -1440,7 +1462,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate ClientExceptionMapper", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateClientExceptionMapper(), e);
          }
       }
       if (isA(provider, ClientRequestFilter.class, contracts))
@@ -1600,7 +1622,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
          {
-            throw new RuntimeException("Interceptor class must be annotated with @ServerInterceptor and/or @ClientInterceptor");
+            throw new RuntimeException(Messages.MESSAGES.interceptorClassMustBeAnnotated());
          }
          newContracts.put(MessageBodyWriterInterceptor.class, 0);
 
@@ -1625,7 +1647,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
          {
-            throw new RuntimeException("Interceptor class must be annotated with @ServerInterceptor and/or @ClientInterceptor");
+            throw new RuntimeException(Messages.MESSAGES.interceptorClassMustBeAnnotated());
          }
          newContracts.put(MessageBodyReaderInterceptor.class, 0);
 
@@ -1640,7 +1662,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate ContextResolver", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateContextResolver(), e);
          }
       }
       if (isA(provider, StringConverter.class, contracts))
@@ -1683,7 +1705,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             if (clientDynamicFeatures == null)
             {
-               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
+               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getClientDynamicFeatures());
             }
             clientDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
          }
@@ -1696,7 +1718,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             serverDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
             if (clientDynamicFeatures == null)
             {
-               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
+               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getClientDynamicFeatures());
             }
             clientDynamicFeatures.add((DynamicFeature) injectedInstance(provider));
          }
@@ -1734,9 +1756,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          if (registered == provider)
          {
-            logger.warn("Provider instance " + provider.getClass().getName() + " is already registered.  2nd registration is being ignored.");
+            LogMessages.LOGGER.providerInstanceAlreadyRegistered(provider.getClass().getName());
             return;
          }
+      }
+      if (getClasses().contains(provider.getClass()))
+      {
+         LogMessages.LOGGER.providerClassAlreadyRegistered(provider.getClass().getName());
+         return;
       }
       Map<Class<?>, Integer> newContracts = new HashMap<Class<?>, Integer>();
       if (isA(provider, ParamConverterProvider.class, contracts))
@@ -1760,7 +1787,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate MessageBodyReader", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateMessageBodyReader(), e);
          }
       }
       if (isA(provider, MessageBodyWriter.class, contracts))
@@ -1773,7 +1800,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate MessageBodyWriter", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateMessageBodyWriter(), e);
          }
       }
       if (isA(provider, ExceptionMapper.class, contracts))
@@ -1786,7 +1813,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateExceptionMapper(), e);
          }
       }
       if (isA(provider, ClientExceptionMapper.class, contracts))
@@ -1798,7 +1825,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate ExceptionMapper", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateExceptionMapper(), e);
          }
       }
       if (isA(provider, ContextResolver.class, contracts))
@@ -1806,12 +1833,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addContextResolver((ContextResolver) provider);
-            int priority = getPriority(priorityOverride, contracts, ExceptionMapper.class, provider.getClass());
+            int priority = getPriority(priorityOverride, contracts, ContextResolver.class, provider.getClass());
             newContracts.put(ContextResolver.class, priority);
          }
          catch (Exception e)
          {
-            throw new RuntimeException("Unable to instantiate ContextResolver", e);
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateContextResolver(), e);
          }
       }
       if (isA(provider, ClientRequestFilter.class, contracts))
@@ -1858,8 +1885,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(this);
          }
-         containerRequestFilterRegistry.registerSingleton((ContainerRequestFilter) provider);
          int priority = getPriority(priorityOverride, contracts, ContainerRequestFilter.class, provider.getClass());
+         containerRequestFilterRegistry.registerSingleton((ContainerRequestFilter) provider, priority);
          newContracts.put(ContainerRequestFilter.class, priority);
       }
       if (isA(provider, PostProcessInterceptor.class, contracts))
@@ -1877,8 +1904,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
          }
-         containerResponseFilterRegistry.registerSingleton((ContainerResponseFilter) provider);
          int priority = getPriority(priorityOverride, contracts, ContainerResponseFilter.class, provider.getClass());
+         containerResponseFilterRegistry.registerSingleton((ContainerResponseFilter) provider, priority);
          newContracts.put(ContainerResponseFilter.class, priority);
       }
       if (isA(provider, ReaderInterceptor.class, contracts))
@@ -1971,7 +1998,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
-            throw new RuntimeException("Interceptor class " + provider.getClass() + " must be annotated with @ServerInterceptor and/or @ClientInterceptor");
+            throw new RuntimeException(Messages.MESSAGES.interceptorClassMustBeAnnotatedWithClass(provider.getClass()));
          }
          newContracts.put(MessageBodyWriterInterceptor.class, 0);
       }
@@ -1995,7 +2022,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
          {
-            throw new RuntimeException("Interceptor class " + provider.getClass() + " must be annotated with @ServerInterceptor and/or @ClientInterceptor");
+            throw new RuntimeException(Messages.MESSAGES.interceptorClassMustBeAnnotatedWithClass(provider.getClass()));
          }
          newContracts.put(MessageBodyReaderInterceptor.class, 0);
 
@@ -2026,9 +2053,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             if (clientDynamicFeatures == null)
             {
-               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
+               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getClientDynamicFeatures());
             }
-            serverDynamicFeatures.add((DynamicFeature) provider);
+            clientDynamicFeatures.add((DynamicFeature) provider);
          }
          if (constrainedTo == null)
          {
@@ -2039,9 +2066,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             serverDynamicFeatures.add((DynamicFeature) provider);
             if (clientDynamicFeatures == null)
             {
-               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getServerDynamicFeatures());
+               clientDynamicFeatures = new CopyOnWriteArraySet<DynamicFeature>(parent.getClientDynamicFeatures());
             }
-            serverDynamicFeatures.add((DynamicFeature) provider);
+            clientDynamicFeatures.add((DynamicFeature) provider);
          }
          newContracts.put(DynamicFeature.class, priority);
       }
@@ -2059,6 +2086,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
       }
       providerInstances.add(provider);
+      providerClasses.add(provider.getClass());
       getClassContracts().put(provider.getClass(), newContracts);
    }
 
@@ -2172,7 +2200,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    public <T> T createEndpoint(Application applicationConfig, Class<T> endpointType) throws IllegalArgumentException, UnsupportedOperationException
    {
-      if (applicationConfig == null) throw new IllegalArgumentException("application param was null");
+      if (applicationConfig == null) throw new IllegalArgumentException(Messages.MESSAGES.applicationParamNull());
       throw new UnsupportedOperationException();
    }
 
@@ -2217,7 +2245,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       Constructor<?> constructor = PickConstructor.pickSingletonConstructor(clazz);
       if (constructor == null)
       {
-         throw new IllegalArgumentException("Unable to find a public constructor for provider class " + clazz.getName());
+         throw new IllegalArgumentException(Messages.MESSAGES.unableToFindPublicConstructorForProvider(clazz.getName()));
       }
       return getInjectorFactory().createConstructor(constructor, this);
    }
@@ -2302,7 +2330,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          else
          {
-            throw new IllegalArgumentException("Unable to find a public constructor for class " + clazz.getName());
+            throw new IllegalArgumentException(Messages.MESSAGES.unableToFindPublicConstructorForClass(clazz.getName()));
          }
       }
       else
@@ -2363,7 +2391,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    @Override
    public ResteasyProviderFactory property(String name, Object value)
    {
-      properties.put(name, value);
+      if (value == null)
+         properties.remove(name);
+      else
+         properties.put(name, value);
       return this;
    }
 
@@ -2420,7 +2451,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (contracts == null || contracts.length == 0)
       {
-         logger.warn("Attempting to register empty contracts for " + componentClass.getName());
+         LogMessages.LOGGER.attemptingToRegisterEmptyContracts(componentClass.getName());
          return this;
       }
       Map<Class<?>, Integer> cons = new HashMap<Class<?>, Integer>();
@@ -2428,7 +2459,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          if (!contract.isAssignableFrom(componentClass))
          {
-            logger.warn("Attempting to register unassignable contract for " + componentClass.getName());
+            LogMessages.LOGGER.attemptingToRegisterUnassignableContract(componentClass.getName());
             return this;
          }
          cons.put(contract, Priorities.USER);
@@ -2449,7 +2480,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (contracts == null || contracts.length == 0)
       {
-         logger.warn("Attempting to register empty contracts for " + component.getClass().getName());
+         LogMessages.LOGGER.attemptingToRegisterEmptyContracts(component.getClass().getName());
          return this;
       }
       Map<Class<?>, Integer> cons = new HashMap<Class<?>, Integer>();
@@ -2457,7 +2488,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          if (!contract.isAssignableFrom(component.getClass()))
          {
-            logger.warn("Attempting to register unassignable contract for " + component.getClass().getName());
+            LogMessages.LOGGER.attemptingToRegisterUnassignableContract(component.getClass().getName());
             return this;
          }
          cons.put(contract, Priorities.USER);
@@ -2473,7 +2504,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          if (!contract.isAssignableFrom(componentClass))
          {
-            logger.warn("Attempting to register unassignable contract for " + componentClass.getName());
+            LogMessages.LOGGER.attemptingToRegisterUnassignableContract(componentClass.getName());
             return this;
          }
       }
@@ -2488,7 +2519,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          if (!contract.isAssignableFrom(component.getClass()))
          {
-            logger.warn("Attempting to register unassignable contract for " + component.getClass().getName());
+            LogMessages.LOGGER.attemptingToRegisterUnassignableContract(component.getClass().getName());
             return this;
          }
       }

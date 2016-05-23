@@ -11,13 +11,12 @@ Resource classes are able to partially process a request and provide another &qu
 @Path("/")
 public class ShoppingStore {
 
-   @Path("/customers/{id}")
-   public Customer getCustomer(@PathParam("id") int id) {
-      Customer cust = ...; // Find a customer object
-      return cust;
-   }
+    @Path("/customers/{id}")
+    public Customer getCustomer(@PathParam("id") int id) {
+        Customer cust = ...; // Find a customer object
+        return cust;
+    }
 }
-
 
 public class Customer {
    
@@ -26,9 +25,7 @@ public class Customer {
 
     @Path("/address")
     public String getAddress() {...}
-
 }
-
 </programlisting>
 </para>
 <para>
@@ -79,7 +76,6 @@ public class ShoppingStore {
    }
 }
 
-
 public class Customer {
    
     @GET
@@ -87,9 +83,7 @@ public class Customer {
 
     @Path("/address")
     public String getAddress() {...}
-
 }
-
 </programlisting>
 </para>
 <para>
@@ -109,7 +103,6 @@ public class ShoppingStore {
    }
 }
 
-
 public class Customer {
    
     @GET
@@ -117,16 +110,13 @@ public class Customer {
 
     @Path("/address")
     public String getAddress() {...}
-
 }
 
-public class CorporateCustomer extendsCustomer {
+public class CorporateCustomer extends Customer {
    
     @Path("/businessAddress")
     public String getAddress() {...}
-
 }
-
 </programlisting>
 </para>
 <para>

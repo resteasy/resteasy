@@ -3,6 +3,8 @@ package org.jboss.resteasy.jose.jwe;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.jboss.resteasy.jose.i18n.Messages;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -44,6 +46,6 @@ public enum EncryptionMethod
       {
          throw new RuntimeException(e);
       }
-      throw new IllegalStateException("Unknown length");
+      throw new IllegalStateException(Messages.MESSAGES.unknownLength());
    }
 }

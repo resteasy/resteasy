@@ -69,6 +69,20 @@ public @interface LinkResource {
 	
 	/**
 	 * <p>
+	 * List of query parameters which should be attached to the link.
+	 * </p>
+	 */
+	ParamBinding[] queryParameters() default {};
+	
+	/**
+	 * <p>
+	 * List of matrix parameters which should be attached to the link.
+	 * </p>
+	 */
+	ParamBinding[] matrixParameters() default {};
+	
+	/**
+	 * <p>
 	 * EL expression that should return a boolean indicating whether or not this service link should be used.
 	 * This is useful for security constraints limiting access to resources. Defaults to using the
 	 * {@link javax.annotation.security.RolesAllowed @RolesAllowed} annotation using the current 

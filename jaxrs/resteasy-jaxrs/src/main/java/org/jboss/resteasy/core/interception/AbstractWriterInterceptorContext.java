@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core.interception;
 
 import org.jboss.resteasy.core.NoMessageBodyWriterFoundFailure;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.WebApplicationException;
@@ -9,6 +10,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.WriterInterceptor;
 import javax.ws.rs.ext.WriterInterceptorContext;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -81,7 +83,7 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
 
    public void setAnnotations(Annotation[] annotations)
    {
-      if (annotations == null) throw new NullPointerException("annotations param was null");
+      if (annotations == null) throw new NullPointerException(Messages.MESSAGES.annotationsParamNull());
       this.annotations = annotations;
    }
 

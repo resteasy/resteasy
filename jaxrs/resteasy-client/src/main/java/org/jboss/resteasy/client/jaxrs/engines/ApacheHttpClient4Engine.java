@@ -21,15 +21,17 @@ import org.apache.http.protocol.HttpContext;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.core.SelfExpandingBufferredInputStream;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
+import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.MultivaluedMap;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -38,7 +40,6 @@ import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -46,7 +47,6 @@ import java.util.logging.Level;
  */
 public class ApacheHttpClient4Engine implements ClientHttpEngine
 {
-   private final static Logger logger = Logger.getLogger(ApacheHttpClient4Engine.class);
 
    /**
     * Used to build temp file prefix.
@@ -284,7 +284,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       }
       catch (Exception e)
       {
-         throw new ProcessingException("Unable to invoke request", e);
+         throw new ProcessingException(Messages.MESSAGES.unableToInvokeRequest(), e);
       }
       finally
       {
@@ -414,7 +414,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
 
       if (request.getEntity() != null)
       {
-         if (httpMethod instanceof HttpGet) throw new ProcessingException("A GET request cannot have a body.");
+         if (httpMethod instanceof HttpGet) throw new ProcessingException(Messages.MESSAGES.getRequestCannotHaveBody());
 
          ByteArrayOutputStream baos = new ByteArrayOutputStream();
          request.getDelegatingOutputStream().setDelegate(baos);
@@ -601,7 +601,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
     */
    private void handleFileNotDeletedError(File tempRequestFile, Exception ex)
    {
-      logger.warn("Could not delete file' " + tempRequestFile.getAbsolutePath() + "' for request: ", ex);
+      LogMessages.LOGGER.warn(Messages.MESSAGES.couldNotDeleteFile(tempRequestFile.getAbsolutePath()), ex);
    }
 
 

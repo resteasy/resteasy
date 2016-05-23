@@ -1,9 +1,11 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.container.CompletionCallback;
 import javax.ws.rs.container.ContainerResponseFilter;
@@ -11,6 +13,7 @@ import javax.ws.rs.container.TimeoutHandler;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.WriterInterceptor;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,12 +36,14 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
    protected Annotation[] annotations;
    protected TimeoutHandler timeoutHandler;
    protected List<CompletionCallback> completionCallbacks = new ArrayList<CompletionCallback>();
+   protected Map<Class<?>, Object> contextDataMap;
 
    protected AbstractAsynchronousResponse(SynchronousDispatcher dispatcher, HttpRequest request, HttpResponse response)
    {
       this.dispatcher = dispatcher;
       this.request = request;
       this.response = response;
+      contextDataMap = ResteasyProviderFactory.getContextDataMap();
    }
 
 
@@ -46,7 +51,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
    @Override
    public Collection<Class<?>> register(Class<?> callback) throws NullPointerException
    {
-      if (callback == null) throw new NullPointerException("Callback was null");
+      if (callback == null) throw new NullPointerException(Messages.MESSAGES.callbackWasNull());
       Object cb = dispatcher.getProviderFactory().createProviderInstance(callback);
       return register(cb);
    }
@@ -54,7 +59,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
    @Override
    public Collection<Class<?>> register(Object callback) throws NullPointerException
    {
-      if (callback == null) throw new NullPointerException("Callback was null");
+      if (callback == null) throw new NullPointerException(Messages.MESSAGES.callbackWasNull());
       ArrayList<Class<?>> registered = new ArrayList<Class<?>>();
       if (callback instanceof CompletionCallback)
       {
@@ -152,6 +157,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
 
    protected boolean internalResume(Object entity)
    {
+      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
       Response response = null;
       if (entity == null)
       {
@@ -163,7 +169,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
       }
       else
       {
-         if (method == null) throw new IllegalStateException("Unknown media type for response entity");
+         if (method == null) throw new IllegalStateException(Messages.MESSAGES.unknownMediaTypeResponseEntity());
          MediaType type = method.resolveContentType(request, entity);
          BuiltResponse jaxrsResponse = (BuiltResponse)Response.ok(entity, type).build();
          jaxrsResponse.setGenericType(method.getGenericReturnType());
@@ -184,6 +190,7 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
 
    protected boolean internalResume(Throwable exc)
    {
+      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
       try
       {
          dispatcher.asynchronousExceptionDelivery(request, response, exc);

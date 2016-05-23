@@ -5,7 +5,8 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.plugins.guice.i18n.LogMessages;
+import org.jboss.resteasy.plugins.guice.i18n.Messages;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -25,7 +26,6 @@ import javax.servlet.ServletContextListener;
 
 public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootstrap implements ServletContextListener
 {
-   private final static Logger logger = Logger.getLogger(GuiceResteasyBootstrapServletContextListener.class);
 
    private List<? extends Module> modules;
    @Inject private Injector parentInjector = null;
@@ -94,8 +94,7 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
       }
       catch (IllegalArgumentException e)
       {
-         throw new RuntimeException("Injector stage is not defined properly. " + stageAsString + " is wrong value." +
-                 " Possible values are PRODUCTION, DEVELOPMENT, TOOL.");
+         throw new RuntimeException(Messages.MESSAGES.injectorStageNotProperlyDefined(stageAsString));
       }
    }
 
@@ -116,7 +115,7 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
          {
             try
             {
-               logger.info("found module: {0}", moduleString);
+               LogMessages.LOGGER.info(Messages.MESSAGES.foundModule(moduleString));
                final Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(moduleString.trim());
                final Module module = (Module) clazz.newInstance();
                result.add(module);
@@ -156,16 +155,16 @@ public class GuiceResteasyBootstrapServletContextListener extends ResteasyBootst
             {
                if(method.getParameterTypes().length > 0)
                {
-                  logger.warn("Cannot execute expected module {}'s @{} method {} because it has unexpected parameters: skipping.", module.getClass().getSimpleName(), annotationClass.getSimpleName(), method.getName());
+                  LogMessages.LOGGER.warn(Messages.MESSAGES.cannotExecute(module.getClass().getSimpleName(), annotationClass.getSimpleName(), method.getName()));
                   continue;
                }
                try
                {
                   method.invoke(module);
                } catch (InvocationTargetException ex) {
-                  logger.warn("Problem running annotation method @" + annotationClass.getSimpleName(), ex);
+                  LogMessages.LOGGER.warn(Messages.MESSAGES.problemRunningAnnotationMethod(annotationClass.getSimpleName()), ex);
                } catch (IllegalAccessException ex) {
-                  logger.warn("Problem running annotation method @" + annotationClass.getSimpleName(), ex);
+                  LogMessages.LOGGER.warn(Messages.MESSAGES.problemRunningAnnotationMethod(annotationClass.getSimpleName()), ex);
                }
             }
          }

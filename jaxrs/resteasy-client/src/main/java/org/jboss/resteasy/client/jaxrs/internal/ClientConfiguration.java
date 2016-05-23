@@ -41,7 +41,7 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
       {
          factory = ((ThreadLocalResteasyProviderFactory)factory).getDelegate();
       }
-      this.providerFactory = new ResteasyProviderFactory(factory);
+      this.providerFactory = new LocalResteasyProviderFactory(factory);
    }
 
    public ClientConfiguration(ClientConfiguration parent)

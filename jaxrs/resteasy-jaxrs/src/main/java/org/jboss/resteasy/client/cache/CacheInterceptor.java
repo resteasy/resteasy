@@ -26,9 +26,15 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @deprecated
+ * 
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @deprecated Caching in the Resteasy client framework in resteasy-jaxrs is replaced by 
+ * caching in the JAX-RS 2.0 compliant resteasy-client module.
+ * 
+ * @see resteasy-client
+ * @see org.jboss.resteasy.client.jaxrs.cache.CacheInterceptor
  */
 @Deprecated
 @SuppressWarnings("unchecked")

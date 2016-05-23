@@ -1,7 +1,9 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
 import org.jboss.resteasy.util.FindAnnotation;
+import org.xml.sax.InputSource;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -16,8 +18,12 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamSource;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -82,17 +88,43 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
          JAXBContextFinder finder = resolver.getContext(type);
          if (finder == null)
          {
-            if (true) throw new JAXBUnmarshalException("Could not find JAXBContextFinder for media type: " + mediaType);
-            else throw new JAXBMarshalException("Could not find JAXBContextFinder for media type: " + mediaType);
+            if (true) throw new JAXBUnmarshalException(Messages.MESSAGES.couldNotFindJAXBContextFinder(mediaType));
+            else throw new JAXBMarshalException(Messages.MESSAGES.couldNotFindJAXBContextFinder(mediaType));
          }
          JAXBContext jaxb = finder.findCacheXmlTypeContext(mediaType, annotations, type);
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
          unmarshaller = decorateUnmarshaller(type, annotations, mediaType, unmarshaller);
-         if (suppressExpandEntityExpansion())
+         
+         Object obj = null;
+         if (needsSecurity())
          {
-            unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);
+            SAXSource source = null;
+            if (getCharset(mediaType) == null)
+            {
+               source = new SAXSource(new InputSource(new InputStreamReader(entityStream, "UTF-8")));
+            }
+            else
+            {
+               source = new SAXSource(new InputSource(entityStream));
+            }
+            unmarshaller = new SecureUnmarshaller(unmarshaller, isDisableExternalEntities(), isEnableSecureProcessingFeature(), isDisableDTDs());
+            obj = unmarshaller.unmarshal(source);
          }
-         Object obj = unmarshaller.unmarshal(entityStream);
+         else
+         {
+            if (getCharset(mediaType) == null)
+            {
+               InputSource is = new InputSource(entityStream);
+               is.setEncoding("UTF-8");
+               StreamSource source = new StreamSource(new InputStreamReader(entityStream, "UTF-8"));
+               source.setInputStream(entityStream);
+               obj = unmarshaller.unmarshal(source);
+            }
+            else
+            {
+               obj = unmarshaller.unmarshal(new StreamSource(entityStream));  
+            }
+         }
          if (obj instanceof JAXBElement)
          {
             JAXBElement element = (JAXBElement) obj;
@@ -143,7 +175,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
          }
          else
          {
-            throw new JAXBMarshalException("A valid XmlRegistry could not be located.");
+            throw new JAXBMarshalException(Messages.MESSAGES.validXmlRegistryCouldNotBeLocated());
          }
       }
       catch (InstantiationException e)
@@ -182,8 +214,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
                return JAXBElement.class.cast(result);
             }
          }
-         throw new JAXBMarshalException(String.format("The method create%s() "
-                 + "was not found in the object Factory!", type));
+         throw new JAXBMarshalException(Messages.MESSAGES.createMethodNotFound(type));
       }
       catch (IllegalArgumentException e)
       {

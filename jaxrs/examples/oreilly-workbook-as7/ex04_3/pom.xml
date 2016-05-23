@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>com.oreilly.rest.workbook</groupId>
-        <artifactId>workbook-pom</artifactId>
+        <artifactId>workbook-pom-as7</artifactId>
         <version>1.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>3.0.8.Final</version>
+            <version>3.1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

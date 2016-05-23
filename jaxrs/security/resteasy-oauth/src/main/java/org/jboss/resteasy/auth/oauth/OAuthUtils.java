@@ -7,20 +7,22 @@ import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
-import org.jboss.resteasy.logging.Logger;
+
+import org.jboss.resteasy.auth.oauth.i18n.LogMessages;
+import org.jboss.resteasy.auth.oauth.i18n.Messages;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class OAuthUtils {
 	
@@ -54,8 +56,6 @@ public class OAuthUtils {
 	 */
 	private static final String ATTR_OAUTH_PROVIDER = OAuthProvider.class.getName();
 
-	private final static Logger logger = Logger.getLogger(OAuthUtils.class);
-
 	/**
 	 * Encodes the given value for use in an OAuth parameter
 	 */
@@ -64,7 +64,7 @@ public class OAuthUtils {
 			return URLUtils.encodePart(value, "UTF-8", URLUtils.UNRESERVED);
 		} catch (UnsupportedEncodingException e) {
 			// this encoding is specified in the JDK
-			throw new RuntimeException("UTF8 encoding should be supported", e);
+		   throw new RuntimeException(Messages.MESSAGES.utf8EncodingShouldBeSupported(), e);
 		}
 	}
 	
@@ -75,7 +75,7 @@ public class OAuthUtils {
 	public static void sendValues(HttpServletResponse resp, String... params) throws IOException {
 		PrintWriter writer = resp.getWriter();
 		if((params.length % 2) != 0)
-			throw new IllegalArgumentException("Arguments should be name=value*");
+		   throw new IllegalArgumentException(Messages.MESSAGES.argumentsShouldBeNameValue());
 		for(int i=0;i<params.length;i+=2){
 			if(i > 0)
 				writer.append('&');
@@ -90,7 +90,7 @@ public class OAuthUtils {
 	 */
 	public static OAuthMessage readMessage(HttpServletRequest req) {
 		String authorizationHeader = req.getHeader(AUTHORIZATION_HEADER);
-		Set<OAuth.Parameter> parameters = new HashSet<OAuth.Parameter>();
+		List<OAuth.Parameter> parameters = new ArrayList<OAuth.Parameter>();
 		
 		// first read the Authorization header
 		if(authorizationHeader != null){
@@ -104,7 +104,7 @@ public class OAuthUtils {
 		List<String> parameterNames = Collections.<String>list(req.getParameterNames());
 		for(String parameterName : parameterNames){
 			for(String value : req.getParameterValues(parameterName)){
-				logger.debug("Adding parameter "+parameterName+" => "+value);
+			   LogMessages.LOGGER.debug(Messages.MESSAGES.addingParameter(parameterName, value));
 				parameters.add(new OAuth.Parameter(parameterName, value));
 			}
 		}
@@ -117,7 +117,7 @@ public class OAuthUtils {
 	 * Sends an error to the OAuth Consumer
 	 */
 	public static void makeErrorResponse(HttpServletResponse resp, String message, int httpCode, OAuthProvider provider) throws IOException{
-		logger.debug("Error ["+httpCode+"]: "+message);
+	   LogMessages.LOGGER.debug(Messages.MESSAGES.errorHttpCode(httpCode, message));
 		resp.getWriter().append(message);
 		resp.setStatus(httpCode);
 		String headerValue = "OAuth";
@@ -138,7 +138,7 @@ public class OAuthUtils {
 		}catch(NumberFormatException x){
 			// fallback
 		}
-		throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, "Invalid timestamp "+timestampString);
+		throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, Messages.MESSAGES.invalidTimestampString(timestampString));
 	}
 
 	/**
@@ -162,19 +162,19 @@ public class OAuthUtils {
 		
 		String providerClassName = context.getInitParameter(OAuthServlet.PARAM_PROVIDER_CLASS);
 		if(providerClassName == null)
-			throw new ServletException(OAuthServlet.PARAM_PROVIDER_CLASS+" parameter required");
+		   throw new ServletException(OAuthServlet.PARAM_PROVIDER_CLASS+Messages.MESSAGES.parameterRequired());
 		try {
-			logger.info("Loading OAuthProvider: "+ providerClassName);
+		   LogMessages.LOGGER.info(Messages.MESSAGES.loadingOAuthProvider(providerClassName));
 			Class<?> providerClass = Class.forName(providerClassName);
 			if(!OAuthProvider.class.isAssignableFrom(providerClass))
-				throw new ServletException(OAuthServlet.PARAM_PROVIDER_CLASS+" class "+providerClassName+" must be an instance of OAuthProvider");
+			   throw new ServletException(OAuthServlet.PARAM_PROVIDER_CLASS+Messages.MESSAGES.classMustBeInstanceOAuthProvider(providerClassName));
 			provider = new OAuthProviderChecker((OAuthProvider) providerClass.newInstance());
 			context.setAttribute(ATTR_OAUTH_PROVIDER, provider);
 			return provider;
 		} catch (ClassNotFoundException e) {
-			throw new ServletException(OAuthServlet.PARAM_PROVIDER_CLASS+" class "+providerClassName+" not found");
+	       throw new ServletException(OAuthServlet.PARAM_PROVIDER_CLASS+Messages.MESSAGES.classNotFound(providerClassName));
 		} catch (Exception e) {
-			throw new ServletException(OAuthServlet.PARAM_PROVIDER_CLASS+" class "+providerClassName+" could not be instanciated", e);
+		   throw new ServletException(OAuthServlet.PARAM_PROVIDER_CLASS+Messages.MESSAGES.classCouldNotBeInstantiated(providerClassName), e);
 		}
 	}
 
@@ -207,7 +207,7 @@ public class OAuthUtils {
         // validate the message
         validator.validateMessage(message, accessor, accessToken);
         if (!OAuthUtils.validateUriScopes(request.getRequestURL().toString(), accessToken.getScopes())) {
-            throw new OAuthException(HttpURLConnection.HTTP_BAD_REQUEST, "Wrong URI Scope");
+           throw new OAuthException(HttpURLConnection.HTTP_BAD_REQUEST, Messages.MESSAGES.wrongURIScope());
         }
 	}
 	
@@ -223,7 +223,7 @@ public class OAuthUtils {
 	    
 	    String[] scopes = consumer.getScopes();
         if (scopes == null || !validateUriScopes(request.getRequestURL().toString(), scopes)) {
-            throw new OAuthException(HttpURLConnection.HTTP_BAD_REQUEST, "Wrong URI Scope");
+           throw new OAuthException(HttpURLConnection.HTTP_BAD_REQUEST, Messages.MESSAGES.wrongURIScope());
         }
         // build some info for verification
         OAuthConsumer _consumer = new OAuthConsumer(null, consumer.getKey(), consumer.getSecret(), null);

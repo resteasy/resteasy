@@ -39,13 +39,22 @@ public class RangeTest extends BaseResourceTest
       {
          return file;
       }
+
+      @GET
+      @Path("small-file")
+      @Produces("text/plain")
+      public File getSmallFile()
+      {
+         return smallFile;
+      }
+
    }
 
 
 
 
    static Client client;
-   static File file;
+   static File file, smallFile;
 
    @BeforeClass
    public static void setup()
@@ -61,6 +70,18 @@ public class RangeTest extends BaseResourceTest
             fos.write("hello".getBytes());
          }
          fos.write("1234".getBytes());
+         fos.flush();
+         fos.close();
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+      try
+      {
+         smallFile = File.createTempFile("tmp", "tmp");
+         FileOutputStream fos = new FileOutputStream(smallFile);
+         fos.write("123456789".getBytes());
          fos.flush();
          fos.close();
       }
@@ -152,6 +173,23 @@ public class RangeTest extends BaseResourceTest
               .header("Range", "bytes=-6000").get();
       Assert.assertEquals(response.getStatus(), 200);
       response.close();
+   }
+
+   /**
+    * See RESTEASY-1094
+    */
+   @Test
+   public void testFullRange()
+   {
+      Response response = client.target(generateURL("/small-file")).request()
+              .header("Range", "bytes=0-8").get();
+      Assert.assertEquals(response.getStatus(), 206);
+      Assert.assertEquals(9, response.getLength());
+      System.out.println("Content-Range: " + response.getHeaderString("Content-Range"));
+      Assert.assertEquals(response.readEntity(String.class), "123456789");
+      response.close();
+
+
    }
 
 

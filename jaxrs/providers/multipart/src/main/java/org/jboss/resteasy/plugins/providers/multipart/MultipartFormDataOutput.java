@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import org.jboss.resteasy.util.GenericType;
-
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;

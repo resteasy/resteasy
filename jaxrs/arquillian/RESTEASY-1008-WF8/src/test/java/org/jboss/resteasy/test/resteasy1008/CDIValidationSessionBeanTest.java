@@ -13,6 +13,7 @@ import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.resteasy1008.SessionApplication;
 import org.jboss.resteasy.resteasy1008.SessionResource;
 import org.jboss.resteasy.resteasy1008.SessionResourceImpl;
@@ -56,7 +57,7 @@ public class CDIValidationSessionBeanTest
    {
       ResteasyClient client = new ResteasyClientBuilder().build();
       Invocation.Builder request = client.target("http://localhost:8080/RESTEASY-1008/test/resource/0").request();
-      Response response = request.get();
+      ClientResponse response = (ClientResponse) request.get();
       String answer = response.readEntity(String.class);
       log.info("status: " + response.getStatus());
       log.info("entity: " + answer);

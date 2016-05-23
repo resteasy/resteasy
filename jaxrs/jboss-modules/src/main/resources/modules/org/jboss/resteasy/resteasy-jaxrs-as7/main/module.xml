@@ -46,6 +46,7 @@
         <module name="org.apache.httpcomponents" export="true"/>
         <module name="org.apache.commons.io"/>
         <module name="org.jboss.resteasy.resteasy-hibernatevalidator-provider" services="export" export="true"/>
+        <module name="org.jboss.logging"/>
         
     </dependencies>
 </module>

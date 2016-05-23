@@ -8,12 +8,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.util.LRUMap;
 import com.fasterxml.jackson.jaxrs.cfg.AnnotationBundleKey;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.fasterxml.jackson.jaxrs.json.JsonEndpointConfig;
 import com.fasterxml.jackson.jaxrs.util.ClassKey;
+import org.jboss.resteasy.annotations.providers.jackson.Formatted;
 import org.jboss.resteasy.annotations.providers.NoJackson;
+import org.jboss.resteasy.util.DelegatingOutputStream;
 import org.jboss.resteasy.util.FindAnnotation;
 
 import javax.ws.rs.Consumes;
@@ -64,7 +65,7 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
 
       private ClassAnnotationKey(Class<?> clazz, Annotation[] annotations)
       {
-         this.annotations = new AnnotationBundleKey(annotations);
+         this.annotations = new AnnotationBundleKey(annotations, AnnotationBundleKey.class);
          this.classKey = new ClassKey(clazz);
          hash = this.annotations.hashCode();
          hash = 31 * hash + classKey.hashCode();
@@ -104,7 +105,7 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       // not yet resolved (or not cached any more)? Resolve!
       if (endpoint == null) {
          ObjectMapper mapper = locateMapper(type, mediaType);
-         endpoint = _configForReading(mapper, annotations);
+         endpoint = _configForReading(mapper, annotations, type);
          _readers.put(key, endpoint);
       }
       ObjectReader reader = endpoint.getReader();
@@ -128,18 +129,38 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
                        MultivaluedMap<String,Object> httpHeaders, OutputStream entityStream)
            throws IOException
    {
+      entityStream = new DelegatingOutputStream(entityStream) {
+          @Override
+          public void flush() throws IOException {
+              // don't flush as this is a performance hit on Undertow.
+              // and causes chunked encoding to happen.
+          }
+      };
       ClassAnnotationKey key = new ClassAnnotationKey(type, annotations);
       JsonEndpointConfig endpoint;
       endpoint = _writers.get(key);
+
       // not yet resolved (or not cached any more)? Resolve!
       if (endpoint == null) {
-         ObjectMapper mapper = locateMapper(type, mediaType);
-         endpoint = _configForWriting(mapper, annotations);
-         // and cache for future reuse
+          ObjectMapper mapper = locateMapper(type, mediaType);
+          endpoint = _configForWriting(mapper, annotations, type);
+
+          // and cache for future reuse
          _writers.put(key, endpoint);
       }
 
-      ObjectWriter writer = endpoint.getWriter();
+       ObjectWriter writer = endpoint.getWriter();
+       boolean withIndentOutput = false; // no way to replace _serializationConfig
+
+       // we can't cache this.
+       if (annotations != null) {
+           for (Annotation annotation : annotations) {
+               if (annotation.annotationType().equals(Formatted.class)) {
+                   withIndentOutput = true;
+                   break;
+               }
+           }
+       }
 
       /* 27-Feb-2009, tatu: Where can we find desired encoding? Within
       *   HTTP headers?
@@ -149,7 +170,7 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
 
       try {
          // Want indentation?
-         if (writer.isEnabled(SerializationFeature.INDENT_OUTPUT)) {
+         if (writer.isEnabled(SerializationFeature.INDENT_OUTPUT) || withIndentOutput) {
             jg.useDefaultPrettyPrinter();
          }
          // 04-Mar-2010, tatu: How about type we were given? (if any)

@@ -6,7 +6,9 @@ import net.oauth.OAuthException;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
 import net.oauth.SimpleOAuthValidator;
-import org.jboss.resteasy.logging.Logger;
+
+import org.jboss.resteasy.auth.oauth.i18n.LogMessages;
+import org.jboss.resteasy.auth.oauth.i18n.Messages;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -16,7 +18,6 @@ import java.net.URISyntaxException;
  * @author Stéphane Épardaud <stef@epardaud.fr>
  */
 public class OAuthValidator extends SimpleOAuthValidator {
-	private final static Logger logger = Logger.getLogger(OAuthValidator.class);
 
 	private OAuthProvider provider;
 
@@ -25,13 +26,13 @@ public class OAuthValidator extends SimpleOAuthValidator {
 	}
 
 	/**
-	 * Overridden to deprecate it since we cannot hide it. at least make sure we won't use it
+	 * @deprecated Overridden to deprecate it since we cannot hide it. at least make sure we won't use it
 	 */
 	@Override
 	@Deprecated
 	public void validateMessage(OAuthMessage message, OAuthAccessor accessor)
     throws OAuthException, IOException, URISyntaxException {
-		throw new RuntimeException("Do not use this method");
+	   throw new RuntimeException(Messages.MESSAGES.doNotUseThisMethod());
 	}
 
 	/**
@@ -70,7 +71,7 @@ public class OAuthValidator extends SimpleOAuthValidator {
 		try {
 			provider.checkTimestamp(token, timestamp);
 		} catch (org.jboss.resteasy.auth.oauth.OAuthException e) {
-			logger.error("Invalid timestamp", e);
+		   LogMessages.LOGGER.error(Messages.MESSAGES.invalidTimestamp(), e);
 			throw new OAuthProblemException(OAuth.Problems.TIMESTAMP_REFUSED);
 		}
 	}

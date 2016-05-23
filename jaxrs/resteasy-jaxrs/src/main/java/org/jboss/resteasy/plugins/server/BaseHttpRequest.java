@@ -1,14 +1,16 @@
 package org.jboss.resteasy.plugins.server;
 
-import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.Encode;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+
 import java.io.IOException;
+import java.net.URI;
 
 /**
  * Helper for creating HttpRequest implementations.  The async code is a fake implementation to work with
@@ -19,24 +21,36 @@ import java.io.IOException;
  */
 public abstract class BaseHttpRequest implements HttpRequest
 {
-   protected SynchronousDispatcher dispatcher;
    protected MultivaluedMap<String, String> formParameters;
    protected MultivaluedMap<String, String> decodedFormParameters;
-   protected HttpResponse httpResponse;
+   protected ResteasyUriInfo uri;
 
-   public BaseHttpRequest(SynchronousDispatcher dispatcher)
+   protected BaseHttpRequest(ResteasyUriInfo uri)
    {
-      this.dispatcher = dispatcher;
+      this.uri = uri;
    }
+
+   @Override
+   public ResteasyUriInfo getUri()
+   {
+      return uri;
+   }
+
 
    public MultivaluedMap<String, String> getFormParameters()
    {
       if (formParameters != null) return formParameters;
-      if (getHttpHeaders().getMediaType().isCompatible(MediaType.valueOf("application/x-www-form-urlencoded")))
+      if (decodedFormParameters != null)
+      {
+         formParameters = Encode.encode(decodedFormParameters);
+         return formParameters;
+      }
+      MediaType mt = getHttpHeaders().getMediaType();
+      if (mt.isCompatible(MediaType.valueOf("application/x-www-form-urlencoded")))
       {
          try
          {
-            formParameters = FormUrlEncodedProvider.parseForm(getInputStream());
+            formParameters = FormUrlEncodedProvider.parseForm(getInputStream(), mt.getParameters().get(MediaType.CHARSET_PARAMETER));
          }
          catch (IOException e)
          {
@@ -45,7 +59,7 @@ public abstract class BaseHttpRequest implements HttpRequest
       }
       else
       {
-         throw new IllegalArgumentException("Request media type is not application/x-www-form-urlencoded");
+         throw new IllegalArgumentException(Messages.MESSAGES.requestMediaTypeNotUrlencoded());
       }
       return formParameters;
    }
@@ -61,5 +75,19 @@ public abstract class BaseHttpRequest implements HttpRequest
    {
       return true;
    }
+
+
+   @Override
+   public void setRequestUri(URI requestUri) throws IllegalStateException
+   {
+      uri.setRequestUri(requestUri);
+   }
+
+   @Override
+   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
+   {
+      uri.setUri(baseUri, requestUri);
+   }
+
 
 }

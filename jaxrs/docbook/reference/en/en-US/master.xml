@@ -56,6 +56,7 @@
                 <!ENTITY SMIME SYSTEM "modules/smime.xml">
                 <!ENTITY Validation SYSTEM "modules/Validation.xml">
                 <!ENTITY CORS SYSTEM "modules/cors.xml">
+                <!ENTITY I18N SYSTEM "modules/I18N.xml">
                 ]>
 
 <book>
@@ -63,7 +64,7 @@
    <bookinfo>
       <title>RESTEasy JAX-RS</title>
       <subtitle>RESTFul Web Services for Java</subtitle>
-      <releaseinfo>3.0.8.Final</releaseinfo>
+      <releaseinfo>3.1.0-SNAPSHOT</releaseinfo>
    </bookinfo>
 
    <toc/>
@@ -80,17 +81,17 @@
          inside the available page width. These lines have been broken up. A '\' at the end of a
          line means that a break has been introduced to fit in the page, with the following lines
          indented. So:
-         <programlisting>
-            Let's pretend to have an extremely \
-            long line that \
-            does not fit
-            This one is short
-         </programlisting>
+<programlisting>
+Let's pretend to have an extremely \
+long line that \
+does not fit
+This one is short
+</programlisting>
          Is really:
-         <programlisting>
-            Let's pretend to have an extremely long line that does not fit
-            This one is short
-         </programlisting>
+<programlisting>
+Let's pretend to have an extremely long line that does not fit
+This one is short
+</programlisting>
       </para>
    </preface>
 
@@ -147,6 +148,7 @@
    &RESTEasy_Client_Framework;
    &AJAX_Client;
    &Validation;
+   &I18N;
    &Maven_and_RESTEasy;
    &JBoss;
    &Migration_from_older_versions;

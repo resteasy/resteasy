@@ -16,6 +16,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
@@ -35,8 +36,11 @@ public class SetRequestUriTest
    @Path("resource")
    public static class Resource {
 
+      @Context
+      protected UriInfo uriInfo;
+
       @GET
-      @Path("setrequesturi1uri")
+      @Path("setrequesturi1/uri")
       public String setRequestUri() {
          return "OK";
       }
@@ -45,6 +49,12 @@ public class SetRequestUriTest
       @Path("setrequesturi1")
       public String setRequestUriDidNotChangeUri() {
          return "Filter did not change the uri to go to";
+      }
+
+      @GET
+      @Path("change")
+      public String changeProtocol() {
+         return uriInfo.getAbsolutePath().toString();
       }
    }
 
@@ -56,18 +66,35 @@ public class SetRequestUriTest
       @Override
       public void filter(ContainerRequestContext requestContext) throws IOException
       {
-         URI uri = null;
-         try {
-            UriInfo info = requestContext.getUriInfo();
-            String path = new StringBuilder().append(info.getAbsolutePath())
-                    .append("uri").toString();
-            uri = new java.net.URI(path);
-         } catch (URISyntaxException e) {
-            throw new IOException(e);
+         if ("https".equalsIgnoreCase(requestContext.getHeaderString("X-Forwarded-Proto")))
+         {
+            requestContext.setRequestUri(
+                    requestContext.getUriInfo().getBaseUriBuilder().scheme("https").build(),
+                    requestContext.getUriInfo().getRequestUriBuilder().scheme("https").build());
          }
-         requestContext.setRequestUri(uri);
+         else if (requestContext.getUriInfo().getPath().contains("setrequesturi1"))
+         {
+            requestContext.setRequestUri(
+                    requestContext.getUriInfo().getRequestUriBuilder().path("uri").build());
+         }
+         else if (requestContext.getUriInfo().getPath().contains("setrequesturi2"))
+         {
+            requestContext.setRequestUri(URI.create("http://localhost:888/otherbase"), URI.create("http://xx.yy:888/base/resource/sub"));
+            UriInfo info = requestContext.getUriInfo();
+            abortWithEntity(requestContext, info.getAbsolutePath().toASCIIString());
+
+         }
+
 
       }
+
+      protected void abortWithEntity(ContainerRequestContext requestContext, String entity) {
+         StringBuilder sb = new StringBuilder();
+         sb.append(entity);
+         Response response = Response.ok(sb.toString()).build();
+         requestContext.abortWith(response);
+      }
+
    }
 
    static Client client;
@@ -95,12 +122,30 @@ public class SetRequestUriTest
    }
 
    @Test
+   public void testSchemaChange() {
+      String uri = generateURL("/base/resource/change");
+      String httpsUri = uri.replace("http://", "https://");
+      Response response = client.target(uri).request().header("X-Forwarded-Proto", "https").get();
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals(httpsUri, response.readEntity(String.class));
+
+   }
+
+   @Test
    public void testResolve()
    {
-      URI base = URI.create("http://localhost:888/otherbase");
-      URI uri = URI.create("http://xx.yy:888/base/resource/sub");
+      {
+         URI base = URI.create("http://localhost:888/otherbase");
+         URI uri = URI.create("http://xx.yy:888/base/resource/sub?foo=bar");
 
-      System.out.println(base.resolve(uri));
+         System.out.println(base.resolve(uri));
+      }
+      {
+         URI base = URI.create("https://localhost:888/base");
+         URI uri = URI.create("https://localhost:888/base/resource/change");
+
+         System.out.println(base.resolve(uri));
+      }
 
    }
 
@@ -112,6 +157,14 @@ public class SetRequestUriTest
       Response response = client.target(generateURL("/base/resource/setrequesturi1")).request().get();
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("OK", response.readEntity(String.class));
+
+   }
+   @Test
+   public void testUriOverride2()
+   {
+      Response response = client.target(generateURL("/base/resource/setrequesturi2")).request().get();
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("http://xx.yy:888/base/resource/sub", response.readEntity(String.class));
 
    }
 

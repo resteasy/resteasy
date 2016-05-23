@@ -6,6 +6,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Yaml test resource.
@@ -25,6 +28,13 @@ public class YamlResource
       obj.setSomeText("This is some sample text");
       obj.setDate(new Date(123456789));
       obj.getNested().setMoreText("This is some more sample text");
+
+      Map<String,MyNestedObject> dataMap = new HashMap<String,MyNestedObject>();
+      MyNestedObject mno = new MyNestedObject();
+      mno.setMoreText("blah");
+      dataMap.put("fooBar",mno);
+
+      obj.setData(dataMap);
 
       return obj;
    }
@@ -46,5 +56,11 @@ public class YamlResource
       return obj;
    }
 
-
+   @POST
+   @Path("/list")
+   @Consumes("text/x-yaml")
+   @Produces("text/plain")
+   public String populate(List<String> data) {
+      return data.toString();
+   }
 }

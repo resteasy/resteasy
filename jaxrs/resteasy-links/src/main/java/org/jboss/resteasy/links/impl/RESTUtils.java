@@ -8,9 +8,11 @@ import org.jboss.resteasy.links.ELProvider;
 import org.jboss.resteasy.links.LinkELProvider;
 import org.jboss.resteasy.links.LinkResource;
 import org.jboss.resteasy.links.LinkResources;
+import org.jboss.resteasy.links.ParamBinding;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.links.ResourceFacade;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.links.i18n.LogMessages;
+import org.jboss.resteasy.links.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -27,6 +29,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -40,16 +43,23 @@ import java.util.Map.Entry;
 
 public class RESTUtils {
 
-	private final static Logger logger = Logger
-	.getLogger(RESTUtils.class);
-
 	public static <T> T addDiscovery(T entity, UriInfo uriInfo, ResourceMethodRegistry registry) {
 		// find the field to inject first
 		Field injectionField = findInjectionField(entity);
-		if(injectionField == null)
+		if (injectionField == null)
 			return entity;
 		List<Method> methods = getServiceMethods(registry);
-		RESTServiceDiscovery ret = new RESTServiceDiscovery();
+		
+		RESTServiceDiscovery ret = null;
+		try {
+			injectionField.setAccessible(true);
+			ret = (RESTServiceDiscovery) injectionField.get(entity);
+		} catch (Exception e) {
+			LogMessages.LOGGER.error(Messages.MESSAGES.failedToReuseServiceDiscovery(entity), e);
+		}
+		if (ret == null) {
+			ret = new RESTServiceDiscovery();
+		}
 		for(Method m : methods){
 			processLinkResources(m, entity, uriInfo, ret);
 		}
@@ -57,13 +67,12 @@ public class RESTUtils {
 		if(ret.isEmpty())
 			return entity;
 		// now inject
-		injectionField.setAccessible(true);
 		try {
 			injectionField.set(entity, ret);
+			injectionField.setAccessible(false);
 		} catch (Exception e) {
-				logger.error("Failed to inject links in "+entity, e);
+		   LogMessages.LOGGER.error(Messages.MESSAGES.failedToInjectLinks(entity), e);
 		}
-		injectionField.setAccessible(false);
 		return entity;
 	}
 
@@ -140,11 +149,11 @@ public class RESTUtils {
 			type = m.getReturnType();
 		}
 		if(Void.TYPE == type)
-			throw new ServiceDiscoveryException(m, "Cannot guess resource type for service discovery");
+		   throw new ServiceDiscoveryException(m, Messages.MESSAGES.cannotGuessResourceType());
 		if(Collection.class.isAssignableFrom(type))
-			throw new ServiceDiscoveryException(m, "Cannot guess collection type for service discovery");
+		   throw new ServiceDiscoveryException(m, Messages.MESSAGES.cannotGuessCollectionType());
 		if(Response.class.isAssignableFrom(type))
-			throw new ServiceDiscoveryException(m, "Cannot guess type for Response");
+		   throw new ServiceDiscoveryException(m, Messages.MESSAGES.cannotGuessType());
 		return type;
 	}
 
@@ -241,7 +250,13 @@ public class RESTUtils {
 
 	private static URI buildURI(UriBuilder uriBuilder, LinkResource service,
 			Object entity, Method m) {
-		// see if we need parameters
+		for (ParamBinding binding : service.queryParameters()) {
+			uriBuilder.queryParam(binding.name(), evaluateEL(m, getELContext(m, entity), entity, binding.value()));
+		}
+		for (ParamBinding binding : service.matrixParameters()) {
+			uriBuilder.matrixParam(binding.name(), evaluateEL(m, getELContext(m, entity), entity, binding.value()));
+		}
+		
 		String[] uriTemplates = service.pathParameters();
 		if (uriTemplates.length > 0) {
 			Object[] values = new Object[uriTemplates.length];
@@ -260,7 +275,7 @@ public class RESTUtils {
 		// if we have too many, ignore the last ones
 		if(params.size() > paramNames.size())
 			return uriBuilder.build(params.subList(0, paramNames.size()).toArray());
-		throw new ServiceDiscoveryException(m, "Not enough URI parameters: expecting "+paramNames.size()+" but only found "+params.size());
+		throw new ServiceDiscoveryException(m, Messages.MESSAGES.notEnoughtUriParameters(paramNames.size(), params.size()));
 	}
 
 	private static List<Object> findURIParamsFromResource(Object entity) {
@@ -292,8 +307,8 @@ public class RESTUtils {
 		try{
 			return elProviderClass.newInstance();
 		}catch(Exception x){
-				logger.error("Could not instantiate ELProvider class "+elProviderClass.getName(), x);
-			throw new ServiceDiscoveryException(m, "Failed to instantiate ELProvider: "+elProviderClass.getName(), x);
+		   LogMessages.LOGGER.error(Messages.MESSAGES.couldNotInstantiateELProviderClass(elProviderClass.getName()), x);
+		   throw new ServiceDiscoveryException(m, Messages.MESSAGES.failedToInstantiateELProvider(elProviderClass.getName()), x);
 		}
 	}
 
@@ -319,8 +334,7 @@ public class RESTUtils {
 			return EL.EXPRESSION_FACTORY.createValueExpression(context, expression,
 					Object.class).getValue(context);
 		}catch(Exception x){
-			throw new ServiceDiscoveryException(m, "Failed to evaluate EL expression: "+expression, x);
-
+		   throw new ServiceDiscoveryException(m, Messages.MESSAGES.failedToEvaluateELExpression(expression), x);
 		}
 	}
 
@@ -329,7 +343,7 @@ public class RESTUtils {
 			return (Boolean) EL.EXPRESSION_FACTORY.createValueExpression(context, expression,
 					Boolean.class).getValue(context);
 		}catch(Exception x){
-			throw new ServiceDiscoveryException(m, "Failed to evaluate EL expression: "+expression, x);
+		   throw new ServiceDiscoveryException(m, Messages.MESSAGES.failedToEvaluateELExpression(expression), x);
 
 		}
 	}

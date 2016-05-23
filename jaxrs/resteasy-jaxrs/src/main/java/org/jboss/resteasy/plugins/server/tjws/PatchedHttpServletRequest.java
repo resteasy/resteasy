@@ -1,9 +1,11 @@
 package org.jboss.resteasy.plugins.server.tjws;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.HttpServletRequestDelegate;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -41,7 +43,7 @@ public class PatchedHttpServletRequest extends HttpServletRequestDelegate
       }
       catch (Exception e)
       {
-         throw new RuntimeException("Unable to create URI: " + buf, e);
+         throw new RuntimeException(Messages.MESSAGES.unableToCreateURI(buf), e);
       }
       try
       {

@@ -1,11 +1,11 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
-import org.jboss.resteasy.util.GenericType;
-
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+
+import javax.ws.rs.core.GenericType;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public interface MultipartFormDataInput extends MultipartInput {
 	/**
-	 * Will be removed in the future. Use
+	 * @deprecated Will be removed in the future. Use
 	 * {@link MultipartFormDataInput#getFormDataMap()} instead.
 	 * 
 	 * @return A parameter map containing only one value per name.

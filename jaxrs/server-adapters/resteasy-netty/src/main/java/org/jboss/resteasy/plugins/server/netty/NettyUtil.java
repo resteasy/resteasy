@@ -31,30 +31,10 @@ public class NettyUtil
       String host = HttpHeaders.getHost(request, "unknown");
       String uri = request.getUri();
 
-      URI absoluteURI = URI.create(protocol + "://" + host + uri);
-
-      String path = PathHelper.getEncodedPathInfo(absoluteURI.getRawPath(), contextPath);
-      if (!path.startsWith("/"))
-      {
-         path = "/" + path;
-      }
-
-      URI baseURI = absoluteURI;
-      if (!path.trim().equals(""))
-      {
-         String tmpContextPath = contextPath;
-         if (!tmpContextPath.endsWith("/")) tmpContextPath += "/";
-         baseURI = UriBuilder.fromUri(absoluteURI).replacePath(tmpContextPath).replaceQuery(null).build();
-      }
-      else
-      {
-         baseURI = UriBuilder.fromUri(absoluteURI).replaceQuery(null).build();
-      }
-      URI relativeURI = UriBuilder.fromUri(path).replaceQuery(absoluteURI.getRawQuery()).build();
-      //System.out.println("path: " + path);
-      //System.out.println("query string: " + request.getQueryString());
-      ResteasyUriInfo uriInfo = new ResteasyUriInfo(baseURI, relativeURI);
-      return uriInfo;
+      String uriString = protocol + "://" + host + uri;
+      URI absoluteURI = URI.create(uriString);
+      URI noQuery = UriBuilder.fromUri(uriString).replaceQuery(null).build();
+      return new ResteasyUriInfo(uriString, absoluteURI.getRawQuery(), contextPath);
    }
 
    public static ResteasyHttpHeaders extractHttpHeaders(HttpRequest request)

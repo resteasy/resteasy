@@ -1,13 +1,16 @@
 package org.jboss.resteasy.test.keystone;
 
 import junit.framework.Assert;
-import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.CMSProcessable;
-import org.bouncycastle.cms.CMSProcessableByteArray;
-import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.cms.CMSSignedDataGenerator;
-import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cert.jcajce.JcaCertStore;
+import org.bouncycastle.cms.*;
+import org.bouncycastle.cms.jcajce.JcaSignerInfoGeneratorBuilder;
+import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
+import org.bouncycastle.util.Store;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.keystone.client.SkeletonKeyAdminClient;
@@ -49,10 +52,9 @@ import java.security.PrivateKey;
 import java.security.Security;
 import java.security.cert.CertStore;
 import java.security.cert.CertStoreException;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
@@ -267,21 +269,26 @@ public class TokenTest
       System.out.println("Base64.size: " + Base64.encodeBytes(signed).length());
 
       SignerInformation signer = (SignerInformation)data.getSignerInfos().getSigners().iterator().next();
-      System.out.println("valid: " + signer.verify(cert, "BC"));
+      System.out.println("valid: " + signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider("BC").build(cert.getPublicKey())));
       client.close();
 
 
    }
 
 
-   private static byte[] p7s(PrivateKey priv, X509Certificate storecert, CertStore certs, byte[] contentbytes) throws CertStoreException, CMSException, NoSuchAlgorithmException, NoSuchProviderException, IOException
-   {
+   private static byte[] p7s(PrivateKey priv, X509Certificate storecert, CertStore certs, byte[] contentbytes) throws CertStoreException, CMSException, NoSuchAlgorithmException, NoSuchProviderException, IOException, OperatorCreationException, CertificateEncodingException {
       CMSSignedDataGenerator signGen = new CMSSignedDataGenerator();
-      signGen.addSigner(priv, (X509Certificate)storecert, CMSSignedDataGenerator.DIGEST_SHA512);
-      //signGen.addCertificatesAndCRLs(certs);
-      CMSProcessable content = new CMSProcessableByteArray(contentbytes);
+      ContentSigner sha1Signer = new JcaContentSignerBuilder("SHA1withRSA").setProvider("BC").build(priv);
 
-      CMSSignedData signedData = signGen.generate(content, true, "BC");
+      signGen.addSignerInfoGenerator(
+              new JcaSignerInfoGeneratorBuilder(
+                      new JcaDigestCalculatorProviderBuilder().setProvider("BC").build())
+                      .build(sha1Signer, storecert));
+
+      CMSTypedData content = new CMSProcessableByteArray(contentbytes);
+
+      CMSSignedData signedData = signGen.generate(content, true);
+
       return signedData.getEncoded();
    }
 

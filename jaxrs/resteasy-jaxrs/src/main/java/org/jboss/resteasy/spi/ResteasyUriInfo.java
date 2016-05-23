@@ -3,22 +3,21 @@ package org.jboss.resteasy.spi;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.PathSegmentImpl;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
+import org.jboss.resteasy.specimpl.UnmodifiableMultivaluedMap;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.PathHelper;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * UriInfo implementation with some added extra methods to help process requests
@@ -31,8 +30,8 @@ public class ResteasyUriInfo implements UriInfo
    private String path;
    private String encodedPath;
    private String matchingPath;
-   private MultivaluedMap<String, String> queryParameters;
-   private MultivaluedMap<String, String> encodedQueryParameters;
+   private MultivaluedMap<String, String> queryParameters = new MultivaluedMapImpl<>();
+   private MultivaluedMap<String, String> encodedQueryParameters = new MultivaluedMapImpl<>();
    private MultivaluedMap<String, String> pathParameters;
    private MultivaluedMap<String, String> encodedPathParameters;
    private MultivaluedMap<String, PathSegment[]> pathParameterPathSegments;
@@ -47,13 +46,19 @@ public class ResteasyUriInfo implements UriInfo
    private List<String> encodedMatchedUris;
    private List<String> encodedMatchedPaths = new LinkedList<String>();
    private List<Object> ancestors;
+   private String queryString;
+   private String contextPath;
 
 
    public ResteasyUriInfo(String absoluteUri, String queryString, String contextPath)
    {
-      ResteasyUriBuilder absoluteBuilder = (ResteasyUriBuilder)UriBuilder.fromUri(absoluteUri).replaceQuery(queryString);
-      requestURI = absoluteBuilder.build();
-      absolutePath = URI.create(absoluteUri);
+      initialize(absoluteUri, queryString, contextPath);
+   }
+
+   protected void initialize(String absoluteUri, String queryString, String contextPath)
+   {ResteasyUriBuilder absoluteBuilder = (ResteasyUriBuilder) UriBuilder.fromUri(absoluteUri);
+      absolutePath = absoluteBuilder.build();
+      requestURI = absoluteBuilder.replaceQuery(queryString).build();
       encodedPath = PathHelper.getEncodedPathInfo(absolutePath.getRawPath(), contextPath);
       baseURI = absolutePath;
       if (!encodedPath.trim().equals(""))
@@ -62,8 +67,9 @@ public class ResteasyUriInfo implements UriInfo
          if (!tmpContextPath.endsWith("/")) tmpContextPath += "/";
          baseURI = absoluteBuilder.clone().replacePath(tmpContextPath).replaceQuery(null).build();
       }
-      // make sure there is no trailing '/'
-      if (encodedPath.length() > 1 && encodedPath.endsWith("/")) encodedPath = encodedPath.substring(0, encodedPath.length() - 1);
+//      // make sure there is no trailing '/'
+//      if (encodedPath.length() > 1 && encodedPath.endsWith("/"))
+//         encodedPath = encodedPath.substring(0, encodedPath.length() - 1);
 
       // make sure path starts with '/'
       if (encodedPath.length() == 0 || encodedPath.charAt(0) != '/')
@@ -96,6 +102,16 @@ public class ResteasyUriInfo implements UriInfo
       processPath();
    }
 
+   public void setUri(URI base, URI relative)
+   {
+      clearQueryParameters(true);
+      clearQueryParameters(false);
+
+      URI rel = base.resolve(relative);
+      String absoluteUri = UriBuilder.fromUri(rel).replaceQuery(null).toTemplate();
+      initialize(absoluteUri, rel.getRawQuery(), base.getRawPath());
+   }
+
    protected void processPath()
    {
       PathSegmentImpl.SegmentParse parse = PathSegmentImpl.parseSegmentsOptimization(encodedPath, false);
@@ -107,16 +123,29 @@ public class ResteasyUriInfo implements UriInfo
       }
       extractParameters(requestURI.getRawQuery());
       if (parse.hasMatrixParams) extractMatchingPath(encodedPathSegments);
-      else matchingPath = encodedPath;
+      else 
+      {
+         matchingPath = encodedPath;
+         if (matchingPath.length() > 1 && matchingPath.endsWith("/"))
+         {
+            matchingPath = matchingPath.substring(0, matchingPath.length() - 1);
+         }
+      }
 
    }
 
    public ResteasyUriInfo(URI requestURI)
    {
+      initializeFromRequest(requestURI);
+
+   }
+
+   public void initializeFromRequest(URI requestURI)
+   {
       String r = requestURI.getRawPath();
       if (r.startsWith("/"))
       {
-         encodedPath =  r;
+         encodedPath = r;
          path = requestURI.getPath();
       }
       else
@@ -128,7 +157,6 @@ public class ResteasyUriInfo implements UriInfo
       baseURI = UriBuilder.fromUri(requestURI).replacePath("").build();
       absolutePath = UriBuilder.fromUri(requestURI).replaceQuery(null).build();
       processPath();
-
    }
 
    /**
@@ -162,15 +190,9 @@ public class ResteasyUriInfo implements UriInfo
     * @param relative
     * @return
     */
-   public ResteasyUriInfo setRequestUri(URI relative)
+   public void setRequestUri(URI relative)
    {
-      String rel = relative.toString();
-      if (rel.startsWith(baseURI.toString()))
-      {
-         relative = URI.create(rel.substring(baseURI.toString().length()));
-      }
-
-      return new ResteasyUriInfo(baseURI, relative);
+      setUri(baseURI, relative);
    }
 
    public String getPath()
@@ -276,20 +298,12 @@ public class ResteasyUriInfo implements UriInfo
 
    public MultivaluedMap<String, String> getQueryParameters()
    {
-      if (queryParameters == null)
-      {
-         queryParameters = new MultivaluedMapImpl<String, String>();
-      }
-      return queryParameters;
+      return new UnmodifiableMultivaluedMap<>(queryParameters);
    }
 
    protected MultivaluedMap<String, String> getEncodedQueryParameters()
    {
-      if (encodedQueryParameters == null)
-      {
-         this.encodedQueryParameters = new MultivaluedMapImpl<String, String>();
-      }
-      return encodedQueryParameters;
+      return new UnmodifiableMultivaluedMap<>(encodedQueryParameters);
    }
 
 
@@ -297,6 +311,23 @@ public class ResteasyUriInfo implements UriInfo
    {
       if (decode) return getQueryParameters();
       else return getEncodedQueryParameters();
+   }
+
+   public void clearQueryParameters(boolean decode) {
+      if (decode) clearQueryParameters();
+      else clearEncodedQueryParameters();
+   }
+
+   private void clearQueryParameters() {
+      if (queryParameters != null) {
+         queryParameters.clear();
+      }
+   }
+
+   private void clearEncodedQueryParameters() {
+      if (encodedQueryParameters != null) {
+         encodedQueryParameters.clear();
+      }
    }
 
    protected void extractParameters(String queryString)
@@ -314,8 +345,8 @@ public class ResteasyUriInfo implements UriInfo
             {
                String name = URLDecoder.decode(nv[0], "UTF-8");
                String val = nv.length > 1 ? nv[1] : "";
-               getEncodedQueryParameters().add(name, val);
-               getQueryParameters().add(name, URLDecoder.decode(val, "UTF-8"));
+               encodedQueryParameters.add(name, val);
+               queryParameters.add(name, URLDecoder.decode(val, "UTF-8"));
             }
             catch (UnsupportedEncodingException e)
             {
@@ -327,8 +358,8 @@ public class ResteasyUriInfo implements UriInfo
             try
             {
                String name = URLDecoder.decode(param, "UTF-8");
-               getEncodedQueryParameters().add(name, "");
-               getQueryParameters().add(name, "");
+               encodedQueryParameters.add(name, "");
+               queryParameters.add(name, "");
             }
             catch (UnsupportedEncodingException e)
             {
@@ -384,7 +415,6 @@ public class ResteasyUriInfo implements UriInfo
    {
       encodedMatchedPaths.remove(0);
    }
-
 
 
    public void pushMatchedURI(String encoded)

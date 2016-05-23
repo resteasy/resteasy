@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+
 /**
  * Server-side cookie representation.  Stolen from Tomcat.
  */
@@ -73,7 +75,7 @@ public class ServerCookie implements Serializable
    }
 
    /**
-    * @deprecated - Not used
+    * @deprecated Not used: Deprecated in the orginal org.apache.tomcat.util.http.ServerCookie class.
     */
    public static boolean checkName(String name)
    {
@@ -243,7 +245,7 @@ public class ServerCookie implements Serializable
    }
 
    /**
-    * @deprecated - Not used
+    * @deprecated Not used: Deprecated in the orginal org.apache.tomcat.util.http.ServerCookie class.
     */
    @Deprecated
    public static void maybeQuote(int version, StringBuffer buf, String value)
@@ -281,7 +283,7 @@ public class ServerCookie implements Serializable
          buf.append("\"\"");
       }
       else if (containsCTL(value, version))
-         throw new IllegalArgumentException("Control character in cookie value, consider BASE64 encoding your value");
+         throw new IllegalArgumentException(Messages.MESSAGES.controlCharacterInCookieValue());
       else if (alreadyQuoted(value))
       {
          buf.append('"');
@@ -331,7 +333,7 @@ public class ServerCookie implements Serializable
          {
             b.append(c);
             //ignore the character after an escape, just append it
-            if (++i >= endIndex) throw new IllegalArgumentException("Invalid escape character in cookie value.");
+            if (++i >= endIndex) throw new IllegalArgumentException(Messages.MESSAGES.invalidEscapeCharacterInCookieValue());
             b.append(s.charAt(i));
          }
          else if (c == '"')

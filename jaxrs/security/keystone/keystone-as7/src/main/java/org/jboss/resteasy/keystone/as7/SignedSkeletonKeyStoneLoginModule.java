@@ -1,10 +1,11 @@
 package org.jboss.resteasy.keystone.as7;
 
 import org.apache.catalina.connector.Request;
+import org.jboss.resteasy.keystone.as7.i18n.LogMessages;
+import org.jboss.resteasy.keystone.as7.i18n.Messages;
 import org.jboss.resteasy.keystone.core.UserPrincipal;
 import org.jboss.resteasy.keystone.model.Access;
 import org.jboss.resteasy.keystone.model.Role;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
 import org.jboss.security.JSSESecurityDomain;
 import org.jboss.security.SecurityConstants;
@@ -20,6 +21,7 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
+
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.Principal;
@@ -35,7 +37,6 @@ import java.util.Map;
  */
 public class SignedSkeletonKeyStoneLoginModule extends JBossWebAuthLoginModule
 {
-   private static final Logger log = Logger.getLogger(SignedSkeletonKeyStoneLoginModule.class);
    private static final String SECURITY_DOMAIN = "securityDomain";
    protected String projectId;
    protected String skeletonKeyCertificateAlias;
@@ -52,7 +53,7 @@ public class SignedSkeletonKeyStoneLoginModule extends JBossWebAuthLoginModule
       skeletonKeyCertificateAlias = (String)options.get("skeleton.key.certificate.alias");
       // Get the security domain and default to "other"
       String sd = (String) options.get(SECURITY_DOMAIN);
-      log.error("Security Domain: " + sd);
+      LogMessages.LOGGER.error(Messages.MESSAGES.securityDomain(sd));
       sd = SecurityUtil.unprefixSecurityDomain(sd);
       if (sd == null)
          sd = "other";
@@ -71,13 +72,13 @@ public class SignedSkeletonKeyStoneLoginModule extends JBossWebAuthLoginModule
             }
             else
             {
-               log.error("The JSSE security domain " + sd + " is not valid. All authentication using this login module will fail!");
+               LogMessages.LOGGER.error(Messages.MESSAGES.securityDomainNotValid(sd));
             }
          }
       }
       catch (NamingException e)
       {
-         log.error("Unable to find the securityDomain named: " + sd, e);
+         LogMessages.LOGGER.error(Messages.MESSAGES.unableToFindSecurityDomain(sd), e);
       }
    }
 
@@ -100,7 +101,7 @@ public class SignedSkeletonKeyStoneLoginModule extends JBossWebAuthLoginModule
             keyStore = ((JSSESecurityDomain) domain).getKeyStore();
          }
       }
-      if (keyStore == null) throw new LoginException("No trust store found");
+      if (keyStore == null) throw new LoginException(Messages.MESSAGES.noTrustStoreFound());
       X509Certificate certificate = null;
       try
       {
@@ -108,12 +109,12 @@ public class SignedSkeletonKeyStoneLoginModule extends JBossWebAuthLoginModule
       }
       catch (KeyStoreException e)
       {
-         throw new LoginException("Could not get certificate from keyStore");
+         throw new LoginException(Messages.MESSAGES.couldNotGetCertificate());
       }
       try
       {
          PKCS7SignatureInput input = new PKCS7SignatureInput(tokenHeader);
-         if (input.verify(certificate) == false) throw new LoginException("Bad Signature");
+         if (input.verify(certificate) == false) throw new LoginException(Messages.MESSAGES.badSignature());
          access = (Access)input.getEntity(Access.class, MediaType.APPLICATION_JSON_TYPE);
 
       }
@@ -123,16 +124,16 @@ public class SignedSkeletonKeyStoneLoginModule extends JBossWebAuthLoginModule
       }
       catch (Exception e)
       {
-         throw new LoginException("Bad Token");
+         throw new LoginException(Messages.MESSAGES.badToken());
       }
 
       if (access.getToken().expired())
       {
-         throw new LoginException("Token expired");
+         throw new LoginException(Messages.MESSAGES.tokenExpired());
       }
       if (!projectId.equals(access.getToken().getProject().getId()))
       {
-         throw new LoginException("Token project id doesn't match");
+         throw new LoginException(Messages.MESSAGES.tokenProjectIdDoesntMatch());
       }
 
       this.loginOk = true;

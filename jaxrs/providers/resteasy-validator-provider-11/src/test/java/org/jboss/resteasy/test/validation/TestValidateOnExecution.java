@@ -21,6 +21,7 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import org.junit.After;
 import org.junit.Test;
 
 /**
@@ -50,6 +51,12 @@ public class TestValidateOnExecution
       EmbeddedContainer.stop();
       dispatcher = null;
       deployment = null;
+   }
+   
+   @After
+   public void after2() throws Exception
+   {
+      after();
    }
 
    //////////////////////////////////////////////////////////////////////////

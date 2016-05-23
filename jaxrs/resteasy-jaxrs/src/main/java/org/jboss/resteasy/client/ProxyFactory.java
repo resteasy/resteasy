@@ -4,6 +4,7 @@ import org.jboss.resteasy.client.core.ClientInvoker;
 import org.jboss.resteasy.client.core.ClientInvokerInterceptorFactory;
 import org.jboss.resteasy.client.core.extractors.DefaultEntityExtractorFactory;
 import org.jboss.resteasy.client.core.extractors.EntityExtractorFactory;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.IsHttpMethod;
 
@@ -15,9 +16,15 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @deprecated
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @deprecated The Resteasy proxy facility in the client framework in resteasy-jaxrs is replaced by the
+ * proxy facility extension in the JAX-RS 2.0 compliant resteasy-client module.
+ * 
+ * @see resteasy-client
+ * @see org.jboss.resteasy.client.jaxrs.ProxyBuilder
+ * @see org.jboss.resteasy.client.jaxrs.ResteasyWebTarget
  */
 @Deprecated
 public class ProxyFactory
@@ -85,7 +92,7 @@ public class ProxyFactory
 		Set<String> httpMethods = IsHttpMethod.getHttpMethods(method);
 		if (httpMethods == null || httpMethods.size() != 1)
 		{
-			throw new RuntimeException("You must use at least one, but no more than one http method annotation on: " + method.toString());
+		   throw new RuntimeException(Messages.MESSAGES.mustUseOneHttpMethod(method.toString()));
 		}
 		ClientInvoker invoker = new ClientInvoker(baseUri, clazz, method, config);
 		invoker.getAttributes().putAll(config.getRequestAttributes());

@@ -7,15 +7,26 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.Locale;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import static org.jboss.resteasy.test.TestPortProvider.getHost;
+import static org.jboss.resteasy.test.TestPortProvider.getPort;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -41,6 +52,14 @@ public class NettyTest
       }
 
       @GET
+      @Path("query")
+      public String query(@QueryParam("param") String value) {
+         return value;
+
+      }
+
+
+      @GET
       @Path("/exception")
       @Produces("text/plain")
       public String exception() {
@@ -63,6 +82,21 @@ public class NettyTest
       @Produces("text/plain")
       public String context(@Context ChannelHandlerContext context) {
           return context.channel().toString();
+      }
+      
+      @POST
+      @Path("/post")
+      @Produces("text/plain")
+      public String post(String postBody) {
+          return postBody;
+      }
+
+      @GET
+      @Path("/test/absolute")
+      @Produces("text/plain")
+      public String absolute(@Context UriInfo info)
+      {
+         return "uri: " + info.getRequestUri().toString();
       }
    }
 
@@ -94,6 +128,14 @@ public class NettyTest
       WebTarget target = client.target(generateURL("/test"));
       String val = target.request().get(String.class);
       Assert.assertEquals("hello world", val);
+   }
+
+   @Test
+   public void testQuery() throws Exception
+   {
+      WebTarget target = client.target(generateURL("/query"));
+      String val = target.queryParam("param", "val").request().get(String.class);
+      Assert.assertEquals("val", val);
    }
 
    @Test
@@ -156,4 +198,49 @@ public class NettyTest
         Assert.assertNotNull(val);
         Assert.assertFalse(val.isEmpty());
     }
+    
+    @Test
+    public void testPost() {
+      WebTarget target = client.target(generateURL("/post"));
+      String postBody = "hello world";
+      String result = (String) target.request().post(Entity.text(postBody), String.class);
+      Assert.assertEquals(postBody, result);
+    }
+
+
+   /**
+    * Per the HTTP spec, we must allow requests like:
+    *
+    * <pre>
+    *     GET http://www.example.com/content HTTP/1.1
+    *     Host: www.example.com
+    * </pre>
+    *
+    * <blockquote>
+    * RFC 2616 5.1.12:
+    * To allow for transition to absoluteURIs in all requests in future
+    versions of HTTP, all HTTP/1.1 servers MUST accept the absoluteURI
+    form in requests, even though HTTP/1.1 clients will only generate
+    them in requests to proxies.
+    </blockquote>
+    * @throws Exception
+    */
+   @Test
+   public void testAbsoluteURI() throws Exception {
+      String uri = generateURL("/test/absolute");
+
+      Socket client = new Socket(getHost(), getPort());
+      PrintWriter out = new PrintWriter(client.getOutputStream(), true);
+      BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+      out.printf(Locale.US, "GET %s HTTP/1.1\nHost: %s:%d\n\n", uri, getHost(), getPort());
+      String statusLine = in.readLine();
+      String response = in.readLine();
+      while (!response.startsWith("uri"))
+      {
+         response = in.readLine();
+      }
+      client.close();
+      Assert.assertEquals("HTTP/1.1 200 OK", statusLine);
+      Assert.assertEquals(uri, response.subSequence(5, response.length()));
+   }
 }

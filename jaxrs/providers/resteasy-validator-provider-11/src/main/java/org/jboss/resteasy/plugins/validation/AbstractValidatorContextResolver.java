@@ -14,7 +14,8 @@ import javax.validation.executable.ExecutableType;
 
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.HibernateValidatorConfiguration;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.plugins.validation.i18n.LogMessages;
+import org.jboss.resteasy.plugins.validation.i18n.Messages;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 
 /**
@@ -27,9 +28,10 @@ import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
  */
 public class AbstractValidatorContextResolver
 {
-   private final static Logger logger = Logger.getLogger(AbstractValidatorContextResolver.class);
    private volatile ValidatorFactory validatorFactory;
    final static Object RD_LOCK = new Object();
+   private volatile Configuration<?> config;
+   private volatile BootstrapConfiguration bootstrapConfiguration;
 
    // this used to be initialized in a static block, but I was having trouble class loading the context resolver in some
    // environments.  So instead of failing and logging a warning when the resolver is instantiated at deploy time
@@ -49,11 +51,11 @@ public class AbstractValidatorContextResolver
                   // Also look up java:comp/env
                   Context context = new InitialContext();
                   validatorFactory = tmpValidatorFactory = ValidatorFactory.class.cast(context.lookup("java:comp/ValidatorFactory"));
-                  logger.debug("Using CDI supporting " + validatorFactory);
+                  LogMessages.LOGGER.debug(Messages.MESSAGES.usingValidatorFactorySupportsCDI(validatorFactory));
                }
                catch (NamingException e)
                {
-                  logger.info("Unable to find CDI supporting ValidatorFactory. Using default ValidatorFactory");
+                  LogMessages.LOGGER.info(Messages.MESSAGES.usingValidatorFactoryDoesNotSupportCDI());
                   HibernateValidatorConfiguration config = Validation.byProvider(HibernateValidator.class).configure();
                   validatorFactory = tmpValidatorFactory = config.buildValidatorFactory();
                }
@@ -63,18 +65,36 @@ public class AbstractValidatorContextResolver
       return validatorFactory;
    }
 
+   BootstrapConfiguration getConfig()
+   {
+       BootstrapConfiguration tmpConfig = bootstrapConfiguration;
+       if (tmpConfig == null)
+       {
+          synchronized (RD_LOCK)
+          {
+             tmpConfig = bootstrapConfiguration;
+             if (tmpConfig == null)
+             {
+                 config = Validation.byDefaultProvider().configure();
+                 bootstrapConfiguration = tmpConfig = config.getBootstrapConfiguration();
+
+             }
+          }
+       }
+       return tmpConfig;
+   }
+
    public GeneralValidatorCDI getContext(Class<?> type) {
       try
       {
-         Configuration<?> config = Validation.byDefaultProvider().configure();
-         BootstrapConfiguration bootstrapConfiguration = config.getBootstrapConfiguration();
+         BootstrapConfiguration bootstrapConfiguration = getConfig();
          boolean isExecutableValidationEnabled = bootstrapConfiguration.isExecutableValidationEnabled();
          Set<ExecutableType> defaultValidatedExecutableTypes = bootstrapConfiguration.getDefaultValidatedExecutableTypes();
          return new GeneralValidatorImpl(getValidatorFactory(), isExecutableValidationEnabled, defaultValidatedExecutableTypes);
       }
       catch (Exception e)
       {
-         throw new ValidationException("Unable to load Validation support", e);
+         throw new ValidationException(Messages.MESSAGES.unableToLoadValidationSupport(), e);
       }
    }
 }

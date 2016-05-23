@@ -52,7 +52,7 @@
 					<tr>
 						<td>org.jboss.resteasy</td>
 						<td>resteasy-links</td>
-						<td>3.0.8.Final</td>
+						<td>3.1.0-SNAPSHOT</td>
 					</tr>
 				</tbody>
 			</table>
@@ -592,8 +592,7 @@ public class ScrollableCollection implements ResourceFacade<Comment> {
 			<para>
 			This will produce such an XML collection:
 			</para>
-			<programlisting language="XML"><![CDATA[
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<programlisting language="XML"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <collection xmlns:atom="http://www.w3.org/2005/Atom" totalRecords="2" start="0">
  <atom.link href="http://localhost:8081/book/foo/comments" rel="add"/>
  <atom.link href="http://localhost:8081/book/foo/comments" rel="list"/>

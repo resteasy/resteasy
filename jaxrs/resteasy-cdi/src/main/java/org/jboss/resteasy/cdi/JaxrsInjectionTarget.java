@@ -8,6 +8,8 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 
+import org.jboss.resteasy.cdi.i18n.LogMessages;
+import org.jboss.resteasy.cdi.i18n.Messages;
 import org.jboss.resteasy.core.PropertyInjectorImpl;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -25,6 +27,7 @@ import org.jboss.resteasy.util.GetRestful;
  */
 public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
 {
+   
    private InjectionTarget<T> delegate;
    private Class<T> clazz;
    private PropertyInjector propertyInjector;
@@ -59,7 +62,14 @@ public class JaxrsInjectionTarget<T> implements InjectionTarget<T>
          propertyInjector.inject(instance);
       }
       
-      validate(request, instance);
+      if (request != null)
+      {
+         validate(request, instance);
+      }
+      else
+      {
+         LogMessages.LOGGER.debug(Messages.MESSAGES.skippingValidationOutsideResteasyContext());
+      }
    }
 
    public void postConstruct(T instance)

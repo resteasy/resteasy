@@ -70,6 +70,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -270,7 +271,7 @@ public class HttpClient4ClientExceptionMapperTest
       catch (ResteasyIOException e)
       {
          traverseException(e);
-         assertTrue(HttpHostConnectException.class.equals(e.getCause().getClass()));
+         assertTrue(ConnectException.class.equals(e.getCause().getClass()));
       }
       catch (Throwable t)
       {

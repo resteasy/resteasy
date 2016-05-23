@@ -255,6 +255,7 @@ REST._complete = function(request, callback){
 		REST.log("Request status: "+request.status);
 		REST.log("Request response: "+request.responseText);
 		if(request.status >= 200 && request.status < 300){
+			request.onreadystatechange = null;
 			var contentType = request.getResponseHeader("Content-Type");
 			if(contentType != null){
 				if(REST._isXMLMIME(contentType))

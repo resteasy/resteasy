@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.annotations.providers.jaxb.WrappedMap;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -36,6 +37,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -53,7 +55,9 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
 {
    @Context
    protected Providers providers;
-   private boolean expandEntityReferences = true;
+   private boolean disableExternalEntities = true;
+   private boolean enableSecureProcessingFeature = true;
+   private boolean disableDTDs = true;
    
    public MapProvider()
    {
@@ -63,7 +67,17 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
          String s = context.getParameter("resteasy.document.expand.entity.references");
          if (s != null)
          {
-            setExpandEntityReferences(Boolean.parseBoolean(s));
+            setDisableExternalEntities(!Boolean.parseBoolean(s));
+         }
+         s = context.getParameter("resteasy.document.secure.processing.feature");
+         if (s != null)
+         {
+            setEnableSecureProcessingFeature(Boolean.parseBoolean(s));
+         }
+         s = context.getParameter("resteasy.document.secure.disableDTDs");
+         if (s != null)
+         {
+            setDisableDTDs(Boolean.parseBoolean(s));
          }
       }
    }
@@ -90,6 +104,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
 
          Class valueType = Types.getMapValueType(genericType);
          if (valueType == null) return false;
+         valueType = XmlAdapterWrapper.xmlAdapterValueType(valueType, annotations);
          return (valueType.isAnnotationPresent(XmlRootElement.class) || valueType.isAnnotationPresent(XmlType.class) || valueType.isAnnotationPresent(XmlSeeAlso.class) || JAXBElement.class.equals(valueType)) && (FindAnnotation.findAnnotation(valueType, annotations, DoNotUseJAXBProvider.class) == null) && !IgnoredMediaTypes.ignored(valueType, annotations, mediaType);
       }
       return false;
@@ -107,25 +122,47 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
-         throw new JAXBUnmarshalException("Unable to find JAXBContext for media type: " + mediaType);
+         throw new JAXBUnmarshalException(Messages.MESSAGES.unableToFindJAXBContext(mediaType));
       }
       Class valueType = Types.getMapValueType(genericType);
+      XmlAdapterWrapper xmlAdapter = XmlAdapterWrapper.getXmlAdapter(valueType, annotations);
+      if (xmlAdapter != null)
+      {
+         valueType = xmlAdapter.getValueType();  
+      }
       JaxbMap jaxbMap = null;
       JAXBElement<JaxbMap> ele = null;
       
       try
       {
          JAXBContext ctx = finder.findCacheContext(mediaType, annotations, JaxbMap.class, JaxbMap.Entry.class, valueType);
-         if (suppressExpandEntityExpansion())
+         if (needsSecurity())
          {
-            SAXSource source = new SAXSource(new InputSource(entityStream));
+            SAXSource source = null;
+            if (getCharset(mediaType) == null)
+            {
+               source = new SAXSource(new InputSource(new InputStreamReader(entityStream, "UTF-8")));
+            }
+            else
+            {
+               source = new SAXSource(new InputSource(entityStream));
+            }
             Unmarshaller unmarshaller = ctx.createUnmarshaller();
-            unmarshaller = new ExternalEntityUnmarshaller(unmarshaller);
+            unmarshaller = new SecureUnmarshaller(unmarshaller, disableExternalEntities, enableSecureProcessingFeature, disableDTDs);
             ele = unmarshaller.unmarshal(source, JaxbMap.class);
          }
          else
          {
-            StreamSource source = new StreamSource(entityStream);
+            StreamSource source = null;
+            if (getCharset(mediaType) == null)
+            {
+               source = new StreamSource(new InputStreamReader(entityStream, "UTF-8"));
+            }
+            else
+            {
+               source = new StreamSource(entityStream);
+            }
+            
             ele = ctx.createUnmarshaller().unmarshal(source, JaxbMap.class);
          }
          WrappedMap wrapped = FindAnnotation.findAnnotation(annotations, WrappedMap.class);
@@ -133,11 +170,11 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
          {
             if (!wrapped.map().equals(ele.getName().getLocalPart()))
             {
-               throw new JAXBUnmarshalException("Map wrapping failed, expected root element name of " + wrapped.map() + " got " + ele.getName().getLocalPart());
+               throw new JAXBUnmarshalException(Messages.MESSAGES.mapWrappingFailedLocalPart(wrapped.map(), ele.getName().getLocalPart()));
             }
             if (!wrapped.namespace().equals(ele.getName().getNamespaceURI()))
             {
-               throw new JAXBUnmarshalException("Map wrapping failed, expect namespace of " + wrapped.namespace() + " got " + ele.getName().getNamespaceURI());
+               throw new JAXBUnmarshalException(Messages.MESSAGES.mapWrappingFailedNamespace(wrapped.namespace(), ele.getName().getNamespaceURI()));
             }
          }
 
@@ -161,7 +198,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
             else
             {
                if (attributeMap.getLength() == 0)
-                  throw new JAXBUnmarshalException("Map wrapped failed, could not find map entry key attribute");
+                  throw new JAXBUnmarshalException(Messages.MESSAGES.mapWrappedFailedKeyAttribute());
                for (int j = 0; j < attributeMap.getLength(); j++)
                {
                   Attr key = (Attr) attributeMap.item(j);
@@ -176,7 +213,17 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
 
 
             Object value = unmarshaller.unmarshal(element.getFirstChild());
-
+            if (xmlAdapter != null)
+            {
+               try
+               {
+                  value = xmlAdapter.unmarshal(value);
+               }
+               catch (Exception e)
+               {
+                  throw new JAXBUnmarshalException(e);
+               }
+            }
             map.put(keyValue, value);
          }
          return map;
@@ -202,9 +249,14 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
-         throw new JAXBMarshalException("Unable to find JAXBContext for media type: " + mediaType);
+         throw new JAXBMarshalException(Messages.MESSAGES.unableToFindJAXBContext(mediaType));
       }
       Class valueType = Types.getMapValueType(genericType);
+      XmlAdapterWrapper xmlAdapter = XmlAdapterWrapper.getXmlAdapter(valueType, annotations);
+      if (xmlAdapter != null)
+      {
+         valueType = xmlAdapter.getValueType();
+      }
       try
       {
          JAXBContext ctx = finder.findCacheContext(mediaType, annotations, JaxbMap.class, JaxbMap.Entry.class, valueType);
@@ -230,7 +282,19 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
          Map<Object, Object> targetMap = (Map) target;
          for (Map.Entry mapEntry : targetMap.entrySet())
          {
-            map.addEntry(mapEntry.getKey().toString(), mapEntry.getValue());
+            Object value = mapEntry.getValue();
+            if (xmlAdapter != null)
+            {
+               try
+               {
+                  value = xmlAdapter.marshal(value);
+               }
+               catch (Exception e)
+               {
+                  throw new JAXBMarshalException(e);
+               }
+            }
+            map.addEntry(mapEntry.getKey().toString(), value);
          }
 
          JAXBElement<JaxbMap> jaxbMap = new JAXBElement<JaxbMap>(new QName(namespaceURI, mapName, prefix), JaxbMap.class, map);
@@ -243,19 +307,48 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
          throw new JAXBMarshalException(e);
       }
    }
-   
-   public boolean isExpandEntityReferences()
+
+   public boolean isDisableExternalEntities()
    {
-      return expandEntityReferences;
+      return disableExternalEntities;
    }
 
-   public void setExpandEntityReferences(boolean expandEntityReferences)
+   public void setDisableExternalEntities(boolean disableExternalEntities)
    {
-      this.expandEntityReferences = expandEntityReferences;
+      this.disableExternalEntities = disableExternalEntities;
+   }
+
+   public boolean isEnableSecureProcessingFeature()
+   {
+      return enableSecureProcessingFeature;
+   }
+
+   public void setEnableSecureProcessingFeature(boolean enableSecureProcessingFeature)
+   {
+      this.enableSecureProcessingFeature = enableSecureProcessingFeature;
+   }
+
+   public boolean isDisableDTDs()
+   {
+      return disableDTDs;
+   }
+
+   public void setDisableDTDs(boolean disableDTDs)
+   {
+      this.disableDTDs = disableDTDs;
    }
    
-   protected boolean suppressExpandEntityExpansion()
+   public static String getCharset(final MediaType mediaType)
    {
-      return !isExpandEntityReferences();
+      if (mediaType != null)
+      {
+         return mediaType.getParameters().get("charset");
+      }
+      return null;
+   }
+   
+   protected boolean needsSecurity()
+   {
+      return true;
    }
 }

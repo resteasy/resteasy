@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpRequestPreprocessor;
 import org.jboss.resteasy.util.MediaTypeHelper;
@@ -10,6 +11,7 @@ import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -49,7 +51,7 @@ public class AcceptParameterHttpPreprocessor implements ContainerRequestFilter
    public AcceptParameterHttpPreprocessor(String paramMapping)
    {
       if (paramMapping == null || paramMapping.matches("\\s+"))
-         throw new IllegalArgumentException("Constructor arg paramMapping is invalid");
+         throw new IllegalArgumentException(Messages.MESSAGES.constructorMappingInvalid());
       this.paramMapping = paramMapping;
    }
 

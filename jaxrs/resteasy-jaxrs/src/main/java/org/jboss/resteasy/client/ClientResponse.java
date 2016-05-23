@@ -15,9 +15,12 @@ import java.util.Map;
  * in your client proxy interface method return type declarations if you want
  * access to the response entity as well as status and header information.
  *
- * @deprecated
+ * @deprecated The Resteasy client framework in resteasy-jaxrs is replaced by the JAX-RS 2.0 compliant resteasy-client module.
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @see javax.ws.rs.core.Response
+ * @see org.jboss.resteasy.client.jaxrs.internal.ClientResponse
  */
 @Deprecated
 public abstract class ClientResponse<T> extends Response

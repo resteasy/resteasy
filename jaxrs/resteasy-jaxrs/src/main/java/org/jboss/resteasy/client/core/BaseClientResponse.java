@@ -3,8 +3,10 @@ package org.jboss.resteasy.client.core;
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
+import org.jboss.resteasy.core.ProvidersContextRetainer;
 import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
 import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.LinkHeader;
 import org.jboss.resteasy.spi.MarshalledEntity;
@@ -26,7 +28,9 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.ReaderInterceptor;
+
 import java.io.ByteArrayInputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -340,8 +344,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    {
       if (returnType == null)
       {
-         throw new RuntimeException(
-                 "No type information to extract entity with, use other getEntity() methods");
+         throw new RuntimeException(Messages.MESSAGES.noTypeInformationForEntity());
       }
       return (T) getEntity(returnType, genericReturnType, this.annotations);
    }
@@ -360,6 +363,10 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
    private <T2> Annotation[] getAnnotations(Class<T2> type, Type genericType)
    {
+      if (this.annotations != null)
+      {
+         return this.annotations;
+      }
       return (this.returnType == type && this.genericReturnType == genericType) ? this.annotations
               : null;
    }
@@ -369,14 +376,12 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    {
       if (exception != null)
       {
-         throw new RuntimeException("Unable to unmarshall response for "
-                 + attributeExceptionsTo, exception);
+         throw new RuntimeException(Messages.MESSAGES.unableToUnmarshalResponse(attributeExceptionsTo), exception);
       }
 
       if (unmarshaledEntity != null && !type.isInstance(this.unmarshaledEntity))
-         throw new RuntimeException("The entity was already read, and it was of type "
-                 + unmarshaledEntity.getClass());
-
+         throw new RuntimeException(Messages.MESSAGES.entityAlreadyRead(unmarshaledEntity.getClass()));
+         
       if (unmarshaledEntity == null)
       {
          if (status == HttpResponseCodes.SC_NO_CONTENT)
@@ -418,12 +423,13 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
       Providers current = ResteasyProviderFactory.getContextData(Providers.class);
       ResteasyProviderFactory.pushContext(Providers.class, providerFactory);
+      Object obj = null;
       try
       {
          InputStream is = streamFactory.getInputStream();
          if (is == null)
          {
-            throw new ClientResponseFailure("Input stream was empty, there is no entity", this);
+            throw new ClientResponseFailure(Messages.MESSAGES.inputStreamEmpty(), this);
          }
          if (isMarshalledEntity)
          {
@@ -431,9 +437,10 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
          }
 
-         final Object obj = new ClientReaderInterceptorContext(readerInterceptors, providerFactory, useType,
-                 useGeneric, this.annotations, media, getResponseHeaders(), is, attributes)
-                 .proceed();
+         final Object finalObj = new ClientReaderInterceptorContext(readerInterceptors, providerFactory, useType,
+               useGeneric, annotations, media, getResponseHeaders(), new InputStreamWrapper(is), attributes)
+               .proceed();
+         obj = finalObj;
          if (isMarshalledEntity)
          {
             InputStreamToByteArray isba = (InputStreamToByteArray) is;
@@ -449,13 +456,13 @@ public class BaseClientResponse<T> extends ClientResponse<T>
                @Override
                public Object getEntity()
                {
-                  return obj;
+                  return finalObj;
                }
             };
          }
          else
          {
-            return (T2) obj;
+            return (T2) finalObj;
          }
 
       }
@@ -474,6 +481,20 @@ public class BaseClientResponse<T> extends ClientResponse<T>
       {
          ResteasyProviderFactory.popContextData(Providers.class);
          if (current != null) ResteasyProviderFactory.pushContext(Providers.class, current);
+         if (obj instanceof ProvidersContextRetainer)
+         {
+            ((ProvidersContextRetainer) obj).setProviders(providerFactory);
+         }
+      }
+   }
+
+   private static class InputStreamWrapper extends FilterInputStream {
+      protected InputStreamWrapper(InputStream in) {
+         super(in);
+      }
+
+      @Override
+      public void close() throws IOException {
       }
    }
 
@@ -541,7 +562,8 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    {
       if (status > 399 && status < 599)
       {
-         throw createResponseFailure(format("Error status %d %s returned", status, getResponseStatus()));
+//         throw createResponseFailure(format("Error status %d %s returned", status, getResponseStatus()));
+         throw createResponseFailure(Messages.MESSAGES.clientResponseFailureStatus(status, getResponseStatus()));
       }
    }
 

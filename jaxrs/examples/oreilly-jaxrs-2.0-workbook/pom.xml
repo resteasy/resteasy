@@ -9,6 +9,11 @@
     <version>1.0</version>
     <packaging>pom</packaging>
 
+
+    <properties>
+        <version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec>1.0.0.Final</version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec>
+    </properties>
+
     <!-- this distributionManagement is only here for RESTEasy automated testing of examples build.  You can remove if you are copying this
          pom.xml as a template -->
     <distributionManagement>
@@ -41,6 +46,14 @@ pom.xml as a template -->
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jboss.spec.javax.ws.rs</groupId>
+            <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
+            <version>${version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec}</version>
+        </dependency>
+    </dependencies>
 
     <modules>
         <module>ex03_1</module>

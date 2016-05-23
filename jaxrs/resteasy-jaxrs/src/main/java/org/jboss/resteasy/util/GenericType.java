@@ -3,6 +3,8 @@ package org.jboss.resteasy.util;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+
 /**
  * This class is a trick used to extract GenericType information at runtime.  Java does not allow you get generic
  * type information easily, so this class does the trick.  For example:
@@ -12,10 +14,17 @@ import java.lang.reflect.Type;
  * </pre>
  * <p/>
  * The above code will get you the genericType for List<String>
+ * 
+ * N.B. This class is replaced by javax.ws.rs.core.GenericType.
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @deprecated Replaced by javax.ws.rs.core.GenericType
+ * 
+ * @see javax.ws.rs.core.GenericType
  */
+@Deprecated
 public class GenericType<T>
 {
    final Class<T> type;
@@ -34,7 +43,7 @@ public class GenericType<T>
       Type superclass = getClass().getGenericSuperclass();
       if (!(superclass instanceof ParameterizedType))
       {
-         throw new RuntimeException("Missing type parameter.");
+         throw new RuntimeException(Messages.MESSAGES.missingTypeParameter());
       }
       ParameterizedType parameterized = (ParameterizedType) superclass;
       this.genericType = parameterized.getActualTypeArguments()[0];

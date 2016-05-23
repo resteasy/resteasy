@@ -7,6 +7,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.core.interception.AbstractWriterInterceptorContext;
 import org.jboss.resteasy.core.interception.ClientWriterInterceptorContext;
 import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.DelegatingOutputStream;
 import org.jboss.resteasy.util.Types;
@@ -153,7 +154,26 @@ public class ClientInvocation implements Invocation
       {
          // Buffer the entity for any exception thrown as the response may have any entity the user wants
          // We don't want to leave the connection open though.
-         response.bufferEntity();
+         String s = String.class.cast(response.getHeaders().getFirst("resteasy.buffer.exception.entity"));
+         if (s == null || Boolean.parseBoolean(s))
+         {
+            response.bufferEntity();
+         }
+         else
+         {
+            // close connection
+            if (response instanceof ClientResponse)
+            {
+               try
+               {
+                  ClientResponse.class.cast(response).releaseConnection();
+               }
+               catch (IOException e)
+               {
+                  // Ignore
+               }
+            }
+         }
          if (status >= 300 && status < 400) throw new RedirectionException(response);
 
          return handleErrorStatus(response);
@@ -328,9 +348,18 @@ public class ClientInvocation implements Invocation
       }
       else
       {
-         this.entity = ent;
-         this.entityClass = ent.getClass();
-         this.entityGenericType = ent.getClass();
+         if (ent == null)
+         {
+            this.entity = null;
+            this.entityClass = null;
+            this.entityGenericType = null;  
+         }
+         else
+         {
+            this.entity = ent;
+            this.entityClass = ent.getClass();
+            this.entityGenericType = ent.getClass();
+         }
       }
    }
 
@@ -722,5 +751,4 @@ public class ClientInvocation implements Invocation
          return get();
       }
    }
-
 }

@@ -3,13 +3,16 @@
  */
 package org.jboss.resteasy.client.jaxrs.internal.proxy.extractors;
 
+import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 
 import javax.ws.rs.core.GenericType;
+
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Method;
+import java.lang.reflect.TypeVariable;
 
 /**
  * BodyEntityExtractor extract body objects from responses. This ends up calling
@@ -43,11 +46,10 @@ public class BodyEntityExtractor implements EntityExtractor
          // void methods should be handled before this method gets called, but it's worth being defensive   
          if (method.getReturnType() == null)
          {
-            throw new RuntimeException(
-                    "No type information to extract entity with.  You use other getEntity() methods");
+            throw new RuntimeException(Messages.MESSAGES.noTypeInformation());
          }
          GenericType gt = null;
-         if (method.getGenericReturnType() != null)
+         if (method.getGenericReturnType() != null && !(method.getGenericReturnType() instanceof TypeVariable))
          {
             gt = new GenericType(method.getGenericReturnType());
          }

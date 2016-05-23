@@ -1,9 +1,9 @@
 package org.jboss.resteasy.plugins.servlet;
 
 import org.jboss.resteasy.core.AsynchronousDispatcher;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
+import org.jboss.resteasy.plugins.servlet.i18n.Messages;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 
 import javax.servlet.ServletContainerInitializer;
@@ -15,6 +15,7 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Provider;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,8 +26,6 @@ import java.util.Set;
 @HandlesTypes({Application.class, Path.class, Provider.class})
 public class ResteasyServletInitializer implements ServletContainerInitializer
 {
-   final static Logger logger = Logger.getLogger(ResteasyServletInitializer.class);
-
    final static Set<String> ignoredPackages = new HashSet<String>();
 
    static
@@ -92,7 +91,7 @@ public class ResteasyServletInitializer implements ServletContainerInitializer
          }
       }
       if (defaultApp == null) return;
-      throw new NotImplementedYetException("Default Application class not implemented yet");
+      throw new NotImplementedYetException(Messages.MESSAGES.defaultApplicationNotImplemented());
 
    }
 

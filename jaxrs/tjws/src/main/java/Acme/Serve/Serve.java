@@ -312,7 +312,6 @@ public class Serve implements ServletContext, Serializable
       });
       setAccessLogged();
       keepAlive = arguments.get(ARG_KEEPALIVE) == null || ((Boolean) arguments.get(ARG_KEEPALIVE)).booleanValue();
-      System.out.println("KEEPALIVE!: " + keepAlive);
       int timeoutKeepAliveSec;
       try
       {
@@ -410,11 +409,16 @@ public class Serve implements ServletContext, Serializable
       mime = new Properties();
       try
       {
-         mime.load(getClass().getClassLoader().getResourceAsStream("Acme/Resource/mime.properties"));
+         InputStream inputStream = getClass().getClassLoader().getResourceAsStream("Acme/Resource/mime.properties");
+         if (inputStream != null) {
+            mime.load(inputStream);
+         } else {
+            log("MIME map can't be found");
+         }
       }
       catch (Exception ex)
       {
-         log("MIME map can't be loaded:" + ex);
+         log("MIME map can't be loaded", ex);
       }
    }
 
@@ -847,8 +851,6 @@ public class Serve implements ServletContext, Serializable
       }
       if (sessions == null)
          sessions = new HttpSessionContextImpl();
-      // TODO: display address as name and as ip
-      System.out.println("[" + new Date() + "] TJWS httpd " + hostName + " - " + acceptor + " is listening.");
    }
 
    /**
@@ -5194,7 +5196,9 @@ public class Serve implements ServletContext, Serializable
       }
 
       /**
-       * @deprecated
+       * @deprecated As of Version 2.1 of interface javax.servlet.http.HttpSession,
+       * this method is deprecated and has no replacement.
+       * It will be removed in a future version of the Java Servlet API.
        */
       public HttpSessionContext getSessionContext()
       {

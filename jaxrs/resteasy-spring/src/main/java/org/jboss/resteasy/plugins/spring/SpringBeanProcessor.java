@@ -1,43 +1,32 @@
 package org.jboss.resteasy.plugins.spring;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
-
 import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.PropertyInjector;
-import org.jboss.resteasy.spi.Registry;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.plugins.spring.i18n.Messages;
+import org.jboss.resteasy.spi.*;
 import org.jboss.resteasy.util.GetRestful;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.beans.factory.config.BeanReference;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.*;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
+
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
+
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * <p>
@@ -296,8 +285,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
       {
          if (!isSingleton(beanDef))
          {
-            throw new RuntimeException("Provider " + name
-                    + " is not a singleton.  That's not allowed");
+            throw new RuntimeException(Messages.MESSAGES.providerIsNotSingleton(name));
          }
 
          providerNames.add(name);
@@ -344,7 +332,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
       {
           return ((BeanReference)value).getBeanName();
       }
-      throw new IllegalStateException("ResteasyRegistration references must be String values or a reference to a bean name");
+      throw new IllegalStateException(Messages.MESSAGES.resteasyRegistrationReferences());
    }
 
    /**
@@ -425,16 +413,49 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
             }
          }
 
-         for (Method method : getBeanClass(factoryClassName).getMethods())
-         {
-            if (method.getName().equals(factoryMethodName))
-            {
-               return method.getReturnType();
-            }
-         }
+          final Class<?> beanClass = getBeanClass(factoryClassName);
+          final Method[] methods = ReflectionUtils.getAllDeclaredMethods(beanClass);
+          for (Method method : methods) {
+              if (method.getName().equals(factoryMethodName)) {
+                  return method.getReturnType();
+              }
+          }
+
+         /*
+            https://github.com/resteasy/Resteasy/issues/585
+
+            If we haven't found the correct factoryMethod using the previous method,
+            fallback to the default FactoryBean getObject method.
+
+            Case in which this tends to happen:
+
+            1. A bean (Bean A) exists which provides factoryMethods for retrieving 1 or more other beans (Bean B, Bean C, ...)
+                example: <bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean"/>
+            2. Bean B is retrieved by telling Spring that the Factory-Bean is Bean A and that there is a method X to retrieve Bean B.
+                example: <bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService"/>
+            3. When resteasy has to inject Bean B it tries to lookup method X on Bean A instead of Bean B using the above code.
+
+            As a fix for this, we retrieve the return type for Bean A from the FactoryBean, which later on can be used to retrieve the other beans.
+
+         */
+          if (FactoryBean.class.isAssignableFrom(beanClass)) {
+              String defaultFactoryMethod = "getObject";
+              Class<?> returnType = null;
+              for (Method method : methods) {
+                  if (method.getName().equals(defaultFactoryMethod)) {
+                      returnType = method.getReturnType();
+                      if (returnType != Object.class) {
+                          break;
+                      }
+                  }
+              }
+              if (returnType != null) {
+                  return returnType;
+              }
+          }
       }
 
-      throw new IllegalStateException("could not find the type for bean named " + name);
+      throw new IllegalStateException(Messages.MESSAGES.couldNotFindTypeForBean(name));
    }
 
    private static boolean isSingleton(BeanDefinition beanDef)
@@ -458,7 +479,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
       }
       catch (final ClassNotFoundException e)
       {
-         throw new IllegalStateException("Could not convert '" + beanClassName + "' to a class.", e);
+         throw new IllegalStateException(Messages.MESSAGES.couldNotConvertBeanToClass(beanClassName), e);
       }
    }
 

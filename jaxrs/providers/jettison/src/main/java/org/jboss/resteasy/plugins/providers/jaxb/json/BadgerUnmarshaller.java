@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.providers.jaxb.json;
 import org.codehaus.jettison.badgerfish.BadgerFishXMLStreamReader;
 import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.json.JSONTokener;
+import org.jboss.resteasy.plugins.providers.jaxb.json.i18n.Messages;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
@@ -20,6 +21,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -130,7 +132,7 @@ public class BadgerUnmarshaller implements Unmarshaller
    public Object unmarshal(Source source)
            throws JAXBException
    {
-      if (!(source instanceof StreamSource)) throw new UnsupportedOperationException("Expecting a StreamSource");
+      if (!(source instanceof StreamSource)) throw new UnsupportedOperationException(Messages.MESSAGES.expectingStreamSource());
       StreamSource stream = (StreamSource) source;
       XMLStreamReader reader = getBadgerFishReader(new InputStreamReader(stream.getInputStream()));
       return unmarshal(reader);
@@ -139,7 +141,7 @@ public class BadgerUnmarshaller implements Unmarshaller
    public <T> JAXBElement<T> unmarshal(Source source, Class<T> tClass)
            throws JAXBException
    {
-      if (!(source instanceof StreamSource)) throw new UnsupportedOperationException("Expecting a StreamSource");
+      if (!(source instanceof StreamSource)) throw new UnsupportedOperationException(Messages.MESSAGES.expectingStreamSource());
       StreamSource stream = (StreamSource) source;
       XMLStreamReader reader = getBadgerFishReader(new InputStreamReader(stream.getInputStream()));
       return unmarshal(reader, tClass);

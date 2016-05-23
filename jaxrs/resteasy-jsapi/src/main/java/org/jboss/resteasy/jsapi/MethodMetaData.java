@@ -1,13 +1,18 @@
 package org.jboss.resteasy.jsapi;
 
 import org.jboss.resteasy.annotations.Form;
+import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.jsapi.MethodParamMetaData.MethodParamType;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.jsapi.i18n.LogMessages;
+import org.jboss.resteasy.jsapi.i18n.Messages;
+import org.jboss.resteasy.spi.metadata.ResourceLocator;
+import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.util.FindAnnotation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -18,11 +23,10 @@ import java.util.Map;
 
 public class MethodMetaData
 {
-	private final static Logger logger = Logger
-    .getLogger(MethodMetaData.class);
 
-	private ResourceMethodInvoker resource;
+	private ResourceMethodInvoker invoker;
 	private Method method;
+	private ResourceMethod resourceMethod;
 	private Class<?> klass;
 	private String wants;
 	private String consumesMIMEType;
@@ -34,28 +38,34 @@ public class MethodMetaData
 	private String functionPrefix;
 	private boolean wantsForm;
 
-	public MethodMetaData(ServiceRegistry serviceRegistry, ResourceMethodInvoker resource)
-	{
+	public MethodMetaData(ServiceRegistry serviceRegistry, ResourceMethodInvoker invoker) throws Exception {
 		this.registry = serviceRegistry;
-		this.resource = resource;
-		this.method = resource.getMethod();
-        this.klass = resource.getResourceClass();
-		Path methodPath = method.getAnnotation(Path.class);
-		Path klassPath = klass.getAnnotation(Path.class);
+		this.invoker = invoker;
+		this.method = invoker.getMethod();
+
+		this.resourceMethod = (ResourceMethod) getResourceLocator(invoker);
+		this.klass = invoker.getResourceClass();
+
+		String methodPath = resourceMethod.getPath();
+		String klassPath = resourceMethod.getResourceClass().getPath();
 		Produces produces = method.getAnnotation(Produces.class);
+
 		if (produces == null)
 			produces = klass.getAnnotation(Produces.class);
 		this.wants = getWants(produces);
 		Consumes consumes = method.getAnnotation(Consumes.class);
 		if (consumes == null)
 			consumes = klass.getAnnotation(Consumes.class);
+
+
 		this.uri = appendURIFragments(registry, klassPath, methodPath);
+
 		if(serviceRegistry.isRoot())
 			this.functionPrefix = klass.getSimpleName();
 		else
 			this.functionPrefix = serviceRegistry.getFunctionPrefix();
 		this.functionName = this.functionPrefix + "." + method.getName(); 
-		httpMethods = resource.getHttpMethods();
+		httpMethods = invoker.getHttpMethods();
 
 		// we need to add all parameters from parent resource locators until the root
 		List<Method> methodsUntilRoot = new ArrayList<Method>();
@@ -72,9 +82,16 @@ public class MethodMetaData
 		// this must be after we scan the params in case of @Form
 		this.consumesMIMEType = getConsumes(consumes);
 		if(wantsForm && !"application/x-www-form-urlencoded".equals(consumesMIMEType)){
-         logger.warn("Overriding @Consumes annotation in favour of application/x-www-form-urlencoded due to the presence of @FormParam");
+		   LogMessages.LOGGER.warn(Messages.MESSAGES.overridingConsumes());
 			this.consumesMIMEType = "application/x-www-form-urlencoded";
 		}
+	}
+
+	public static ResourceLocator getResourceLocator(ResourceInvoker invoker) throws Exception {
+			Field resourceMethodField = null;
+			resourceMethodField = invoker.getClass().getDeclaredField("method");
+			resourceMethodField.setAccessible(true);
+			return (ResourceLocator) resourceMethodField.get(invoker);
 	}
 
 	protected void processMetaData(Class<?> type, Annotation[] annotations,
@@ -191,6 +208,12 @@ public class MethodMetaData
 		return "text/plain";
 	}
 
+	public static String appendURIFragments(ServiceRegistry registry, String classPath, String methodPath) {
+		return appendURIFragments(registry == null ? null : registry.getUri(),
+				notEmpty(classPath) ? classPath : null,
+				notEmpty(methodPath) ? methodPath : null);
+	}
+
 	public static String appendURIFragments(String... fragments)
 	{
 		StringBuilder str = new StringBuilder();
@@ -209,9 +232,9 @@ public class MethodMetaData
 		return str.toString();
 	}
 
-	public ResourceMethodInvoker getResource()
+	public ResourceMethodInvoker getInvoker()
 	{
-		return resource;
+		return invoker;
 	}
 
 	public Method getMethod()
@@ -254,10 +277,9 @@ public class MethodMetaData
 		return httpMethods;
 	}
 
-	public static String appendURIFragments(ServiceRegistry registry, Path classPath, Path methodPath) {
-		return appendURIFragments(registry == null ? null : registry.getUri(), 
-				classPath != null ? classPath.value() : null,
-				methodPath != null ? methodPath.value() : null);
+
+	private static boolean notEmpty(String string) {
+		return string != null && !string.isEmpty();
 	}
 
 	public String getFunctionPrefix() {

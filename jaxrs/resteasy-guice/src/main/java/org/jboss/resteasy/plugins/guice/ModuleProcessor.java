@@ -3,7 +3,8 @@ package org.jboss.resteasy.plugins.guice;
 import com.google.inject.Binding;
 import com.google.inject.Injector;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.plugins.guice.i18n.LogMessages;
+import org.jboss.resteasy.plugins.guice.i18n.Messages;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -17,7 +18,6 @@ import javax.ws.rs.ext.Provider;
 
 public class ModuleProcessor
 {
-   private final static Logger logger = Logger.getLogger(ModuleProcessor.class);
 
    private final Registry registry;
    private final ResteasyProviderFactory providerFactory;
@@ -33,7 +33,7 @@ public class ModuleProcessor
       List<Binding<?>> rootResourceBindings = new ArrayList<Binding<?>>();
       for (final Binding<?> binding : injector.getBindings().values())
       {
-         final Type type = binding.getKey().getTypeLiteral().getType();
+         final Type type = binding.getKey().getTypeLiteral().getRawType();
          if (type instanceof Class)
          {
             final Class<?> beanClass = (Class) type;
@@ -44,7 +44,7 @@ public class ModuleProcessor
             }
             if (beanClass.isAnnotationPresent(Provider.class))
             {
-               logger.info("registering provider instance for {0}", beanClass.getName());
+               LogMessages.LOGGER.info(Messages.MESSAGES.registeringProviderInstance(beanClass.getName()));
                providerFactory.registerProviderInstance(binding.getProvider().get());
             }
          }
@@ -53,7 +53,7 @@ public class ModuleProcessor
       {
          Class<?> beanClass = (Class) binding.getKey().getTypeLiteral().getType();
          final ResourceFactory resourceFactory = new GuiceResourceFactory(binding.getProvider(), beanClass);
-         logger.info("registering factory for {0}", beanClass.getName());
+         LogMessages.LOGGER.info(Messages.MESSAGES.registeringFactory(beanClass.getName()));
          registry.addResourceFactory(resourceFactory);
       }
    }

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.core.interception;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.ProcessingException;
@@ -8,6 +8,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.WriterInterceptor;
+
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -22,7 +23,6 @@ import java.util.Map;
  */
 public class ClientWriterInterceptorContext extends AbstractWriterInterceptorContext
 {
-   private final static Logger logger = Logger.getLogger(ClientWriterInterceptorContext.class);
    protected Map<String, Object> properties;
 
    public ClientWriterInterceptorContext(WriterInterceptor[] interceptors, ResteasyProviderFactory providerFactory,
@@ -37,9 +37,7 @@ public class ClientWriterInterceptorContext extends AbstractWriterInterceptorCon
    @Override
    void throwWriterNotFoundException()
    {
-      throw new ProcessingException("could not find writer for content-type "
-              + mediaType + " type: " + type.getName());
-
+      throw new ProcessingException(Messages.MESSAGES.couldNotFindWriterForContentType(mediaType, type.getName()));
    }
 
    @Override

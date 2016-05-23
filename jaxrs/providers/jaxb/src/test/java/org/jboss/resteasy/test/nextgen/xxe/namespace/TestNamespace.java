@@ -24,6 +24,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import org.junit.After;
 import org.junit.Test;
 
 /**
@@ -155,7 +156,8 @@ public class TestNamespace
       client = new ResteasyClientBuilder().build();
    }
    
-   public static void after() throws Exception
+   @After
+   public void after() throws Exception
    {
       EmbeddedContainer.stop();
       dispatcher = null;
@@ -175,7 +177,6 @@ public class TestNamespace
       String entity = response.readEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertEquals("La Regle du Jeu", entity);
-      after();
    }
    
    @Test
@@ -191,7 +192,6 @@ public class TestNamespace
       String entity = response.readEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertEquals("La Cage Aux Folles", entity);
-      after();
    }
    
    @Test
@@ -207,7 +207,6 @@ public class TestNamespace
       String entity = response.readEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertEquals("La Cage Aux Folles", entity);
-      after();
    }
    
    @Test
@@ -257,7 +256,6 @@ public class TestNamespace
       {
          Assert.assertEquals("/La Regle du Jeu/La Cage Aux Folles", entity);
       }
-      after();
    }
    
    void doMapTest() throws Exception
@@ -279,14 +277,12 @@ public class TestNamespace
       Assert.assertEquals(200, response.getStatus());
       String entity = response.readEntity(String.class);
       System.out.println("Result: " + entity);
-      if (entity.indexOf("Cage") < entity.indexOf("Règle"))
-      {
-         Assert.assertEquals("/La Cage Aux Folles/La Regle du Jeu", entity);
-      }
-      else
-      {
-         Assert.assertEquals("/La Regle du Jeu/La Cage Aux Folles", entity);
-      }
-      after();
+            boolean result = false;
+            if ("/La Cage Aux Folles/La Regle du Jeu".equals(entity))
+                result = true;
+            else if ("/La Regle du Jeu/La Cage Aux Folles".equals(entity))
+                result = true;
+
+       Assert.assertTrue(result);
    }
 }

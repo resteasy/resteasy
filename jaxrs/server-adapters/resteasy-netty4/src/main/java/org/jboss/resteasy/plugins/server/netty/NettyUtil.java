@@ -8,12 +8,10 @@ import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.jboss.resteasy.util.CookieParser;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.MediaTypeHelper;
-import org.jboss.resteasy.util.PathHelper;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,30 +29,17 @@ public class NettyUtil
       String host = HttpHeaders.getHost(request, "unknown");
       String uri = request.getUri();
 
-      URI absoluteURI = URI.create(protocol + "://" + host + uri);
+      String uriString;
 
-      String path = PathHelper.getEncodedPathInfo(absoluteURI.getRawPath(), contextPath);
-      if (!path.startsWith("/"))
-      {
-         path = "/" + path;
+      // If we appear to have an absolute URL, don't try to recreate it from the host and request line.
+      if (uri.startsWith(protocol + "://")) {
+         uriString = uri;
+      } else {
+         uriString = protocol + "://" + host + uri;
       }
 
-      URI baseURI = absoluteURI;
-      if (!path.trim().equals(""))
-      {
-         String tmpContextPath = contextPath;
-         if (!tmpContextPath.endsWith("/")) tmpContextPath += "/";
-         baseURI = UriBuilder.fromUri(absoluteURI).replacePath(tmpContextPath).replaceQuery(null).build();
-      }
-      else
-      {
-         baseURI = UriBuilder.fromUri(absoluteURI).replaceQuery(null).build();
-      }
-      URI relativeURI = UriBuilder.fromUri(path).replaceQuery(absoluteURI.getRawQuery()).build();
-      //System.out.println("path: " + path);
-      //System.out.println("query string: " + request.getQueryString());
-      ResteasyUriInfo uriInfo = new ResteasyUriInfo(baseURI, relativeURI);
-      return uriInfo;
+      URI absoluteURI = URI.create(uriString);
+      return new ResteasyUriInfo(uriString, absoluteURI.getRawQuery(), contextPath);
    }
 
    public static ResteasyHttpHeaders extractHttpHeaders(HttpRequest request)

@@ -3,9 +3,11 @@ package org.jboss.resteasy.links.impl;
 import org.jboss.resteasy.links.ParentResource;
 import org.jboss.resteasy.links.ResourceID;
 import org.jboss.resteasy.links.ResourceIDs;
+import org.jboss.resteasy.links.i18n.Messages;
 
 import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlID;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -28,7 +30,7 @@ public class BeanUtils {
 				try {
 					values.add(getPropertyValue(entity, entity.getClass(), name));
 				} catch (NotFoundException e) {
-					throw new RuntimeException("Failed to find bean property "+name);
+				   throw new RuntimeException(Messages.MESSAGES.failedToFindBeanProperty(name));
 				}
 			}
 			return values;
@@ -65,7 +67,7 @@ public class BeanUtils {
 				return readField(f, entity);
 			} catch (SecurityException e) {
 				// there's one but it's not accessible?
-				throw new RuntimeException("Failed to read property "+name, e);
+			   throw new RuntimeException(Messages.MESSAGES.failedToReadProperty(name), e);
 			} catch (NoSuchFieldException e) {
 				// ignore
 			}
@@ -94,7 +96,7 @@ public class BeanUtils {
 			return readMethod(getter, entity);
 		} catch (SecurityException e) {
 			// there's one but it's not accessible?
-			throw new RuntimeException("Failed to read property "+methodName, e);
+		   throw new RuntimeException(Messages.MESSAGES.failedToReadProperty(methodName), e);
 		} catch (NoSuchMethodException e) {
 			throw new NotFoundException();
 		}
@@ -144,7 +146,7 @@ public class BeanUtils {
 		try {
 			return m.invoke(entity);
 		} catch (Exception e) {
-			throw new RuntimeException("Failed to read property from method "+m.getName(), e);
+		   throw new RuntimeException(Messages.MESSAGES.failedToReadPropertyFromMethod(m.getName()), e);
 		}finally{
 			m.setAccessible(false);
 		}
@@ -156,7 +158,7 @@ public class BeanUtils {
 		try {
 			return f.get(entity);
 		} catch (Exception e) {
-			throw new RuntimeException("Failed to read field "+f.getName(), e);
+		   throw new RuntimeException(Messages.MESSAGES.failedToReadField(f.getName()), e);
 		}finally{
 			f.setAccessible(false);
 		}

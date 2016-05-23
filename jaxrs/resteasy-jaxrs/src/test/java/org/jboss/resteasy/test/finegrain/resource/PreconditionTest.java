@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
+import java.util.Date;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
@@ -21,6 +22,7 @@ import javax.ws.rs.core.Response;
 import java.util.GregorianCalendar;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import org.jboss.resteasy.util.DateUtil;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -37,6 +39,7 @@ public class PreconditionTest
       dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(LastModifiedResource.class);
       dispatcher.getRegistry().addPerRequestResource(EtagResource.class);
+      dispatcher.getRegistry().addPerRequestResource(PrecedenceResource.class);
    }
 
    @AfterClass
@@ -507,6 +510,150 @@ public class PreconditionTest
       {
          ClientResponse<?> response = request.get();
          Assert.assertEquals(412, response.getStatus());
+         shutdownConnections(request);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
+   @Path("/precedence")
+   public static class PrecedenceResource
+   {
+      @GET
+      public Response doGet(@Context Request request)
+      {
+         Date lastModified = DateUtil.parseDate("Mon, 1 Jan 2007 00:00:00 GMT");
+         Response.ResponseBuilder rb = request.evaluatePreconditions(lastModified, new EntityTag("1"));
+         if (rb != null)
+            return rb.build();
+
+         return Response.ok("foo", "text/plain").build();
+      }
+   }
+
+   @Test
+   public void testPrecedence_AllMatch()
+   {
+      ClientRequest request = new ClientRequest(generateURL("/precedence"));
+      request.header(HttpHeaderNames.IF_MATCH, "1");  // true
+      request.header(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Mon, 1 Jan 2007 00:00:00 GMT");  // true
+      request.header(HttpHeaderNames.IF_NONE_MATCH, "2");  // true
+      request.header(HttpHeaderNames.IF_MODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT"); // true
+      try
+      {
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         shutdownConnections(request);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
+   @Test
+   public void testPrecedence_IfMatchWithNonMatchingEtag()
+   {
+      ClientRequest request = new ClientRequest(generateURL("/precedence"));
+      request.header(HttpHeaderNames.IF_MATCH, "2");  // false
+      request.header(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Mon, 1 Jan 2007 00:00:00 GMT");  // true
+      request.header(HttpHeaderNames.IF_NONE_MATCH, "2");  // true
+      request.header(HttpHeaderNames.IF_MODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT"); // true
+      try
+      {
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_PRECONDITION_FAILED, response.getStatus());
+         shutdownConnections(request);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
+   @Test
+   public void testPrecedence_IfMatchNotPresentUnmodifiedSinceBeforeLastModified()
+   {
+      ClientRequest request = new ClientRequest(generateURL("/precedence"));
+      request.header(HttpHeaderNames.IF_UNMODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT"); //false
+      request.header(HttpHeaderNames.IF_NONE_MATCH, "2");  // true
+      request.header(HttpHeaderNames.IF_MODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT"); // true
+      try
+      {
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_PRECONDITION_FAILED, response.getStatus());
+         shutdownConnections(request);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
+   @Test
+   public void testPrecedence_IfNoneMatchWithMatchingEtag()
+   {
+      ClientRequest request = new ClientRequest(generateURL("/precedence"));
+      request.header(HttpHeaderNames.IF_NONE_MATCH, "1");  // true
+      request.header(HttpHeaderNames.IF_MODIFIED_SINCE, "Mon, 1 Jan 2007 00:00:00 GMT");  // true
+      try
+      {
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_NOT_MODIFIED, response.getStatus());
+         shutdownConnections(request);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
+   @Test
+   public void testPrecedence_IfNoneMatchWithNonMatchingEtag()
+   {
+      ClientRequest request = new ClientRequest(generateURL("/precedence"));
+      request.header(HttpHeaderNames.IF_NONE_MATCH, "2");  // false
+      request.header(HttpHeaderNames.IF_MODIFIED_SINCE, "Mon, 1 Jan 2007 00:00:00 GMT");  // true
+      try
+      {
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_NOT_MODIFIED, response.getStatus());
+         shutdownConnections(request);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
+   @Test
+   public void testPrecedence_IfNoneMatchNotPresent_IfModifiedSinceBeforeLastModified()
+   {
+      ClientRequest request = new ClientRequest(generateURL("/precedence"));
+      request.header(HttpHeaderNames.IF_MODIFIED_SINCE, "Sat, 30 Dec 2006 00:00:00 GMT"); // false
+      try
+      {
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+         shutdownConnections(request);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
+   @Test
+   public void testPrecedence_IfNoneMatchNotPresent_IfModifiedSinceAfterLastModified()
+   {
+      ClientRequest request = new ClientRequest(generateURL("/precedence"));
+      request.header(HttpHeaderNames.IF_MODIFIED_SINCE, "Tue, 2 Jan 2007 00:00:00 GMT");  // true
+      try
+      {
+         ClientResponse<?> response = request.get();
+         Assert.assertEquals(HttpResponseCodes.SC_NOT_MODIFIED, response.getStatus());
          shutdownConnections(request);
       }
       catch (Exception e)

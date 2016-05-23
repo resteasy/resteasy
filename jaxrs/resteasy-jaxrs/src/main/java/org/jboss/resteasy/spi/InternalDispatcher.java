@@ -140,7 +140,14 @@ public class InternalDispatcher
       UriInfo uriInfo = ResteasyProviderFactory.getContextData(UriInfo.class);
 
       URI baseUri = uriInfo.getBaseUri();
-      URI absoluteUri = baseUri.resolve(relativeUri);
+      URI absoluteUri = baseUri.resolve(parseRelativeUri(relativeUri));
       return MockHttpRequest.create(verb, absoluteUri, baseUri);
+   }
+
+   private static URI parseRelativeUri(String relativeUri) {
+      if(relativeUri.startsWith("/")) {
+         return URI.create(relativeUri.substring(1));
+      }
+      return URI.create(relativeUri);
    }
 }

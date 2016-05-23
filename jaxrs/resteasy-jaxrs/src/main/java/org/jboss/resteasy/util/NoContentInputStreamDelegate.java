@@ -1,6 +1,9 @@
 package org.jboss.resteasy.util;
 
 import javax.ws.rs.core.NoContentException;
+
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -30,7 +33,7 @@ public class NoContentInputStreamDelegate extends InputStream
       if (amount > -1) hasRead = true;
       else if (!hasRead)
       {
-         throw new NoContentException("No content");
+         throw new NoContentException(Messages.MESSAGES.noContent());
       }
       return amount;
    }

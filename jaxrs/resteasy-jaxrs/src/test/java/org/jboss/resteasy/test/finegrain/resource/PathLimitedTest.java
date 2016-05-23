@@ -156,6 +156,7 @@ public class PathLimitedTest
    public void testUnlimitedOnMethod()
    {
       _test("/unlimited2/on/and/on");
+      _test("/unlimited2/runtime/org.jbpm:HR:1.0/process/hiring/start");
       _test("/uriparam/on/and/on?expected=on%2Fand%2Fon");
    }
 

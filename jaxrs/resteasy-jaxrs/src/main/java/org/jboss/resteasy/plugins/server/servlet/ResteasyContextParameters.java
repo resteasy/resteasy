@@ -32,7 +32,9 @@ public interface ResteasyContextParameters
    String RESTEASY_JNDI_COMPONENT_RESOURCES = "resteasy.jndi.component.resources";
    String RESTEASY_UNWRAPPED_EXCEPTIONS = "resteasy.unwrapped.exceptions";
    String RESTEASY_EXPAND_ENTITY_REFERENCES = "resteasy.document.expand.entity.references";
-
+   String RESTEASY_SECURE_PROCESSING_FEATURE = "resteasy.document.secure.processing.feature";
+   String RESTEASY_DISABLE_DTDS = "resteasy.document.secure.disableDTDs";
+   
    // these scanned variables are provided by a deployer
    String RESTEASY_SCANNED_RESOURCES = "resteasy.scanned.resources";
    String RESTEASY_SCANNED_PROVIDERS = "resteasy.scanned.providers";

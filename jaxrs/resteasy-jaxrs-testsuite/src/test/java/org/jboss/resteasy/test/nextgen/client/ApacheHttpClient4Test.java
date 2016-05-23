@@ -334,20 +334,20 @@ public class ApacheHttpClient4Test extends BaseResourceTest
       final ClientHttpEngine executor;
 
       if (clazz.isAssignableFrom(ApacheHttpClient4Engine.class)) {
-         HttpParams params = new BasicHttpParams();
-         ConnManagerParams.setMaxTotalConnections(params, 3);
-         ConnManagerParams.setTimeout(params, 1000);
+          HttpParams params = new BasicHttpParams();
+          ConnManagerParams.setMaxTotalConnections(params, 3);
+          ConnManagerParams.setTimeout(params, 5000);
 
-         // Create and initialize scheme registry
-         SchemeRegistry schemeRegistry = new SchemeRegistry();
-         schemeRegistry.register(
+          // Create and initialize scheme registry
+          SchemeRegistry schemeRegistry = new SchemeRegistry();
+          schemeRegistry.register(
                  new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
 
-         // Create an HttpClient with the ThreadSafeClientConnManager.
-         // This connection manager must be used if more than one thread will
-         // be using the HttpClient.
-         ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
-         HttpClient httpClient = new DefaultHttpClient(cm, params);
+          // Create an HttpClient with the ThreadSafeClientConnManager.
+          // This connection manager must be used if more than one thread will
+          // be using the HttpClient.
+          ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
+          HttpClient httpClient = new DefaultHttpClient(cm, params);
           executor = new ApacheHttpClient4Engine(httpClient);
       }
 // only with the right dependencies

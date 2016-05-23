@@ -3,19 +3,18 @@ package org.jboss.resteasy.specimpl;
 import org.jboss.resteasy.core.request.ServerDrivenNegotiation;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.DateUtil;
-import org.jboss.resteasy.util.HttpHeaderNames;
-import org.jboss.resteasy.util.HttpResponseCodes;
 
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Variant;
+import javax.ws.rs.core.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static org.jboss.resteasy.resteasy_jaxrs.i18n.Messages.MESSAGES;
+import static org.jboss.resteasy.util.HttpHeaderNames.*;
+import static org.jboss.resteasy.util.HttpResponseCodes.SC_PRECONDITION_FAILED;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -42,7 +41,10 @@ public class RequestImpl implements Request
       return httpMethod;
    }
 
-
+   private boolean isRfc7232preconditions() {
+      ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+      return context != null && Boolean.parseBoolean(context.getParameter("resteasy.rfc7232preconditions"));
+   }
 
    public MultivaluedMap<String, String> getFormParameters()
    {
@@ -51,17 +53,17 @@ public class RequestImpl implements Request
 
    public Variant selectVariant(List<Variant> variants) throws IllegalArgumentException
    {
-      if (variants == null || variants.size() == 0) throw new IllegalArgumentException("Variant list must not be zero");
-
+      if (variants == null || variants.size() == 0) throw new IllegalArgumentException(MESSAGES.variantListMustNotBeZero());
+      
       ServerDrivenNegotiation negotiation = new ServerDrivenNegotiation();
       MultivaluedMap<String, String> requestHeaders = headers.getRequestHeaders();
-      negotiation.setAcceptHeaders(requestHeaders.get(HttpHeaderNames.ACCEPT));
-      negotiation.setAcceptCharsetHeaders(requestHeaders.get(HttpHeaderNames.ACCEPT_CHARSET));
-      negotiation.setAcceptEncodingHeaders(requestHeaders.get(HttpHeaderNames.ACCEPT_ENCODING));
-      negotiation.setAcceptLanguageHeaders(requestHeaders.get(HttpHeaderNames.ACCEPT_LANGUAGE));
+      negotiation.setAcceptHeaders(requestHeaders.get(ACCEPT));
+      negotiation.setAcceptCharsetHeaders(requestHeaders.get(ACCEPT_CHARSET));
+      negotiation.setAcceptEncodingHeaders(requestHeaders.get(ACCEPT_ENCODING));
+      negotiation.setAcceptLanguageHeaders(requestHeaders.get(ACCEPT_LANGUAGE));
 
       varyHeader = ResponseBuilderImpl.createVaryHeader(variants);
-      response.getOutputHeaders().add(HttpHeaderNames.VARY, varyHeader);
+      response.getOutputHeaders().add(VARY, varyHeader);
       return negotiation.getBestMatch(variants);
    }
 
@@ -91,7 +93,7 @@ public class RequestImpl implements Request
          }
       }
       if (match) return null;
-      return Response.status(HttpResponseCodes.SC_PRECONDITION_FAILED).tag(eTag);
+      return Response.status(SC_PRECONDITION_FAILED).tag(eTag);
 
    }
 
@@ -113,7 +115,7 @@ public class RequestImpl implements Request
             return Response.notModified(eTag);
          }
 
-         return Response.status(HttpResponseCodes.SC_PRECONDITION_FAILED).tag(eTag);
+         return Response.status(SC_PRECONDITION_FAILED).tag(eTag);
       }
       return null;
    }
@@ -121,16 +123,16 @@ public class RequestImpl implements Request
 
    public Response.ResponseBuilder evaluatePreconditions(EntityTag eTag)
    {
-      if (eTag == null) throw new IllegalArgumentException("eTag param null");
+      if (eTag == null) throw new IllegalArgumentException(MESSAGES.eTagParamNull());
       Response.ResponseBuilder builder = null;
-      List<String> ifMatch = headers.getRequestHeaders().get(HttpHeaderNames.IF_MATCH);
+      List<String> ifMatch = headers.getRequestHeaders().get(IF_MATCH);
       if (ifMatch != null && ifMatch.size() > 0)
       {
          builder = ifMatch(convertEtag(ifMatch), eTag);
       }
       if (builder == null)
       {
-         List<String> ifNoneMatch = headers.getRequestHeaders().get(HttpHeaderNames.IF_NONE_MATCH);
+         List<String> ifNoneMatch = headers.getRequestHeaders().get(IF_NONE_MATCH);
          if (ifNoneMatch != null && ifNoneMatch.size() > 0)
          {
             builder = ifNoneMatch(convertEtag(ifNoneMatch), eTag);
@@ -140,7 +142,7 @@ public class RequestImpl implements Request
       {
          builder.tag(eTag);
       }
-      if (builder != null && varyHeader != null) builder.header(HttpHeaderNames.VARY, varyHeader);
+      if (builder != null && varyHeader != null) builder.header(VARY, varyHeader);
       return builder;
    }
 
@@ -164,37 +166,37 @@ public class RequestImpl implements Request
       {
          return null;
       }
-      return Response.status(HttpResponseCodes.SC_PRECONDITION_FAILED).lastModified(lastModified);
+      return Response.status(SC_PRECONDITION_FAILED).lastModified(lastModified);
 
    }
 
    public Response.ResponseBuilder evaluatePreconditions(Date lastModified)
    {
-      if (lastModified == null) throw new IllegalArgumentException("lastModified param null");
+      if (lastModified == null) throw new IllegalArgumentException(MESSAGES.lastModifiedParamNull());
       Response.ResponseBuilder builder = null;
-      String ifModifiedSince = headers.getRequestHeaders().getFirst(HttpHeaderNames.IF_MODIFIED_SINCE);
-      if (ifModifiedSince != null)
+      MultivaluedMap<String, String> headers = this.headers.getRequestHeaders();
+      String ifModifiedSince = headers.getFirst(IF_MODIFIED_SINCE);
+      if (ifModifiedSince != null && (!isRfc7232preconditions() || (!headers.containsKey(IF_NONE_MATCH))))
       {
          builder = ifModifiedSince(ifModifiedSince, lastModified);
       }
       if (builder == null)
       {
-         //System.out.println("ifModified returned null");
-         String ifUnmodifiedSince = headers.getRequestHeaders().getFirst(HttpHeaderNames.IF_UNMODIFIED_SINCE);
-         if (ifUnmodifiedSince != null)
+         String ifUnmodifiedSince = headers.getFirst(IF_UNMODIFIED_SINCE);
+         if (ifUnmodifiedSince != null && (!isRfc7232preconditions() || (!headers.containsKey(IF_MATCH))))
          {
             builder = ifUnmodifiedSince(ifUnmodifiedSince, lastModified);
          }
       }
-      if (builder != null && varyHeader != null) builder.header(HttpHeaderNames.VARY, varyHeader);
+      if (builder != null && varyHeader != null) builder.header(VARY, varyHeader);
 
       return builder;
    }
 
    public Response.ResponseBuilder evaluatePreconditions(Date lastModified, EntityTag eTag)
    {
-      if (lastModified == null) throw new IllegalArgumentException("lastModified param null");
-      if (eTag == null) throw new IllegalArgumentException("eTag param null");
+      if (lastModified == null) throw new IllegalArgumentException(MESSAGES.lastModifiedParamNull());
+      if (eTag == null) throw new IllegalArgumentException(MESSAGES.eTagParamNull());
       Response.ResponseBuilder rtn = null;
       Response.ResponseBuilder lastModifiedBuilder = evaluatePreconditions(lastModified);
       Response.ResponseBuilder etagBuilder = evaluatePreconditions(eTag);
@@ -206,19 +208,19 @@ public class RequestImpl implements Request
          rtn = lastModifiedBuilder;
          rtn.tag(eTag);
       }
-      if (rtn != null && varyHeader != null) rtn.header(HttpHeaderNames.VARY, varyHeader);
+      if (rtn != null && varyHeader != null) rtn.header(VARY, varyHeader);
       return rtn;
    }
 
    public Response.ResponseBuilder evaluatePreconditions()
    {
-      List<String> ifMatch = headers.getRequestHeaders().get(HttpHeaderNames.IF_MATCH);
+      List<String> ifMatch = headers.getRequestHeaders().get(IF_MATCH);
       if (ifMatch == null || ifMatch.size() == 0)
       {
          return null;
       }
 
-      return Response.status(HttpResponseCodes.SC_PRECONDITION_FAILED);
+      return Response.status(SC_PRECONDITION_FAILED);
    }
 
 }

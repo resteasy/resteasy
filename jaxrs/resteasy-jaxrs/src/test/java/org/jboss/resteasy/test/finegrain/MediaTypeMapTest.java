@@ -175,7 +175,7 @@ public class MediaTypeMapTest
       ResteasyProviderFactory factory = new ResteasyProviderFactory();
       RegisterBuiltin.register(factory);
 
-      MessageBodyWriter<Integer> writer = factory.getMessageBodyWriter(Integer.class, null, null, new MediaType("text", "plain"));
+      MessageBodyWriter<Boolean> writer = factory.getMessageBodyWriter(Boolean.class, null, null, new MediaType("text", "plain"));
       Assert.assertNotNull(writer);
       Assert.assertEquals(writer.getClass(), DefaultTextPlain.class);
    }
@@ -229,7 +229,7 @@ public class MediaTypeMapTest
 
    private void verifyPlainWriter(ResteasyProviderFactory factory)
    {
-      MessageBodyWriter writer2 = factory.getMessageBodyWriter(Integer.class, null, null, MediaType.TEXT_PLAIN_TYPE);
+      MessageBodyWriter writer2 = factory.getMessageBodyWriter(Boolean.class, null, null, MediaType.TEXT_PLAIN_TYPE);
       Assert.assertNotNull(writer2);
       Assert.assertTrue(writer2 instanceof PlainTextWriter);
    }

@@ -637,7 +637,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
       }
 
       @Override
-      protected synchronized void releaseConnection() throws IOException
+      public synchronized void releaseConnection() throws IOException
       {
          boolean thrown = true;
          try

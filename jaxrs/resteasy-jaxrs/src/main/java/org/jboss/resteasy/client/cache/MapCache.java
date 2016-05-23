@@ -7,7 +7,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @deprecated
+ * @deprecated Caching in the Resteasy client framework in resteasy-jaxrs is replaced by 
+ * caching in the JAX-RS 2.0 compliant resteasy-client module.
+ * 
+ * @see resteasy-client
+ * @see org.jboss.resteasy.client.jaxrs.cache.MapCache
  */
 @Deprecated
 public class MapCache implements BrowserCache
@@ -56,7 +60,7 @@ public class MapCache implements BrowserCache
    {
       Map<String, Entry> data = cache.get(key);
       if (data == null) return null;
-      Entry removed = data.remove(type);
+      Entry removed = data.remove(type.toString());
       if (data.isEmpty())
       {
          cache.remove(key);

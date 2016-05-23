@@ -7,7 +7,10 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.TooLongFrameException;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpResponse;
-import org.jboss.resteasy.logging.Logger;
+
+import io.netty.handler.timeout.IdleStateEvent;
+import org.jboss.resteasy.plugins.server.netty.i18n.LogMessages;
+import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.spi.Failure;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
@@ -29,7 +32,6 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 public class RequestHandler extends SimpleChannelInboundHandler
 {
    protected final RequestDispatcher dispatcher;
-   private final static Logger logger = Logger.getLogger(RequestHandler.class);
 
    public RequestHandler(RequestDispatcher dispatcher)
    {
@@ -61,7 +63,7 @@ public class RequestHandler extends SimpleChannelInboundHandler
           {
              response.reset();
              response.setStatus(500);
-             logger.error("Unexpected", ex);
+             LogMessages.LOGGER.error(Messages.MESSAGES.unexpected(), ex);
           }
 
           if (!request.getAsyncContext().isSuspended()) {
@@ -92,4 +94,11 @@ public class RequestHandler extends SimpleChannelInboundHandler
           ctx.close();
       }
    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof IdleStateEvent) {
+            ctx.close();
+        }
+    }
 }

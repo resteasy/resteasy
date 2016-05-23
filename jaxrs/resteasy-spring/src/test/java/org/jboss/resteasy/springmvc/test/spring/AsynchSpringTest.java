@@ -156,6 +156,7 @@ public class AsynchSpringTest
          response.releaseConnection();
 
          // test its still there
+         Thread.sleep(1000);
          request = new ClientRequest(jobUrl2);
          response = request.get();
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -180,8 +181,9 @@ public class AsynchSpringTest
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
          String jobUrl2 = response.getResponseHeaders().getFirst(HttpHeaders.LOCATION);
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
-         response.releaseConnection();         
-         
+         response.releaseConnection();
+
+         Thread.sleep(1000);
          // test its still there
          request = new ClientRequest(jobUrl2);
          response = request.post();

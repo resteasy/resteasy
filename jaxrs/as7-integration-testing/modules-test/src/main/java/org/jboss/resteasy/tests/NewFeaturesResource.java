@@ -14,8 +14,6 @@ import org.jboss.resteasy.security.BouncyIntegration;
 import org.jboss.resteasy.security.KeyTools;
 import org.jboss.resteasy.security.smime.PKCS7SignatureInput;
 import org.jboss.resteasy.security.smime.SignedOutput;
-import org.junit.Assert;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;

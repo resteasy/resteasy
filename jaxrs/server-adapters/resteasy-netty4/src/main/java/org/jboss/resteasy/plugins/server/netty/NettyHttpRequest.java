@@ -1,10 +1,13 @@
 package org.jboss.resteasy.plugins.server.netty;
 
 import io.netty.channel.ChannelHandlerContext;
+
 import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.AbstractExecutionContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
+import org.jboss.resteasy.plugins.server.BaseHttpRequest;
+import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
@@ -19,6 +22,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -40,14 +44,11 @@ import java.util.concurrent.TimeUnit;
  * @author Kristoffer Sjogren
  * @version $Revision: 1 $
  */
-public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
+public class NettyHttpRequest extends BaseHttpRequest
 {
    protected ResteasyHttpHeaders httpHeaders;
    protected SynchronousDispatcher dispatcher;
-   protected ResteasyUriInfo uriInfo;
    protected String httpMethod;
-   protected MultivaluedMap<String, String> formParameters;
-   protected MultivaluedMap<String, String> decodedFormParameters;
    protected InputStream inputStream;
    protected Map<String, Object> attributes = new HashMap<String, Object>();
    protected NettyHttpResponse response;
@@ -58,12 +59,12 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
 
    public NettyHttpRequest(ChannelHandlerContext ctx, ResteasyHttpHeaders httpHeaders, ResteasyUriInfo uri, String httpMethod, SynchronousDispatcher dispatcher, NettyHttpResponse response, boolean is100ContinueExpected)
    {
+      super(uri);
       this.is100ContinueExpected = is100ContinueExpected;
       this.response = response;
       this.dispatcher = dispatcher;
       this.httpHeaders = httpHeaders;
       this.httpMethod = httpMethod;
-      this.uriInfo = uri;
       this.executionContext = new NettyExecutionContext(this, response, dispatcher);
       this.ctx = ctx;
    }
@@ -113,37 +114,6 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
    }
 
    @Override
-   public MultivaluedMap<String, String> getFormParameters()
-   {
-      if (formParameters != null) return formParameters;
-      if (getHttpHeaders().getMediaType().isCompatible(MediaType.valueOf("application/x-www-form-urlencoded")))
-      {
-         try
-         {
-            formParameters = FormUrlEncodedProvider.parseForm(getInputStream());
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-      }
-      else
-      {
-         throw new IllegalArgumentException("Request media type is not application/x-www-form-urlencoded");
-      }
-      return formParameters;
-   }
-
-   @Override
-   public MultivaluedMap<String, String> getDecodedFormParameters()
-   {
-      if (decodedFormParameters != null) return decodedFormParameters;
-      decodedFormParameters = Encode.decode(getFormParameters());
-      return decodedFormParameters;
-   }
-
-
-   @Override
    public Object getAttribute(String attribute)
    {
       return attributes.get(attribute);
@@ -180,34 +150,9 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
    }
 
    @Override
-   public ResteasyUriInfo getUri()
-   {
-      return uriInfo;
-   }
-
-   @Override
    public String getHttpMethod()
    {
       return httpMethod;
-   }
-
-   @Override
-   public void setRequestUri(URI requestUri) throws IllegalStateException
-   {
-      uriInfo = uriInfo.setRequestUri(requestUri);
-   }
-
-   @Override
-   public void setRequestUri(URI baseUri, URI requestUri) throws IllegalStateException
-   {
-      uriInfo = new ResteasyUriInfo(baseUri.resolve(requestUri));
-   }
-
-
-   @Override
-   public boolean isInitial()
-   {
-      return true;
    }
 
    public NettyHttpResponse getResponse()
@@ -277,7 +222,7 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
         public ResteasyAsynchronousResponse suspend(long time, TimeUnit unit) throws IllegalStateException {
             if (wasSuspended)
             {
-                throw new IllegalStateException("Already suspended");
+               throw new IllegalStateException(Messages.MESSAGES.alreadySuspended());
             }
             wasSuspended = true;
             return asyncResponse;
@@ -395,10 +340,6 @@ public class NettyHttpRequest implements org.jboss.resteasy.spi.HttpRequest
               catch (IOException e)
               {
                  throw new RuntimeException(e);
-              }
-              finally
-              {
-                 ctx.close();
               }
            }
 

@@ -16,6 +16,7 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import org.junit.After;
 import org.junit.Test;
 
 /**
@@ -55,7 +56,7 @@ public class TestXXESecureProcessing
      @Consumes({"application/xml"})
      public String addFavoriteMovie(FavoriteMovieXmlRootElement movie)
      {
-        System.out.println("MovieResource(xmlRootElment): title = " + movie.getTitle());
+        System.out.println("MovieResource(xmlRootElment): title = " + movie.getTitle().substring(0, 30));
         return movie.getTitle();
      }
    }
@@ -75,6 +76,7 @@ public class TestXXESecureProcessing
    {
       Hashtable<String,String> initParams = new Hashtable<String,String>();
       Hashtable<String,String> contextParams = new Hashtable<String,String>();
+      contextParams.put("resteasy.document.secure.disableDTDs", "false");
       contextParams.put("resteasy.document.expand.entity.references", expandEntityReferences);
       deployment = EmbeddedContainer.start(initParams, contextParams);
       dispatcher = deployment.getDispatcher();
@@ -83,12 +85,16 @@ public class TestXXESecureProcessing
 
    public static void before() throws Exception
    {
-      deployment = EmbeddedContainer.start();
+      Hashtable<String,String> initParams = new Hashtable<String,String>();
+      Hashtable<String,String> contextParams = new Hashtable<String,String>();
+      contextParams.put("resteasy.document.secure.disableDTDs", "false");
+      deployment = EmbeddedContainer.start(initParams, contextParams);
       dispatcher = deployment.getDispatcher();
       deployment.getRegistry().addPerRequestResource(MovieResource.class);
    }
    
-   public static void after() throws Exception
+   @After
+   public void after() throws Exception
    {
       EmbeddedContainer.stop();
       dispatcher = null;
@@ -108,7 +114,6 @@ public class TestXXESecureProcessing
       System.out.println("Result: " + entity.substring(0, 30));
       System.out.println("foos: " + countFoos(entity));
       Assert.assertEquals(10000, countFoos(entity));
-      after();
    }
    
    @Test
@@ -123,7 +128,6 @@ public class TestXXESecureProcessing
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException"));
-      after();
    }
    
    @Test
@@ -139,7 +143,6 @@ public class TestXXESecureProcessing
       System.out.println("Result: " + entity.substring(0, 30));
       System.out.println("foos: " + countFoos(entity));
       Assert.assertEquals(10000, countFoos(entity));
-      after();
    }
    
    @Test
@@ -154,7 +157,6 @@ public class TestXXESecureProcessing
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException"));
-      after();
    }
 
    @Test
@@ -170,7 +172,6 @@ public class TestXXESecureProcessing
       System.out.println("Result: " + entity.substring(0, 30));
       System.out.println("foos: " + countFoos(entity));
       Assert.assertEquals(10000, countFoos(entity));
-      after();
    }
    
    @Test
@@ -185,7 +186,6 @@ public class TestXXESecureProcessing
       String entity = response.getEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException"));
-      after();
    }
    
    private int countFoos(String s)

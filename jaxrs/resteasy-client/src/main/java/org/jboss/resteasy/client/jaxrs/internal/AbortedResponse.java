@@ -1,5 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
+import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 
 import javax.ws.rs.ProcessingException;
@@ -7,6 +8,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -57,15 +59,14 @@ public class AbortedResponse extends ClientResponse
                     .getMessageBodyWriter(getEntityClass(), getGenericType(),
                             null, mediaType);
             if (writer == null) {
-               throw new ProcessingException("Failed to buffer aborted response. Could not find writer for content-type "
-                       + mediaType + " type: " + entityClass.getName());
+               throw new ProcessingException(Messages.MESSAGES.failedToBufferAbortedResponseNoWriter(mediaType, entityClass.getName()));
             }
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             try {
                writer.writeTo(getEntity(), getEntityClass(), getGenericType(), getAnnotations(), mediaType, getHeaders(), baos);
             }
             catch (IOException e) {
-               throw new ProcessingException("Failed to buffer aborted response", e);
+               throw new ProcessingException(Messages.MESSAGES.failedToBufferAbortedResponse(), e);
             }
             bufferedEntity = baos.toByteArray();
             setInputStream(new ByteArrayInputStream(bufferedEntity));
@@ -98,7 +99,7 @@ public class AbortedResponse extends ClientResponse
    }
 
    @Override
-   protected void releaseConnection()
+   public void releaseConnection()
    {
       try {
          if (is != null) is.close();

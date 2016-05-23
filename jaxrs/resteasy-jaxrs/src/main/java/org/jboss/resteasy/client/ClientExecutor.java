@@ -5,7 +5,9 @@ import javax.ws.rs.core.UriBuilder;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * @deprecated
+ * @deprecated The Resteasy client framework in resteasy-jaxrs is replaced by the JAX-RS 2.0 compliant resteasy-client module.
+ * 
+ * @see org.jboss.resteasy.client.jaxrs.ClientHttpEngine
  */
 @Deprecated
 public interface ClientExecutor

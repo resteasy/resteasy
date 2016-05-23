@@ -1,7 +1,8 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.JAXBConfig;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
@@ -17,6 +18,7 @@ import javax.xml.bind.Validator;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -33,8 +35,6 @@ import java.util.Map;
 @SuppressWarnings("deprecation")
 public class JAXBContextWrapper extends JAXBContext
 {
-
-   private static final Logger logger = Logger.getLogger(JAXBContextWrapper.class);
 
    private static final String NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
    private static Constructor mapperConstructor = null;
@@ -126,7 +126,7 @@ public class JAXBContextWrapper extends JAXBContext
          {
             if (mapperConstructor == null)
             {
-               throw new JAXBException("com.sun.xml.bind.marshaller.NamespacePrefixMapper is not in your classpath.  You need to use the JAXB RI for the prefix mapping feature");
+               throw new JAXBException(Messages.MESSAGES.namespacePrefixMapperNotInClassPath());
             }
             try
             {
@@ -148,7 +148,7 @@ public class JAXBContextWrapper extends JAXBContext
             }
             catch (SAXException e)
             {
-               throw new JAXBException("Error while trying to load schema for " + config.schema(), e);
+               throw new JAXBException(Messages.MESSAGES.errorTryingToLoadSchema(config.schema()), e);
             }
          }
 
@@ -220,7 +220,7 @@ public class JAXBContextWrapper extends JAXBContext
          }
          catch (PropertyException e)
          {
-            logger.warn(e.getMessage());
+            LogMessages.LOGGER.warn(e.getMessage());
          }
       }
       return marshaller;
@@ -240,7 +240,7 @@ public class JAXBContextWrapper extends JAXBContext
     * @return
     * @throws JAXBException
     * @see javax.xml.bind.JAXBContext#createValidator()
-    * @deprecated
+    * @deprecated See javax.xml.bind.JAXBContext#createValidator().
     */
    public Validator createValidator() throws JAXBException
    {

@@ -46,6 +46,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 public class BasicAuthTest
 {
    private static Dispatcher dispatcher;
+   private static final String ACCESS_FORBIDDEN_MESSAGE = "Access forbidden: role not allowed";
 
    @Path("/secured")
    public static interface BaseProxy
@@ -197,6 +198,7 @@ public class BasicAuthTest
       catch (ClientResponseFailure e)
       {
          Assert.assertEquals(e.getResponse().getStatus(), 403);
+         Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, e.getResponse().getEntity(String.class));
       }
    }
 
@@ -228,6 +230,7 @@ public class BasicAuthTest
          ClientRequest request = new ClientRequest(generateURL("/secured/deny"), executor);
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
+         Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.getEntity(String.class));
          response.releaseConnection();
       }
       {
@@ -241,6 +244,7 @@ public class BasicAuthTest
          ClientRequest request = new ClientRequest(generateURL("/secured3/authorized"));
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals(403, response.getStatus());
+         Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.getEntity(String.class));
          response.releaseConnection();
       }
       {
@@ -300,6 +304,7 @@ public class BasicAuthTest
          ClientRequest request = new ClientRequest(generateURL("/secured/authorized"), executor);
          ClientResponse<?> response = request.get();
          Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
+         Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.getEntity(String.class));
          response.releaseConnection();
       }
    }

@@ -99,7 +99,7 @@ public class MultipleWarTest
          Assert.assertTrue(cv.getMessage().indexOf("org.jboss.resteasy.resteasy1058.SumConstraint") > 0);
          cv = e.getParameterViolations().iterator().next();
          Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 7"));
-         response.close();
+         response.releaseConnection();;
          
          response = request2.get(); 
          log.info("status: " + response.getStatus());
@@ -117,7 +117,7 @@ public class MultipleWarTest
          Assert.assertTrue(cv.getMessage().indexOf("org.jboss.resteasy.resteasy1058.SumConstraint") > 0);
          cv = e.getParameterViolations().iterator().next();
          Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 7"));
-         response.close();
+         response.releaseConnection();
       }
    }
 
@@ -143,7 +143,7 @@ public class MultipleWarTest
          countViolations(e, 1, 0, 0, 0, 0, 1);
          ResteasyConstraintViolation cv = e.getReturnValueViolations().iterator().next();
          Assert.assertTrue(cv.getMessage().equals("must be less than or equal to 0"));
-         response.close();
+         response.releaseConnection();;
          
          response = request2.get();   
          answer = response.getEntity(String.class);
@@ -155,7 +155,7 @@ public class MultipleWarTest
          countViolations(e, 1, 0, 0, 0, 0, 1);
          cv = e.getReturnValueViolations().iterator().next();
          Assert.assertTrue(cv.getMessage().equals("must be less than or equal to 0"));
-         response.close();
+         response.releaseConnection();;
       }
    }
 

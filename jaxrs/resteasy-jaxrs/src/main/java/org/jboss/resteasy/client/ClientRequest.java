@@ -4,6 +4,7 @@ import org.jboss.resteasy.client.core.BaseClientResponse;
 import org.jboss.resteasy.client.core.ClientInterceptorRepositoryImpl;
 import org.jboss.resteasy.core.interception.ClientExecutionContextImpl;
 import org.jboss.resteasy.core.interception.ClientWriterInterceptorContext;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.Link;
@@ -41,10 +42,13 @@ import static org.jboss.resteasy.util.HttpHeaderNames.ACCEPT;
  * After an execution of a request, the internal state remains the same.  You can invoke the request again.
  * You can clear the request with the clear() method.
  *
- * @deprecated
+ * @deprecated The Resteasy client framework in resteasy-jaxrs is replaced by the JAX-RS 2.0 compliant resteasy-client module.
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
+ * @see javax.ws.rs.client.Invocation
  */
 @Deprecated
 @SuppressWarnings("unchecked")
@@ -781,7 +785,7 @@ public class ClientRequest extends ClientInterceptorRepositoryImpl implements Cl
       catch (CloneNotSupportedException e)
       {
          // this shouldn't happen
-         throw new RuntimeException("ClientRequest doesn't implement Clonable.  Notify the RESTEasy staff right away.");
+         throw new RuntimeException(Messages.MESSAGES.clientRequestDoesntSupportClonable());
       }
    }
 }

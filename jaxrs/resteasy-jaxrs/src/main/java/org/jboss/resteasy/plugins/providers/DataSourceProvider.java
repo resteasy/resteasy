@@ -3,9 +3,14 @@
  */
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.plugins.server.servlet.Cleanable;
+import org.jboss.resteasy.plugins.server.servlet.Cleanables;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.NoContent;
 
 import javax.xml.transform.stream.StreamSource;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,7 +48,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
       private final File tempFile;
       private final String type;
 
-      public SequencedDataSource(byte[] byteBuffer, int byteBufferOffset,
+      protected SequencedDataSource(byte[] byteBuffer, int byteBufferOffset,
                                  int byteBufferLength, File tempFile, String type)
       {
          super();
@@ -67,7 +72,13 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
          if (tempFile == null)
             return bis;
          InputStream fis = new FileInputStream(tempFile);
-         return new SequenceInputStream(bis, fis);
+         CleanableSequenceInputStream csis = new CleanableSequenceInputStream(bis, fis, tempFile);
+         Cleanables cleanables = ResteasyProviderFactory.getContextData(Cleanables.class);
+         if (cleanables != null)
+         {
+             cleanables.addCleanable(csis);
+         }
+         return csis;
       }
 
       @Override
@@ -79,7 +90,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
       @Override
       public OutputStream getOutputStream() throws IOException
       {
-         throw new IOException("No output stream allowed");
+         throw new IOException(Messages.MESSAGES.noOutputStreamAllowed());
       }
 
    }
@@ -103,6 +114,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
          int count = in.read(buffer, 0, buffer.length);
          if (count > -1) {
              tempFile = File.createTempFile("resteasy-provider-datasource", null);
+             tempFile.deleteOnExit();
              FileOutputStream fos = new FileOutputStream(tempFile);
              fos.write(buffer, 0, count);
              try
@@ -217,4 +229,27 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
 
    }
 
+   private static class CleanableSequenceInputStream extends SequenceInputStream implements Cleanable
+   {
+	   private File tempFile;
+	   public CleanableSequenceInputStream(InputStream is1, InputStream is2, File tempFile)
+	   {
+		   super(is1, is2);
+		   this.tempFile = tempFile;
+	   }
+
+	   @Override
+	   public void clean() throws Exception
+	   {
+		   deleteTempFile();
+	   }
+
+	   private void deleteTempFile()
+	   {
+		   if(tempFile.exists())
+		   {
+			   tempFile.delete();
+		   }
+	   }
+   }
 }

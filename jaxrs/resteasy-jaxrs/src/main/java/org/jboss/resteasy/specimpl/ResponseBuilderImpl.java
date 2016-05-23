@@ -357,7 +357,11 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    @Override
    public Response.ResponseBuilder links(Link... links)
    {
-      metadata.remove(HttpHeaders.LINK);
+      if (links == null)
+      {
+         metadata.remove(HttpHeaders.LINK);
+         return this;
+      }
       for (Link link : links)
       {
          metadata.add(HttpHeaders.LINK, link);

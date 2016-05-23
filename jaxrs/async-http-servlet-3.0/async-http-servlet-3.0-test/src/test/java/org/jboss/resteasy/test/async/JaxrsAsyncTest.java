@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.async;
 
+import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -90,6 +91,7 @@ public class JaxrsAsyncTest
    public void testResumeObject() throws Exception
    {
       Client client = ClientBuilder.newClient();
+      client.register(JAXBXmlRootElementProvider.class);
       long start = System.currentTimeMillis();
       Response response = client.target("http://localhost:8080/jaxrs/resume/object").request().get();
       long end = System.currentTimeMillis() - start;
@@ -104,6 +106,7 @@ public class JaxrsAsyncTest
    public void testResumeObjectThread() throws Exception
    {
       Client client = ClientBuilder.newClient();
+      client.register(JAXBXmlRootElementProvider.class);
       long start = System.currentTimeMillis();
       Response response = client.target("http://localhost:8080/jaxrs/resume/object/thread").request().get();
       long end = System.currentTimeMillis() - start;

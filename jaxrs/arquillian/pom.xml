@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0.8.Final</version>
+        <version>3.1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <name>Arquillian</name>
@@ -12,22 +12,38 @@
     <packaging>pom</packaging>
 
     <modules>
-        <!--module>RESTEASY-736-jetty</module-->
+        <module>RESTEASY-736-jetty</module>
         <!--module>RESTEASY-736-as71</module-->
+        <!--module>RESTEASY-903-AS7</module>-->
+        <module>RESTEASY-903-WF8</module>
         <module>RESTEASY-760-jetty</module>
         <module>RESTEASY-767-jetty</module>
-        <module>RESTEASY-800-AS71</module>
-        <module>resteasy-cdi-ejb-test</module>
+        <!--<module>RESTEASY-800-AS71</module>-->
+        <!--<module>resteasy-cdi-ejb-test</module>-->
         <module>ValidationTest-WF8</module>
-        <module>ValidationTest-AS7</module>
+        <!--<module>ValidationTest-AS7</module>-->
+        <!--<module>RESTEASY-923-AS7</module>-->
+        <!--<module>RESTEASY-923-EAP6</module>-->
+        <module>RESTEASY-923-WF8</module>
         <module>RESTEASY-945-WF8</module>
         <module>RESTEASY-1008-WF8</module>
-        <module>RESTEASY-1008-AS7</module>
-        <module>RESTEASY-1008-jetty-bv11</module>
-        <module>RESTEASY-1008-jetty-bv10</module>
-        <module>RESTEASY-1054-AS7</module>
+        <!--<module>RESTEASY-1008-AS7</module>-->
+        <!--<module>RESTEASY-1054-AS7</module>-->
         <module>RESTEASY-1054-WF8</module>
+        <module>RESTEASY-1056-jetty-bv11</module>
+        <module>RESTEASY-1056-jetty-bv10</module>
         <module>RESTEASY-1058-WF8</module>
+        <module>RESTEASY-1073-WF8</module>
+        <module>RESTEASY-1082-WF8</module>
+        <!--<module>RESTEASY-TEST-EAP6</module>-->
+        <module>RESTEASY-TEST-WF8</module>
+        <module>RESTEASY-1141-WF8</module>
+        <module>RESTEASY-1141-jetty</module>
+        <module>RESTEASY-1223-WF8</module>
+        <!--module>RESTEASY-TEST-WF10</module-->
+        
+        <!-- Wildfly 10 requires jdk 1.8, so the travis execution with jdk 1.7 fails -->
+        <!--module>RESTEASY-TEST-WF10</module-->
     </modules>
     
     <artifactId>arquillian</artifactId>

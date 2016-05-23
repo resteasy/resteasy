@@ -3,13 +3,17 @@ package org.jboss.resteasy.security.smime;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.SignerInformationVerifier;
+import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
+import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.Base64;
-import org.jboss.resteasy.util.GenericType;
 
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Providers;
+
 import java.io.ByteArrayInputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -114,8 +118,8 @@ public class PKCS7SignatureInput<T>
 
    public void setType(GenericType type)
    {
-      this.type = type.getType();
-      this.genericType = type.getGenericType();
+      this.type = type.getRawType();
+      this.genericType = type.getType();
    }
 
    public Type getGenericType()
@@ -170,11 +174,11 @@ public class PKCS7SignatureInput<T>
 
    public <T2> T2  getEntity(GenericType<T2> gt, MediaType mediaType)
    {
-      return getEntity(gt.getType(),  gt.getGenericType(), annotations, mediaType);
+      return getEntity((Class<T2>) gt.getRawType(),  gt.getType(), annotations, mediaType);
    }
    public <T2> T2   getEntity(GenericType<T2> gt, Annotation[] ann, MediaType mediaType)
    {
-      return getEntity(gt.getType(), gt.getGenericType(), ann, mediaType);
+      return getEntity((Class<T2>) gt.getRawType(), gt.getType(), ann, mediaType);
    }
    public <T2> T2  getEntity(Class<T2> t, Type gt, Annotation[] ann, MediaType mediaType)
    {
@@ -198,7 +202,7 @@ public class PKCS7SignatureInput<T>
    {
       if (certificate != null) return verify(certificate);
       else if (publicKey != null) return verify(publicKey);
-      else throw new NullPointerException("Certificate nor public key properties set");
+      else throw new NullPointerException(Messages.MESSAGES.certificateNorPublicKeySet());
    }
 
    public boolean verify(X509Certificate certificate) throws Exception
@@ -206,7 +210,9 @@ public class PKCS7SignatureInput<T>
       for (Object info : data.getSignerInfos().getSigners())
       {
          SignerInformation signer = (SignerInformation)info;
-         if (signer.verify(certificate, "BC"))
+
+
+         if (signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider("BC").build(certificate)))
          {
             return true;
          }
@@ -218,7 +224,7 @@ public class PKCS7SignatureInput<T>
       for (Object info : data.getSignerInfos().getSigners())
       {
          SignerInformation signer = (SignerInformation)info;
-         if (signer.verify(publicKey, "BC"))
+         if (signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider("BC").build(publicKey)))
          {
             return true;
          }

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.jwt;
 
+import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.plugins.providers.jackson.ResteasyJacksonProvider;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -8,6 +9,7 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Providers;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,7 +33,7 @@ public class JsonSerialization
    public static byte[] toByteArray(Object token, ResteasyProviderFactory factory) throws IOException
    {
       MessageBodyWriter writer = factory.getMessageBodyWriter(token.getClass(), null, null, MediaType.APPLICATION_JSON_TYPE);
-      if (writer == null) throw new NullPointerException("Could not find MessageBodyWriter for JSON");
+      if (writer == null) throw new NullPointerException(Messages.MESSAGES.couldNotFindMessageBodyWriterForJSON());
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
       Providers old = ResteasyProviderFactory.getContextData(Providers.class);
@@ -89,7 +91,7 @@ public class JsonSerialization
    public static <T> T fromBytes(Class<T> type, byte[] bytes, ResteasyProviderFactory factory) throws IOException
    {
       MessageBodyReader<T> reader = factory.getMessageBodyReader(type, type, null, MediaType.APPLICATION_JSON_TYPE);
-      if (reader == null) throw new NullPointerException("Could not find MessageBodyReader for JSON");
+      if (reader == null) throw new NullPointerException(Messages.MESSAGES.couldNotFindMessageBodyReaderForJSON());
       ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 
       Providers old = ResteasyProviderFactory.getContextData(Providers.class);

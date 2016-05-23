@@ -2,13 +2,16 @@ package org.jboss.resteasy.security.smime;
 
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
+import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.mail.smime.SMIMESigned;
-import org.jboss.resteasy.util.GenericType;
+import org.jboss.resteasy.security.doseta.i18n.Messages;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.ext.Providers;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.security.PublicKey;
@@ -61,8 +64,8 @@ public class MultipartSignedInputImpl implements SignedInput
 
    public void setType(GenericType type)
    {
-      this.type = type.getType();
-      this.genericType = type.getGenericType();
+      this.type = type.getRawType();
+      this.genericType = type.getType();
    }
 
    public Type getGenericType()
@@ -117,11 +120,11 @@ public class MultipartSignedInputImpl implements SignedInput
 
    public Object getEntity(GenericType gt)
    {
-      return getEntity(gt.getType(),  gt.getGenericType(), annotations);
+      return getEntity(gt.getRawType(),  gt.getType(), annotations);
    }
    public Object getEntity(GenericType gt, Annotation[] ann)
    {
-      return getEntity(gt.getType(), gt.getGenericType(), ann);
+      return getEntity(gt.getRawType(), gt.getType(), ann);
    }
    public Object getEntity(Class t, Type gt, Annotation[] ann)
    {
@@ -144,7 +147,7 @@ public class MultipartSignedInputImpl implements SignedInput
    {
       if (certificate != null) return verify(certificate);
       else if (publicKey != null) return verify(publicKey);
-      else throw new NullPointerException("Certificate nor public key properties set");
+      else throw new NullPointerException(Messages.MESSAGES.certificateNorPublicKeySet());
    }
 
    public boolean verify(X509Certificate certificate) throws Exception
@@ -157,7 +160,7 @@ public class MultipartSignedInputImpl implements SignedInput
 
       SignerInformationStore signers = signed.getSignerInfos();
       SignerInformation signer = (SignerInformation) signers.getSigners().iterator().next();
-      return signer.verify(publicKey, "BC");
+      return (signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider("BC").build(publicKey)));
 
    }
 
