@@ -62,8 +62,8 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    // default no idle timeout.
    private int idleTimeout = -1;
    private List<ChannelHandler> channelHandlers = Collections.emptyList();
-   private Map<ChannelOption, Object> channelOptions = Collections.emptyMap();
-   private Map<ChannelOption, Object> childChannelOptions = Collections.emptyMap();
+   private Map<ChannelOption<Object>, Object> channelOptions = Collections.emptyMap();
+   private Map<ChannelOption<Object>, Object> childChannelOptions = Collections.emptyMap();
    private List<ChannelHandler> httpChannelHandlers = Collections.emptyList();
 
    public void setSSLContext(SSLContext sslContext)
@@ -175,8 +175,8 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
      * @param channelOptions the additional {@link io.netty.channel.ChannelOption}s.
      * @see io.netty.bootstrap.ServerBootstrap#option(io.netty.channel.ChannelOption, Object)
      */
-    public void setChannelOptions(final Map<ChannelOption, Object> channelOptions) {
-        this.channelOptions = channelOptions == null ? Collections.<ChannelOption, Object>emptyMap() : channelOptions;
+    public void setChannelOptions(final Map<ChannelOption<Object>, Object> channelOptions) {
+        this.channelOptions = channelOptions == null ? Collections.<ChannelOption<Object>, Object>emptyMap() : channelOptions;
     }
 
     /**
@@ -185,8 +185,8 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
      * @param channelOptions the additional child {@link io.netty.channel.ChannelOption}s.
      * @see io.netty.bootstrap.ServerBootstrap#childOption(io.netty.channel.ChannelOption, Object)
      */
-    public void setChildChannelOptions(final Map<ChannelOption, Object> channelOptions) {
-        this.childChannelOptions = channelOptions == null ? Collections.<ChannelOption, Object>emptyMap() : channelOptions;
+    public void setChildChannelOptions(final Map<ChannelOption<Object>, Object> channelOptions) {
+        this.childChannelOptions = channelOptions == null ? Collections.<ChannelOption<Object>, Object>emptyMap() : channelOptions;
     }
 
    @Override
@@ -232,11 +232,11 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
                 .option(ChannelOption.SO_BACKLOG, backlog)
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-        for (Map.Entry<ChannelOption, Object> entry : channelOptions.entrySet()) {
+        for (Map.Entry<ChannelOption<Object>, Object> entry : channelOptions.entrySet()) {
             bootstrap.option(entry.getKey(), entry.getValue());
         }
 
-        for (Map.Entry<ChannelOption, Object> entry : childChannelOptions.entrySet()) {
+        for (Map.Entry<ChannelOption<Object>, Object> entry : childChannelOptions.entrySet()) {
             bootstrap.childOption(entry.getKey(), entry.getValue());
         }
 

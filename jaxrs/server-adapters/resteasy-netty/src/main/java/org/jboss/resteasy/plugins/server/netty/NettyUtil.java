@@ -98,7 +98,7 @@ public class NettyUtil
    {
       Headers<String> requestHeaders = new Headers<String>();
 
-      for (Map.Entry<String, String> header : request.getHeaders())
+      for (Map.Entry<String, String> header : request.headers())
       {
          requestHeaders.add(header.getKey(), header.getValue());
       }
