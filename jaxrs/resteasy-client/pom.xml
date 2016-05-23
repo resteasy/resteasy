@@ -17,7 +17,29 @@
             <artifactId>resteasy-jaxrs</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+        <!-- OPTIONAL dependency to apache HttpAsyncClient.
+             To use it in own projects one needs to manually add a dependency to httpcomponents-asyncclient,
+             and configure ApacheHttpAsyncClient4Engine -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpasyncclient</artifactId>
+            <version>4.1.1</version>
+            <optional>true</optional>
+            <exclusions> <!-- avoid changing these transitive dependency-versions  -->
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpcore</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>

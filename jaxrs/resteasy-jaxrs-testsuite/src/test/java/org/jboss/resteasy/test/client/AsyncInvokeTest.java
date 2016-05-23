@@ -18,10 +18,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.core.Response;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
@@ -93,7 +96,7 @@ public class AsyncInvokeTest extends BaseResourceTest
    @Test
    public void testAsync() throws Exception
    {
-      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyClient client = buildClient();
 
       {
          Future<Response> future = client.target(generateURL("/test")).request().async().get();
@@ -173,15 +176,16 @@ public class AsyncInvokeTest extends BaseResourceTest
       client.close();
    }
 
-   static boolean ok;
-
    @Test
    public void testAsyncCallback() throws Exception
    {
-      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyClient client = buildClient();
+
+      // the callback may be called after the future completes, but it should see always the same result.
+      // see ApacheHttpAsyncClient4Engine#submit for a discussion regarding this.
 
       {
-         ok = false;
+         final CountDownLatch latch = new CountDownLatch(1);
          Future<Response> future = client.target(generateURL("/test")).request().async().get(new InvocationCallback<Response>()
          {
             @Override
@@ -189,7 +193,7 @@ public class AsyncInvokeTest extends BaseResourceTest
             {
                String entity = response.readEntity(String.class);
                Assert.assertEquals("get", entity);
-               ok = true;
+               latch.countDown();
             }
 
             @Override
@@ -199,19 +203,18 @@ public class AsyncInvokeTest extends BaseResourceTest
          });
          Response res = future.get();
          Assert.assertEquals(200, res.getStatus());
-         Assert.assertTrue(ok);
-
+         Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
       }
 
       {
-         ok = false;
+         final CountDownLatch latch = new CountDownLatch(1);
          Future<String> future = client.target(generateURL("/test")).request().async().get(new InvocationCallback<String>()
          {
             @Override
             public void completed(String entity)
             {
                Assert.assertEquals("get", entity);
-               ok = true;
+               latch.countDown();
             }
 
             @Override
@@ -221,11 +224,11 @@ public class AsyncInvokeTest extends BaseResourceTest
          });
          String entity = future.get();
          Assert.assertEquals("get", entity);
-         Assert.assertTrue(ok);
+         Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
       }
 
       {
-         ok = false;
+         final CountDownLatch latch = new CountDownLatch(1);
          Future<Response> future = client.target(generateURL("/test")).request().async().delete(new InvocationCallback<Response>()
          {
             @Override
@@ -233,7 +236,7 @@ public class AsyncInvokeTest extends BaseResourceTest
             {
                String entity = response.readEntity(String.class);
                Assert.assertEquals("delete", entity);
-               ok = true;
+               latch.countDown();
             }
 
             @Override
@@ -243,18 +246,18 @@ public class AsyncInvokeTest extends BaseResourceTest
          });
          Response res = future.get();
          Assert.assertEquals(200, res.getStatus());
-         Assert.assertTrue(ok);
+         Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
       }
 
       {
-         ok = false;
+         final CountDownLatch latch = new CountDownLatch(1);
          Future<String> future = client.target(generateURL("/test")).request().async().delete(new InvocationCallback<String>()
          {
             @Override
             public void completed(String s)
             {
                Assert.assertEquals("delete", s);
-               ok = true;
+               latch.countDown();
             }
 
             @Override
@@ -264,10 +267,10 @@ public class AsyncInvokeTest extends BaseResourceTest
          });
          String entity = future.get();
          Assert.assertEquals("delete", entity);
-         Assert.assertTrue(ok);
+         Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
       }
       {
-          ok = false;
+          final CountDownLatch latch = new CountDownLatch(1);
           Future<Response> future = client.target(generateURL("/test")).request().async().put(Entity.text("hello"), new InvocationCallback<Response>()
           {
              @Override
@@ -275,7 +278,7 @@ public class AsyncInvokeTest extends BaseResourceTest
              {
                 String entity = response.readEntity(String.class);
                 Assert.assertEquals("put hello", entity);
-                ok = true;
+                latch.countDown();
              }
 
              @Override
@@ -285,18 +288,18 @@ public class AsyncInvokeTest extends BaseResourceTest
           });
           Response res = future.get();
           Assert.assertEquals(200, res.getStatus());
-          Assert.assertTrue(ok);
+          Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
 
        }
-      {
-         ok = false;
+       {
+         final CountDownLatch latch = new CountDownLatch(1);
          Future<String> future = client.target(generateURL("/test")).request().async().put(Entity.text("hello"), new InvocationCallback<String>()
          {
             @Override
             public void completed(String s)
             {
                Assert.assertEquals("put hello", s);
-               ok = true;
+               latch.countDown();
             }
 
             @Override
@@ -306,20 +309,20 @@ public class AsyncInvokeTest extends BaseResourceTest
          });
          String entity = future.get();
          Assert.assertEquals("put hello", entity);
-         Assert.assertTrue(ok);
+         Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
 
       }
 
       {
-          ok = false;
-          Future<Response> future = client.target(generateURL("/test")).request().async().post(Entity.text("hello"), new InvocationCallback<Response>()
+         final CountDownLatch latch = new CountDownLatch(1);
+         Future<Response> future = client.target(generateURL("/test")).request().async().post(Entity.text("hello"), new InvocationCallback<Response>()
           {
              @Override
              public void completed(Response response)
              {
                 String entity = response.readEntity(String.class);
                 Assert.assertEquals("post hello", entity);
-                ok = true;
+                latch.countDown();
              }
 
              @Override
@@ -329,18 +332,18 @@ public class AsyncInvokeTest extends BaseResourceTest
           });
           Response res = future.get();
           Assert.assertEquals(200, res.getStatus());
-         Assert.assertTrue(ok);
+          Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
 
        }
-      {
-         ok = false;
+       {
+         final CountDownLatch latch = new CountDownLatch(1);
          Future<String> future = client.target(generateURL("/test")).request().async().post(Entity.text("hello"), new InvocationCallback<String>()
          {
             @Override
             public void completed(String s)
             {
                Assert.assertEquals("post hello", s);
-               ok = true;
+               latch.countDown();
             }
 
             @Override
@@ -350,12 +353,12 @@ public class AsyncInvokeTest extends BaseResourceTest
          });
          String entity = future.get();
          Assert.assertEquals("post hello", entity);
-         Assert.assertTrue(ok);
+         Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
 
       }
 
       {
-          ok = false;
+          final CountDownLatch latch = new CountDownLatch(1);
           Future<Response> future = client.target(generateURL("/test")).request().async().method("PATCH", Entity.text("hello"), new InvocationCallback<Response>()
           {
              @Override
@@ -363,7 +366,7 @@ public class AsyncInvokeTest extends BaseResourceTest
              {
                 String entity = response.readEntity(String.class);
                 Assert.assertEquals("patch hello", entity);
-                ok = true;
+                latch.countDown();
              }
 
              @Override
@@ -373,18 +376,18 @@ public class AsyncInvokeTest extends BaseResourceTest
           });
           Response res = future.get();
           Assert.assertEquals(200, res.getStatus());
-         Assert.assertTrue(ok);
+          Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
 
        }
       {
-         ok = false;
+         final CountDownLatch latch = new CountDownLatch(1);
          Future<String> future = client.target(generateURL("/test")).request().async().method("PATCH", Entity.text("hello"), new InvocationCallback<String>()
          {
             @Override
             public void completed(String s)
             {
                Assert.assertEquals("patch hello", s);
-               ok = true;
+               latch.countDown();
             }
 
             @Override
@@ -394,9 +397,55 @@ public class AsyncInvokeTest extends BaseResourceTest
          });
          String entity = future.get();
          Assert.assertEquals("patch hello", entity);
-         Assert.assertTrue(ok);
+         Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
 
       }
+
+      {
+         final CountDownLatch latch = new CountDownLatch(1);
+         Future<Response> future = client.target(generateURL("/test")).request().async().get(new InvocationCallback<Response>()
+         {
+            @Override
+            public void completed(Response response)
+            {
+               String entity = response.readEntity(String.class);
+               Assert.assertEquals("get", entity);
+               latch.countDown();
+               throw new RuntimeException("for the test of it");
+            }
+
+            @Override
+            public void failed(Throwable error)
+            {
+            }
+         });
+         Assert.assertTrue(latch.await(15, TimeUnit.SECONDS));
+         Response res = future.get();
+         Assert.assertEquals(200, res.getStatus()); // must not see the runtimeexception of the callback
+      }
+
+      {
+         final CountDownLatch latch = new CountDownLatch(1);
+         Future<String> future = client.target(generateURL("/test")).request().async().get(new InvocationCallback<String>()
+         {
+            @Override
+            public void completed(String s)
+            {
+               Assert.assertEquals("get", s);
+               latch.countDown();
+               throw new RuntimeException("for the test of it");
+            }
+
+            @Override
+            public void failed(Throwable error)
+            {
+            }
+         });
+         Assert.assertTrue(latch.await(15, TimeUnit.SECONDS));
+         String entity = future.get();
+         Assert.assertEquals("get", entity); // must not see the runtimeexception of the callback
+      }
+
       client.close();
    }
 
@@ -404,7 +453,7 @@ public class AsyncInvokeTest extends BaseResourceTest
    @Test
    public void testSubmit() throws Exception
    {
-      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyClient client = buildClient();
 
       {
          Future<Response> future = client.target(generateURL("/test")).request().buildGet().submit();
@@ -482,5 +531,14 @@ public class AsyncInvokeTest extends BaseResourceTest
 
       }
       client.close();
+   }
+
+   private ResteasyClient buildClient()
+   {
+      // only with dependency to apache httpasyncclient and co
+      // CloseableHttpAsyncClient asyncClient = HttpAsyncClientBuilder.create().setMaxConnTotal(1).build();
+      // return new ResteasyClientBuilder().httpEngine(new ApacheHttpAsyncClient4Engine(asyncClient, true)).build();
+
+      return new ResteasyClientBuilder().build();
    }
 }

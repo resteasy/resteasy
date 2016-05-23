@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.client;
 
+import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.BaseResourceTest;
@@ -51,17 +52,16 @@ public class InputStreamTest  extends BaseResourceTest
       ResteasyClient client = new ResteasyClientBuilder().build();
 
       InputStream is  = client.target(generateURL("/test")).request().get(InputStream.class);
-      byte[] buf = new byte[1024];
-      int read = is.read(buf);
-      String str = new String(buf, 0, read);
+      byte[] buf = IOUtils.toByteArray(is);
+      String str = new String(buf);
       Assert.assertEquals("hello world", str);
       System.out.println(str);
       is.close();
 
       InputStreamInterface proxy = client.target(generateURL("/")).proxy(InputStreamInterface.class);
       is = proxy.get();
-      read = is.read(buf);
-      str = new String(buf, 0, read);
+      buf = IOUtils.toByteArray(is);
+      str = new String(buf);
       Assert.assertEquals("hello world", str);
       is.close();
 
