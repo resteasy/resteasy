@@ -10,7 +10,7 @@
   <groupId>org.jboss.resteasy</groupId>
   <artifactId>resteasy-hibernatevalidator-provider</artifactId>
   <packaging>jar</packaging>
-  <name>Resteasy Hibernate Validator Provider</name>
+  <name>RESTEasy Hibernate Validator Provider</name>
   <url>http://maven.apache.org</url>
 
   <properties>

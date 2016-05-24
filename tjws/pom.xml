@@ -10,7 +10,7 @@
 
     <artifactId>tjws</artifactId>
     <packaging>jar</packaging>
-    <name>Embedded Servlet Container</name>
+    <name>RESTEasy Embedded Servlet Container</name>
     <description/>
 
     <dependencies>

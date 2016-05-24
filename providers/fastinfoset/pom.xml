@@ -9,7 +9,7 @@
     </parent>
     <artifactId>resteasy-fastinfoset-provider</artifactId>
     <packaging>jar</packaging>
-    <name>Resteasy FastInfoSet Provider</name>
+    <name>RESTEasy FastInfoSet Provider</name>
     <description/>
 
     <dependencies>

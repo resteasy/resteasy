@@ -10,7 +10,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>resteasy-guice</artifactId>
-    <name>Resteasy Guice</name>
+    <name>RESTEasy Guice</name>
     <description/>
 
     <dependencies>

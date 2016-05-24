@@ -9,7 +9,7 @@
     </parent>
     <artifactId>test-resteasy-html</artifactId>
     <packaging>jar</packaging>
-    <name>Resteasy HTML test</name>
+    <name>RESTEasy HTML test</name>
     <description/>
 
     <dependencies>

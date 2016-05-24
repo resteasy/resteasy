@@ -35,7 +35,7 @@
 
     <artifactId>resteasy-jboss-modules</artifactId>
 
-    <name>Resteasy JBoss Modules</name>
+    <name>RESTEasy JBoss Modules</name>
     <packaging>pom</packaging>
     <dependencies>
         <dependency>

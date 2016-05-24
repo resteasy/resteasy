@@ -9,7 +9,7 @@
     </parent>
     <artifactId>resteasy-yaml-provider</artifactId>
     <packaging>jar</packaging>
-    <name>Resteasy YAML Provider</name>
+    <name>RESTEasy YAML Provider</name>
     <description/>
 
     <dependencies>

@@ -9,7 +9,7 @@
     </parent>
     <artifactId>resteasy-multipart-provider</artifactId>
     <packaging>jar</packaging>
-    <name>Resteasy Multipart Provider</name>
+    <name>RESTEasy Multipart Provider</name>
     <description/>
 
     <dependencies>

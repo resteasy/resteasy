@@ -9,7 +9,7 @@
   </parent>
   <artifactId>resteasy-cdi-ejb-test</artifactId>
   <packaging>jar</packaging>
-  <name>Resteasy AS7/CDI/EJB Integration Testsuite</name>
+  <name>RESTEasy AS7/CDI/EJB Integration Testsuite</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

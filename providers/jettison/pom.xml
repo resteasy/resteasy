@@ -9,7 +9,7 @@
     </parent>
     <artifactId>resteasy-jettison-provider</artifactId>
     <packaging>jar</packaging>
-    <name>Resteasy Jettison Provider</name>
+    <name>RESTEasy Jettison Provider</name>
     <description/>
 
     <dependencies>

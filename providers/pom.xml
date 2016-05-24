@@ -6,7 +6,7 @@
         <version>3.1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <name>Resteasy Providers</name>
+    <name>RESTEasy Providers</name>
     <description/>
     <modelVersion>4.0.0</modelVersion>
 

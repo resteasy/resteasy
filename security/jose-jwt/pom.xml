@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>jose-jwt</artifactId>
-    <name>Resteasy JOSE JWT</name>
+    <name>RESTEasy JOSE JWT</name>
     <description/>
 
     <dependencies>

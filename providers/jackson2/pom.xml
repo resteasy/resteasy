@@ -9,7 +9,7 @@
     </parent>
     <artifactId>resteasy-jackson2-provider</artifactId>
     <packaging>jar</packaging>
-    <name>Resteasy Jackson Provider</name>
+    <name>RESTEasy Jackson 2 Provider</name>
     <description/>
 
     <dependencies>

@@ -9,7 +9,7 @@
     </parent>
     <artifactId>resteasy-servlet-initializer</artifactId>
     <packaging>jar</packaging>
-    <name>Resteasy Servlet Container Initializer</name>
+    <name>RESTEasy Servlet Container Initializer</name>
     <description/>
 
     <dependencies>

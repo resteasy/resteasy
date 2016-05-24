@@ -9,7 +9,7 @@
     </parent>
     <artifactId>resteasy-json-p-provider</artifactId>
     <packaging>jar</packaging>
-    <name>Resteasy JSON-P EE7 Provider</name>
+    <name>RESTEasy JSON-P EE7 Provider</name>
     <description/>
 
     <dependencies>

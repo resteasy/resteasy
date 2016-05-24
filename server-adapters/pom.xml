@@ -5,7 +5,7 @@
         <artifactId>resteasy-jaxrs-all</artifactId>
         <version>3.1.0-SNAPSHOT</version>
     </parent>
-    <name>Resteasy Http Adapter Plugins</name>
+    <name>RESTEasy Http Adapter Plugins</name>
     <description/>
     <modelVersion>4.0.0</modelVersion>
 

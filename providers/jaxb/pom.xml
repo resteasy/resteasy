@@ -9,7 +9,7 @@
     </parent>
     <artifactId>resteasy-jaxb-provider</artifactId>
     <packaging>jar</packaging>
-    <name>Resteasy JAXB Provider</name>
+    <name>RESTEasy JAXB Provider</name>
     <description/>
 
     <dependencies>

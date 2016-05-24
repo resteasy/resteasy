@@ -10,7 +10,7 @@
   <groupId>org.jboss.resteasy</groupId>
   <artifactId>resteasy-validator-provider-11</artifactId>
   <packaging>jar</packaging>
-  <name>Resteasy Validator Provider BV 1.1</name>
+  <name>RESTEasy Validator Provider BV 1.1</name>
   <url>http://maven.apache.org</url>
 
   <properties>

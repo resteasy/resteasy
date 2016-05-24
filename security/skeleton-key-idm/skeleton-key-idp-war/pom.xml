@@ -11,7 +11,7 @@
     <groupId>org.jboss.resteasy.example</groupId>
     <artifactId>skeleton-key-idp-war</artifactId>
     <packaging>war</packaging>
-    <name>Resteasy Skeleton Key Server WAR</name>
+    <name>RESTEasy Skeleton Key Server WAR</name>
     <description/>
     <url>http://maven.apache.org</url>
 

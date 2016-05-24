@@ -9,7 +9,7 @@
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-spring</artifactId>
     <packaging>jar</packaging>
-    <name>Resteasy Spring integration</name>
+    <name>RESTEasy Spring integration</name>
     <description/>
 
     <repositories>
