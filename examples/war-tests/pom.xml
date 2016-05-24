@@ -1,15 +1,16 @@
 <project>
     <parent>
         <groupId>org.jboss.resteasy</groupId>
-        <artifactId>testable-examples-pom</artifactId>
+        <artifactId>testable-examples</artifactId>
         <version>3.1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <name>RESTEasy WAR Tests</name>
     <description/>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jboss.resteasy.test</groupId>
-    <artifactId>war-tests-pom</artifactId>
+    <artifactId>war-tests</artifactId>
     <packaging>pom</packaging>
 
     <!-- this is only here for RESTEasy automated testing of examples build.  You can remove if you are copying this

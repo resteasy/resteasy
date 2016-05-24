@@ -2,18 +2,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-jaxrs-all</artifactId>
+        <groupId>org.jboss.resteasy.test</groupId>
+        <artifactId>war-tests</artifactId>
         <version>3.1.0-SNAPSHOT</version>
-        <relativePath>../../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.jboss.resteasy.test</groupId>
     <artifactId>test-application-war</artifactId>
     <packaging>war</packaging>
     <name>test-application-war</name>
     <description/>
-    <url>http://maven.apache.org</url>
     <properties>
         <skip.deploy>true</skip.deploy>
     </properties>
@@ -57,7 +55,7 @@
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.2.13.v20150730</version>
+                <version>${version.org.eclipse.jetty}</version>
                 <configuration>
                     <!-- By default the artifactId is taken, override it with something simple -->
                     <webApp>
@@ -109,14 +107,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
             </plugin>
         </plugins>
     </build>

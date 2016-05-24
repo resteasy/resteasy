@@ -1,5 +1,11 @@
 <!-- This file is used to build and run all the examples -->
 <project>
+    <parent>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-parent</artifactId>
+        <version>20</version>
+        <relativePath/>
+    </parent>
     <name>OReilly JAX-RS 2.0 Workbook Examples</name>
     <description/>
     <modelVersion>4.0.0</modelVersion>
