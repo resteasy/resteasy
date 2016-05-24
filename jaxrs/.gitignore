@@ -1,9 +1,0 @@
-# eclipse files
-.project
-.settings
-.classpath
-.DS_Store
-
-# maven files
-target
-bin
