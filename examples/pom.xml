@@ -28,20 +28,6 @@
     </build>
 
     <modules>
-        <module>jaxrs2-async-pubsub-example</module>
-        <module>jaxb-json</module>
-        <module>guice-hello</module>
-        <module>async-job-service</module>
-        <module>resteasy-springMVC</module>
-        <module>oreilly-workbook</module>
         <module>oreilly-jaxrs-2.0-workbook</module>
-        <module>oauth1-examples</module>
-        <module>oauth2-as7-example</module>
-        <module>examples-jsapi</module>
-        <module>smime</module>
-        <module>digital-signatures</module>
-        <module>jaxrs-2.0/simple-client</module>
-        <module>jaxrs-2.0/server-async-http</module>
-        <module>wadl-example</module>
     </modules>
 </project>

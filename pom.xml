@@ -184,6 +184,7 @@
                 <module>profiling-tests</module>
                 <module>resteasy-wadl</module>
                 <module>arquillian</module>
+                <module>examples</module>
             </modules>
         </profile>
         <profile>
