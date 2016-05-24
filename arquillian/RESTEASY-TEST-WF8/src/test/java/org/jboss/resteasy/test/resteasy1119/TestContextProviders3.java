@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import junit.framework.Assert;
 
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
@@ -29,6 +30,7 @@ import org.junit.runner.RunWith;
 
 @SuppressWarnings("deprecation")
 @RunWith(Arquillian.class)
+@RunAsClient
 public class TestContextProviders3 extends TestContextProviders
 {
    @Deployment

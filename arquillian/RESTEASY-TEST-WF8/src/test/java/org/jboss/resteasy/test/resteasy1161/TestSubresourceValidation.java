@@ -10,6 +10,7 @@ import javax.ws.rs.core.Response;
 import junit.framework.Assert;
 
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ViolationReport;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
  * @date September 1, 2014
  */
 @RunWith(Arquillian.class)
+@RunAsClient
 public class TestSubresourceValidation
 {
 //   private static final Logger log = LoggerFactory.getLogger(TestSubresourceValidation.class);

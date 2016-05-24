@@ -11,6 +11,7 @@ import javax.ws.rs.ext.Provider;
 import junit.framework.Assert;
 
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
@@ -37,6 +38,7 @@ import org.junit.runner.RunWith;
  * @date September 1, 2014
  */
 @RunWith(Arquillian.class)
+@RunAsClient
 public class TestSecureProcessing
 {
    protected static Map<String, String> EMPTY_MAP = new HashMap<String, String>();

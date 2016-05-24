@@ -7,6 +7,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.resteasy1137.TestApplication;
@@ -31,6 +32,7 @@ import org.junit.runner.RunWith;
  * Copyright Jul 20, 2015
  */
 @RunWith(Arquillian.class)
+@RunAsClient
 public class TestCustomExceptionMapper
 {
    @Deployment
