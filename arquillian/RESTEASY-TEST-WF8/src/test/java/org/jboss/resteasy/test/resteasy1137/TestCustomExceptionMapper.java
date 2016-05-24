@@ -1,5 +1,8 @@
 package org.jboss.resteasy.test.resteasy1137;
 
+import java.io.File;
+import java.net.URL;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation.Builder;
@@ -41,8 +44,8 @@ public class TestCustomExceptionMapper
       WebArchive war = ShrinkWrap.create(WebArchive.class, "RESTEASY-1137.war")
             .addClasses(TestApplication.class, TestResource.class)
             .addClasses(TestClassConstraint.class, TestClassValidator.class, TestReport.class)
-            .addAsLibrary("1137/validation-versioning.jar", "validation-versioning.jar")
-            .addAsWebInfResource("1137/web.xml", "web.xml")
+            .addAsLibrary(TestCustomExceptionMapper.class.getResource("/1137/validation-versioning.jar"), "validation-versioning.jar")
+            .addAsWebInfResource(TestCustomExceptionMapper.class.getResource("/1137/web.xml"), "web.xml")
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
             ;
       System.out.println(war.toString(true));
