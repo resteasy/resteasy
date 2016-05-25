@@ -18,6 +18,7 @@
 
     <properties>
         <version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec>1.0.0.Final</version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec>
+        <version.org.eclipse.jetty>9.2.13.v20150730</version.org.eclipse.jetty>
     </properties>
 
     <!-- this distributionManagement is only here for RESTEasy automated testing of examples build.  You can remove if you are copying this
@@ -58,6 +59,12 @@ pom.xml as a template -->
             <groupId>org.jboss.spec.javax.ws.rs</groupId>
             <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
             <version>${version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

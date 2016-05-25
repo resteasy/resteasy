@@ -251,6 +251,7 @@
                 <groupId>org.jboss.logging</groupId>
                 <artifactId>jboss-logging</artifactId>
                 <version>${version.org.jboss.logging.jboss-logging}</version>
+                <!--<scope>provided</scope> todo this should be provided-->
             </dependency>
 
             <dependency>
