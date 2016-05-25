@@ -33,7 +33,7 @@ import org.junit.Test;
 
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.ServletInfo;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * RESTEASY-841

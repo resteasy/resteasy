@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;

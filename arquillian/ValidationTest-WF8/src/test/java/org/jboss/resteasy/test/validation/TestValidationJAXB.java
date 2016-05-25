@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.validation;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import javax.ws.rs.core.MediaType;
 

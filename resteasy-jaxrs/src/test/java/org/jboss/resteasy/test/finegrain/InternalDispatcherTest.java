@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.finegrain;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.annotations.ClientResponseType;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.providers.multipart;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;

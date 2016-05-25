@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.finegrain.application;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.junit.Test;
 

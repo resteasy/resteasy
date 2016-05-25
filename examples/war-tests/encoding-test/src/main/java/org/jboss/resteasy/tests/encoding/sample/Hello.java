@@ -1,6 +1,6 @@
 package org.jboss.resteasy.tests.encoding.sample;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import javax.annotation.Resource;
 import javax.ws.rs.GET;

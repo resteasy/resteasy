@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.nextgen.security;
 import org.jboss.resteasy.util.BasicAuthHelper;
 import org.junit.Test;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * RESTEASY-1176

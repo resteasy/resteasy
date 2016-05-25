@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.skeleton.key;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMWriter;
 import org.jboss.resteasy.security.PemUtils;

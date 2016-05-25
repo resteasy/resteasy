@@ -3,7 +3,7 @@ package org.jboss.resteasy.test.i18n;
 import java.lang.reflect.Method;
 import java.util.Locale;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.ResourceMethodInvoker;

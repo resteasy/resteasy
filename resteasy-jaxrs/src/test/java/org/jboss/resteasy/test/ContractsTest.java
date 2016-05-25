@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test;
 
-import junit.framework.Assert;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.junit.Assert;
 import org.junit.Test;
 
 import javax.ws.rs.Consumes;

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.client;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.core.executors.InMemoryClientExecutor;
 import org.junit.Test;

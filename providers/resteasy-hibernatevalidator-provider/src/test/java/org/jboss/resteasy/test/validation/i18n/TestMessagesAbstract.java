@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.validation.i18n;
 
 import java.util.Locale;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.jboss.resteasy.plugins.validation.hibernate.i18n.Messages;
 import org.jboss.resteasy.test.resteasy_jaxrs.i18n.TestMessagesParent;

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.resteasy767;
 
 import static org.junit.Assert.assertEquals;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;

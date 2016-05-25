@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.finegrain.client;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.annotations.Body;
 import org.jboss.resteasy.annotations.LinkHeaderParam;
 import org.jboss.resteasy.annotations.ResponseObject;

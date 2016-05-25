@@ -11,7 +11,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.util.AnnotationLiteral;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.jboss.resteasy.cdi.extension.bean.Boston;
 import org.jboss.resteasy.cdi.extension.bean.BostonHolder;

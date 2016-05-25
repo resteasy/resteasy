@@ -5,7 +5,7 @@ import java.util.Locale;
 import javax.validation.ElementKind;
 import javax.ws.rs.core.MediaType;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.jboss.resteasy.api.validation.ConstraintType;
 import org.jboss.resteasy.plugins.validation.i18n.Messages;

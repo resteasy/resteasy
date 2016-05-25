@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.skeleton.key;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.skeleton.key.RSATokenVerifier;
 import org.jboss.resteasy.skeleton.key.ResourceMetadata;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;

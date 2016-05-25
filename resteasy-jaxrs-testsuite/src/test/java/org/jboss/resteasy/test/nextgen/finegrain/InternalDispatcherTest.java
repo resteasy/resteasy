@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.nextgen.finegrain;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.core.Dispatcher;

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.finegrain;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.core.messagebody.ReaderUtility;
 import org.jboss.resteasy.core.messagebody.WriterUtility;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;

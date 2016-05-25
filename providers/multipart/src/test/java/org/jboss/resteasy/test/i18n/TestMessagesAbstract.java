@@ -5,7 +5,7 @@ import java.util.Locale;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.james.mime4j.parser.Field;
 import org.apache.james.mime4j.util.ByteSequence;

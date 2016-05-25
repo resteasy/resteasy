@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.i18n;
 
 import java.util.Locale;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.jboss.resteasy.security.doseta.DKIMSignature;
 import org.jboss.resteasy.security.doseta.i18n.Messages;

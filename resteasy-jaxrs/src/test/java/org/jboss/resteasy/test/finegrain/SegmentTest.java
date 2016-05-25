@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.finegrain;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.core.ResourceLocatorInvoker;
 import org.jboss.resteasy.core.ResourceMethodInvoker;

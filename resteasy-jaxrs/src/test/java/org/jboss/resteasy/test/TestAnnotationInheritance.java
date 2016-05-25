@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.junit.Test;
 
