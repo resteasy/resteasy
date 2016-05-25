@@ -66,7 +66,7 @@
                 <scanIntervalSeconds>10</scanIntervalSeconds>
                 <stopKey>foo</stopKey>
                 <stopPort>9999</stopPort>
-                <stopWait>1</stopWait>
+                <stopWait>10</stopWait>
             </configuration>
             <executions>
                 <execution>
