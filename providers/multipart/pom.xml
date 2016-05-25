@@ -33,11 +33,6 @@
             <artifactId>javax.mail</artifactId>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.james</groupId>
             <artifactId>apache-mime4j</artifactId>
         </dependency>
@@ -57,17 +52,9 @@
             <version>2.1.0.Final</version>
             <scope>test</scope>
         </dependency>
-        <!--
-        <dependency>
-           <groupId>tjws</groupId>
-           <artifactId>webserver</artifactId>
-           <scope>test</scope>
-        </dependency>
-        -->
       <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
-            <version>3.1.4.GA</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>
@@ -95,32 +82,6 @@
         </dependency>
     </dependencies>
 
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                    <encoding>ISO8859_1</encoding>
-                </configuration>
-            </plugin>
-            <!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <encoding>utf-8</encoding>
-                </configuration>
-            </plugin>
-            -->
-        </plugins>
-    </build>
-
-
     <profiles>
         <profile>
             <id>i18n</id>
@@ -134,8 +95,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-resources-plugin</artifactId>
-                        <version>2.6</version>
-                        <executions>
+                       <executions>
                             <execution>
                                 <id>copy-resources</id>
                                 <phase>initialize</phase>
@@ -159,19 +119,8 @@
                     </plugin>
 
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>2.3.2</version>
-                        <configuration>
-                            <compilerArgument>
-                                -AgeneratedTranslationFilesPath=${project.basedir}/target/generated-translation-files
-                            </compilerArgument>
-                        </configuration>
-                    </plugin>
-                    <plugin>
                        <groupId>org.apache.maven.plugins</groupId>
                        <artifactId>maven-surefire-plugin</artifactId>
-                       <version>2.17</version>
                        <configuration>
                            <reuseForks>false</reuseForks>
                         </configuration>

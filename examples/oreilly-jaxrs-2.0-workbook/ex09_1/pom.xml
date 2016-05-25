@@ -68,7 +68,7 @@
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.0.6.v20130930</version>
+                <version>${version.org.eclipse.jetty}</version>
                 <configuration>
                     <webApp>
                         <contextPath>/</contextPath>
@@ -83,7 +83,7 @@
                         <id>start-jetty</id>
                         <phase>pre-integration-test</phase>
                         <goals>
-                            <goal>run</goal>
+                            <goal>start</goal>
                         </goals>
                         <configuration>
                             <scanIntervalSeconds>0</scanIntervalSeconds>
@@ -117,14 +117,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
             </plugin>
         </plugins>
     </build>

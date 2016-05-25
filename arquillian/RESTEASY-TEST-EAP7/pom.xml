@@ -16,25 +16,12 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <wildfly-version>10.0.0.CR4-redhat-1</wildfly-version>
+    <wildfly-version>10.0.0.Final</wildfly-version>
     <eap.version>7.0</eap.version>
   </properties>
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
-        <!--configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration-->
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.12</version>
-      </plugin>
         <plugin>
             <artifactId>maven-dependency-plugin</artifactId>
             <executions>
@@ -62,7 +49,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.6</version>
         <executions>
           <execution>
             <id>unpack resteasy</id>
@@ -101,21 +87,14 @@
   <dependencies>
     <dependency>
         <groupId>org.jboss.spec</groupId>
-        <artifactId>jboss-javaee-6.0</artifactId>
-        <version>1.0.0.Final</version>
+        <artifactId>jboss-javaee-7.0</artifactId>
+        <version>1.0.3.Final</version>
         <type>pom</type>
         <scope>provided</scope>
-        <exclusions>
-            <exclusion>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>jaxrs-api</artifactId>
-            </exclusion>
-        </exclusions> 
     </dependency>
     <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.8.1</version>
         <scope>compile</scope>
     </dependency>
     <dependency>

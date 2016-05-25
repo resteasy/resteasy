@@ -35,7 +35,6 @@
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
-            <version>3.1.4.GA</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>
@@ -55,25 +54,7 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency> 
-        <!--<dependency>-->
-            <!--<groupId>org.jboss.resteasy</groupId>-->
-            <!--<artifactId>resteasy-jaxrs-testsuite</artifactId>-->
-            <!--<version>${project.version}</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
     <profiles>
         <profile>
@@ -88,7 +69,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-resources-plugin</artifactId>
-                        <version>2.6</version>
                         <executions>
                             <execution>
                                 <id>copy-resources</id>
@@ -113,19 +93,8 @@
                     </plugin>
 
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>2.3.2</version>
-                        <configuration>
-                            <compilerArgument>
-                                -AgeneratedTranslationFilesPath=${project.basedir}/target/generated-translation-files
-                            </compilerArgument>
-                        </configuration>
-                    </plugin>
-                    <plugin>
                        <groupId>org.apache.maven.plugins</groupId>
                        <artifactId>maven-surefire-plugin</artifactId>
-                       <version>2.17</version>
                        <configuration>
                            <reuseForks>false</reuseForks>
                         </configuration>
