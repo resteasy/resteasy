@@ -1,5 +1,0 @@
-<jboss-web>
-    <valve>
-        <class-name>org.jboss.resteasy.skeleton.key.as7.BearerTokenAuthenticatorValve</class-name>
-    </valve>
-</jboss-web>
