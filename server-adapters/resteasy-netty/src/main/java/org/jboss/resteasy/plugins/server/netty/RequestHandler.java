@@ -11,6 +11,7 @@ import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.server.netty.i18n.LogMessages;
 import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.spi.Failure;
@@ -32,6 +33,8 @@ import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 @Sharable
 public class RequestHandler extends SimpleChannelUpstreamHandler
 {
+   private static final Logger LOG = Logger.getLogger(RequestHandler.class);
+
    protected final RequestDispatcher dispatcher;
 
    public RequestHandler(RequestDispatcher dispatcher)
@@ -100,7 +103,7 @@ public class RequestHandler extends SimpleChannelUpstreamHandler
       }
       else
       {
-          e.getCause().printStackTrace();
+          LOG.info("Exception caught by handler", e);
           e.getChannel().close();
       }
 

@@ -43,9 +43,13 @@ import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SSLAcceptor implements Acceptor
 {
+   private static final Logger LOG = Logger.getLogger(SSLAcceptor.class.getName());
+
    public static final String ARG_ALGORITHM = "algorithm"; // SUNX509
 
    public static final String ARG_CLIENTAUTH = "clientAuth"; // false
@@ -163,8 +167,7 @@ public class SSLAcceptor implements Acceptor
       }
       catch (Exception e)
       {
-         System.err.println("initKeyStore:  " + e);
-         e.printStackTrace();
+         LOG.log(Level.SEVERE, "initKeyStore: " + e, e);
          throw new IOException(e.toString());
       }
       finally
@@ -195,7 +198,7 @@ public class SSLAcceptor implements Acceptor
             }
             catch (Throwable t)
             {
-               t.printStackTrace();
+               LOG.log(Level.SEVERE, t.getMessage(), t);
                throw new IOException(t.toString());
             }
 
@@ -220,8 +223,7 @@ public class SSLAcceptor implements Acceptor
       }
       catch (Exception e)
       {
-         System.err.println("SSLsocket creation:  " + e);
-         e.printStackTrace();
+         LOG.log(Level.SEVERE, "SSLsocket creation:  " + e, e);
          throw new IOException(e.toString());
       }
 
