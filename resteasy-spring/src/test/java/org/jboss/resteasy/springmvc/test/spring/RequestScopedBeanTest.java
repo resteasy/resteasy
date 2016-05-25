@@ -1,6 +1,6 @@
 package org.jboss.resteasy.springmvc.test.spring;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.ValueInjector;
 import org.jboss.resteasy.spi.HttpRequest;

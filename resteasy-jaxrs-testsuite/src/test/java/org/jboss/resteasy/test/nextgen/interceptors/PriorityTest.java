@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.nextgen.interceptors;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.core.interception.ClientResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.ContainerResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;

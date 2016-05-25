@@ -3,7 +3,7 @@ package org.jboss.resteasy.test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.plugins.stats.DeleteResourceMethod;
 import org.jboss.resteasy.plugins.stats.GetResourceMethod;

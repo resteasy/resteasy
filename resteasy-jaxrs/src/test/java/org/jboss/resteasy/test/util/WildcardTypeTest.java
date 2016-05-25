@@ -10,7 +10,7 @@ import javax.ws.rs.core.GenericType;
 import org.jboss.resteasy.util.Types;
 import org.junit.Test;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * RESTEASY-1295

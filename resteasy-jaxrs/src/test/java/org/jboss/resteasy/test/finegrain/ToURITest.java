@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.finegrain;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.spi.touri.MappedBy;
 import org.jboss.resteasy.spi.touri.ObjectToURI;
 import org.jboss.resteasy.spi.touri.URIResolver;

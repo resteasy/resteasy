@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.client;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;

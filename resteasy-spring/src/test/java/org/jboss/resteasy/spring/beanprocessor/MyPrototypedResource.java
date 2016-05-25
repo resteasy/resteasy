@@ -1,6 +1,6 @@
 package org.jboss.resteasy.spring.beanprocessor;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

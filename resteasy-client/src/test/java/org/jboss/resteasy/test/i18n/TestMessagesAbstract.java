@@ -5,7 +5,7 @@ import java.util.Locale;
 
 import javax.ws.rs.core.MediaType;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.junit.Test;

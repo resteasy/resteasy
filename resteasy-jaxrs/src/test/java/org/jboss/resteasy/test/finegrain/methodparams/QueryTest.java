@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.annotations.Query;
 import org.jboss.resteasy.core.Dispatcher;

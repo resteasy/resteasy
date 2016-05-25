@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.profiling;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;

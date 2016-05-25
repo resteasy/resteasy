@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.keystone;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.infinispan.Cache;
 import org.infinispan.manager.DefaultCacheManager;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;

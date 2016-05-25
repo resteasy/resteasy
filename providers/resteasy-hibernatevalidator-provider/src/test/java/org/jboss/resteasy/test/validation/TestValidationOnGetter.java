@@ -17,7 +17,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.core.Dispatcher;

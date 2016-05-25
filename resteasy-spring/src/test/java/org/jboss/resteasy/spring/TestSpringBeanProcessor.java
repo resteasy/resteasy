@@ -1,7 +1,7 @@
 package org.jboss.resteasy.spring;
 
 import static org.jboss.resteasy.test.TestPortProvider.createClientRequest;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.plugins.spring.SpringBeanProcessor;

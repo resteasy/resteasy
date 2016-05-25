@@ -10,7 +10,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.jboss.resteasy.cdi.i18n.Messages;
 import org.jboss.resteasy.test.resteasy_jaxrs.i18n.TestMessagesParent;

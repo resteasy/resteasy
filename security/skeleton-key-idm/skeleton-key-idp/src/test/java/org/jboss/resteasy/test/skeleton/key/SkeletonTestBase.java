@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.skeleton.key;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.infinispan.Cache;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;

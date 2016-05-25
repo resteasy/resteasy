@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.plugins.validation.smoke;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.ProxyFactory;

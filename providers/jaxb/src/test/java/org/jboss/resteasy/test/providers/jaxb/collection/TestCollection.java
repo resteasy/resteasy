@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.providers.jaxb.collection;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;

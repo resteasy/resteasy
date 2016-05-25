@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.nextgen.finegrain.resource;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.spi.metadata.ResourceBuilder;
 import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.test.BaseResourceTest;

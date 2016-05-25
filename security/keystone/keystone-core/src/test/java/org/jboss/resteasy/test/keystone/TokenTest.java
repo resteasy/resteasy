@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.keystone;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cms.*;
 import org.bouncycastle.cms.jcajce.JcaSignerInfoGeneratorBuilder;

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.jose.jws;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.annotate.JsonSerialize;

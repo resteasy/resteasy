@@ -9,7 +9,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.jboss.resteasy.api.validation.ViolationReport;
 import org.jboss.resteasy.client.ClientRequest;

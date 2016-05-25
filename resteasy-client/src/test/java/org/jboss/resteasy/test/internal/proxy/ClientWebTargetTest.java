@@ -5,7 +5,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ClientWebTarget;
 import org.junit.Test;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.util.Collections;
 

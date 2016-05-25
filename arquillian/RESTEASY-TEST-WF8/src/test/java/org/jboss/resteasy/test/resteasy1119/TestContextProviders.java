@@ -13,7 +13,7 @@ import java.util.Set;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.ws.rs.core.MediaType;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;

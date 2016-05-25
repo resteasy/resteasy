@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.skeleton.key;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.jboss.resteasy.jose.jws.JWSBuilder;
 import org.jboss.resteasy.jose.jws.JWSInput;
 import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
