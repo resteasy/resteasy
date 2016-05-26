@@ -2058,7 +2058,7 @@ public class Serve implements ServletContext, Serializable
                restart();
                // Get the streams.
                parseRequest();
-               if (reqMethod != null && serve.isAccessLogged())
+               if (reqMethod != null && serve.isAccessLogged() && serve.log.isLoggable(Level.FINER))
                {
                   // consider caching socket stuff for faster logging
                   // {0} {1} {2} [{3,date,dd/MMM/yyyy:HH:mm:ss Z}] \"{4} {5} {6}\" {7,number,#} {8,number} {9} {10}
@@ -4562,7 +4562,8 @@ public class Serve implements ServletContext, Serializable
       /* ------------------------------------------------------------ */
       public long skip(long len) throws IOException
       {
-         LOG.finer("instream.skip() :" + len);
+         if (DEBUG_ON)
+            LOG.finer("instream.skip() :" + len);
          if (closed)
             throw new IOException("The stream is already closed");
          if (chunking)
@@ -4679,7 +4680,8 @@ public class Serve implements ServletContext, Serializable
       public void mark(int readlimit)
       {
          // not supported
-         LOG.finer("instream.mark(" + readlimit + ")");
+         if (DEBUG_ON)
+            LOG.finer("instream.mark(" + readlimit + ")");
       }
 
       /* ------------------------------------------------------------ */
