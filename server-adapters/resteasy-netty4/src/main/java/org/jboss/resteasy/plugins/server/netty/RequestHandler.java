@@ -9,6 +9,7 @@ import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpResponse;
 
 import io.netty.handler.timeout.IdleStateEvent;
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.server.netty.i18n.LogMessages;
 import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.spi.Failure;
@@ -31,6 +32,8 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 @Sharable
 public class RequestHandler extends SimpleChannelInboundHandler
 {
+   private static final Logger LOG = Logger.getLogger(RequestHandler.class);
+
    protected final RequestDispatcher dispatcher;
 
    public RequestHandler(RequestDispatcher dispatcher)
@@ -90,7 +93,7 @@ public class RequestHandler extends SimpleChannelInboundHandler
       }
       else
       {
-          e.getCause().printStackTrace();
+          LOG.info("Exception caught by handler", e);
           ctx.close();
       }
    }

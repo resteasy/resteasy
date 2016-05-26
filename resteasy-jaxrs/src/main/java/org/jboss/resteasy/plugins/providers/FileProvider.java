@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.NoContent;
 
@@ -37,6 +38,8 @@ import java.lang.reflect.Type;
 public class FileProvider implements MessageBodyReader<File>,
         MessageBodyWriter<File>
 {
+   private static final Logger LOG = Logger.getLogger(FileProvider.class);
+
    private static final String PREFIX = "pfx";
 
    private static final String SUFFIX = "sfx";
@@ -70,9 +73,7 @@ public class FileProvider implements MessageBodyReader<File>,
             // could make this configurable, so we fail on fault rather than
             // default.
 
-            System.err
-                    .println("Could not bind to specified download directory "
-                            + _downloadDirectory + " so will use temp dir.");
+            LOG.warn("Could not bind to specified download directory " + _downloadDirectory +" so will use temp dir.");
          }
       }
 

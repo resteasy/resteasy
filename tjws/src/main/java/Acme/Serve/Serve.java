@@ -109,6 +109,10 @@ import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.StreamHandler;
 
 /// Minimal Java servlet container class.
 // <P>
@@ -242,7 +246,7 @@ public class Serve implements ServletContext, Serializable
 
    protected String hostName;
 
-   private transient PrintStream logStream;
+   private transient Logger log;
 
    private boolean useAccLog;
 
@@ -289,11 +293,23 @@ public class Serve implements ServletContext, Serializable
 
    protected List<ServeConnection> connections = new ArrayList<ServeConnection>();
 
-   // / Constructor.
-   public Serve(Map arguments, PrintStream logStream)
+   // / Constructor kept for API compatibility
+   public Serve(Map arguments, PrintStream logStream) {
+      this(arguments, newLoggerForPrintStream(logStream));
+   }
+
+   /**
+    * Default constructor to create TJWS as a bean
+    */
+   public Serve()
+   {
+      this(new HashMap(), Logger.getLogger(Serve.class.getName()));
+   }
+
+   private Serve(Map arguments, Logger log)
    {
       this.arguments = arguments;
-      this.logStream = logStream;
+      this.log = log;
       registry = new PathTreeDictionary();
       realms = new PathTreeDictionary();
       attributes = new Hashtable();
@@ -350,12 +366,11 @@ public class Serve implements ServletContext, Serializable
       initMime();
    }
 
-   /**
-    * Default constructor to create TJWS as a bean
-    */
-   public Serve()
-   {
-      this(new HashMap(), System.err);
+   private static Logger newLoggerForPrintStream(PrintStream printStream) {
+      Logger result = Logger.getLogger(Serve.class.getName());
+      result.setUseParentHandlers(false);
+      result.addHandler(new StreamHandler(printStream, new SimpleFormatter()));
+      return result;
    }
 
    protected void setAccessLogged()
@@ -1082,21 +1097,12 @@ public class Serve implements ServletContext, Serializable
    // @param message the message to log
    public void log(String message)
    {
-      Date date = new Date(System.currentTimeMillis());
-      logStream.println("[" + date.toString() + "] " + message);
+      log.log(Level.INFO, message);
    }
 
    public void log(String message, Throwable throwable)
    {
-      if (throwable != null)
-      {
-         StringWriter sw;
-         PrintWriter pw = new PrintWriter(sw = new StringWriter());
-         throwable.printStackTrace(pw);
-         // printCauses(throwable, pw);
-         message = message + '\n' + sw;
-      }
-      log(message);
+      log.log(Level.SEVERE, message, throwable);
    }
 
    // protected void printCauses(Throwable throwable, PrintWriter printWriter) {
@@ -2052,7 +2058,7 @@ public class Serve implements ServletContext, Serializable
                restart();
                // Get the streams.
                parseRequest();
-               if (reqMethod != null && serve.isAccessLogged())
+               if (reqMethod != null && serve.isAccessLogged() && serve.log.isLoggable(Level.FINER))
                {
                   // consider caching socket stuff for faster logging
                   // {0} {1} {2} [{3,date,dd/MMM/yyyy:HH:mm:ss Z}] \"{4} {5} {6}\" {7,number,#} {8,number} {9} {10}
@@ -2069,7 +2075,7 @@ public class Serve implements ServletContext, Serializable
                   logPlaceholders[9] = new Integer(socket.getLocalPort());
                   logPlaceholders[10] = serve.isShowReferer() ? getHeader("Referer") : "-";
                   logPlaceholders[11] = serve.isShowUserAgent() ? getHeader("User-Agent") : "-";
-                  serve.logStream.println(accessFmt.format(logPlaceholders));
+                  serve.log.finer(accessFmt.format(logPlaceholders));
                }
                lastRun = 0;
                timesRequested++;
@@ -4349,7 +4355,9 @@ public class Serve implements ServletContext, Serializable
 
    public static class ServeInputStream extends ServletInputStream
    {
-      private final static boolean STREAM_DEBUG = false;
+      private final static Logger LOG = Logger.getLogger(ServeInputStream.class.getName());
+
+      private final static boolean DEBUG_ON = LOG.isLoggable(Level.FINER);
 
       /**
        * The actual input stream (buffered).
@@ -4488,8 +4496,8 @@ public class Serve implements ServletContext, Serializable
                i++;
             }
          }
-         if (STREAM_DEBUG)
-            System.err.println(buf);
+         if (DEBUG_ON)
+            LOG.finer(String.valueOf(buf));
          if (c == -1 && buf.length() == 0)
             return null;
 
@@ -4534,8 +4542,7 @@ public class Serve implements ServletContext, Serializable
                   len = Math.min(len, (int) (contentLength - readCount));
                if (len <= 0)
                {
-                  if (STREAM_DEBUG)
-                     System.err.print("EOF");
+                  LOG.finer("EOF");
                   return -1;
                }
                len = in.read(b, off, len);
@@ -4546,8 +4553,8 @@ public class Serve implements ServletContext, Serializable
                // to avoid extra if
                len = in.read(b, off, len);
          }
-         if (STREAM_DEBUG && len > 0)
-            System.err.print(new String(b, off, len));
+         if (DEBUG_ON && len > 0)
+            LOG.finer(new String(b, off, len));
 
          return len;
       }
@@ -4555,8 +4562,8 @@ public class Serve implements ServletContext, Serializable
       /* ------------------------------------------------------------ */
       public long skip(long len) throws IOException
       {
-         if (STREAM_DEBUG)
-            System.err.println("instream.skip() :" + len);
+         if (DEBUG_ON)
+            LOG.finer("instream.skip() :" + len);
          if (closed)
             throw new IOException("The stream is already closed");
          if (chunking)
@@ -4590,8 +4597,7 @@ public class Serve implements ServletContext, Serializable
        */
       public int available() throws IOException
       {
-         if (STREAM_DEBUG)
-            System.err.println("instream.available()");
+         LOG.finer("instream.available()");
          if (closed)
             throw new IOException("The stream is already closed");
          if (chunking)
@@ -4618,8 +4624,7 @@ public class Serve implements ServletContext, Serializable
       {
          // keep alive, will be closed by socket
          // in.close();
-         if (STREAM_DEBUG)
-            System.err.println("instream.close() " + closed);
+         LOG.finer("instream.close() " + closed);
          if (closed)
             return; //throw new IOException("The stream is already closed");
          // read until end of chunks or content length
@@ -4662,8 +4667,7 @@ public class Serve implements ServletContext, Serializable
          // no buffering, so not possible
          if (closed)
             throw new IOException("The stream is already closed");
-         if (STREAM_DEBUG)
-            System.err.println("instream.reset()");
+         LOG.finer("instream.reset()");
          in.reset();
       }
 
@@ -4676,8 +4680,8 @@ public class Serve implements ServletContext, Serializable
       public void mark(int readlimit)
       {
          // not supported
-         if (STREAM_DEBUG)
-            System.err.println("instream.mark(" + readlimit + ")");
+         if (DEBUG_ON)
+            LOG.finer("instream.mark(" + readlimit + ")");
       }
 
       /* ------------------------------------------------------------ */
@@ -4747,7 +4751,9 @@ public class Serve implements ServletContext, Serializable
    public static class ServeOutputStream extends ServletOutputStream
    {
 
-      private static final boolean STREAM_DEBUG = false;
+      private static final Logger LOG = Logger.getLogger(ServeOutputStream.class.getName());
+
+      private final static boolean DEBUG_ON = LOG.isLoggable(Level.FINER);
 
       private boolean chunked;
 
@@ -4832,10 +4838,10 @@ public class Serve implements ServletContext, Serializable
 
       public void write(byte[] b, int off, int len) throws IOException
       {
-         if (closed)
-         {
-            if (STREAM_DEBUG)
-               System.err.println((b == null ? "null" : new String(b, off, len)) + "\n won't be written, stream closed.");
+         if (closed) {
+            if (DEBUG_ON) {
+               LOG.finer((b == null ? "null" : new String(b, off, len)) + "\n won't be written, stream closed.");
+            }
             throw new IOException("An attempt of writing " + len + " bytes to a closed out.");
          }
 
@@ -4864,13 +4870,12 @@ public class Serve implements ServletContext, Serializable
             lbytes += len;
          }
 
-         if (STREAM_DEBUG)
-         {
+         if (DEBUG_ON) {
             if (chunked)
-               System.err.println(Integer.toHexString(len));
-            System.err.print(new String(b, off, len));
+               LOG.finer(Integer.toHexString(len));
+            LOG.finer(new String(b, off, len));
             if (chunked)
-               System.err.println();
+               LOG.finer("end of chunk");
          }
       }
 
@@ -4892,20 +4897,17 @@ public class Serve implements ServletContext, Serializable
                lbytes += b.length;
                out.write("\r\n".getBytes());
                lbytes += 2;
-               if (STREAM_DEBUG)
-               {
-                  System.err.println(hexl);
-                  System.err.print(new String(b));
-                  System.err.println();
+               if (DEBUG_ON) {
+                  LOG.finer(hexl);
+                  LOG.finer(new String(b));
                }
             }
             else
             {
                out.write(b);
                lbytes += b.length;
-               if (STREAM_DEBUG)
-               {
-                  System.err.print(new String(b));
+               if (DEBUG_ON) {
+                  LOG.finer(new String(b));
                }
             }
          }
@@ -4927,8 +4929,7 @@ public class Serve implements ServletContext, Serializable
                {
                   out.write("0\r\n\r\n".getBytes());
                   lbytes += 5;
-                  if (STREAM_DEBUG)
-                     System.err.print("0\r\n\r\n");
+                  LOG.finer("0\r\n\r\n");
                   // TODO: here is possible to write trailer headers
                   out.flush();
                }
