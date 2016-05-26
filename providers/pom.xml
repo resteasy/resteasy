@@ -39,16 +39,13 @@
                 <module>jaxb</module>
                 <module>jettison</module>
                 <module>fastinfoset</module>
-                <module>test-all-jaxb</module>
                 <module>jackson</module>
                 <module>jackson2</module>
                 <module>json-p-ee7</module>
-                <module>test-jackson-jaxb-coexistence</module>
                 <module>resteasy-atom</module>
                 <module>multipart</module>
                 <module>yaml</module>
                 <module>resteasy-html</module>
-                <module>test-resteasy-html</module>
                 <module>resteasy-hibernatevalidator-provider</module>
                 <module>resteasy-validator-provider-11</module>
             </modules>
