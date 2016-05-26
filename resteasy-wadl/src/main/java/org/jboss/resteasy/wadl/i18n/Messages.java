@@ -41,5 +41,6 @@ public interface Messages
    @Message(id = BASE + 35, value = "Serving %s")
    String servingPathInfo(String pathInfo);
    
-   
+   @Message(id = BASE + 36, value = "Error while processing WADL")
+   String cantProcessWadl();
 }
