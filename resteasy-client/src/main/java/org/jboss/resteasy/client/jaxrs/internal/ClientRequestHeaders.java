@@ -1,5 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
+import org.jboss.resteasy.plugins.delegates.ClientCookie;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HeaderHelper;
@@ -132,9 +133,23 @@ public class ClientRequestHeaders
 
    public void cookie(Cookie cookie)
    {
-      headers.add(HttpHeaders.COOKIE, cookie);
+      if (!(cookie instanceof ClientCookie))
+      {
+         cookie = new ClientCookie(cookie);
+      }
+      String cookies = (String)headers.getFirst(HttpHeaders.COOKIE);
+      StringBuilder builder = buildCookieString(cookies, cookie);
+      headers.putSingle(HttpHeaders.COOKIE, builder.toString());
    }
 
+   private StringBuilder buildCookieString(String cookies, Cookie cookie)
+   {
+      StringBuilder builder = new StringBuilder();
+      if (cookies != null) builder.append(cookies).append("; ");
+      builder.append(configuration.toHeaderString(cookie));
+      return builder;
+   }
+   
    public void allow(String... methods)
    {
       HeaderHelper.setAllow(this.headers, methods);

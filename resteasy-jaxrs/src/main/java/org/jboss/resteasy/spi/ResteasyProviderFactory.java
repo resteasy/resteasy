@@ -20,6 +20,8 @@ import org.jboss.resteasy.core.interception.LegacyPrecedence;
 import org.jboss.resteasy.core.interception.ReaderInterceptorRegistry;
 import org.jboss.resteasy.core.interception.WriterInterceptorRegistry;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
+import org.jboss.resteasy.plugins.delegates.ClientCookie;
+import org.jboss.resteasy.plugins.delegates.ClientCookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.CookieHeaderDelegate;
 import org.jboss.resteasy.plugins.delegates.DateDelegate;
 import org.jboss.resteasy.plugins.delegates.EntityTagDelegate;
@@ -292,6 +294,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       addHeaderDelegate(MediaType.class, new MediaTypeHeaderDelegate());
       addHeaderDelegate(NewCookie.class, new NewCookieHeaderDelegate());
       addHeaderDelegate(Cookie.class, new CookieHeaderDelegate());
+      addHeaderDelegate(ClientCookie.class, new ClientCookieHeaderDelegate());
       addHeaderDelegate(URI.class, new UriHeaderDelegate());
       addHeaderDelegate(EntityTag.class, new EntityTagDelegate());
       addHeaderDelegate(CacheControl.class, new CacheControlDelegate());
