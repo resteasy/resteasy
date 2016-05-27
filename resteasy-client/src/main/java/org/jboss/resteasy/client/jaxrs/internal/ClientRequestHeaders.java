@@ -308,9 +308,13 @@ public class ClientRequestHeaders
          }
          else
          {
-            String str = configuration.toHeaderString(obj);
-            Cookie cookie = Cookie.valueOf(str);
-            cookies.put(cookie.getName(), cookie);
+            String[] cs = ((String) obj).split(";");
+            for (String c : cs)
+            {
+               String str = configuration.toHeaderString(c);
+               Cookie cookie = Cookie.valueOf(str);
+               cookies.put(cookie.getName(), cookie);
+            }
          }
       }
       return cookies;
