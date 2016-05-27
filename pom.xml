@@ -181,6 +181,7 @@
                 <module>profiling-tests</module>
                 <module>resteasy-wadl</module>
                 <module>arquillian</module>
+                <module>integration-tests</module>
                 <module>examples</module>
             </modules>
         </profile>
@@ -209,6 +210,7 @@
                 <module>profiling-tests</module>
                 <module>resteasy-wadl</module>
                 <module>arquillian</module>
+                <module>integration-tests</module>
             </modules>
         </profile>
     </profiles>
