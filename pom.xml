@@ -28,8 +28,8 @@
     <properties>
         <jboss.home />
         <dep.jaxb-impl.version>2.2.7</dep.jaxb-impl.version>
-        <dep.jettison.version>1.3.2</dep.jettison.version>
-        <dep.commons-io.version>2.1</dep.commons-io.version>
+        <dep.jettison.version>1.3.3</dep.jettison.version>
+        <dep.commons-io.version>2.4</dep.commons-io.version>
         <dep.hibernate-validator.version>5.1.3.Final</dep.hibernate-validator.version>
         <dep.javax.persistence.version>1.0.1.Final</dep.javax.persistence.version>
         <dep.javax.activation.version>1.1.1</dep.javax.activation.version>
@@ -40,7 +40,7 @@
         <dep.guice.version>4.0</dep.guice.version>
         <dep.netty.version>3.6.4.Final</dep.netty.version>
         <dep.netty4.version>4.0.7.Final</dep.netty4.version>
-        <dep.slf4j.version>1.7.5</dep.slf4j.version>
+        <dep.slf4j.version>1.7.7</dep.slf4j.version>
         <dep.bc.version>1.52</dep.bc.version>
         <dep.com.sun.mail.version>1.5.5</dep.com.sun.mail.version>
         <dep.arquillian-bom.version>1.1.11.Final</dep.arquillian-bom.version>
@@ -48,16 +48,18 @@
         <version.org.jboss.logging.jboss-logging>3.3.0.Final</version.org.jboss.logging.jboss-logging>
         <version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.2_spec>1.0.0.Final</version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.2_spec>
         <version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>1.0.0.Final</version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>
-        <version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>1.0.0.Final</version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>
+        <version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>1.0.5.Final</version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>
         <version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>1.0.0.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>
         <version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec>1.0.0.Final</version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec>
         <version.org.javassist>3.20.0-GA</version.org.javassist>
-        <version.org.glassfish.javax.el>3.0.0</version.org.glassfish.javax.el>
+        <version.org.glassfish.javax.el>3.0.1-b08</version.org.glassfish.javax.el>
         <version.io.undertow>1.3.22.Final</version.io.undertow>
-        <version.com.fasterxml.jackson>2.6.3</version.com.fasterxml.jackson>
+        <version.com.fasterxml.jackson>2.7.3</version.com.fasterxml.jackson>
         <version.org.apache.httpcomponents.httpclient>4.5</version.org.apache.httpcomponents.httpclient>
         <version.org.apache.httpcomponents.httpcore>4.4.1</version.org.apache.httpcomponents.httpcore>
         <version.org.eclipse.jetty>9.2.13.v20150730</version.org.eclipse.jetty>
+        <version.org.codehaus.jackson>1.9.13</version.org.codehaus.jackson>
+        <version.org.infinispan>5.1.6.FINAL</version.org.infinispan>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- java 7-->
         <maven.compiler.target>1.7</maven.compiler.target>
@@ -244,7 +246,7 @@
             <dependency>
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
-                <version>1.2.14</version>
+                <version>1.2.17</version>
             </dependency>
 
             <dependency>
@@ -300,7 +302,7 @@
             <dependency>
                 <groupId>com.sun.xml.fastinfoset</groupId>
                 <artifactId>FastInfoset</artifactId>
-                <version>1.2.7</version>
+                <version>1.2.13</version>
             </dependency>
 
             <dependency>
@@ -425,22 +427,22 @@
             <dependency>
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-core-asl</artifactId>
-                <version>1.9.12</version>
+                <version>${version.org.codehaus.jackson}</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-mapper-asl</artifactId>
-                <version>1.9.12</version>
+                <version>${version.org.codehaus.jackson}</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-xc</artifactId>
-                <version>1.9.12</version>
+                <version>${version.org.codehaus.jackson}</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-jaxrs</artifactId>
-                <version>1.9.12</version>
+                <version>${version.org.codehaus.jackson}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.cache</groupId>
@@ -450,12 +452,12 @@
             <dependency>
                 <groupId>org.infinispan</groupId>
                 <artifactId>infinispan-core</artifactId>
-                <version>5.1.6.FINAL</version>
+                <version>${version.org.infinispan}</version>
             </dependency>
             <dependency>
                 <groupId>org.infinispan</groupId>
                 <artifactId>infinispan-tree</artifactId>
-                <version>5.1.6.FINAL</version>
+                <version>${version.org.infinispan}</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
