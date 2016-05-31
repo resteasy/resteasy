@@ -29,6 +29,11 @@
             <directory>../examples/oreilly-jaxrs-2.0-workbook</directory>
             <outputDirectory>examples/oreilly-jaxrs-2.0-workbook</outputDirectory>
             <excludes>
+                <exclude>**/.classpath</exclude>
+                <exclude>**/.git*/**</exclude>
+                <exclude>**/.idea/**</exclude>
+                <exclude>**/.project</exclude>
+                <exclude>**/.settings/**</exclude>
                 <exclude>**/.svn/**</exclude>
                 <exclude>**/target/**</exclude>
                 <exclude>**/*.iml</exclude>
