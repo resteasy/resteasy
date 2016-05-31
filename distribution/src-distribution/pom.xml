@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-jaxrs-all</artifactId>
+        <artifactId>resteasy-jaxrs-dist</artifactId>
         <version>3.1.0-SNAPSHOT</version>
     </parent>
 

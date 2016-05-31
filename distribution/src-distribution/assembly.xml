@@ -11,7 +11,11 @@
             <directory>../../</directory>
             <outputDirectory></outputDirectory>
             <excludes>
+                <exclude>**/.classpath</exclude>
+                <exclude>**/.git*/**</exclude>
                 <exclude>**/.idea/**</exclude>
+                <exclude>**/.project</exclude>
+                <exclude>**/.settings/**</exclude>
                 <exclude>**/.svn/**</exclude>
                 <exclude>**/target/**</exclude>
                 <exclude>**/*.iml</exclude>
