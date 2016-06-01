@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class InfinispanIDM implements IdentityManager
 {
    private static AtomicLong counter = new AtomicLong(1);

@@ -148,11 +148,11 @@ public class JWEInput
 
       }
 
-      public Object readContent(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+      public <T> T readContent(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
       {
          Providers tmp = providers;
          if (tmp == null) tmp = ResteasyProviderFactory.getInstance();
-         MessageBodyReader reader = tmp.getMessageBodyReader(type, genericType, annotations, mediaType);
+         MessageBodyReader<T> reader = tmp.getMessageBodyReader(type, genericType, annotations, mediaType);
          if (reader == null) throw new RuntimeException(Messages.MESSAGES.unableToFindReaderForContentType());
 
          try

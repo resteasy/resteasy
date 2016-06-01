@@ -3,7 +3,6 @@ package org.jboss.resteasy.security.smime;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
-import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
@@ -28,7 +27,7 @@ public class PKCS7SignatureInput<T>
 {
    private PublicKey publicKey;
    private X509Certificate certificate;
-   private Class type;
+   private Class<?> type;
    private Type genericType;
    private CMSSignedData data;
    private Annotation[] annotations;
@@ -106,17 +105,17 @@ public class PKCS7SignatureInput<T>
       this.certificate = certificate;
    }
 
-   public Class getType()
+   public Class<?> getType()
    {
       return type;
    }
 
-   public void setType(Class type)
+   public void setType(Class<?> type)
    {
       this.type = type;
    }
 
-   public void setType(GenericType type)
+   public void setType(GenericType<?> type)
    {
       this.type = type.getRawType();
       this.genericType = type.getType();
@@ -162,6 +161,7 @@ public class PKCS7SignatureInput<T>
       this.providers = providers;
    }
 
+   @SuppressWarnings("unchecked")
    public T getEntity(MediaType mediaType)
    {
       return (T)getEntity(type, genericType, annotations, mediaType);
@@ -172,14 +172,17 @@ public class PKCS7SignatureInput<T>
       return getEntity(type, type, annotations, mediaType);
    }
 
+   @SuppressWarnings("unchecked")
    public <T2> T2  getEntity(GenericType<T2> gt, MediaType mediaType)
    {
       return getEntity((Class<T2>) gt.getRawType(),  gt.getType(), annotations, mediaType);
    }
+   @SuppressWarnings("unchecked")
    public <T2> T2   getEntity(GenericType<T2> gt, Annotation[] ann, MediaType mediaType)
    {
       return getEntity((Class<T2>) gt.getRawType(), gt.getType(), ann, mediaType);
    }
+   @SuppressWarnings({"rawtypes", "unchecked"})
    public <T2> T2  getEntity(Class<T2> t, Type gt, Annotation[] ann, MediaType mediaType)
    {
       if (entity != null) return (T2)entity;

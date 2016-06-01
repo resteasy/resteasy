@@ -97,6 +97,7 @@ public class EnvelopedWriter implements MessageBodyWriter<EnvelopedOutput>
       }
    }
 
+   @SuppressWarnings({"rawtypes", "unchecked"})
    public static MimeBodyPart createBodyPart(Providers providers, SMIMEOutput out) throws IOException, MessagingException
    {
       ByteArrayOutputStream bodyOs = new ByteArrayOutputStream();

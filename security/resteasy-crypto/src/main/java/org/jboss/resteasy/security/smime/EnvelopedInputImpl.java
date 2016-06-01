@@ -31,11 +31,12 @@ import java.util.Enumeration;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("rawtypes")
 public class EnvelopedInputImpl implements EnvelopedInput
 {
    private PrivateKey privateKey;
    private X509Certificate certificate;
-   private Class type;
+   private Class<?> type;
    private Type genericType;
    private MimeBodyPart body;
    private Annotation[] annotations;
@@ -61,17 +62,17 @@ public class EnvelopedInputImpl implements EnvelopedInput
       this.certificate = certificate;
    }
 
-   public Class getType()
+   public Class<?> getType()
    {
       return type;
    }
 
-   public void setType(Class type)
+   public void setType(Class<?> type)
    {
       this.type = type;
    }
 
-   public void setType(GenericType type)
+   public void setType(GenericType<?> type)
    {
       this.type = type.getRawType();
       this.genericType = type.getType();
@@ -174,6 +175,7 @@ public class EnvelopedInputImpl implements EnvelopedInput
       return extractEntity(t, gt, ann, decrypted, providers);
    }
 
+   @SuppressWarnings("unchecked")
    public static Object extractEntity(Class t, Type gt, Annotation[] ann, MimeBodyPart decrypted, Providers providers)
    {
       MultivaluedMap<String, String> mimeHeaders = new Headers<String>();

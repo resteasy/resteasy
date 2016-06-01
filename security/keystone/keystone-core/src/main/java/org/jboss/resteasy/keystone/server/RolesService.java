@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Path("/roles")
 @RolesAllowed("admin")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class RolesService
 {
    private Cache cache;

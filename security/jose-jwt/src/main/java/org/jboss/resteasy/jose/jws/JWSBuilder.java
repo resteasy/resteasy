@@ -104,16 +104,17 @@ public class JWSBuilder
       return encoding.toString();
    }
 
+   @SuppressWarnings({"rawtypes", "unchecked"})
    protected byte[] marshalContent()
    {
       if (contentBytes != null) return contentBytes;
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      Class type = content.getClass();
+      Class<?> type = content.getClass();
       Type genericType = null;
       Object obj = content;
       if (content instanceof GenericEntity)
       {
-         GenericEntity ge = (GenericEntity)content;
+         GenericEntity<?> ge = (GenericEntity<?>)content;
          obj = ge.getEntity();
          type = ge.getRawType();
          genericType = ge.getType();

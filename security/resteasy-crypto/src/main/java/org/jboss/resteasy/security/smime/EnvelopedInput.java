@@ -9,6 +9,7 @@ import javax.ws.rs.core.GenericType;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("rawtypes")
 public interface EnvelopedInput<T>
 {
    T getEntity();
