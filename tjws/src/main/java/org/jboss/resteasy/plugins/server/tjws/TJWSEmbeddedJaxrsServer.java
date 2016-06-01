@@ -9,9 +9,15 @@ import Acme.Serve.Serve;
 import java.util.Hashtable;
 
 /**
+ * fix bug in non-encoded getRequestURI and URL
+ * as well as the correct context Path.
+ * 
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @deprecated See resteasy-undertow module.
  */
+@Deprecated
 public class TJWSEmbeddedJaxrsServer extends TJWSServletServer implements EmbeddedJaxrsServer
 {
    protected ResteasyDeployment deployment = new ResteasyDeployment();

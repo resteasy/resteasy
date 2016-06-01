@@ -27,7 +27,10 @@ package Acme.Serve;
 
 /**
  * @author dmitriy
+ *  
+ * @deprecated See resteasy-undertow module.
  */
+@Deprecated
 public interface WarDeployer
 {
    void deploy(Serve server);

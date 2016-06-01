@@ -77,6 +77,10 @@ import java.util.StringTokenizer;
 // <A HREF="/resources/classes/Acme/Utils.java">Fetch the software.</A><BR>
 // <A HREF="/resources/classes/Acme.tar.Z">Fetch the entire Acme package.</A>
 
+/**
+ * @deprecated See resteasy-undertow module.
+ */
+@Deprecated
 public class Utils
 {
    // / Returns a date string formatted in Unix ls style - if it's within

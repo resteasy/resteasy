@@ -12,6 +12,7 @@ import Acme.Serve.SSLAcceptor;
 import Acme.Serve.Serve;
 
 /**
+ * 
  * This cannot be restarted once stopped.
  * <p/>
  * All properties can be set by a Properties map.  See more info at <a href="http://tjws.sourceforge.net/">TJWS Website</a>
@@ -19,8 +20,11 @@ import Acme.Serve.Serve;
  * Server will not run unless you set the port or ssl port properties.  You cannot run both an SSL and Non-SSL listener.
  * Create a new server if you want to do that.
  *
+ *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @deprecated See resteasy-undertow module.
  */
 public class TJWSServletServer
 {

@@ -50,6 +50,10 @@ import java.util.Vector;
 // <P>
 // @see Acme.Utils#match
 
+/**
+ * @deprecated See resteasy-undertow module.
+ */
+@Deprecated
 public class WildcardDictionary extends Dictionary
 {
 
