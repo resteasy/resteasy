@@ -25,7 +25,10 @@ import org.jboss.resteasy.plugins.validation.hibernate.i18n.Messages;
  * 
  * @TODO Need to work on representation of exceptions
  * @TODO Add javadoc.
+ * 
+ * @deprecated Use resteasy-validator-provider-11.
  */
+@Deprecated
 public class ResteasyViolationException extends ValidationException
 {  
    private static final long serialVersionUID = 2623733139912277260L;

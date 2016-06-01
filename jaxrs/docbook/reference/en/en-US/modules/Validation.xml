@@ -404,6 +404,9 @@ public interface Resource {
     
 }</programlisting>   
 
+   <para><emphasis role="bold">NOTE.</emphasis> resteasy-hibernatevalidate-provider is now deprecated. Please migrate
+   to resteasy-validator-provider-11.</para>
+   
    </section>   
 
    <section>
