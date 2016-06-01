@@ -33,6 +33,10 @@ package Acme.Serve;
 // <A HREF="/resources/classes/Acme/Serve/ThrottleItem.java">Fetch the software.</A><BR>
 // <A HREF="/resources/classes/Acme.tar.Z">Fetch the entire Acme package.</A>
 
+/**
+ * @deprecated See resteasy-undertow module.
+ */
+@Deprecated
 public class ThrottleItem
 {
 

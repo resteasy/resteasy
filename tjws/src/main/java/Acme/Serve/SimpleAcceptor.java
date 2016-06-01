@@ -35,6 +35,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
 
+/**
+ * @deprecated See resteasy-undertow module.
+ */
+@Deprecated
 public class SimpleAcceptor implements Serve.Acceptor
 {
    public Socket accept() throws IOException

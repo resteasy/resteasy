@@ -41,6 +41,10 @@ import java.nio.channels.ServerSocketChannel;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * @deprecated See resteasy-undertow module.
+ */
+@Deprecated
 public class SelectorAcceptor implements Acceptor
 {
    private ServerSocketChannel channel;

@@ -167,6 +167,11 @@ import java.util.logging.StreamHandler;
 // Java applications.
 
 // Inheritance can extend usage of this server
+
+/**
+ * @deprecated See resteasy-undertow module.
+ */
+@Deprecated
 public class Serve implements ServletContext, Serializable
 {
 

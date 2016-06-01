@@ -10,9 +10,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
+ * 
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @deprecated See resteasy-undertow module.
  */
+@Deprecated
 public class TJWSServletDispatcher extends HttpServletDispatcher
 {
    private TJWSRequestPreProcessor requestPreProcessor;
