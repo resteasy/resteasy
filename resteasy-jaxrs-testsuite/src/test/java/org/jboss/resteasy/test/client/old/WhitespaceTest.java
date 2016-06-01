@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.client;
+package org.jboss.resteasy.test.client.old;
 
 import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;

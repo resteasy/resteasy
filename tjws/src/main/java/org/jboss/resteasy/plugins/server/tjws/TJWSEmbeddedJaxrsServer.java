@@ -1,9 +1,10 @@
 package org.jboss.resteasy.plugins.server.tjws;
 
-import Acme.Serve.Serve;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+
+import Acme.Serve.Serve;
 
 import java.util.Hashtable;
 
