@@ -97,8 +97,10 @@ public class InfinispanCache implements ServerCache
       }
    }
 
+   @SuppressWarnings("rawtypes")
    protected Cache cache;
 
+   @SuppressWarnings("rawtypes")
    public InfinispanCache(Cache cache)
    {
       this.cache = cache;
@@ -106,6 +108,7 @@ public class InfinispanCache implements ServerCache
 
    public Entry get(String uri, MediaType accept)
    {
+      @SuppressWarnings("unchecked")
       Set<String> entries = (Set<String>)cache.get(uri);
       if (entries == null) return null;
 
@@ -121,6 +124,7 @@ public class InfinispanCache implements ServerCache
       return null;
    }
 
+   @SuppressWarnings("unchecked")
    public Entry add(String uri, MediaType mediaType, CacheControl cc, MultivaluedMap<String, Object> headers, byte[] entity, String etag)
    {
       // there's a race condition here with a concurrent get() method above.  Too bad JBoss Cache doesn't have a way to create
@@ -141,6 +145,7 @@ public class InfinispanCache implements ServerCache
 
    public void remove(String uri)
    {
+      @SuppressWarnings("unchecked")
       Set<String> entries = (Set<String>)cache.remove(uri);
       if (entries == null) return;
       for (String entry : entries)

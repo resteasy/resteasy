@@ -15,17 +15,17 @@ public class ThreadContext
 
    public static Object get(String key)
    {
-      Map map = context.get();
+      Map<String, Object> map = context.get();
       if (map == null) return null;
       return map.get(key);
    }
 
    public static void set(String key, Object value)
    {
-      Map map = context.get();
+      Map<String, Object> map = context.get();
       if (map == null)
       {
-         map = new HashMap();
+         map = new HashMap<String, Object>();
          context.set(map);
       }
       map.put(key, value);

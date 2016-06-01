@@ -77,6 +77,7 @@ public class TestLinksInvalidEL
 		dispatcher.getRegistry().removeRegistrations(resourceType);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testELWorksWithoutPackageXML() throws Exception
 	{
@@ -88,6 +89,7 @@ public class TestLinksInvalidEL
 			Assert.assertEquals(500, x.getResponse().getStatus());
 		}
 	}
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testELWorksWithoutPackageJSON() throws Exception
 	{

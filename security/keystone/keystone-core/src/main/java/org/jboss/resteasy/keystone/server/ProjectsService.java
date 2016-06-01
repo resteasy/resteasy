@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
  * @version $Revision: 1 $
  */
 @Path("/projects")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ProjectsService
 {
    private Cache cache;

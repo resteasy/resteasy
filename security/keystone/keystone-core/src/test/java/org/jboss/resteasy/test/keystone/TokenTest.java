@@ -73,7 +73,7 @@ public class TokenTest
    {
       SkeletonKeyApplication app;
 
-      public SApp(@Context Configurable confgurable)
+      public SApp(@Context Configurable<?> confgurable)
       {
          this.app = new SkeletonKeyApplication(confgurable);
       }
@@ -160,7 +160,7 @@ public class TokenTest
       newUser.setName("John Smith");
       newUser.setUsername("jsmith");
       newUser.setEnabled(true);
-      Map creds = new HashMap();
+      Map<String, String> creds = new HashMap<>();
       creds.put("password", "foobar");
       newUser.setCredentials(creds);
       Response response = admin.users().create(newUser);
@@ -191,7 +191,7 @@ public class TokenTest
       newUser.setName("John Smith");
       newUser.setUsername("jsmith");
       newUser.setEnabled(true);
-      Map creds = new HashMap();
+      Map<String, String> creds = new HashMap<>();
       creds.put("password", "foobar");
       newUser.setCredentials(creds);
       Response response = admin.users().create(newUser);

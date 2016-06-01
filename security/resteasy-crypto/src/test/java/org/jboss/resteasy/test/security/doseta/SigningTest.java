@@ -163,7 +163,7 @@ public class SigningTest extends BaseResourceTest
          DKIMSignature signature = new DKIMSignature();
          signature.setDomain("samplezone.org");
          signature.setSelector("test");
-         signature.sign(new HashMap(), "hello world".getBytes(), keys.getPrivate());
+         signature.sign(new HashMap<>(), "hello world".getBytes(), keys.getPrivate());
 
          byte[] sig = {0x0f, 0x03};
          String encodedBadSig = Base64.encodeBytes(sig);
@@ -184,7 +184,7 @@ public class SigningTest extends BaseResourceTest
          DKIMSignature signature = new DKIMSignature();
          signature.setDomain("samplezone.org");
          signature.setSelector("test");
-         signature.sign(new HashMap(), "hello world".getBytes(), keys.getPrivate());
+         signature.sign(new HashMap<>(), "hello world".getBytes(), keys.getPrivate());
 
          return Response.ok("hello").header(DKIMSignature.DKIM_SIGNATURE, signature.toString()).build();
       }

@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("rawtypes")
 @Path("/users")
 @RolesAllowed("admin")
 public class UsersService
@@ -37,6 +38,7 @@ public class UsersService
       this.cache = cache;
    }
 
+   @SuppressWarnings("unchecked")
    public String create(StoredUser user) throws Exception
    {
       String password = user.getCredentials().remove("password");
@@ -71,6 +73,7 @@ public class UsersService
    @Consumes("application/json")
    @Produces("application/json")
    @Path("{id}")
+   @SuppressWarnings("unchecked")
    public void update(@PathParam("id") String id, StoredUser user) throws Exception
    {
       StoredUser stored = getStoredUser(id);

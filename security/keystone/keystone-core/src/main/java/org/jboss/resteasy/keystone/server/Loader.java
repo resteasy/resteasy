@@ -24,6 +24,7 @@ import java.util.List;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class Loader
 {
    final ObjectMapper DEFAULT_MAPPER = new ObjectMapper();

@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 public class DigitalVerificationHeaderDecoratorClientExecutionInterceptor extends AbstractDigitalVerificationHeaderDecorator implements ClientExecutionInterceptor, AcceptedByMethod
 {
 
+   @SuppressWarnings("rawtypes")
    public boolean accept(Class declaring, Method method)
    {
       verify = (Verify) method.getAnnotation(Verify.class);
@@ -28,6 +29,7 @@ public class DigitalVerificationHeaderDecoratorClientExecutionInterceptor extend
       return verify != null || verifications != null;
    }
 
+   @SuppressWarnings({"rawtypes", "unchecked"})
    @Override
    public ClientResponse execute(ClientExecutionContext ctx) throws Exception
    {
