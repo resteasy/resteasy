@@ -1,7 +1,7 @@
 install:
  - mvn clean
 script:
- - mvn install
+ - mvn -B install
 
 language: java
 jdk:
