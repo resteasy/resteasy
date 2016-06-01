@@ -46,6 +46,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * @deprecated See resteasy-undertow module.
+ */
+@Deprecated
 public class SSLAcceptor implements Acceptor
 {
    private static final Logger LOG = Logger.getLogger(SSLAcceptor.class.getName());

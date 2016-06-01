@@ -221,6 +221,8 @@ If you want to use Spring, see the SpringBeanProcessor.  Here's a pseudo-code ex
    }
 </programlisting>
       </para>
+      
+      <para><emphasis role="bold">NOTE:</emphasis> TJWS is now deprecated. Consider using the more modern Undertow.</para>
     </section>
     <section>
         <title>Netty</title>

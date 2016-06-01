@@ -55,6 +55,10 @@ import java.util.Vector;
 // <P>
 // @see Acme.Serve.Serve
 
+/**
+ * @deprecated See resteasy-undertow module.
+ */
+@Deprecated
 public class CgiServlet extends HttpServlet
 {
 

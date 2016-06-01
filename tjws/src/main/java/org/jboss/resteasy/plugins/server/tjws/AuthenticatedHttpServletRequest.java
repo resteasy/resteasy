@@ -8,7 +8,10 @@ import java.security.Principal;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @deprecated See resteasy-undertow module.
  */
+@Deprecated
 class AuthenticatedHttpServletRequest extends PatchedHttpServletRequest
 {
    private SecurityDomain domain;

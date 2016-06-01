@@ -65,6 +65,10 @@ import java.util.zip.GZIPOutputStream;
 // <P>
 // @see Acme.Serve.Serve
 
+/**
+ * @deprecated See resteasy-undertow module.
+ */
+@Deprecated
 public class FileServlet extends HttpServlet
 {
 

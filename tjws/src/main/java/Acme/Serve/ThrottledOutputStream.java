@@ -43,6 +43,10 @@ import java.io.OutputStream;
 // <A HREF="/resources/classes/Acme/Serve/ThrottledOutputStream.java">Fetch the software.</A><BR>
 // <A HREF="/resources/classes/Acme.tar.Z">Fetch the entire Acme package.</A>
 
+/**
+ * @deprecated See resteasy-undertow module.
+ */
+@Deprecated
 public class ThrottledOutputStream extends FilterOutputStream
 {
 

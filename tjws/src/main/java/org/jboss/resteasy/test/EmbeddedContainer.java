@@ -9,7 +9,10 @@ import java.util.Hashtable;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @deprecated See resteasy-undertow module.
  */
+@Deprecated
 public class EmbeddedContainer
 {
    private static Class<?> bootstrap = TJWSServletContainer.class;

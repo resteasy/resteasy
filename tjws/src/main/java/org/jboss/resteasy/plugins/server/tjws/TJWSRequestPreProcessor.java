@@ -10,6 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
 
+/**
+ * @deprecated See resteasy-undertow module.
+ */
+@Deprecated
 public class TJWSRequestPreProcessor
 {
    private SecurityDomain domain;
