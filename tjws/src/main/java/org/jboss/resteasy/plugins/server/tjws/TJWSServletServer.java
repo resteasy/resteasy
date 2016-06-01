@@ -1,15 +1,15 @@
 package org.jboss.resteasy.plugins.server.tjws;
 
-import Acme.Serve.SSLAcceptor;
-import Acme.Serve.Serve;
-
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
-
-import javax.servlet.http.HttpServlet;
-
 import java.io.File;
 import java.util.Hashtable;
 import java.util.Properties;
+
+import javax.servlet.http.HttpServlet;
+
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+
+import Acme.Serve.SSLAcceptor;
+import Acme.Serve.Serve;
 
 /**
  * This cannot be restarted once stopped.

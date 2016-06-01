@@ -23,13 +23,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>tjws</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.jboss.spec.javax.servlet</groupId>
             <artifactId>jboss-servlet-api_3.1_spec</artifactId>
         </dependency>
@@ -49,11 +42,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
-            <scope>test</scope>
         </dependency>
         <!--
            Needed for javax.annotation.security.* which is part of javaee 6 XXX
