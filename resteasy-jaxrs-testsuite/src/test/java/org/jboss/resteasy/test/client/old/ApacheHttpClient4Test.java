@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.client;
+package org.jboss.resteasy.test.client.old;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ClientConnectionManager;

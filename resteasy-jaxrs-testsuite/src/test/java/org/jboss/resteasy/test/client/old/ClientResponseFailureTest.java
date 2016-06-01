@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.client;
+package org.jboss.resteasy.test.client.old;
 
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.ProxyFactory;
