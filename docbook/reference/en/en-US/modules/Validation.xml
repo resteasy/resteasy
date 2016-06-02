@@ -310,11 +310,11 @@ path fields.
 </para>
 
    </section>
-
+            
    <section>
-   <title>Bean Validation 1.1</title>
-   
-   <para>
+         <title>Validation Service Providers</title>
+         
+            <para>
    The form of validation mandated by the JAX-RS 2.0 specification, based on Bean Validation 1.1,
    is supported by the RESTEasy module resteasy-validator-provider-11, which produces the artifact
    resteasy-validator-provider-11-&lt;version&gt;.jar.  Validation is turned on by default (assuming
@@ -322,93 +322,9 @@ path fields.
    parameter and return value validation can be turned off or modified in the validation.xml
    configuration file. See the
    <ulink url="http://docs.jboss.org/hibernate/validator/5.0/reference/en-US/html/">Hibernate Validator</ulink>
-   documentation for the details.  Wildfly 8.x will ship with Hibernate Validator 5.x.
-   </para>
-   </section>
-            
-   <section>
-   <title>Bean Validation 1.0</title>
-   
-   <para>
-   Validation is not included in the original JAX-RS specification, but RESTEasy 2.x provides a
-   form of validation, including parameter and return value validation, based on Bean Validation 1.0
-   plus Hibernate 4.x extensions. For applications running in the context of Hibernate Validation 4.x,
-   RESTEasy 3.x inherits the validation semantics from RESTEasy 2.x.  This version of validation is
-   in the RESTEasy module resteasy-hibernatevalidate-provider, which produces the artifact
-   resteasy-hibernatevalidator-provider-&lt;version&gt;.jar.  It follows the validation sequence
-   given in the first section, detecting field, property, class, parameter, and return value constraints,
-   though with a somewhat less rich semantics than resteasy-validator-provider-11.
+   documentation for the details.  Wildfly 8+ ships with Hibernate Validator 5.x.
    </para>
    
-   <para>
-   Unlike resteasy-validator-provider-11, resteasy-hibernatevalidate-provider does not do validation
-   testing by default.  Validation must be turned on. There are two relevent annotations - 
-   <classname>org.jboss.resteasy.plugins.validation.hibernate.ValidateRequest</classname> and
-   <classname>org.jboss.resteasy.plugins.validation.hibernate.DoNotValidateRequest</classname> - 
-   that are used to indicate what needs validation or not. We can tell RESTEasy to validate any method
-   in a resource annotating the resource:
-   </para>
-   
-<programlisting>
-@Path("resourcePath")
-@ValidateRequest
-public interface Resource {
-   
-   @POST
-   @Path("insert")
-   public String insert(...
-
-   @GET
-   @Path("list")
-   public String list(...
-    
-}</programlisting>
-
-   <para>
-   We can tell it to validate just some methods in an interface:
-   </para>
-
-<programlisting>
-@Path("resourcePath")
-public interface Resource {
-   
-   @POST
-   @Path("insert")
-   @ValidateRequest
-   public String insert(...
-
-   @GET
-   @Path("list")
-   public String list(...
-    
-}</programlisting>   
-
-   <para>
-      This way RESTEasy will only trigger validation in insert method.
-      It's possible to say what methods you don't want to be validated: 
-   </para>
-               
-<programlisting>
-@Path("resourcePath")
-@ValidateRequest
-public interface Resource {
-   
-   @POST
-   @Path("insert")
-   public String insert(...
-   
-   @GET
-   @Path("list")
-   @DoNotValidateRequest
-   public String list(...
-    
-}</programlisting>   
-
-   </section>   
-
-   <section>
-         <title>Validation Service Providers</title>
-         
          <para>
          RESTEasy obtains a bean validation implemenation by looking in the available
          META-INF/services/javax.ws.rs.Providers files for an implementation
@@ -497,8 +413,8 @@ public interface GeneralValidator
    </para>
  
    <para>
-   RESTEasy supplies two implementations of <methodname>GeneralValidator</methodname>,
-   in the modules resteasy-validator-provider-11 and resteasy-hibernatevalidator-provider.
+   RESTEasy module resteasy-validator-provider-11 supplies an implementation
+   of <methodname>GeneralValidator</methodname>.
    An alternative implementation may be supplied by implementing 
    <classname>ContextResolver&lt;GeneralValidator&gt;</classname> and
    <classname>org.jboss.resteasy.spi.validation.GeneralValidator</classname>.
@@ -553,7 +469,7 @@ public interface GeneralValidatorCDI extends GeneralValidator
    ]]></programlisting>
 
    <para>
-   Both supplied validators implement GeneralValidatorCDI.
+   The validator in resteasy-validator-provider-11 implements GeneralValidatorCDI.
    </para>
    </section>
 </chapter>
