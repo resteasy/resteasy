@@ -27,7 +27,6 @@
                 <module>multipart</module>
                 <module>yaml</module>
                 <module>resteasy-validator-provider-11</module>
-                <module>resteasy-hibernatevalidator-provider</module>
             </modules>
         </profile>
         <profile>
