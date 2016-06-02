@@ -186,13 +186,7 @@
             <artifactId>resteasy-validator-provider-11</artifactId>
             <version>${project.version}</version>
         </dependency>
-  
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-hibernatevalidator-provider</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
+
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-spring</artifactId>
