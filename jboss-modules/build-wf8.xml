@@ -170,9 +170,7 @@
         </module-def>
 
         <zip destfile="${output.dir}/resteasy-jboss-modules-wf8-${project.version}.zip">
-            <zipfileset dir="${output.dir}/modules">
-            	<exclude name="**/resteasy-hibernatevalidator-provider/**"/>
-            </zipfileset>
+            <zipfileset dir="${output.dir}/modules"/>
         </zip>
 
     </target>
