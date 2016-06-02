@@ -452,7 +452,7 @@
             <dependency>
                 <groupId>org.infinispan</groupId>
                 <artifactId>infinispan-core</artifactId>
-                <version>${version.org.infinispan}</version>
+                <version>5.1.6.FINAL</version>
             </dependency>
             <dependency>
                 <groupId>org.infinispan</groupId>

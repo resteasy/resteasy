@@ -16,7 +16,6 @@
         <module>RESTEASY-903-WF8</module>
         <module>RESTEASY-760-jetty</module>
         <module>RESTEASY-767-jetty</module>
-        <!--<module>resteasy-cdi-ejb-test</module>-->
         <module>ValidationTest-WF8</module>
         <module>RESTEASY-923-WF8</module>
         <module>RESTEASY-945-WF8</module>
@@ -33,6 +32,13 @@
         <module>RESTEASY-1141-jetty</module>
         <module>RESTEASY-1223-WF8</module>
         <module>RESTEASY-TEST-WF10</module>
+        
+        <!-- Wildfly 10 requires jdk 1.8, so the travis execution with jdk 1.7 fails -->
+        <!--module>RESTEASY-TEST-WF10</module-->
+
+        <!-- test for Apache 4.3 upgrade -->
+        <module>RESTEASY-903-WF10</module>
+        <module>RESTEASY-1008-WF10</module>
     </modules>
     
     <artifactId>arquillian</artifactId>
