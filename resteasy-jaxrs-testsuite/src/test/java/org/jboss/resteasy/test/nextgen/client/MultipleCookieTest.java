@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.nextgen.client;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -35,9 +36,13 @@ public class MultipleCookieTest
       {
          try
          {
-            Object cookies = context.getHeaders().getFirst(HttpHeaders.COOKIE);
-            log.info("cookie header: " + context.getHeaders().getFirst(HttpHeaders.COOKIE));
-            Response r = Response.ok(cookies).build();
+            List<Object> cookies = context.getHeaders().get(HttpHeaders.COOKIE);
+            StringBuilder sb = new StringBuilder();
+            for (Object o : cookies)
+            {
+               sb.append(((Cookie) o).toString());
+            }
+            Response r = Response.ok(sb.toString()).build();
             context.abortWith(r);
          }
          catch (Throwable e)

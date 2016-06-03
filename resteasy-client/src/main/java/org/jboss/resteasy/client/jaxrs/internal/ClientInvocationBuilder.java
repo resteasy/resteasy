@@ -1,7 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.plugins.delegates.ClientCookie;
 
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.client.AsyncInvoker;
@@ -77,9 +76,9 @@ public class ClientInvocationBuilder implements Invocation.Builder
    @Override
    public Invocation.Builder cookie(Cookie cookie)
    {
-      if (!(cookie instanceof ClientCookie))
+      if (!(Cookie.class.equals(cookie.getClass())))
       {
-         cookie = new ClientCookie(cookie);
+         cookie = new Cookie(cookie.getName(), cookie.getValue(), cookie.getPath(), cookie.getDomain(), cookie.getVersion());
       }
       getHeaders().cookie(cookie);
       return this;
@@ -88,7 +87,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
    @Override
    public Invocation.Builder cookie(String name, String value)
    {
-      getHeaders().cookie(new ClientCookie(name, value));
+      getHeaders().cookie(new Cookie(name, value));
       return this;
    }
 

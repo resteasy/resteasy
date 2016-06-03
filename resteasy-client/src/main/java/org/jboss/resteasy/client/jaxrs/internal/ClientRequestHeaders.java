@@ -1,6 +1,5 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
-import org.jboss.resteasy.plugins.delegates.ClientCookie;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HeaderHelper;
@@ -133,23 +132,13 @@ public class ClientRequestHeaders
 
    public void cookie(Cookie cookie)
    {
-      if (!(cookie instanceof ClientCookie))
+      if (!(Cookie.class.equals(cookie.getClass())))
       {
-         cookie = new ClientCookie(cookie);
+         cookie = new Cookie(cookie.getName(), cookie.getValue(), cookie.getPath(), cookie.getDomain(), cookie.getVersion());
       }
-      String cookies = (String)headers.getFirst(HttpHeaders.COOKIE);
-      StringBuilder builder = buildCookieString(cookies, cookie);
-      headers.putSingle(HttpHeaders.COOKIE, builder.toString());
+      headers.add(HttpHeaders.COOKIE, cookie);
    }
 
-   private StringBuilder buildCookieString(String cookies, Cookie cookie)
-   {
-      StringBuilder builder = new StringBuilder();
-      if (cookies != null) builder.append(cookies).append("; ");
-      builder.append(configuration.toHeaderString(cookie));
-      return builder;
-   }
-   
    public void allow(String... methods)
    {
       HeaderHelper.setAllow(this.headers, methods);
@@ -308,13 +297,9 @@ public class ClientRequestHeaders
          }
          else
          {
-            String[] cs = ((String) obj).split(";");
-            for (String c : cs)
-            {
-               String str = configuration.toHeaderString(c);
-               Cookie cookie = Cookie.valueOf(str);
-               cookies.put(cookie.getName(), cookie);
-            }
+            String str = configuration.toHeaderString(obj);
+            Cookie cookie = Cookie.valueOf(str);
+            cookies.put(cookie.getName(), cookie);
          }
       }
       return cookies;

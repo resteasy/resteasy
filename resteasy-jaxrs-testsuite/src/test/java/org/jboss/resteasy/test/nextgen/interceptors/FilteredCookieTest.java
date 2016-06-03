@@ -6,6 +6,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.ClientRequestContext;
+import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -36,6 +38,7 @@ import org.junit.Test;
  */
 public class FilteredCookieTest
 {
+   public static final String newline = System.getProperty("line.separator");
    private static final Logger log = Logger.getLogger(FilteredCookieTest.class);
    private static final String OLD_COOKIE_NAME = "old-cookie";
    private static final String NEW_COOKIE_NAME = "new-cookie";
@@ -71,7 +74,7 @@ public class FilteredCookieTest
 
    @Provider
    @PreMatching
-   public static class TestFilter implements ContainerRequestFilter
+   public static class ContainerRequestTestFilter implements ContainerRequestFilter
    {
       @Override
       public void filter(ContainerRequestContext requestContext) throws IOException
@@ -84,6 +87,29 @@ public class FilteredCookieTest
          }
       }
    }
+   
+   @Provider
+   public static class ClientRequestTestFilter implements ClientRequestFilter
+   {
+      @Override
+      public void filter(ClientRequestContext requestContext) throws IOException
+      {
+         Cookie cookie1 = requestContext.getCookies().get(OLD_COOKIE_NAME);
+         System.out.println("cookie1: " + cookie1);
+         Cookie cookie2 = requestContext.getCookies().get(NEW_COOKIE_NAME);
+         System.out.println("cookie2: " + cookie2);
+         if (cookie1 != null && cookie2 != null)
+         {
+            Response r = Response.ok().build();
+            requestContext.abortWith(r);
+         }
+         else
+         {
+            Response r = Response.status(444).build();
+            requestContext.abortWith(r);
+         }
+      }
+   }
 
    @Before
    public void before() throws Exception
@@ -91,7 +117,7 @@ public class FilteredCookieTest
       deployment = EmbeddedContainer.start();
       dispatcher = deployment.getDispatcher();
       deployment.getRegistry().addPerRequestResource(TestResource.class);
-      deployment.getProviderFactory().register(TestFilter.class);
+      deployment.getProviderFactory().register(ContainerRequestTestFilter.class);
    }
 
    @After
@@ -103,7 +129,7 @@ public class FilteredCookieTest
    }
    
    @Test
-   public void test()
+   public void testServerHeaders()
    {
       Client client = ClientBuilder.newClient();
       WebTarget target = client.target("http://localhost:8081/test/get");
@@ -127,5 +153,57 @@ public class FilteredCookieTest
       Assert.assertNotNull(oldCookie);
       Assert.assertNotNull(newCookie);
       client.close();
+   }
+   
+   @Test
+   public void testClientHeaders()
+   {
+      Client client = ClientBuilder.newClient();
+      WebTarget target = client.target("http://localhost:8081/test/dummy").register(ClientRequestTestFilter.class);
+      Builder builder = target.request();
+      NewCookie newCookie = new NewCookie(NEW_COOKIE_NAME, "value1", "/path1", "domain1", null, -1, false);
+      Cookie cookie = new Cookie(OLD_COOKIE_NAME, "value2", "/path2", "domain2");
+      Response response = builder.cookie(newCookie).cookie(cookie).get();
+      log.info("status: " + response.getStatus());
+      Assert.assertEquals(200, response.getStatus());
+   }
+   
+   @Test
+   public void toStringTest() throws Exception
+   {
+      boolean pass = true;
+      StringBuffer sb = new StringBuffer();
+
+      String name = "name_1";
+      String value = "value_1";
+      String path = "/acme";
+      String domain = "y.x.foo.com";
+      int version = 0;
+
+      Cookie ck11 = new Cookie(name, value, path, domain, version);
+
+      String cookie = ck11.toString().toLowerCase();
+      System.out.println("cookie: " + cookie.toString());
+      if (!cookie.contains("name_1")) {
+         pass = false;
+         sb.append("Name test failed" + newline);
+      }
+
+      if (!cookie.contains("value_1")) {
+         pass = false;
+         sb.append("Value test failed" + newline);
+      }
+
+      if (!cookie.contains("acme")) {
+         pass = false;
+         sb.append("path test failed" + newline);
+      }
+
+      if (!cookie.contains("y.x.foo.com")) {
+         pass = false;
+         sb.append("domain test failed" + newline);
+      }
+
+      Assert.assertTrue(pass);
    }
 }
