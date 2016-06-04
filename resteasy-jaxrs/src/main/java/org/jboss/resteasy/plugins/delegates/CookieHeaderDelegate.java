@@ -2,6 +2,8 @@ package org.jboss.resteasy.plugins.delegates;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.ext.RuntimeDelegate;
+
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.util.CookieParser;
 
 /**
@@ -16,10 +18,40 @@ public class CookieHeaderDelegate implements RuntimeDelegate.HeaderDelegate<Cook
       return CookieParser.parseCookies(value).get(0);
    }
 
-   public String toString(Cookie value)
+   public String toString(Cookie cookie)
    {
-      StringBuffer buf = new StringBuffer();
-      ServerCookie.appendCookieValue(buf, 0, value.getName(), value.getValue(), value.getPath(), value.getDomain(), null, -1, false);
-      return buf.toString();
+      if (cookie == null)
+      {
+         throw new IllegalArgumentException(Messages.MESSAGES.paramNull());
+      }
+      StringBuilder b = new StringBuilder();
+      b.append("$Version=").append(cookie.getVersion()).append(";");
+      b.append(cookie.getName()).append('=');
+      if (cookie.getValue() != null)
+      {
+         quote(b, cookie.getValue());
+      }
+      if (cookie.getPath() != null)
+      {
+         b.append(";").append("$Path").append("=");
+         quote(b, cookie.getPath());
+      }
+      if (cookie.getDomain() != null)
+      {
+         b.append(";").append("$Domain").append("=");
+         quote(b, cookie.getDomain());
+      }
+      return b.toString();
    }
+   
+   protected void quote(StringBuilder b, String value) {
+
+      if (MediaTypeHeaderDelegate.quoted(value)) {
+          b.append('"');
+          b.append(value);
+          b.append('"');
+      } else {
+          b.append(value);
+      }
+  }
 }

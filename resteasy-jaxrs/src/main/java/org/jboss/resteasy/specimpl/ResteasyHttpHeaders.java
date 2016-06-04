@@ -1,8 +1,7 @@
 package org.jboss.resteasy.specimpl;
 
-import org.jboss.resteasy.util.CaseInsensitiveMap;
+import org.jboss.resteasy.util.CookieParser;
 import org.jboss.resteasy.util.DateUtil;
-import org.jboss.resteasy.util.LocaleHelper;
 import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.WeightedLanguage;
 
@@ -37,7 +36,7 @@ public class ResteasyHttpHeaders implements HttpHeaders
    public ResteasyHttpHeaders(MultivaluedMap<String, String> requestHeaders, Map<String, Cookie> cookies)
    {
       this.requestHeaders = requestHeaders;
-      this.cookies = cookies;
+      this.cookies = (cookies == null ? new HashMap<String, Cookie>() : cookies);
    }
 
    @Override
@@ -72,11 +71,13 @@ public class ResteasyHttpHeaders implements HttpHeaders
    @Override
    public Map<String, Cookie> getCookies()
    {
+      mergeCookies();
       return Collections.unmodifiableMap(cookies);
    }
 
    public Map<String, Cookie> getMutableCookies()
    {
+      mergeCookies();
       return cookies;
    }
 
@@ -175,5 +176,21 @@ public class ResteasyHttpHeaders implements HttpHeaders
       Collections.sort(languages);
       for (WeightedLanguage language : languages) list.add(language.getLocale());
       return Collections.unmodifiableList(list);
+   }
+   
+   private void mergeCookies()
+   {
+      List<String> cookieHeader = requestHeaders.get(HttpHeaders.COOKIE);
+      if (cookieHeader != null && !cookieHeader.isEmpty())
+      {
+         for (String s : cookieHeader)
+         {
+            List<Cookie> list = CookieParser.parseCookies(s);
+            for (Cookie cookie : list)
+            {
+               cookies.put(cookie.getName(), cookie);
+            }
+         }
+      }
    }
 }
