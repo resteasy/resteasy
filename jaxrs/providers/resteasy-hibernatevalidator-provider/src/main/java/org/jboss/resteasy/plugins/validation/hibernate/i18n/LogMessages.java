@@ -10,7 +10,10 @@ import org.jboss.logging.annotations.MessageLogger;
  * @version $Revision: 1.1 $
  *
  * Copyright Aug 25, 2015
+ * 
+ * @deprecated Use resteasy-validator-provider-11.
  */
+@Deprecated
 @MessageLogger(projectCode = "RESTEASY")
 public interface LogMessages extends BasicLogger
 {

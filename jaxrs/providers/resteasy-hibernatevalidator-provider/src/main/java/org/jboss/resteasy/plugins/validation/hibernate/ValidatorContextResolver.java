@@ -12,7 +12,10 @@ import org.jboss.resteasy.spi.validation.GeneralValidator;
  * @version $Revision: 1.1 $
  *
  * Copyright May 23, 2013
+ * 
+ * @deprecated Use resteasy-validator-provider-11.
  */
+@Deprecated
 @Provider
 public class ValidatorContextResolver extends AbstractValidatorContextResolver implements ContextResolver<GeneralValidator>
 {

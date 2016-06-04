@@ -12,7 +12,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 * @version $Revision: 1.1 $
 *
 * Copyright July 27, 2013
-*/
+* 
+* @deprecated Use resteasy-validator-provider-11.
+ */
+@Deprecated
 @XmlRootElement(name="violationReport")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ViolationReport

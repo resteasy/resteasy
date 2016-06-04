@@ -21,7 +21,9 @@ import javax.ws.rs.ext.Provider;
  * @version $Revision: 1.1 $
  *
  * Created Mar 31, 2012
+ * @deprecated Use resteasy-validator-provider-11.
  */
+@Deprecated
 @Provider
 public class ResteasyViolationExceptionMapper implements ExceptionMapper<ValidationException>
 {

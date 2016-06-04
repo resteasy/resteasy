@@ -16,7 +16,10 @@ import org.jboss.resteasy.plugins.validation.hibernate.i18n.Messages;
  * @version $Revision: 1.1 $
  *
  * Copyright Mar 6, 2012
+ * 
+ * @deprecated Use resteasy-validator-provider-11.
  */
+@Deprecated
 public class ConstraintTypeUtil10 implements ConstraintTypeUtil
 {
    public Type getConstraintType(Object o)

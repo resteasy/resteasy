@@ -10,7 +10,10 @@ import org.jboss.resteasy.api.validation.ConstraintType;
  * @version $Revision: 1.1 $
  *
  * Copyright Aug 25, 2015
+ * 
+ * @deprecated Use resteasy-validator-provider-11.
  */
+@Deprecated
 @MessageBundle(projectCode = "RESTEASY")
 public interface Messages
 {

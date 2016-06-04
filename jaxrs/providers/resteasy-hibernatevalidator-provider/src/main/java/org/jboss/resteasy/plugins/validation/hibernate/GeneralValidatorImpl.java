@@ -42,7 +42,10 @@ import org.jboss.resteasy.util.FindAnnotation;
  * @version $Revision: 1.1 $
  *
  * Copyright May 23, 2013
+ * 
+ * @deprecated Use resteasy-validator-provider-11.
  */
+@Deprecated
 @SuppressWarnings("serial")
 public class GeneralValidatorImpl implements GeneralValidatorCDI
 {  
