@@ -106,7 +106,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
    {
       if ((Collection.class.isAssignableFrom(type) || type.isArray()) && genericType != null)
       {
-         Class baseType = Types.getCollectionBaseType(type, genericType);
+         Class<?> baseType = Types.getCollectionBaseType(type, genericType);
          if (baseType == null) return false;
          baseType = XmlAdapterWrapper.xmlAdapterValueType(baseType, annotations);
          return (baseType.isAnnotationPresent(XmlRootElement.class) || baseType.isAnnotationPresent(XmlType.class) || baseType.isAnnotationPresent(XmlSeeAlso.class) || JAXBElement.class.equals(baseType)) && (FindAnnotation.findAnnotation(baseType, annotations, DoNotUseJAXBProvider.class) == null) && !IgnoredMediaTypes.ignored(baseType, annotations, mediaType);
@@ -121,6 +121,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
    }
 
 
+   @SuppressWarnings("unchecked")
    public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
    {
       JAXBContextFinder finder = getFinder(mediaType);

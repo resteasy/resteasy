@@ -26,22 +26,22 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@SuppressWarnings("unchecked")
 public class ClientInvoker implements MethodInvoker
 {
    protected String httpMethod;
    protected Method method;
-   protected Class declaring;
+   protected Class<?> declaring;
    protected MediaType accepts;
    protected Object[] processors;
    protected ResteasyWebTarget webTarget;
    protected boolean followRedirects;
+   @SuppressWarnings("rawtypes")
    protected EntityExtractor extractor;
    protected DefaultEntityExtractorFactory entityExtractorFactory;
    protected ClientConfiguration invokerConfig;
 
 
-   public ClientInvoker(ResteasyWebTarget parent, Class declaring, Method method, ProxyConfig config)
+   public ClientInvoker(ResteasyWebTarget parent, Class<?> declaring, Method method, ProxyConfig config)
    {
       // webTarget must be a clone so that it has a cloned ClientConfiguration so we can apply DynamicFeature
       if (method.isAnnotationPresent(Path.class))
@@ -91,7 +91,7 @@ public class ClientInvoker implements MethodInvoker
       return method;
    }
 
-   public Class getDeclaring()
+   public Class<?> getDeclaring()
    {
       return declaring;
    }
@@ -101,7 +101,7 @@ public class ClientInvoker implements MethodInvoker
       ClientInvocation request = createRequest(args);
       ClientResponse response = (ClientResponse)request.invoke();
       ClientContext context = new ClientContext(request, response, entityExtractorFactory);
-      return extractor.extractEntity(context, null);
+      return extractor.extractEntity(context);
    }
 
    protected ClientInvocation createRequest(Object[] args)

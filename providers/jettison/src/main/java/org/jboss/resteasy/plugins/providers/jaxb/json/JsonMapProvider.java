@@ -40,6 +40,7 @@ import java.util.Map;
 public class JsonMapProvider extends MapProvider
 {
 
+   @SuppressWarnings("unchecked")
    public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
    {
       Class baseType = Types.getMapValueType(genericType);
@@ -104,6 +105,7 @@ public class JsonMapProvider extends MapProvider
       return "UTF-8";
    }
 
+   @SuppressWarnings("unchecked")
    public void writeTo(Object target, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
       JAXBContextFinder finder = getFinder(mediaType);

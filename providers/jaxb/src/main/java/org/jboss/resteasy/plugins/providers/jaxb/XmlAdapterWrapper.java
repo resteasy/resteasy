@@ -62,6 +62,7 @@ class XmlAdapterWrapper extends XmlAdapter<Object, Object>
       return clazz;
    }
    
+   @SuppressWarnings("unchecked")
    protected static XmlAdapterWrapper getXmlAdapter(Class<?> baseType, Annotation[] annotations)
    {
       if (baseType.isAnnotationPresent(XmlJavaTypeAdapter.class))
