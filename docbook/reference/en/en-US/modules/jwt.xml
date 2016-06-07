@@ -1,9 +1,9 @@
 <chapter>
   <title>JSON Web Signature and Encryption (JOSE-JWT)</title>
 
-  <para>JSON Web Signature and Encryption (JOSE JWT) is a new specification that can be used
-  to encode content as a string and either digitally sign or encrypt it.  I won't go over the spec here
-  Do a Google search on it ifyou're interested</para>
+  <para>JSON Web Signature and Encryption (JOSE JWT) is a new specification that can be used to
+        encode content as a string and either digitally sign or encrypt it. I won't go over the spec
+        here Do a Google search on it if you're interested</para>
 
   <section>
       <title>JSON Web Signature (JWS)</title>
