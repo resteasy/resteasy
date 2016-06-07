@@ -24,6 +24,7 @@ public class AbortedResponse extends ClientResponse
 {
    protected InputStream is;
 
+   @SuppressWarnings("unchecked")
    public AbortedResponse(ClientConfiguration configuration, Response response)
    {
       super(configuration);
@@ -55,6 +56,7 @@ public class AbortedResponse extends ClientResponse
 
          if (!(response.getEntity() instanceof InputStream)) {
 
+            @SuppressWarnings("rawtypes")
             MessageBodyWriter writer = configuration
                     .getMessageBodyWriter(getEntityClass(), getGenericType(),
                             null, mediaType);

@@ -8,7 +8,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,14 +25,15 @@ public class MediaTypeMap<T>
 {
    public static interface Typed
    {
-      Class getType();
+      Class<?> getType();
    }
 
-   private static class TypedEntryComparator implements Comparator<Entry>, Serializable
+   private static class TypedEntryComparator implements Comparator<Entry<?>>, Serializable
    {
-      private Class type;
+      private static final long serialVersionUID = -8815419198743440920L;
+      private Class<?> type;
 
-      public TypedEntryComparator(Class type)
+      public TypedEntryComparator(Class<?> type)
       {
          this.type = type;
       }
@@ -44,7 +44,7 @@ public class MediaTypeMap<T>
          return typed.getType().isAssignableFrom(type);
       }
 
-      private int compareTypes(Entry entry, Entry entry1)
+      private int compareTypes(Entry<?> entry, Entry<?> entry1)
       {
          int val = 0;
          if (entry.object instanceof Typed && entry1.object instanceof Typed && type != null)
@@ -84,7 +84,7 @@ public class MediaTypeMap<T>
 
       }
 
-      public int compare(Entry entry, Entry entry1)
+      public int compare(Entry<?> entry, Entry<?> entry1)
       {
          int val = compareTypes(entry, entry1);
          if (val == 0) val = entry.compareTo(entry1);
@@ -92,7 +92,7 @@ public class MediaTypeMap<T>
       }
    }
 
-   private static class Entry<T> implements Comparable<Entry>
+   private static class Entry<T> implements Comparable<Entry<?>>
    {
       public MediaType mediaType;
       public T object;
@@ -103,7 +103,8 @@ public class MediaTypeMap<T>
          this.object = object;
       }
 
-      public int compareTo(Entry entry)
+      @SuppressWarnings({"rawtypes", "unchecked"})
+      public int compareTo(Entry<?> entry)
       {
          int val = MediaTypeHelper.compareWeight(mediaType, entry.mediaType);
          if (val == 0 && object instanceof Comparable && entry.object instanceof Comparable)
@@ -262,10 +263,11 @@ public class MediaTypeMap<T>
    {
       // we need a weak reference because of possible hot deployment
       // Although, these reference should get cleared up with any add() invocation
-      private WeakReference<Class> clazz;
+      private WeakReference<Class<?>> clazz;
       private MediaType mediaType;
       private final int hash;
 
+      @SuppressWarnings({"rawtypes", "unchecked"})
       private CachedMediaTypeAndClass(Class clazz, MediaType mediaType)
       {
          this.clazz = new WeakReference(clazz);
@@ -275,7 +277,7 @@ public class MediaTypeMap<T>
          hash = result;
       }
 
-      private Class getClazz()
+      private Class<?> getClazz()
       {
          return clazz.get();
       }
@@ -401,7 +403,7 @@ public class MediaTypeMap<T>
     */
    public static boolean useCache = true;
 
-   public List<T> getPossible(MediaType accept, Class type)
+   public List<T> getPossible(MediaType accept, Class<?> type)
    {
       List<T> cached = null;
       CachedMediaTypeAndClass cacheEntry = null;

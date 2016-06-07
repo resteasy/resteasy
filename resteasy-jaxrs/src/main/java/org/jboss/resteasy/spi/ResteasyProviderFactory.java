@@ -108,22 +108,22 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     */
    protected static class SortedKey<T> implements Comparable<SortedKey<T>>, MediaTypeMap.Typed
    {
-      public Class readerClass;
+      public Class<?> readerClass;
       public T obj;
 
       public boolean isBuiltin = false;
 
-      public Class template = null;
+      public Class<?> template = null;
 
 
-      private SortedKey(Class intf, T reader, Class readerClass, boolean isBuiltin)
+      private SortedKey(Class<?> intf, T reader, Class<?> readerClass, boolean isBuiltin)
       {
          this(intf, reader, readerClass);
          this.isBuiltin = isBuiltin;
       }
 
 
-      private SortedKey(Class intf, T reader, Class readerClass)
+      private SortedKey(Class<?> intf, T reader, Class<?> readerClass)
       {
          this.readerClass = readerClass;
          this.obj = reader;
@@ -141,7 +141,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          else return -1;
       }
 
-      public Class getType()
+      public Class<?> getType()
       {
          return template;
       }
