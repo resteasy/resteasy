@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jboss.resteasy.test</groupId>
-    <artifactId>war-tests-pom</artifactId>
+    <artifactId>as7-tests-pom</artifactId>
     <packaging>pom</packaging>
 
     <!-- this is only here for RESTEasy automated testing of examples build.  You can remove if you are copying this
