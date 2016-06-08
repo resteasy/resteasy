@@ -122,20 +122,28 @@
         <profile>
             <id>redhat-prod</id>
             <modules>
-                <module>async-http-servlet-3.0</module>
-                <module>resteasy-jaxrs</module>
-                <module>resteasy-jaxrs-testsuite</module>
-                <module>security</module>
-                <module>providers</module>
-                <module>resteasy-jsapi</module>
-                <module>resteasy-spring</module>
-                <module>resteasy-cdi</module>
-                <module>resteasy-guice</module>
                 <module>tjws</module>
+                <module>resteasy-test-data</module>
+                <module>resteasy-jaxrs</module>
                 <module>resteasy-client</module>
-                <module>server-adapters/resteasy-undertow</module>
+                <module>resteasy-jaxrs-testsuite</module>
+                <module>providers</module>
+                <module>resteasy-bom</module>
+                <module>resteasy-cache</module>
+                <module>resteasy-guice</module>
+                <module>security</module>
                 <module>resteasy-links</module>
+                <module>resteasy-spring</module>
+                <module>resteasy-jsapi</module>
+                <module>resteasy-cdi</module>
                 <module>resteasy-servlet-initializer</module>
+                <module>server-adapters</module>
+                <module>async-http-servlet-3.0</module>
+                <module>jboss-modules</module>
+                <module>resteasy-wadl</module>
+                <module>arquillian</module>
+                <module>integration-tests</module>
+                <module>examples</module>
             </modules>
             <build>
                 <plugins>
