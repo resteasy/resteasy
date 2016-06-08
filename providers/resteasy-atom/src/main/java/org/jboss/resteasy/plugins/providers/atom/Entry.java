@@ -353,7 +353,8 @@ public class Entry extends CommonAttributes
     * @return null if there is no XML content
     * @throws JAXBException
     */
-    public <T> T getAnyOtherJAXBObject(Class<T> clazz, Class... otherPossibleClasses) throws JAXBException {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public <T> T getAnyOtherJAXBObject(Class<T> clazz, Class... otherPossibleClasses) throws JAXBException {
         JAXBContext ctx = null;
         Class[] classes = {clazz};
         if (otherPossibleClasses != null && otherPossibleClasses.length > 0) {

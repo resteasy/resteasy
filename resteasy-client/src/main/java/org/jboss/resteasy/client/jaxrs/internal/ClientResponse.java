@@ -7,7 +7,6 @@ import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HeaderValueProcessor;
 import org.jboss.resteasy.spi.MarshalledEntity;
-import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -18,7 +17,6 @@ import org.jboss.resteasy.util.Types;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.ReaderInterceptor;
 
@@ -29,10 +27,7 @@ import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.List;
 import java.util.Map;
-
-import static java.lang.String.format;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -50,6 +45,7 @@ public abstract class ClientResponse extends BuiltResponse
       setClientConfiguration(configuration);
    }
 
+   @SuppressWarnings({ "rawtypes", "unchecked" })
    public void setHeaders(MultivaluedMap<String, String> headers)
    {
       this.metadata = new Headers<Object>();
@@ -147,6 +143,7 @@ public abstract class ClientResponse extends BuiltResponse
 
 
    // this is synchronized in conjunction with finalize to protect against premature finalize called by the GC
+   @SuppressWarnings("unchecked")
    public synchronized <T> T readEntity(Class<T> type, Type genericType, Annotation[] anns)
    {
       abortIfClosed();
@@ -255,7 +252,7 @@ public abstract class ClientResponse extends BuiltResponse
          {
             InputStreamToByteArray isba = (InputStreamToByteArray) is;
             final byte[] bytes = isba.toByteArray();
-            return new MarshalledEntity()
+            return new MarshalledEntity<Object>()
             {
                @Override
                public byte[] getMarshalledBytes()
@@ -272,7 +269,7 @@ public abstract class ClientResponse extends BuiltResponse
          }
          else
          {
-            return (T) finalObj;
+            return finalObj;
          }
 
       }

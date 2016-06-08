@@ -29,6 +29,7 @@ public class MessageBodyParameterProcessor implements InvocationProcessor
       this.annotations = annotations;
    }
 
+   @SuppressWarnings("unchecked")
    @Override
    public void process(ClientInvocationBuilder invocation, Object param)
    {

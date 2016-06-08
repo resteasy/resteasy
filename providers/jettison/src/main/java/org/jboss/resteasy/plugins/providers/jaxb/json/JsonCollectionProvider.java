@@ -47,6 +47,7 @@ import java.util.TreeSet;
 public class JsonCollectionProvider extends CollectionProvider
 {
 
+   @SuppressWarnings("unchecked")
    public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
    {
       Class baseType = Types.getCollectionBaseType(type, genericType);

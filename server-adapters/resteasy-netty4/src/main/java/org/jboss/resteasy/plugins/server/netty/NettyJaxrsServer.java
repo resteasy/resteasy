@@ -220,6 +220,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
                deployment.getProviderFactory(), domain);
    }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void start() {
         eventLoopGroup = new NioEventLoopGroup(ioWorkerCount);

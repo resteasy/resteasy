@@ -98,11 +98,11 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
    {
       if (Map.class.isAssignableFrom(type) && genericType != null)
       {
-         Class keyType = Types.getMapKeyType(genericType);
+         Class<?> keyType = Types.getMapKeyType(genericType);
          if (keyType == null) return false;
          if (!CharSequence.class.isAssignableFrom(keyType) && !Number.class.isAssignableFrom(keyType)) return false;
 
-         Class valueType = Types.getMapValueType(genericType);
+         Class<?> valueType = Types.getMapValueType(genericType);
          if (valueType == null) return false;
          valueType = XmlAdapterWrapper.xmlAdapterValueType(valueType, annotations);
          return (valueType.isAnnotationPresent(XmlRootElement.class) || valueType.isAnnotationPresent(XmlType.class) || valueType.isAnnotationPresent(XmlSeeAlso.class) || JAXBElement.class.equals(valueType)) && (FindAnnotation.findAnnotation(valueType, annotations, DoNotUseJAXBProvider.class) == null) && !IgnoredMediaTypes.ignored(valueType, annotations, mediaType);
@@ -180,7 +180,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
 
          jaxbMap = ele.getValue();
 
-         HashMap map = new HashMap();
+         HashMap<String, Object> map = new HashMap<String, Object>();
 
          Unmarshaller unmarshaller = ctx.createUnmarshaller();
          unmarshaller = AbstractJAXBProvider.decorateUnmarshaller(valueType, annotations, mediaType, unmarshaller);
@@ -279,7 +279,8 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
 
          JaxbMap map = new JaxbMap(entryName, keyName, namespaceURI);
 
-         Map<Object, Object> targetMap = (Map) target;
+         @SuppressWarnings("unchecked")
+		 Map<Object, Object> targetMap = (Map) target;
          for (Map.Entry mapEntry : targetMap.entrySet())
          {
             Object value = mapEntry.getValue();

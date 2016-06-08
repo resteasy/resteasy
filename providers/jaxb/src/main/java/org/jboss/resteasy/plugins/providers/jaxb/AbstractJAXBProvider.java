@@ -95,6 +95,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    /**
     *
     */
+   @SuppressWarnings("unchecked")
    public T readFrom(Class<T> type,
                      Type genericType,
                      Annotation[] annotations,
@@ -281,6 +282,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       return true;
    }
    
+   @SuppressWarnings("unchecked")
    protected T processWithSecureProcessing(Unmarshaller unmarshaller, InputStream entityStream, String charset) throws JAXBException
    {  
       unmarshaller = new SecureUnmarshaller(unmarshaller, disableExternalEntities, enableSecureProcessingFeature, disableDTDs);

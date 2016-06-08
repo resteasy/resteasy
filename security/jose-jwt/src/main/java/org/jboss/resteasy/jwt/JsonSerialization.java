@@ -30,6 +30,7 @@ public class JsonSerialization
 
    }
 
+   @SuppressWarnings({"rawtypes", "unchecked"})
    public static byte[] toByteArray(Object token, ResteasyProviderFactory factory) throws IOException
    {
       MessageBodyWriter writer = factory.getMessageBodyWriter(token.getClass(), null, null, MediaType.APPLICATION_JSON_TYPE);

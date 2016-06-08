@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("rawtypes")
 @Path("/tokens")
 public class TokenService
 {
@@ -90,6 +91,7 @@ public class TokenService
       return signed;
    }
 
+   @SuppressWarnings("unchecked")
    @POST
    @Consumes("application/json")
    @Produces("application/json")

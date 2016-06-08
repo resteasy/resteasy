@@ -130,7 +130,7 @@ public class JAXBContextWrapper extends JAXBContext
             }
             try
             {
-               mapper = mapperConstructor.newInstance(config.namespaces());
+               mapper = mapperConstructor.newInstance((Object[])config.namespaces());
             }
             catch (Exception e)
             {

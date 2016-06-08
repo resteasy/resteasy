@@ -3,7 +3,6 @@ package org.jboss.resteasy.client.jaxrs.internal;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.core.interception.AbstractWriterInterceptorContext;
 import org.jboss.resteasy.core.interception.ClientWriterInterceptorContext;
-import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.DelegatingOutputStream;
 import org.jboss.resteasy.util.Types;
@@ -32,7 +31,6 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.WriterInterceptor;
 import java.io.IOException;
@@ -44,10 +42,7 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -60,7 +55,7 @@ public class ClientInvocation implements Invocation
    protected String method;
    protected Object entity;
    protected Type entityGenericType;
-   protected Class entityClass;
+   protected Class<?> entityClass;
    protected Annotation[] entityAnnotations;
    protected ClientConfiguration configuration;
    protected URI uri;
@@ -300,7 +295,7 @@ public class ClientInvocation implements Invocation
       return entityGenericType;
    }
 
-   public Class getEntityClass()
+   public Class<?> getEntityClass()
    {
       return entityClass;
    }
@@ -310,7 +305,7 @@ public class ClientInvocation implements Invocation
       return headers;
    }
 
-   public void setEntity(Entity entity)
+   public void setEntity(Entity<?> entity)
    {
       if (entity == null)
       {
@@ -336,7 +331,7 @@ public class ClientInvocation implements Invocation
    {
       if (ent instanceof GenericEntity)
       {
-         GenericEntity genericEntity = (GenericEntity) ent;
+         GenericEntity<?> genericEntity = (GenericEntity<?>) ent;
          entityClass = genericEntity.getRawType();
          entityGenericType = genericEntity.getType();
          this.entity = genericEntity.getEntity();
@@ -465,6 +460,7 @@ public class ClientInvocation implements Invocation
       }
    }
 
+   @SuppressWarnings("unchecked")
    @Override
    public <T> T invoke(Class<T> responseType)
    {
@@ -473,6 +469,7 @@ public class ClientInvocation implements Invocation
       return extractResult(new GenericType<T>(responseType), response, null);
    }
 
+   @SuppressWarnings("unchecked")
    @Override
    public <T> T invoke(GenericType<T> responseType)
    {
@@ -521,6 +518,7 @@ public class ClientInvocation implements Invocation
       });
    }
 
+   @SuppressWarnings({ "rawtypes", "unchecked" })
    @Override
    public <T> Future<T> submit(final InvocationCallback<T> callback)
    {

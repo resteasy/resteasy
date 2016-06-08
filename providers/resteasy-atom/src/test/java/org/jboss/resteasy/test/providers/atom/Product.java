@@ -24,7 +24,7 @@ public class Product
    protected String name;
 
 
-   private ArrayList linkList = new ArrayList<Link>();
+   private ArrayList<Link> linkList = new ArrayList<Link>();
 
    @XmlAttribute
    public int getId()
