@@ -54,6 +54,7 @@ public class TestContextProviders2 extends TestContextProviders
       return entity;
    }
 
+   @SuppressWarnings("unchecked")
    @Override
    <S, T> T post(String path, S payload, MediaType mediaType,
          Class<T> returnType, Type genericReturnType, Annotation[] annotations) throws Exception
