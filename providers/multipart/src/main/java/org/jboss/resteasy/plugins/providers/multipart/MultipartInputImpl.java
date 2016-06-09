@@ -135,6 +135,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
             BodyFactory factory = (BodyFactory)bodyFactoryField.get(this);
             body = factory.binaryBody(decodedStream);
 
+            @SuppressWarnings("unchecked")
             Stack<Object> st = (Stack<Object>)stackField.get(this);
             Entity entity = ((Entity) st.peek());
             entity.setBody(body);
@@ -288,6 +289,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          headers.putSingle("Content-Type", mediaType.toString());
       }
 
+      @SuppressWarnings("unchecked")
       public <T> T getBody(Class<T> type, Type genericType)
               throws IOException
       {
@@ -321,6 +323,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          }
       }
 
+      @SuppressWarnings("unchecked")
       public <T> T getBody(GenericType<T> type) throws IOException
       {
          return getBody((Class<T>) type.getRawType(), type.getType());

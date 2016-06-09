@@ -102,6 +102,7 @@ public class JWSInput
       return signature;
    }
 
+   @SuppressWarnings("unchecked")
    public <T> T readContent(Class<T> type)
    {
       MediaType mediaType = MediaType.WILDCARD_TYPE;
@@ -113,8 +114,10 @@ public class JWSInput
 
    }
 
+   @SuppressWarnings("unchecked")
    public Object readContent(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
+      @SuppressWarnings("rawtypes")
       MessageBodyReader reader = providers.getMessageBodyReader(type, genericType, annotations, mediaType);
       if (reader == null) throw new RuntimeException(Messages.MESSAGES.unableToFindReaderForContentType());
       
