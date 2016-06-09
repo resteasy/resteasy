@@ -105,6 +105,7 @@ public class JWEBuilder
       }
    }
 
+   @SuppressWarnings({"unchecked", "rawtypes"})
    protected byte[] marshalContent(Object content, MediaType marshalTo)
    {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
