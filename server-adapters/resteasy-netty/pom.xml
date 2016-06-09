@@ -22,7 +22,6 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty</artifactId>
-            <version>${dep.netty.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

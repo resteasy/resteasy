@@ -16,7 +16,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>${dep.spring-webmvc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>

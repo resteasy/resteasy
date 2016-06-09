@@ -61,7 +61,6 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>${dep.netty4.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
