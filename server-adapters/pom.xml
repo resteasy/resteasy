@@ -9,7 +9,6 @@
     <description/>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.jboss.resteasy</groupId>
     <artifactId>http-adapter-pom</artifactId>
     <packaging>pom</packaging>
 

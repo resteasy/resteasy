@@ -7,7 +7,6 @@
         <version>3.1.0-SNAPSHOT</version>
 <relativePath>../../pom.xml</relativePath>
     </parent>
-  <groupId>org.jboss.resteasy</groupId>
   <artifactId>resteasy-validator-provider-11</artifactId>
   <packaging>jar</packaging>
   <name>RESTEasy Validator Provider BV 1.1</name>

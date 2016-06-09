@@ -10,7 +10,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-wadl</artifactId>
     <packaging>jar</packaging>
     <name>RESTEasy WADL</name>

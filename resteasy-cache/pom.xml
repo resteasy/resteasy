@@ -10,7 +10,6 @@
     <description/>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-cache-pom</artifactId>
     <packaging>pom</packaging>
 
