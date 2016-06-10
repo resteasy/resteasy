@@ -27,8 +27,6 @@
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
-            <scope>provided</scope>
-            <version>${dep.cdi-api.version}</version>
         </dependency>
         
         <dependency>
@@ -40,8 +38,6 @@
         <dependency>
         	<groupId>org.jboss.spec.javax.ejb</groupId>
         	<artifactId>jboss-ejb-api_3.1_spec</artifactId>
-        	<scope>provided</scope>
-        	<version>${dep.jboss-ejb-api_3.1_spec.version}</version>
         </dependency>
 
         <dependency>
@@ -70,20 +66,10 @@
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-annotations</artifactId>
-            <version>1.2.0.Final</version>
-            <!-- This is a compile-time dependency of this project, but is not needed at compile or runtime by other
-                  projects that depend on this project.-->
-            <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-processor</artifactId>
-            <version>1.2.0.Final</version>
-            <!-- This is a compile-time dependency of this project, but is not needed at compile or runtime by other
-                  projects that depend on this project.-->
-            <scope>provided</scope>
-            <optional>true</optional>
         </dependency> 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>

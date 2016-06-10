@@ -82,7 +82,6 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>${dep.netty4.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
