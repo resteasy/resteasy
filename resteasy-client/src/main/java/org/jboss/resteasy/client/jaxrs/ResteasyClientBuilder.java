@@ -2,6 +2,7 @@ package org.jboss.resteasy.client.jaxrs;
 
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -18,6 +19,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.client.jaxrs.engines.PassthroughTrustManager;
+import org.jboss.resteasy.client.jaxrs.engines.factory.ApacheHttpClient4EngineFactory;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
@@ -360,7 +362,40 @@ public class ResteasyClientBuilder extends ClientBuilder
       }
 
       ClientHttpEngine engine = httpEngine;
-      if (engine == null) engine = initDefaultEngine();
+      if (engine == null) {
+         engine = initDefaultEngine();
+      }
+      return new ResteasyClient(engine, executor, cleanupExecutor, config);
+
+   }
+
+   /**
+    * Maintain 2 version of build for testing.  Confirm Apache (deprectaed) Apis
+    * continue running and new Apache 4.3 run properly. (testcases will be setup
+    * to run both.
+    * @return
+     */
+
+   public ResteasyClient build43()
+   {
+      ClientConfiguration config = new ClientConfiguration(getProviderFactory());
+      for (Map.Entry<String, Object> entry : properties.entrySet())
+      {
+         config.property(entry.getKey(), entry.getValue());
+      }
+
+      ExecutorService executor = asyncExecutor;
+
+      if (executor == null)
+      {
+         cleanupExecutor = true;
+         executor = Executors.newFixedThreadPool(10);
+      }
+
+      ClientHttpEngine engine = httpEngine;
+      if (engine == null) {
+         engine = HttpClientBuilder43.initDefaultEngine43(this);
+      }
       return new ResteasyClient(engine, executor, cleanupExecutor, config);
 
    }
@@ -480,13 +515,14 @@ public class ResteasyClientBuilder extends ClientBuilder
          {
              HttpClientParams.setConnectionManagerTimeout(params, connectionCheckoutTimeoutMs);
          }
+         params.setParameter(ConnRoutePNames.DEFAULT_PROXY, defaultProxy);
          httpClient = new DefaultHttpClient(cm, params);
-         ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient, true);
+         ApacheHttpClient4Engine engine =
+             (ApacheHttpClient4Engine) ApacheHttpClient4EngineFactory.create(httpClient, true);
          engine.setResponseBufferSize(responseBufferSize);
          engine.setHostnameVerifier(verifier);
          // this may be null.  We can't really support this with Apache Client.
          engine.setSslContext(theContext);
-         engine.setDefaultProxy(defaultProxy);
          return engine;
       }
       catch (Exception e)
