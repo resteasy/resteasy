@@ -11,10 +11,7 @@ import javax.ws.rs.core.Context;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
@@ -24,8 +21,8 @@ public class ResteasyWadlMethodMetaData {
     private ResourceMethodInvoker resourceInvoker;
     private Method method;
     private Class<?> klass;
-    private String produces;
-    private String consumesMIMEType;
+    private List<String> produces;
+    private List<String> consumesMIMETypes;
     private String uri;
     private String functionName;
     private List<ResteasyWadlMethodParamMetaData> parameters = new ArrayList<ResteasyWadlMethodParamMetaData>();
@@ -89,10 +86,10 @@ public class ResteasyWadlMethodMetaData {
             }
         }
         // this must be after we scan the params in case of @Form
-        this.consumesMIMEType = getConsumes(consumes);
-        if (wantsForm && !"application/x-www-form-urlencoded".equals(consumesMIMEType)) {
+        this.consumesMIMETypes = getConsumes(consumes);
+        if (wantsForm && !"application/x-www-form-urlencoded".equals(consumesMIMETypes)) {
             LogMessages.LOGGER.warn(Messages.MESSAGES.overridingConsumesAnnotation());
-            this.consumesMIMEType = "application/x-www-form-urlencoded";
+            this.consumesMIMETypes = Arrays.asList("application/x-www-form-urlencoded");
         }
     }
 
@@ -171,29 +168,19 @@ public class ResteasyWadlMethodMetaData {
                 value));
     }
 
-    private String getProduces(Produces produces) {
+    private List<String> getProduces(Produces produces) {
         if (produces == null)
-            return null;
-        String[] value = produces.value();
-        if (value.length == 0)
-            return null;
-        if (value.length == 1)
-            return value[0];
-        StringBuffer buf = new StringBuffer();
-        for (String mime : produces.value()) {
-            if (buf.length() != 0)
-                buf.append(",");
-            buf.append(mime);
-        }
-        return buf.toString();
+            return new ArrayList<>();
+        String[] values = produces.value();
+        return Arrays.asList(values);
     }
 
-    private String getConsumes(Consumes consumes) {
+    private List<String> getConsumes(Consumes consumes) {
         if (consumes == null)
-            return "text/plain";
+            return Arrays.asList("text/plain");
         if (consumes.value().length > 0)
-            return consumes.value()[0];
-        return "text/plain";
+            return Arrays.asList(consumes.value());
+        return Arrays.asList("text/plain");
     }
 
     public static String appendURIFragments(String... fragments) {
@@ -224,12 +211,12 @@ public class ResteasyWadlMethodMetaData {
         return klass;
     }
 
-    public String getProduces() {
+    public List<String> getProduces() {
         return produces;
     }
 
-    public String getConsumesMIMEType() {
-        return consumesMIMEType;
+    public List<String> getConsumesMIMETypes() {
+        return consumesMIMETypes;
     }
 
     public String getUri() {

@@ -53,7 +53,7 @@ public class TestNettyContainer {
 
     @Test
     public void test() throws Exception {
-        BasicTest basicTest = new BasicTest(port, client);
-        basicTest.testBasicResource();
+        TestBase basicTest = new TestBase(port, client);
+        basicTest.testAll();
     }
 }
