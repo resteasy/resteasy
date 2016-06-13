@@ -7,6 +7,7 @@
         <relativePath/>
     </parent>
 
+
     <modelVersion>4.0.0</modelVersion>
 
     <name>RESTEasy JAX-RS</name>
