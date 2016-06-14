@@ -1,7 +1,10 @@
 package org.jboss.resteasy.plugins.cache.server;
 
 import org.infinispan.Cache;
+import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
+import org.infinispan.configuration.global.GlobalConfiguration;
+import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
@@ -67,10 +70,19 @@ public class ServerCacheFeature implements Feature
 
    protected ServerCache getDefaultCache()
    {
-      EmbeddedCacheManager manager = new DefaultCacheManager();
-      manager.defineConfiguration("custom-cache", new ConfigurationBuilder()
-              .eviction().strategy(EvictionStrategy.LIRS).maxEntries(100)
-              .build());
+      GlobalConfiguration gconfig = new GlobalConfigurationBuilder()
+         .globalJmxStatistics()
+         .allowDuplicateDomains(true)
+         .enable()
+         .jmxDomain("custom-cache")
+         .build();
+      Configuration configuration = new ConfigurationBuilder()
+         .eviction()
+         .strategy(EvictionStrategy.LIRS)
+         .maxEntries(100)
+         .jmxStatistics().enable()
+         .build();
+      EmbeddedCacheManager manager = new DefaultCacheManager(gconfig, configuration);
       Cache<Object, Object> c = manager.getCache("custom-cache");
       return new InfinispanCache(c);
    }

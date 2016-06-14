@@ -1,8 +1,10 @@
 package org.jboss.resteasy.test.skeleton.key;
 
-import org.junit.Assert;
 import org.infinispan.Cache;
+import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
+import org.infinispan.configuration.global.GlobalConfiguration;
+import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
@@ -17,6 +19,7 @@ import org.jboss.resteasy.skeleton.key.representations.idm.PublishedRealmReprese
 import org.jboss.resteasy.skeleton.key.representations.idm.RealmRepresentation;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.AfterClass;
+import org.junit.Assert;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -67,10 +70,20 @@ public class SkeletonTestBase extends BaseResourceTest
 
    public static Cache getDefaultCache()
    {
-      EmbeddedCacheManager manager = new DefaultCacheManager();
-      manager.defineConfiguration("custom-cache", new ConfigurationBuilder()
-              .eviction().strategy(EvictionStrategy.NONE).maxEntries(5000)
-              .build());
+      GlobalConfiguration gconfig = new GlobalConfigurationBuilder()
+          .globalJmxStatistics()
+          .allowDuplicateDomains(true)
+          .enable()
+          .jmxDomain("custom-cache")
+          .build();
+
+      Configuration configuration = new ConfigurationBuilder()
+          .eviction()
+          .strategy(EvictionStrategy.NONE)
+          .maxEntries(5000)
+       .jmxStatistics().enable()
+          .build();
+      EmbeddedCacheManager manager = new DefaultCacheManager(gconfig, configuration);
       return manager.getCache("custom-cache");
    }
 
