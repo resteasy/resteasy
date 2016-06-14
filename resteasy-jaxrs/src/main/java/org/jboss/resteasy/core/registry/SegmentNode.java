@@ -19,12 +19,16 @@ import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -386,6 +390,7 @@ public class SegmentNode
       }
       //if (list.size() == 1) return list.get(0); //don't do this optimization as we need to set chosen accept
       List<SortEntry> sortList = new ArrayList<SortEntry>();
+      Set<Method> targetMethods = new HashSet<Method>();
       for (Match match : list)
       {
          ResourceMethodInvoker invoker = (ResourceMethodInvoker) match.expression.getInvoker();
@@ -422,6 +427,7 @@ public class SegmentNode
                   for (SortFactor consume : consumeCombo)
                   {
                      sortList.add(new SortEntry(match, consume, sortFactor, produce));
+                     targetMethods.add(match.expression.getInvoker().getMethod());
                   }
                }
 
@@ -430,9 +436,9 @@ public class SegmentNode
       }
       Collections.sort(sortList);
       SortEntry sortEntry = sortList.get(0);
-      if (sortList.size() > 1)
+      if (targetMethods.size() > 1)
       {
-         LogMessages.LOGGER.multipleMethodsMatch();
+         LogMessages.LOGGER.multipleMethodsMatch(requestToString(request), methodNames(targetMethods));
       }
       request.setAttribute(RESTEASY_CHOSEN_ACCEPT, sortEntry.getAcceptType());
       return sortEntry.match;
@@ -443,6 +449,20 @@ public class SegmentNode
       targets.add(expression);
       Collections.sort(targets);
 
+   }
+
+   private String requestToString(HttpRequest request) {
+      return "\"" + request.getHttpMethod() + " " + request.getUri().getPath() + "\"";
+   }
+
+   private String[] methodNames(Collection<Method> methods) {
+      String[] names = new String[methods.size()];
+      Iterator<Method> iterator = methods.iterator();
+      int i = 0;
+      while (iterator.hasNext()) {
+         names[i++] = iterator.next().toString();
+      }
+      return names;
    }
 
 
