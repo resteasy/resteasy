@@ -17,17 +17,17 @@ import static org.junit.Assert.*;
 /**
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
-public class BasicTest {
+public class TestBase {
 
     private int port;
     private Client client;
 
-    public BasicTest(int port, Client client) {
+    public TestBase(int port, Client client) {
         this.port = port;
         this.client = client;
     }
 
-    public void testBasicResource() throws Exception {
+    public void testAll() throws Exception {
         String url = "http://127.0.0.1:${port}/application.xml".replaceAll("\\$\\{port\\}",
                 Integer.valueOf(port).toString());
         WebTarget target = client.target(url);
@@ -100,7 +100,7 @@ public class BasicTest {
 
     }
 
-    private org.jboss.resteasy.wadl.jaxb.Method findMethodById(org.jboss.resteasy.wadl.jaxb.Resource resource, String id) {
+    public static org.jboss.resteasy.wadl.jaxb.Method findMethodById(org.jboss.resteasy.wadl.jaxb.Resource resource, String id) {
         for (Object methodOrResource : resource.getMethodOrResource()) {
             if (methodOrResource.getClass().equals(org.jboss.resteasy.wadl.jaxb.Method.class))
                 if (((org.jboss.resteasy.wadl.jaxb.Method) methodOrResource).getId().equals(id))
@@ -109,7 +109,7 @@ public class BasicTest {
         return null;
     }
 
-    private org.jboss.resteasy.wadl.jaxb.Resource findResourceByName(Object target, String resourceName) {
+    public static org.jboss.resteasy.wadl.jaxb.Resource findResourceByName(Object target, String resourceName) {
         if (target.getClass().equals(org.jboss.resteasy.wadl.jaxb.Application.class)) {
             for (org.jboss.resteasy.wadl.jaxb.Resource resource : ((org.jboss.resteasy.wadl.jaxb.Application) target).getResources().get(0).getResource()) {
                 if (resource.getPath().equals(resourceName)) {
@@ -126,7 +126,7 @@ public class BasicTest {
         return null;
     }
 
-    class ExistenceVerifier {
+    public class ExistenceVerifier {
         private Map<String, Boolean> data = new HashMap<>();
 
         public void createVerifier(String... keys) {
