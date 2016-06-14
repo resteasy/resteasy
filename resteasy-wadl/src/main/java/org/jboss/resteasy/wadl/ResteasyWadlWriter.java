@@ -115,14 +115,16 @@ public class ResteasyWadlWriter {
 
         if (methodMetaData.getProduces() != null) {
             for (String produces : methodMetaData.getProduces()) {
-                mediaType = MediaType.valueOf(produces);
-                if (mediaType == null) {
-                    mediaType = serviceRegistry.getProviderFactory().getConcreteMediaTypeFromMessageBodyWriters(_type, _generic, methodMetaData.getMethod().getAnnotations(), MediaType.WILDCARD_TYPE);
-                    if (mediaType == null)
-                        mediaType = MediaType.WILDCARD_TYPE;
+                for (String _produces : produces.split(",")) {
+                    mediaType = MediaType.valueOf(_produces);
+                    if (mediaType == null) {
+                        mediaType = serviceRegistry.getProviderFactory().getConcreteMediaTypeFromMessageBodyWriters(_type, _generic, methodMetaData.getMethod().getAnnotations(), MediaType.WILDCARD_TYPE);
+                        if (mediaType == null)
+                            mediaType = MediaType.WILDCARD_TYPE;
+                    }
+                    Representation representation = createRepresentation(mediaType);
+                    response.getRepresentation().add(representation);
                 }
-                Representation representation = createRepresentation(mediaType);
-                response.getRepresentation().add(representation);
             }
         }
         return response;

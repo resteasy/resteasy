@@ -5,6 +5,7 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.NettyContainer;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.test.nextgen.wadl.resources.BasicResource;
+import org.jboss.resteasy.test.nextgen.wadl.resources.issues.RESTEASY1246;
 import org.jboss.resteasy.wadl.ResteasyWadlDefaultResource;
 import org.jboss.resteasy.wadl.ResteasyWadlGenerator;
 import org.junit.AfterClass;
@@ -17,7 +18,7 @@ import javax.ws.rs.client.ClientBuilder;
 /**
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
-public class TestNettyContainer {
+public class WADLNettyContainerTests {
     private static NettyJaxrsServer netty;
     private static int port = TestPortProvider.getPort() + 2;
     private static Client client = ClientBuilder.newClient();
@@ -37,6 +38,7 @@ public class TestNettyContainer {
 
         deployment.getRegistry().addPerRequestResource(BasicResource.class);
         deployment.getRegistry().addPerRequestResource(ResteasyWadlDefaultResource.class);
+        deployment.getRegistry().addPerRequestResource(RESTEASY1246.class);
         ResteasyWadlDefaultResource.getServices().put("/", ResteasyWadlGenerator.generateServiceRegistry(deployment));
     }
 
@@ -53,7 +55,10 @@ public class TestNettyContainer {
 
     @Test
     public void test() throws Exception {
-        TestBase basicTest = new TestBase(port, client);
-        basicTest.testAll();
+        WADLBasicTests basicTest = new WADLBasicTests();
+        basicTest.setPort(port);
+        basicTest.setClient(client);
+        basicTest.testBasicSet();
+        basicTest.testResteasy1246();
     }
 }
