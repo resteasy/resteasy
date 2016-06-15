@@ -390,7 +390,8 @@ public class SegmentNode
       }
       //if (list.size() == 1) return list.get(0); //don't do this optimization as we need to set chosen accept
       List<SortEntry> sortList = new ArrayList<SortEntry>();
-      Set<Method> targetMethods = new HashSet<Method>();
+      Set<Method> targetMethods = null;
+      Method firstTargetMethod = null;
       for (Match match : list)
       {
          ResourceMethodInvoker invoker = (ResourceMethodInvoker) match.expression.getInvoker();
@@ -426,8 +427,17 @@ public class SegmentNode
 
                   for (SortFactor consume : consumeCombo)
                   {
+                     final Method m = match.expression.getInvoker().getMethod();
                      sortList.add(new SortEntry(match, consume, sortFactor, produce));
-                     targetMethods.add(match.expression.getInvoker().getMethod());
+                     if (firstTargetMethod == null) {
+                        firstTargetMethod = m;
+                     } else if (firstTargetMethod != m) {
+                        if (targetMethods == null) {
+                           targetMethods = new HashSet<Method>();
+                           targetMethods.add(firstTargetMethod);
+                        }
+                        targetMethods.add(m);
+                     }
                   }
                }
 
@@ -436,7 +446,7 @@ public class SegmentNode
       }
       Collections.sort(sortList);
       SortEntry sortEntry = sortList.get(0);
-      if (targetMethods.size() > 1)
+      if (targetMethods != null && targetMethods.size() > 1)
       {
          LogMessages.LOGGER.multipleMethodsMatch(requestToString(request), methodNames(targetMethods));
       }
