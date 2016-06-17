@@ -1,6 +1,5 @@
 package org.jboss.resteasy.plugins.providers;
 
-import org.apache.commons.io.Charsets;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -49,7 +48,7 @@ public class RegisterBuiltin
          InputStream is = url.openStream();
          try
          {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charsets.UTF_8));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             String line;
             while ((line = reader.readLine()) != null)
             {
