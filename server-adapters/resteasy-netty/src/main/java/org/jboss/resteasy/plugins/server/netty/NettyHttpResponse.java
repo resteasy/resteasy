@@ -7,6 +7,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Values;
+import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
@@ -34,13 +35,20 @@ public class NettyHttpResponse implements HttpResponse
    private final Channel channel;
    private boolean committed;
    private boolean keepAlive;
-   
+   private HttpMethod method;
+
    public NettyHttpResponse(Channel channel, boolean keepAlive)
+   {
+      this(channel, keepAlive, null);
+   }
+
+   public NettyHttpResponse(Channel channel, boolean keepAlive, HttpMethod method)
    {
       outputHeaders = new MultivaluedMapImpl<String, Object>();
       os = underlyingOutputStream = new ChannelBufferOutputStream(ChannelBuffers.dynamicBuffer());
       this.channel = channel;
       this.keepAlive = keepAlive;
+      this.method = method;
    }
 
    @Override
@@ -139,4 +147,9 @@ public class NettyHttpResponse implements HttpResponse
    public boolean isKeepAlive() {
        return keepAlive;
    }
+
+   public HttpMethod getMethod() {
+      return method;
+   }
+
 }

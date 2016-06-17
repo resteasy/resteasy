@@ -1,11 +1,13 @@
 package org.jboss.resteasy.plugins.server.netty;
 
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandler.Sharable;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Values;
+import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
@@ -66,12 +68,16 @@ public class RestEasyHttpResponseEncoder extends OneToOneEncoder
             }
 
             nettyResponse.getOutputStream().flush();
-            response.setContent(nettyResponse.getBuffer());
+            final ChannelBuffer buffer = nettyResponse.getBuffer();
+
+            if (nettyResponse.getMethod() == null || nettyResponse.getMethod() != HttpMethod.HEAD) {
+                response.setContent(buffer);
+            }
 
             if (nettyResponse.isKeepAlive()) 
             {
                 // Add content length and connection header if needed
-                response.setHeader(Names.CONTENT_LENGTH, response.getContent().readableBytes());
+                response.setHeader(Names.CONTENT_LENGTH, buffer.readableBytes());
                 response.setHeader(Names.CONNECTION, Values.KEEP_ALIVE);
             }
             return response;
