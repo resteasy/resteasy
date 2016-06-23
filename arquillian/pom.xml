@@ -13,24 +13,13 @@
 
     <modules>
         <module>RESTEASY-736-jetty</module>
-        <module>RESTEASY-903-WF8</module>
         <module>RESTEASY-760-jetty</module>
         <module>RESTEASY-767-jetty</module>
         <!--<module>resteasy-cdi-ejb-test</module>-->
-        <module>ValidationTest-WF8</module>
-        <module>RESTEASY-923-WF8</module>
-        <module>RESTEASY-945-WF8</module>
-        <module>RESTEASY-1008-WF8</module>
-        <module>RESTEASY-1054-WF8</module>
         <module>RESTEASY-1056-jetty-bv11</module>
-        <module>RESTEASY-1058-WF8</module>
-        <module>RESTEASY-1073-WF8</module>
-        <module>RESTEASY-1082-WF8</module>
         <!--<module>RESTEASY-TEST-EAP6</module>-->
         <module>RESTEASY-TEST-WF8</module>
-        <module>RESTEASY-1141-WF8</module>
         <module>RESTEASY-1141-jetty</module>
-        <module>RESTEASY-1223-WF8</module>
         <module>RESTEASY-TEST-WF10</module>
     </modules>
     
