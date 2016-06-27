@@ -105,7 +105,7 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       // not yet resolved (or not cached any more)? Resolve!
       if (endpoint == null) {
          ObjectMapper mapper = locateMapper(type, mediaType);
-         endpoint = _configForReading(mapper, annotations, type);
+         endpoint = _configForReading(mapper, annotations, null);
          _readers.put(key, endpoint);
       }
       ObjectReader reader = endpoint.getReader();
