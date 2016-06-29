@@ -62,7 +62,7 @@ public class RestEasyHttpRequestDecoder extends OneToOneDecoder
         org.jboss.netty.handler.codec.http.HttpRequest request = (org.jboss.netty.handler.codec.http.HttpRequest) msg;
         boolean keepAlive = org.jboss.netty.handler.codec.http.HttpHeaders.isKeepAlive(request) & isKeepAlive;
 
-        NettyHttpResponse response = new NettyHttpResponse(channel, keepAlive);
+        NettyHttpResponse response = new NettyHttpResponse(channel, keepAlive, request.getMethod());
 
         ResteasyHttpHeaders headers = null;
         ResteasyUriInfo uriInfo = null;
