@@ -12,6 +12,7 @@ import javax.xml.bind.JAXBException;
 import java.lang.annotation.Annotation;
 import java.util.concurrent.ConcurrentHashMap;
 
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -25,29 +26,23 @@ public class XmlJAXBContextFinder extends AbstractJAXBContextFinder implements C
    private ConcurrentHashMap<CacheKey, JAXBContext> xmlTypeCollectionCache = new ConcurrentHashMap<CacheKey, JAXBContext>();
 
 
+	@Override
    public JAXBContext findCachedContext(Class type, MediaType mediaType, Annotation[] parameterAnnotations) throws JAXBException
    {
-      JAXBContext result;
-
-      JAXBContext jaxb = null;
-      if (type != null)
+		JAXBContext jaxb = findProvidedJAXBContext(type, mediaType);
+		if (jaxb != null)
       {
-         jaxb = cache.get((Class<?>) type);
-         if (jaxb != null)
-         {
-            return jaxb;
-         }
+			return jaxb;
       }
-      jaxb = findProvidedJAXBContext((Class<?>) type, mediaType);
-      if (jaxb != null)
+		jaxb = type != null ? cache.get(type) : null;
+		if (jaxb == null)
       {
-         cache.putIfAbsent((Class<?>) type, jaxb);
-         return jaxb;
+			jaxb = createContext(parameterAnnotations, type);
+			if (jaxb != null && type != null) {
+				cache.putIfAbsent(type, jaxb);
+			}
       }
-      jaxb = createContext(parameterAnnotations, type);
-      if (jaxb != null && type != null) cache.putIfAbsent((Class<?>) type, jaxb);
-      result = jaxb;
-      return result;
+		return jaxb;
    }
 
    protected JAXBContext createContextObject(Annotation[] parameterAnnotations, Class... classes) throws JAXBException

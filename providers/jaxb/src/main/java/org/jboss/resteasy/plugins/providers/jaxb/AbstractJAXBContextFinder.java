@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
+import java.util.Collections;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
@@ -9,6 +10,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.bind.annotation.XmlType;
 import java.lang.annotation.Annotation;
+import java.util.Set;
 import java.util.HashSet;
 
 /**
@@ -136,19 +138,24 @@ public abstract class AbstractJAXBContextFinder implements JAXBContextFinder
       return createContextObject(parameterAnnotations, contextPath.toString());
    }
 
-   public JAXBContext createContext(Annotation[] parameterAnnotations, Class... classes) throws JAXBException
-   {
-      HashSet<Class> classes1 = new HashSet<Class>();
-      for (Class type : classes)
-      {
-         if (type == null) continue;
-         classes1.add(type);
-         Class factory = findDefaultObjectFactoryClass(type);
-         if (factory != null) classes1.add(factory);
-      }
-      Class[] classArray = classes1.toArray(new Class[classes1.size()]);
-      return createContextObject(parameterAnnotations, classArray);
-   }
+	@Override
+	public JAXBContext createContext(Annotation[] parameterAnnotations, Class... classes) throws JAXBException
+ {
+		Set<Class<?>> classes1 = Collections.emptySet();
+		if (classes != null && classes.length != 0) {
+			classes1 = new HashSet<Class<?>>();
+			for (Class<?> type : classes) {
+				if (type == null)
+					continue;
+				classes1.add(type);
+				Class<?> factory = findDefaultObjectFactoryClass(type);
+				if (factory != null)
+					classes1.add(factory);
+			}
+		}
+		Class<?>[] classArray = classes1.toArray(new Class[classes1.size()]);
+		return createContextObject(parameterAnnotations, classArray);
+	}
 
    public JAXBContextFinder getContext(Class<?> type)
    {
