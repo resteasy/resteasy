@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans default-init-method="populate"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="fieldInjectedResource"
+        lazy-init="true"
+        class="org.jboss.resteasy.spring.FieldInjectedResource"/>
+
+</beans>
