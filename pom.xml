@@ -75,6 +75,7 @@
         <version.org.yaml.snakeyaml>1.17</version.org.yaml.snakeyaml>
         <version.javax.validation-api>1.1.0.Final</version.javax.validation-api>
         <version.jboss-javaee-6.0.spec>1.0.0.Final</version.jboss-javaee-6.0.spec>
+        <version.weld21>2.1.0.Final</version.weld21>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -734,6 +735,16 @@
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest-all</artifactId>
                 <version>${version.hamcrest}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.weld</groupId>
+                <artifactId>weld-core</artifactId>
+                <version>${version.weld21}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.weld.se</groupId>
+                <artifactId>weld-se</artifactId>
+                <version>${version.weld21}</version>
             </dependency>
             <dependency>
                 <groupId>org.wildfly.core</groupId>
