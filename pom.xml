@@ -29,9 +29,8 @@
         <dep.arquillian-bom.version>1.1.11.Final</dep.arquillian-bom.version>
         <dep.arquillian-wildfly.version>8.2.1.Final</dep.arquillian-wildfly.version>
         <jboss.home />
-        <!-- java 7-->
-        <maven.compiler.target>1.7</maven.compiler.target>
-        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.com.fasterxml.jackson>2.7.3</version.com.fasterxml.jackson>
         <version.com.google.inject.guice>4.0</version.com.google.inject.guice>
