@@ -1,0 +1,6 @@
+<web-app>
+    <context-param>
+        <param-name>spring-beans-file</param-name>
+        <param-value>META-INF/applicationContext.xml</param-value>
+    </context-param>
+</web-app>

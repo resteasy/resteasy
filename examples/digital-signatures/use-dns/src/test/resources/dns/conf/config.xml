@@ -1,0 +1,31 @@
+<Config>
+        <System>
+                <Port>6363</Port>
+                <TCPThreadPoolSize>20</TCPThreadPoolSize>
+                <TCPThreadPoolShutdownTimeout>60</TCPThreadPoolShutdownTimeout>
+                <UDPThreadPoolSize>20</UDPThreadPoolSize>
+                <UDPThreadPoolShutdownTimeout>60</UDPThreadPoolShutdownTimeout>
+                <AXFRTimeout>30</AXFRTimeout>
+        </System>
+        <ZoneProviders>
+                <ZoneProvider>
+                        <Name>Default file zone provider</Name>
+                        <Class>se.unlogic.eagledns.zoneproviders.file.PathZoneProvider</Class>
+                        <Properties>
+                                <Property name="zoneFilePath">dns/zones</Property>
+                                <Property name="autoReloadZones">false</Property>
+                                <Property name="pollingInterval">10000</Property>
+                        </Properties>
+                </ZoneProvider>
+<!--            <ZoneProvider>-->
+<!--                    <Name>Default DB zone provider</Name>-->
+<!--                    <Class>se.unlogic.eagledns.zoneproviders.db.DBZoneProvider</Class>-->
+<!--                    <Properties>-->
+<!--                            <Property name="driver">com.mysql.jdbc.Driver</Property>-->
+<!--                            <Property name="username">root</Property>-->
+<!--                            <Property name="password">root</Property>-->
+<!--                            <Property name="url">jdbc:mysql://localhost:3306/eagledns</Property>-->
+<!--                    </Properties>-->
+<!--            </ZoneProvider>         -->
+        </ZoneProviders>
+</Config>
