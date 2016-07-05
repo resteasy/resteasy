@@ -13,14 +13,25 @@
 
     <modules>
         <module>arquillian-utils</module>
-<!--        <module>unit-tests</module>
-        <module>integration-tests</module> -->
+<!--        <module>unit-tests</module> -->
+        <module>integration-tests</module>
     </modules>
     
     <artifactId>resteasy-testsuite</artifactId>
 
     <build>
         <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <additionalJvmArgs></additionalJvmArgs>
+                        <ipv6>false</ipv6>
+                        <ipv6ArquillianSettings></ipv6ArquillianSettings>
+                        <node>127.0.0.1</node>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -37,6 +48,58 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>excludeFailing</id>
+            <activation>
+                <property>
+                    <name>excludeFailing</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <additionalJvmArgs></additionalJvmArgs>
+                                <ipv6>false</ipv6>
+                                <ipv6ArquillianSettings></ipv6ArquillianSettings>
+                                <node>127.0.0.1</node>
+                            </systemPropertyVariables>
+                            <excludedGroups>org.jboss.resteasy.category.ExpectedFailing</excludedGroups>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>ipv6</id>
+            <activation>
+                <property>
+                    <name>ipv6</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <argLine>${surefireArgLine}</argLine>
+                            <testFailureIgnore>true</testFailureIgnore>
+                            <systemPropertyVariables>
+                                <ipv6>true</ipv6>
+                                <ipv6ArquillianSettings>-Djava.net.preferIPv4Stack=false -Djava.net.preferIPv6Addresses=true</ipv6ArquillianSettings>
+                                <node>::1</node>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
 
