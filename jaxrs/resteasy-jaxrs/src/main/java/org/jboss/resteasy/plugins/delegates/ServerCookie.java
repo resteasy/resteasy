@@ -77,6 +77,7 @@ public class ServerCookie implements Serializable
    /**
     * @deprecated Not used: Deprecated in the orginal org.apache.tomcat.util.http.ServerCookie class.
     */
+   @Deprecated
    public static boolean checkName(String name)
    {
       if (!isToken(name)

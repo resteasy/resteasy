@@ -48,7 +48,13 @@ import static java.lang.String.format;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @deprecated The Resteasy client framework in resteasy-jaxrs is replaced by the JAX-RS 2.0 compliant resteasy-client module.
+ * 
+ * @see javax.ws.rs.core.Response
+ * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
  */
+@Deprecated
 @SuppressWarnings("unchecked")
 public class BaseClientResponse<T> extends ClientResponse<T>
 {

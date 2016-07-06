@@ -12,7 +12,16 @@ import java.util.Map;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @deprecated The Resteasy client framework in resteasy-jaxrs
+ *             is replaced by the JAX-RS 2.0 compliant resteasy-client module.
+ *             
+ *             The Resteasy client proxy framework is replaced by the client proxy
+ *             framework in resteasy-client module.
+ *  
+ *  @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
  */
+@Deprecated
 public class ClientProxy implements InvocationHandler
 {
 	private Map<Method, MethodInvoker> methodMap;

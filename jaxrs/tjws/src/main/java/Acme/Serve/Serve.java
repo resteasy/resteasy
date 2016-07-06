@@ -5200,6 +5200,7 @@ public class Serve implements ServletContext, Serializable
        * this method is deprecated and has no replacement.
        * It will be removed in a future version of the Java Servlet API.
        */
+      @Deprecated
       public HttpSessionContext getSessionContext()
       {
          return sessionContext;

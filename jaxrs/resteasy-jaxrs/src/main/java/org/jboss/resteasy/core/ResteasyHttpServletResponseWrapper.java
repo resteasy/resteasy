@@ -164,6 +164,7 @@ public class ResteasyHttpServletResponseWrapper extends ServletResponseWrapper i
     * @return    the encoded URL if encoding is needed; 
     *         the unchanged URL otherwise.
     */
+   @Deprecated
    @Override
    public String encodeUrl(String url)
    {
@@ -178,6 +179,7 @@ public class ResteasyHttpServletResponseWrapper extends ServletResponseWrapper i
     * @return    the encoded URL if encoding is needed; 
     *         the unchanged URL otherwise.
     */
+   @Deprecated
    @Override
    public String encodeRedirectUrl(String url)
    {
@@ -255,6 +257,7 @@ public class ResteasyHttpServletResponseWrapper extends ServletResponseWrapper i
     * @param  sc the status code
     * @param  sm the status message
     */
+   @Deprecated
    @Override
    public void setStatus(int sc, String sm)
    {

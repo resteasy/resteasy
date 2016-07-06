@@ -14,7 +14,16 @@ import javax.ws.rs.core.Response;
  * encountered exception.
  *
  * @author <a href="mailto:lincoln@ocpsoft.com">Lincoln Baxter, III</a>
+ * 
+ * @deprecated The Resteasy client framework in resteasy-jaxrs
+ *             is replaced by the JAX-RS 2.0 compliant resteasy-client module.
+ *             
+ *             The Resteasy interceptor facility introduced in release 2.x
+ *             is replaced by the JAX-RS 2.0 compliant interceptor facility in release 3.0.x.
+ * 
+ * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
  */
+@Deprecated
 public interface ClientErrorInterceptor
 {
    /**

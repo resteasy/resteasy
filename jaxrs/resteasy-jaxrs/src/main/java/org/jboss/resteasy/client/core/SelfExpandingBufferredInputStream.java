@@ -13,7 +13,13 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
  * stream.
  *
  * @author ul8b
+ * 
+ * @deprecated Replaced by org.jboss.resteasy.client.jaxrs.engines.SelfExpandingBufferredInputStream
+ *             in resteasy-client module
+ *             
+ * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
  */
+@Deprecated
 public class SelfExpandingBufferredInputStream extends BufferedInputStream
 {
    private static int defaultBufferSize = 8192;

@@ -20,7 +20,18 @@ import java.lang.reflect.Method;
  * @version $Revision: 1 $
  * @see EntityExtractorFactory
  * @see MessageBodyReader
+ * 
+ * @deprecated The Resteasy client framework in resteasy-jaxrs is replaced by
+ *             the JAX-RS 2.0 compliant resteasy-client module.
+ *             
+ *             The Resteasy client proxy framework is replaced by the client proxy
+ *             framework in resteasy-client module.
+ * 
+ * @see org.jboss.resteasy.client.jaxrs.internal.proxy.extractors.BodyEntityExtractor
+ * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
+ * 
  */
+@Deprecated
 @SuppressWarnings("unchecked")
 public class BodyEntityExtractor implements EntityExtractor
 {

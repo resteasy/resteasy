@@ -49,7 +49,11 @@ import java.util.Map;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @deprecated Replaced by org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine and
+ *             org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine in resteasy-client module
  */
+@Deprecated
 public class ApacheHttpClient4Executor implements ClientExecutor
 {
    public static final String BYTE_MEMORY_UNIT = "BY";

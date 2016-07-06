@@ -11,7 +11,16 @@ import java.lang.reflect.Method;
  * @version $Revision: 1 $
  * @see EntityExtractor, DefaultObjectEntityExtractor,
  *      ResponseObjectEntityExtractor
+ * 
+ * @deprecated The Resteasy client framework in resteasy-jaxrs is replaced by
+ *             the JAX-RS 2.0 compliant resteasy-client module.
+ *             
+ *             The Resteasy client proxy framework is replaced by the client proxy
+ *             framework in resteasy-client module.
+ * 
+ * @see org.jboss.resteasy.client.jaxrs.internal.proxy.extractors.EntityExtractorFactory
  */
+@Deprecated
 public interface EntityExtractorFactory
 {
    @SuppressWarnings("unchecked")
