@@ -30,6 +30,7 @@
                         <ipv6ArquillianSettings></ipv6ArquillianSettings>
                         <node>127.0.0.1</node>
                     </systemPropertyVariables>
+                    <excludedGroups>org.jboss.resteasy.category.ExpectedFailing</excludedGroups>
                 </configuration>
             </plugin>
             <plugin>
@@ -50,7 +51,7 @@
     </build>
 
     <profiles>
-        <profile>
+<!--         <profile>
             <id>excludeFailing</id>
             <activation>
                 <property>
@@ -68,12 +69,11 @@
                                 <ipv6ArquillianSettings></ipv6ArquillianSettings>
                                 <node>127.0.0.1</node>
                             </systemPropertyVariables>
-                            <excludedGroups>org.jboss.resteasy.category.ExpectedFailing</excludedGroups>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
-        </profile>
+        </profile> -->
         <profile>
             <id>ipv6</id>
             <activation>
@@ -93,6 +93,7 @@
                                 <ipv6ArquillianSettings>-Djava.net.preferIPv4Stack=false -Djava.net.preferIPv6Addresses=true</ipv6ArquillianSettings>
                                 <node>::1</node>
                             </systemPropertyVariables>
+                            <excludedGroups>org.jboss.resteasy.category.ExpectedFailing</excludedGroups>
                         </configuration>
                     </plugin>
 

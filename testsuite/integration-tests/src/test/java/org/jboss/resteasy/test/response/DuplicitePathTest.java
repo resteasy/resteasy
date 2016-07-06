@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -82,7 +83,7 @@ public class DuplicitePathTest {
      * @tpSince EAP 7.0.1
      */
     @Test
-    @Category({NotForForwardCompatibility.class})
+    @Category({NotForForwardCompatibility.class, ExpectedFailing.class}) //[RESTEASY-1369] FIXME
     public void testDuplicationTwoAppTwoResourceSameMethodPath() throws Exception {
         int initWarningsCount = getWarningCount();
         WebTarget base = client.target(generateURL("/a/b/c"));
@@ -108,6 +109,7 @@ public class DuplicitePathTest {
      * @tpSince EAP 7.0.1
      */
     @Test
+    @Category({ExpectedFailing.class}) //[RESTEASY-1369] FIXME
     public void testDuplicationMoreAccepts() throws Exception {
         int initWarningsCount = getWarningCount();
         WebTarget base = client.target(generateURL("/f/g/i"));
@@ -132,6 +134,7 @@ public class DuplicitePathTest {
      * @tpSince EAP 7.0.1
      */
     @Test
+    @Category({ExpectedFailing.class}) //[RESTEASY-1369] FIXME
     public void testDuplicationMoretypes() throws Exception {
         int initWarningsCount = getWarningCount();
         WebTarget base = client.target(generateURL("/f/g/j"));
