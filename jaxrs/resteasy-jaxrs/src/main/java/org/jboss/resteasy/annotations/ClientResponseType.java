@@ -27,8 +27,13 @@ import java.lang.annotation.Target;
  *
  * @author <a href="mailto:sduskis@gmail.com">Solomon Duskis</a>
  * @version $Revision: 1 $
+ * 
+ * @deprecated The Resteasy client framework in resteasy-jaxrs is replaced by the JAX-RS 2.0 compliant resteasy-client module.
+ * 
+ * @see javax.ws.rs.core.Response
+ * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
  */
-
+@Deprecated
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @SuppressWarnings("unchecked")

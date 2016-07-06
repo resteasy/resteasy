@@ -11,10 +11,18 @@ import java.util.List;
  * This class handles client errors (of course...).
  *
  * @author Solomon.Duskis
+ * 
+ * @deprecated The Resteasy client framework in resteasy-jaxrs is replaced by
+ *             the JAX-RS 2.0 compliant resteasy-client module.
+ *             
+ *             The Resteasy client proxy framework is replaced by the client proxy
+ *             framework in resteasy-client module.
+ *             
+ * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
  */
 
 // TODO: expand this class for more robust, complicated error handling
-
+@Deprecated
 public class ClientErrorHandler
 {
    private List<ClientErrorInterceptor> interceptors;

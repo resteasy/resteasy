@@ -28,7 +28,11 @@ import java.net.URL;
  *
  * @author <a href="justin@justinedelson.com">Justin Edelson</a>
  * @version $Revision$
+ * 
+ * @deprecated Replaced by org.jboss.resteasy.test.TestPortProvider in resteasy-client module.
+ * 
  */
+@Deprecated
 public class TestPortProvider
 {
    private static final int DEFAULT_PORT = 8081;

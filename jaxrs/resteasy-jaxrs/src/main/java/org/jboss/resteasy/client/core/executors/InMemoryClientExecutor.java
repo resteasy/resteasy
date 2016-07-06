@@ -33,7 +33,10 @@ import java.util.Map.Entry;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @deprecated 
  */
+@Deprecated
 @SuppressWarnings("unchecked")
 public class InMemoryClientExecutor implements ClientExecutor
 {

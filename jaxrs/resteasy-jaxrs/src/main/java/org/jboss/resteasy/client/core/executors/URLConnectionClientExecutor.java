@@ -21,6 +21,13 @@ import java.util.Map.Entry;
 
 import static org.jboss.resteasy.util.HttpHeaderNames.*;
 
+/**
+ * 
+ * @deprecated Replaced by org.jboss.resteasy.client.jaxrs.engines.URLConnectionEngine
+ *             in resteasy-client module
+ * 
+ */
+@Deprecated
 public class URLConnectionClientExecutor implements ClientExecutor
 {
 

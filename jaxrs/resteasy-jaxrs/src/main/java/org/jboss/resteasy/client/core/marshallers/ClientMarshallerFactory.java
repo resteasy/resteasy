@@ -24,6 +24,19 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
+/**
+ * @deprecated The Resteasy client framework in resteasy-jaxrs
+ *             is replaced by the JAX-RS 2.0 compliant resteasy-client module.
+ *             
+ *             The Resteasy client proxy framework is replaced by the client proxy
+ *             framework in resteasy-client module.
+ *  
+ * @see package org.jboss.resteasy.client.jaxrs.internal.proxy.processors
+ * @see package org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation
+ * @see package org.jboss.resteasy.client.jaxrs.internal.proxy.processors.webtarget
+ * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
+ */
+@Deprecated
 public class ClientMarshallerFactory
 {
 
