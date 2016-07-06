@@ -36,14 +36,7 @@
     </build>
 
     <modules>
-        <module>async-http-servlet-3.0-test</module>
-        <module>callback-test</module>
-        <module>filter-test</module>
-        <module>encoding-test</module>
-        <module>context-test</module>
         <module>oauth-servlet-test</module>
         <!-- <module>jsapi-servlet-test</module> -->
-        <module>application-test</module>
-        <module>client-typevar-test</module>
     </modules>
 </project>

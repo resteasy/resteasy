@@ -18,7 +18,7 @@ import org.junit.BeforeClass;
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
  * @date Aug 13, 2014
  */
-public class TestCharsetExpand extends TestCharsetParent
+public class TestCharsetExpand
 {
    protected static Process process;
    

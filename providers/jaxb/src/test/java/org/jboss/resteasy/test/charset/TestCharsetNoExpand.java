@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.charset;
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
@@ -19,7 +18,7 @@ import org.junit.BeforeClass;
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
  * @date Aug 13, 2014
  */
-public class TestCharsetNoExpand extends TestCharsetParent
+public class TestCharsetNoExpand
 {
    protected static Process process;
 
