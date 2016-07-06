@@ -34,8 +34,6 @@
     </build>
 
     <modules>
-        <module>test-jackson-jaxb-coexistence</module>
-        <module>test-resteasy-html</module>
         <module>profiling-tests</module>
     </modules>
 </project>
