@@ -67,6 +67,73 @@
                 </plugins>
             </build>
         </profile>
+
+        <!--
+        Name:  download
+        Descr: Download WildFly
+        -->
+        <profile>
+          <id>download</id>
+          <activation>
+            <property>
+              <name>!server.home</name>
+            </property>
+          </activation>
+          <build>
+            <plugins>
+              <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.wildfly</groupId>
+                                    <artifactId>wildfly-dist</artifactId>
+                                    <!-- <version>${wildfly-version}</version> TODO!!! -->
+                                    <version>10.0.0.Final</version>
+                                    <type>zip</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/test-server</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+              </plugin>
+              <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack resteasy</id>
+                        <phase>process-test-classes</phase>
+                        <configuration>
+                            <target>
+                                <unzip src="../../jboss-modules/target/resteasy-jboss-modules-wf8-${project.version}.zip"
+                                       dest="${project.build.directory}/test-server/wildfly-10.0.0.Final/modules/system/layers/base"
+                                       overwrite="true"/>
+                                <delete dir="target/dependency-maven-plugin-markers"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+              </plugin>
+            </plugins>
+          </build>
+          <properties>
+            <jboss.home>${project.build.directory}/test-server/wildfly-10.0.0.Final</jboss.home>
+          </properties>
+        </profile>
+
     </profiles>
 
     <dependencies>
@@ -226,6 +293,21 @@
     </dependencies>
 
     <build>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>arquillian.xml</include>
+                </includes>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <excludes>
+                    <exclude>arquillian.xml</exclude>
+                </excludes>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

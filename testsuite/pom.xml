@@ -29,6 +29,7 @@
                         <ipv6>false</ipv6>
                         <ipv6ArquillianSettings></ipv6ArquillianSettings>
                         <node>127.0.0.1</node>
+                        <jboss.home>${jboss.home}</jboss.home>
                     </systemPropertyVariables>
                     <excludedGroups>org.jboss.resteasy.category.ExpectedFailing</excludedGroups>
                 </configuration>
@@ -51,6 +52,17 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>home</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <jboss.home>${server.home}</jboss.home>
+            </properties>
+        </profile>
+
+
 <!--         <profile>
             <id>excludeFailing</id>
             <activation>
