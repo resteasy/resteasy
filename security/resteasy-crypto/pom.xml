@@ -54,7 +54,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>eagledns-fork</artifactId>
-            <version>3.0.1.Final</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

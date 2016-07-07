@@ -120,7 +120,7 @@ public class AnnotatedDAO<T> {
 			this.queryParameterPopulators = null;
 		}
 
-		if (this.beanStringPopulators != null) {
+		if (typePopulators != null) {
 
 			this.beanStringPopulators = new ArrayList<BeanStringPopulator<?>>(typePopulators);
 
