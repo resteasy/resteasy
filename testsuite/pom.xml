@@ -15,6 +15,7 @@
         <module>arquillian-utils</module>
         <module>unit-tests</module>
         <module>integration-tests</module>
+        <module>integration-tests-spring</module>
     </modules>
     
     <artifactId>resteasy-testsuite</artifactId>

@@ -1,0 +1,37 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <context:component-scan base-package="org.jboss.resteasy.test.spring.inmodule.resource" >
+        <context:include-filter type="annotation" expression="javax.ws.rs.Path"/>
+    </context:component-scan>
+	<context:annotation-config />
+
+	<!-- we're doing a mix of annotation scanning, @Configuration and XML beans 
+		for the purposes of rounding out a variety of spring use cases -->
+	<bean class="org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorResourceConfiguration" />
+	
+    <bean id="bill" class="org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorCustomer" p:name="bill"/>
+
+    <bean id="springBeanProcessorMyResource" class="org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorMyResource" p:springBeanProcessorCustomer-ref="bill" />
+    <bean id="springBeanProcessorMyInterceptedResource" class="org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorMyInterceptedResource"
+    	p:springBeanProcessorCustomer-ref="bill" />
+    <bean id="springBeanProcessorMyPrototypedResource" class="org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorMyPrototypedResource"
+          scope="prototype" p:springBeanProcessorCustomer-ref="bill" />
+
+    <bean id="springBeanProcessorMyProvider" class="org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorMyWriter"/>
+    <bean id="springBeanProcessorMyInterceptor" class="org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorMyInterceptor"/>
+
+    <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames" value="springBeanProcessorMyInterceptedResource" />
+        <property name="interceptorNames">
+            <list>
+                <value>springBeanProcessorMyInterceptor</value>
+            </list>
+        </property>
+    </bean>
+</beans>

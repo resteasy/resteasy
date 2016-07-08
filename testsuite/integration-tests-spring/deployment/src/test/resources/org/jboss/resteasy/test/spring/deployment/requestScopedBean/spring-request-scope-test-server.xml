@@ -1,0 +1,21 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- Import basic SpringMVC Resteasy integration -->
+    <import resource="classpath:springmvc-resteasy.xml"/>
+
+    <bean id="injectorFactory"
+          class="org.jboss.resteasy.test.spring.deployment.resource.RequestScopedBeanQualifierInjectorFactoryImpl">
+    </bean>
+
+    <bean id="testBean" class="org.jboss.resteasy.test.spring.deployment.resource.RequestScopedBeanTestBean" scope="request">
+        <property name="configured" value="configuredValue"/>
+    </bean>
+
+    <bean id="testResource" class="org.jboss.resteasy.test.spring.deployment.resource.RequestScopedBeanTestBeanResource"/>
+
+    <!-- https://github.com/resteasy/Resteasy/issues/585 -->
+    <bean id="myBean" class="org.jboss.resteasy.test.spring.deployment.resource.RequestScopedBeanBeanFactoryBean"/>
+    <bean id="myInnerBean" factory-bean="myBean" factory-method="getMyInnerBean"/>
+
+</beans>
