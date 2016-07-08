@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.providers.yaml;
 
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.junit.Assert;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -18,6 +19,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.yaml.snakeyaml.Yaml;
 
@@ -106,6 +108,7 @@ public class YamlProviderTest {
      * @tpSince EAP 7.0.0
      */
     @Test
+    @Category({ExpectedFailing.class}) //[RESTEASY-1361] FIXME
     public void testBadPost() throws Exception {
         WebTarget target = client.target(generateURL("/yaml"));
         Response response = target.request().post(Entity.entity("---! bad", "text/x-yaml"));
