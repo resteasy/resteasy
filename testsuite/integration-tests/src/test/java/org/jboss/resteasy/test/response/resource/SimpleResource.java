@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.resteasy.resteasy1365;
+package org.jboss.resteasy.test.response.resource;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

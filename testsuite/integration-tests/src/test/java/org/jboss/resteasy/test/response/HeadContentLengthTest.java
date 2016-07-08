@@ -19,12 +19,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.resteasy.test.resteasy1365;
+package org.jboss.resteasy.test.response;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.resteasy1365.HeadContentLengthApplication;
-import org.jboss.resteasy.resteasy1365.SimpleResource;
+import org.jboss.resteasy.test.response.resource.HeadContentLengthApplication;
+import org.jboss.resteasy.test.response.resource.SimpleResource;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
