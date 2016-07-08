@@ -53,4 +53,13 @@ public class FilterTest {
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         assertEquals("Wrong content of response", "forward", response.readEntity(String.class));
     }
+    
+    @Test
+    public void testDispatchDynamic43() throws Exception {
+        ResteasyClient client = new ResteasyClientBuilder().build43();
+        Invocation.Builder request = client.target(generateURL("/test/dispatch/dynamic")).request();
+        Response response = request.get();
+        assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        assertEquals("Wrong content of response", "forward", response.readEntity(String.class));
+    }
 }
