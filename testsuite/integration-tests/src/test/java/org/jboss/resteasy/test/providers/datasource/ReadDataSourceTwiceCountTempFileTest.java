@@ -12,6 +12,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.datasource.resource.ReadDataSourceTwiceCountTempFileResource;
@@ -25,6 +26,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.Assert;
 import org.junit.AfterClass;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -67,6 +69,7 @@ public class ReadDataSourceTwiceCountTempFileTest {
      * @tpSince EAP 7.0.0
      */
     @Test
+    @Category({ExpectedFailing.class}) //[RESTEASY-1361] FIXME test failing on Travis CI but passing locally
     public void testFileNotFound() throws Exception {
         WebTarget target = client.target(generateURL("/post"));
 
@@ -97,6 +100,7 @@ public class ReadDataSourceTwiceCountTempFileTest {
      * @tpSince EAP 7.0.0
      */
     @Test
+    @Category({ExpectedFailing.class}) //[RESTEASY-1361] FIXME test failing on Travis CI but passing locally
     public void testFileNotFoundMultipleRequests() throws Exception {
         WebTarget target = client.target(generateURL("/post"));
         ByteArrayOutputStream baos = new ByteArrayOutputStream(5000);
