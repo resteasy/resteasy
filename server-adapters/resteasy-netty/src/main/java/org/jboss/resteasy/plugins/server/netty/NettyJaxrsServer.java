@@ -36,7 +36,8 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    protected ServerBootstrap bootstrap;
    protected Channel channel;
    protected String hostname = null;
-   protected int port = 8080;
+   protected int configuredPort = 8080;
+   protected int runtimePort = -1;
    protected ResteasyDeployment deployment = new ResteasyDeployment();
    protected String root = "";
    protected SecurityDomain domain;
@@ -103,12 +104,12 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
 
    public int getPort()
    {
-      return port;
+      return runtimePort > 0 ? runtimePort : configuredPort;
    }
 
    public void setPort(int port)
    {
-      this.port = port;
+      this.configuredPort = port;
    }
 
     /**
@@ -184,18 +185,20 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
       // Bind and start to accept incoming connections.
       final InetSocketAddress socketAddress;
       if(null == hostname || hostname.isEmpty()) {
-          socketAddress = new InetSocketAddress(port);
+          socketAddress = new InetSocketAddress(configuredPort);
       } else {
-          socketAddress = new InetSocketAddress(hostname, port);
+          socketAddress = new InetSocketAddress(hostname, configuredPort);
       }
 
       channel = bootstrap.bind(socketAddress);
       allChannels.add(channel);
+      runtimePort = ((InetSocketAddress) channel.getLocalAddress()).getPort();
    }
 
    @Override
    public void stop()
    {
+      runtimePort = -1;
       allChannels.close().awaitUninterruptibly();
       if (bootstrap != null) {
           bootstrap.releaseExternalResources();

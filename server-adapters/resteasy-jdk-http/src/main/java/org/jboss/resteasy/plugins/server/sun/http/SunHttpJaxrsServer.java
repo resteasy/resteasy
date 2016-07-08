@@ -19,7 +19,8 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
 {
    protected HttpContextBuilder context = new HttpContextBuilder();
    protected HttpServer httpServer;
-   protected int port = 8080;
+   protected int configuredPort = 8080;
+   protected int runtimePort = -1;
 
    public void setRootResourcePath(String rootResourcePath)
    {
@@ -63,7 +64,17 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
     */
    public void setPort(int port)
    {
-      this.port = port;
+      this.configuredPort = port;
+   }
+
+   /**
+    * Gets port number of this HttpServer.
+    *
+    * @return port number.
+     */
+   public int getPort()
+   {
+      return runtimePort > 0 ? runtimePort : configuredPort;
    }
 
    @Override
@@ -73,7 +84,8 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
       {
          try
          {
-            httpServer = HttpServer.create(new InetSocketAddress(port), 10);
+            httpServer = HttpServer.create(new InetSocketAddress(configuredPort), 10);
+            runtimePort = httpServer.getAddress().getPort();
          }
          catch (IOException e)
          {
@@ -87,6 +99,7 @@ public class SunHttpJaxrsServer implements EmbeddedJaxrsServer
    @Override
    public void stop()
    {
+      runtimePort = -1;
       httpServer.stop(0);
       context.cleanup();
    }
