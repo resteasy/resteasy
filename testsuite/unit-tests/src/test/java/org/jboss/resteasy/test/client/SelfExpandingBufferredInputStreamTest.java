@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
  * @tpTestCaseDetails Unit test for SelfExpandingBufferredInputStream
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class SelfExpandingBufferredInputStreamTest {
     String data = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -30,7 +30,7 @@ public class SelfExpandingBufferredInputStreamTest {
 
     /**
      * @tpTestDetails Test not supported mark
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = UnsupportedOperationException.class)
     public void testMarkNotSupported() {
@@ -39,7 +39,7 @@ public class SelfExpandingBufferredInputStreamTest {
 
     /**
      * @tpTestDetails Test for buffer auto expands read
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBufferAutoExpandsRead() throws Exception {
@@ -56,7 +56,7 @@ public class SelfExpandingBufferredInputStreamTest {
 
     /**
      * @tpTestDetails Test for reset returns to position zero
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResetReturnsToPositionZero() throws Exception {
@@ -70,7 +70,7 @@ public class SelfExpandingBufferredInputStreamTest {
 
     /**
      * @tpTestDetails Test for reset and read over buffer
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResetAndReadOverMarklengthContinuesToExpandBuffer() throws Exception {
@@ -88,7 +88,7 @@ public class SelfExpandingBufferredInputStreamTest {
 
     /**
      * @tpTestDetails Test for read and reset data
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testReadResetReReadReturnsSameData() throws Exception {
@@ -106,7 +106,7 @@ public class SelfExpandingBufferredInputStreamTest {
 
     /**
      * @tpTestDetails Test for read offset
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testReadOffsetExpandsBuffer() throws Exception {

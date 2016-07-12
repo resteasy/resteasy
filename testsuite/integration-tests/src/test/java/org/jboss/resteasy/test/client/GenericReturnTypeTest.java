@@ -22,7 +22,7 @@ import javax.ws.rs.client.Client;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.1
+ * @tpSince RESTEasy 3.0.17
  * @tpTestCaseDetails Regression for JBEAP-4699
  */
 @RunWith(Arquillian.class)
@@ -42,7 +42,7 @@ public class GenericReturnTypeTest {
 
     /**
      * @tpTestDetails Test generic type of proxy
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testGenericReturnType() {

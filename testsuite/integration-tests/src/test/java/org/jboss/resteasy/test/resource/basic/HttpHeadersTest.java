@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Resources
  * @tpChapter Integration tests
  * @tpTestCaseDetails Spec requires that HEAD and OPTIONS are handled in a default manner
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -56,7 +56,7 @@ public class HttpHeadersTest {
      * @tpTestDetails Client invokes GET request on a sub resource at /HeadersTest/sub2
      *                with Accept MediaType and Content-Type Headers set;
      *                Verify that HttpHeaders got the property set by the request
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void RequestHeadersTest() throws Exception {

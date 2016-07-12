@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test connection cleanup for ApacheHttpClient4Engine and URLConnectionEngine
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -56,7 +56,7 @@ public class ApacheHttpClient4Test {
 
     /**
      * @tpTestDetails Create 3 threads and test GC with correct request. System.gc is called directly. Proxy is not used.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testConnectionCleanupGCBase() throws Exception {
@@ -94,7 +94,7 @@ public class ApacheHttpClient4Test {
 
     /**
      * @tpTestDetails Create 3 threads and test GC with correct request. System.gc is not called directly. Proxy is not used.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testConnectionCleanupAuto() throws Exception {
@@ -131,7 +131,7 @@ public class ApacheHttpClient4Test {
 
     /**
      * @tpTestDetails Create 3 threads and test GC with correct request. System.gc is not called directly. Proxy is used.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testConnectionCleanupProxy() throws Exception {
@@ -172,7 +172,7 @@ public class ApacheHttpClient4Test {
 
     /**
      * @tpTestDetails Create 3 threads and test GC with incorrect request. System.gc is called directly. Proxy is not used.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testConnectionCleanupErrorGC() throws Exception {
@@ -215,7 +215,7 @@ public class ApacheHttpClient4Test {
 
     /**
      * @tpTestDetails Create 3 threads and test GC with incorrect request. System.gc is not called directly. Proxy is not used.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testConnectionCleanupErrorNoGC() throws Exception {
@@ -263,7 +263,7 @@ public class ApacheHttpClient4Test {
     /**
      * @tpTestDetails Create 3 threads and test GC with incorrect request. System.gc is not called directly.
      *                Proxy is used. Data is sent during request.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testConnectionWithRequestBody() throws InterruptedException {

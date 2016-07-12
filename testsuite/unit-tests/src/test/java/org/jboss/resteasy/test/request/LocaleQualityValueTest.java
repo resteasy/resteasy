@@ -18,7 +18,7 @@ import static org.junit.Assert.assertNull;
  * @tpSubChapter Requests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for AcceptHeaders and QualityValue classes, local value.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class LocaleQualityValueTest {
 
@@ -32,7 +32,7 @@ public class LocaleQualityValueTest {
 
     /**
      * @tpTestDetails Test for simple values.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void simple() {
@@ -52,7 +52,7 @@ public class LocaleQualityValueTest {
 
     /**
      * @tpTestDetails Test for chinese localization.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void chineseLocalization() {
@@ -67,7 +67,7 @@ public class LocaleQualityValueTest {
 
     /**
      * @tpTestDetails Test for english localization and default value.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void undefined() {
@@ -82,7 +82,7 @@ public class LocaleQualityValueTest {
 
     /**
      * @tpTestDetails Test empty quality values.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void empty() {

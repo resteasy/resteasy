@@ -28,7 +28,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Configuration
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for resource and provider defined in one class together.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -61,7 +61,7 @@ public class AppConfigTest {
 
     /**
      * @tpTestDetails Test for apache client
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void apacheClient() throws Exception {

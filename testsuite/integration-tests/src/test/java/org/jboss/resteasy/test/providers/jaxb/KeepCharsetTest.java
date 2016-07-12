@@ -32,13 +32,13 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1066. If the content-type of the response is not specified in the request,
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class KeepCharsetTest {
 
-    protected static final Logger logger = Logger.getLogger(KeepCharsetTest.class.getName());
+    protected final Logger logger = Logger.getLogger(KeepCharsetTest.class.getName());
     static ResteasyClient client;
     protected static final MediaType APPLICATION_XML_UTF16_TYPE;
 
@@ -85,7 +85,7 @@ public class KeepCharsetTest {
      * @tpTestDetails Client sends POST request with jaxb annotated object entity. Request encoding is different than from
      * encoding of the server. Default encoding is used and entity expansion is set to true.
      * @tpPassCrit The response is returned in encoding of the original request not in encoding of the server.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlDefaultExpand() throws Exception {
@@ -96,7 +96,7 @@ public class KeepCharsetTest {
      * @tpTestDetails Client sends POST request with jaxb annotated object entity. Request encoding is different than from
      * encoding of the server. Default encoding is used and entity expansion is set to false.
      * @tpPassCrit The response is returned in encoding of the original request not in encoding of the server.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlDefaultNoExpand() throws Exception {
@@ -113,7 +113,6 @@ public class KeepCharsetTest {
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         KeepCharsetFavoriteMovieXmlRootElement entity = response.readEntity(KeepCharsetFavoriteMovieXmlRootElement.class);
         logger.info("Result: " + entity);
-        logger.info("title: " + entity.getTitle());
         Assert.assertEquals("Incorrect xml entity was returned from the server", "La Règle du Jeu", entity.getTitle());
     }
 
@@ -121,7 +120,7 @@ public class KeepCharsetTest {
      * @tpTestDetails Client sends POST request with jaxb annotated object entity. Request encoding is different than from
      * encoding of the server. Encoding is set up in resource produces annotation and entity expansion is set to true.
      * @tpPassCrit The response is returned in encoding of the original request not in encoding of the server.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlProducesExpand() throws Exception {
@@ -132,7 +131,7 @@ public class KeepCharsetTest {
      * @tpTestDetails Client sends POST request with jaxb annotated object entity. Request encoding is different than from
      * encoding of the server. Encoding is set up in resource produces annotation and entity expansion is set to false.
      * @tpPassCrit The response is returned in encoding of the original request not in encoding of the server.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlProducesNoExpand() throws Exception {
@@ -147,7 +146,6 @@ public class KeepCharsetTest {
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         KeepCharsetFavoriteMovieXmlRootElement entity = response.readEntity(KeepCharsetFavoriteMovieXmlRootElement.class);
         logger.info("Result: " + entity);
-        logger.info("title: " + entity.getTitle());
         Assert.assertEquals("Incorrect xml entity was returned from the server", "La Règle du Jeu", entity.getTitle());
     }
 
@@ -155,7 +153,7 @@ public class KeepCharsetTest {
      * @tpTestDetails Client sends POST request with jaxb annotated object entity. Request encoding is different than from
      * encoding of the server. Encoding is set up in the request accepts header and entity expansion is set to true.
      * @tpPassCrit The response is returned in encoding of the original request not in encoding of the server.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlAcceptsExpand() throws Exception {
@@ -166,7 +164,7 @@ public class KeepCharsetTest {
      * @tpTestDetails Client sends POST request with jaxb annotated object entity. Request encoding is different than from
      * encoding of the server. Encoding is set up in the request accepts header and entity expansion is set to false.
      * @tpPassCrit The response is returned in encoding of the original request not in encoding of the server.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlAcceptsNoExpand() throws Exception {
@@ -181,7 +179,6 @@ public class KeepCharsetTest {
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         KeepCharsetFavoriteMovieXmlRootElement entity = response.readEntity(KeepCharsetFavoriteMovieXmlRootElement.class);
         logger.info("Result: " + entity);
-        logger.info("title: " + entity.getTitle());
         Assert.assertEquals("Incorrect xml entity was returned from the server", "La Règle du Jeu", entity.getTitle());
     }
 }

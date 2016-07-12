@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Exceptions
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for javax.ws.rs.WebApplicationException class
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -49,7 +49,7 @@ public class WebApplicationExceptionTest {
 
     /**
      * @tpTestDetails Test for exception without error entity
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testException() {
@@ -59,7 +59,7 @@ public class WebApplicationExceptionTest {
     /**
      * @tpTestDetails Test for exception with error entity.
      *                Regression test for RESTEASY-24
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testExceptionWithEntity() {

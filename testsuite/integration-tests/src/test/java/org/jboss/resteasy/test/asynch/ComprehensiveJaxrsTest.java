@@ -50,7 +50,7 @@ import java.util.concurrent.Future;
  * @tpSubChapter Asynchronous RESTEasy
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for asyncHttpServlet module. Check stage URL property.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -196,7 +196,7 @@ public class ComprehensiveJaxrsTest {
 
     /**
      * @tpTestDetails Complex test. Check stage=0 and stage=1 values.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @Category({ExpectedFailing.class}) //FIXME

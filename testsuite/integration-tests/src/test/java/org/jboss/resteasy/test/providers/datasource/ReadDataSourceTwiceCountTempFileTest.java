@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter DataSource provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -66,7 +66,7 @@ public class ReadDataSourceTwiceCountTempFileTest {
      * @tpTestDetails Tests DataSourceProviders ability to read the same stream twice, consuming content of whole stream
      * before reading the second and verifies that no temporary file left after stream is closed
      * @tpInfo RESTEASY-1182
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @Category({ExpectedFailing.class}) //[RESTEASY-1361] FIXME test failing on Travis CI but passing locally
@@ -97,7 +97,7 @@ public class ReadDataSourceTwiceCountTempFileTest {
      * before reading the second and verifies that no temporary file left after stream is closed. The request is send multiple
      * times and then number of files is verified
      * @tpInfo RESTEASY-1182
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @Category({ExpectedFailing.class}) //[RESTEASY-1361] FIXME test failing on Travis CI but passing locally

@@ -25,7 +25,7 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter Resource
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Test for org.jboss.resteasy.spi.StringConverter class
  *                    StringConverter is deprecated.
  *                    See javax.ws.rs.ext.ParamConverter
@@ -53,7 +53,7 @@ public class SuperStringConverterTest {
 
     /**
      * @tpTestDetails Test converter on basic object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPerson() throws Exception {
@@ -69,7 +69,7 @@ public class SuperStringConverterTest {
 
     /**
      * @tpTestDetails Test converter on object with override on "toString" method
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCompany() throws Exception {

@@ -38,7 +38,7 @@ import java.io.ByteArrayOutputStream;
  * @tpSubChapter Interceptors
  * @tpChapter Integration tests
  * @tpTestCaseDetails Gzip compression tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -70,7 +70,7 @@ public class GzipTest {
 
     /**
      * @tpTestDetails Check ByteArrayOutputStream of gzip data
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRawStreams() throws Exception {
@@ -95,7 +95,7 @@ public class GzipTest {
 
     /**
      * @tpTestDetails Check ProxyFactory
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testProxy() throws Exception {
@@ -116,7 +116,7 @@ public class GzipTest {
 
     /**
      * @tpTestDetails Check length of content. Gzip data should have at least 11 bytes
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testContentLength() throws Exception {
@@ -144,7 +144,7 @@ public class GzipTest {
 
     /**
      * @tpTestDetails Check wrong URL
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRequestError() throws Exception {
@@ -155,7 +155,7 @@ public class GzipTest {
 
     /**
      * @tpTestDetails Check stream from PUT request
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPutStream() throws Exception {
@@ -167,7 +167,7 @@ public class GzipTest {
 
     /**
      * @tpTestDetails Check text from PUT request
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPutText() throws Exception {
@@ -179,7 +179,7 @@ public class GzipTest {
 
     /**
      * @tpTestDetails Check plain text response
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRequestPlain() throws Exception {
@@ -190,7 +190,7 @@ public class GzipTest {
 
     /**
      * @tpTestDetails Check encoded text response
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRequestEncoded() throws Exception {
@@ -200,7 +200,7 @@ public class GzipTest {
 
     /**
      * @tpTestDetails Test that it was zipped by running it through Apache HTTP Client which does not automatically unzip
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testWasZipped() throws Exception {
@@ -233,7 +233,7 @@ public class GzipTest {
 
     /**
      * @tpTestDetails Test that if there is no accept-encoding: gzip header that result isn't encoded
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testWithoutAcceptEncoding() throws Exception {

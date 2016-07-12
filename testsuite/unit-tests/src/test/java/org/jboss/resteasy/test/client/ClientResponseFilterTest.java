@@ -27,7 +27,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class ClientResponseFilterTest {
 
@@ -51,7 +51,7 @@ public class ClientResponseFilterTest {
      * Note: This test uses custom implementation of RuntimeDelegate, allowing to customize conversion between String
      * representation of HTTP header and the corresponding JAX-RS type (StringBean in this case)
      * @tpPassCrit Successful response is returned and response header is not null
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void emptyHeaderStringTest() {
@@ -76,7 +76,7 @@ public class ClientResponseFilterTest {
      * as argument. The latter processes the response and checks that the length of the response is same
      * as in the original response
      * @tpPassCrit Successful response is returned and response length is same as original response
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void lengthTest() {
@@ -91,7 +91,7 @@ public class ClientResponseFilterTest {
      * @tpTestDetails Client registers ClientRequestFilter and ClientResponseFilter. The first returns Response provided
      * as argument. The latter processes the response and checks that response contains header 'OPTIONS' as allowed method
      * @tpPassCrit Successful response is returned and 'OPTIONS' method is allowed header
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void allowedTest() {
@@ -107,7 +107,7 @@ public class ClientResponseFilterTest {
      * @tpTestDetails Client registers ClientRequestFilter and ClientResponseFilter. The first returns Response provided
      * as argument. The latter processes the response and changes the response code to 'FORBIDDEN'
      * @tpPassCrit Response with status code 'FORBIDDEN' is returned
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void statusOverrideTest() {
@@ -120,7 +120,7 @@ public class ClientResponseFilterTest {
      * @tpTestDetails Client registers ClientRequestFilter and ClientResponseFilter. The first returns Response provided
      * as argument. The latter processes the response and prints all headers in the response
      * @tpPassCrit The response with reponse code success is expected
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void headersTest() {
@@ -137,7 +137,7 @@ public class ClientResponseFilterTest {
      * @tpTestDetails Client registers ClientRequestFilter and two ReaderInterceptors. The first returns Response provided
      * as argument. The ReaderInterceptorOne calls ReaderInterceptorTwo and catches IOException raised by ReaderInterceptorTwo
      * @tpPassCrit The ReaderInterceptorOne catches IOException and sends successful response
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void interceptorOrderTest() {

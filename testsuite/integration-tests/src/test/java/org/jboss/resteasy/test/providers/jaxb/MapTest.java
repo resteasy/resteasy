@@ -37,7 +37,7 @@ import java.util.Map;
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -68,7 +68,7 @@ public class MapTest {
 
     /**
      * @tpTestDetails Tests marshalling and unmarshalling jaxb object into/from map
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMap() throws Exception {
@@ -102,7 +102,7 @@ public class MapTest {
 
     /**
      * @tpTestDetails Tests Jaxb object which is send to the server and from server, the response is read by using GenericType
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testProvider() throws Exception {
@@ -132,7 +132,7 @@ public class MapTest {
     /**
      * @tpTestDetails Tests Jaxb object which is send to the server and from server, the response is read by using GenericType,
      * The tested entity contains integer key types
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testProviderMapIntegerFoo() throws Exception {
@@ -168,7 +168,7 @@ public class MapTest {
     /**
      * @tpTestDetails Tests Jaxb object which is send to the server and from server, the response is read by using GenericType,
      * the resource is annotated with @WrappedMap annotation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testWrapped() throws Exception {
@@ -192,7 +192,7 @@ public class MapTest {
 
     /**
      * @tpTestDetails Tests that Jaxb object with wrong structure returns bad request (400) response code
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBadWrapped() throws Exception {

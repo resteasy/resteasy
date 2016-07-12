@@ -26,7 +26,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -59,7 +59,7 @@ public class ExceptionMapperJaxbTest {
     /**
      * @tpTestDetails Test for custom JAXBUnmarshalException excetion mapper
      * @tpInfo RESTEASY-519
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFailure() throws Exception {

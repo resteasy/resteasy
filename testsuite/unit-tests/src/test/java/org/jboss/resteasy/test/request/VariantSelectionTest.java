@@ -17,7 +17,7 @@ import static org.junit.Assert.assertNotNull;
  * @tpSubChapter Requests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for ServerDrivenNegotiation class.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class VariantSelectionTest {
 

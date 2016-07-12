@@ -35,12 +35,12 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class XmlJavaTypeAdapterTest {
 
-    private static Logger logger = Logger.getLogger(XmlJavaTypeAdapterTest.class.getName());
+    private final Logger logger = Logger.getLogger(XmlJavaTypeAdapterTest.class.getName());
     static ResteasyClient client;
 
     @Deployment
@@ -59,6 +59,7 @@ public class XmlJavaTypeAdapterTest {
     @After
     public void after() throws Exception {
         client.close();
+        client = null;
     }
 
     private String generateURL(String path) {
@@ -71,7 +72,7 @@ public class XmlJavaTypeAdapterTest {
     /**
      * @tpTestDetails Tests jaxb resource is returning correct string with @XmlJavaTypeAdapter in place
      * @tpInfo RESTEASY-1088
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @RunAsClient
@@ -80,14 +81,13 @@ public class XmlJavaTypeAdapterTest {
         XmlJavaTypeAdapterHuman human = new XmlJavaTypeAdapterHuman();
         human.setName("bill");
         String response = target.request().post(Entity.entity(human, MediaType.APPLICATION_XML_TYPE), String.class);
-        logger.info("response: \"" + response + "\"");
         Assert.assertEquals("The received response was not the expected one", "bill", response);
     }
 
     /**
      * @tpTestDetails Tests jaxb with class annotated by @XmlJavaTypeAdapter, resource returning Foo object
      * @tpInfo RESTEASY-1088
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @RunAsClient
@@ -96,14 +96,13 @@ public class XmlJavaTypeAdapterTest {
         XmlJavaTypeAdapterFoo foo = new XmlJavaTypeAdapterFoo();
         foo.setName("bill");
         XmlJavaTypeAdapterFoo response = target.request().post(Entity.entity(foo, MediaType.APPLICATION_XML_TYPE), XmlJavaTypeAdapterFoo.class);
-        logger.info("response: \"" + response + "\"");
         Assert.assertEquals("The received response was not the expected one", foo, response);
     }
 
     /**
      * @tpTestDetails Tests jaxb with class annotated by @XmlJavaTypeAdapter, resource returning String
      * @tpInfo RESTEASY-1088
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @RunAsClient
@@ -120,7 +119,7 @@ public class XmlJavaTypeAdapterTest {
     /**
      * @tpTestDetails Tests jaxb with class annotated by @XmlJavaTypeAdapter, resource returning list of Human objects
      * @tpInfo RESTEASY-1088
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @RunAsClient
@@ -136,7 +135,6 @@ public class XmlJavaTypeAdapterTest {
         GenericEntity<List<XmlJavaTypeAdapterHuman>> entity = new GenericEntity<List<XmlJavaTypeAdapterHuman>>(list) {
         };
         String response = target.request().post(Entity.entity(entity, MediaType.APPLICATION_XML_TYPE), String.class);
-        logger.info("response: \"" + response + "\"");
         Assert.assertEquals("The received response was not the expected one", "|bill|bob", response);
     }
 
@@ -145,7 +143,7 @@ public class XmlJavaTypeAdapterTest {
      * where application expects the use of Human class with jaxb annotation, XmlJavaTypeAdapter is used to convert Alien
      * to Human and back
      * @tpInfo RESTEASY-1088
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostAlienList() {
@@ -179,7 +177,7 @@ public class XmlJavaTypeAdapterTest {
      * where application expects the use of Human class with jaxb annotation, XmlJavaTypeAdapter is used to convert Alien
      * to Human and back
      * @tpInfo RESTEASY-1088
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostAlienArray() {
@@ -213,7 +211,7 @@ public class XmlJavaTypeAdapterTest {
      * where application expects the use of Human class with jaxb annotation, XmlJavaTypeAdapter is used to convert Alien
      * to Human and back
      * @tpInfo RESTEASY-1088
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostAlienMap() {
@@ -247,7 +245,7 @@ public class XmlJavaTypeAdapterTest {
      * where application expects the use of Human class with jaxb annotation, XmlJavaTypeAdapter is used to convert Alien
      * to Human and back. The Entity send to the server extends Alien class.
      * @tpInfo RESTEASY-1088
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostTralfamadoreanList() {

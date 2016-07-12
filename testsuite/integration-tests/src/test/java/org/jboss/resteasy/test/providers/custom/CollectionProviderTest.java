@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -120,7 +120,7 @@ public class CollectionProviderTest {
      * @tpTestDetails Client sends GET request to the server, server sends LinkedList with String items. Two message
      * body readers are registered. One always returns isWritable false, so the other one has to be used.
      * @tpPassCrit Correct MessageBodyReader is used for writing response of the type LinkedList<String>
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGenericTypeDefault() {
@@ -134,7 +134,7 @@ public class CollectionProviderTest {
      * LinkedList with String items. Two message body readers are registered. One always returns isWritable false,
      * so the other one has to be used.
      * @tpPassCrit Correct MessageBodyReader is used for writing response with GenericEntity of the type LinkedList<String>
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGenericTypeResponse() {

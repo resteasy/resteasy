@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails JAXB shouldn't have a concurrent problem and should unmarshall a Map property all the time
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class JaxbMarshallingSoakTest {
@@ -81,7 +81,7 @@ public class JaxbMarshallingSoakTest {
 
     /**
      * @tpTestDetails Test with client.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void basicTest() throws Exception {
@@ -104,7 +104,7 @@ public class JaxbMarshallingSoakTest {
 
     /**
      * @tpTestDetails Server test.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void compare() throws Exception {

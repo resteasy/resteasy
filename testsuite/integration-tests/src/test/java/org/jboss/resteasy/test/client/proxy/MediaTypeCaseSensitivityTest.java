@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
  * @tpTestCaseDetails Regression test for RESTEASY-207
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -42,7 +42,7 @@ public class MediaTypeCaseSensitivityTest {
 
     /**
      * @tpTestDetails MediaType case sensitivity when matching MessageBodyReader
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testItPost() throws Exception {
@@ -57,7 +57,7 @@ public class MediaTypeCaseSensitivityTest {
     /**
      * @tpTestDetails MediaType case sensitivity when matching MessageBodyReader, check the MessageBodyReader of
      * the custom type is available on the server
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testItGet() throws Exception {

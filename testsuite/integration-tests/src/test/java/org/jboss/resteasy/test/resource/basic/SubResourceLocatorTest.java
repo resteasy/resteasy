@@ -30,7 +30,7 @@ import static org.hamcrest.CoreMatchers.is;
  * @tpSubChapter Resources
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-657
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -48,7 +48,7 @@ public class SubResourceLocatorTest {
 
     /**
      * @tpTestDetails Sub resource locator should not fail
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void test657() throws Exception {

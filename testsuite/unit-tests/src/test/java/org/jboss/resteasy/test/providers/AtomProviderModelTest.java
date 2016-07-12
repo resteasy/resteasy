@@ -30,11 +30,11 @@ import java.util.Date;
  * @tpSubChapter Providers
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for atom provider model
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class AtomProviderModelTest {
 
-    protected static final Logger logger = LogManager.getLogger(AtomProviderModelTest.class.getName());
+    protected final Logger logger = LogManager.getLogger(AtomProviderModelTest.class.getName());
 
     private static final String XML = "<content xmlns=\"http://www.w3.org/2005/Atom\" language=\"en\">Text\n" +
             "</content>";
@@ -87,7 +87,7 @@ public class AtomProviderModelTest {
 
     /**
      * @tpTestDetails Test JAXB content - text form
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testContentText() throws Exception {
@@ -100,7 +100,7 @@ public class AtomProviderModelTest {
 
     /**
      * @tpTestDetails Regression test for RESTEASY-242
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testContentSetElement() throws Exception {
@@ -111,7 +111,7 @@ public class AtomProviderModelTest {
 
     /**
      * @tpTestDetails Check JAXB content
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testContent() throws Exception {
@@ -136,23 +136,17 @@ public class AtomProviderModelTest {
             }
         };
 
-        ClassResolver resolver = new ClassResolver() {
-            @Nullable
-            public Class<?> resolveElementName(@NotNull String ns, @NotNull String location) throws Exception {
-                logger.info("Resolve: " + ns + " " + location);
-                return null;
-            }
-        };
-
         marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", mapper);
         marshaller.marshal(content, writer);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
         marshaller.marshal(content, ps);
-        logger.info("Result: " + ps.toString());
-
-        logger.info("**********");
-        logger.info(writer.toString());
+        if (logger.isDebugEnabled()) {
+	        logger.debug("Result: " + ps.toString());
+	
+	        logger.debug("**********");
+	        logger.debug(writer.toString());
+        }
         content = (Content) ctx.createUnmarshaller().unmarshal(new StringReader(writer.toString()));
 
         AtomProviderModelCustomerAtom cust = content.getJAXBObject(AtomProviderModelCustomerAtom.class);
@@ -162,7 +156,7 @@ public class AtomProviderModelTest {
 
     /**
      * @tpTestDetails Check Atom Provider Binding
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBinding() throws Exception {
@@ -222,7 +216,7 @@ public class AtomProviderModelTest {
 
     /**
      * @tpTestDetails Check RFC
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRFC() throws Exception {

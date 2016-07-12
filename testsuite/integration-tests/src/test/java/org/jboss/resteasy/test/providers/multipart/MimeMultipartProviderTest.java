@@ -44,7 +44,7 @@ import java.util.Map;
 /**
  * @tpSubChapter Multipart provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -80,7 +80,7 @@ public class MimeMultipartProviderTest {
 
     /**
      * @tpTestDetails MultipartFormDataOutput entity in put request with data from file is used
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPutForm() throws Exception {
@@ -102,7 +102,7 @@ public class MimeMultipartProviderTest {
 
     /**
      * @tpTestDetails MultipartOutput entity in put request with data from file is used
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPut() throws Exception {
@@ -125,7 +125,7 @@ public class MimeMultipartProviderTest {
 
     /**
      * @tpTestDetails MultipartFormDataOutput entity in put request with created by jxb marshaller is used
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testForm() throws Exception {
@@ -149,7 +149,7 @@ public class MimeMultipartProviderTest {
 
     /**
      * @tpTestDetails MultipartOutput entity in put request with manually created jaxb objects is used
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMultipartOutput() throws Exception {
@@ -162,7 +162,7 @@ public class MimeMultipartProviderTest {
 
     /**
      * @tpTestDetails MultipartFormDataOutput entity in put request with manually created jaxb objects is used
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMultipartFormDataOutput() throws Exception {
@@ -175,7 +175,7 @@ public class MimeMultipartProviderTest {
 
     /**
      * @tpTestDetails  MultipartRelatedOutput entity in put request with manually generated xml is used
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMultipartRelatedOutput() throws Exception {
@@ -205,7 +205,7 @@ public class MimeMultipartProviderTest {
 
     /**
      * @tpTestDetails List is send in put request with the @PartType annotation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMultipartList() throws Exception {
@@ -218,7 +218,7 @@ public class MimeMultipartProviderTest {
 
     /**
      * @tpTestDetails Map is send in put request with the @PartType annotation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMultipartMap() throws Exception {
@@ -231,7 +231,7 @@ public class MimeMultipartProviderTest {
 
     /**
      * @tpTestDetails Custom Form type in put request with @MultipartForm annotation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMultipartForm() throws Exception {
@@ -243,7 +243,7 @@ public class MimeMultipartProviderTest {
 
     /**
      * @tpTestDetails Custom jaxb object in put request with @XopWithMultipartRelated
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXop() throws Exception {
@@ -267,7 +267,7 @@ public class MimeMultipartProviderTest {
 
     /**
      * @tpTestDetails Client sends get request for InputStream from the server
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGet() throws Exception {
@@ -283,7 +283,7 @@ public class MimeMultipartProviderTest {
 
     /**
      * @tpTestDetails Client sends post request with "multipart/form-data" and boundary definition
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFile() throws Exception {

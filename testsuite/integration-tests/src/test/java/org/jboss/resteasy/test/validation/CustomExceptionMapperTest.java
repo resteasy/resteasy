@@ -27,7 +27,7 @@ import java.io.File;
  * @tpSubChapter Multipart provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1137
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -53,7 +53,7 @@ public class CustomExceptionMapperTest {
 
     /**
      * @tpTestDetails Text exception mapper for input violations
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testExceptionMapperInputViolations() throws Exception {
@@ -68,7 +68,7 @@ public class CustomExceptionMapperTest {
 
     /**
      * @tpTestDetails Text exception mapper for output violations
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testExceptionMapperOutputViolations() throws Exception {

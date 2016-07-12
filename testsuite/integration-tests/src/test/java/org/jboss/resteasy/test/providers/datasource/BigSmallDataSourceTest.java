@@ -29,7 +29,7 @@ import java.io.ByteArrayInputStream;
 /**
  * @tpSubChapter DataSource provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -64,7 +64,7 @@ public class BigSmallDataSourceTest {
 
     /**
      * @tpTestDetails Tests DataSourceProviders ability to get content type of the file attached to the request
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostDataSource() throws Exception {
@@ -78,7 +78,7 @@ public class BigSmallDataSourceTest {
 
     /**
      * @tpTestDetails Tests DataSourceProviders ability to read and write bigger file
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEchoDataSourceBigData() throws Exception {
@@ -114,7 +114,7 @@ public class BigSmallDataSourceTest {
 
     /**
      * @tpTestDetails Tests DataSourceProviders ability to read and write small stream
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEchoDataSourceSmallData() throws Exception {
@@ -149,7 +149,7 @@ public class BigSmallDataSourceTest {
 
     /**
      * @tpTestDetails Tests DataSourceProviders ability to return InputStream for given value
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetDataSource() throws Exception {

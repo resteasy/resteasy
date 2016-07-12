@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Resource
  * @tpChapter Integration tests
  * @tpTestCaseDetails Check class name of sub-resources, which process client request
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -56,7 +56,7 @@ public class WildcardResourceMatchingTest {
 
     /**
      * @tpTestDetails Check root resource.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMain() {
@@ -68,7 +68,7 @@ public class WildcardResourceMatchingTest {
 
     /**
      * @tpTestDetails Check sub-resource.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMainSub() {
@@ -80,7 +80,7 @@ public class WildcardResourceMatchingTest {
 
     /**
      * @tpTestDetails Check sub-sub-resource.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMainSubSub() {

@@ -27,7 +27,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -66,7 +66,7 @@ public class SyncInvokeTest {
      * @tpTestDetails Client sends  GET, PUT, DELETE, POST and custom defined requests. First request expects
      * Response object in return, the second expects String object in return
      * @tpPassCrit Successful response is returned
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMethods() throws Exception {
@@ -126,7 +126,7 @@ public class SyncInvokeTest {
      * @tpTestDetails Client sends  GET, PUT, DELETE, POST and custom defined requests. The request is send using
      * invoke() method. First request expects Response object in return, the second expects String object in return
      * @tpPassCrit Successful response is returned
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInvoke() throws Exception {

@@ -24,7 +24,7 @@ import java.util.Map;
  * @tpSubChapter Providers
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class WriterNotBuiltinTest {
@@ -47,7 +47,7 @@ public class WriterNotBuiltinTest {
      * so it comes after DefaultPlainText in the built-in ordering.
      * The fact that TestReaderWriter gets called verifies that
      * DefaultPlainText gets passed over.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void test1New() throws Exception {

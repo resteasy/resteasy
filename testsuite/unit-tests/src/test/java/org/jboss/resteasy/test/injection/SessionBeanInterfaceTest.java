@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
  * @tpSubChapter Injection tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Session bean interface test.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class SessionBeanInterfaceTest {
     private ResteasyCdiExtension extension;
@@ -33,7 +33,7 @@ public class SessionBeanInterfaceTest {
 
     /**
      * @tpTestDetails Interface is selected
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJaxrsAnnotatedInterfaceSelected() {
@@ -49,7 +49,7 @@ public class SessionBeanInterfaceTest {
 
     /**
      * @tpTestDetails Unmarshaller test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNoInterfaceSelected() {

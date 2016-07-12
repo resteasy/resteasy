@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -68,7 +68,7 @@ public class DefaultMediaTypesTest {
     /**
      * @tpTestDetails Client sends request thru client proxy, no default consumes type is specified.
      * @tpPassCrit Runtime exception is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = RuntimeException.class)
     public void testOldBehaviorContinues() throws Exception {
@@ -79,7 +79,7 @@ public class DefaultMediaTypesTest {
     /**
      * @tpTestDetails Client sends request thru client proxy, the request has specified default produces and consumes type
      * @tpPassCrit The response contains acceptable media types set up by client (text/plain)
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDefaultValues() throws Exception {
@@ -94,7 +94,7 @@ public class DefaultMediaTypesTest {
     /**
      * @tpTestDetails Client sends request thru client proxy, the request has specified default produces and consumes type
      * @tpPassCrit The response contains acceptable media types set up by client (application/json)
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMismatch() throws Exception {

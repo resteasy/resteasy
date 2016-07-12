@@ -32,7 +32,7 @@ import java.net.URL;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -65,7 +65,7 @@ public class ClientResponseRedirectTest {
     /**
      * @tpTestDetails Tests redirection of the request using deprecated ProxyFactory client
      * @tpPassCrit The header 'location' contains the redirected target
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRedirectProxyFactory() throws Exception {
@@ -75,7 +75,7 @@ public class ClientResponseRedirectTest {
     /**
      * @tpTestDetails Tests redirection of the request using ProxyBuilder client
      * @tpPassCrit The header 'location' contains the redirected target
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRedirectProxyBuilder() throws Exception {
@@ -85,7 +85,7 @@ public class ClientResponseRedirectTest {
     /**
      * @tpTestDetails Tests redirection of the request using deprecated ClientRequest
      * @tpPassCrit The header 'location' contains the redirected target
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRedirectClientRequest() throws Exception {
@@ -95,7 +95,7 @@ public class ClientResponseRedirectTest {
     /**
      * @tpTestDetails Tests redirection of the request using Client Webtarget request
      * @tpPassCrit The header 'location' contains the redirected target
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRedirectClientTargetRequest() throws Exception {
@@ -105,7 +105,7 @@ public class ClientResponseRedirectTest {
     /**
      * @tpTestDetails Tests redirection of the request using HttpUrlConnection
      * @tpPassCrit The header 'location' contains the redirected target
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRedirectHttpUrlConnection() throws Exception {

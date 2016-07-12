@@ -37,7 +37,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Parameters
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test all variants of primitive matrix parameters (boolean, int, long, float, etc.)
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -168,7 +168,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Basic test for boolean
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBoolean() {
@@ -177,7 +177,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value for boolean
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBooleanPrimitivesDefault() {
@@ -186,7 +186,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value of boolean with wrapper
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBooleanPrimitiveWrapperDefault() {
@@ -195,7 +195,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default values of list of boolean
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBooleanPrimitiveListDefault() {
@@ -205,7 +205,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Basic test for byte
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetByte() {
@@ -214,7 +214,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value of byte
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBytePrimitivesDefault() {
@@ -223,7 +223,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value of byte with wrapper
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBytePrimitiveWrappersDefault() {
@@ -232,7 +232,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value of list and array of byte
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBytePrimitiveListDefault() {
@@ -242,7 +242,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Basic test for short
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetShort() {
@@ -251,7 +251,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default values of short
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetShortPrimtivesDefault() {
@@ -260,7 +260,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default values of short with wrapper
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetShortPrimtiveWrappersDefault() {
@@ -269,7 +269,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default values of list and array of short
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetShortPrimtiveListDefault() {
@@ -279,7 +279,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Basic test for int
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetInt() {
@@ -288,7 +288,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value of int
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetIntPrimitivesDefault() {
@@ -297,7 +297,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value of int with wrapper
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetIntPrimitiveWrappersDefault() {
@@ -306,7 +306,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value of list and array of integer
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetIntPrimitiveListDefault() {
@@ -316,7 +316,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Basic test for long
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetLong() {
@@ -325,7 +325,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value of long
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetLongPrimitivesDefault() {
@@ -334,7 +334,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value of long with wrapper
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetLongPrimitiveWrappersDefault() {
@@ -343,7 +343,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value of list and array of long
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetLongPrimitiveListDefault() {
@@ -353,7 +353,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Basic test for float
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetFloat() {
@@ -362,7 +362,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value of float
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetFloatPrimitivesDefault() {
@@ -371,7 +371,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value of float with wrapper
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetFloatPrimitiveWrappersDefault() {
@@ -380,7 +380,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value of array and list of float
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetFloatPrimitiveListDefault() {
@@ -390,7 +390,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Basic test for double
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetDouble() {
@@ -399,7 +399,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value of double
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetDoublePrimitivesDefault() {
@@ -408,7 +408,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value of double with wrapper
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetDoublePrimitiveWrappersDefault() {
@@ -417,7 +417,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value of list and array of double
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetDoublePrimitiveListDefault() {
@@ -427,7 +427,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test wrong data stored in int format
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBadPrimitiveValue() {
@@ -444,7 +444,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test wrong data stored in int format, wrapper is used
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBadPrimitiveWrapperValue() {
@@ -461,7 +461,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test wrong data stored in list of int
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBadPrimitiveListValue() {

@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Resource
  * @tpChapter Integration tests
  * @tpTestCaseDetails Check resources with locator with no expression
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -67,7 +67,7 @@ public class ResourceLocatorWithBaseNoExpressionTest {
 
     /**
      * @tpTestDetails Test for root resource and for subresource.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSubresource() throws Exception {

@@ -29,7 +29,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -66,7 +66,7 @@ public class ResponseContainerFilterTest {
      * two ContainerResponseFilters, which have common ancestor and different priority. The filter ResponseFilter
      * with higher priority should be used here first, because the order of execution for Response filters is descending.
      * @tpPassCrit The ResponseFilter is used first for processing the response
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testHasEntity() {

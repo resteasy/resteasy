@@ -22,7 +22,7 @@ import javax.ws.rs.client.WebTarget;
  * @tpSubChapter Injection
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-573
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -40,7 +40,7 @@ public class LazyInitUriInfoInjectionTest {
 
     /**
      * @tpTestDetails Repeat client request without query parameter
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDup() throws Exception {

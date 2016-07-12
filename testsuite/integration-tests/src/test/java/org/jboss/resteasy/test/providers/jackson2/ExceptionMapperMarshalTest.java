@@ -33,7 +33,7 @@ import java.util.List;
  * @tpSubChapter Jackson2 provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-937
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -67,7 +67,7 @@ public class ExceptionMapperMarshalTest {
     /**
      * @tpTestDetails Tests usage of custom ExceptionMapper producing json response
      * @tpPassCrit The resource returns Success response
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCustomUsed() {

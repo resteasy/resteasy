@@ -39,7 +39,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter CDI
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test integration of Events and RESTEasy.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -65,7 +65,7 @@ public class EventsTest {
 
     /**
      * @tpTestDetails Test creating object on resource and retrieving this object again.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEvents() throws Exception {

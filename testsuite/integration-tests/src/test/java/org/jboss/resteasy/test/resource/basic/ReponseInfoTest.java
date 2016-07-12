@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Resource
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -59,7 +59,7 @@ public class ReponseInfoTest {
 
     /**
      * @tpTestDetails Check URI location from HTTP headers from response prepared in resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testUriInfo() throws Exception {

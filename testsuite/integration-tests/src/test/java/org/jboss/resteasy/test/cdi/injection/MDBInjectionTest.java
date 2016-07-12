@@ -53,7 +53,7 @@ import javax.ws.rs.core.Response;
  * @tpChapter Integration tests
  * @tpTestCaseDetails This class tests the use of MDBs with Resteasy, including the injection of a
  *                    JAX-RS resource into an MDB.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -101,7 +101,7 @@ public class MDBInjectionTest extends AbstractInjectionTestBase {
 
     /**
      * @tpTestDetails Tests the injection of JMS Producers, Consumers, Queues, and MDBs using producer fields and methods.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMDB() throws Exception {

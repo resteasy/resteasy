@@ -28,7 +28,7 @@ import java.util.Date;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -63,7 +63,7 @@ public class ResponseGetAnnotationsTest {
      * registered provider to Read and Write responses with Date and Annotations objects. Client sends POST request with
      * Date entity and expects response with Date and Annotations from a test class.
      * @tpPassCrit The date and annotations are present in the response
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetAnnotations() {

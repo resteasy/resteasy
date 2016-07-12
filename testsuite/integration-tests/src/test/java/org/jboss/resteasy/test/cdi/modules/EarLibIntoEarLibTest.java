@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter CDI
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test bean injection from lib to lib in ear.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class EarLibIntoEarLibTest {
@@ -57,7 +57,7 @@ public class EarLibIntoEarLibTest {
 
     /**
      * @tpTestDetails Test bean injection from lib to lib in ear.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testModules() throws Exception {

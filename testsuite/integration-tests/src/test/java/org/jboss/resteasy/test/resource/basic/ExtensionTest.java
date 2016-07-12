@@ -25,7 +25,7 @@ import java.util.Map;
  * @tpSubChapter Resource
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for resteasy.media.type.mappings and resteasy.language.mappings parameters
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -55,7 +55,7 @@ public class ExtensionTest {
 
     /**
      * @tpTestDetails Check correct values
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIt() {
@@ -69,7 +69,7 @@ public class ExtensionTest {
 
     /**
      * @tpTestDetails Check wrong value
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testError() {

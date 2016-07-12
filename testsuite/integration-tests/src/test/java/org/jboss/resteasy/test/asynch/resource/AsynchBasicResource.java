@@ -40,17 +40,12 @@ public class AsynchBasicResource {
 
     @PUT
     public void put(String content) throws Exception {
-        logger.info("IN PUT!!!!");
         Assert.assertNotNull(config);
         Assert.assertNotNull(context);
-        logger.info("Asserts passed");
         config.getServletContext();
         context.getMajorVersion();
-        logger.info("Called injected passed");
         Assert.assertEquals("content", content);
         Thread.sleep(500);
-        logger.info("******* countdown ****");
         AsynchBasicTest.latch.countDown();
-        logger.info("******* countdown complete ****");
     }
 }

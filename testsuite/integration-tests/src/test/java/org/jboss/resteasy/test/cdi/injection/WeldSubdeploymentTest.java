@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for JBEAP-4084, WFLY-6485
  *                    Test that JPA dependencies are set for sub-deployments
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -87,7 +87,7 @@ public class WeldSubdeploymentTest {
 
     /**
      * @tpTestDetails Test for bean with application scope
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAppcliationScope() throws Exception {
@@ -96,7 +96,7 @@ public class WeldSubdeploymentTest {
 
     /**
      * @tpTestDetails Test for bean with request scope
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRequestScope() throws Exception {
@@ -105,7 +105,7 @@ public class WeldSubdeploymentTest {
 
     /**
      * @tpTestDetails Test for stateful bean
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testStateful() throws Exception {
@@ -114,7 +114,7 @@ public class WeldSubdeploymentTest {
 
     /**
      * @tpTestDetails Test for stateless bean
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testStateLess() throws Exception {

@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Test client error caused by bad media type
  */
 @RunWith(Arquillian.class)
@@ -46,7 +46,7 @@ public class ClientErrorBadMediaTypeTest {
     /**
      * @tpTestDetails This test uses not defined "foo/bar" media type.
      *                Upstream variant of this test was updated by JBEAP-2594.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBadContentType() throws Exception {

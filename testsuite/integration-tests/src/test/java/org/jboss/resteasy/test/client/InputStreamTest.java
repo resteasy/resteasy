@@ -27,7 +27,7 @@ import java.io.InputStream;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -72,7 +72,7 @@ public class InputStreamTest {
     /**
      * @tpTestDetails Client sends GET request with requested return type of InputStream.
      * @tpPassCrit The response String can be read from returned input stream and matches expected text.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInputStream() throws Exception {
@@ -89,7 +89,7 @@ public class InputStreamTest {
      * @tpTestDetails Client sends GET request with requested return type of InputStream. The request is created
      * via client proxy
      * @tpPassCrit The response with expected Exception text is returned
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInputStreamProxy() throws Exception {

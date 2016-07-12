@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -56,7 +56,7 @@ public class CustomOverrideTest {
     /**
      * @tpTestDetails Test for same resource path for media type xml and "text/x-vcard" with custom MessageBodyWriter
      * @tpInfo RESTEASY-510
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRegression() throws Exception {

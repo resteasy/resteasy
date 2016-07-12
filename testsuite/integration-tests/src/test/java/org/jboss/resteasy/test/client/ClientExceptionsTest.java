@@ -35,7 +35,7 @@ import javax.ws.rs.core.Response;
  * "When a provider method throws an exception, the JAX-RS client runtime will map it to an instance of
  * ProcessingException if thrown while processing a request, and to a ResponseProcessingException
  * if thrown while processing a response."
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -71,7 +71,7 @@ public class ClientExceptionsTest {
      * @tpTestDetails Send a request for entity which requires special MessageBodyReader which is not available.
      * The exception is raised before sending request to the server
      * @tpPassCrit ProcessingException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void noMessageBodyReaderExistsTest() {
@@ -87,7 +87,7 @@ public class ClientExceptionsTest {
      * which is not available. The response contains entity of type Data.
      * The exception is raised when trying to read response from the server.
      * @tpPassCrit ProcessingException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void noMessageBodyReaderExistsReadEntityTest() throws Exception {
@@ -102,7 +102,7 @@ public class ClientExceptionsTest {
      * @tpTestDetails Send a request and try to read Response for entity which requires special MessageBodyReader,
      * which is not available. The response contains header with CONTENT_LENGTH zero and no Data entity.
      * @tpPassCrit ProcessingException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void responseWithContentLengthZero() {
@@ -117,7 +117,7 @@ public class ClientExceptionsTest {
      * @tpTestDetails WebTarget registers ReaderInterceptor and sends entity to a server. Then tries to read
      * the response, but get interrupted by exception happening in ReaderInterceptor.
      * @tpPassCrit ProcessingException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void interceptorThrowsExceptionTest() {
@@ -132,7 +132,7 @@ public class ClientExceptionsTest {
      * @tpTestDetails WebTarget registers ClientResponseFilter and sends request to a server. The processing of the response gets
      * interrupted in the ClientResponseFilter and processing ends with ResponseProcessingException.
      * @tpPassCrit ResponseProcessingException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = ResponseProcessingException.class)
     public void responseFilterThrowsExceptionTest() {
@@ -145,7 +145,7 @@ public class ClientExceptionsTest {
      * @tpTestDetails WebTarget registers ClientRequestFilter and sends request to a server. The processing of the request gets
      * interrupted in the ClientRequestFilter and processing ends with ProcessingException.
      * @tpPassCrit ProcessingException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = ProcessingException.class)
     public void requestFilterThrowsException() {

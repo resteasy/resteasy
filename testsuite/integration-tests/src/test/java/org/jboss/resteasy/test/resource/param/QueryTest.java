@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Parameters
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for @Query param of the resource, RESTEASY-715
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -56,7 +56,7 @@ public class QueryTest {
     /**
      * @tpTestDetails Use resource with @Query annotation with the parameter of custom type which consist of @QueryParam fields.
      * Resteasy correctly parses the uri to get all specified parameters
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testQueryParamPrefix() throws Exception {

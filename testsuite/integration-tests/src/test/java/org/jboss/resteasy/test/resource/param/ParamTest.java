@@ -18,7 +18,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Parameters
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-423 and RESTEASY-522
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -38,7 +38,7 @@ public class ParamTest {
 
     /**
      * @tpTestDetails Null matrix parameters should be accepted by the reasteasy client library (RESTEASY-423)
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNullMatrixParam() throws Exception {
@@ -50,7 +50,7 @@ public class ParamTest {
     /**
      * @tpTestDetails RestEasy Client Framework should not throw null point exception when
      *                the @CookieParam() is null (RESTEASY-522)
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNullCookieParam() throws Exception {
@@ -62,7 +62,7 @@ public class ParamTest {
     /**
      * @tpTestDetails RestEasy Client Framework should not throw null point exception when
      *                the @HeaderParam() is null (RESTEASY-522)
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNullHeaderParam() throws Exception {

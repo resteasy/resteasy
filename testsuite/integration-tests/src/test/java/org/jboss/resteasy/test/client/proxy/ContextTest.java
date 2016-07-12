@@ -25,7 +25,7 @@ import javax.ws.rs.core.UriInfo;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -66,7 +66,7 @@ public class ContextTest {
      * @tpTestDetails Client sends async GET requests thru client proxy. UriInfo is injected as argument of the GET
      * method call.
      * @tpPassCrit UriInfo was injected into method call
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testContextInjectionProxy() {

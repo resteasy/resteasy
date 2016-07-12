@@ -38,7 +38,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpTestCaseDetails Tests client exception handling for AsyncInvoker interface and InvocationCallBack interface.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -123,7 +123,7 @@ public class AsyncTimeoutExceptionsTest {
      * @tpTestDetails Future get() method is called with timeout parameter, resulting to TimeoutException being thrown.
      * Resource invokes Thread.Sleep(), client is expected to throw TimeoutExcetion.
      * @tpPassCrit TimeoutException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = TimeoutException.class)
     public void futureTimeOutSleepTest() throws InterruptedException, ExecutionException, TimeoutException {
@@ -137,7 +137,7 @@ public class AsyncTimeoutExceptionsTest {
      * Asynchronous processing is invoked on the server - the current thread on the server is detached, but it is not
      * run, resulting to client Throws TimeoutException.
      * @tpPassCrit TimeoutException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = TimeoutException.class)
     public void futureAsyncOnServerAndTimeoutTest() throws InterruptedException, ExecutionException, TimeoutException {
@@ -152,7 +152,7 @@ public class AsyncTimeoutExceptionsTest {
      * asynchronously on the server and processing thread is suspended.
      * Client is expected to throw TimeoutException.
      * @tpPassCrit TimeoutException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = TimeoutException.class)
     public void futureAsyncOnServerClientTimeoutTest() throws InterruptedException, ExecutionException, TimeoutException {
@@ -168,7 +168,7 @@ public class AsyncTimeoutExceptionsTest {
      * Resource invokes Thread.Sleep(), client is expected to throw TimeoutException.
      * The resource is supposed to return Response object.
      * @tpPassCrit TimeoutException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = TimeoutException.class)
     public void futureTimeOutWithResponseTest() throws InterruptedException, ExecutionException, TimeoutException {
@@ -183,7 +183,7 @@ public class AsyncTimeoutExceptionsTest {
      * Another asynchronous request is invoked and it is asserted that the same client will handle it successfully.
      * @tpInfo Server throws RejectedExecutionException in the end, see WFCORE-756 and "UT015005: Error invoking method requestDestroyed" - WFLY-2837
      * @tpPassCrit Client handles successfully asynchronous request after exception is thrown
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void futureTimeoutAndMoreRequestsTest() throws InterruptedException, ExecutionException, TimeoutException {
@@ -218,7 +218,7 @@ public class AsyncTimeoutExceptionsTest {
      * @tpTestDetails Invocation callback should close all connections by itself
      * Resource invokes Thread.Sleep(), client is expected to throw TimeoutExcetion.
      * @tpPassCrit TimeoutException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = TimeoutException.class)
     public void invocationCallbackTimeoutSleepTest() throws InterruptedException, ExecutionException, TimeoutException {
@@ -232,7 +232,7 @@ public class AsyncTimeoutExceptionsTest {
      * Asynchronous processing is invoked on the server - the current thread on the server is detached, but it is not
      * run, resulting to client Throws TimeoutException.
      * @tpPassCrit TimeoutException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
      @Test(expected = TimeoutException.class)
      public void invocationCallbackAsyncOnServerAndTimeoutTest() throws InterruptedException, ExecutionException, TimeoutException {
@@ -246,7 +246,7 @@ public class AsyncTimeoutExceptionsTest {
      * Asynchronous processing is invoked on the server - the current thread on the server is detached and request is processed
      * asynchronously on the server and processing thread is suspended.
      * @tpPassCrit TimeoutException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = TimeoutException.class)
     public void invocationCallbackAsyncOnServerClientTimeoutTest() throws InterruptedException, ExecutionException, TimeoutException {
@@ -262,7 +262,7 @@ public class AsyncTimeoutExceptionsTest {
      * Resource invokes Thread.Sleep(), client is expected to throw TimeoutException.
      * The resource is supposed to return Response object.
      * @tpPassCrit TimeoutException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = TimeoutException.class)
     public void invocationCallbackTimeoutWithResponseTest() throws InterruptedException, ExecutionException, TimeoutException {
@@ -277,7 +277,7 @@ public class AsyncTimeoutExceptionsTest {
      * Another asynchronous request is invoked and it is asserted that the same client will handle it successfully.
      * @tpInfo Server throws RejectedExecutionException in the end, see WFCORE-756 and "UT015005: Error invoking method requestDestroyed" - WFLY-2837
      * @tpPassCrit Client handles successfully asynchronous request after exception is thrown
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void invocationCallbackTimeoutAndMoreRequestsTest() throws InterruptedException, ExecutionException, TimeoutException {

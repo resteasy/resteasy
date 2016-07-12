@@ -24,7 +24,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Resources
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test return value of covariant with locators.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -40,7 +40,7 @@ public class CovariantReturnSubresourceLocatorsTest {
 
     /**
      * @tpTestDetails Test basic path
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void basicTest() {

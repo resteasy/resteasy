@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Form tests
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -37,7 +37,7 @@ public class FormUrlEncodedTest {
 
     /**
      * @tpTestDetails Get form parameter from resource using InputStream and StreamingOutput
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPost() {

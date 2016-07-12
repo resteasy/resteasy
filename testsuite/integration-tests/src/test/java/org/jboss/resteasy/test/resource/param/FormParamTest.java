@@ -30,7 +30,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Parameters
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for form parameters
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -68,7 +68,7 @@ public class FormParamTest {
 
     /**
      * @tpTestDetails Check form parameters with POST method
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void postTest() {
@@ -81,7 +81,7 @@ public class FormParamTest {
 
     /**
      * @tpTestDetails Check non default form parameters, accept special object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void nonDefaultFormParamFromStringTest() {
@@ -94,7 +94,7 @@ public class FormParamTest {
 
     /**
      * @tpTestDetails Check non default form parameters, accept String
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void string() {
@@ -107,7 +107,7 @@ public class FormParamTest {
 
     /**
      * @tpTestDetails Check non default form parameters, accept sorted set
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void defaultFormParamFromSortedSetFromStringTest() {
@@ -120,7 +120,7 @@ public class FormParamTest {
 
     /**
      * @tpTestDetails Check non default form parameters, accept list
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void defaultListConstructor() {
@@ -133,7 +133,7 @@ public class FormParamTest {
 
     /**
      * @tpTestDetails Check wrong arguments, exception is excepted
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIllegalArgumentException() {

@@ -18,7 +18,7 @@ import java.io.Reader;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Unit tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Test for close calling, if no content in stream is used.
  */
 public class NoContentStreamingCloseTest {
@@ -28,7 +28,7 @@ public class NoContentStreamingCloseTest {
 
     /**
      * @tpTestDetails Non-empty input stream test.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNonEmptyInputStream() throws Exception {
@@ -55,7 +55,7 @@ public class NoContentStreamingCloseTest {
 
     /**
      * @tpTestDetails Empty input stream test.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEmptyInputStream() throws Exception {
@@ -80,7 +80,7 @@ public class NoContentStreamingCloseTest {
 
     /**
      * @tpTestDetails Empty Reader test.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEmptyReader() throws Exception {
@@ -105,7 +105,7 @@ public class NoContentStreamingCloseTest {
 
     /**
      * @tpTestDetails Empty DataSource test.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEmptyDataSource() throws Exception {
@@ -130,7 +130,7 @@ public class NoContentStreamingCloseTest {
 
     /**
      * @tpTestDetails Empty Stream source test.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEmptyStreamSource() throws Exception {
@@ -156,7 +156,7 @@ public class NoContentStreamingCloseTest {
 
     /**
      * @tpTestDetails Empty Byte array source test.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEmptyByteArray() throws Exception {

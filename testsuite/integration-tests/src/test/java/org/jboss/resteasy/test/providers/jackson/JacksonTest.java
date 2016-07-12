@@ -38,7 +38,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Jackson provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -115,7 +115,7 @@ public class JacksonTest {
      * @tpTestDetails Client sends GET request for json annotated resource. In the first case it returns single json entity,
      * in the second case multiple json entities as String.
      * @tpPassCrit The resource returns json entities in correct format
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJacksonString() throws Exception {
@@ -144,7 +144,7 @@ public class JacksonTest {
      * Jettison is deprecated, so it needs to be added to EAP manually (see JBEAP-2856).
      * @tpPassCrit The resource returns json entities in correct format
      * @tpInfo JBEAP-2856
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlString() throws Exception {
@@ -172,7 +172,7 @@ public class JacksonTest {
          * + The response entity is returned as instance of String class
          * + The response entity is returned as instance of JacksonProduct class and response is mediatype of 'application/foo+json'
          * @tpPassCrit The returned object contains expected values
-         * @tpSince EAP 7.0.0
+         * @tpSince RESTEasy 3.0.16
          */
     @Test
     public void testJackson() throws Exception {
@@ -203,7 +203,7 @@ public class JacksonTest {
     /**
      * @tpTestDetails Client sends POST request with JacksonProduct entity using client proxy.
      * @tpPassCrit The returned object contains expected values
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJacksonProxy() throws Exception {
@@ -219,7 +219,7 @@ public class JacksonTest {
      * JAXB annotated resource and verifies renaming of the Xml element attribute. Second it sends GET request for resource
      * with Jackson annotation and verifies that json response contains the renamed attribute.
      * @tpPassCrit The response contains the renamed attributes
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJacksonJAXB() throws Exception {

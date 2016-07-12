@@ -25,7 +25,7 @@ import java.util.Locale;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class RequestFilterTest {
 
@@ -50,7 +50,7 @@ public class RequestFilterTest {
      * processed by registered filter before sending it to the server. Filter aborts processing and sends its own
      * response
      * @tpPassCrit Expected String is returned from the ClientRequestFilter
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void AbortWithTest() {
@@ -65,7 +65,7 @@ public class RequestFilterTest {
      * it is send to the server. Filter aborts processing and sends its own response with list of acceptable languages
      * from the request.
      * @tpPassCrit Expected String is returned from the ClientRequestFilter
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void AcceptLanguagesTest() {
@@ -86,7 +86,7 @@ public class RequestFilterTest {
      * entity set up in the first filter. Second Filter aborts processing and sends its own response.
      * from the request.
      * @tpPassCrit The request is processed by both filters.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void MultipleFiltersTest() {
@@ -102,7 +102,7 @@ public class RequestFilterTest {
      * The request is processed by registered filter before it is send to the server. Filter aborts processing
      * and sends its own response with request entity annotation.
      * @tpPassCrit Expected Annotation is returned from the ClientRequestFilter
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void AnnotationFilterTest() {

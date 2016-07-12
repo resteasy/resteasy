@@ -38,7 +38,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter CDI
  * @tpChapter Integration tests
  * @tpTestCaseDetails RESTEasy integration test for CDI && decorators
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -65,7 +65,7 @@ public class ConcreteDecoratorTest {
 
     /**
      * @tpTestDetails Run REST point method and check execution of decorators.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testConcreteConcreteDecorator() throws Exception {

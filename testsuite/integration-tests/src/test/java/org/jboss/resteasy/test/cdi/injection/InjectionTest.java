@@ -63,7 +63,7 @@ import org.junit.runner.RunWith;
  * @tpTestCaseDetails This is a collection of tests addressed to the interactions of
  *                    Resteasy, CDI, EJB, and so forth in the context of a JEE Application Server.
  *                    It tests the injection of a variety of beans into Resteasy objects.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -158,7 +158,7 @@ public class InjectionTest extends AbstractInjectionTestBase {
      *    EJB proxies or Weld proxies, are handled properly.
      * A side effect of 3) and 4) is to test that beans managed by CDI (managed beans, singleton beans,
      * stateless EJBs) are injected properly into JAX-RS objects.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testVerifyScopes() throws Exception {
@@ -180,7 +180,7 @@ public class InjectionTest extends AbstractInjectionTestBase {
     /**
      * @tpTestDetails Addresses the injection of managed beans, singletons, and stateless EJBs into JAX-RS objects.
      *                Uses a singleton (BookCollection) to interact with an EntityManager.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEJBs() throws Exception {
@@ -262,7 +262,7 @@ public class InjectionTest extends AbstractInjectionTestBase {
      * @tpTestDetails This test verifies that a session scoped SFSB survives throughout the course of a session and is
      * re-injected into the request scoped BookResource over the course of the session.  Also, it is destroyed
      * and replaced when an invocation is made on BookResource after the session ends.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSessionScope() throws Exception {
@@ -322,7 +322,7 @@ public class InjectionTest extends AbstractInjectionTestBase {
 
     /**
      * @tpTestDetails Tests the injection of JMS Producers, Consumers, and Queues using producer fields and methods.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJMS() throws Exception {
@@ -352,7 +352,7 @@ public class InjectionTest extends AbstractInjectionTestBase {
 
     /**
      * @tpTestDetails Verifies that BookResource.postConstruct() and preDestroy() are called for each invocation.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostConstructPreDestroy() throws Exception {
@@ -375,7 +375,7 @@ public class InjectionTest extends AbstractInjectionTestBase {
 
     /**
      * @tpTestDetails Verifies that ResourceProducer disposer method has been called for Queue.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDisposer() throws Exception {

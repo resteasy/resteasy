@@ -34,7 +34,7 @@ import org.junit.runner.RunWith;
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1066. If the content-type of the response is not specified in the request,
  *
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -75,7 +75,7 @@ public class CharsetTest {
 
     /**
      * @tpTestDetails Tests StringTextStar provider, where the charset is unspecified.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testStringDefault() throws Exception {
@@ -93,7 +93,7 @@ public class CharsetTest {
     /**
      * @tpTestDetails Tests StringTextStar provider, where the charset is specified
      * by the resource method.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testStringProducesUtf16() throws Exception {
@@ -110,7 +110,7 @@ public class CharsetTest {
     /**
      * @tpTestDetails Tests StringTextStar provider, where the charset is specified
      * by the Accept header.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testStringAcceptsUtf16() throws Exception {
@@ -126,7 +126,7 @@ public class CharsetTest {
 
     /**
      * @tpTestDetails Tests DefaultTextPlain provider, where the charset is unspecified.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFooDefault() throws Exception {
@@ -143,7 +143,7 @@ public class CharsetTest {
     /**
      * @tpTestDetails Tests DefaultTextPlain provider, where the charset is specified
      * by the resource method.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFooProducesUtf16() throws Exception {
@@ -160,7 +160,7 @@ public class CharsetTest {
     /**
      * @tpTestDetails Tests DefaultTextPlain provider, where the charset is specified
      * by the Accept header.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFooAcceptsUtf16() throws Exception {
@@ -176,7 +176,7 @@ public class CharsetTest {
 
     /**
      * @tpTestDetails Tests StringTextStar provider, default charset
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFormDefault() throws Exception {

@@ -21,7 +21,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Response
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for default value of resteasy.validation.suppress.path parameter
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -39,7 +39,7 @@ public class ValidationSurpressPathDefaultTest extends ValidationSuppressPathTes
 
     /**
      * @tpTestDetails Test input violations.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInputViolations() throws Exception {
@@ -48,7 +48,7 @@ public class ValidationSurpressPathDefaultTest extends ValidationSuppressPathTes
 
     /**
      * @tpTestDetails Test return value violations.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testReturnValues() throws Exception {

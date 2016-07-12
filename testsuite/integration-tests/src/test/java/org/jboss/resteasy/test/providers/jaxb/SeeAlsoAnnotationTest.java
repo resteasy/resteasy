@@ -27,13 +27,13 @@ import java.io.StringWriter;
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class SeeAlsoAnnotationTest {
 
-    private static Logger logger = Logger.getLogger(SeeAlsoAnnotationTest.class.getName());
+    private final Logger logger = Logger.getLogger(SeeAlsoAnnotationTest.class.getName());
     static ResteasyClient client;
 
     @Deployment
@@ -51,6 +51,7 @@ public class SeeAlsoAnnotationTest {
     @After
     public void after() throws Exception {
         client.close();
+        client = null;
     }
 
     private String generateURL(String path) {
@@ -59,7 +60,7 @@ public class SeeAlsoAnnotationTest {
 
     /**
      * @tpTestDetails Tests jaxb @SeeAlsoAnnotation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIntf() throws Exception {
@@ -69,7 +70,7 @@ public class SeeAlsoAnnotationTest {
 
     /**
      * @tpTestDetails Tests jaxb @SeeAlsoAnnotation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testTest() throws Exception {

@@ -31,7 +31,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter CDI
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for unwrapping EJB exception
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -65,7 +65,7 @@ public class EjbExceptionUnwrapTest {
 
     /**
      * @tpTestDetails No default resource for exception
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNoDefaultsResourceForException() {
@@ -76,7 +76,7 @@ public class EjbExceptionUnwrapTest {
 
     /**
      * @tpTestDetails No default resource without exception mapping
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNoDefaultsResource() throws Exception {
@@ -106,7 +106,7 @@ public class EjbExceptionUnwrapTest {
 
     /**
      * @tpTestDetails Check for locating resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLocatingResource() throws Exception {

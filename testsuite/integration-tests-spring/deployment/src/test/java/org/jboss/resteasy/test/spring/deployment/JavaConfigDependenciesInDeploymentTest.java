@@ -26,7 +26,7 @@ import javax.ws.rs.core.Response;
  * @tpChapter Integration tests - dependencies included in deployment
  * @tpTestCaseDetails This test will verify that the resource invoked by RESTEasy has been
  * initialized by spring when defined using spring's JavaConfig.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -52,7 +52,7 @@ public class JavaConfigDependenciesInDeploymentTest {
     /**
      * @tpTestDetails This test will verify that the resource invoked by RESTEasy has been
      * initialized by spring when defined using spring's JavaConfig.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void test() throws Exception {

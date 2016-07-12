@@ -29,13 +29,13 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Jettison provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class JsonCollectionTest {
 
-    protected static final Logger logger = Logger.getLogger(JsonCollectionTest.class.getName());
+    protected final Logger logger = Logger.getLogger(JsonCollectionTest.class.getName());
 
     static ResteasyClient client;
 
@@ -55,6 +55,7 @@ public class JsonCollectionTest {
     @After
     public void after() throws Exception {
         client.close();
+        client = null;
     }
 
     private String generateURL(String path) {
@@ -64,7 +65,7 @@ public class JsonCollectionTest {
     /**
      * @tpTestDetails Test that an array containing json objects can be received and send
      * @tpPassCrit The response with Success is returned
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testArray() throws Exception {
@@ -90,7 +91,7 @@ public class JsonCollectionTest {
      * @tpTestDetails Test that json entity is correctly marshalled into the array, and json string is returned from the server
      * and the same entity is send back to the server to produce a list and returned as json string.
      * @tpPassCrit The response with Success is returned
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testList() throws Exception {
@@ -112,7 +113,7 @@ public class JsonCollectionTest {
     /**
      * @tpTestDetails Test that an array of namespaced json objects can be received and send
      * @tpPassCrit The response with Success is returned
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNamespacedArray() throws Exception {
@@ -133,7 +134,7 @@ public class JsonCollectionTest {
      * @tpTestDetails Test that namespaced json entity is correctly marshalled into the array, and json string is returned from the server
      * and the same entity is send back to the server to produce a list and returned as json string.
      * @tpPassCrit The response with Success is returned
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNamespacedList() throws Exception {
@@ -154,7 +155,7 @@ public class JsonCollectionTest {
     /**
      * @tpTestDetails Test to send and receive empty json array
      * @tpPassCrit The response with Success is returned
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEmptyArray() throws Exception {
@@ -167,7 +168,7 @@ public class JsonCollectionTest {
     /**
      * @tpTestDetails Test to send and receive empty json list
      * @tpPassCrit The response with Success is returned
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEmptyList() throws Exception {
@@ -180,7 +181,7 @@ public class JsonCollectionTest {
     /**
      * @tpTestDetails Test to send non-json input
      * @tpPassCrit The response with code Bad request is returned
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBadArray() throws Exception {

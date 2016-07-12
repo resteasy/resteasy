@@ -20,7 +20,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Multipart provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test proxy with null part of message with multipart provider
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -38,7 +38,7 @@ public class NullPartTest {
 
     /**
      * @tpTestDetails Test new client
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNewClient() throws Exception {
@@ -51,7 +51,7 @@ public class NullPartTest {
 
     /**
      * @tpTestDetails Test old client
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testOldClient() throws Exception {

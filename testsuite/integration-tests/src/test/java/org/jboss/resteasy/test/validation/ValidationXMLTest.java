@@ -37,7 +37,7 @@ import java.util.Iterator;
  * @tpSubChapter Validation
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test of xml validation
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -70,7 +70,7 @@ public class ValidationXMLTest {
 
     /**
      * @tpTestDetails Test standard XML
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testStandardXML() throws Exception {
@@ -79,7 +79,7 @@ public class ValidationXMLTest {
 
     /**
      * @tpTestDetails Test standard JSON
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testStandardJSON() throws Exception {
@@ -88,7 +88,7 @@ public class ValidationXMLTest {
 
     /**
      * @tpTestDetails Test standard plain text
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testText() throws Exception {
@@ -97,7 +97,7 @@ public class ValidationXMLTest {
 
     /**
      * @tpTestDetails Check wildcard
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testWildcard() throws Exception {
@@ -106,7 +106,7 @@ public class ValidationXMLTest {
 
     /**
      * @tpTestDetails Check XML and JSON. JSON use q=.5
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void tesXML_NoQ_JSON() throws Exception {
@@ -115,7 +115,7 @@ public class ValidationXMLTest {
 
     /**
      * @tpTestDetails Check XML and JSON. JSON use q=.5
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void tesXML_JSON_NoQ() throws Exception {
@@ -124,7 +124,7 @@ public class ValidationXMLTest {
 
     /**
      * @tpTestDetails Check XML and JSON. JSON use q=.5. XML use q=1
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXML_GT_JSON() throws Exception {
@@ -133,7 +133,7 @@ public class ValidationXMLTest {
 
     /**
      * @tpTestDetails Check XML and JSON. JSON use q=1. XML use q=.5
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXML_LT_JSON() throws Exception {
@@ -238,8 +238,6 @@ public class ValidationXMLTest {
             logger.info("report: " + report);
             TestUtil.countViolations(report, 0, 0, 0, 0, 1);
             ResteasyConstraintViolation cv = report.getReturnValueViolations().iterator().next();
-            logger.info("message: " + cv.getMessage());
-            logger.info("value: " + cv.getValue());
             Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 4 <= length <= 5", cv.getMessage());
             Assert.assertEquals(WRONG_ERROR_MSG, foo.toString(), cv.getValue());
             response.close();
@@ -342,8 +340,6 @@ public class ValidationXMLTest {
             logger.info("report: " + report);
             TestUtil.countViolations(report, 0, 0, 0, 0, 1);
             ResteasyConstraintViolation cv = report.getReturnValueViolations().iterator().next();
-            logger.info("message: " + cv.getMessage());
-            logger.info("value: " + cv.getValue());
             Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 4 <= length <= 5", cv.getMessage());
             Assert.assertEquals(WRONG_ERROR_MSG, foo.toString(), cv.getValue());
             response.close();

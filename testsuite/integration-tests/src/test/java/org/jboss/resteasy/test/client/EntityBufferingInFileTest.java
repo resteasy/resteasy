@@ -39,7 +39,7 @@ import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -95,7 +95,7 @@ public class EntityBufferingInFileTest {
      * of defined size (10 bytes),
      * @tpPassCrit Successful response is returned, the entity stream returned is same as original string
      * Response entity is type of ByteArrayEntity.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBytes1() throws Exception {
@@ -107,7 +107,7 @@ public class EntityBufferingInFileTest {
      * (defined by memoryUnit and threshold size in doTest() method). Client then sends POST request with String entity
      * of defined size (20 bytes)
      * @tpPassCrit Successful response is returned, the entity stream returned is same as original string
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBytes2() throws Exception {
@@ -119,7 +119,7 @@ public class EntityBufferingInFileTest {
      * (defined by memoryUnit and threshold size in doTest() method). Client then sends POST request with String entity
      * of defined size (500 bytes)
      * @tpPassCrit Successful response is returned, the entity stream returned is same as original string
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testKilobytes1() throws Exception {
@@ -131,7 +131,7 @@ public class EntityBufferingInFileTest {
      * (defined by memoryUnit and threshold size in doTest() method). Client then sends POST request with String entity
      * of defined size (2000 bytes)
      * @tpPassCrit Successful response is returned, the entity stream returned is same as original string
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testKilobytes2() throws Exception {
@@ -143,7 +143,7 @@ public class EntityBufferingInFileTest {
      * (defined by memoryUnit and threshold size in doTest() method). Client then sends POST request with String entity
      * of defined size (500000 bytes)
      * @tpPassCrit Successful response is returned, the entity stream returned is same as original string
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMegabytes1() throws Exception {
@@ -155,7 +155,7 @@ public class EntityBufferingInFileTest {
      * (defined by memoryUnit and threshold size in doTest() method). Client then sends POST request with String entity
      * of defined size (2000000000 bytes)
      * @tpPassCrit Successful response is returned, the entity stream returned is same as original string
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMegabytes2() throws Exception {
@@ -167,7 +167,7 @@ public class EntityBufferingInFileTest {
      * (defined by memoryUnit and threshold size in doTest() method). Client then sends POST request with String entity
      * of defined size (500000000 bytes)
      * @tpPassCrit Successful response is returned, the entity stream returned is same as original string
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Ignore("The tests fails on some machines on client side. As this is performance test and performance tests were dropped" +
             "from EAP7 rfe list, this is not priority now.")

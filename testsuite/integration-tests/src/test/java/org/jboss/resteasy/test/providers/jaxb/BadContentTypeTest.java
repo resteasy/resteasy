@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -61,7 +61,7 @@ public class BadContentTypeTest {
     /**
      * @tpTestDetails Tests if correct Response code is returned when sending syntactically incorrect xml
      * @tpInfo RESTEASY-519
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBadRequest() throws Exception {
@@ -75,7 +75,7 @@ public class BadContentTypeTest {
      * @tpTestDetails Tests if correct exception and MessageBodyWriter error is thrown when sending request for which no
      * MessageBodyWriterExists
      * @tpInfo RESTEASY-169
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testHtmlError() throws Exception {
@@ -90,7 +90,7 @@ public class BadContentTypeTest {
 
     /**
      * @tpTestDetails Tests of receiving Bad Request response code after html error
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBadRequestAfterHtmlError() throws Exception {

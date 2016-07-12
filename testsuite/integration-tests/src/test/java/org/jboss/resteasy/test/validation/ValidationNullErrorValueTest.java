@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Validation
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for validation of null error value
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -60,7 +60,7 @@ public class ValidationNullErrorValueTest {
 
     /**
      * @tpTestDetails Test null field and property.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNullFieldAndProperty() throws Exception {
@@ -73,7 +73,7 @@ public class ValidationNullErrorValueTest {
 
     /**
      * @tpTestDetails Test null return value
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNullParameterAndReturnValue() throws Exception {

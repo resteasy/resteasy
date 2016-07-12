@@ -30,13 +30,13 @@ import java.util.TimeZone;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class RangeTest {
 
-    protected static final Logger logger = LogManager.getLogger(VariantsTest.class.getName());
+    protected final Logger logger = LogManager.getLogger(VariantsTest.class.getName());
 
     static Client client;
 
@@ -58,6 +58,7 @@ public class RangeTest {
         response = client.target(generateURL("/deletesmallfile")).request().get();
         response.close();
         client.close();
+        client = null;
     }
 
     private static String generateURL(String path) {
@@ -67,7 +68,7 @@ public class RangeTest {
     /**
      * @tpTestDetails Verify that required date object can be created and parsed to string
      * @tpPassCrit Date object is created
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDate() {
@@ -88,7 +89,7 @@ public class RangeTest {
      * @tpTestDetails Client sends GET request for a file with request header set to Range 0-3
      * @tpPassCrit The returned response code is 206 (Partial Content), the length of the response is 4, the response
      * contains string "hell" and the response contains "Content-Range" header as written in HTTP 1.1 specification.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRange0to3() {
@@ -106,7 +107,7 @@ public class RangeTest {
      * @tpTestDetails Client sends GET request for a file with request header set to Range 1-4
      * @tpPassCrit The returned response code is 206 (Partial Content), the length of the response is 4, the response
      * contains string "ello" and the response contains "Content-Range" header as written in HTTP 1.1 specification.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRange1to4() {
@@ -124,7 +125,7 @@ public class RangeTest {
      * @tpTestDetails Client sends GET request for a file with request header set to Range 0-3000
      * @tpPassCrit The returned response code is 206 (Partial Content), the length of the response is 3001
      * and the response contains "Content-Range" header as written in HTTP 1.1 specification.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRange0to3000() {
@@ -144,7 +145,7 @@ public class RangeTest {
      * @tpPassCrit The returned response code is 206 (Partial Content), the length of the response is 4,
      * the response contains the last "1234" (the last 4 bytes from the file) and the response contains
      * "Content-Range" header as written in HTTP 1.1 specification.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNegativeRange4() {
@@ -163,7 +164,7 @@ public class RangeTest {
      * the size of the file
      * @tpPassCrit The returned response code is 200 (Success) as server should return whole content of the file this
      * time.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNegativeRange6000OutOfSize() {
@@ -179,7 +180,7 @@ public class RangeTest {
      * the response contains the last "123456789" and the response contains "Content-Range" header
      * as written in HTTP 1.1 specification.
      * @tpInfo RESTEASY-1094
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFullRange() {

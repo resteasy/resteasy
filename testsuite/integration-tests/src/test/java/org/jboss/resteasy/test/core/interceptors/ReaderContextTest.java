@@ -34,7 +34,7 @@ import java.util.List;
  * @tpSubChapter Interceptors
  * @tpChapter Integration tests
  * @tpTestCaseDetails Basic test for reated context
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -73,7 +73,7 @@ public class ReaderContextTest {
 
     /**
      * @tpTestDetails Check post request.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void readerContextOnClientTest() {

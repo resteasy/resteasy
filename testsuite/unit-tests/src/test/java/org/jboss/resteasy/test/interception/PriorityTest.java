@@ -26,14 +26,14 @@ import static org.junit.Assert.assertTrue;
  * @tpSubChapter Interception tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Check functionality of Priority annotation on filter classes. Use more classes with different value in Priority annotation.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class PriorityTest {
 
     private static final String ERROR_MESSAGE = "RESTEasy uses filter in wrong older";
     /**
      * @tpTestDetails Test for classes implements ContainerResponseFilter.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPriority() throws Exception {
@@ -72,7 +72,7 @@ public class PriorityTest {
 
     /**
      * @tpTestDetails Test for classes implements ClientRequestFilter.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPriorityOverride() {

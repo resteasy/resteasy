@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
  * @tpSubChapter Util tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for UriBuilder class.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class UriBuilderTest {
     private static final String ERROR_MSG = "UriBuilder works incorrectly";
@@ -34,7 +34,7 @@ public class UriBuilderTest {
 
     /**
      * @tpTestDetails Test for all important method and use cases of UriBuilder class.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void uriBuilderTest() throws Exception {
@@ -915,8 +915,6 @@ public class UriBuilderTest {
                             "http://localhost:8080;name=x=;name=y?;name=x y;name=&")
                     .replaceMatrixParam(name, "x", "y", "y x", "x%y", "%20")
                     .build();
-            logger.info(uri.toString());
-            logger.info(expected);
             Assert.assertEquals(ERROR_MSG, uri.toString(), expected);
 
         }
@@ -931,8 +929,6 @@ public class UriBuilderTest {
                             "http://localhost:8080;name=x=;name=y?;name=x y;name=&")
                     .replaceMatrixParam(name, "x", "y", "y x", "x%y", "%20")
                     .build();
-            logger.info(uri.toString());
-            logger.info(expected);
             Assert.assertEquals(ERROR_MSG, uri.toString(), expected);
 
         }
@@ -945,8 +941,6 @@ public class UriBuilderTest {
             URI uri = UriBuilder.fromPath("http://localhost:8080")
                     .matrixParam(name, "x=", "y?", "x y", "&")
                     .replaceMatrix(null).build();
-            logger.info(uri.toString());
-            logger.info(expected1);
             Assert.assertEquals(ERROR_MSG, uri.toString(), expected1);
 
         }
@@ -960,8 +954,6 @@ public class UriBuilderTest {
                     .fromPath(
                             "http://localhost:8080;name=x=;name=y?;name=x y;name=&")
                     .replaceMatrix(value).build();
-            logger.info(uri.toString());
-            logger.info(expected);
             Assert.assertEquals(ERROR_MSG, uri.toString(), expected);
 
         }
@@ -975,8 +967,6 @@ public class UriBuilderTest {
                     .fromPath(
                             "http://localhost:8080;name=x=;name=y?;name=x y;name=&")
                     .replaceMatrix(value).build();
-            logger.info(uri.toString());
-            logger.info(expected);
             Assert.assertEquals(ERROR_MSG, uri.toString(), expected);
 
         }
@@ -990,8 +980,6 @@ public class UriBuilderTest {
 
             URI uri = UriBuilder.fromUri(new URI(orig))
                     .uri(replacement.toASCIIString()).build();
-            logger.info(uri.toString());
-            logger.info(expected);
             Assert.assertEquals(ERROR_MSG, uri.toString(), expected);
 
         }
@@ -1005,8 +993,6 @@ public class UriBuilderTest {
             UriBuilder uriBuilder = UriBuilder.fromUri(new URI(orig));
             URI uri = uriBuilder
                     .uri(replacement.toASCIIString()).build();
-            logger.info(uri.toString());
-            logger.info(expected);
             Assert.assertEquals(ERROR_MSG, uri.toString(), expected);
 
         }
@@ -1020,8 +1006,6 @@ public class UriBuilderTest {
             UriBuilder uriBuilder = UriBuilder.fromUri(new URI(orig));
             URI uri = uriBuilder
                     .uri(replacement.toASCIIString()).build();
-            logger.info(uri.toString());
-            logger.info(expected);
             Assert.assertEquals(ERROR_MSG, uri.toString(), expected);
 
         }

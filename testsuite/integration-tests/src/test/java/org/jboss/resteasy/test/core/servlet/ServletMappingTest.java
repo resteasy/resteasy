@@ -32,7 +32,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Configuration
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for servlet mapping. This settings is in web.xml
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -66,7 +66,7 @@ public class ServletMappingTest {
 
     /**
      * @tpTestDetails Test for new resteasy client without proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNoDefaultsResourceNewRESTEasyClient() throws Exception {
@@ -79,7 +79,7 @@ public class ServletMappingTest {
 
     /**
      * @tpTestDetails Test for apache client
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNoDefaultsResourceApacheClient() throws Exception {
@@ -97,7 +97,7 @@ public class ServletMappingTest {
 
     /**
      * @tpTestDetails Test for old resteasy client with proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFormParamOldRESTEasyClient() {
@@ -108,7 +108,7 @@ public class ServletMappingTest {
 
     /**
      * @tpTestDetails Test for new resteasy client with proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFormParamNewRESTEasyClient() {

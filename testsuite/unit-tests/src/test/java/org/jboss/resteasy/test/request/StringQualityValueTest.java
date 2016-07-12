@@ -18,7 +18,7 @@ import static org.junit.Assert.fail;
  * @tpSubChapter Requests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for AcceptHeaders and QualityValue classes, string type.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class StringQualityValueTest {
 
@@ -32,7 +32,7 @@ public class StringQualityValueTest {
 
     /**
      * @tpTestDetails Test for simple values.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void simple() {
@@ -48,7 +48,7 @@ public class StringQualityValueTest {
 
     /**
      * @tpTestDetails Test for special parameters.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void parameter() {
@@ -63,7 +63,7 @@ public class StringQualityValueTest {
 
     /**
      * @tpTestDetails Test for * in header.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void wildcard() {
@@ -75,7 +75,7 @@ public class StringQualityValueTest {
 
     /**
      * @tpTestDetails Test for wildcard with parameter.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void wildcardWithParameter() {
@@ -91,7 +91,7 @@ public class StringQualityValueTest {
 
     /**
      * @tpTestDetails Bad requests test.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void badRequests() {
@@ -117,7 +117,7 @@ public class StringQualityValueTest {
 
     /**
      * @tpTestDetails Check empty values.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void empty() {

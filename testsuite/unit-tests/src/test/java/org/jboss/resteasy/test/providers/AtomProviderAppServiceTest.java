@@ -22,7 +22,7 @@ import java.net.URI;
  * @tpSubChapter Providers
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for atom app service
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class AtomProviderAppServiceTest {
     /**
@@ -68,7 +68,7 @@ public class AtomProviderAppServiceTest {
 
     /**
      * @tpTestDetails Check custom ObjectFactory with Atom provider
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void marshallAppService() throws Exception {
@@ -142,7 +142,7 @@ public class AtomProviderAppServiceTest {
 
     /**
      * @tpTestDetails Check unmarshalling
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void unmarshallAppService() throws Exception {

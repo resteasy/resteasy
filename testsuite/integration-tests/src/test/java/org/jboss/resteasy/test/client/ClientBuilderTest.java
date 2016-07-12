@@ -19,7 +19,7 @@ import javax.ws.rs.core.FeatureContext;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Unit tests
- * @tpSince EAP 7.0.1
+ * @tpSince RESTEasy 3.0.17
  */
 @RunWith(Arquillian.class)
 public class ClientBuilderTest {
@@ -48,7 +48,7 @@ public class ClientBuilderTest {
     /**
      * @tpTestDetails Register class twice to the client
      * @tpPassCrit Warning will be raised that second class registration is ignored
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testDoubleClassRegistration() {
@@ -65,7 +65,7 @@ public class ClientBuilderTest {
     /**
      * @tpTestDetails Register provider instance twice to the client
      * @tpPassCrit Warning will be raised that second provider instance registration is ignored
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     @Category({NotForForwardCompatibility.class})

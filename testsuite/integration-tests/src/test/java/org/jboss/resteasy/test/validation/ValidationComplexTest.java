@@ -84,7 +84,7 @@ import java.util.Map;
  * @tpSubChapter Response
  * @tpChapter Integration tests
  * @tpTestCaseDetails Complex basic test for Resteasy Validator Provider
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class ValidationComplexTest {
@@ -260,7 +260,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Valid field test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFieldValid() throws Exception {
@@ -272,7 +272,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Invalid field test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFieldInvalid() throws Exception {
@@ -291,7 +291,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Valid property test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPropertyValid() throws Exception {
@@ -303,7 +303,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Invalid property test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPropertyInvalid() throws Exception {
@@ -321,7 +321,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Field and property validation test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFieldAndProperty() throws Exception {
@@ -349,7 +349,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Check class constraints
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testClassConstraint() throws Exception {
@@ -375,7 +375,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Graph test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGraph() throws Exception {
@@ -410,7 +410,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Validation of array
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testArray() throws Exception {
@@ -435,7 +435,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Validation of list
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testList() throws Exception {
@@ -460,7 +460,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Validation of map
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMap() throws Exception {
@@ -485,7 +485,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Validation of map of list of array of string
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMapOfListOfArrayOfStrings() throws Exception {
@@ -511,7 +511,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Test parameters validation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testParameters() throws Exception {
@@ -610,7 +610,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Test return value validation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testReturnValues() throws Exception {
@@ -686,7 +686,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Check validations before checking return value
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testViolationsBeforeReturnValue() throws Exception {
@@ -724,7 +724,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Validation in inheritence classes
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("basicDeploymentInterfaceTestSub")
@@ -810,7 +810,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Locators validation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLocators() throws Exception {
@@ -901,7 +901,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Validation with asynchronous requests
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAsynch() throws Exception {
@@ -985,7 +985,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Validation by cross-parameter constraints
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCrossParameterConstraint() throws Exception {
@@ -1016,7 +1016,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Validation with client proxies
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testProxy() throws Exception {
@@ -1053,7 +1053,7 @@ public class ValidationComplexTest {
 
     /**
      * @tpTestDetails Check other groups validation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testOtherGroups() throws Exception {

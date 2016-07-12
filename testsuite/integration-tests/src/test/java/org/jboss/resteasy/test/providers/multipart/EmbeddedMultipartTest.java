@@ -27,7 +27,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Multipart provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-929
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -48,7 +48,7 @@ public class EmbeddedMultipartTest {
 
     /**
      * @tpTestDetails Test embedded part of multipart message
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEmbedded() {
@@ -67,7 +67,7 @@ public class EmbeddedMultipartTest {
 
     /**
      * @tpTestDetails Test complete multipart message
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCustomer() {
@@ -84,7 +84,7 @@ public class EmbeddedMultipartTest {
 
     /**
      * @tpTestDetails Test exception in embedded multipart message
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInvalid() {

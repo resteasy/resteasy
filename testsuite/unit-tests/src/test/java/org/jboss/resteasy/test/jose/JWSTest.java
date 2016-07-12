@@ -29,7 +29,7 @@ import static org.hamcrest.CoreMatchers.containsString;
  * @tpSubChapter Jose tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for JWS
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JWSTest {
@@ -40,7 +40,7 @@ public class JWSTest {
 
     /**
      * @tpTestDetails Header serialization test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testHeaderSerialization() throws Exception {
@@ -61,7 +61,7 @@ public class JWSTest {
 
     /**
      * @tpTestDetails Basic RSA test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRSA() throws Exception {
@@ -82,7 +82,7 @@ public class JWSTest {
 
     /**
      * @tpTestDetails RSA with content type test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRSAWithContentType() throws Exception {
@@ -105,7 +105,7 @@ public class JWSTest {
 
     /**
      * @tpTestDetails HMAC with ContentType test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testHMACWithContentType() throws Exception {

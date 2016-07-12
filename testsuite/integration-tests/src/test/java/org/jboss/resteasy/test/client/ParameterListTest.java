@@ -32,7 +32,7 @@ import java.util.TreeSet;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Regression for RESTEASY-756
  */
 @RunWith(Arquillian.class)
@@ -71,7 +71,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails Old client: set matrix param by URL and by matrixParameter function
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMatrixOldClient() throws Exception {
@@ -84,7 +84,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails Old client: set query param by URL and by queryParameter function
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testQueryOldClient() throws Exception {
@@ -97,7 +97,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails New client: set matrix param by URL and by matrixParam function
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMatrixNewClient() throws Exception {
@@ -108,7 +108,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails New client: set query param by URL and by queryParam function
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testQueryNewClient() throws Exception {
@@ -120,7 +120,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails Old client: check settings of matrix list by proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @SuppressWarnings("unchecked")
     @Test
@@ -137,7 +137,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails Old client: check settings of matrix set by proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @SuppressWarnings("unchecked")
     @Test
@@ -154,7 +154,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails Old client: check settings of matrix sorted set by proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @SuppressWarnings("unchecked")
     @Test
@@ -171,7 +171,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails Old client: check settings of matrix list and other parameter by proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @SuppressWarnings("unchecked")
     @Test
@@ -188,7 +188,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails Old client: check settings of query list by proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @SuppressWarnings("unchecked")
     @Test
@@ -205,7 +205,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails Old client: check settings of query set by proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @SuppressWarnings("unchecked")
     @Test
@@ -222,7 +222,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails Old client: check settings of query sorted set by proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @SuppressWarnings("unchecked")
     @Test
@@ -239,7 +239,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails Old client: check settings of query list with other parameter by proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @SuppressWarnings("unchecked")
     @Test
@@ -256,7 +256,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails Old client: check settings of query list, matrix list and other parameter by proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @SuppressWarnings("unchecked")
     @Test
@@ -278,7 +278,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails New client: check settings of matrix list by proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMatrixProxyListNewClient() throws Exception {
@@ -296,7 +296,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails New client: check settings of matrix set by proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMatrixProxySetNewClient() throws Exception {
@@ -313,7 +313,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails New client: check settings of matrix sorted set by proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMatrixProxySortedSetNewClient() throws Exception {
@@ -330,7 +330,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails New client: check settings of matrix list and other parameter by proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMatrixWithEntityProxyNewClient() throws Exception {
@@ -347,7 +347,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails New client: check settings of query list by proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testQueryProxyListNewClient() throws Exception {
@@ -364,7 +364,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails New client: check settings of query set by proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testQueryProxySetNewClient() throws Exception {
@@ -381,7 +381,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails New client: check settings of query sorted set by proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testQueryProxySortedSetNewClient() throws Exception {
@@ -398,7 +398,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails New client: check settings of query list with other parameter by proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testQueryWithEntityProxyNewClient() throws Exception {
@@ -415,7 +415,7 @@ public class ParameterListTest {
 
     /**
      * @tpTestDetails New client: check settings of query list, matrix list and other parameter by proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMatrixQueryWithEntityProxyNewClient() throws Exception {

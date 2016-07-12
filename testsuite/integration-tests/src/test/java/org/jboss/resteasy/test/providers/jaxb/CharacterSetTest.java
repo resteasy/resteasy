@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -58,7 +58,7 @@ public class CharacterSetTest {
 
     /**
      * @tpTestDetails Tests if correct Variant is chosen for given combination of mediatype xml and charsets.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void variantSelection() throws URISyntaxException {

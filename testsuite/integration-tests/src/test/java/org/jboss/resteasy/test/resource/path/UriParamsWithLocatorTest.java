@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter UriParamsWithLocatorResource
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Test that a locator and resource with same path params work
  */
 @RunWith(Arquillian.class)
@@ -59,7 +59,7 @@ public class UriParamsWithLocatorTest {
 
     /**
      * @tpTestDetails CTest double ID as String in resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDoubleId() throws Exception {
@@ -71,7 +71,7 @@ public class UriParamsWithLocatorTest {
 
     /**
      * @tpTestDetails CTest double ID as PathSegment in resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDoubleIdAsPathSegment() throws Exception {

@@ -38,7 +38,7 @@ import static org.hamcrest.CoreMatchers.containsString;
  * @tpSubChapter Validation
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for JBEAP-3280
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -73,7 +73,7 @@ public class ValidationJaxbTest {
 
     /**
      * @tpTestDetails Raw XML check.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRawXML() throws Exception {
@@ -82,7 +82,7 @@ public class ValidationJaxbTest {
 
     /**
      * @tpTestDetails Raw JSON check.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRawJSON() throws Exception {
@@ -91,7 +91,7 @@ public class ValidationJaxbTest {
 
     /**
      * @tpTestDetails ViolationReport from XML check.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXML() throws Exception {
@@ -100,7 +100,7 @@ public class ValidationJaxbTest {
 
     /**
      * @tpTestDetails ViolationReport from JSON check.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJSON() throws Exception {

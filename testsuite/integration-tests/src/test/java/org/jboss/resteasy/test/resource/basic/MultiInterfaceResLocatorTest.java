@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.resource.basic;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -25,13 +23,11 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Resources
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class MultiInterfaceResLocatorTest {
-
-    protected static final Logger logger = LogManager.getLogger(MultiInterfaceResLocatorTest.class.getName());
 
     @Deployment
     public static Archive<?> deploy() {
@@ -47,20 +43,18 @@ public class MultiInterfaceResLocatorTest {
 
     /**
      * @tpTestDetails Test for resource with more interfaces.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void test() throws Exception {
         Client client = new ResteasyClientBuilder().build();
         Response response = client.target(generateURL("/test/hello1/")).request().get();
         String entity = response.readEntity(String.class);
-        logger.info("Received first response: " + entity);
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         Assert.assertEquals("Wrong content of response", "resourceMethod1", entity);
 
         response = client.target(generateURL("/test/hello2/")).request().get();
         entity = response.readEntity(String.class);
-        logger.info("Received second response: " + entity);
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         Assert.assertEquals("Wrong content of response", "resourceMethod2", entity);
     }

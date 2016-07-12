@@ -43,7 +43,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter CDI
  * @tpChapter Integration tests
  * @tpTestCaseDetails EJB and RESTEasy integration test.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class EJBTest {
@@ -95,7 +95,7 @@ public class EJBTest {
     /**
      * @tpTestDetails Verify that EJBBookReaderImpl, EJBBookWriterImpl, and EJBBookResource
      *                are placed in the correct scope.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testVerifyScopesJaxRs() throws Exception {
@@ -110,7 +110,7 @@ public class EJBTest {
     /**
      * @tpTestDetails Verify that EJBBookReaderImpl, EJBBookWriterImpl, and EJBBookResource
      *                are placed in the correct scope on local.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testVerifyScopesLocalEJB() throws Exception {
@@ -122,7 +122,7 @@ public class EJBTest {
     /**
      * @tpTestDetails Verify that EJBBookReaderImpl, EJBBookWriterImpl, and EJBBookResource
      *                are placed in the correct scope on remote.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testVerifyScopesRemoteEJB() throws Exception {
@@ -139,7 +139,7 @@ public class EJBTest {
     /**
      * @tpTestDetails Verify that EJBBookReader and EJBBookWriterImpl are correctly injected
      *                into EJBBookResource.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testVerifyInjectionJaxRs() throws Exception {
@@ -153,7 +153,7 @@ public class EJBTest {
     /**
      * @tpTestDetails Verify that EJBBookReader and EJBBookWriterImpl are correctly injected
      *                into EJBBookResource.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testVerifyInjectionLocalEJB() throws Exception {
@@ -166,7 +166,7 @@ public class EJBTest {
     /**
      * @tpTestDetails Verify that EJBBookReader and EJBBookWriterImpl are correctly injected
      *                into EJBBookResource.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testVerifyInjectionRemoteEJB() throws Exception {
@@ -182,7 +182,7 @@ public class EJBTest {
 
     /**
      * @tpTestDetails Further addresses the use of EJBs as JAX-RS components.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAsJaxRSResource() throws Exception {
@@ -242,7 +242,7 @@ public class EJBTest {
 
     /**
      * @tpTestDetails Invokes additional methods of JAX-RS resource as local EJB.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAsLocalEJB() throws Exception {
@@ -279,7 +279,7 @@ public class EJBTest {
 
     /**
      * @tpTestDetails Invokes additional methods of JAX-RS resource as remote EJB.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAsRemoteEJB() throws Exception {

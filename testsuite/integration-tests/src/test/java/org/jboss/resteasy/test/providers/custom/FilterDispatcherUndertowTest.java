@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-903
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -44,7 +44,7 @@ public class FilterDispatcherUndertowTest {
      * @tpTestDetails Server should be able to forward a HttpServletRequest/HttpServletResponse captured
      *                using the @Context annotation on a member variables inside a resource class.
      * @tpPassCrit Response should have code 200.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testUndertow() throws Exception {

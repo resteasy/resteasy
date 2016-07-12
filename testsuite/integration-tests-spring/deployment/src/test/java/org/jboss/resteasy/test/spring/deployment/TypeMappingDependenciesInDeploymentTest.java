@@ -30,7 +30,7 @@ import static org.junit.Assert.assertEquals;
  * @tpChapter Integration tests - dependencies included in deployment
  * @tpTestCaseDetails Test extension mapping by ResteasyDeployment property mediaTypeMappings.
  * Logic of this test is in spring-typemapping-test-server.xml
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -78,7 +78,7 @@ public class TypeMappingDependenciesInDeploymentTest {
 
     /**
      * @tpTestDetails Test various option of type mapping.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @Category({ ExpectedFailing.class, NotForForwardCompatibility.class})

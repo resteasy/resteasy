@@ -9,7 +9,7 @@ import org.junit.Test;
  * @tpSubChapter Injection tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for correct injection in registered custom provider.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class ProviderInjectionTest {
     private static final String ERROR_MSG = String.format("%s provider was not successfully registered.",
@@ -17,7 +17,7 @@ public class ProviderInjectionTest {
 
     /**
      * @tpTestDetails Test for injected HttpHeaders and Providers
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCacheControl() {

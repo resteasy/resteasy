@@ -25,7 +25,7 @@ import java.net.URISyntaxException;
 /**
  * @tpSubChapter Resource
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.1
+ * @tpSince RESTEasy 3.0.17
  * @tpTestCaseDetails Regression test for JBEAP-4698
  */
 @RunWith(Arquillian.class)
@@ -45,7 +45,7 @@ public class TrailingSlashTest {
 
     /**
      * @tpTestDetails Simple construction of ResteasyUriInfo.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void oneArgConstructorTest() throws Exception {
@@ -64,7 +64,7 @@ public class TrailingSlashTest {
 
     /**
      * @tpTestDetails ResteasyUriInfo is based of two URIs.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void twoArgConstructorTest() throws Exception {
@@ -88,7 +88,7 @@ public class TrailingSlashTest {
 
     /**
      * @tpTestDetails ResteasyUriInfo is based on queryString and contextPath.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void threeArgConstructorTest() throws Exception {
@@ -108,7 +108,7 @@ public class TrailingSlashTest {
 
     /**
      * @tpTestDetails No slash at the end of URI
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testNoSlash() {
@@ -121,7 +121,7 @@ public class TrailingSlashTest {
 
     /**
      * @tpTestDetails Slash at the end of URI
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     @Category({NotForForwardCompatibility.class})

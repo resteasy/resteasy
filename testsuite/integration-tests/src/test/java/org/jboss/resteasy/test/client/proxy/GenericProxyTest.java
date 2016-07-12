@@ -27,7 +27,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1047.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -57,7 +57,7 @@ public class GenericProxyTest {
 
     /**
      * @tpTestDetails Test generic proxy in client.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEcho() {
@@ -71,7 +71,7 @@ public class GenericProxyTest {
 
     /**
      * @tpTestDetails Test generic proxy in client.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEchoNoProxy() {

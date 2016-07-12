@@ -26,7 +26,7 @@ import javax.ws.rs.Produces;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -82,7 +82,7 @@ public class SubResourceLocatorProxyTest {
      * @tpTestDetails Client sends request thru client proxy. The processing of the response goes first to the Book
      * resource which creates Chapter subresource and creates the response.
      * @tpPassCrit Expected string is returned in the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSubresourceProxy() throws Exception {

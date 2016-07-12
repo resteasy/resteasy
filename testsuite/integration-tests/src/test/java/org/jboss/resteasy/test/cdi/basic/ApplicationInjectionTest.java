@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter CDI
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for injecting of Application
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class ApplicationInjectionTest {
@@ -28,7 +28,7 @@ public class ApplicationInjectionTest {
 
     /**
      * @tpTestDetails Injected application instance should not be null.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAppInjection() throws Exception {

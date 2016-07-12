@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter Configuration
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1049
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -43,7 +43,7 @@ public class FilterTest {
 
     /**
      * @tpTestDetails Test for dynamic dispatching in servlet.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDispatchDynamic() throws Exception {

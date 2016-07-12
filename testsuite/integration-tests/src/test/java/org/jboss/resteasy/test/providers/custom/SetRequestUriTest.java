@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -56,7 +56,7 @@ public class SetRequestUriTest {
      * @tpTestDetails Client sends GET request with https protocol uri. The resource has injected UriInfo and returns
      * response containing absolute path of the uri from the request.
      * @tpPassCrit The response code status is changed to 200 (SUCCESS) and the absolute uri matches the original request
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSchemaChange() {
@@ -72,7 +72,7 @@ public class SetRequestUriTest {
      * @tpTestDetails Client sends GET request with https protocol uri. The resource has injected UriInfo and returns
      * response containing absolute path of the uri from the request.
      * @tpPassCrit The response code status is changed to 200 (SUCCESS) and the absolute uri matches the original request
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testUriOverride() {
@@ -86,7 +86,7 @@ public class SetRequestUriTest {
      * RequestFilter which applies to all requests not matter if the resource exists on the server. The RequestFilter
      * processes the request aborts processing of the request and sends response back to the client.
      * @tpPassCrit The response code status is 200 (SUCCESS) and the absolute uri is changed by RequestFilter
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testUriOverride2() {

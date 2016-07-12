@@ -10,13 +10,13 @@ import java.util.List;
 /**
  * @tpSubChapter Media type
  * @tpChapter Unit tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class MediaTypeMapTest {
 
     /**
      * @tpTestDetails Test to add media types into MediaTypeMap
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMatching() {

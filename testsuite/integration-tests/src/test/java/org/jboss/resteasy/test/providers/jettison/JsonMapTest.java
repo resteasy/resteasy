@@ -26,13 +26,13 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Jettison provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class JsonMapTest {
 
-    protected static final Logger logger = Logger.getLogger(JsonMapTest.class.getName());
+    protected final Logger logger = Logger.getLogger(JsonMapTest.class.getName());
 
     static ResteasyClient client;
 
@@ -52,6 +52,7 @@ public class JsonMapTest {
     @After
     public void after() throws Exception {
         client.close();
+        client = null;
     }
 
     private String generateURL(String path) {
@@ -62,7 +63,7 @@ public class JsonMapTest {
      * @tpTestDetails Client sends GET request for json resource. The response should be processed with jettison provider.
      * The json map is send as entity with the POST request.
      * @tpPassCrit The response returned successfully
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testProvider() throws Exception {
@@ -88,7 +89,7 @@ public class JsonMapTest {
      * @tpTestDetails Client sends POST request for json resource. The response should be processed with jettison provider.
      * The entity in the resource is empty map.
      * @tpPassCrit The response returned successfully
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEmptyMap() throws Exception {

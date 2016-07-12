@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.xxe;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -33,12 +31,11 @@ import java.util.Map;
  * @tpSubChapter XXE
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-996
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class NamespaceJaxbTest {
-    protected static final Logger logger = LogManager.getLogger(NamespaceJaxbTest.class.getName());
     protected static ResteasyClient client;
     protected static final String WRONG_RESPONSE_ERROR_MSG = "Response has wrong content";
     @Deployment
@@ -66,7 +63,7 @@ public class NamespaceJaxbTest {
 
     /**
      * @tpTestDetails Check XML root element
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlRootElement() throws Exception {
@@ -76,13 +73,12 @@ public class NamespaceJaxbTest {
         Response response = target.request().post(Entity.entity(movie, "application/xml"));
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
-        logger.info("Result: " + entity);
         Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "La Regle du Jeu", entity);
     }
 
     /**
      * @tpTestDetails Check XML type
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlType() throws Exception {
@@ -92,30 +88,27 @@ public class NamespaceJaxbTest {
         Response response = target.request().post(Entity.entity(movie, "application/xml"));
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
-        logger.info("Result: " + entity);
         Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "La Cage Aux Folles", entity);
     }
 
     /**
      * @tpTestDetails Check JAXB element
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJAXBElement() throws Exception {
         ResteasyWebTarget target = client.target(generateURL("/JAXBElement"));
         String str = "<?xml version=\"1.0\"?>\r" +
                 "<favoriteMovieXmlType xmlns=\"http://abc.com\"><title>La Cage Aux Folles</title></favoriteMovieXmlType>";
-        logger.info(str);
         Response response = target.request().post(Entity.entity(str, "application/xml"));
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
-        logger.info("Result: " + entity);
         Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "La Cage Aux Folles", entity);
     }
 
     /**
      * @tpTestDetails Check list
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testList() throws Exception {
@@ -124,7 +117,7 @@ public class NamespaceJaxbTest {
 
     /**
      * @tpTestDetails Check set
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSet() throws Exception {
@@ -133,7 +126,7 @@ public class NamespaceJaxbTest {
 
     /**
      * @tpTestDetails Check array
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testArray() throws Exception {
@@ -142,7 +135,7 @@ public class NamespaceJaxbTest {
 
     /**
      * @tpTestDetails Check map
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMap() throws Exception {
@@ -156,11 +149,9 @@ public class NamespaceJaxbTest {
                 "<favoriteMovieXmlRootElement><title>La Cage Aux Folles</title></favoriteMovieXmlRootElement>" +
                 "<favoriteMovieXmlRootElement><title>La Regle du Jeu</title></favoriteMovieXmlRootElement>" +
                 "</collection>";
-        logger.info(str);
         Response response = target.request().post(Entity.entity(str, "application/xml"));
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
-        logger.info("Result: " + entity);
         if (entity.indexOf("Cage") < entity.indexOf("Regle")) {
             Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, "/La Cage Aux Folles/La Regle du Jeu", entity);
         } else {
@@ -179,11 +170,9 @@ public class NamespaceJaxbTest {
                 "<favoriteMovieXmlRootElement><title>La Regle du Jeu</title></favoriteMovieXmlRootElement>" +
                 "</entry>" +
                 "</map>";
-        logger.info(str);
         Response response = target.request().post(Entity.entity(str, "application/xml"));
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
-        logger.info("Result: " + entity);
         boolean result = false;
         if ("/La Cage Aux Folles/La Regle du Jeu".equals(entity)) {
             result = true;

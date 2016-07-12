@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter CDI
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test bean injection from jar lib to war in ear.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -65,7 +65,7 @@ public class EjbjarLibIntoWarLibTest {
 
     /**
      * @tpTestDetails Test bean injection from jar lib to war in ear.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testModules() throws Exception {

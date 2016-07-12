@@ -37,7 +37,7 @@ import java.io.Reader;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -85,7 +85,7 @@ public class ResourceMatchingTest {
      * @tpTestDetails Client sends GET request, the returned response Mediatype is APPLICATION_SVG_XML_TYPE as set up
      * by the custom MessageBodyWriter.
      * @tpPassCrit The correct mediatype and response code 200 (Success) is returned
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMediaTypeFromProvider() {
@@ -100,7 +100,7 @@ public class ResourceMatchingTest {
      * @tpTestDetails Client sends GET request, the returned response Mediatype is APPLICATION_OCTET_STREAM_TYPE as
      * set up by the custom MessageBodyWriter.
      * @tpPassCrit The correct mediatype and response code 200 (Success) is returned
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNoProduces() {
@@ -117,7 +117,7 @@ public class ResourceMatchingTest {
      * "HTTP/1.1 servers are allowed to return responses which are not acceptable according to the accept headers
      * sent in the request."
      * @tpPassCrit The response code 406 (Not Acceptable) is returned
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNonConcreteMatch() {
@@ -130,7 +130,7 @@ public class ResourceMatchingTest {
     /**
      * @tpTestDetails Client sends GET request, with header accept type "testi/*", the more specific resource is chosen
      * @tpPassCrit The response code 200 (Success) is returned and the correct resource is chosen
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testWildcard() {
@@ -145,7 +145,7 @@ public class ResourceMatchingTest {
      * "application/xml" media type has in the resource higher probability to be chosen (indicates that by higher "qs"
      * than other resources)
      * @tpPassCrit The returned resource is the resource with media type "application/xml"
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testQS() {
@@ -158,7 +158,7 @@ public class ResourceMatchingTest {
     /**
      * @tpTestDetails Client sends empty POST request, with specified header Content-Type "text/plain",
      * @tpPassCrit The correct subresource is chosen
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testOverride() {
@@ -173,7 +173,7 @@ public class ResourceMatchingTest {
      * @tpTestDetails Client sends OPTIONS request, which allows it to determine which HTTP methods it can issue without
      * initiating resource retrieval.
      * @tpPassCrit The response code 200 (Success) is returned and response contains GET option.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testOptions() {
@@ -188,7 +188,7 @@ public class ResourceMatchingTest {
      * @tpTestDetails Client sends empty POST request with mediatype q parameter specified. It gives higher weight (q=0.9)
      * to a mediatype "application/*" then to mediatype "application/xml" (q=0.1).
      * @tpPassCrit The more specific mediatype will be chosen by the server ("application/xml")
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAvoidWildcard() {

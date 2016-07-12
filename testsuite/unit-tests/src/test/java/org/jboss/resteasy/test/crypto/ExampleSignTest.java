@@ -20,7 +20,7 @@ import java.security.spec.X509EncodedKeySpec;
  * @tpSubChapter Crypto
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for sign by PKCS8EncodedKeySpec and X509EncodedKeySpec.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class ExampleSignTest {
     static final String publicFileS = TestUtil.getResourcePath(ExampleSignTest.class, "ExampleSignPublicDkimKey.pem");
@@ -57,7 +57,7 @@ public class ExampleSignTest {
 
     /**
      * @tpTestDetails Check pem file
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPemFiles() throws Exception {

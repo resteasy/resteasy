@@ -26,7 +26,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Response
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for internationalization of hibernate validator
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -56,7 +56,7 @@ public class ValidationHibernateI18NTest {
 
     /**
      * @tpTestDetails Test two languages.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testI18NSetAcceptLanguage() throws Exception {

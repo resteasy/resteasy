@@ -27,7 +27,7 @@ import java.util.List;
  * @tpSubChapter Multipart provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for JBEAP-1795
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class GenericTypeMultipartTest {
@@ -48,7 +48,7 @@ public class GenericTypeMultipartTest {
 
     /**
      * @tpTestDetails List is in request.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGenericType() throws Exception {

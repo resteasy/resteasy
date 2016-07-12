@@ -41,7 +41,7 @@ import javax.ws.rs.core.Response;
  * @tpChapter Integration tests - dependencies included in deployment
  * @tpTestCaseDetails This class tests a gamut of Spring related functionality including @Configuration beans, @Autowired,
  * scanned beans, interceptors and overall integration between RESTEasy and the Spring ApplicationContext.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -92,7 +92,7 @@ public class SpringBeanProcessorDependenciesInDeploymentTest {
 
     /**
      * @tpTestDetails Tests org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator integration with Resteasy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAutoProxy() throws Exception {
@@ -104,7 +104,7 @@ public class SpringBeanProcessorDependenciesInDeploymentTest {
 
     /**
      * @tpTestDetails Tests that resource bean defined in xml spring application context is registred by resourceBeanProcessor
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testProcessor() throws Exception {
@@ -117,7 +117,7 @@ public class SpringBeanProcessorDependenciesInDeploymentTest {
     /**
      * @tpTestDetails Tests that resource bean defined in xml spring application context with scope prototype
      * is registred by resourceBeanProcessor
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPrototyped() throws Exception {
@@ -134,7 +134,7 @@ public class SpringBeanProcessorDependenciesInDeploymentTest {
     /**
      * @tpTestDetails Tests that resource is automatically registered without defining it in spring application context
      * configuration file, but defined programatically with @Configuration annotation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRegistration() throws Exception {
@@ -147,7 +147,7 @@ public class SpringBeanProcessorDependenciesInDeploymentTest {
     /**
      * @tpTestDetails Tests that resource is automatically registered without defining it in spring application context
      * configuration file
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testScanned() throws Exception {
@@ -159,7 +159,7 @@ public class SpringBeanProcessorDependenciesInDeploymentTest {
 
     /**
      * @tpTestDetails Tests that resource is available when using @Autowired annotation for the service
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAutowiredProvider() throws Exception {

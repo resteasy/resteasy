@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Configuration
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for usage of more application in one deployment
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -56,7 +56,7 @@ public class ApplicationTest {
 
     /**
      * @tpTestDetails Test first application in deployment
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testExplicitA() throws Exception {
@@ -73,7 +73,7 @@ public class ApplicationTest {
 
     /**
      * @tpTestDetails Test second application in deployment
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testExplicitB() throws Exception {
@@ -90,7 +90,7 @@ public class ApplicationTest {
 
     /**
      * @tpTestDetails Test scanned application in deployment: getClasses method is not used.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testScanned() throws Exception {
@@ -105,7 +105,7 @@ public class ApplicationTest {
 
     /**
      * @tpTestDetails Test scanned application in deployment: getClasses method is not used. This application is mapped to different location.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMapped() throws Exception {

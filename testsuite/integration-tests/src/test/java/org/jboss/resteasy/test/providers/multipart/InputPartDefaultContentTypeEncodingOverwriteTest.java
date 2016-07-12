@@ -26,7 +26,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Multipart provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for default content type encoding of multipart provider
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -51,7 +51,7 @@ public class InputPartDefaultContentTypeEncodingOverwriteTest {
 
     /**
      * @tpTestDetails Test for old client
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testContentTypeOldClient() throws Exception {
@@ -71,7 +71,7 @@ public class InputPartDefaultContentTypeEncodingOverwriteTest {
 
     /**
      * @tpTestDetails Test for new client
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testContentTypeNewClient() throws Exception {

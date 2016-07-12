@@ -28,7 +28,7 @@ import java.util.List;
  * @tpSubChapter Crypto
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for response secured by PKCS7SignatureInput
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -60,7 +60,7 @@ public class PKCS7SignatureSmokeTest {
 
     /**
      * @tpTestDetails Get encoded data
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void encodedData() throws Exception {
@@ -73,7 +73,7 @@ public class PKCS7SignatureSmokeTest {
 
     /**
      * @tpTestDetails Get decoded data
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void decodedData() throws Exception {

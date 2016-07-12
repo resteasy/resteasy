@@ -24,7 +24,7 @@ import java.util.List;
  * @tpSubChapter Requests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for accepting correct method.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class AcceptTest {
     private static final String METHOD_ERROR_MESSAGE = "Unexpected method received";
@@ -43,7 +43,7 @@ public class AcceptTest {
 
     /**
      * @tpTestDetails Accepting GET method
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAcceptGet() throws Exception {
@@ -101,7 +101,7 @@ public class AcceptTest {
 
     /**
      * @tpTestDetails Accepting PUT method, schema attribute is added to media type
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testConsume() throws Exception {
@@ -120,7 +120,7 @@ public class AcceptTest {
 
     /**
      * @tpTestDetails Accepting updated PUT method, schema and q attributes are added to media type
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testConsume2() throws Exception {
@@ -141,7 +141,7 @@ public class AcceptTest {
 
     /**
      * @tpTestDetails Accepting PUT method, schema and q attributes are added to media type
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testConsume3() throws Exception {
@@ -162,7 +162,7 @@ public class AcceptTest {
 
     /**
      * @tpTestDetails Accepting wild card
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAcceptGetWildCard() throws Exception {
@@ -185,7 +185,7 @@ public class AcceptTest {
 
     /**
      * @tpTestDetails Accepting multiple values
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAcceptMultiple() throws Exception {
@@ -229,7 +229,7 @@ public class AcceptTest {
 
     /**
      * @tpTestDetails Test content type matching
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testContentTypeMatching() throws Exception {
@@ -262,7 +262,7 @@ public class AcceptTest {
 
     /**
      * @tpTestDetails Complex test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testComplex() throws Exception {

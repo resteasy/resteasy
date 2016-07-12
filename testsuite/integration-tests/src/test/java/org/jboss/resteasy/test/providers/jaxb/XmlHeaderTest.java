@@ -23,18 +23,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
-
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class XmlHeaderTest {
 
-    private static Logger logger = Logger.getLogger(XmlHeaderTest.class.getName());
+    private final Logger logger = Logger.getLogger(XmlHeaderTest.class.getName());
     static ResteasyClient client;
 
     @Deployment
@@ -52,6 +50,7 @@ public class XmlHeaderTest {
     @After
     public void after() throws Exception {
         client.close();
+        client = null;
     }
 
     private String generateURL(String path) {
@@ -61,7 +60,7 @@ public class XmlHeaderTest {
     /**
      * @tpTestDetails This tests decorators in general with the @XmlHeader annotation
      * @tpPassCrit The response contains expected xml-stylesheet header
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testHeader() throws Exception {
@@ -76,7 +75,7 @@ public class XmlHeaderTest {
     /**
      * @tpTestDetails This tests decorators in general with the @Stylesheet annotation
      * @tpPassCrit The response contains expected xml-stylesheet header
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testStylesheet() throws Exception {

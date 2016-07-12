@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Configuration
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for org.jboss.resteasy.annotations.cache.Cache class
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -55,7 +55,7 @@ public class CacheControlAnnotationTest {
 
     /**
      * @tpTestDetails Test for correct value of max-age of cache annotation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResourceValid() {
@@ -72,7 +72,7 @@ public class CacheControlAnnotationTest {
 
     /**
      * @tpTestDetails Test for no-cache settings
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResourceNoCach() {

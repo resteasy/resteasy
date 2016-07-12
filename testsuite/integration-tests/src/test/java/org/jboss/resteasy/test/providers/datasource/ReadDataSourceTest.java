@@ -26,7 +26,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter DataSource provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -58,7 +58,7 @@ public class ReadDataSourceTest {
      * @tpTestDetails Tests DataSourceProviders ability to read the same stream twice and verifies the results of both reads
      * are equal
      * @tpInfo RESTEASY-1182
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDataSourceInputStream() throws Exception {

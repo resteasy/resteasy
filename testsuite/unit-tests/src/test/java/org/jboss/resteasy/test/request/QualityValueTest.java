@@ -11,14 +11,14 @@ import static org.junit.Assert.*;
  * @tpSubChapter Requests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for QualityValue class and its base conversion
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class QualityValueTest {
 
     private static final String ERROR_MSG = "Wrong conversion";
     /**
      * @tpTestDetails Conversion of zero number.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void zero() {
@@ -31,7 +31,7 @@ public class QualityValueTest {
 
     /**
      * @tpTestDetails Conversion of one number.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void one() {
@@ -44,7 +44,7 @@ public class QualityValueTest {
 
     /**
      * @tpTestDetails Fraction conversion.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void fractions() {
@@ -57,7 +57,7 @@ public class QualityValueTest {
 
     /**
      * @tpTestDetails Check equivalent values.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void equivalent() {
@@ -67,7 +67,7 @@ public class QualityValueTest {
 
     /**
      * @tpTestDetails Check compareTo method.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void comparison() {
@@ -78,7 +78,7 @@ public class QualityValueTest {
 
     /**
      * @tpTestDetails Check 1.001 value.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = BadRequestException.class)
     public void tooLarge() {
@@ -87,7 +87,7 @@ public class QualityValueTest {
 
     /**
      * @tpTestDetails Check -0.001 value (exception expected).
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = BadRequestException.class)
     public void tooSmall() {
@@ -96,7 +96,7 @@ public class QualityValueTest {
 
     /**
      * @tpTestDetails Check 0.1234 value (exception expected).
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = BadRequestException.class)
     public void tooLong() {
@@ -105,7 +105,7 @@ public class QualityValueTest {
 
     /**
      * @tpTestDetails Check "" value (exception expected).
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = BadRequestException.class)
     public void tooShort() {
@@ -114,7 +114,7 @@ public class QualityValueTest {
 
     /**
      * @tpTestDetails Check 0,2F value (exception expected).
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = BadRequestException.class)
     public void wrongContent() {
@@ -123,7 +123,7 @@ public class QualityValueTest {
 
     /**
      * @tpTestDetails Check default value.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void nullContent() {
@@ -132,7 +132,7 @@ public class QualityValueTest {
 
     /**
      * @tpTestDetails Check numbers.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void numbers() {

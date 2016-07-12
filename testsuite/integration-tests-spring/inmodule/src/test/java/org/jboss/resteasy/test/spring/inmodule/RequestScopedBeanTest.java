@@ -30,7 +30,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter Spring
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test Spring request bean and RESTEasy integration
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -59,7 +59,7 @@ public class RequestScopedBeanTest {
 
     /**
      * @tpTestDetails Test request bean defined in xml spring settings
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBean() throws Exception {

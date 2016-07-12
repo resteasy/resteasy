@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
  * @tpSubChapter Util tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Basic unit test for Utilities class used for many CDI integration tests.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class UtilitiesTest {
     private static Logger log = Logger.getLogger(UtilitiesTest.class.getName());
@@ -38,7 +38,7 @@ public class UtilitiesTest {
 
     /**
      * @tpTestDetails Test for getQualifiers method.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetQualifiers() {
@@ -59,7 +59,7 @@ public class UtilitiesTest {
 
     /**
      * @tpTestDetails Test for hasQualifier method.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testHasQualifier() {
@@ -84,7 +84,7 @@ public class UtilitiesTest {
 
     /**
      * @tpTestDetails Test for getTypeClosure method.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testTypeClosure() throws Exception {
@@ -99,7 +99,7 @@ public class UtilitiesTest {
 
     /**
      * @tpTestDetails Test for isAnnotationPresent method.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @SuppressWarnings("serial")
     @Test

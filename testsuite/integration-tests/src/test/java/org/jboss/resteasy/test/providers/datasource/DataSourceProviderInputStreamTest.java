@@ -35,7 +35,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter DataSource provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for https://issues.jboss.org/browse/RESTEASY-779
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -55,7 +55,7 @@ public class DataSourceProviderInputStreamTest {
 
     /**
      * @tpTestDetails Check DataSource provider with RESTEasy client.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testDataSourceProviderRestClient() throws Exception {
@@ -90,7 +90,7 @@ public class DataSourceProviderInputStreamTest {
 
     /**
      * @tpTestDetails Check DataSource provider with Apache client.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDataSourceProvider() throws Exception {

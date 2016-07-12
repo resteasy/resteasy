@@ -15,13 +15,13 @@ import java.util.List;
  * @tpSubChapter Requests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for javax.ws.rs.core.MediaType class.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class MediaTypeTest {
 
     /**
      * @tpTestDetails Test for MediaType parsing.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testParsing() {
@@ -80,7 +80,7 @@ public class MediaTypeTest {
 
     /**
      * @tpTestDetails Test for MediaType sorting.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSort() {
@@ -133,7 +133,7 @@ public class MediaTypeTest {
 
     /**
      * @tpTestDetails Test for MediaType sorting with weight
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testWeightedSort() {
@@ -187,7 +187,7 @@ public class MediaTypeTest {
 
     /**
      * @tpTestDetails Test for MediaType composition
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testComposite() {

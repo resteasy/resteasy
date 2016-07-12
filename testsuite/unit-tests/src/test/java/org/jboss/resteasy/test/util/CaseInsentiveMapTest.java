@@ -8,13 +8,13 @@ import org.junit.Test;
  * @tpSubChapter Util tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for CaseInsensitiveMap class.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class CaseInsentiveMapTest {
 
     /**
      * @tpTestDetails Test for CaseInsensitiveMap class, key of map should be case insensitive.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMap() {

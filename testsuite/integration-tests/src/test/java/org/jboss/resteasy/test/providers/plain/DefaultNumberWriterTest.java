@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response;
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for DefaultNumberWriter provider.
  *                    Regression test for partial fix for JBEAP-2847.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class DefaultNumberWriterTest {
@@ -45,7 +45,7 @@ public class DefaultNumberWriterTest {
 
     /**
      * @tpTestDetails Tests Byte object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testByte() throws Exception {
@@ -60,7 +60,7 @@ public class DefaultNumberWriterTest {
 
     /**
      * @tpTestDetails Tests byte primitive
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBytePrimitive() throws Exception {
@@ -75,7 +75,7 @@ public class DefaultNumberWriterTest {
 
     /**
      * @tpTestDetails Tests Double object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDouble() throws Exception {
@@ -90,7 +90,7 @@ public class DefaultNumberWriterTest {
 
     /**
      * @tpTestDetails Tests double primitive
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDoublePrimitive() throws Exception {
@@ -105,7 +105,7 @@ public class DefaultNumberWriterTest {
 
     /**
      * @tpTestDetails Tests Float object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFloat() throws Exception {
@@ -120,7 +120,7 @@ public class DefaultNumberWriterTest {
 
     /**
      * @tpTestDetails Tests float primitive
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFloatPrimitive() throws Exception {
@@ -135,7 +135,7 @@ public class DefaultNumberWriterTest {
 
     /**
      * @tpTestDetails Tests Integer object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInteger() throws Exception {
@@ -150,7 +150,7 @@ public class DefaultNumberWriterTest {
 
     /**
      * @tpTestDetails Tests integer primitive
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIntegerPrimitive() throws Exception {
@@ -165,7 +165,7 @@ public class DefaultNumberWriterTest {
 
     /**
      * @tpTestDetails Tests Long object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLong() throws Exception {
@@ -180,7 +180,7 @@ public class DefaultNumberWriterTest {
 
     /**
      * @tpTestDetails Tests long primitive
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLongPrimitive() throws Exception {
@@ -195,7 +195,7 @@ public class DefaultNumberWriterTest {
 
     /**
      * @tpTestDetails Tests Short object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testShort() throws Exception {
@@ -210,7 +210,7 @@ public class DefaultNumberWriterTest {
 
     /**
      * @tpTestDetails Tests short primitive
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testShortPrimitive() throws Exception {
@@ -225,7 +225,7 @@ public class DefaultNumberWriterTest {
 
     /**
      * @tpTestDetails Tests BigDecimal object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBigDecimal() throws Exception {
@@ -240,7 +240,7 @@ public class DefaultNumberWriterTest {
 
     /**
      * @tpTestDetails Tests BigDecimal object with register custom provider on client
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testProviderGetsUsed() throws Exception {

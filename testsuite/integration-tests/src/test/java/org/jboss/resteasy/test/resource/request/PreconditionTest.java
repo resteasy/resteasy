@@ -27,7 +27,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Resource
  * @tpChapter Integration tests
  * @tpTestCaseDetails Tests for preconditions specified in the header of the request
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -60,7 +60,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Sets header IF_UNMODIFIED_SINCE date before last modified
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfUnmodifiedSinceBeforeLastModified() {
@@ -76,7 +76,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Sets header IF_UNMODIFIED_SINCE date after last modified
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfUnmodifiedSinceAfterLastModified() {
@@ -92,7 +92,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Sets header IF_MODIFIED_SINCE date before last modified
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfModifiedSinceBeforeLastModified() {
@@ -108,7 +108,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Sets header IF_MODIFIED_SINCE date after last modified
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfModifiedSinceAfterLastModified() {
@@ -124,7 +124,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Sets headers IF_MODIFIED_SINCE and IF_UNMODIFIED_SINCE date before last modified
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfUnmodifiedSinceBeforeLastModified_IfModifiedSinceBeforeLastModified() {
@@ -141,7 +141,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Sets headers IF_MODIFIED_SINCE date after last modified and IF_UNMODIFIED_SINCE date before last modified
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfUnmodifiedSinceBeforeLastModified_IfModifiedSinceAfterLastModified() {
@@ -158,7 +158,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Sets headers IF_MODIFIED_SINCE and IF_UNMODIFIED_SINCE date after last modified
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfUnmodifiedSinceAfterLastModified_IfModifiedSinceAfterLastModified() {
@@ -175,7 +175,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Sets headers IF_MODIFIED_SINCE date before last modified and IF_UNMODIFIED_SINCE date after last modified
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfUnmodifiedSinceAfterLastModified_IfModifiedSinceBeforeLastModified() {
@@ -192,7 +192,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Sets header IF_MATCH to an entity value which matches to eTag in the resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfMatchWithMatchingETag() {
@@ -202,7 +202,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Sets header IF_MATCH to an entity value which doesn't match to eTag in the resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfMatchWithoutMatchingETag() {
@@ -212,7 +212,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Sets header IF_MATCH to a wildcard
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfMatchWildCard() {
@@ -222,7 +222,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Sets header IF_NONE_MATCH to an entity value which matches to eTag in the resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfNonMatchWithMatchingETag() {
@@ -232,7 +232,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Sets header IF_NONE_MATCH to an entity value which doesn't match to eTag in the resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfNonMatchWithoutMatchingETag() {
@@ -242,7 +242,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Sets header IF_NONE_MATCH to a wildcard
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfNonMatchWildCard() {
@@ -252,7 +252,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Sets header IF_NONE_MATCH and IF_MATCH to an entity value which matches to eTag in the resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfMatchWithMatchingETag_IfNonMatchWithMatchingETag() {
@@ -264,7 +264,7 @@ public class PreconditionTest {
     /**
      * @tpTestDetails Sets header IF_NONE_MATCH to an entity value which doesn't match to eTag in the resource
      * and IF_MATCH to an entity value which matches to eTag in the resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfMatchWithMatchingETag_IfNonMatchWithoutMatchingETag() {
@@ -275,7 +275,7 @@ public class PreconditionTest {
     /**
      * @tpTestDetails Sets header IF_NONE_MATCH to an entity value which matches to eTag in the resource
      * and IF_MATCH to an entity value which doesn't match to eTag in the resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfMatchWithoutMatchingETag_IfNonMatchWithMatchingETag() {
@@ -286,7 +286,7 @@ public class PreconditionTest {
     /**
      * @tpTestDetails Sets header IF_NONE_MATCH to an entity value which doesn't match to eTag in the resource
      * and IF_MATCH to an entity value which doesn't match to eTag in the resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfMatchWithoutMatchingETag_IfNonMatchWithoutMatchingETag() {
@@ -296,7 +296,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Sets header IF_MATCH to an weak eTag value which matches to eTag in the resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfMatchWithMatchingWeakETag() {
@@ -312,7 +312,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Sets header IF_MATCH to an weak eTag value which matches to eTag in the resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIfMatchWithNonMatchingWeakEtag() {
@@ -451,7 +451,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Response if all match
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testPrecedence_AllMatch() {
@@ -467,7 +467,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Response if all match without IF_MATCH
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testPrecedence_IfMatchWithNonMatchingEtag() {
@@ -483,7 +483,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Response if all match without IF_MATCH
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testPrecedence_IfMatchNotPresentUnmodifiedSinceBeforeLastModified() {
@@ -499,7 +499,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Response if IF_MATH is missing
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testPrecedence_IfNoneMatchWithMatchingEtag() {
@@ -513,7 +513,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Response if IF_MATH is missing and IF_NONE_MATCH don't match
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testPrecedence_IfNoneMatchWithNonMatchingEtag() {
@@ -527,7 +527,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Response if IF_MODIFIED_SINCE don't match
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testPrecedence_IfNoneMatchNotPresent_IfModifiedSinceBeforeLastModified() {
@@ -541,7 +541,7 @@ public class PreconditionTest {
 
     /**
      * @tpTestDetails Response if IF_MODIFIED_SINCE match
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testPrecedence_IfNoneMatchNotPresent_IfModifiedSinceAfterLastModified() {

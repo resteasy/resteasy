@@ -21,7 +21,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Regression test for RESTEASY-595
  */
 @RunWith(Arquillian.class)
@@ -37,7 +37,7 @@ public class ExceptionMapperWebRuntimeExceptionTest {
 
     /**
      * @tpTestDetails Check ExceptionMapper for WebApplicationException
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testWebAPplicationException() throws Exception {

@@ -32,7 +32,7 @@ import javax.ws.rs.ProcessingException;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -76,7 +76,7 @@ public class ResponseObjectTest {
     /**
      * @tpTestDetails Tests ResponseObject annotation on a client interface, invoking the request with deprecated ProxyFactory instance
      * @tpPassCrit The response contains the expected header
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSimpleProxyFactory() {
@@ -92,7 +92,7 @@ public class ResponseObjectTest {
      * @tpTestDetails Tests ResponseObject annotation on a client interface, and resource containg a Link object,
      * forwarding to another resource and invoking the request with deprecated ProxyFactory instance
      * @tpPassCrit The request was forwarded to another resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
         public void testLinkFollowProxyFactory() {
@@ -105,7 +105,7 @@ public class ResponseObjectTest {
     /**
      * @tpTestDetails Tests ResponseObject annotation on a client interface, invoking the request with ProxyBuilder instance
      * @tpPassCrit The response contains the expected header
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSimpleProxyBuilder() {
@@ -125,7 +125,7 @@ public class ResponseObjectTest {
      * @tpTestDetails Tests ResponseObject annotation on a client interface, and resource containg a Link object,
      * forwarding to another resource and invoking the request with ProxyBuilder instance
      * @tpPassCrit The request was forwarded to another resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLinkFollowProxyBuilder() {

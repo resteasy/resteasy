@@ -22,7 +22,7 @@ import static org.junit.Assert.fail;
  * @tpSubChapter Requests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for AcceptHeaders and QualityValue classes, media type.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class MediaTypeQualityValueTest {
 
@@ -36,7 +36,7 @@ public class MediaTypeQualityValueTest {
 
     /**
      * @tpTestDetails Test for simple values.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void simple() {
@@ -54,7 +54,7 @@ public class MediaTypeQualityValueTest {
 
     /**
      * @tpTestDetails Test for special parameters.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void parameters() {
@@ -72,7 +72,7 @@ public class MediaTypeQualityValueTest {
 
     /**
      * @tpTestDetails Test for unsupported extension.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void unsupportedExtension() {
@@ -84,7 +84,7 @@ public class MediaTypeQualityValueTest {
 
     /**
      * @tpTestDetails Test for bad requests.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void badRequests() {
@@ -111,7 +111,7 @@ public class MediaTypeQualityValueTest {
 
     /**
      * @tpTestDetails Test empty quality values.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void empty() {

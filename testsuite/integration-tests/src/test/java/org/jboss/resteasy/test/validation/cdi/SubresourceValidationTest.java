@@ -27,7 +27,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter Response
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1103
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -46,7 +46,7 @@ public class SubresourceValidationTest {
 
     /**
      * @tpTestDetails Test for subresources
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSubresource() throws Exception {
@@ -60,7 +60,7 @@ public class SubresourceValidationTest {
 
     /**
      * @tpTestDetails Test for validation of returned value
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testReturnValue() throws Exception {

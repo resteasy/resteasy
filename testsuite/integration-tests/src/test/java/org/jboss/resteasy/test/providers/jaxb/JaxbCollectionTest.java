@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -62,7 +62,7 @@ public class JaxbCollectionTest {
      * @tpTestDetails Client sends POST request with xml entity, the request is processed by resource, which can process
      * JAXB objects wrapped in collection element.
      * @tpPassCrit The Response contains correct number of elements and correct values
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNakedArray() throws Exception {
@@ -83,7 +83,7 @@ public class JaxbCollectionTest {
      * JAXB objects wrapped in collection element. The resource has changed the collection element name using @Wrapped
      * annotation on the resource to 'list'.
      * @tpPassCrit The Response contains correct number of elements and correct values
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testList() throws Exception {
@@ -104,7 +104,7 @@ public class JaxbCollectionTest {
      * @tpTestDetails Client sends POST request with xml entity, the request is processed by resource, which can process
      * JAXB objects wrapped in collection element. The XML element of name 'foo' has changed namespace to 'http://foo.com'.
      * @tpPassCrit The Response contains correct number of elements and correct values
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNamespacedNakedArray() throws Exception {
@@ -126,7 +126,7 @@ public class JaxbCollectionTest {
      * JAXB objects wrapped in collection element. The resource has changed the collection element name using @Wrapped
      * annotation on the resource to 'list'. The XML element of name 'foo' has changed namespace to 'http://foo.com'.
      * @tpPassCrit The Response contains correct number of elements and correct values
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNamespacedList() throws Exception {
@@ -145,7 +145,7 @@ public class JaxbCollectionTest {
     /**
      * @tpTestDetails Client sends POST request with xml entity containing wrong element name for collection.
      * @tpPassCrit Response with code BAD REQUEST
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBadList() throws Exception {

@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter CDI
  * @tpChapter Integration tests
  * @tpTestCaseDetails This class tests CDI inheritance (BookSelectedAlternative should be used)
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -52,7 +52,7 @@ public class AlternativeSelectedInheritanceTest {
     /**
      * @tpTestDetails Client get request. Resource check inheritance bean on server.
      * @tpPassCrit Response status should not contain error.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAlternative() throws Exception {

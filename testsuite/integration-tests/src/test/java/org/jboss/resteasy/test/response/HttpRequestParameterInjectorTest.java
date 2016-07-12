@@ -25,7 +25,7 @@ import javax.ws.rs.core.Form;
  * @tpSubChapter Localization
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for InjectorFactoryImpl. It is used for new type of parameters in resource.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -47,7 +47,7 @@ public class HttpRequestParameterInjectorTest {
 
     /**
      * @tpTestDetails New Client usage.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCustomInjectorFactory() throws Exception {
@@ -68,7 +68,7 @@ public class HttpRequestParameterInjectorTest {
 
     /**
      * @tpTestDetails Old Client usage.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCustomInjectorFactoryOldClient() throws Exception {

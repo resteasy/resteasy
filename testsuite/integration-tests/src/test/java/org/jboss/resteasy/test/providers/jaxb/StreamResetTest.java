@@ -29,13 +29,13 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class StreamResetTest {
 
-    private static Logger logger = Logger.getLogger(StreamResetTest.class);
+    private final Logger logger = Logger.getLogger(StreamResetTest.class);
 
     static ResteasyClient client;
 
@@ -55,6 +55,7 @@ public class StreamResetTest {
     @After
     public void after() throws Exception {
         client.close();
+        client = null;
     }
 
     private String generateURL(String path) {
@@ -63,7 +64,7 @@ public class StreamResetTest {
 
     /**
      * @tpTestDetails Regression test for JBEAP-2138.  BufferEntity method is called.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJBEAP2138() throws Exception {
@@ -83,7 +84,7 @@ public class StreamResetTest {
 
     /**
      * @tpTestDetails Regression test for JBEAP-2138.  BufferEntity method is not called.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJBEAP2138WithoutBufferedEntity() throws Exception {
@@ -110,7 +111,7 @@ public class StreamResetTest {
      * response from the server, the stream of the response must be reset before reading it again.
      * @tpPassCrit After exception is thrown the response is parsed correctly with getEntity()
      * @tpInfo RESTEASY-456
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testClientRequestResetStream() throws Exception {

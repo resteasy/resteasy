@@ -24,7 +24,7 @@ import java.util.List;
  * @tpSubChapter Crypto
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for DosetaKeyRepository without EAP and arquillian.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class LocalTest {
     protected static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(LocalTest.class.getName());

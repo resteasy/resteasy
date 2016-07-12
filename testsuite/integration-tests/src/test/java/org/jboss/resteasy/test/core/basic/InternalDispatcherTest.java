@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * @tpSubChapter Core
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Test for InternalDispatcher
  */
 @RunWith(Arquillian.class)
@@ -73,7 +73,7 @@ public class InternalDispatcherTest {
 
     /**
      * @tpTestDetails Check response of forwarded reuests.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testClientResponse() throws Exception {
@@ -104,7 +104,7 @@ public class InternalDispatcherTest {
      *                only 1 level of "context" data and that clean up occurred correctly.
      *                This should not spin forever, since RESTEasy stops the recursive loop
      *                after 20 internal dispatches
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInfinitForward() {
@@ -114,7 +114,7 @@ public class InternalDispatcherTest {
 
     /**
      * @tpTestDetails Check UriInfo information without forwarding
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testUriInfoBasic() {
@@ -127,7 +127,7 @@ public class InternalDispatcherTest {
 
     /**
      * @tpTestDetails Check UriInfo information with forwarding. This is also regression test for JBEAP-2476
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testUriInfoForwardBasic() throws Exception {
@@ -146,7 +146,7 @@ public class InternalDispatcherTest {
 
     /**
      * @tpTestDetails Regression test for JBEAP-2476
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testUriInfoForwardBasicComplexUri() {

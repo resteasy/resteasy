@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -79,7 +79,7 @@ public class LocatorSubResourceReturningThisTest {
      * @tpTestDetails Client sends GET request for the resource Locator, which returns itself. The Resource Locator here
      * extends the resource with HTTP methods annotations directly.
      * @tpPassCrit Correct response is returned from the server
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void LocatorWithSubWithPathAnnotationTest() {

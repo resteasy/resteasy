@@ -36,7 +36,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Asynchronous RESTEasy
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for asyncHttpServlet module. Check cooperation during more requests and exception mapping.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -71,7 +71,7 @@ public class JaxrsAsyncServletTest {
 
     /**
      * @tpTestDetails Check ForbiddenException throwing during async request. Try to inject un-exist bean.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInjectionFailure() throws Exception {
@@ -88,7 +88,7 @@ public class JaxrsAsyncServletTest {
 
     /**
      * @tpTestDetails Check ForbiddenException throwing during async request. No injection of some beans.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMethodFailure() throws Exception {
@@ -105,7 +105,7 @@ public class JaxrsAsyncServletTest {
 
     /**
      * @tpTestDetails Try to get xml response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAsync() throws Exception {
@@ -122,7 +122,7 @@ public class JaxrsAsyncServletTest {
 
     /**
      * @tpTestDetails Check timeout exception
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testTimeout() throws Exception {
@@ -135,7 +135,7 @@ public class JaxrsAsyncServletTest {
 
     /**
      * @tpTestDetails Test cooperation between two requests. Use 408 HTTP status.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCancel() throws Exception {
@@ -164,7 +164,7 @@ public class JaxrsAsyncServletTest {
 
     /**
      * @tpTestDetails Test cooperation between two requests. Use 200 HTTP status.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResumeObject() throws Exception {
@@ -182,7 +182,7 @@ public class JaxrsAsyncServletTest {
 
     /**
      * @tpTestDetails Create response in new thread.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResumeObjectThread() throws Exception {

@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter Core
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.1
+ * @tpSince RESTEasy 3.0.17
  * @tpTestCaseDetails Regression test for JBEAP-4719
  */
 @RunWith(Arquillian.class)
@@ -45,7 +45,7 @@ public class MissingProducerTest {
 
     /**
      * @tpTestDetails Check logs for RESTEASY002120 warning message.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     @Category({NotForForwardCompatibility.class})

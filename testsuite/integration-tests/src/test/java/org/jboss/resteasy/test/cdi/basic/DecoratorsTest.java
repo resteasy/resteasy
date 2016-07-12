@@ -47,7 +47,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter CDI
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for integration of RESTEasy and CDI decorators.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -78,7 +78,7 @@ public class DecoratorsTest {
 
     /**
      * @tpTestDetails Store Book to server, received it and check decorator usage.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDecorators() throws Exception {

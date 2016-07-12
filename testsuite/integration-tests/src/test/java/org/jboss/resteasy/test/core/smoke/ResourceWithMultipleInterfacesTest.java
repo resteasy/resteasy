@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Smoke tests for jaxrs
  * @tpChapter Integration tests
  * @tpTestCaseDetails Smoke test for resource with multiple interfaces.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -54,7 +54,7 @@ public class ResourceWithMultipleInterfacesTest {
 
     /**
      * @tpTestDetails Check result from resource with multiple interfaces.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNoDefaultsResource() throws Exception {

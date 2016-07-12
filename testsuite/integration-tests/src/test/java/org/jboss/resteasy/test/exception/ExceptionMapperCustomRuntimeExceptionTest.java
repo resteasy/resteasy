@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Regression test for RESTEASY-421
  */
 @RunWith(Arquillian.class)
@@ -43,7 +43,7 @@ public class ExceptionMapperCustomRuntimeExceptionTest {
     /**
      * @tpTestDetails Check ExceptionMapper for Custom RuntimeException. Check the response contains headers and entity
      * from custom exception mapper. Using Resteasy client.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMapperWithResteasyClient() throws Exception {
@@ -62,7 +62,7 @@ public class ExceptionMapperCustomRuntimeExceptionTest {
     /**
      * @tpTestDetails Check ExceptionMapper for Custom RuntimeException. Check the response contains headers and entity
      * from custom exception mapper. Using ClientRequest/ClientResponse.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMapperWithClientRequest() throws Exception {

@@ -32,7 +32,7 @@ import org.jboss.resteasy.utils.PortProviderUtil;
  * @tpSubChapter Response
  * @tpChapter Integration tests
  * @tpTestCaseDetails Tests that correct variant headers are returned in the response
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -65,7 +65,7 @@ public class VariantsTest {
 
     /**
      * @tpTestDetails Simple http GET conditional request
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void evaluatePreconditionsTagNullAndSimpleGetTest() {
@@ -81,7 +81,7 @@ public class VariantsTest {
     /**
      * @tpTestDetails PUT request is send, request selects best variant from the list od empty variants,
      * IllegalArgumentException is thrown
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void selectVariantPutRequestTest() {
@@ -94,7 +94,7 @@ public class VariantsTest {
 
     /**
      * @tpTestDetails GET request is send, test that variant is selected and response contains proper headers
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void selectVariantResponseVaryTest() {
@@ -114,7 +114,7 @@ public class VariantsTest {
 
     /**
      * @tpTestDetails Tests that variant preferred by client request by Accept-Language is selected
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetLanguageEn() throws Exception {
@@ -128,7 +128,7 @@ public class VariantsTest {
     /**
      * @tpTestDetails Tests that given wildcard client request by Accept-Language header returns some concrete language
      * header in the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetLanguageWildcard() throws Exception {
@@ -141,7 +141,7 @@ public class VariantsTest {
     /**
      * @tpTestDetails Tests that variant preferred by client request by Accept-Language is selected. Variant defined with
      * Locale("pt", "BR")
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetLanguageSubLocal() throws Exception {
@@ -154,7 +154,7 @@ public class VariantsTest {
 
     /**
      * @tpTestDetails Test that language variant which has 0 preference is not returned
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetLanguageZero() throws Exception {
@@ -166,7 +166,7 @@ public class VariantsTest {
 
     /**
      * @tpTestDetails Simple Get for with Accept-Language "zh". Lanfuage "zh" in the response is returned
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetLanguageZh() throws Exception {
@@ -180,7 +180,7 @@ public class VariantsTest {
     /**
      * @tpTestDetails Tests client request with multiple Accept-language preferences, check the most preferred language
      * is returned in the response
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetLanguageMultiple() throws Exception {
@@ -194,7 +194,7 @@ public class VariantsTest {
 
     /**
      * @tpTestDetails Verifies that a more specific media type is preferred.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetComplexAcceptLanguageEn() throws Exception {
@@ -210,7 +210,7 @@ public class VariantsTest {
 
     /**
      * @tpTestDetails Verifies that a more specific media type is preferred.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetComplexAcceptLanguageEnUs() throws Exception {
@@ -226,7 +226,7 @@ public class VariantsTest {
 
     /**
      * @tpTestDetails Test that expected variants are selected from list of multiple weighted content and language type.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetComplexShuffleAcceptMedia() throws Exception {
@@ -243,7 +243,7 @@ public class VariantsTest {
     /**
      * @tpTestDetails  Test that expected variants are selected from list of multiple weighted content and language type.
      * en-us with preference
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetComplexAcceptLanguageEnUsWithPreference() throws Exception {
@@ -259,7 +259,7 @@ public class VariantsTest {
 
     /**
      * @tpTestDetails Tests client request which has accept header which cannot be served by server.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetComplexNotAcceptable() throws Exception {
@@ -294,7 +294,7 @@ public class VariantsTest {
 
     /**
      * @tpTestDetails Tests client request with custom Accept-encoding
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetEncodingCustomEnc1() throws Exception {
@@ -309,7 +309,7 @@ public class VariantsTest {
 
     /**
      * @tpTestDetails Tests client request with custom Accept-encoding
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetEncodingCustomEnc2() throws Exception {
@@ -324,7 +324,7 @@ public class VariantsTest {
 
     /**
      * @tpTestDetails Tests client request with custom Accept-encoding
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetEncodingCustomEnc3() throws Exception {
@@ -339,7 +339,7 @@ public class VariantsTest {
 
     /**
      * @tpTestDetails Tests client request with custom Accept-encoding with preference specified
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetEncodingCustomPreference() throws Exception {
@@ -354,7 +354,7 @@ public class VariantsTest {
 
     /**
      * @tpTestDetails Tests client request with custom Accept-encoding with preference specified
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetEncodingCustomPreferenceZero() throws Exception {

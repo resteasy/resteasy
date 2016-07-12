@@ -26,7 +26,7 @@ import static org.hamcrest.CoreMatchers.containsString;
  * @tpSubChapter Jettison provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-244
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -57,7 +57,7 @@ public class JettisonMediaTypeTest {
 
     /**
      * @tpTestDetails Cannot provide charset MediaType with application/json
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCharset() throws Exception {

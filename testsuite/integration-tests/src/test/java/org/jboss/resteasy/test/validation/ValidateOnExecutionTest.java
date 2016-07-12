@@ -44,7 +44,7 @@ import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
 /**
  * @tpSubChapter Validator provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -125,7 +125,7 @@ public class ValidateOnExecutionTest {
     /**
      * @tpTestDetails Client sends various requests. Validation exceptions is expected.
      * @tpPassCrit Violation count should be correct according to resource definition.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment(MAIN)
@@ -219,7 +219,7 @@ public class ValidateOnExecutionTest {
     /**
      * @tpTestDetails Try to deploy invalid one level class.
      * @tpPassCrit ResteasyViolationException should be throws during deploying.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testValidateOnExecutionInvalidOneLevel_Class() throws Exception {
@@ -229,7 +229,7 @@ public class ValidateOnExecutionTest {
     /**
      * @tpTestDetails Try to deploy invalid two level class.
      * @tpPassCrit ResteasyViolationException should be throws during deploying.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testValidateOnExecutionInvalidTwoLevels_Class() throws Exception {
@@ -239,7 +239,7 @@ public class ValidateOnExecutionTest {
     /**
      * @tpTestDetails Try to deploy invalid one level interface.
      * @tpPassCrit ResteasyViolationException should be throws during deploying.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testValidateOnExecutionInvalidOneLevel_Interface() throws Exception {
@@ -249,7 +249,7 @@ public class ValidateOnExecutionTest {
     /**
      * @tpTestDetails Try to deploy invalid two level interface.
      * @tpPassCrit ResteasyViolationException should be throws during deploying.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testValidateOnExecutionInvalidTwoLevels_Interface() throws Exception {
@@ -259,7 +259,7 @@ public class ValidateOnExecutionTest {
     /**
      * @tpTestDetails Try to deploy invalid class (error is in overriding).
      * @tpPassCrit ResteasyViolationException should be throws during deploying.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testValidateOnExecutionInvalidGenericOverride_Class() throws Exception {
@@ -269,7 +269,7 @@ public class ValidateOnExecutionTest {
     /**
      * @tpTestDetails Try to deploy invalid interface (error is in overriding).
      * @tpPassCrit ResteasyViolationException should be throws during deploying.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testValidateOnExecutionInvalidGenericOverride_Interface() throws Exception {

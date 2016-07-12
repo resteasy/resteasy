@@ -21,7 +21,7 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -54,7 +54,7 @@ public class XmlEnumParamTest {
      * @tpTestDetails Tests xml enum param in the resource
      * @tpPassCrit The expected enum type is returned
      * @tpInfo RESTEASY-428
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlEnumParam() throws Exception {

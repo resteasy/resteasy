@@ -28,7 +28,7 @@ import java.lang.reflect.Type;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Regression test for RESTEASY-666
  */
 @RunWith(Arquillian.class)
@@ -58,7 +58,7 @@ public class AbstractExceptionMapperTest {
 
     /**
      * @tpTestDetails Correct exception mapper should be chosen when ExceptionMapper implement statement is in abstract class.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCustomUsed() {

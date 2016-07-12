@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test that empty QueryParam list is empty
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -52,7 +52,7 @@ public class CollectionDefaultValueTest {
 
     /**
      * @tpTestDetails Test that empty QueryParam list is empty
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEmpty() throws Exception {

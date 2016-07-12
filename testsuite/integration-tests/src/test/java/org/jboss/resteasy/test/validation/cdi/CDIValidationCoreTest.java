@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter Response
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1008
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -53,7 +53,7 @@ public class CDIValidationCoreTest {
 
     /**
      * @tpTestDetails Check validation with all valid parameters
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAllValid() throws Exception {
@@ -67,7 +67,7 @@ public class CDIValidationCoreTest {
 
     /**
      * @tpTestDetails Check validation with invalid inputs
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInputsInvalid() throws Exception {
@@ -90,7 +90,7 @@ public class CDIValidationCoreTest {
 
     /**
      * @tpTestDetails Check validation with invalid return value
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testReturnValueInvalid() throws Exception {
@@ -107,7 +107,7 @@ public class CDIValidationCoreTest {
 
     /**
      * @tpTestDetails Check validation with valid locators
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLocatorAllValid() throws Exception {
@@ -121,7 +121,7 @@ public class CDIValidationCoreTest {
 
     /**
      * @tpTestDetails Check validation with invalid subparameters
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLocatorInvalidSubparameter() throws Exception {
@@ -138,7 +138,7 @@ public class CDIValidationCoreTest {
 
     /**
      * @tpTestDetails Check validation with locators and invalid return values
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLocatorInvalidReturnValue() throws Exception {
@@ -155,7 +155,7 @@ public class CDIValidationCoreTest {
 
     /**
      * @tpTestDetails Check validation with invalid inputs and no executables
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInputsInvalidNoExecutableValidation() throws Exception {
@@ -176,7 +176,7 @@ public class CDIValidationCoreTest {
 
     /**
      * @tpTestDetails Check validation with invalid inputs and no parameters are used
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInputsInvalidNoParameters() throws Exception {

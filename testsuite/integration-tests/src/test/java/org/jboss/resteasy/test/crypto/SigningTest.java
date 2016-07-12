@@ -51,7 +51,7 @@ import static org.hamcrest.CoreMatchers.containsString;
  * @tpSubChapter Crypto
  * @tpChapter Integration tests
  * @tpTestCaseDetails Signing test for RESTEasy-crypto
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -59,9 +59,9 @@ public class SigningTest {
     public static KeyPair keys;
     public static DosetaKeyRepository repository;
     public static PrivateKey badKey;
-    public static ResteasyClient client;
+    private static ResteasyClient client;
 
-    protected static final Logger logger = LogManager.getLogger(PKCS7SignatureSmokeTest.class.getName());
+    protected final Logger logger = LogManager.getLogger(PKCS7SignatureSmokeTest.class.getName());
 
     private static final String RESPONSE_ERROR_MSG = "Response contains wrong content";
     static final String testJksPath;
@@ -119,11 +119,12 @@ public class SigningTest {
     @AfterClass
     public static void afterIt() throws Exception {
         client.close();
+        client = null;
     }
 
     /**
      * @tpTestDetails Test for "DKIM-Signature" header attribute
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRequestOnly() throws Exception {
@@ -150,7 +151,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Test for manual signing
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSigningManual() throws Exception {
@@ -172,7 +173,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Basic verification test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBasicVerification() throws Exception {
@@ -189,7 +190,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Manual verification test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testManualVerification() throws Exception {
@@ -207,7 +208,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Basic verification test with repository
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBasicVerificationRepository() throws Exception {
@@ -224,7 +225,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Basic verification test with bad signature
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBasicVerificationBadSignature() throws Exception {
@@ -241,7 +242,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Basic verification test with no signature
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBasicVerificationNoSignature() throws Exception {
@@ -253,7 +254,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Test for timestamp signature with set domain
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testTimestampSignature() throws Exception {
@@ -269,7 +270,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Test for timestamp signature without set domain
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testTimestamp() throws Exception {
@@ -294,7 +295,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Stale timestamp test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testStaleTimestamp() throws Exception {
@@ -315,7 +316,6 @@ public class SigningTest {
             Assert.fail("Validation error excepted.");
         } catch (ProcessingException pe) {
             UnauthorizedSignatureException e = (UnauthorizedSignatureException) pe.getCause();
-            logger.info("here");
             Assert.assertThat("Unexcepted error", e.getMessage(), containsString("Failed to verify signatures:\r\n"));
             Assert.assertThat("Unexcepted error", e.getMessage(), containsString("Signature is stale"));
         }
@@ -324,7 +324,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Hour expiration test (expires attribute in Signed annotation in REST end-point is used).
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testExpiresHour() throws Exception {
@@ -343,7 +343,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Minute expiration test (expires attribute in Signed annotation in REST end-point is used).
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testExpiresMinutes() throws Exception {
@@ -362,7 +362,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Day expiration test (expires attribute in Signed annotation in REST end-point is used).
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testExpiresDays() throws Exception {
@@ -381,7 +381,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Month expiration test (expires attribute in Signed annotation in REST end-point is used).
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testExpiresMonths() throws Exception {
@@ -400,7 +400,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Year expiration test (expires attribute in Signed annotation in REST end-point is used).
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testExpiresYears() throws Exception {
@@ -419,7 +419,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Fail expiration test (expires attribute in Signed annotation in REST end-point is used).
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testExpiresFail() throws Exception {
@@ -446,7 +446,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Manual fail test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testManualFail() throws Exception {
@@ -478,7 +478,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Manual success test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testManual() throws Exception {
@@ -499,7 +499,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Manual test with header
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testManualWithHeader() throws Exception {
@@ -520,7 +520,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Bad signature test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBadSignature() throws Exception {
@@ -547,7 +547,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Bad hash test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBadHash() throws Exception {
@@ -574,7 +574,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Proxy test with correct signature
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testProxy() throws Exception {
@@ -587,7 +587,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Proxy test with bad signature
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBadSignatureProxy() throws Exception {
@@ -604,7 +604,7 @@ public class SigningTest {
 
     /**
      * @tpTestDetails Regression test for RESTEASY-1169
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testBasicVerificationBadSignatureNoBody() throws Exception {

@@ -46,7 +46,7 @@ import java.security.cert.X509Certificate;
  * @tpSubChapter Crypto
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for sign by content of message signed by X509Certificate.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class EnvelopedTest {
 
@@ -77,7 +77,7 @@ public class EnvelopedTest {
 
     /**
      * @tpTestDetails Check body of message content
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBody() throws Exception {
@@ -118,7 +118,7 @@ public class EnvelopedTest {
 
     /**
      * @tpTestDetails Check headers
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testHeaders()
@@ -152,7 +152,7 @@ public class EnvelopedTest {
 
     /**
      * @tpTestDetails Check bython generated content
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFromPythonGenerated() throws Exception {

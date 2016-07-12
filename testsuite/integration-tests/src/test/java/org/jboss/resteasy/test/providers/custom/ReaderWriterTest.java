@@ -36,7 +36,7 @@ import java.net.URL;
  * @tpSubChapter Providers
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEasy issues
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -85,7 +85,7 @@ public class ReaderWriterTest {
     }
     /**
      * @tpTestDetails Regression test for RESTEASY-144
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void test144() throws Exception {
@@ -113,7 +113,7 @@ public class ReaderWriterTest {
 
     /**
      * @tpTestDetails Regression test for RESTEASY-61
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJdkURLConnection() throws Exception {
@@ -125,7 +125,7 @@ public class ReaderWriterTest {
 
     /**
      * @tpTestDetails Regression test for RESTEASY-24 and RESTEASY-139
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void test24() throws Exception {
@@ -141,7 +141,7 @@ public class ReaderWriterTest {
 
     /**
      * @tpTestDetails Regression test for RESTEASY-1 and RESTEASY-2
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void test1and2() throws Exception {
@@ -155,7 +155,7 @@ public class ReaderWriterTest {
 
     /**
      * @tpTestDetails Test for resource mapped to nowhere using deprecated proxy.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testItDeprecatedProxy() throws Exception {
@@ -165,7 +165,7 @@ public class ReaderWriterTest {
 
     /**
      * @tpTestDetails Test for resource mapped to nowhere using proxy.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testItNewProxy() throws Exception {
@@ -177,7 +177,7 @@ public class ReaderWriterTest {
 
     /**
      * @tpTestDetails Regression test for RESTEASY-212
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void test212() throws Exception {
@@ -189,7 +189,7 @@ public class ReaderWriterTest {
 
     /**
      * @tpTestDetails Regression test for RESTEASY-227
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("ReaderWriterCurlyBraces")

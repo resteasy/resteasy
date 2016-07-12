@@ -26,7 +26,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -57,7 +57,7 @@ public class LocatorWithClassHierarchyTest {
      * @tpTestDetails Client sends POST request with null entity for the resource Locator, which creates the targeted
      * resource object.
      * @tpPassCrit Correct response is returned from the server
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLocatorWithSubWithPathAnnotation() {

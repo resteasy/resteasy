@@ -22,7 +22,7 @@ import javax.ws.rs.client.WebTarget;
  * @tpSubChapter CDI
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for CDI locator
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -53,7 +53,7 @@ public class CDILocatorTest {
 
     /**
      * @tpTestDetails Check generic type
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void genericTypeTest() throws Exception {
@@ -63,7 +63,7 @@ public class CDILocatorTest {
 
     /**
      * @tpTestDetails Check locator
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void locatorTest() throws Exception {

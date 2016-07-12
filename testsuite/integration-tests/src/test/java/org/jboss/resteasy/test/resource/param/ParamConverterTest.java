@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Parameters
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for ParamConverter
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -46,7 +46,7 @@ public class ParamConverterTest {
 
     /**
      * @tpTestDetails Set specific values
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIt() throws Exception {
@@ -58,7 +58,7 @@ public class ParamConverterTest {
 
     /**
      * @tpTestDetails Check default values
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDefault() throws Exception {

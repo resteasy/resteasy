@@ -18,7 +18,7 @@ import javax.ws.rs.ext.Provider;
 /**
  * @tpSubChapter Providers
  * @tpChapter Unit tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class ProviderFactoryPrecedenceTest {
 
@@ -40,7 +40,7 @@ public class ProviderFactoryPrecedenceTest {
 
     /**
      * @tpTestDetails Test that classes which extends generic MessageBodyWriter of generic type are of the correct type
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testTypes() {
@@ -58,7 +58,7 @@ public class ProviderFactoryPrecedenceTest {
 
     /**
      * @tpTestDetails ResteasyProviderFactory - register default provider instance, test that correct DefaultTextPlain provider is taken
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMatching2() {
@@ -72,7 +72,7 @@ public class ProviderFactoryPrecedenceTest {
 
     /**
      * @tpTestDetails ResteasyProviderFactory - register provider instances, test that application providers take precedence over builtin
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testUserPrecendence1() throws Exception {
@@ -93,7 +93,7 @@ public class ProviderFactoryPrecedenceTest {
     /**
      * @tpTestDetails ResteasyProviderFactory - register provider instances, verify they are available in user ordered
      * precedence
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testUserPrecendence2() throws Exception {
@@ -113,7 +113,7 @@ public class ProviderFactoryPrecedenceTest {
     /**
      * @tpTestDetails ResteasyProviderFactory - register provider instances, verify they are available in user ordered
      * precedence
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testUserPrecendence3() throws Exception {

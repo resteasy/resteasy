@@ -25,7 +25,7 @@ import static org.junit.Assert.assertTrue;
  * @tpChapter Integration tests
  * @tpTestCaseDetails This test verifies that Providers instance can be injected into a Provider
  *                    using constructor or field injection.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -55,7 +55,7 @@ public class ProviderInjectionTest {
 
     /**
      * @tpTestDetails Getting constructor
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testConstructorInjection() {
@@ -66,7 +66,7 @@ public class ProviderInjectionTest {
 
     /**
      * @tpTestDetails Getting field
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFieldInjection() {

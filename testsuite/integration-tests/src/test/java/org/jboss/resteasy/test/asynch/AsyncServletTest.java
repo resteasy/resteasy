@@ -24,7 +24,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Asynchronous RESTEasy
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for asyncHttpServlet module
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -54,7 +54,7 @@ public class AsyncServletTest {
 
     /**
      * @tpTestDetails Test for correct response
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAsync() throws Exception {
@@ -65,7 +65,7 @@ public class AsyncServletTest {
 
     /**
      * @tpTestDetails Service unavailable test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testTimeout() throws Exception {

@@ -24,7 +24,7 @@ import static junit.framework.Assert.assertTrue;
  * @tpSubChapter Interception tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for org.jboss.resteasy.annotations.Decorator class.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class DecoratorMatcherTest {
     private static final AtomicBoolean called = new AtomicBoolean(false);
@@ -40,7 +40,7 @@ public class DecoratorMatcherTest {
 
     /**
      * @tpTestDetails Decorator method should not be called in this test.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void shouldNotThrowOnUnmarshaller() throws JAXBException {
@@ -50,7 +50,7 @@ public class DecoratorMatcherTest {
 
     /**
      * @tpTestDetails Decorator method should be called in this test.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void shouldCallOnMarshaller() throws JAXBException {

@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
  * @tpSubChapter Util tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for {@link org.jboss.resteasy.util.TypeConverter#getType(Class, String)}.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class TypeConverterTest {
 
@@ -23,7 +23,7 @@ public class TypeConverterTest {
 
     /**
      * @tpTestDetails Boolean conversion.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBooleanTypes() {
@@ -48,7 +48,7 @@ public class TypeConverterTest {
 
     /**
      * @tpTestDetails Integer and int conversion.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIntegerTypes() {
@@ -58,7 +58,7 @@ public class TypeConverterTest {
 
     /**
      * @tpTestDetails Double conversion.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDoubleTypes() {
@@ -68,7 +68,7 @@ public class TypeConverterTest {
 
     /**
      * @tpTestDetails Float conversion.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFloatTypes() {
@@ -78,7 +78,7 @@ public class TypeConverterTest {
 
     /**
      * @tpTestDetails Long conversion.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLongTypes() {
@@ -88,7 +88,7 @@ public class TypeConverterTest {
 
     /**
      * @tpTestDetails Date conversion.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDate() {

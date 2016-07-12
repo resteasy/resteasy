@@ -31,7 +31,7 @@ import java.util.List;
  * @tpSubChapter Jettison provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-167
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -46,7 +46,7 @@ public class BaseClassFromTypeListTest {
     public static class Child extends Parent<BaseClassFromTypeListCustomer> {
     }
 
-    protected static final Logger logger = Logger.getLogger(BaseClassFromTypeListTest.class.getName());
+    protected final Logger logger = Logger.getLogger(BaseClassFromTypeListTest.class.getName());
 
     static ResteasyClient client;
 
@@ -66,6 +66,7 @@ public class BaseClassFromTypeListTest {
     @After
     public void after() throws Exception {
         client.close();
+        client = null;
     }
 
     private String generateURL(String path) {
@@ -74,7 +75,7 @@ public class BaseClassFromTypeListTest {
 
     /**
      * @tpTestDetails Test with resource implementing generic interface
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIntfTemplate() throws Exception {

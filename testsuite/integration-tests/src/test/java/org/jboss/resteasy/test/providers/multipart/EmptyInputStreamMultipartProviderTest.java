@@ -12,7 +12,6 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import javax.ws.rs.client.Client;
@@ -25,19 +24,13 @@ import javax.ws.rs.core.Response;
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-204.
  * POJO with empty InputStream field returned as "mutlipart/form-data" produces no headers in multipart
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class EmptyInputStreamMultipartProviderTest {
 
-    static Client client;
-    protected static final Logger logger = Logger.getLogger(EmptyInputStreamMultipartProviderTest.class.getName());
-
-    @BeforeClass
-    public static void before() throws Exception {
-        client = ClientBuilder.newClient();
-    }
+    protected final Logger logger = Logger.getLogger(EmptyInputStreamMultipartProviderTest.class.getName());
 
     @Deployment
     public static Archive<?> deploy() {
@@ -51,10 +44,11 @@ public class EmptyInputStreamMultipartProviderTest {
 
     /**
      * @tpTestDetails Resource returning POJO with empty InputStream field, the response is checked to contain the header
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void test() throws Exception {
+    	Client client = ClientBuilder.newClient();
         WebTarget target = client.target(generateURL("/rest/zba"));
         Response response = target.request().get();
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());

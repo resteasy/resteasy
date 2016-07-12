@@ -31,7 +31,7 @@ import java.math.BigDecimal;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -65,7 +65,7 @@ public class ProduceConsumeTest {
      * @tpTestDetails Client sends GET request, server return empty successful response. Client parses the response
      * and tries to read it as BigDecimal.class object.
      * @tpPassCrit Instance of NoContentException is thrown
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEmpty() {
@@ -86,7 +86,7 @@ public class ProduceConsumeTest {
      * @tpTestDetails Client sends GET request, server return empty successful response. Client parses the response
      * and tries to read it as Character.class object.
      * @tpPassCrit Instance of NoContentException is thrown
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEmptyCharacter() {
@@ -107,7 +107,7 @@ public class ProduceConsumeTest {
      * @tpTestDetails Client sends GET request, server return empty successful response. Client parses the response
      * and tries to read it as Integer.class object.
      * @tpPassCrit Instance of NoContentException is thrown
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEmptyInteger() {
@@ -128,7 +128,7 @@ public class ProduceConsumeTest {
      * @tpTestDetails Client sends GET request, server return empty successful response. Client parses the response
      * and tries to read it as MultivaluedMap.class object.
      * @tpPassCrit The returned MultivaluedMap object is null
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEmptyForm() {
@@ -147,7 +147,7 @@ public class ProduceConsumeTest {
      * and sends response back to the client
      * @tpPassCrit The text/plain provider is chosen by the server, because if the request has wildcard mediatype,
      * the most specific provider has to be chosen.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testWild() {

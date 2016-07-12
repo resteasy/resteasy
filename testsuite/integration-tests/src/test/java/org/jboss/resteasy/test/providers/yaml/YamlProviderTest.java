@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * @tpSubChapter Yaml provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -68,7 +68,7 @@ public class YamlProviderTest {
     /**
      * @tpTestDetails Client sends GET request for yaml annotated resource. It is asserted that response contains yaml header.
      * @tpPassCrit The resource returns yaml entity same as in the original request entity
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGet() throws Exception {
@@ -87,7 +87,7 @@ public class YamlProviderTest {
      * @tpTestDetails Client sends POST request for yaml annotated resource. It is asserted that response contains yaml header.
      * @tpPassCrit The resource returns yaml entity same as in the original request entity
      * @tpInfo JBEAP-1047
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPost() throws Exception {
@@ -105,7 +105,7 @@ public class YamlProviderTest {
     /**
      * @tpTestDetails Client sends POST request for yaml annotated resource with the entity in incorrect format
      * @tpPassCrit The response code is Internal server error (500)
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @Category({ExpectedFailing.class}) //[RESTEASY-1361] FIXME
@@ -119,7 +119,7 @@ public class YamlProviderTest {
     /**
      * @tpTestDetails Client sends POST request for yaml with list of string
      * @tpPassCrit The resource returns yaml entity same as in the original request entity
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostList() throws Exception {

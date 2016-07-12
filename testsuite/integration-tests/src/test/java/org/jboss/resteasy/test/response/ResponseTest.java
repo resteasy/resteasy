@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -76,7 +76,7 @@ public class ResponseTest {
      * @tpTestDetails Client sends HEAD request. The resource returns response with entity but the resulting response
      * must not contain entity as per HEAD method HTTP1.1 spec.
      * @tpPassCrit Response doesn't contain entity
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testHead() {
@@ -90,7 +90,7 @@ public class ResponseTest {
     /**
      * @tpTestDetails Client sends HEAD request. The resource returns empty response.
      * @tpPassCrit The resulting response must not contain entity as per HEAD method HTTP1.1 spec.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEmpty() {
@@ -103,7 +103,7 @@ public class ResponseTest {
     /**
      * @tpTestDetails Client sends GET request. The resource creates response from RuntimeDelegate ResponseBuilder.
      * @tpPassCrit The response code status is changed to 200 (SUCCESS) and response contains the correct entity
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNoStatus() {
@@ -117,7 +117,7 @@ public class ResponseTest {
      * @tpTestDetails Client sends GET request. The resource creates response from RuntimeDelegate ResponseBuilder with
      * empty entity.
      * @tpPassCrit The response code status is 204 (NO CONTENT)
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNullEntityNoStatus() {
@@ -130,7 +130,7 @@ public class ResponseTest {
     /**
      * @tpTestDetails Client sends POST request, The resource creates link and attaches it to the Response.
      * @tpPassCrit The response contains the link
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void hasLinkWhenLinkTest() {
@@ -161,7 +161,7 @@ public class ResponseTest {
      * in the response.
      * @tpPassCrit The ANNOTATIONS fields are set up correctly in the DateReaderWriter after processing the response and
      * the correct date is returned
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void readEntityGenericTypeAnnotationTest() {
@@ -200,7 +200,7 @@ public class ResponseTest {
      * read multiple times as generic entity
      * @tpPassCrit The response code status is changed to 200 (SUCCESS) and the entity can be read with generic Reader
      * class and can be stored directly as array of bytes
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void readEntityGenericTypeTest() throws Exception {

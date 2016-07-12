@@ -19,7 +19,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Resource
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Test query params with multiple equals
  */
 @RunWith(Arquillian.class)
@@ -38,7 +38,7 @@ public class QueryParamWithMultipleEqualsTest {
 
     /**
      * @tpTestDetails Test query parameter "foo=weird=but=valid"
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testQueryParam() throws Exception {

@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.core.encoding;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -29,15 +27,13 @@ import static junit.framework.TestCase.assertEquals;
  * @tpSubChapter Encoding
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-737
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ParameterEncodingTest {
 
     protected ResteasyClient client;
-
-    protected static final Logger logger = LogManager.getLogger(ParameterEncodingTest.class.getName());
 
     @Before
     public void setup() throws Exception {
@@ -62,7 +58,7 @@ public class ParameterEncodingTest {
 
     /**
      * @tpTestDetails Check space encoding in URL
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResteasy734() throws Exception {
@@ -72,7 +68,6 @@ public class ParameterEncodingTest {
         target = client.target(generateURL("/encoded/pathparam/bee bop"));
         response = target.request().get();
         String entity = response.readEntity(String.class);
-        logger.info("Received encoded path param: " + entity);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         assertEquals("bee%20bop", entity);
         response.close();
@@ -80,7 +75,6 @@ public class ParameterEncodingTest {
         target = client.target(generateURL("/decoded/pathparam/bee bop"));
         response = target.request().get();
         entity = response.readEntity(String.class);
-        logger.info("Received decoded path param: " + entity);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         assertEquals("bee bop", entity);
         response.close();
@@ -88,7 +82,6 @@ public class ParameterEncodingTest {
         target = client.target(generateURL("/encoded/matrix;m=bee bop"));
         response = target.request().get();
         entity = response.readEntity(String.class);
-        logger.info("Received encoded matrix param: " + entity);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         assertEquals("bee%20bop", entity);
         response.close();
@@ -96,7 +89,6 @@ public class ParameterEncodingTest {
         target = client.target(generateURL("/decoded/matrix;m=bee bop"));
         response = target.request().get();
         entity = response.readEntity(String.class);
-        logger.info("Received decoded matrix param: " + entity);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         assertEquals("bee bop", entity);
         response.close();
@@ -104,7 +96,6 @@ public class ParameterEncodingTest {
         target = client.target(generateURL("/encoded/query?m=bee bop"));
         response = target.request().get();
         entity = response.readEntity(String.class);
-        logger.info("Received encoded query param: " + entity);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         assertEquals("bee%20bop", entity);
         response.close();
@@ -112,7 +103,6 @@ public class ParameterEncodingTest {
         target = client.target(generateURL("/decoded/query?m=bee bop"));
         response = target.request().get();
         entity = response.readEntity(String.class);
-        logger.info("Received decoded query param: " + entity);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         assertEquals("bee bop", entity);
         response.close();
@@ -122,7 +112,6 @@ public class ParameterEncodingTest {
         form.param("f", "bee bop");
         response = target.request().post(Entity.form(form));
         entity = response.readEntity(String.class);
-        logger.info("Received encoded form param: " + entity);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         assertEquals("bee+bop", entity);
         response.close();
@@ -132,7 +121,6 @@ public class ParameterEncodingTest {
         form.param("f", "bee bop");
         response = target.request().post(Entity.form(form));
         entity = response.readEntity(String.class);
-        logger.info("Received decoded form param: " + entity);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         assertEquals("bee bop", entity);
         response.close();
@@ -140,7 +128,6 @@ public class ParameterEncodingTest {
         target = client.target(generateURL("/encoded/segment/bee bop"));
         response = target.request().get();
         entity = response.readEntity(String.class);
-        logger.info("Received encoded path param from segment: " + entity);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         assertEquals("bee%20bop", entity);
         response.close();
@@ -148,7 +135,6 @@ public class ParameterEncodingTest {
         target = client.target(generateURL("/decoded/segment/bee bop"));
         response = target.request().get();
         entity = response.readEntity(String.class);
-        logger.info("Received decoded path param from segment: " + entity);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         assertEquals("bee bop", entity);
         response.close();
@@ -156,7 +142,6 @@ public class ParameterEncodingTest {
         target = client.target(generateURL("/encoded/segment/matrix/params;m=bee bop"));
         response = target.request().get();
         entity = response.readEntity(String.class);
-        logger.info("Received encoded matrix param from segment: " + entity);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         assertEquals("bee%20bop", entity);
         response.close();
@@ -164,7 +149,6 @@ public class ParameterEncodingTest {
         target = client.target(generateURL("/decoded/segment/matrix/params;m=bee bop"));
         response = target.request().get();
         entity = response.readEntity(String.class);
-        logger.info("Received decoded matrix param from segment: " + entity);
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         assertEquals("bee bop", entity);
         response.close();

@@ -21,7 +21,7 @@ import javax.ws.rs.NotAuthorizedException;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Regression test for RESTEASY-575
  */
 @RunWith(Arquillian.class)
@@ -36,7 +36,7 @@ public class UnauthorizedHttpCodeTest {
 
     /**
      * @tpTestDetails Get 401 http code via proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testProxy() throws Exception {

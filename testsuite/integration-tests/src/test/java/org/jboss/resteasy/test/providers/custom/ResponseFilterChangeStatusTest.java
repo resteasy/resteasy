@@ -29,7 +29,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -66,7 +66,7 @@ public class ResponseFilterChangeStatusTest {
      * @tpTestDetails Client sends HEAD request. The response gets processed by custom ResponseFilter.
      * @tpPassCrit The response code status is changed to 201 (CREATED), the response doesn't contain any entity,
      * because this was HEAD request and response has set up its MediaType
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDefaultHead() {
@@ -85,7 +85,7 @@ public class ResponseFilterChangeStatusTest {
     /**
      * @tpTestDetails Client sends POST request. The response gets processed by custom ResponseFilter.
      * @tpPassCrit The response code status is changed to 201 (CREATED)
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testChangeStatus() {

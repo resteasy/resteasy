@@ -39,7 +39,7 @@ import java.io.InputStream;
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -79,7 +79,7 @@ public class XmlJaxbProvidersTest {
 
     /**
      * @tpTestDetails Test jaxb unmarshaller to correctly unmarshall InputStream
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testUnmarshalOrder() throws Exception {
@@ -93,7 +93,7 @@ public class XmlJaxbProvidersTest {
     /**
      * @tpTestDetails An xml file is loaded on the server and jaxb converts the xml entity Order from xml file into an
      * object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetOrder() {
@@ -104,7 +104,7 @@ public class XmlJaxbProvidersTest {
     /**
      * @tpTestDetails Clients sends request with order if and  set xml headerr. An xml file is loaded on the server
      * and jaxb converts the xml entity Order from xml file into an object.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetOrderAndUnmarshal() throws Exception {
@@ -122,7 +122,7 @@ public class XmlJaxbProvidersTest {
     /**
      * @tpTestDetails Same as testGetOrderWithParams() except that it uses the client framework to implicitly unmarshal
      * the returned order and it tests its value, instead of just printing it out.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetOrderWithParamsToOrder() throws Exception {
@@ -135,7 +135,7 @@ public class XmlJaxbProvidersTest {
 
     /**
      * @tpTestDetails Updates the specified order and returns updated object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testUpdateOrder() {

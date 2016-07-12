@@ -10,13 +10,13 @@ import org.junit.Test;
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
  * @tpTestCaseDetails Test for LinkHeader (it use deprecated Link). Test also new Link provided by jax-rs 2.0 spec
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class LinkHeaderTest {
 
     /**
      * @tpTestDetails Test for deprecated Link, LinkHeader and LinkHeaderDelegate. Basic test.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testTopic() throws Exception {
@@ -35,7 +35,7 @@ public class LinkHeaderTest {
 
     /**
      * @tpTestDetails Test for deprecated Link, LinkHeader and LinkHeaderDelegate. More complex URLs are used.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testTopicComplex() throws Exception {
@@ -53,7 +53,7 @@ public class LinkHeaderTest {
 
     /**
      * @tpTestDetails Test add method in LinkHeader class.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAdd() {
@@ -67,7 +67,7 @@ public class LinkHeaderTest {
 
     /**
      * @tpTestDetails Test new client without API and old client with API
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLinkheader() throws Exception {

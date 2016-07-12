@@ -33,7 +33,7 @@ import java.util.Set;
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
  * @tpTestCaseDetails Regression test for RESTEASY-1345
- * @tpSince EAP 7.0.1
+ * @tpSince RESTEasy 3.0.17
  */
 public class ConfigurationInheritenceTest extends ResteasyProviderFactory {
     private static ConfigurationInheritenceTestFeature2 testFeature2 = new ConfigurationInheritenceTestFeature2();
@@ -50,7 +50,7 @@ public class ConfigurationInheritenceTest extends ResteasyProviderFactory {
 
     /**
      * @tpTestDetails Register items to clientBuilder.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testClientBuilderToClient() {
@@ -86,7 +86,7 @@ public class ConfigurationInheritenceTest extends ResteasyProviderFactory {
 
     /**
      * @tpTestDetails Register items to client.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testClientToWebTarget() {
@@ -123,7 +123,7 @@ public class ConfigurationInheritenceTest extends ResteasyProviderFactory {
 
     /**
      * @tpTestDetails Check default RuntimeType oc clientBuilder, client end webTarget.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testRuntimeType() {

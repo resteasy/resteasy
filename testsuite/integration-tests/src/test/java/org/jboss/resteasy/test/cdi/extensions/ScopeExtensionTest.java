@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
  * @tpChapter Integration tests
  * @tpTestCaseDetails CDIScopeExtensionTest tests that Resteasy interacts well with beans in
  * a user defined scope.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class ScopeExtensionTest {
@@ -63,7 +63,7 @@ public class ScopeExtensionTest {
 
     /**
      * @tpTestDetails Beans in scope test.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testObsolescentScope() throws Exception {

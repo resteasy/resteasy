@@ -21,7 +21,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Asynchronous RESTEasy
  * @tpChapter Integration tests
  * @tpTestCaseDetails Basic asynchronous test. Resource creates new threads.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -39,7 +39,7 @@ public class JaxrsAsyncTest {
 
     /**
      * @tpTestDetails Correct response excepted.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSuccess() throws Exception {
@@ -53,7 +53,7 @@ public class JaxrsAsyncTest {
 
     /**
      * @tpTestDetails Timeout exception should be thrown.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testTimeout() throws Exception {
@@ -66,7 +66,7 @@ public class JaxrsAsyncTest {
 
     /**
      * @tpTestDetails Negative timeout value is set to response in end-point. Regression test for JBEAP-4695.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testNegativeTimeout() throws Exception {
@@ -80,7 +80,7 @@ public class JaxrsAsyncTest {
 
     /**
      * @tpTestDetails Zero timeout value is set to response in end-point. Regression test for JBEAP-4695.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testZeroTimeout() throws Exception {

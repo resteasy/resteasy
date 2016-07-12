@@ -37,13 +37,13 @@ import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1103
  *      RestEasy is vulnerable to XML Entity Denial of Service XXE is disabled.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class SecureProcessing2Test {
 
-    protected static final Logger logger = LogManager.getLogger(SecureProcessing2Test.class.getName());
+    protected final Logger logger = LogManager.getLogger(SecureProcessing2Test.class.getName());
     static ResteasyClient client;
 
     private static final String URL_PREFIX = "RESTEASY-1103-";
@@ -226,7 +226,7 @@ public class SecureProcessing2Test {
      * @tpTestDetails "resteasy.document.secure.processing.feature" is set to default value
      *                "resteasy.document.secure.disableDTDs" is set to default value
      *                "resteasy.document.expand.entity.references" is set to default value
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSecurityDefaultDTDsDefaultExpansionDefault() throws Exception {
@@ -237,7 +237,7 @@ public class SecureProcessing2Test {
      * @tpTestDetails "resteasy.document.secure.processing.feature" is set to default value
      *                "resteasy.document.secure.disableDTDs" is set to default value
      *                "resteasy.document.expand.entity.references" is set to false
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSecurityDefaultDTDsDefaultExpansionFalse() throws Exception {
@@ -248,7 +248,7 @@ public class SecureProcessing2Test {
      * @tpTestDetails "resteasy.document.secure.processing.feature" is set to default value
      *                "resteasy.document.secure.disableDTDs" is set to default value
      *                "resteasy.document.expand.entity.references" is set to true
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSecurityDefaultDTDsDefaultExpansionTrue() throws Exception {
@@ -259,7 +259,7 @@ public class SecureProcessing2Test {
      * @tpTestDetails "resteasy.document.secure.processing.feature" is set to default value
      *                "resteasy.document.secure.disableDTDs" is set to false
      *                "resteasy.document.expand.entity.references" is set to default value
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSecurityDefaultDTDsFalseExpansionDefault() throws Exception {
@@ -270,7 +270,7 @@ public class SecureProcessing2Test {
      * @tpTestDetails "resteasy.document.secure.processing.feature" is set to default value
      *                "resteasy.document.secure.disableDTDs" is set to false
      *                "resteasy.document.expand.entity.references" is set to false
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSecurityDefaultDTDsFalseExpansionFalse() throws Exception {
@@ -281,7 +281,7 @@ public class SecureProcessing2Test {
      * @tpTestDetails "resteasy.document.secure.processing.feature" is set to default value
      *                "resteasy.document.secure.disableDTDs" is set to false
      *                "resteasy.document.expand.entity.references" is set to true
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSecurityDefaultDTDsFalseExpansionTrue() throws Exception {
@@ -292,7 +292,7 @@ public class SecureProcessing2Test {
      * @tpTestDetails "resteasy.document.secure.processing.feature" is set to default value
      *                "resteasy.document.secure.disableDTDs" is set to true
      *                "resteasy.document.expand.entity.references" is set to default value
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSecurityDefaultDTDsTrueExpansionDefault() throws Exception {
@@ -303,7 +303,7 @@ public class SecureProcessing2Test {
      * @tpTestDetails "resteasy.document.secure.processing.feature" is set to default value
      *                "resteasy.document.secure.disableDTDs" is set to true
      *                "resteasy.document.expand.entity.references" is set to false
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSecurityDefaultDTDsTrueExpansionFalse() throws Exception {
@@ -314,7 +314,7 @@ public class SecureProcessing2Test {
      * @tpTestDetails "resteasy.document.secure.processing.feature" is set to default value
      *                "resteasy.document.secure.disableDTDs" is set to true
      *                "resteasy.document.expand.entity.references" is set to true
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSecurityDefaultDTDsTrueExpansionTrue() throws Exception {
@@ -325,7 +325,7 @@ public class SecureProcessing2Test {
      * @tpTestDetails "resteasy.document.secure.processing.feature" is set to false
      *                "resteasy.document.secure.disableDTDs" is set to default value
      *                "resteasy.document.expand.entity.references" is set to default value
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSecurityFalseDTDsDefaultExpansionDefault() throws Exception {
@@ -336,7 +336,7 @@ public class SecureProcessing2Test {
      * @tpTestDetails "resteasy.document.secure.processing.feature" is set to false
      *                "resteasy.document.secure.disableDTDs" is set to default value
      *                "resteasy.document.expand.entity.references" is set to false
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSecurityFalseDTDsDefaultExpansionFalse() throws Exception {
@@ -347,7 +347,7 @@ public class SecureProcessing2Test {
      * @tpTestDetails "resteasy.document.secure.processing.feature" is set to false
      *                "resteasy.document.secure.disableDTDs" is set to default value
      *                "resteasy.document.expand.entity.references" is set to true
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSecurityFalseDTDsDefaultExpansionTrue() throws Exception {
@@ -358,7 +358,7 @@ public class SecureProcessing2Test {
      * @tpTestDetails "resteasy.document.secure.processing.feature" is set to false
      *                "resteasy.document.secure.disableDTDs" is set to false
      *                "resteasy.document.expand.entity.references" is set to default value
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSecurityFalseDTDsFalseExpansionDefault() throws Exception {
@@ -411,7 +411,6 @@ public class SecureProcessing2Test {
             logger.info("Request body: " + bigXmlRootElement);
             Response response = client.target(generateURL("/entityExpansion/xmlRootElement/", URL_PREFIX + ext)).request()
                     .post(Entity.entity(bigXmlRootElement, "application/xml"));
-            logger.info("status: " + response.getStatus());
             Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             String entity = response.readEntity(String.class);
             logger.info("doEntityExpansionFails() result: " + entity);
@@ -420,7 +419,6 @@ public class SecureProcessing2Test {
         {
             Response response = client.target(generateURL("/entityExpansion/xmlType/", URL_PREFIX + ext)).request()
                     .post(Entity.entity(bigXmlType, "application/xml"));
-            logger.info("status: " + response.getStatus());
             Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             String entity = response.readEntity(String.class);
             logger.info("doEntityExpansionFails() result: " + entity);
@@ -429,7 +427,6 @@ public class SecureProcessing2Test {
         {
             Response response = client.target(generateURL("/entityExpansion/JAXBElement/", URL_PREFIX + ext)).request()
                     .post(Entity.entity(bigJAXBElement, "application/xml"));
-            logger.info("status: " + response.getStatus());
             Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             String entity = response.readEntity(String.class);
             logger.info("doEntityExpansionFails() result: " + entity);
@@ -438,7 +435,6 @@ public class SecureProcessing2Test {
         {
             Response response = client.target(generateURL("/entityExpansion/collection/", URL_PREFIX + ext)).request()
                     .post(Entity.entity(bigCollection, "application/xml"));
-            logger.info("status: " + response.getStatus());
             Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             String entity = response.readEntity(String.class);
             logger.info("doEntityExpansionFails() result: " + entity);
@@ -447,7 +443,6 @@ public class SecureProcessing2Test {
         {
             Response response = client.target(generateURL("/entityExpansion/map/", URL_PREFIX + ext)).request()
                     .post(Entity.entity(bigMap, "application/xml"));
-            logger.info("status: " + response.getStatus());
             Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
             String entity = response.readEntity(String.class);
             logger.info("doEntityExpansionFails() result: " + entity);
@@ -461,7 +456,6 @@ public class SecureProcessing2Test {
             logger.info("Request body: " + bigXmlRootElement);
             Response response = client.target(generateURL("/entityExpansion/xmlRootElement/", URL_PREFIX + ext)).request()
                     .post(Entity.entity(bigXmlRootElement, "application/xml"));
-            logger.info("status: " + response.getStatus());
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             String entity = response.readEntity(String.class);
             int len = Math.min(entity.length(), 30);
@@ -471,7 +465,6 @@ public class SecureProcessing2Test {
         {
             Response response = client.target(generateURL("/entityExpansion/xmlType/", URL_PREFIX + ext)).request()
                     .post(Entity.entity(bigXmlType, "application/xml"));
-            logger.info("status: " + response.getStatus());
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             String entity = response.readEntity(String.class);
             int len = Math.min(entity.length(), 30);
@@ -481,7 +474,6 @@ public class SecureProcessing2Test {
         {
             Response response = client.target(generateURL("/entityExpansion/JAXBElement/", URL_PREFIX + ext)).request()
                     .post(Entity.entity(bigJAXBElement, "application/xml"));
-            logger.info("status: " + response.getStatus());
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             String entity = response.readEntity(String.class);
             int len = Math.min(entity.length(), 30);
@@ -491,7 +483,6 @@ public class SecureProcessing2Test {
         {
             Response response = client.target(generateURL("/entityExpansion/collection/", URL_PREFIX + ext)).request()
                     .post(Entity.entity(bigCollection, "application/xml"));
-            logger.info("status: " + response.getStatus());
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             String entity = response.readEntity(String.class);
             int len = Math.min(entity.length(), 30);
@@ -501,7 +492,6 @@ public class SecureProcessing2Test {
         {
             Response response = client.target(generateURL("/entityExpansion/map/", URL_PREFIX + ext)).request()
                     .post(Entity.entity(bigMap, "application/xml"));
-            logger.info("status: " + response.getStatus());
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             String entity = response.readEntity(String.class);
             int len = Math.min(entity.length(), 30);
@@ -547,7 +537,6 @@ public class SecureProcessing2Test {
         logger.info("entering doDTDPasses(" + ext + ")");
         Response response = client.target(generateURL("/DTD/", URL_PREFIX + ext)).request()
                 .post(Entity.entity(bar, "application/xml"));
-        logger.info("status: " + response.getStatus());
         String entity = response.readEntity(String.class);
         logger.info("doDTDPasses() result: " + entity);
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
@@ -559,7 +548,6 @@ public class SecureProcessing2Test {
         {
             Response response = client.target(generateURL("/entityExpansion/xmlRootElement/", URL_PREFIX + ext)).request()
                     .post(Entity.entity(externalXmlRootElement, "application/xml"));
-            logger.info("status: " + response.getStatus());
             String entity = response.readEntity(String.class);
             logger.info("doExternalEntityExpansionFails() result: " + entity);
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
@@ -577,7 +565,6 @@ public class SecureProcessing2Test {
         {
             Response response = client.target(generateURL("/entityExpansion/JAXBElement/", URL_PREFIX + ext)).request()
                     .post(Entity.entity(externalJAXBElement, "application/xml"));
-            logger.info("status: " + response.getStatus());
             String entity = response.readEntity(String.class);
             logger.info("doExternalEntityExpansionFails() result: " + entity);
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
@@ -586,7 +573,6 @@ public class SecureProcessing2Test {
         {
             Response response = client.target(generateURL("/entityExpansion/collection/", URL_PREFIX + ext)).request()
                     .post(Entity.entity(externalCollection, "application/xml"));
-            logger.info("status: " + response.getStatus());
             String entity = response.readEntity(String.class);
             logger.info("doExternalEntityExpansionFails() result: " + entity);
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
@@ -597,7 +583,6 @@ public class SecureProcessing2Test {
                     .post(Entity.entity(externalMap, "application/xml"));
             String entity = response.readEntity(String.class);
             logger.info("doExternalEntityExpansionFails() result: " + entity);
-            logger.info("status: " + response.getStatus());
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             Assert.assertThat("Wrong content of response", entity, isEmptyString());
         }
@@ -609,7 +594,6 @@ public class SecureProcessing2Test {
             logger.info("externalXmlRootElement: " + externalXmlRootElement);
             Response response = client.target(generateURL("/entityExpansion/xmlRootElement/", URL_PREFIX + ext)).request()
                     .post(Entity.entity(externalXmlRootElement, "application/xml"));
-            logger.info("status: " + response.getStatus());
             String entity = response.readEntity(String.class);
             int len = Math.min(entity.length(), 30);
             logger.info("doExternalEntityExpansionPasses() result: " + entity.substring(0, len) + "...");
@@ -619,7 +603,6 @@ public class SecureProcessing2Test {
         {
             Response response = client.target(generateURL("/entityExpansion/xmlType/", URL_PREFIX + ext)).request()
                     .post(Entity.entity(externalXmlType, "application/xml"));
-            logger.info("status: " + response.getStatus());
             String entity = response.readEntity(String.class);
             int len = Math.min(entity.length(), 30);
             logger.info("doExternalEntityExpansionPasses() result: " + entity.substring(0, len) + "...");
@@ -629,7 +612,6 @@ public class SecureProcessing2Test {
         {
             Response response = client.target(generateURL("/entityExpansion/JAXBElement/", URL_PREFIX + ext)).request()
                     .post(Entity.entity(externalJAXBElement, "application/xml"));
-            logger.info("status: " + response.getStatus());
             String entity = response.readEntity(String.class);
             int len = Math.min(entity.length(), 30);
             logger.info("doExternalEntityExpansionPasses() result: " + entity.substring(0, len) + "...");
@@ -639,7 +621,6 @@ public class SecureProcessing2Test {
         {
             Response response = client.target(generateURL("/entityExpansion/collection/", URL_PREFIX + ext)).request()
                     .post(Entity.entity(externalCollection, "application/xml"));
-            logger.info("status: " + response.getStatus());
             String entity = response.readEntity(String.class);
             int len = Math.min(entity.length(), 30);
             logger.info("doExternalEntityExpansionPasses() result: " + entity.substring(0, len) + "...");
@@ -649,7 +630,6 @@ public class SecureProcessing2Test {
         {
             Response response = client.target(generateURL("/entityExpansion/map/", URL_PREFIX + ext)).request()
                     .post(Entity.entity(externalMap, "application/xml"));
-            logger.info("status: " + response.getStatus());
             String entity = response.readEntity(String.class);
             int len = Math.min(entity.length(), 30);
             logger.info("doExternalEntityExpansionPasses() result: " + entity.substring(0, len) + "...");

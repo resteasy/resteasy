@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter Response
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-923
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient

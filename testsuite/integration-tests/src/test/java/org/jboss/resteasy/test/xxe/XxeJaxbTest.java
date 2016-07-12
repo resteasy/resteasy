@@ -34,14 +34,14 @@ import java.util.Hashtable;
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1103, RESTEASY-647.
  * RestEasy is vulnerable to XML Entity Denial of Service XXE is disabled.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class XxeJaxbTest {
 
     static ResteasyClient client;
-    private static Logger logger = Logger.getLogger(XxeJaxbTest.class);
+    private Logger logger = Logger.getLogger(XxeJaxbTest.class);
     private static final String URL_PREFIX = "RESTEASY-1103-";
     private String passwdFile = new File(TestUtil.getResourcePath(XxeJaxbTest.class, "XxeJaxbPasswd")).getAbsolutePath();
 
@@ -93,6 +93,7 @@ public class XxeJaxbTest {
     @After
     public void after() throws Exception {
         client.close();
+        client = null;
     }
 
     @Deployment(name = "f", order = 1)
@@ -150,7 +151,7 @@ public class XxeJaxbTest {
      * @tpTestDetails Test on jaxb object annotated with @XmlRootElement
      * "resteasy.document.secure.processing.feature" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("f")
@@ -162,7 +163,7 @@ public class XxeJaxbTest {
      * @tpTestDetails Test on jaxb object annotated with @XmlRootElement
      * "resteasy.document.secure.processing.feature" is set to "true"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("t")
@@ -175,7 +176,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "false"
      * "resteasy.document.expand.entity.references" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("ff")
@@ -188,7 +189,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "true"
      * "resteasy.document.expand.entity.references" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("ft")
@@ -201,7 +202,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "false"
      * "resteasy.document.expand.entity.references" is set to "true"
      * @tpPassCrit Passwd file should be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("tf")
@@ -214,7 +215,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "true"
      * "resteasy.document.expand.entity.references" is set to "true"
      * @tpPassCrit Passwd file should be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("tt")
@@ -226,7 +227,7 @@ public class XxeJaxbTest {
      * @tpTestDetails Test on jaxb object annotated with @XmlType
      * "resteasy.document.secure.processing.feature" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("f")
@@ -238,7 +239,7 @@ public class XxeJaxbTest {
      * @tpTestDetails Test on jaxb object annotated with @XmlType
      * "resteasy.document.secure.processing.feature" is set to "true"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("t")
@@ -251,7 +252,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "false"
      * "resteasy.document.expand.entity.references" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("ff")
@@ -264,7 +265,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "true"
      * "resteasy.document.expand.entity.references" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("ft")
@@ -277,7 +278,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "false"
      * "resteasy.document.expand.entity.references" is set to "true"
      * @tpPassCrit Passwd file should be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("tf")
@@ -290,7 +291,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "true"
      * "resteasy.document.expand.entity.references" is set to "true"
      * @tpPassCrit Passwd file should be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("tt")
@@ -302,7 +303,7 @@ public class XxeJaxbTest {
      * @tpTestDetails Test on jaxb object annotated with @XmlType and resource binding xml element to JaxbElement
      * "resteasy.document.secure.processing.feature" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("f")
@@ -314,7 +315,7 @@ public class XxeJaxbTest {
      * @tpTestDetails Test on jaxb object annotated with @XmlType and resource binding xml element to JaxbElement
      * "resteasy.document.secure.processing.feature" is set to "true"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("t")
@@ -327,7 +328,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "false"
      * "resteasy.document.expand.entity.references" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("ff")
@@ -340,7 +341,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "true"
      * "resteasy.document.expand.entity.references" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("ft")
@@ -353,7 +354,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "false"
      * "resteasy.document.expand.entity.references" is set to "true"
      * @tpPassCrit Passwd file should be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("tf")
@@ -366,7 +367,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "true"
      * "resteasy.document.expand.entity.references" is set to "true"
      * @tpPassCrit Passwd file should be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("tt")
@@ -379,7 +380,7 @@ public class XxeJaxbTest {
      * tags. Resource binds such xml correctly into a list object
      * "resteasy.document.secure.processing.feature" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("f")
@@ -392,7 +393,7 @@ public class XxeJaxbTest {
      * tags. Resource binds such xml correctly into a list object
      * "resteasy.document.secure.processing.feature" is set to "true"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("t")
@@ -406,7 +407,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "false"
      * "resteasy.document.expand.entity.references" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("ff")
@@ -420,7 +421,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "true"
      * "resteasy.document.expand.entity.references" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("ft")
@@ -434,7 +435,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "false"
      * "resteasy.document.expand.entity.references" is set to "true"
      * @tpPassCrit Passwd file should be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("tf")
@@ -448,7 +449,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "true"
      * "resteasy.document.expand.entity.references" is set to "true"
      * @tpPassCrit Passwd file should be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("tt")
@@ -461,7 +462,7 @@ public class XxeJaxbTest {
      * tags. Resource binds such xml correctly into a Set object
      * "resteasy.document.secure.processing.feature" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("f")
@@ -474,7 +475,7 @@ public class XxeJaxbTest {
      * tags. Resource binds such xml correctly into a Set object
      * "resteasy.document.secure.processing.feature" is set to "true"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("t")
@@ -488,7 +489,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "false"
      * "resteasy.document.expand.entity.references" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("ff")
@@ -502,7 +503,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "true"
      * "resteasy.document.expand.entity.references" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("ft")
@@ -516,7 +517,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "false"
      * "resteasy.document.expand.entity.references" is set to "true"
      * @tpPassCrit Passwd file should be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("tf")
@@ -530,7 +531,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "true"
      * "resteasy.document.expand.entity.references" is set to "true"
      * @tpPassCrit Passwd file should be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("tt")
@@ -543,7 +544,7 @@ public class XxeJaxbTest {
      * tags. Resource binds such xml correctly into an array
      * "resteasy.document.secure.processing.feature" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("f")
@@ -556,7 +557,7 @@ public class XxeJaxbTest {
      * tags. Resource binds such xml correctly into an array
      * "resteasy.document.secure.processing.feature" is set to "true"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("t")
@@ -570,7 +571,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "false"
      * "resteasy.document.expand.entity.references" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("ff")
@@ -584,7 +585,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "true"
      * "resteasy.document.expand.entity.references" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("ft")
@@ -598,7 +599,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "false"
      * "resteasy.document.expand.entity.references" is set to "true"
      * @tpPassCrit Passwd file should be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("tf")
@@ -612,7 +613,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "true"
      * "resteasy.document.expand.entity.references" is set to "true"
      * @tpPassCrit Passwd file should be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("tt")
@@ -625,7 +626,7 @@ public class XxeJaxbTest {
      * tags. Resource binds such xml correctly into a map
      * "resteasy.document.secure.processing.feature" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("f")
@@ -638,7 +639,7 @@ public class XxeJaxbTest {
      * tags. Resource binds such xml correctly into a map
      * "resteasy.document.secure.processing.feature" is set to "true"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("t")
@@ -652,7 +653,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "false"
      * "resteasy.document.expand.entity.references" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("ff")
@@ -666,7 +667,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "true"
      * "resteasy.document.expand.entity.references" is set to "false"
      * @tpPassCrit Passwd file should not be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("ft")
@@ -680,7 +681,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "false"
      * "resteasy.document.expand.entity.references" is set to "true"
      * @tpPassCrit Passwd file should be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("tf")
@@ -694,7 +695,7 @@ public class XxeJaxbTest {
      * "resteasy.document.secure.processing.feature" is set to "true"
      * "resteasy.document.expand.entity.references" is set to "true"
      * @tpPassCrit Passwd file should be returned by the response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("tt")

@@ -21,7 +21,7 @@ import javax.ws.rs.NotAuthorizedException;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Regression test for RESTEASY-435
  */
 @RunWith(Arquillian.class)
@@ -41,7 +41,7 @@ public class UnauthorizedExceptionTest {
 
     /**
      * @tpTestDetails Check thrown exception on client side.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMe() throws Exception {

@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpTestCaseDetails Smoke parameter test.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -53,7 +53,7 @@ public class SmokeParamTest {
 
     /**
      * @tpTestDetails Test one request with header and query parameter.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSimple() throws Exception {

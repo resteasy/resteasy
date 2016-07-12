@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Writers
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -54,7 +54,7 @@ public class WriterMatchingTest {
 
     /**
      * @tpTestDetails Check correct sort of writers. RESTEasy should check correct writer.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMatch() {

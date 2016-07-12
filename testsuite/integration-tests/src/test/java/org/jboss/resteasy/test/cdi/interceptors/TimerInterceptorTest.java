@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter CDI
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for interceptors with timer service.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class TimerInterceptorTest {
@@ -48,7 +48,7 @@ public class TimerInterceptorTest {
 
     /**
      * @tpTestDetails Timer is sheduled and than is called.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testTimerInterceptor() throws Exception {

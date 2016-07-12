@@ -24,7 +24,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -57,7 +57,7 @@ public class ProxyJaxbResourceIntfTest {
 
     /**
      * @tpTestDetails Tests client proxy with annotated jaxb resource, RESTEASY-306
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIt() throws Exception {

@@ -30,7 +30,7 @@ import java.util.Map;
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-637
  *                    Basic XXE test.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -48,7 +48,7 @@ public class XXEBasicTest {
     }
 
     static ResteasyClient client;
-    protected static final Logger logger = LogManager.getLogger(XXEBasicTest.class.getName());
+    protected final Logger logger = LogManager.getLogger(XXEBasicTest.class.getName());
 
     public static Archive<?> deploy(String expandEntityReferences) {
         WebArchive war = TestUtil.prepareArchive(expandEntityReferences);
@@ -76,11 +76,12 @@ public class XXEBasicTest {
     @After
     public void after() throws Exception {
         client.close();
+        client = null;
     }
 
     /**
      * @tpTestDetails "resteasy.document.secure.disableDTDs" is set to false
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXXEWithoutExpansion() throws Exception {
@@ -90,21 +91,19 @@ public class XXEBasicTest {
 
         Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         String entity = response.readEntity(String.class);
-        logger.info("result: " + entity);
         Assert.assertEquals(entity, null);
         response.close();
     }
 
     /**
      * @tpTestDetails "resteasy.document.secure.disableDTDs" is set to true
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXXEWithExpansion() throws Exception {
         Response response = client.target(PortProviderUtil.generateURL("/", "true")).request().post(Entity.entity(request, "application/xml"));
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         String entity = response.readEntity(String.class);
-        logger.info("result: " + entity);
         Assert.assertEquals("xx:xx:xx:xx:xx:xx:xx", entity);
         response.close();
     }

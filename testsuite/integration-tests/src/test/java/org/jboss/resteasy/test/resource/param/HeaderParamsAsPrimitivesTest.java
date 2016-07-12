@@ -66,7 +66,7 @@ import static org.junit.Assert.fail;
  * @tpSubChapter Parameters
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test primitive header parameters
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -270,7 +270,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Test set of boolean
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSet() {
@@ -325,7 +325,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Test list of boolean with GET method
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBoolean() {
@@ -344,7 +344,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Basic test for boolean
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBooleanPrimitivesDefault() {
@@ -356,7 +356,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Boolean test by proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBooleanPrimitiveWrapperDefault() {
@@ -368,7 +368,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Proxy test for list of boolean
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBooleanPrimitiveListDefault() {
@@ -386,7 +386,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Basic test for byte
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetByte() {
@@ -414,7 +414,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Proxy test for byte
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBytePrimitivesDefault() {
@@ -426,7 +426,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Proxy test for byte with wrapper
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBytePrimitiveWrappersDefault() {
@@ -438,7 +438,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Basic test for byte list
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBytePrimitiveListDefault() {
@@ -452,7 +452,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Basic test for short, use proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetShort() {
@@ -468,7 +468,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Basic test for short, test default value
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetShortPrimtivesDefault() {
@@ -477,7 +477,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Short type test, use wrapper
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetShortPrimtiveWrappersDefault() {
@@ -486,7 +486,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Short test, test default value
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetShortPrimtiveListDefault() {
@@ -495,7 +495,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Basic test for int
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetInt() {
@@ -504,7 +504,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Check default value for int
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetIntPrimitivesDefault() {
@@ -513,7 +513,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Test int with wrapper
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetIntPrimitiveWrappersDefault() {
@@ -522,7 +522,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Test list of int
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetIntPrimitiveListDefault() {
@@ -531,7 +531,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Basic test for long
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetLong() {
@@ -540,7 +540,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Test default value for long
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetLongPrimitivesDefault() {
@@ -549,7 +549,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Test default value for long, use wrapper
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetLongPrimitiveWrappersDefault() {
@@ -558,7 +558,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Test default value for list of long, do not use wrapper
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetLongPrimitiveListDefault() {
@@ -567,7 +567,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Basic test for float
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetFloat() {
@@ -576,7 +576,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Test default value for float
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetFloatPrimitivesDefault() {
@@ -585,7 +585,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Test default value for float, use wrapper
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetFloatPrimitiveWrappersDefault() {
@@ -594,7 +594,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Test default value for list of float, use wrapper
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetFloatPrimitiveListDefault() {
@@ -603,7 +603,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Basic test for double
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetDouble() {
@@ -612,7 +612,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Basic test for double, test default value
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetDoublePrimitivesDefault() {
@@ -621,7 +621,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Basic test for double, use wrapper
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetDoublePrimitiveWrappersDefault() {
@@ -630,7 +630,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Basic test for list of double, do not use wrapper
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetDoublePrimitiveListDefault() {
@@ -639,7 +639,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Negative test for int
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBadPrimitiveValue() {
@@ -655,7 +655,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Negative test for int, use wrapper
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBadPrimitiveWrapperValue() {
@@ -671,7 +671,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Negative test for list of int
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBadPrimitiveListValue() {

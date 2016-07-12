@@ -22,13 +22,13 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class StringCharsetTest {
 
-    private static Logger logger = Logger.getLogger(ExceptionMapperJaxbTest.class.getName());
+    private final Logger logger = Logger.getLogger(ExceptionMapperJaxbTest.class.getName());
     static ResteasyClient client;
 
     @Deployment
@@ -46,6 +46,7 @@ public class StringCharsetTest {
     @After
     public void after() throws Exception {
         client.close();
+        client = null;
     }
 
     private String generateURL(String path) {
@@ -54,7 +55,7 @@ public class StringCharsetTest {
 
     /**
      * @tpTestDetails Tests jaxb with combination of request specified charset
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIt() throws Exception {

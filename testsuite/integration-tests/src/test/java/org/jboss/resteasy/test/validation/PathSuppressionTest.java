@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter Response
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-945
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -78,7 +78,7 @@ public class PathSuppressionTest {
 
     /**
      * @tpTestDetails Check input parameters for default value of resteasy.validation.suppress.path
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInputSuppressPathDefault() throws Exception {
@@ -87,7 +87,7 @@ public class PathSuppressionTest {
 
     /**
      * @tpTestDetails Check input parameters for false value of resteasy.validation.suppress.path
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInputSuppressPathFalse() throws Exception {
@@ -96,7 +96,7 @@ public class PathSuppressionTest {
 
     /**
      * @tpTestDetails Check input parameters for true value of resteasy.validation.suppress.path
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInputSuppressPathTrue() throws Exception {
@@ -105,7 +105,7 @@ public class PathSuppressionTest {
 
     /**
      * @tpTestDetails Check return value for default value of resteasy.validation.suppress.path
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testReturnValueSuppressPathDefault() throws Exception {
@@ -114,7 +114,7 @@ public class PathSuppressionTest {
 
     /**
      * @tpTestDetails Check return value for false value of resteasy.validation.suppress.path
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testReturnValueSuppressPathFalse() throws Exception {
@@ -123,7 +123,7 @@ public class PathSuppressionTest {
 
     /**
      * @tpTestDetails Check return value for true value of resteasy.validation.suppress.path
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testReturnSuppressPathTrue() throws Exception {

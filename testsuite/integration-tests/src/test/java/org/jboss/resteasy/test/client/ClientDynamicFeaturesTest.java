@@ -24,7 +24,7 @@ import java.util.Set;
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1083
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class ClientDynamicFeaturesTest {
@@ -49,7 +49,7 @@ public class ClientDynamicFeaturesTest {
 
     /**
      * @tpTestDetails Check dynamic feature counts.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDynamicFeatures() throws Exception {

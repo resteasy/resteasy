@@ -17,7 +17,7 @@ import java.net.URI;
  * @tpSubChapter Util tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for javax.ws.rs.core.Link class.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class LinkTest {
 
@@ -25,7 +25,7 @@ public class LinkTest {
 
     /**
      * @tpTestDetails Check relative path option
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRelativized() throws Exception {
@@ -47,7 +47,7 @@ public class LinkTest {
 
     /**
      * @tpTestDetails Check fromMethod method.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFromMethod() {
@@ -62,7 +62,7 @@ public class LinkTest {
 
     /**
      * @tpTestDetails Check wrong URI
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIllegalUri() {

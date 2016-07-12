@@ -26,7 +26,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Asynchronous RESTEasy
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-767
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class AsyncPostProcessingTest {
@@ -59,7 +59,7 @@ public class AsyncPostProcessingTest {
 
     /**
      * @tpTestDetails Test synchronized request.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSync() throws Exception {
@@ -79,7 +79,7 @@ public class AsyncPostProcessingTest {
 
     /**
      * @tpTestDetails Test async request with delay.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAsyncWithDelay() throws Exception {
@@ -99,7 +99,7 @@ public class AsyncPostProcessingTest {
 
     /**
      * @tpTestDetails Test async request without delay.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAsyncWithNoDelay() throws Exception {

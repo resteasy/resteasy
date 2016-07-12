@@ -34,7 +34,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Resources
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test resources with sub-resources with parameters.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -73,7 +73,7 @@ public class ParameterSubResTest {
 
     /**
      * @tpTestDetails Check types of parameter.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testParametized() throws Exception {
@@ -82,7 +82,7 @@ public class ParameterSubResTest {
 
     /**
      * @tpTestDetails Check sub resources.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSubResource() throws Exception {
@@ -93,7 +93,7 @@ public class ParameterSubResTest {
 
     /**
      * @tpTestDetails Check root resource.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRoot() throws Exception {

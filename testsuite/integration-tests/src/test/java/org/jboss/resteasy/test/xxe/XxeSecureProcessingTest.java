@@ -28,14 +28,14 @@ import java.util.Map;
  * @tpSubChapter XXE
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-869
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class XxeSecureProcessingTest {
 
     private ResteasyClient client;
-    public static final Logger logger = LogManager.getLogger(XxeSecureProcessingTest.class.getName());
+    public final Logger logger = LogManager.getLogger(XxeSecureProcessingTest.class.getName());
 
     String doctype =
             "<!DOCTYPE foodocument [" +
@@ -97,97 +97,88 @@ public class XxeSecureProcessingTest {
 
     /**
      * @tpTestDetails Small request in XML root element. "resteasy.document.expand.entity.references" property is not set.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlRootElementDefaultSmall() throws Exception {
         Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", null)).request().post(Entity.entity(small, "application/xml"));
-        logger.info("status: " + response.getStatus());
         Assert.assertEquals(200, response.getStatus());
         String entity = response.readEntity(String.class);
-        logger.info("Result: " + entity.substring(0, 30));
-        logger.info("foos: " + countFoos(entity));
+        logger.debug("Result: " + entity.substring(0, 30));
         Assert.assertEquals(10000, countFoos(entity));
         response.close();
     }
 
     /**
      * @tpTestDetails Big request in XML root element. "resteasy.document.expand.entity.references" property is not set.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlRootElementDefaultBig() throws Exception {
         Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", null)).request().post(Entity.entity(big, "application/xml"));
-        logger.info("status: " + response.getStatus());
         Assert.assertEquals(400, response.getStatus());
         String entity = response.readEntity(String.class);
-        logger.info("Result: " + entity);
+        logger.debug("Result: " + entity);
         Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException"));
         response.close();
     }
 
     /**
      * @tpTestDetails Small request in XML root element. "resteasy.document.expand.entity.references" property is set to false.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlRootElementWithoutExternalExpansionSmall() throws Exception {
         Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", T_FALSE)).request()
                 .post(Entity.entity(small, "application/xml"));
-        logger.info("status: " + response.getStatus());
         Assert.assertEquals(200, response.getStatus());
         String entity = response.readEntity(String.class);
-        logger.info("Result: " + entity.substring(0, 30));
-        logger.info("foos: " + countFoos(entity));
+        logger.debug("Result: " + entity.substring(0, 30));
         Assert.assertEquals(10000, countFoos(entity));
         response.close();
     }
 
     /**
      * @tpTestDetails Big request in XML root element. "resteasy.document.expand.entity.references" property is set to false.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlRootElementWithoutExternalExpansionBig() throws Exception {
         Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", T_FALSE)).request()
                 .post(Entity.entity(big, "application/xml"));
-        logger.info("status: " + response.getStatus());
         Assert.assertEquals(400, response.getStatus());
         String entity = response.readEntity(String.class);
-        logger.info("Result: " + entity);
+        logger.debug("Result: " + entity);
         Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException"));
         response.close();
     }
 
     /**
      * @tpTestDetails Small request in XML root element. "resteasy.document.expand.entity.references" property is set to true.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlRootElementWithExternalExpansionSmall() throws Exception {
         Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", T_TRUE)).request()
                 .post(Entity.entity(small, "application/xml"));
-        logger.info("status: " + response.getStatus());
         Assert.assertEquals(200, response.getStatus());
         String entity = response.readEntity(String.class);
-        logger.info("Result: " + entity.substring(0, 30));
-        logger.info("foos: " + countFoos(entity));
+        logger.debug("Result: " + entity.substring(0, 30));
         Assert.assertEquals(10000, countFoos(entity));
         response.close();
     }
 
     /**
      * @tpTestDetails Big request in XML root element. "resteasy.document.expand.entity.references" property is set to true.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlRootElementWithExternalExpansionBig() throws Exception {
         Response response = client.target(PortProviderUtil.generateURL("/xmlRootElement", T_TRUE)).request()
                 .post(Entity.entity(big, "application/xml"));
-        logger.info("status: " + response.getStatus());
         Assert.assertEquals(400, response.getStatus());
         String entity = response.readEntity(String.class);
-        logger.info("Result: " + entity);
+        logger.debug("Result: " + entity);
         Assert.assertTrue(entity.contains("javax.xml.bind.UnmarshalException"));
         response.close();
     }

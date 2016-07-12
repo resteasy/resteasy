@@ -26,7 +26,7 @@ import static junit.framework.Assert.assertEquals;
  * @tpSubChapter Providers
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for custom provider preference.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -58,7 +58,7 @@ public class CustomProviderPreferenceTest {
 
     /**
      * @tpTestDetails Client test.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCustomProviderPreference() throws Exception {

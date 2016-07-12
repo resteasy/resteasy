@@ -28,7 +28,7 @@ import java.util.Date;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -60,7 +60,7 @@ public class ProxyJaxbResourcePostTest {
 
     /**
      * @tpTestDetails Tests client proxy with annotated jaxb resource, sends jaxb object to the server
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testClient() throws Exception {

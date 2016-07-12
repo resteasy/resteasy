@@ -18,14 +18,14 @@ import java.util.TimeZone;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class ResponseTest {
     protected static final Logger logger = LogManager.getLogger(ResponseTest.class.getName());
 
     /**
      * @tpTestDetails Test getLastModified method of response"
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void getLastModifiedTest() {
@@ -39,7 +39,7 @@ public class ResponseTest {
 
     /**
      * @tpTestDetails Test expires item from metadata.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void expiresTest() {

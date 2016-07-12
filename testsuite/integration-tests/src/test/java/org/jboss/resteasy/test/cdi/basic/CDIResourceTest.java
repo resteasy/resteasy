@@ -29,7 +29,7 @@ import java.nio.file.StandardCopyOption;
  * @tpSubChapter CDI
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1082
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -51,7 +51,7 @@ public class CDIResourceTest {
 
     /**
      * @tpTestDetails Redeploy deployment with RESTEasy and CDI beans. Check errors.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCDIResourceFromServlet() throws Exception {
@@ -120,9 +120,7 @@ public class CDIResourceTest {
     protected void printResponse(HttpResponse response) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
         String line = reader.readLine();
-        logger.info("___________________");
         logger.info("_____Response:_____");
-        logger.info("___________________");
         while (line != null) {
             logger.info(line);
             line = reader.readLine();

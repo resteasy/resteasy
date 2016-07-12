@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -58,7 +58,7 @@ public class MapProviderBuiltInTest {
      * server using invocation method. The server returns response containing MultiValuedMap. The builtin Resteasy MapProvider
      * is used for reading request and writing response.
      * @tpPassCrit Correct response is returned from the server and map contains original item
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMapInvoke() {
@@ -78,7 +78,7 @@ public class MapProviderBuiltInTest {
      * using post method. The server returns response containing MultiValuedMap. The builtin Resteasy MapProvider
      * is used for reading request and writing response.
      * @tpPassCrit Correct response is returned from the server and map contains original item
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMapPost() {

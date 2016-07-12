@@ -24,7 +24,7 @@ import java.util.HashSet;
  * @tpSubChapter Response
  * @tpChapter Integration tests
  * @tpTestCaseDetails Spec requires that HEAD and OPTIONS are handled in a default manner
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -56,7 +56,7 @@ public class MethodDefaultTest {
      * @tpTestDetails Client invokes Head on root resource at /GetTest;
      *                which no request method designated for HEAD;
      *                Verify that corresponding GET Method is invoked.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testHeadPlain() throws Exception {
@@ -71,7 +71,7 @@ public class MethodDefaultTest {
      * @tpTestDetails Client invokes HEAD on root resource at /GetTest;
      *                which no request method designated for HEAD;
      *                Verify that corresponding GET Method is invoked.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testHeadHtml() throws Exception {
@@ -86,7 +86,7 @@ public class MethodDefaultTest {
      * @tpTestDetails Client invokes HEAD on sub resource at /GetTest/sub;
      * which no request method designated for HEAD;
      * Verify that corresponding GET Method is invoked instead.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testHeadSubresource() throws Exception {
@@ -100,7 +100,7 @@ public class MethodDefaultTest {
     /**
      * @tpTestDetails If client invokes OPTIONS and there is no request method that exists, verify that an automatic response is
      *                generated
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testOptions() throws Exception {

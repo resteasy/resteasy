@@ -30,7 +30,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Jackson2 provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -80,7 +80,7 @@ public class JacksonJaxbCoexistenceTest {
      * @tpTestDetails Client sends GET request for json annotated resource. In the first case it returns single json entity,
      * in the second case multiple json entities as String.
      * @tpPassCrit The resource returns json entities in correct format
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJacksonString() throws Exception {
@@ -106,7 +106,7 @@ public class JacksonJaxbCoexistenceTest {
 
     /**
      * @tpTestDetails Test that Jackson is picked
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJacksonXmlString() throws Exception {
@@ -132,7 +132,7 @@ public class JacksonJaxbCoexistenceTest {
     /**
      * @tpTestDetails Test that Jettison is picked
      * Jettison is deprecated, so it needs to be added to EAP manually (see JBEAP-2856).
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlString() throws Exception {
@@ -154,7 +154,7 @@ public class JacksonJaxbCoexistenceTest {
 
     /**
      * @tpTestDetails Test that Jackson is picked and object can be returned from the resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJackson() throws Exception {

@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -55,7 +55,7 @@ public class LocatorTest {
      * @tpTestDetails Client sends GET request for the resource which is not annotated with any HTTP method anotation.
      * This resource created new object resource and passes the request to this new created object.
      * @tpPassCrit Correct response is returned from the server
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLocatorWithSubWithPathAnnotation() {
@@ -67,7 +67,7 @@ public class LocatorTest {
     /**
      * @tpTestDetails Client sends GET request with the path which matches multiple resources.
      * @tpPassCrit Correct resource is used and successful response is returned.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMultiplePathOptions() {

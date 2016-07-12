@@ -33,7 +33,7 @@ import java.util.Arrays;
  * @tpSubChapter IIOImage provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Basic test for IIOImage provider. Old issue: https://issues.jboss.org/browse/RESTEASY-862
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -66,7 +66,7 @@ public class IIOImageProviderTest {
     /**
      * @tpTestDetails Test a post of a PNG image whose response should be a PNG version of the
      *                same photo.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostJPEGIMage() throws Exception {
@@ -94,7 +94,7 @@ public class IIOImageProviderTest {
      *                case, an HD Photo image is posted to the Resource which should return a
      *                406 - Not Acceptable response. The response body should include a list of
      *                variants that are supported by the application.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostUnsupportedImage() throws Exception {

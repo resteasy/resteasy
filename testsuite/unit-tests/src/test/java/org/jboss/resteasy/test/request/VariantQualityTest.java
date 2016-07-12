@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter Requests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for VariantQuality class.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class VariantQualityTest {
 
@@ -20,7 +20,7 @@ public class VariantQualityTest {
 
     /**
      * @tpTestDetails Check default values.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void defaultQuality() {
@@ -35,7 +35,7 @@ public class VariantQualityTest {
 
     /**
      * @tpTestDetails Check quality setters.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void qualitySetters() {

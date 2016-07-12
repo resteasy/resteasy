@@ -49,7 +49,7 @@ import static org.jboss.resteasy.util.HttpClient4xUtils.updateQuery;
  * @tpSubChapter Parameters
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test all variants of primitive query parameters (boolean, int, long, float, etc.)
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -229,7 +229,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test boolean primitive object for get request
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBoolean() {
@@ -248,7 +248,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test boolean primitive object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBooleanPrimitivesDefault() {
@@ -257,7 +257,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test boolean primitive object with proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBooleanPrimitiveWrapperDefault() {
@@ -266,7 +266,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test boolean primitive objects in list
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBooleanPrimitiveListDefault() {
@@ -275,7 +275,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test boolean primitive objects in array
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBooleanPrimitiveArrayDefault() {
@@ -284,7 +284,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test byte primitive object for get method
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetByte() {
@@ -303,7 +303,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test byte primitive object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBytePrimitivesDefault() {
@@ -312,7 +312,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test byte primitive object with proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBytePrimitiveWrappersDefault() {
@@ -321,7 +321,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test byte primitive objects in list
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBytePrimitiveListDefault() {
@@ -330,7 +330,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test byte primitive objects in array
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBytePrimitiveArrayDefault() {
@@ -339,7 +339,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test short primitive object for get method
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetShort() {
@@ -348,7 +348,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test short primitive object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetShortPrimtivesDefault() {
@@ -357,7 +357,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test short primitive object with proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetShortPrimtiveWrappersDefault() {
@@ -366,7 +366,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test short primitive objects in list
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetShortPrimtiveListDefault() {
@@ -375,7 +375,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test int primitive object for get method
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetInt() {
@@ -384,7 +384,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test int primitive object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetIntPrimitivesDefault() {
@@ -393,7 +393,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test int primitive object with proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetIntPrimitiveWrappersDefault() {
@@ -402,7 +402,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test int primitive objects in list
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetIntPrimitiveListDefault() {
@@ -411,7 +411,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test long primitive object with get method
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetLong() {
@@ -420,7 +420,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test long primitive object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetLongPrimitivesDefault() {
@@ -429,7 +429,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test long primitive object with proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetLongPrimitiveWrappersDefault() {
@@ -438,7 +438,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test long primitive objects in list
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetLongPrimitiveListDefault() {
@@ -447,7 +447,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test float primitive object with get method
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetFloat() {
@@ -456,7 +456,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test float primitive object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetFloatPrimitivesDefault() {
@@ -465,7 +465,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test float primitive object with proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetFloatPrimitiveWrappersDefault() {
@@ -474,7 +474,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test float primitive objects in list
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetFloatPrimitiveListDefault() {
@@ -483,7 +483,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test double primitive object with get method
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetDouble() {
@@ -492,7 +492,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test double primitive object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetDoublePrimitivesDefault() {
@@ -501,7 +501,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test double primitive object with proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetDoublePrimitiveWrappersDefault() {
@@ -510,7 +510,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test double primitive objects in list
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetDoublePrimitiveListDefault() {
@@ -519,7 +519,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Negative testing: accept only int, but string is provided. Error is excepted.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBadPrimitiveValue() {
@@ -540,7 +540,7 @@ public class QueryParamAsPrimitiveTest {
     /**
      * @tpTestDetails Negative testing: accept only int, but string is provided. Error is excepted.
      *                Proxy is used.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBadPrimitiveWrapperValue() {
@@ -561,7 +561,7 @@ public class QueryParamAsPrimitiveTest {
     /**
      * @tpTestDetails Negative testing: accept only int, but string is provided. Error is excepted.
      *                List is tested
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBadPrimitiveListValue() {

@@ -21,7 +21,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Localization
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -35,7 +35,7 @@ public class AcceptLanguagesTest {
 
     /**
      * @tpTestDetails Check some languages for accepting
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLanguages() throws Exception {

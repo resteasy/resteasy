@@ -27,7 +27,7 @@ import java.util.Map;
  * @tpSubChapter Resources
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test positive scenario for "resteasy.wider.request.matching" property
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -62,7 +62,7 @@ public class WiderMappingTest {
 
    /**
     * @tpTestDetails Two resources used, more general resource should be used
-    * @tpSince EAP 7.0.0
+    * @tpSince RESTEasy 3.0.16
     */
    @Test
    public void testOptions() {

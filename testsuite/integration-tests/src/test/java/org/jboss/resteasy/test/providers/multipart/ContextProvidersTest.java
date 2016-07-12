@@ -60,14 +60,14 @@ import static org.hamcrest.CoreMatchers.is;
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1119.
  *      Unable to find contextual data of type: javax.ws.rs.ext.Providers if ClientBuilder.newClient is used.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @SuppressWarnings("deprecation")
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ContextProvidersTest {
 
-    protected static final Logger logger = LogManager.getLogger(ContextProvidersTest.class.getName());
+    protected final Logger logger = LogManager.getLogger(ContextProvidersTest.class.getName());
 
     protected enum Version {
         TWO,
@@ -105,7 +105,7 @@ public class ContextProvidersTest {
     /**
      * @tpTestDetails Form data in get request is used.
      * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetFormData() throws Exception {
@@ -119,10 +119,8 @@ public class ContextProvidersTest {
 
             // Get parts by name.
             ContextProvidersCustomer c = entity.getFormDataPart("bill", ContextProvidersCustomer.class, null);
-            logger.info("Response part 1: " + c.getName());
             Assert.assertEquals("Wrong response", "Bill", c.getName());
             String s = entity.getFormDataPart("bob", String.class, null);
-            logger.info("Response part 2: " + s);
             Assert.assertEquals("Wrong response", "Bob", s);
 
             // Iterate over list of parts.
@@ -133,7 +131,6 @@ public class ContextProvidersTest {
                 List<InputPart> list = map.get(key);
                 for (Iterator<InputPart> it2 = list.iterator(); it2.hasNext(); ) {
                     InputPart inputPart = it2.next();
-                    logger.info("media type: " + inputPart.getMediaType());
                     if (MediaType.APPLICATION_XML_TYPE.equals(inputPart.getMediaType())) {
                         c = inputPart.getBody(ContextProvidersCustomer.class, null);
                         Assert.assertEquals("Wrong response", "Bill", c.getName());
@@ -151,7 +148,7 @@ public class ContextProvidersTest {
     /**
      * @tpTestDetails Mixed data in get request is used.
      * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetMixed() throws Exception {
@@ -167,7 +164,6 @@ public class ContextProvidersTest {
             List<InputPart> parts = entity.getParts();
             for (Iterator<InputPart> it = parts.iterator(); it.hasNext(); ) {
                 InputPart inputPart = it.next();
-                logger.info("InputPart media type: " + inputPart.getMediaType());
                 if (MediaType.APPLICATION_XML_TYPE.equals(inputPart.getMediaType())) {
                     ContextProvidersCustomer c = inputPart.getBody(ContextProvidersCustomer.class, null);
                     Assert.assertEquals("Wrong response", "Bill", c.getName());
@@ -184,7 +180,7 @@ public class ContextProvidersTest {
     /**
      * @tpTestDetails List data in get request is used.
      * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetList() throws Exception {
@@ -214,7 +210,7 @@ public class ContextProvidersTest {
     /**
      * @tpTestDetails Map data in get request is used.
      * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetMap() throws Exception {
@@ -228,10 +224,8 @@ public class ContextProvidersTest {
 
             // Get parts by name.
             ContextProvidersCustomer c = entity.getFormDataPart("bill", ContextProvidersCustomer.class, null);
-            logger.info("Response part 1: " + c.getName());
             Assert.assertEquals("Wrong response", "Bill", c.getName());
             c = entity.getFormDataPart("bob", ContextProvidersCustomer.class, null);
-            logger.info("Response part 2: " + c.getName());
             Assert.assertEquals("Wrong response", "Bob", c.getName());
 
             // Iterate over map of parts.
@@ -256,7 +250,7 @@ public class ContextProvidersTest {
     /**
      * @tpTestDetails Related data in get request is used.
      * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetRelated() throws Exception {
@@ -291,7 +285,7 @@ public class ContextProvidersTest {
     /**
      * @tpTestDetails Multipart form data in get request is used.
      * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetMultipartForm() throws Exception {
@@ -310,7 +304,7 @@ public class ContextProvidersTest {
     /**
      * @tpTestDetails Xop data in get request is used.
      * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetXop() throws Exception {
@@ -322,14 +316,13 @@ public class ContextProvidersTest {
         Annotation[] annotations = new Annotation[1];
         annotations[0] = XOP_WITH_MULTIPART_RELATED;
         ContextProvidersXop xop = get(version, "/get/xop", ContextProvidersXop.class, annotations);
-        logger.info("xop response: " + new String(xop.getBytes()));
         Assert.assertEquals("Wrong response", "goodbye world", new String(xop.getBytes()));
     }
 
     /**
      * @tpTestDetails Mixed data in post request is used.
      * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostMixed() throws Exception {
@@ -354,7 +347,7 @@ public class ContextProvidersTest {
     /**
      * @tpTestDetails Form data in post request is used.
      * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostFormData() throws Exception {
@@ -380,7 +373,7 @@ public class ContextProvidersTest {
     /**
      * @tpTestDetails List data in post request is used.
      * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostList() throws Exception {
@@ -405,7 +398,7 @@ public class ContextProvidersTest {
     /**
      * @tpTestDetails Map data in post request is used.
      * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostMap() throws Exception {
@@ -430,7 +423,7 @@ public class ContextProvidersTest {
     /**
      * @tpTestDetails Related data in post request is used.
      * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostRelated() throws Exception {
@@ -456,7 +449,7 @@ public class ContextProvidersTest {
     /**
      * @tpTestDetails Multipart form data in post request is used.
      * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostMultipartForm() throws Exception {
@@ -470,14 +463,13 @@ public class ContextProvidersTest {
         Annotation[] annotations = new Annotation[1];
         annotations[0] = MULTIPART_FORM;
         String name = post(version, "/post/multipartform", form, MULTIPART_FORM_DATA, String.class, null, annotations);
-        logger.info("Response: " + name);
         Assert.assertEquals("Wrong response", "Bill", name);
     }
 
     /**
      * @tpTestDetails Xop data in post request is used.
      * @tpPassCrit RE should be able to find contextual data of type: javax.ws.rs.ext.Providers.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostXop() throws Exception {
@@ -504,7 +496,6 @@ public class ContextProvidersTest {
                     ClientRequest request = new ClientRequest(PortProviderUtil.generateURL(path, ContextProvidersTest.class.getSimpleName()));
 
                     ClientResponse<T> response = request.get(clazz);
-                    logger.info("Response status: " + response.getStatus());
                     Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
                     T entity = response.getEntity(clazz, null, annotations);
                     return entity;
@@ -514,7 +505,6 @@ public class ContextProvidersTest {
                     Client client = ClientBuilder.newClient();
                     WebTarget target = client.target(PortProviderUtil.generateURL(path, ContextProvidersTest.class.getSimpleName()));
                     Response response = target.request().get();
-                    logger.info("Response status: " + response.getStatus());
                     Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
                     T entity = response.readEntity(clazz, annotations);
                     return entity;
@@ -550,7 +540,6 @@ public class ContextProvidersTest {
                 WebTarget target = client.target(PortProviderUtil.generateURL(path, ContextProvidersTest.class.getSimpleName()));
                 Entity<S> entity = Entity.entity(payload, mediaType, annotations);
                 Response response = target.request().post(entity);
-                logger.info("Response status: " + response.getStatus());
                 Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
                 T result = null;
                 if (genericReturnType != null) {

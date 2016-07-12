@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Resource
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test that a locator and resource with same path params work
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -53,7 +53,7 @@ public class MultipleMatrixSegmentsTest {
 
     /**
      * @tpTestDetails Test segments on start and on end of path
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMultipleStartAndEnd() throws Exception {
@@ -64,7 +64,7 @@ public class MultipleMatrixSegmentsTest {
 
     /**
      * @tpTestDetails Test segments in the middle of path
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMultipleMiddle() throws Exception {

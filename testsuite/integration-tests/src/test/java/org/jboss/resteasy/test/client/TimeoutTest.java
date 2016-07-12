@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -55,7 +55,7 @@ public class TimeoutTest {
      * @tpTestDetails Create client with custom SocketTimeout setting. Client sends GET request for the resource which
      * calls sleep() for the specified amount of time.
      * @tpPassCrit The request gets timeouted
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testTimeout() throws Exception {

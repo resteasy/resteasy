@@ -27,7 +27,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter Jettison provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Type mapping test
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -80,7 +80,7 @@ public class TypeMappingJettisonTest {
 
     /**
      * @tpTestDetails Test for extensions: xml -> application/xml, json -> application/json
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void extensionTest() throws Exception {

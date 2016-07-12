@@ -35,7 +35,7 @@ import org.springframework.context.ApplicationContext;
  * @tpSubChapter Spring
  * @tpChapter Integration tests - dependencies included in deployment
  * @tpTestCaseDetails Tests adding spring as resource root in deployment
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -56,7 +56,7 @@ public class AddSpringResteasyAsResourceRootTest {
     /**
      * @tpTestDetails Add spring libraries into the deployment. Deployment is configured with SpringMVC Dispatcher Servlet.
      * @tpPassCrit The application is successfully deployed, resource is available, and Spring classes are on the path.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("dep3")
@@ -84,7 +84,7 @@ public class AddSpringResteasyAsResourceRootTest {
     /**
      * @tpTestDetails Add spring libraries into the deployment. Deployment is configured with Spring context loader listener.
      * @tpPassCrit The application is successfully deployed, resource is available, and Spring classes are on the path.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("dep2")
@@ -111,7 +111,7 @@ public class AddSpringResteasyAsResourceRootTest {
      * @tpTestDetails Add spring libraries into the deployment. Deployment is configured without Spring context loader listener or
      * MVC dispatcher.
      * @tpPassCrit The application is successfully deployed, resource is available, and Spring classes are on the path.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment("dep1")

@@ -36,7 +36,7 @@ import java.util.Iterator;
  * @tpSubChapter Response
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-923
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -71,7 +71,7 @@ public class ValidationCoreTest {
 
     /**
      * @tpTestDetails Test native, imposed and both validation of return values. Also test negative scenarios.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testReturnValues() throws Exception {
@@ -155,7 +155,7 @@ public class ValidationCoreTest {
 
     /**
      * @tpTestDetails Test violations before returning some value.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testViolationsBeforeReturnValue() throws Exception {

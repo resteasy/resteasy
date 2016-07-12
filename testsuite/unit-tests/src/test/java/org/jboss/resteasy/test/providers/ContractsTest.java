@@ -16,13 +16,13 @@ import java.util.Map;
  * @tpSubChapter Providers
  * @tpChapter Unit tests
  * @tpTestCaseDetails Correct selection of Reader and Writer
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class ContractsTest {
 
     /**
      * @tpTestDetails Basic test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLimitedContract() {
@@ -36,7 +36,7 @@ public class ContractsTest {
 
     /**
      * @tpTestDetails Test for map
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLimitedContractMap() {

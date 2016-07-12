@@ -28,12 +28,12 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Response
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test ignored validation
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class GetterReturnValueNotValidatedTest {
-    protected static final Logger logger = LogManager.getLogger(GetterReturnValueNotValidatedTest.class.getName());
+    protected final Logger logger = LogManager.getLogger(GetterReturnValueNotValidatedTest.class.getName());
     ResteasyClient client;
 
     @Deployment
@@ -61,21 +61,18 @@ public class GetterReturnValueNotValidatedTest {
 
     /**
      * @tpTestDetails Validation of getter return value is not expected.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testReturnValues() throws Exception {
-        logger.info("____________________ PRETEST ___________________________________");
         Response response = client.target(generateURL("/get")).request().get();
         response.close();
 
-        logger.info("____________________ SET RELOADED _____________________________");
         response = client.target(generateURL("/set")).request().get();
         Assert.assertEquals(HttpResponseCodes.SC_NO_CONTENT, response.getStatus());
         response.close();
 
         // Valid native constraint
-        logger.info("____________________ MAIN TEST LOGIC __________________________");
         response = client.target(generateURL("/get")).request().get();
         String entity = response.readEntity(String.class);
         logger.info(String.format("Response: %s", entity.replace('\r', ' ').replace('\t', ' ').replace('\n', ' ')));

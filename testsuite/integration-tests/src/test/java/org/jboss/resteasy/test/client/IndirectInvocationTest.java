@@ -28,7 +28,7 @@ import java.util.Collection;
  * @author <a href="mailto:kanovotn@redhat.com">Katerina Novotna</a>
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  *
  */
 @RunWith(Arquillian.class)
@@ -62,7 +62,7 @@ public class IndirectInvocationTest {
     /**
      * @tpTestDetails Create Invocation request and submit it using invoke() method, verify the answer
      * @tpPassCrit Expected response is returned from the server
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void invokeLaterTest() {
@@ -80,7 +80,7 @@ public class IndirectInvocationTest {
      * @tpTestDetails Create two Invocations requests, store them in the list and then call them multiple times
      * @tpPassCrit Expected response is returned from the server
      * @tpInfo https://weblogs.java.net/blog/spericas/archive/2011/10/20/jax-rs-20-client-api-generic-interface
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void invokeMultipleTimes() {

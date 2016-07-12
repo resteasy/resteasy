@@ -39,7 +39,7 @@ import java.net.URI;
 /**
  * @tpSubChapter Atom provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -186,7 +186,7 @@ public class AtomProviderTest {
      * from original request.
      * in the second case multiple json entities as String.
      * @tpPassCrit The resource returns json entities in correct format
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAtomFeed() throws Exception {
@@ -204,7 +204,7 @@ public class AtomProviderTest {
     /**
      * @tpTestDetails Client sends GET request for atom Entry xml annotated resource.
      * @tpPassCrit The response is successful
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAtomEntry() throws Exception {
@@ -219,7 +219,7 @@ public class AtomProviderTest {
      * @tpTestDetails Client sends GET request for atom Entry with xml object.
      * @tpPassCrit The response header contains "application/atom+xml" content-type
      * @tpInfo JBEAP-1048
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testHeaderContentType() throws Exception {
@@ -233,7 +233,7 @@ public class AtomProviderTest {
      * @tpTestDetails Client sends GET request for atom Entry with xml object.
      * @tpPassCrit The response entity Entry contains AtomProviderDataCollectionRecord which contains correct value.
      * @tpInfo JBEAP-1048
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlType() throws Exception {

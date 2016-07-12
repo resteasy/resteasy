@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.client;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -24,14 +22,12 @@ import javax.ws.rs.core.MediaType;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Regression for RESTEASY-1057
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class NullEntityTest {
-
-    protected static final Logger logger = LogManager.getLogger(NullEntityTest.class.getName());
 
     @Deployment
     public static Archive<?> deploy() {
@@ -45,84 +41,78 @@ public class NullEntityTest {
 
     /**
      * @tpTestDetails Test to send null by post request.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostNull() {
         ResteasyClient client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = client.target(generateURL("/null"));
         String response = target.request().post(null, String.class);
-        logger.info("response: \"" + response + "\"");
         Assert.assertEquals("Wrong response", "", response);
         client.close();
     }
 
     /**
      * @tpTestDetails Test to send null via entity by post request.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEntity() {
         ResteasyClient client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = client.target(generateURL("/entity"));
         String response = target.request().post(Entity.entity(null, MediaType.WILDCARD), String.class);
-        logger.info("response: \"" + response + "\"");
         Assert.assertEquals("Wrong response", "", response);
         client.close();
     }
 
     /**
      * @tpTestDetails Test to send null via form
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testForm() {
         ResteasyClient client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = client.target(generateURL("/form"));
         String response = target.request().post(Entity.form((Form) null), String.class);
-        logger.info("response: \"" + response + "\"");
         Assert.assertEquals("Wrong response", null, response);
         client.close();
     }
 
     /**
      * @tpTestDetails Test resource with "text/html" media type
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testHtml() {
         ResteasyClient client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = client.target(generateURL("/html"));
         String response = target.request().post(Entity.html(null), String.class);
-        logger.info("response: \"" + response + "\"");
         Assert.assertEquals("Wrong response", "", response);
         client.close();
     }
 
     /**
      * @tpTestDetails Test resource with "application/xhtml+xml" media type
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXhtml() {
         ResteasyClient client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = client.target(generateURL("/xhtml"));
         String response = target.request().post(Entity.xhtml(null), String.class);
-        logger.info("response: \"" + response + "\"");
         Assert.assertEquals("Wrong response", "", response);
         client.close();
     }
 
     /**
      * @tpTestDetails Test resource with "application/xml" media type
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXml() {
         ResteasyClient client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = client.target(generateURL("/xml"));
         String response = target.request().post(Entity.xml(null), String.class);
-        logger.info("response: \"" + response + "\"");
         Assert.assertEquals("Wrong response", "", response);
         client.close();
     }

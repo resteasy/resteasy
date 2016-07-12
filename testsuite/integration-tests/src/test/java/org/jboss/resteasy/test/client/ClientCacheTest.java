@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Test for client cache
  */
 @RunWith(Arquillian.class)
@@ -49,7 +49,7 @@ public class ClientCacheTest {
 
     /**
      * @tpTestDetails Complex proxy test for client cache
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testProxy() throws Exception {
@@ -125,7 +125,7 @@ public class ClientCacheTest {
 
     /**
      * @tpTestDetails Test for max size of client cache
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMaxSize() throws Exception {

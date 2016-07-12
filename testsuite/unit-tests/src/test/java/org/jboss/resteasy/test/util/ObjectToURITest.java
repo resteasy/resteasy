@@ -13,14 +13,14 @@ import org.junit.Test;
  * @tpSubChapter Util tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for org.jboss.resteasy.spi.touri.ObjectToRUI class.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class ObjectToURITest {
     private static final String ERROR_MSG = "Wrong conversion to URI";
 
     /**
      * @tpTestDetails Check default resolvers.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDefaultResolvers() {
@@ -32,7 +32,7 @@ public class ObjectToURITest {
 
     /**
      * @tpTestDetails Check custom resolvers.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCustomResolver() {

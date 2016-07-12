@@ -15,13 +15,13 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter Util tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for Types class.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class TypesBuiltInTest {
 
     /**
      * @tpTestDetails Check getActualTypeArgumentsOfAnInterface method of Types class for basic provider.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetInterfaceArgumentFromSimpleType() {
@@ -37,7 +37,7 @@ public class TypesBuiltInTest {
     /**
      * @tpTestDetails Check getActualTypeArgumentsOfAnInterface method of Types class for provider with parent class.
      *                Provider subclasses are not defined by the spec, but we need to be able to recognize them for proxied providers to be identified.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetInterfaceArgumentFromSubclass() {

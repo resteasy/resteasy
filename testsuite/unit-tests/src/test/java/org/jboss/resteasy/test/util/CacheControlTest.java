@@ -15,13 +15,13 @@ import static org.junit.Assert.assertTrue;
  * @tpSubChapter Util tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for javax.ws.rs.core.CacheControl; class.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class CacheControlTest {
 
     /**
      * @tpTestDetails Check serialization
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void cacheControlSerialization() {
@@ -70,7 +70,7 @@ public class CacheControlTest {
 
     /**
      * @tpTestDetails Conversion from and to String
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCacheControl() {
@@ -105,7 +105,7 @@ public class CacheControlTest {
 
     /**
      * @tpTestDetails Check properties are correct in converted String
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEveryDirectiveAppearsInStringifiedVersion() { // TCK requires this
@@ -124,7 +124,7 @@ public class CacheControlTest {
 
     /**
      * @tpTestDetails Check properties are correct in converted String for ExtendedCacheControl class
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testExtendedCacheControl() {

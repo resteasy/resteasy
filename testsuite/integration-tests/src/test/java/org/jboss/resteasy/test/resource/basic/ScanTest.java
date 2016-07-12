@@ -31,7 +31,7 @@ import java.util.Map;
  * @tpSubChapter Resource
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression tests for RESTEASY-263 and RESTEASY-274
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -59,7 +59,7 @@ public class ScanTest {
 
     /**
      * @tpTestDetails Test with old client
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testOldClient() throws Exception {
@@ -72,7 +72,7 @@ public class ScanTest {
 
     /**
      * @tpTestDetails Test with new client
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNewClient() throws Exception {

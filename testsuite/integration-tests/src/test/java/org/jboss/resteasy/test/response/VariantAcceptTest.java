@@ -27,7 +27,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-994
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -71,7 +71,7 @@ public class VariantAcceptTest {
 
     /**
      * @tpTestDetails Verifies that a more specific media type is preferred.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testVariant() throws Exception {
@@ -87,7 +87,7 @@ public class VariantAcceptTest {
 
     /**
      * @tpTestDetails Verifies that the number of parameters does not outweigh more specific media types.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testVariantWithParameters() throws Exception {

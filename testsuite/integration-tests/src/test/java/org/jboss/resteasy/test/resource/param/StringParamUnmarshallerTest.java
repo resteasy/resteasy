@@ -26,7 +26,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * @tpSubChapter Resource
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Test for unmarshalling with string parameter. StringParameterUnmarshallerBinder annotation is used
  */
 @RunWith(Arquillian.class)

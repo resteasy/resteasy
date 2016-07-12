@@ -27,7 +27,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Response
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-363
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -57,7 +57,7 @@ public class OptionsTest {
 
     /**
      * @tpTestDetails Check options HTTP request
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testOptions() throws Exception {
@@ -69,7 +69,7 @@ public class OptionsTest {
 
     /**
      * @tpTestDetails Check not allowed request
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMethodNotAllowed() throws Exception {

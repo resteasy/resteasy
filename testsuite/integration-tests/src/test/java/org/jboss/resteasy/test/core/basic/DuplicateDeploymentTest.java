@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter Response
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.1
+ * @tpSince RESTEasy 3.0.17
  * @tpTestCaseDetails Regression test for JBEAP-4697
  */
 @RunWith(Arquillian.class)
@@ -48,7 +48,7 @@ public class DuplicateDeploymentTest {
 
     /**
      * @tpTestDetails Check number of warning messages: Singleton resource object class "Resource" already deployed. Singleton ignored.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     @Category({NotForForwardCompatibility.class})

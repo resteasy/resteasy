@@ -20,17 +20,17 @@ import java.security.interfaces.RSAPublicKey;
  * @tpSubChapter Jose tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for JWE
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JWETest {
     private static final String ERROR_MSG = "Wrong conversion";
     private static final String BOUNCY_CASTLE_ERROR = "BouncyCastle security provider can't be used in non-OpenJDK (missing signatures)";
-    protected static final Logger logger = LogManager.getLogger(JWETest.class.getName());
+    protected final Logger logger = LogManager.getLogger(JWETest.class.getName());
 
     /**
      * @tpTestDetails RSA test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRSA() throws Exception {
@@ -71,7 +71,7 @@ public class JWETest {
 
     /**
      * @tpTestDetails Direct test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDirect() throws Exception {

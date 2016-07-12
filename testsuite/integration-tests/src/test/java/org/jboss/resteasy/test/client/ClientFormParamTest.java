@@ -29,7 +29,7 @@ import javax.ws.rs.core.MediaType;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -73,7 +73,7 @@ public class ClientFormParamTest {
     /**
      * @tpTestDetails Client sends POST request with Form entity with one parameter.
      * @tpPassCrit The resulting Form entity contains the original parameter
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testClientFormOneParameter() throws Exception {
@@ -90,7 +90,7 @@ public class ClientFormParamTest {
     /**
      * @tpTestDetails Client sends POST request with Form entity with two parameters.
      * @tpPassCrit The resulting Form entity contains both original parameters
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testClientFormTwoParameters() throws Exception {

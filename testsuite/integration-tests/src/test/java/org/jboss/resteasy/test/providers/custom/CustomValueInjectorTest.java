@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Providers
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for custom value injector.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -54,7 +54,7 @@ public class CustomValueInjectorTest {
 
     /**
      * @tpTestDetails Client test.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCustomInjectorFactory() throws Exception {

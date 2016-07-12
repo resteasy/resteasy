@@ -19,7 +19,7 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter Form tests
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -34,7 +34,7 @@ public class FormBodyResourceTest {
 
     /**
      * @tpTestDetails Check body of form.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void test() {

@@ -38,13 +38,13 @@ import java.util.List;
  * @tpSubChapter Resources
  * @tpChapter Integration tests
  * @tpTestCaseDetails Tests for java.net.URI class
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class UriInfoTest {
 
-    protected static final Logger logger = LogManager.getLogger(UriInfoTest.class.getName());
+    protected final Logger logger = LogManager.getLogger(UriInfoTest.class.getName());
 
     private static Client client;
 
@@ -56,6 +56,7 @@ public class UriInfoTest {
     @AfterClass
     public static void after() throws Exception {
         client.close();
+        client = null;
     }
 
     @Deployment(name = "UriInfoSimpleResource")
@@ -67,7 +68,7 @@ public class UriInfoTest {
 
     /**
      * @tpTestDetails Check uri from resource on server. Simple resource is used.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testUriInfo() throws Exception {
@@ -86,7 +87,7 @@ public class UriInfoTest {
 
     /**
      * @tpTestDetails Check uri from resource on server. Resource is set as singleton to RESTEasy.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testUriInfoWithSingleton() throws Exception {
@@ -102,7 +103,7 @@ public class UriInfoTest {
 
     /**
      * @tpTestDetails Check uri from resource on server. Test complex parameter.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEscapedMatrParam() throws Exception {
@@ -118,7 +119,7 @@ public class UriInfoTest {
 
     /**
      * @tpTestDetails Check uri from resource on server. Test space character in URI.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEncodedTemplateParams() throws Exception {
@@ -135,7 +136,7 @@ public class UriInfoTest {
 
     /**
      * @tpTestDetails Check uri from resource on server. Test space character in URI attribute.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEncodedQueryParams() throws Exception {
@@ -151,7 +152,7 @@ public class UriInfoTest {
 
     /**
      * @tpTestDetails Check uri from resource on server. Test return value from resource - same URI address.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRelativize() throws Exception {
@@ -168,7 +169,7 @@ public class UriInfoTest {
 
     /**
      * @tpTestDetails Check uri on client. Base unit test.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResolve() throws Exception {
@@ -197,7 +198,7 @@ public class UriInfoTest {
 
     /**
      * @tpTestDetails Test that UriInfo.getQueryParameters() returns an immutable map. Test's logic is in end-point.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     @Category({NotForForwardCompatibility.class})

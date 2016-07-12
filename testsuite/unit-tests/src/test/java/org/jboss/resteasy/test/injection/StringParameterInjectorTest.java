@@ -19,7 +19,7 @@ import static org.junit.Assert.assertSame;
  * @tpSubChapter Injection tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for org.jboss.resteasy.annotations.Decorator class.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class StringParameterInjectorTest {
 
@@ -27,7 +27,7 @@ public class StringParameterInjectorTest {
 
     /**
      * @tpTestDetails Unmarshaller test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void shouldInjectForAnnotationConfiguredUnmarshaller() throws Exception {
@@ -43,7 +43,7 @@ public class StringParameterInjectorTest {
 
     /**
      * @tpTestDetails Instantiation test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void instantiation() throws Exception {

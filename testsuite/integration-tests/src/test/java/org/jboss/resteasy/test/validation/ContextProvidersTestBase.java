@@ -34,7 +34,7 @@ import java.util.Set;
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1119.
  *                    This is abstract class, ContextProvidersOldClientTest and ContextProvidersOldClientTest use this abstract class.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public abstract class ContextProvidersTestBase {
     static final String RESPONSE_ERROR_MSG = "Response has wrong content";
@@ -76,7 +76,7 @@ public abstract class ContextProvidersTestBase {
 
     /**
      * @tpTestDetails Test get request and form data in response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetFormData() throws Exception {
@@ -108,7 +108,7 @@ public abstract class ContextProvidersTestBase {
 
     /**
      * @tpTestDetails Test get request. Response should contain xml and text-plain data.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetMixed() throws Exception {
@@ -130,7 +130,7 @@ public abstract class ContextProvidersTestBase {
 
     /**
      * @tpTestDetails Test get request. Response should contain list.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetList() throws Exception {
@@ -150,7 +150,7 @@ public abstract class ContextProvidersTestBase {
 
     /**
      * @tpTestDetails Test get request. Response should contain map.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetMap() throws Exception {
@@ -180,7 +180,7 @@ public abstract class ContextProvidersTestBase {
 
     /**
      * @tpTestDetails Test get request. Response should contain multipart/related.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetRelated() throws Exception {
@@ -202,7 +202,7 @@ public abstract class ContextProvidersTestBase {
 
     /**
      * @tpTestDetails Test get request. Response should contain multipart/form.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetMultipartForm() throws Exception {
@@ -215,7 +215,7 @@ public abstract class ContextProvidersTestBase {
 
     /**
      * @tpTestDetails Test get request. Response should contain xop (XML-binary Optimized Packaging).
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetXop() throws Exception {
@@ -227,7 +227,7 @@ public abstract class ContextProvidersTestBase {
 
     /**
      * @tpTestDetails Test post request with mixed params.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @SuppressWarnings("unchecked")
@@ -246,7 +246,7 @@ public abstract class ContextProvidersTestBase {
 
     /**
      * @tpTestDetails Test post request with form params.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @SuppressWarnings("unchecked")
@@ -265,7 +265,7 @@ public abstract class ContextProvidersTestBase {
 
     /**
      * @tpTestDetails Test post request with list param.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @SuppressWarnings("unchecked")
@@ -284,7 +284,7 @@ public abstract class ContextProvidersTestBase {
 
     /**
      * @tpTestDetails Test post request with map param.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @SuppressWarnings("unchecked")
@@ -303,7 +303,7 @@ public abstract class ContextProvidersTestBase {
 
     /**
      * @tpTestDetails Test post request with multipart/related param.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @SuppressWarnings("unchecked")
@@ -323,7 +323,7 @@ public abstract class ContextProvidersTestBase {
 
     /**
      * @tpTestDetails Test post request with multipart/form param.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostMultipartForm() throws Exception {
@@ -337,7 +337,7 @@ public abstract class ContextProvidersTestBase {
 
     /**
      * @tpTestDetails Test post request with xop param (XML-binary Optimized Packaging).
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostXop() throws Exception {

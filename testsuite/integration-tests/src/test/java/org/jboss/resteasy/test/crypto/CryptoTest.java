@@ -53,7 +53,7 @@ import java.util.Base64;
  * @tpSubChapter Crypto
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for response secured by BouncyCastleProvider
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -102,7 +102,7 @@ public class CryptoTest {
 
     /**
      * @tpTestDetails Check signed output
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSignedOutput() throws Exception {
@@ -120,7 +120,7 @@ public class CryptoTest {
 
     /**
      * @tpTestDetails Check PKCS7 signed output
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPKCS7SignedOutput() throws Exception {
@@ -134,7 +134,7 @@ public class CryptoTest {
 
     /**
      * @tpTestDetails Check PKCS7 signed text output
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPKCS7SignedTextOutput() throws Exception {
@@ -156,7 +156,7 @@ public class CryptoTest {
 
     /**
      * @tpTestDetails Check encrypted output
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEncryptedOutput() throws Exception {
@@ -173,7 +173,7 @@ public class CryptoTest {
 
     /**
      * @tpTestDetails Check write encrypted signed output to file
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEncryptedSignedOutputToFile() throws Exception {
@@ -193,7 +193,7 @@ public class CryptoTest {
 
     /**
      * @tpTestDetails Check encrypted signed output
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEncryptedSignedOutput() throws Exception {
@@ -214,7 +214,7 @@ public class CryptoTest {
 
     /**
      * @tpTestDetails Check encrypted input
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEncryptedInput() throws Exception {
@@ -227,7 +227,7 @@ public class CryptoTest {
 
     /**
      * @tpTestDetails Check encrypted signed input
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEncryptedSignedInput() throws Exception {
@@ -243,7 +243,7 @@ public class CryptoTest {
 
     /**
      * @tpTestDetails Check signed input
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSignedInput() throws Exception {

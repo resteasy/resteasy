@@ -33,7 +33,7 @@ import java.util.concurrent.Future;
  * @tpSubChapter Asynchronous RESTEasy
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for async exception handling
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -92,7 +92,7 @@ public class CallbackTest {
 
     /**
      * @tpTestDetails Argument contains exception in two callback classes
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void argumentContainsExceptionInTwoCallbackClassesTest() throws Exception {
@@ -119,7 +119,7 @@ public class CallbackTest {
 
     /**
      * @tpTestDetails Argument contains exception in two callback instances
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void argumentContainsExceptionInTwoCallbackInstancesTest() throws Exception {
@@ -146,7 +146,7 @@ public class CallbackTest {
 
     /**
      * @tpTestDetails Argument contains exception when sending IO exception
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void argumentContainsExceptionWhenSendingIoExceptionTest() throws Exception {

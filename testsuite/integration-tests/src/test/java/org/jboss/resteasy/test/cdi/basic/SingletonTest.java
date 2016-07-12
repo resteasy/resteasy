@@ -29,7 +29,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter CDI
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for Singleton beans
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -61,7 +61,7 @@ public class SingletonTest {
 
     /**
      * @tpTestDetails Three requests for singleton bean
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSingleton() throws Exception {

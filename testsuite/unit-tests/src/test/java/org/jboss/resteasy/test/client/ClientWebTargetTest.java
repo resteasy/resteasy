@@ -12,13 +12,13 @@ import java.util.Collections;
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
  * @tpTestCaseDetails Regression test for JBEAP-4708
- * @tpSince EAP 7.0.1
+ * @tpSince RESTEasy 3.0.17
  */
 public class ClientWebTargetTest {
 
     /**
      * @tpTestDetails Test for removing property from WebTarget.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void propertyNullTest() throws Exception {

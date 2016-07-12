@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.crypto;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -34,19 +32,18 @@ import java.security.cert.X509Certificate;
  * @tpSubChapter Crypto
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-962
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class VerifyDecryptTest {
     private static final String RESPONSE_ERROR_MSG = "Response contains wrong content";
 
-    protected static final Logger logger = LogManager.getLogger(PKCS7SignatureSmokeTest.class.getName());
     protected static final MediaType MULTIPART_MIXED = new MediaType("multipart", "mixed");
 
     public static X509Certificate cert;
     public static PrivateKey privateKey;
-    public static ResteasyClient client;
+    private static ResteasyClient client;
     static final String certPemPath;
     static final String certPrivatePemPath;
 
@@ -63,6 +60,7 @@ public class VerifyDecryptTest {
     @After
     public void close() {
         client.close();
+        client = null;
     }
 
     @Deployment
@@ -82,7 +80,7 @@ public class VerifyDecryptTest {
 
     /**
      * @tpTestDetails Encryption output "application/pkcs7-mime"
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEncrypt() throws Exception {
@@ -92,13 +90,12 @@ public class VerifyDecryptTest {
         ResteasyWebTarget target = client.target(generateURL("/encrypt"));
         Response res = target.request().post(Entity.entity(output, "application/pkcs7-mime"));
         String result = res.readEntity(String.class);
-        logger.info("result: " + result);
         Assert.assertEquals(RESPONSE_ERROR_MSG, "xanadu", result);
     }
 
     /**
      * @tpTestDetails Signing text/plain output
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSign() throws Exception {
@@ -109,13 +106,12 @@ public class VerifyDecryptTest {
         ResteasyWebTarget target = client.target(generateURL("/sign"));
         Response res = target.request().post(Entity.entity(signed, "multipart/signed"));
         String result = res.readEntity(String.class);
-        logger.info("result: " + result);
         Assert.assertEquals(RESPONSE_ERROR_MSG, "xanadu", result);
     }
 
     /**
      * @tpTestDetails Encryption and signing test, output type is "application/pkcs7-mime"
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEncryptSign() throws Exception {
@@ -128,13 +124,12 @@ public class VerifyDecryptTest {
         ResteasyWebTarget target = client.target(generateURL("/encryptSign"));
         Response res = target.request().post(Entity.entity(signed, "multipart/signed"));
         String result = res.readEntity(String.class);
-        logger.info("result: " + result);
         Assert.assertEquals(RESPONSE_ERROR_MSG, "xanadu", result);
     }
 
     /**
      * @tpTestDetails Encryption and signing test, output type is "multipart/signed"
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSignEncrypt() throws Exception {
@@ -147,13 +142,12 @@ public class VerifyDecryptTest {
         ResteasyWebTarget target = client.target(generateURL("/signEncrypt"));
         Response res = target.request().post(Entity.entity(output, "application/pkcs7-mime"));
         String result = res.readEntity(String.class);
-        logger.info("result: " + result);
         Assert.assertEquals(RESPONSE_ERROR_MSG, "xanadu", result);
     }
 
     /**
      * @tpTestDetails Encrepted input and output
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEncryptedEncrypted() {
@@ -169,13 +163,12 @@ public class VerifyDecryptTest {
         ResteasyWebTarget target = client.target(generateURL("/encryptedEncrypted"));
         Response res = target.request().post(Entity.entity(output, "application/pkcs7-mime"));
         String result = res.readEntity(String.class);
-        logger.info("result: " + result);
         Assert.assertEquals(RESPONSE_ERROR_MSG, "xanadu", result);
     }
 
     /**
      * @tpTestDetails Encrepted input and output
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEncryptSignSign() throws Exception {
@@ -191,13 +184,12 @@ public class VerifyDecryptTest {
         ResteasyWebTarget target = client.target(generateURL("/encryptSignSign"));
         Response res = target.request().post(Entity.entity(resigned, "multipart/signed"));
         String result = res.readEntity(String.class);
-        logger.info("result: " + result);
         Assert.assertEquals(RESPONSE_ERROR_MSG, "xanadu", result);
     }
 
     /**
      * @tpTestDetails Encrypted multipart output
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMultipartEncrypted() {
@@ -209,7 +201,6 @@ public class VerifyDecryptTest {
         ResteasyWebTarget target = client.target(generateURL("/multipartEncrypted"));
         Response res = target.request().post(Entity.entity(output, "application/pkcs7-mime"));
         String result = res.readEntity(String.class);
-        logger.info("result: " + result);
         Assert.assertEquals(RESPONSE_ERROR_MSG, "xanadu", result);
     }
 }

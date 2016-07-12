@@ -4,8 +4,6 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -30,13 +28,12 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Form tests
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-760
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class FormParameterTest {
 
-    protected static final Logger logger = LogManager.getLogger(FormParameterTest.class.getName());
     static ResteasyClient client;
 
     @Deployment
@@ -58,12 +55,13 @@ public class FormParameterTest {
     @After
     public void after() throws Exception {
         client.close();
+        client = null;
     }
 
     /**
      * @tpTestDetails Client sends PUT requests.
      *      Form parameter is used and should be returned by RE resource.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFormParamWithNoQueryParamPut() throws Exception {
@@ -75,14 +73,13 @@ public class FormParameterTest {
                 assertThat("Wrong response", response, notNullValue());
 
         response.bufferEntity();
-        logger.info("response: " + response.readEntity(String.class));
         assertEquals("Wrong response", "abc xyz", response.readEntity(String.class));
     }
 
     /**
      * @tpTestDetails Client sends PUT requests.
      *      Form parameter is used (encoded) and should be returned by RE resource.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFormParamWithNoQueryParamPutEncoded() throws Exception {
@@ -94,14 +91,13 @@ public class FormParameterTest {
 
         assertThat("Wrong response", response, notNullValue());
         response.bufferEntity();
-        logger.info("response: " + response.readEntity(String.class));
         assertEquals("Wrong response", "abc+xyz", response.readEntity(String.class));
     }
 
     /**
      * @tpTestDetails Client sends POST requests.
      *      Form parameter is used and should be returned by RE resource.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFormParamWithNoQueryParamPost() throws Exception {
@@ -113,14 +109,13 @@ public class FormParameterTest {
 
         assertThat("Wrong response", response, notNullValue());
         response.bufferEntity();
-        logger.info("response: " + response.readEntity(String.class));
         assertEquals("Wrong response", "abc xyz", response.readEntity(String.class));
     }
 
     /**
      * @tpTestDetails Client sends POST requests.
      *      Form parameter is used (encoded) and should be returned by RE resource.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFormParamWithNoQueryParamPostEncoded() throws Exception {
@@ -132,7 +127,6 @@ public class FormParameterTest {
 
         assertThat("Wrong response", response, notNullValue());
         response.bufferEntity();
-        logger.info("response: " + response.readEntity(String.class));
         assertEquals("Wrong response", "abc+xyz", response.readEntity(String.class));
     }
 
@@ -140,7 +134,7 @@ public class FormParameterTest {
      * @tpTestDetails Client sends PUT requests. Query parameter is used.
      *      Form parameter is used too and should be returned by RE resource.
      *      This is regression test for JBEAP-982
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFormParamWithQueryParamPut() throws Exception {
@@ -152,7 +146,6 @@ public class FormParameterTest {
 
         assertThat("Wrong response", response, notNullValue());
         response.bufferEntity();
-        logger.info("response: " + response.readEntity(String.class));
         assertEquals("Wrong response", "abc xyz", response.readEntity(String.class));
     }
 
@@ -160,7 +153,7 @@ public class FormParameterTest {
      * @tpTestDetails Client sends PUT requests. Query parameter is used.
      *      Form parameter is used too (encoded) and should be returned by RE resource.
      *      This is regression test for JBEAP-982
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFormParamWithQueryParamPutEncoded() throws Exception {
@@ -172,14 +165,13 @@ public class FormParameterTest {
 
         assertThat("Wrong response", response, notNullValue());
         response.bufferEntity();
-        logger.info("response: " + response.readEntity(String.class));
         assertEquals("Wrong response", "abc+xyz", response.readEntity(String.class));
     }
 
     /**
      * @tpTestDetails Client sends POST requests. Query parameter is used.
      *      Form parameter is used too and should be returned by RE resource.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFormParamWithQueryParamPost() throws Exception {
@@ -191,14 +183,13 @@ public class FormParameterTest {
 
         assertThat("Wrong response", response, notNullValue());
         response.bufferEntity();
-        logger.info("response: " + response.readEntity(String.class));
         assertEquals("Wrong response", "abc xyz", response.readEntity(String.class));
     }
 
     /**
      * @tpTestDetails Client sends POST requests. Query parameter is used.
      *      Form parameter is used too (encoded) and should be returned by RE resource.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFormParamWithQueryParamPostEncoded() throws Exception {
@@ -210,7 +201,6 @@ public class FormParameterTest {
 
         assertThat("Wrong response", response, notNullValue());
         response.bufferEntity();
-        logger.info("response: " + response.readEntity(String.class));
         assertEquals("Wrong response", "abc+xyz", response.readEntity(String.class));
     }
 }

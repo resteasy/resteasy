@@ -32,7 +32,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Spring
  * @tpChapter Integration tests - dependencies included in deployment
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -79,7 +79,7 @@ public class ContactsDependenciesInDeploymentTest {
     /**
      * @tpTestDetails Test is using component-scan and annotation-config spring features. This features are unusable if
      * running with spring dependency 3.2.8.RELEASE and earlier. Only Spring 4 is supported.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testData() {

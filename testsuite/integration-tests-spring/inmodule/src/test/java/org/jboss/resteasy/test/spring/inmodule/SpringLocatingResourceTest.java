@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Spring
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -61,7 +61,7 @@ public class SpringLocatingResourceTest {
 
     /**
      * @tpTestDetails Test resource bean defined in xml spring settings
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNoDefaultsResource() throws Exception {
@@ -96,7 +96,7 @@ public class SpringLocatingResourceTest {
     /**
      * @tpTestDetails Test resource bean defined in xml spring settings, resource calls another resource also
      * defined as resource bean
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLocatingResource() throws Exception {

@@ -6,8 +6,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -43,15 +41,13 @@ import static org.jboss.resteasy.util.HttpClient4xUtils.consumeEntity;
  * @tpSubChapter Resources
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEasy issues about special resources
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class SpecialResourceTest {
 
     static ResteasyClient client;
-
-    protected static final Logger logger = LogManager.getLogger(SpecialResourceTest.class.getName());
 
     @Deployment
     public static Archive<?> testReturnValuesDeploy() throws Exception {
@@ -68,6 +64,7 @@ public class SpecialResourceTest {
     @AfterClass
     public static void close() {
         client.close();
+        client = null;
     }
 
     private String generateURL(String path) {
@@ -76,7 +73,7 @@ public class SpecialResourceTest {
 
     /**
      * @tpTestDetails Regression test for RESTEASY-631
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void test631() throws Exception {
@@ -88,7 +85,7 @@ public class SpecialResourceTest {
 
     /**
      * @tpTestDetails Regression test for RESTEASY-534
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void test534() throws Exception {
@@ -100,7 +97,7 @@ public class SpecialResourceTest {
 
     /**
      * @tpTestDetails Regression test for RESTEASY-624
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void test624() throws Exception {
@@ -113,7 +110,7 @@ public class SpecialResourceTest {
 
     /**
      * @tpTestDetails Regression test for RESTEASY-583
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void test583() throws Exception {
@@ -133,7 +130,7 @@ public class SpecialResourceTest {
 
     /**
      * @tpTestDetails Regression test for RESTEASY-638
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void test638() throws Exception {
@@ -145,7 +142,6 @@ public class SpecialResourceTest {
             Assert.assertThat("Wrong count of possible providers", factory.getMBRMap().getPossible(type, Document.class).size(), greaterThan(1));
         }
 
-        logger.info("cache size: " + factory.getMBRMap().getClassCache().size());
         Assert.assertEquals(1, factory.getMBRMap().getClassCache().size());
 
     }

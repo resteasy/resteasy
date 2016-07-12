@@ -29,7 +29,7 @@ import static org.hamcrest.CoreMatchers.containsString;
  * @tpSubChapter Providers
  * @tpChapter Unit tests
  * @tpTestCaseDetails Namespace mapping test for jettison provider
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class NamespaceMappingTest {
     static JAXBContext ctx = null;
@@ -45,7 +45,7 @@ public class NamespaceMappingTest {
 
     /**
      * @tpTestDetails Marshalling and unmarshalling test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testManual() throws Exception {

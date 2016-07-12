@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter DataSource provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -63,7 +63,7 @@ public class ReadFromSocketDataSourceProviderTest {
     /**
      * @tpTestDetails Tests DataSourceProviders ability to read input stream entirely, using socket buffer for reading
      * @tpInfo RESTEASY-779
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testReadFromSocketDataSourceProvider() throws Exception {

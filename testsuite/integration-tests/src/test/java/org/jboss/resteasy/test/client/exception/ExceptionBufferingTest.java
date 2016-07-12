@@ -34,7 +34,7 @@ import org.junit.runner.RunWith;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Regression test for RESTEASY-981
  */
 @RunWith(Arquillian.class)
@@ -81,7 +81,7 @@ public class ExceptionBufferingTest {
 
     /**
      * @tpTestDetails Test default value of resteasy.buffer.exception.entity property
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBufferedResponseDefault() throws Exception {
@@ -104,7 +104,7 @@ public class ExceptionBufferingTest {
 
     /**
      * @tpTestDetails Test false value of resteasy.buffer.exception.entity property
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBufferedResponseFalse() throws Exception {
@@ -134,7 +134,7 @@ public class ExceptionBufferingTest {
 
     /**
      * @tpTestDetails Test true value of resteasy.buffer.exception.entity property
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBufferedResponseTrue() throws Exception {

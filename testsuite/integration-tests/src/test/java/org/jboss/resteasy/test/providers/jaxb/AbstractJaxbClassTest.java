@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -68,7 +68,7 @@ public class AbstractJaxbClassTest {
     /**
      * @tpTestDetails Test for Abstract jaxb class with @XmlSeeAlso annotation
      * @tpInfo RESTEASY-126
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPost() throws Exception {

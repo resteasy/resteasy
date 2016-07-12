@@ -31,7 +31,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Jackson provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test jackson1 provider with proxy with generic return type
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -67,7 +67,7 @@ public class ProxyWithGenericReturnTypeJacksonTest {
 
     /**
      * @tpTestDetails Test new client
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNewClient() throws Exception {
@@ -84,7 +84,7 @@ public class ProxyWithGenericReturnTypeJacksonTest {
 
     /**
      * @tpTestDetails Test old client
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testOldClient() throws Exception {

@@ -14,13 +14,13 @@ import java.util.Vector;
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for javax.ws.rs.core.MultivaluedMap class
  *                    and javax.ws.rs.core.MultivaluedHashMap.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class MultivaluedMapTest {
 
     /**
      * @tpTestDetails Check map order, size and compare with other objects.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEdge() {

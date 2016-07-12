@@ -28,7 +28,7 @@ import static org.hamcrest.core.Is.is;
  * @tpSubChapter Interceptors
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test CorsFilter usage
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class CorsFiltersTest {
@@ -50,7 +50,7 @@ public class CorsFiltersTest {
      * @tpTestDetails Check different options of Cors headers.
      * CorsFilter is created as singleton in TestApplication instance.
      * In this test is CorsFilter get from static set from TestApplication class.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPreflight() throws Exception {

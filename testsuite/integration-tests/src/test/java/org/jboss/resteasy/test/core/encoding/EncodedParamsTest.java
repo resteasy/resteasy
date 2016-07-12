@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Encoding
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for special characters in get request
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -52,7 +52,7 @@ public class EncodedParamsTest {
 
     /**
      * @tpTestDetails Check various location of "?", "%20" characters
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEncoded() throws Exception {

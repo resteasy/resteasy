@@ -45,7 +45,7 @@ import java.util.List;
 /**
  * @tpSubChapter Interceptors
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Regression test for RESTEASY-1294
  */
 @RunWith(Arquillian.class)
@@ -99,7 +99,7 @@ public class PriorityExecutionTest {
 
     /**
      * @tpTestDetails Check order of client and server filters
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPriority() throws Exception {

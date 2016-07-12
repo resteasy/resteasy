@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.resource.basic;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.resource.basic.resource.GenericEntityDoubleWriter;
 import org.jboss.resteasy.test.resource.basic.resource.GenericEntityResource;
 import org.jboss.resteasy.test.resource.basic.resource.GenericEntitytFloatWriter;
@@ -26,14 +25,13 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Resource
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class GenericEntityTest {
 
     static Client client;
-    private static Logger logger = Logger.getLogger(GenericEntityTest.class);
 
     @Deployment
     public static Archive<?> deploy() {
@@ -50,6 +48,7 @@ public class GenericEntityTest {
     @AfterClass
     public static void after() throws Exception {
         client.close();
+        client = null;
     }
 
     private String generateURL(String path) {
@@ -58,7 +57,7 @@ public class GenericEntityTest {
 
     /**
      * @tpTestDetails Resource returning GenericEntity with custom MessageBodyWriter returning double values
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDoubles() {
@@ -68,7 +67,6 @@ public class GenericEntityTest {
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             String body = response.readEntity(String.class);
             Assert.assertEquals("The response doesn't contain the expected entity", "45.0D 50.0D ", body);
-            logger.info(body);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -76,7 +74,7 @@ public class GenericEntityTest {
 
     /**
      * @tpTestDetails Resource returning GenericEntity with custom MessageBodyWriter returning float values
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFloats() {
@@ -86,7 +84,6 @@ public class GenericEntityTest {
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             String body = response.readEntity(String.class);
             Assert.assertEquals("The response doesn't contain the expected entity", "45.0F 50.0F ", body);
-            logger.info(body);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

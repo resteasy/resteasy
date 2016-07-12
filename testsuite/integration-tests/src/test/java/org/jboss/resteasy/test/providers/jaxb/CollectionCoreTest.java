@@ -32,7 +32,7 @@ import static org.hamcrest.CoreMatchers.containsString;
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Check jaxb requests with collection
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
 */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -65,7 +65,7 @@ public class CollectionCoreTest {
 
     /**
      * @tpTestDetails Test array response
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testArray() throws Exception {
@@ -82,7 +82,7 @@ public class CollectionCoreTest {
 
     /**
      * @tpTestDetails Test list response
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testList() throws Exception {
@@ -99,7 +99,7 @@ public class CollectionCoreTest {
 
     /**
      * @tpTestDetails Test GenericEntity of list response
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResponse() throws Exception {
@@ -111,7 +111,7 @@ public class CollectionCoreTest {
 
     /**
      * @tpTestDetails Test array of customers with namespace in XML
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNamespacedArray() throws Exception {
@@ -129,7 +129,7 @@ public class CollectionCoreTest {
 
     /**
      * @tpTestDetails Test GenericEntity with list of customers with namespace in XML
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNamespacedList() throws Exception {
@@ -147,7 +147,7 @@ public class CollectionCoreTest {
 
     /**
      * @tpTestDetails Test list of customers with namespace in XML
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNamespacedResponse() throws Exception {

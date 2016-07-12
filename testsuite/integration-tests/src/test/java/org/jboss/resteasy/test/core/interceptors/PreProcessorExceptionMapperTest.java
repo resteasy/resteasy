@@ -26,7 +26,7 @@ import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
  * @tpSubChapter Interceptors
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-433
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -45,7 +45,7 @@ public class PreProcessorExceptionMapperTest {
     /**
      * @tpTestDetails Generate PreProcessorExceptionMapperCandlepinUnauthorizedException
      * @tpPassCrit SC_PRECONDITION_FAILED (412) HTTP code is excepted
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMapper() throws Exception {

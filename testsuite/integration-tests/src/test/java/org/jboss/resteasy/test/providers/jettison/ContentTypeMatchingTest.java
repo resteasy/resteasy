@@ -27,13 +27,13 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Jettison provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails This tests automatically picking content type based on Accept header and/or @Produces
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ContentTypeMatchingTest {
 
-    protected static final Logger logger = Logger.getLogger(ContentTypeMatchingTest.class.getName());
+    protected final Logger logger = Logger.getLogger(ContentTypeMatchingTest.class.getName());
 
     static ResteasyClient client;
 
@@ -53,6 +53,7 @@ public class ContentTypeMatchingTest {
     @After
     public void after() throws Exception {
         client.close();
+        client = null;
     }
 
     private String generateURL(String path) {
@@ -62,7 +63,7 @@ public class ContentTypeMatchingTest {
     /**
      * @tpTestDetails Test that media type is chosen from resource method
      * @tpPassCrit The response returned with expected http response code
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testProduces() throws Exception {
@@ -72,16 +73,16 @@ public class ContentTypeMatchingTest {
         Assert.assertEquals("Wrong response content-type returned",
                 "application/xml", response.getStringHeaders().getFirst("Content-Type"));
         String error = response.readEntity(String.class);
+        logger.info(error);
         Assert.assertTrue("Incorrect exception mapper was used",
                 error.contains("<contentTypeMatchingError><name>foo</name></contentTypeMatchingError>"));
-        logger.info(error);
 
     }
 
     /**
      * @tpTestDetails Test that media type is chosen from resource method and accepts
      * @tpPassCrit The response returned with expected http response code
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAcceptsProduces() throws Exception {
@@ -91,8 +92,8 @@ public class ContentTypeMatchingTest {
             Assert.assertEquals(412, response.getStatus());
             Assert.assertEquals("application/json", response.getStringHeaders().getFirst("Content-Type"));
             String error = response.readEntity(String.class);
-            Assert.assertTrue("Incorrect exception mapper was used", error.contains("{\"name\":\"foo\"}"));
             logger.info(error);
+            Assert.assertTrue("Incorrect exception mapper was used", error.contains("{\"name\":\"foo\"}"));
         }
 
         {
@@ -100,16 +101,16 @@ public class ContentTypeMatchingTest {
             Assert.assertEquals(412, response.getStatus());
             Assert.assertEquals("application/xml", response.getStringHeaders().getFirst("Content-Type"));
             String error = response.readEntity(String.class);
+            logger.info(error);
             Assert.assertTrue("Incorrect exception mapper was used",
                     error.contains("<contentTypeMatchingError><name>foo</name></contentTypeMatchingError>"));
-            logger.info(error);
         }
     }
 
     /**
      * @tpTestDetails Test that media type is chosen from accepts
      * @tpPassCrit The response returned with expected http response code
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAccepts() throws Exception {
@@ -120,8 +121,8 @@ public class ContentTypeMatchingTest {
             Assert.assertEquals(412, response.getStatus());
             Assert.assertEquals("application/json", response.getStringHeaders().getFirst("Content-Type"));
             String error = response.readEntity(String.class);
-            Assert.assertTrue("Incorrect exception mapper was used", error.contains("{\"name\":\"foo\"}"));
             logger.info(error);
+            Assert.assertTrue("Incorrect exception mapper was used", error.contains("{\"name\":\"foo\"}"));
         }
 
         {
@@ -129,16 +130,16 @@ public class ContentTypeMatchingTest {
             Assert.assertEquals(412, response.getStatus());
             Assert.assertEquals("application/xml", response.getStringHeaders().getFirst("Content-Type"));
             String error = response.readEntity(String.class);
+            logger.info(error);
             Assert.assertTrue("Incorrect exception mapper was used",
                     error.contains("<contentTypeMatchingError><name>foo</name></contentTypeMatchingError>"));
-            logger.info(error);
         }
     }
 
     /**
      * @tpTestDetails Test that media type is chosen from accepts when returning an entity
      * @tpPassCrit The response returned with expected http response code
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAcceptsEntity() throws Exception {
@@ -148,8 +149,8 @@ public class ContentTypeMatchingTest {
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             Assert.assertEquals("application/json", response.getStringHeaders().getFirst("Content-Type"));
             String error = response.readEntity(String.class);
-            Assert.assertTrue("Incorrect exception mapper was used", error.contains("{\"name\":\"foo\"}"));
             logger.info(error);
+            Assert.assertTrue("Incorrect exception mapper was used", error.contains("{\"name\":\"foo\"}"));
         }
 
         {
@@ -157,9 +158,9 @@ public class ContentTypeMatchingTest {
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             Assert.assertEquals("application/xml", response.getStringHeaders().getFirst("Content-Type"));
             String error = response.readEntity(String.class);
+            logger.info(error);
             Assert.assertTrue("Incorrect exception mapper was used",
                     error.contains("<contentTypeMatchingError><name>foo</name></contentTypeMatchingError>"));
-            logger.info(error);
         }
     }
 }

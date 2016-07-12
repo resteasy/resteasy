@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-143
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -81,7 +81,7 @@ public class ParsingTest {
 
     /**
      * @tpTestDetails Check XML parsing
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testWire() throws Exception {

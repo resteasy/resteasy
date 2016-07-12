@@ -27,7 +27,7 @@ import javax.ws.rs.client.WebTarget;
 /**
  * @tpSubChapter Json-p provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -52,6 +52,7 @@ public class JsonpTest {
     @After
     public void after() throws Exception {
         client.close();
+        client = null;
     }
 
     private String generateURL(String path) {
@@ -63,7 +64,7 @@ public class JsonpTest {
      * response and should contain the same field values as original request.
      * in the second case multiple json entities as String.
      * @tpPassCrit The resource returns JsonObject with correct values
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testObject() throws Exception {
@@ -83,7 +84,7 @@ public class JsonpTest {
      * response and should contain the same field values as original request.
      * in the second case multiple json entities as String.
      * @tpPassCrit The resource returns JsonArray with correct values
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testArray() throws Exception {
@@ -111,7 +112,7 @@ public class JsonpTest {
      * response and should contain the same field values as original request.
      * in the second case multiple json entities as String.
      * @tpPassCrit The resource returns JsonStructure with correct values
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testStructure() throws Exception {

@@ -22,7 +22,7 @@ import static org.junit.Assert.assertNotNull;
  * @tpSubChapter Providers
  * @tpChapter Unit tests
  * @tpTestCaseDetails Regression test for RESTEASY-584
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class ProviderFactoryTest {
 
@@ -35,7 +35,7 @@ public class ProviderFactoryTest {
 
     /**
      * @tpTestDetails Basic check for ResteasyProviderFactory class.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void shouldReturnStringParameterUnmarshallerAddedForType() {
@@ -46,7 +46,7 @@ public class ProviderFactoryTest {
     /**
      * @tpTestDetails Regression test for JBEAP-4706
      *                Test whether the priority is supplied to the container request filter registry.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testRegisterProviderInstancePriorityContainerRequestFilter() throws Exception {
@@ -60,7 +60,7 @@ public class ProviderFactoryTest {
     /**
      * @tpTestDetails Regression test for JBEAP-4706
      *                Test whether the priority is supplied to the container response filter registry.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testRegisterProviderInstancePriorityContainerResponseFilter() throws Exception {

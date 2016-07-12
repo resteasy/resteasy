@@ -25,7 +25,7 @@ import javax.ws.rs.Produces;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -69,7 +69,7 @@ public class ClientResponseFailureTest {
     /**
      * @tpTestDetails Client sends async GET requests thru client proxy. The NotFoundException should be thrown as response.
      * @tpPassCrit Exception NotFoundException is thrown
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testStreamStillOpen() throws Exception {

@@ -10,13 +10,13 @@ import static org.hamcrest.CoreMatchers.containsString;
  * @tpSubChapter Requests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Regression test for JBEAP-4712
- * @tpSince EAP 7.0.1
+ * @tpSince RESTEasy 3.0.17
  */
 public class CookieNullValueTest {
 
     /**
      * @tpTestDetails Test for creating of NewCookieHeaderDelegate.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testCookie() {

@@ -30,7 +30,7 @@ import java.util.Map;
  * @tpSubChapter Resource
  * @tpChapter Integration tests
  * @tpTestCaseDetails Tests for RFC 7232 functionality
- * @tpSince EAP 7.0.1
+ * @tpSince RESTEasy 3.0.17
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -64,7 +64,7 @@ public class PreconditionRfc7232Test {
 
     /**
      * @tpTestDetails Response if all match
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testPrecedence_AllMatch() {
@@ -79,7 +79,7 @@ public class PreconditionRfc7232Test {
 
     /**
      * @tpTestDetails Response if all match without IF_MATCH
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testPrecedence_IfMatchWithNonMatchingEtag() {
@@ -95,7 +95,7 @@ public class PreconditionRfc7232Test {
 
     /**
      * @tpTestDetails Response if all match without IF_MATCH
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testPrecedence_IfMatchNotPresentUnmodifiedSinceBeforeLastModified() {
@@ -110,7 +110,7 @@ public class PreconditionRfc7232Test {
 
     /**
      * @tpTestDetails Response if IF_MATH is missing
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testPrecedence_IfNoneMatchWithMatchingEtag() {
@@ -125,7 +125,7 @@ public class PreconditionRfc7232Test {
 
     /**
      * @tpTestDetails Response if IF_MATH is missing and IF_NONE_MATCH don't match
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     @Category({NotForForwardCompatibility.class})
@@ -141,7 +141,7 @@ public class PreconditionRfc7232Test {
 
     /**
      * @tpTestDetails Response if IF_MODIFIED_SINCE don't match
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testPrecedence_IfNoneMatchNotPresent_IfModifiedSinceBeforeLastModified() {
@@ -155,7 +155,7 @@ public class PreconditionRfc7232Test {
 
     /**
      * @tpTestDetails Response if IF_MODIFIED_SINCE match
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testPrecedence_IfNoneMatchNotPresent_IfModifiedSinceAfterLastModified() {

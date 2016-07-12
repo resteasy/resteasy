@@ -15,7 +15,7 @@ import static org.hamcrest.core.Is.is;
  * @tpSubChapter Jose tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for JWT
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class JWTTest {
     protected static final Logger logger = LogManager.getLogger(JWTTest.class.getName());
@@ -23,7 +23,7 @@ public class JWTTest {
 
     /**
      * @tpTestDetails JsonWebToken test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJWT() throws Exception {

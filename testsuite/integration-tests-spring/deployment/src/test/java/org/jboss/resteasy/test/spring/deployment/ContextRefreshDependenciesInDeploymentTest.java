@@ -20,7 +20,7 @@ import java.util.Enumeration;
  * @tpSubChapter Spring
  * @tpChapter Integration tests - dependencies included in deployment
  * @tpTestCaseDetails Spring context refresh, RESTEASY-632
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class ContextRefreshDependenciesInDeploymentTest {
@@ -42,7 +42,7 @@ public class ContextRefreshDependenciesInDeploymentTest {
 
     /**
      * @tpTestDetails Refresh the persistent representation of the spring configuration twice
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testContextRefresh() throws Exception {

@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.response;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -39,12 +37,11 @@ import static org.hamcrest.CoreMatchers.is;
  * @tpSubChapter Response
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for JBEAP-3459
- * @tpSince EAP 7.0.1
+ * @tpSince RESTEasy 3.0.17
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class DuplicitePathTest {
-    protected static final Logger logger = LogManager.getLogger(DuplicitePathTest.class.getName());
     static ResteasyClient client;
 
     private static int getWarningCount() {
@@ -71,6 +68,7 @@ public class DuplicitePathTest {
     @AfterClass
     public static void close() {
         client.close();
+        client = null;
     }
 
     private String generateURL(String path) {
@@ -80,7 +78,7 @@ public class DuplicitePathTest {
     /**
      * @tpTestDetails Check that warning message was logged, if client makes request to path,
      * that is handled by two methods in two end-point in two application classes
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     @Category({NotForForwardCompatibility.class, ExpectedFailing.class}) //[RESTEASY-1369] FIXME
@@ -92,7 +90,6 @@ public class DuplicitePathTest {
             response = base.request().get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             String strResponse = response.readEntity(String.class);
-            logger.info(String.format("%d. response: %s", 1, strResponse));
             Assert.assertThat("Wrong body of response", strResponse,
                     either(is(DuplicitePathDupliciteResourceOne.DUPLICITE_RESPONSE))
                             .or(is(DuplicitePathDupliciteResourceTwo.DUPLICITE_RESPONSE)));
@@ -106,7 +103,7 @@ public class DuplicitePathTest {
     /**
      * @tpTestDetails Check that warning message was logged, if client makes request to path,
      * that is handled by two methods in two end-point in two application classes
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     @Category({ExpectedFailing.class}) //[RESTEASY-1369] FIXME
@@ -118,7 +115,6 @@ public class DuplicitePathTest {
             response = base.request().accept(MediaType.TEXT_PLAIN, MediaType.WILDCARD).get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             String strResponse = response.readEntity(String.class);
-            logger.info(String.format("%d. response: %s", 1, strResponse));
             Assert.assertThat("Wrong body of response", strResponse,
                     is(DuplicitePathMethodResource.NO_DUPLICITE_RESPONSE));
         } finally {
@@ -131,7 +127,7 @@ public class DuplicitePathTest {
     /**
      * @tpTestDetails Check that warning message was logged, if client makes request to path,
      * that is handled by two methods in two end-point in two application classes
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     @Category({ExpectedFailing.class}) //[RESTEASY-1369] FIXME
@@ -143,7 +139,6 @@ public class DuplicitePathTest {
             response = base.request().accept(MediaType.TEXT_PLAIN, MediaType.WILDCARD).get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             String strResponse = response.readEntity(String.class);
-            logger.info(String.format("%d. response: %s", 1, strResponse));
             Assert.assertThat("Wrong body of response", strResponse,
                     is(DuplicitePathMethodResource.DUPLICITE_TYPE_GET));
         } finally {
@@ -156,7 +151,7 @@ public class DuplicitePathTest {
     /**
      * @tpTestDetails Check that warning message was logged, if client makes request to path,
      * that is handled by two methods in two end-point in one application classes
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     @Category({NotForForwardCompatibility.class})
@@ -168,7 +163,6 @@ public class DuplicitePathTest {
             response = base.request().get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             String strResponse = response.readEntity(String.class);
-            logger.info("Response: " + strResponse);
             Assert.assertThat("Wrong body of response", strResponse,
                     either(is(DuplicitePathDupliciteResourceOne.DUPLICITE_RESPONSE))
                             .or(is(DuplicitePathDupliciteResourceTwo.DUPLICITE_RESPONSE)));
@@ -180,7 +174,7 @@ public class DuplicitePathTest {
 
     /**
      * @tpTestDetails Check that warning message was logged, if client makes request to path, that is handled by two methods
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     @Category({NotForForwardCompatibility.class})
@@ -202,7 +196,7 @@ public class DuplicitePathTest {
 
     /**
      * @tpTestDetails Check that warning message was not logged, if client makes request to path, that is handled by one method (correct behaviour)
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testNoDuplicationPathInMethod() throws Exception {

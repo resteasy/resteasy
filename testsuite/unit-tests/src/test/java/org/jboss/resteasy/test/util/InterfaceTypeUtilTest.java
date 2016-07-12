@@ -13,13 +13,13 @@ import org.junit.Test;
  * @tpSubChapter Util tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for org.jboss.resteasy.util.Types class.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class InterfaceTypeUtilTest {
 
     /**
      * @tpTestDetails Test for getTemplateParameterOfInterface method
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testType() throws Exception {

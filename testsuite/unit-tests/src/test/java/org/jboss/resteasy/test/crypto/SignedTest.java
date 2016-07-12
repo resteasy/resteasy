@@ -36,7 +36,7 @@ import java.security.cert.X509Certificate;
  * @tpSubChapter Crypto
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for sign by X509Certificate.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class SignedTest {
 
@@ -92,7 +92,7 @@ public class SignedTest {
 
     /**
      * @tpTestDetails Multipart test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMultipart() throws Exception {
@@ -123,7 +123,7 @@ public class SignedTest {
 
     /**
      * @tpTestDetails Test for python sign format
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPythonSigned() throws Exception {
@@ -150,7 +150,7 @@ public class SignedTest {
 
     /**
      * @tpTestDetails Check output after signing
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testOutput() throws Exception {
@@ -185,7 +185,7 @@ public class SignedTest {
 
     /**
      * @tpTestDetails Test python-style verification
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPythonVerified() throws Exception {
@@ -211,7 +211,7 @@ public class SignedTest {
 
     /**
      * @tpTestDetails Test python-style wrong verification
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPythonVerifiedBad() throws Exception {

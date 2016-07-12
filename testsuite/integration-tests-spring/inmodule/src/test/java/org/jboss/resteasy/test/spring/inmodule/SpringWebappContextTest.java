@@ -25,7 +25,7 @@ import java.util.Map;
  * @tpSubChapter Spring
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test basic header and uri info context injection with spring dependencies on the classpath
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -53,7 +53,7 @@ public class SpringWebappContextTest {
 
     /**
      * @tpTestDetails Get uri info from @Context injection
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetUri() throws Exception {
@@ -62,7 +62,7 @@ public class SpringWebappContextTest {
 
     /**
      * @tpTestDetails Get headers from @Context injection
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetHeaders() throws Exception {
@@ -71,7 +71,7 @@ public class SpringWebappContextTest {
 
     /**
      * @tpTestDetails Test that the parameters given to the first request doesn't stick for the second request
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testParamsDontStick() throws Exception {
@@ -84,7 +84,7 @@ public class SpringWebappContextTest {
 
     /**
      * @tpTestDetails Ensure concurrent invocations see different injected values
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testConcurrent() throws Exception {

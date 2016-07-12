@@ -19,7 +19,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  * @version $Revision: 1 $
  * @tpSubChapter Resteasy-client
  * @tpChapter Unit tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class WebTargetUnitTest {
 
@@ -43,7 +43,7 @@ public class WebTargetUnitTest {
      * @tpTestDetails Create WebTarget Instance from another base WebTarget instance, resolve template
      * from decoded characters
      * @tpPassCrit Response from the server matches the pattern
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResolveTemplateDecoded() {
@@ -61,7 +61,7 @@ public class WebTargetUnitTest {
      * @tpTestDetails Create WebTarget Instance from another base WebTarget instance, resolve template
      * from encoded characters
      * @tpPassCrit Response from the server matches the pattern
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResolveTemplateEncoded() {
@@ -75,7 +75,7 @@ public class WebTargetUnitTest {
     /**
      * @tpTestDetails Create WebTarget Instance from another base WebTarget instance, resolve templates with empty map
      * @tpPassCrit Response from the server matches the pattern
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResolveTemplatesEmptyMap() {
@@ -92,7 +92,7 @@ public class WebTargetUnitTest {
      * @tpTestDetails Create WebTarget Instance from another base WebTarget instance, test resolveTemplate()
      * for NullPointerException
      * @tpPassCrit NullPointerException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = NullPointerException.class)
     public void testResolveTemplateNull() {
@@ -103,7 +103,7 @@ public class WebTargetUnitTest {
      * @tpTestDetails Create WebTarget Instance from another base WebTarget instance,
      * test queryParam() NullPointerException
      * @tpPassCrit NullPointerException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = NullPointerException.class)
     public void testQueryParamNullPointer() {
@@ -115,7 +115,7 @@ public class WebTargetUnitTest {
     /**
      * @tpTestDetails Create WebTarget Instance from another base WebTarget instance, call MatrixParam with null argument
      * @tpPassCrit NullPointerException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = NullPointerException.class)
     public void testMatrixParamNullPointer() {

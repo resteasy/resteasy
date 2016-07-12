@@ -38,14 +38,14 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Validator provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test - RESTEASY-1054
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ValidationTest {
 
     static Client client;
-    protected static final Logger logger = LogManager.getLogger(ValidationTest.class.getName());
+    protected final Logger logger = LogManager.getLogger(ValidationTest.class.getName());
     private static final String ERR_ENTITY_MESSAGE = "The entity returned from the server is not the expected one";
     private static final String ERR_CONSTRAINT_MESSAGE = "The entity parameters are out of allowed values defined by validator";
     private static final String ERROR_HEADER_MESSAGE = "Header was null";
@@ -77,7 +77,7 @@ public class ValidationTest {
     /**
      * @tpTestDetails Tests for Valid native constraint, Valid imposed constraint, Valid native and imposed constraints,
      * Invalid native constraint, Invalid imposed constraint, Invalid native and imposed constraints
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testReturnValues() throws Exception {
@@ -166,7 +166,7 @@ public class ValidationTest {
 
     /**
      * @tpTestDetails Tests that resteasy correctly report expected constraint violations
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testViolationsBeforeReturnValue() throws Exception {
@@ -191,7 +191,6 @@ public class ValidationTest {
         ViolationReport r = response.readEntity(ViolationReport.class);
         logger.info("report: " + r);
         logger.info("testViolationsBeforeReturnValue(): exception:");
-        logger.info(r.toString());
         TestUtil.countViolations(r, 1, 1, 1, 1, 0);
         ResteasyConstraintViolation violation = r.getFieldViolations().iterator().next();
         logger.info("violation: " + violation);

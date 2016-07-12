@@ -24,7 +24,7 @@ import javax.ws.rs.client.WebTarget;
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for custom Application class with overriden getProperties() method, by injecting Configuration into
  * the resource.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -55,7 +55,7 @@ public class ApplicationPropertiesConfigTest {
     /**
      * @tpTestDetails Test for custom Application class with overriden getProperties() method, by injecting Configuration
      * into the resource.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testApplicationPropertiesConfig() {

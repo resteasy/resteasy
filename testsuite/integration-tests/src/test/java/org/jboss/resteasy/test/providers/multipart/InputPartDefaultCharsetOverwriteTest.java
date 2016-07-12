@@ -32,12 +32,12 @@ import java.util.Random;
  * @tpSubChapter Multipart provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-723
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class InputPartDefaultCharsetOverwriteTest {
-    private static org.jboss.logging.Logger logger = org.jboss.logging.Logger.getLogger(InputPartDefaultCharsetOverwriteTest.class);
+    private static final org.jboss.logging.Logger logger = org.jboss.logging.Logger.getLogger(InputPartDefaultCharsetOverwriteTest.class);
 
     static Client client;
 
@@ -71,6 +71,7 @@ public class InputPartDefaultCharsetOverwriteTest {
     @AfterClass
     public static void after() throws Exception {
         client.close();
+        client = null;
     }
 
     @Deployment(name = "InputPartDefaultCharsetOverwriteTest")
@@ -137,7 +138,7 @@ public class InputPartDefaultCharsetOverwriteTest {
 
     /**
      * @tpTestDetails Test UTF8 content-type, no charset, preprocessor with no content-type
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testUTF8ContentTypeNoCharsetPreprocessorWithNoContentTypeCharset() throws Exception {
@@ -146,7 +147,7 @@ public class InputPartDefaultCharsetOverwriteTest {
 
     /**
      * @tpTestDetails The tests use no interceptor.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void noInterceptorTest() throws Exception {
@@ -177,7 +178,7 @@ public class InputPartDefaultCharsetOverwriteTest {
 
     /**
      * @tpTestDetails The tests use an interceptor that installs a content-type but no charset.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void interceptorNoCharsetYesContentType() throws Exception {
@@ -215,7 +216,7 @@ public class InputPartDefaultCharsetOverwriteTest {
 
     /**
      * @tpTestDetails The tests use an interceptor that installs a charset but no content-type.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNoContentTypePreprocessorWithNoContentTypeCharsetUTF8() throws Exception {
@@ -253,7 +254,7 @@ public class InputPartDefaultCharsetOverwriteTest {
 
     /**
      * @tpTestDetails The tests use an interceptor that installs both a content-type and a charset.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNoContentTypePreprocessorWithContentTypeCharset8() throws Exception {
@@ -291,7 +292,7 @@ public class InputPartDefaultCharsetOverwriteTest {
 
     /**
      * @tpTestDetails The tests use a non-text media type.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     //////////////////////////////////////////////////////////////////////////////////////////
     //

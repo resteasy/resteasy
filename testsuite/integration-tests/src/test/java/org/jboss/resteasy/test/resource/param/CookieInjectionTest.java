@@ -30,13 +30,13 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Parameters
  * @tpChapter Integration tests
  * @tpTestCaseDetails Tests cookie injection via @CookieParam and @Context header injection
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class CookieInjectionTest {
 
-    private static Logger logger = Logger.getLogger(CookieInjectionTest.class);
+    private final Logger logger = Logger.getLogger(CookieInjectionTest.class);
     static Client client;
 
     public interface CookieProxy {
@@ -86,7 +86,7 @@ public class CookieInjectionTest {
 
     /**
      * @tpTestDetails Injection of the cookie into resource, request issued with client
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIt() {
@@ -100,7 +100,7 @@ public class CookieInjectionTest {
 
     /**
      * @tpTestDetails Injection of the cookie into resource, request issued with proxy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testProxy() {

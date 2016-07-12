@@ -39,7 +39,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Jackson2 provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -110,7 +110,7 @@ public class Jackson2Test {
      * @tpTestDetails Client sends GET request for json annotated resource. In the first case it returns single json entity,
      * in the second case multiple json entities as String.
      * @tpPassCrit The resource returns json entities in correct format
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJacksonString() throws Exception {
@@ -139,7 +139,7 @@ public class Jackson2Test {
      * trigger processing of the response in the format callbackvalue("key":"value")
      * @tpPassCrit The resource returns json entities in correct format
      * @tpInfo This test fails, see RESTEASY-1168. This should be fixed in 3.0.12 release.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJacksonJsonp() throws Exception {
@@ -157,7 +157,7 @@ public class Jackson2Test {
      * annotation available in Jackson 2 provider. It formats the response entity to look prettier. The test tests whether
      * response contains '\n' (new line) character, because the annotation inserts new lines between element fields.
      * @tpPassCrit The resource returns json entities in correct format
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFormattedJacksonString() throws Exception {
@@ -176,7 +176,7 @@ public class Jackson2Test {
      * Jettison is deprecated, so it needs to be added to EAP manually (see JBEAP-2856).
      * @tpPassCrit The resource returns json entities in correct format
      * @tpInfo JBEAP-2856
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlString() throws Exception {
@@ -204,7 +204,7 @@ public class Jackson2Test {
      * + The response entity is returned as instance of String class
      * + The response entity is returned as instance of Jackson2Product class and response is mediatype of 'application/foo+json'
      * @tpPassCrit The returned object contains expected values
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJackson() throws Exception {
@@ -235,7 +235,7 @@ public class Jackson2Test {
     /**
      * @tpTestDetails Client sends POST request with Jackson2Product entity using client proxy.
      * @tpPassCrit The returned object contains expected values
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJacksonProxy() throws Exception {
@@ -251,7 +251,7 @@ public class Jackson2Test {
      * JAXB annotated resource and verifies renaming of the Xml element attribute. Second it sends GET request for resource
      * with Jackson annotation and verifies that json response contains the renamed attribute.
      * @tpPassCrit The response contains the renamed attributes
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJacksonJAXB() throws Exception {

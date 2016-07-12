@@ -30,7 +30,7 @@ import java.util.Iterator;
  * @tpSubChapter Atom provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test integration of atom provider and JAXB Context finder
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -61,7 +61,7 @@ public class JAXBContextFinderTest {
 
     /**
      * @tpTestDetails Test old client
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAtomFeedOldClient() throws Exception {
@@ -80,7 +80,7 @@ public class JAXBContextFinderTest {
 
     /**
      * @tpTestDetails Test new client
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAtomFeedNewClient() throws Exception {

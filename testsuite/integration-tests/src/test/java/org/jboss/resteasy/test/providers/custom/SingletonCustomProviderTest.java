@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Configuration
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for anonymous classes as resource added to REST singletons
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -56,7 +56,7 @@ public class SingletonCustomProviderTest {
 
     /**
      * @tpTestDetails Check post request
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMessageReaderThrowingWebApplicationException() throws Exception {
@@ -67,7 +67,7 @@ public class SingletonCustomProviderTest {
 
     /**
      * @tpTestDetails Check get request
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMessageWriterThrowingWebApplicationException() throws Exception {

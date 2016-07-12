@@ -22,7 +22,7 @@ import javax.ws.rs.client.ClientBuilder;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -54,7 +54,7 @@ public class ResourceMatchingMultipleTest {
      * @tpTestDetails Client sends GET request for Users resource, with custom id. With 3 Resources available in the
      * application, the correct path will be selected.
      * @tpPassCrit The correct Resource path is chosen
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMatchingUsers() throws Exception {
@@ -66,7 +66,7 @@ public class ResourceMatchingMultipleTest {
      * @tpTestDetails Client sends GET request for Memberships resource, with custom id. With 3 Resources available in the
      * application, the correct path will be selected.
      * @tpPassCrit The correct Resource path is chosen
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMatchingMemberShips() throws Exception {
@@ -78,7 +78,7 @@ public class ResourceMatchingMultipleTest {
      * @tpTestDetails Client sends GET request for Certs resource, with custom id. With 3 Resources available in the
      * application, the correct path will be selected.
      * @tpPassCrit The correct Resource path is chosen
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMatchingCerts() throws Exception {

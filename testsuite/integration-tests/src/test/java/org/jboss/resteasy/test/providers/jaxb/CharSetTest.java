@@ -27,13 +27,13 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class CharSetTest {
 
-    private static Logger logger = Logger.getLogger(CharSetResource.class.getName());
+    private final Logger logger = Logger.getLogger(CharSetResource.class.getName());
     static ResteasyClient client;
 
     @Deployment
@@ -51,6 +51,7 @@ public class CharSetTest {
     @After
     public void after() throws Exception {
         client.close();
+        client = null;
     }
 
     private String generateURL(String path) {
@@ -61,7 +62,7 @@ public class CharSetTest {
      * @tpTestDetails Client sends POST request with jaxb annotated object entity and the targeted resource receives jaxb
      * object with corect encoding.
      * @tpPassCrit The jaxb object xml element is same as original
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testReceiveJaxbObjectAsItis() throws Exception {
@@ -77,7 +78,7 @@ public class CharSetTest {
      * @tpTestDetails Client sends POST request with jaxb annotated object entity and the targeted resource receives
      * xml string.
      * @tpPassCrit Jaxb object is unmarshalled to the expected xml string with correct encoding
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testReceiveJaxbObjectAsString() throws Exception {

@@ -22,7 +22,7 @@ import java.net.URL;
  * @tpSubChapter Configuration
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-903
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class UndertowTest {
@@ -40,7 +40,7 @@ public class UndertowTest {
 
     /**
      * @tpTestDetails Redirection in one servlet to other servlet.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testUndertow() throws Exception {

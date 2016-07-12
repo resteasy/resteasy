@@ -27,7 +27,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for LinkHeader (it use deprecated Link). Test also new Link provided by jax-rs 2.0 spec
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -57,7 +57,7 @@ public class LinkHeaderTest {
 
     /**
      * @tpTestDetails Test new client without API and old client with API
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLinkheader() throws Exception {
@@ -86,7 +86,7 @@ public class LinkHeaderTest {
 
     /**
      * @tpTestDetails Test old client without API
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLinkheaderOldClientWithoutApi() throws Exception {

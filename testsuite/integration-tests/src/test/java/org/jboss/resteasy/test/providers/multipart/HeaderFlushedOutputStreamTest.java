@@ -34,7 +34,7 @@ import java.io.InputStream;
  * @tpSubChapter Multipart provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-190
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -73,7 +73,7 @@ public class HeaderFlushedOutputStreamTest {
 
     /**
      * @tpTestDetails Loopback to examine form-data
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPost() throws Exception {
@@ -97,7 +97,7 @@ public class HeaderFlushedOutputStreamTest {
 
     /**
      * @tpTestDetails Test post method
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostForm() throws Exception {
@@ -122,7 +122,7 @@ public class HeaderFlushedOutputStreamTest {
 
     /**
      * @tpTestDetails Test get method
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGet() throws Exception {

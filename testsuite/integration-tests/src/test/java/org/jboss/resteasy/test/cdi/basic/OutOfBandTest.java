@@ -25,7 +25,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter CDI
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1049.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -41,7 +41,7 @@ public class OutOfBandTest {
 
     /**
      * @tpTestDetails JAX-RS resource methods can be called outside the context of a servlet request, leading to NPEs.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testTimerInterceptor() throws Exception {

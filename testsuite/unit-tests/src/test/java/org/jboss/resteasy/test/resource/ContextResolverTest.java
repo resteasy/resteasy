@@ -18,7 +18,7 @@ import javax.ws.rs.ext.ContextResolver;
  * @tpSubChapter Resource
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for javax.ws.rs.ext.ContextResolver class.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class ContextResolverTest {
     @BeforeClass
@@ -34,7 +34,7 @@ public class ContextResolverTest {
 
     /**
      * @tpTestDetails Test contexts for various types.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testContextResolver() {

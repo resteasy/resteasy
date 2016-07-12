@@ -31,7 +31,7 @@ import javax.ws.rs.core.Response;
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1125. Jaxb message body reader not recognized when using generics in
  * complex inheritance structure
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -65,7 +65,7 @@ public class GenericResourceTest {
 
     /**
      * @tpTestDetails Tests Jaxb object with resource using inheritance, generics and abstract classes
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGenericInheritingResource() throws Exception {
@@ -80,7 +80,7 @@ public class GenericResourceTest {
 
     /**
      * @tpTestDetails Tests Jaxb object with resource using inheritance, generics and abstract classes
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGenericResource() throws Exception {

@@ -22,13 +22,13 @@ import java.net.URISyntaxException;
  * @tpChapter Unit tests
  * @tpTestCaseDetails Tests to make sure that standard segment mapping work correctly, especially
  *                    regexes that contain "\"
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class SegmentTest {
 
     /**
      * @tpTestDetails Basic segment check
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBasic() throws URISyntaxException {
@@ -44,7 +44,7 @@ public class SegmentTest {
 
     /**
      * @tpTestDetails Check default option for segment
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDefaultOptions() throws URISyntaxException {
@@ -63,7 +63,7 @@ public class SegmentTest {
 
     /**
      * @tpTestDetails Check locator option
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLocatorOptions() throws URISyntaxException {
@@ -77,7 +77,7 @@ public class SegmentTest {
 
     /**
      * @tpTestDetails Check complex locator
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLocator3() throws URISyntaxException {

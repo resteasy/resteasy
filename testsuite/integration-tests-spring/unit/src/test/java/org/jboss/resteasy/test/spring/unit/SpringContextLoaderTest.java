@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter Spring
  * @tpChapter Unit test
  * @tpTestCaseDetails  Tests that SpringContextLoader does proper validations and adds an application listener
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class SpringContextLoaderTest {
 
@@ -30,7 +30,7 @@ public class SpringContextLoaderTest {
 
     /**
      * @tpTestDetails Tests that ProviderFactory is required for customizeContext() of SpringContextLoader
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = RuntimeException.class)
     public void testThatProviderFactoryIsRequired() {
@@ -41,7 +41,7 @@ public class SpringContextLoaderTest {
 
     /**
      * @tpTestDetails Tests that Registry is required for customizeContext() of SpringContextLoader
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = RuntimeException.class)
     public void testThatRegistryIsRequired() {
@@ -52,7 +52,7 @@ public class SpringContextLoaderTest {
 
     /**
      * @tpTestDetails Tests that Dispatcher is required for customizeContext() of SpringContextLoader
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = RuntimeException.class)
     public void testThatDispatcherIsRequired() {
@@ -63,7 +63,7 @@ public class SpringContextLoaderTest {
 
     /**
      * @tpTestDetails Tests that only one application listener is added for customizeContext() call of SpringContextLoader
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testThatWeAddedAnApplicationListener() {

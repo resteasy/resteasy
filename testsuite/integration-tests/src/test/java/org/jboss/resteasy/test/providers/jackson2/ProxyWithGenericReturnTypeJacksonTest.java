@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Jackson2 provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -64,7 +64,7 @@ public class ProxyWithGenericReturnTypeJacksonTest {
     /**
      * @tpTestDetails Tests usage of proxied subresource
      * @tpPassCrit The resource returns Success response
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testProxyWithGenericReturnType() throws Exception {

@@ -38,7 +38,7 @@ import java.util.Map;
  * @tpSubChapter Form tests
  * @tpChapter Integration tests
  * @tpTestCaseDetails Form test with resource
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -72,7 +72,7 @@ public class FormResourceTest {
 
     /**
      * @tpTestDetails Regression test for RESTEASY-261
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMultiValueParam() throws Exception {
@@ -100,7 +100,7 @@ public class FormResourceTest {
 
     /**
      * @tpTestDetails Regression test for RESTEASY-691
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testProxy691() throws Exception {
@@ -113,7 +113,7 @@ public class FormResourceTest {
 
     /**
      * @tpTestDetails Test for different value type of form by proxy.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testProxy() throws Exception {
@@ -157,7 +157,7 @@ public class FormResourceTest {
 
     /**
      * @tpTestDetails Test for different value type of form directly
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFormResource() throws Exception {

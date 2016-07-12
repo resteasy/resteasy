@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter Yaml provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1223
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -53,7 +53,7 @@ public class YamlPojoBindingTest {
 
     /**
      * @tpTestDetails GET method test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGet() throws Exception {
@@ -73,7 +73,7 @@ public class YamlPojoBindingTest {
 
     /**
      * @tpTestDetails POST method test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPost() throws Exception {
@@ -93,7 +93,7 @@ public class YamlPojoBindingTest {
 
     /**
      * @tpTestDetails POST method test. Wrong request, error expected.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @Category({ExpectedFailing.class}) //[RESTEASY-1361] FIXME
@@ -107,7 +107,7 @@ public class YamlPojoBindingTest {
 
     /**
      * @tpTestDetails POST method test. List is in request and in response.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPostList() throws Exception {

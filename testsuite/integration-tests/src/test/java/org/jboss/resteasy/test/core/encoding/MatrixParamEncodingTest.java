@@ -28,7 +28,7 @@ import javax.ws.rs.core.UriBuilder;
  * @tpSubChapter Encoding
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-729
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -57,11 +57,12 @@ public class MatrixParamEncodingTest {
     @After
     public void shutdown() throws Exception {
         client.close();
+        client = null;
     }
 
     /**
      * @tpTestDetails Check decoded request, do not use UriBuilder
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMatrixParamRequestDecoded() throws Exception {
@@ -74,7 +75,7 @@ public class MatrixParamEncodingTest {
 
     /**
      * @tpTestDetails Check decoded request, one matrix param is not defined, do not use UriBuilder
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMatrixParamNullRequestDecoded() throws Exception {
@@ -87,7 +88,7 @@ public class MatrixParamEncodingTest {
 
     /**
      * @tpTestDetails Check encoded request, do not use UriBuilder
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMatrixParamRequestEncoded() throws Exception {
@@ -100,7 +101,7 @@ public class MatrixParamEncodingTest {
 
     /**
      * @tpTestDetails Check decoded request, use UriBuilder
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMatrixParamUriBuilderDecoded() throws Exception {
@@ -110,7 +111,6 @@ public class MatrixParamEncodingTest {
         logger.info("Sending request to " + uriBuilder.build().toString());
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
-        logger.info("Received response: " + entity);
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         Assert.assertEquals("Wrong response", "ac/dc", entity);
         response.close();
@@ -118,7 +118,7 @@ public class MatrixParamEncodingTest {
 
     /**
      * @tpTestDetails Check encoded request, use UriBuilder
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMatrixParamUriBuilderEncoded() throws Exception {
@@ -128,7 +128,6 @@ public class MatrixParamEncodingTest {
         logger.info("Sending request to " + uriBuilder.build().toString());
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
-        logger.info("Received response: " + entity);
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         Assert.assertEquals("Wrong response", "ac%2Fdc", entity);
         response.close();

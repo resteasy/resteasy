@@ -1,7 +1,9 @@
 package org.jboss.resteasy.test.providers.atom;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import static org.hamcrest.CoreMatchers.containsString;
+
+import javax.ws.rs.core.Response;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -19,22 +21,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.core.Response;
-
-import static org.hamcrest.CoreMatchers.containsString;
-
 
 /**
  * @tpSubChapter Atom provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for org.jboss.resteasy.plugins.providers.atom.Link class
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class LinkTest {
-
-    protected static final Logger logger = LogManager.getLogger(LinkTest.class.getName());
 
     static ResteasyClient client;
 
@@ -61,7 +57,7 @@ public class LinkTest {
 
     /**
      * @tpTestDetails Test response as java custom object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRelativeLinkProductOutput() throws Exception {
@@ -74,13 +70,12 @@ public class LinkTest {
 
     /**
      * @tpTestDetails Test response as XML String
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRelativeLinkStringOutput() throws Exception {
         Response response = client.target(generateURL("/products/333")).request().get();
         String stringResponse = response.readEntity(String.class);
-        logger.info("Results: " + stringResponse);
         Assert.assertThat("Wrong link in response", stringResponse, containsString("/LinkTest/products/333/self\""));
         Assert.assertThat("Wrong link in response", stringResponse, containsString("/LinkTest/products\""));
         response.close();

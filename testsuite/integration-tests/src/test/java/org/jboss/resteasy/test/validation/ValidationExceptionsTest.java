@@ -45,7 +45,7 @@ import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
 /**
  * @tpSubChapter Validator provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -116,7 +116,7 @@ public class ValidationExceptionsTest {
 
     /**
      * @tpTestDetails Resource with incorrect constraint, constrain definitiont exception is expected
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment(DEF_EXCEPTION)
@@ -133,7 +133,7 @@ public class ValidationExceptionsTest {
 
     /**
      * @tpTestDetails Resource with incorrect constraint declaration, constraint definition exception is expected
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment(DECL_EXCEPTION)
@@ -150,7 +150,7 @@ public class ValidationExceptionsTest {
 
     /**
      * @tpTestDetails Resource with incorrect group definition, group definition exception is expected
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment(GROUP_DEF_EXCEPTION)
@@ -168,7 +168,7 @@ public class ValidationExceptionsTest {
     /**
      * @tpTestDetails Tests for: Exception thrown during validation of field, Exception thrown during validation of parameter,
      * Exception thrown during validation of return value, Exception thrown by resource method
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment(OTHER_EXCEPTION)
@@ -227,7 +227,7 @@ public class ValidationExceptionsTest {
 
     /**
      * @tpTestDetails Resource with crazy message in constraint
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @OperateOnDeployment(CRAZY_EXCEPTION)

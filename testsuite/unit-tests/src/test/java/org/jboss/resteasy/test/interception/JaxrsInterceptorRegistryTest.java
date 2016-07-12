@@ -24,13 +24,13 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter Interception tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Unit test for JaxrsInterceptorRegistry class.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class JaxrsInterceptorRegistryTest {
 
     /**
      * @tpTestDetails Test for using name binding annotation.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void shouldUseNameBindingAnnotation() throws Exception {
@@ -57,7 +57,7 @@ public class JaxrsInterceptorRegistryTest {
 
     /**
      * @tpTestDetails Test for JaxrsInterceptorRegistry.Match class
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testOrder() {

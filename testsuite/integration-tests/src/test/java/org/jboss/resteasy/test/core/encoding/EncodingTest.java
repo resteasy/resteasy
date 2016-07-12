@@ -34,7 +34,7 @@ import java.nio.charset.CharacterCodingException;
  * @tpSubChapter Encoding
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for HTML encoding and decoding.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -82,7 +82,7 @@ public class EncodingTest {
 
     /**
      * @tpTestDetails Tests requesting special characters via a ClientProxy.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEncodingCharacters() throws Exception {
@@ -110,7 +110,7 @@ public class EncodingTest {
 
     /**
      * @tpTestDetails Tests backslash encoding.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPercent() {
@@ -119,7 +119,7 @@ public class EncodingTest {
 
     /**
      * @tpTestDetails Tests requesting special characters via manual URL construction.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testViaDirectURI() throws Exception {
@@ -140,7 +140,7 @@ public class EncodingTest {
 
     /**
      * @tpTestDetails Chinese character decoding in path.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void decodeChineseInPath() throws Exception {
@@ -151,7 +151,7 @@ public class EncodingTest {
 
     /**
      * @tpTestDetails Western European character decoding in path.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void decodeWesternEuropeanCharsInPath() throws Exception {
@@ -184,7 +184,7 @@ public class EncodingTest {
 
     /**
      * @tpTestDetails Test method for {@link org.jboss.resteasy.util.Encode#encodeQueryParam(String)}
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEncodeQueryParam() {
@@ -194,7 +194,7 @@ public class EncodingTest {
     /**
      * @tpTestDetails Test method for {@link org.jboss.resteasy.util.Encode#encodeQueryParam(String)}.
      *                Special characters are used.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEncodeQueryParam_special() {
@@ -203,7 +203,7 @@ public class EncodingTest {
 
     /**
      * @tpTestDetails Test for scands characters.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEncodeQueryParamScands() throws UnsupportedEncodingException {
@@ -214,7 +214,7 @@ public class EncodingTest {
 
     /**
      * @tpTestDetails Test for 2bytes UTF8 character.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEncodeQueryParamUtf8TwoByte() throws CharacterCodingException, UnsupportedEncodingException {
@@ -238,7 +238,7 @@ public class EncodingTest {
 
     /**
      * @tpTestDetails Test path for {} characters
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPathParamWithBraces() {
@@ -251,7 +251,7 @@ public class EncodingTest {
 
     /**
      * @tpTestDetails Test path for % character
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPathParamWithLifePercentDeath() {
@@ -264,7 +264,7 @@ public class EncodingTest {
 
     /**
      * @tpTestDetails Test query for %% characters
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testQueryParamWithDoublePercent() {
@@ -277,7 +277,7 @@ public class EncodingTest {
 
     /**
      * @tpTestDetails Test query for {} characters
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testQueryParamWithBraces() {
@@ -290,7 +290,7 @@ public class EncodingTest {
 
     /**
      * @tpTestDetails Test query for % character
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testQueryParamWithLifePercentDeath() {
@@ -303,7 +303,7 @@ public class EncodingTest {
 
     /**
      * @tpTestDetails Test for encoding string seems to be a code, but it is not a code
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEncodeNonCodes() {

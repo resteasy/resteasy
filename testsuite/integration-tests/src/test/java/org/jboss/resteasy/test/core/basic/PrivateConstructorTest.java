@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Constructors
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-489
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -36,7 +36,7 @@ public class PrivateConstructorTest {
 
     /**
      * @tpTestDetails Exception should not be thrown  on WS with a non-public constructor
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMapper() throws Exception {

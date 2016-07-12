@@ -25,7 +25,7 @@ import java.io.InputStream;
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-351
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -56,7 +56,7 @@ public class ProxyInputStreamTest {
 
     /**
      * @tpTestDetails Old client version
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInputStreamOldClient() throws Exception {
@@ -70,7 +70,7 @@ public class ProxyInputStreamTest {
 
     /**
      * @tpTestDetails New client version
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInputStreamNewClient() throws Exception {

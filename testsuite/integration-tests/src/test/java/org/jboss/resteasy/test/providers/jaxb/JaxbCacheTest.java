@@ -23,7 +23,7 @@ import javax.xml.bind.JAXBContext;
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class JaxbCacheTest {
@@ -41,7 +41,7 @@ public class JaxbCacheTest {
     /**
      * @tpTestDetails Gets contextResolver for JAXBContextFinder class and mediatype "APPLICATION_XML_TYPE" or "APPLICATION_ATOM_XML_TYPE",
      * then gets calls findCachedContext() twice to get JAXBContext and ensures that the result is the same
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCache() throws Exception {
@@ -72,7 +72,7 @@ public class JaxbCacheTest {
     /**
      * @tpTestDetails Gets contextResolver for JAXBContextFinder class and mediatype "APPLICATION_XML_TYPE" or "APPLICATION_ATOM_XML_TYPE",
      * thrn gets calls findCacheContext() twice to get JAXBContext and ensures that the result is the same
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCache2() throws Exception {

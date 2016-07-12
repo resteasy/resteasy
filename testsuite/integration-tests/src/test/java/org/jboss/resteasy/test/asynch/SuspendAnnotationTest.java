@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response;
  * @tpChapter Integration tests
  * @tpTestCaseDetails Basic asynchronous test for suspended response.
  *                Test for org.jboss.resteasy.annotations.Suspend annotation
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -41,7 +41,7 @@ public class SuspendAnnotationTest {
 
     /**
      * @tpTestDetails Server is able to answer in requested time.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPositive() throws Exception {
@@ -57,7 +57,7 @@ public class SuspendAnnotationTest {
 
     /**
      * @tpTestDetails Server is not able to answer in requested time.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testTimeout() throws Exception {

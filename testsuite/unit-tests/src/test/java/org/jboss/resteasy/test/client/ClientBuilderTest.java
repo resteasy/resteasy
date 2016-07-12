@@ -19,7 +19,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Unit tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  *
  */
 public class ClientBuilderTest {
@@ -27,7 +27,7 @@ public class ClientBuilderTest {
     /**
      * @tpTestDetails Create string entity with unparsable media type
      * @tpPassCrit IllegalArgumentException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = IllegalArgumentException.class)
     public void entityStringThrowsExceptionWhenUnparsableTest() throws Exception {
@@ -39,7 +39,7 @@ public class ClientBuilderTest {
      * @tpTestDetails Create client, set up custom property for it, get client configuration
      * and create new client using that configuration
      * @tpPassCrit Client is created
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBuilder() throws Exception {
@@ -55,7 +55,7 @@ public class ClientBuilderTest {
      * @tpTestDetails Create client with custom property, check that property is set and remove the property
      * from client configuration
      * @tpPassCrit Property is added and removed from client configuration
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void addAndRemovePropertyTest() throws Exception {
@@ -76,7 +76,7 @@ public class ClientBuilderTest {
     /**
      * @tpTestDetails Invoke target method on the closed client
      * @tpPassCrit IllegalStateException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = IllegalStateException.class)
     public void closeClientSendRequestTest() throws Exception {
@@ -89,7 +89,7 @@ public class ClientBuilderTest {
      * @tpTestDetails Create Webtarget instance, close the client and execute get request on the original
      * Webtarget instance
      * @tpPassCrit IllegalStateException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = IllegalStateException.class)
     public void closeClientWebTargetTest() throws Exception {

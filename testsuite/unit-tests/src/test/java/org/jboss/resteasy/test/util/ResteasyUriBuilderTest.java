@@ -12,7 +12,7 @@ import static org.junit.Assert.assertSame;
  * @tpSubChapter Util tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for ResteasyUriBuilder class.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class ResteasyUriBuilderTest {
 
@@ -21,7 +21,7 @@ public class ResteasyUriBuilderTest {
 
     /**
      * @tpTestDetails Uri method of ResteasyUriBuilder object should return same object.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testParseHierarchicalUri() {
@@ -40,7 +40,7 @@ public class ResteasyUriBuilderTest {
     /**
      * @tpTestDetails ResteasyUriBuilder object should not encode valid characters in the fragment uri
      * @tpTestDetails RESTEASY-1261
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testUriWithFragment() {

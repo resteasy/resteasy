@@ -8,12 +8,12 @@ import org.junit.Test;
  * @tpSubChapter Util tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Regression test for RESTEASY-1176
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class PasswordColonTest {
     /**
      * @tpTestDetails Test for BasicAuthHelper
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testPasswordWithColon() {

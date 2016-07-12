@@ -57,7 +57,7 @@ import static org.junit.Assert.assertNotNull;
  * @tpSubChapter Atom provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Check complex model with Atom Provider
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -101,7 +101,7 @@ public class AtomComplexModelTest {
 
     /**
      * @tpTestDetails Check complex type
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testComplexType() throws Exception {
@@ -149,7 +149,7 @@ public class AtomComplexModelTest {
 
     /**
      * @tpTestDetails Check old client
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testOldClient() throws Exception {
@@ -224,7 +224,7 @@ public class AtomComplexModelTest {
 
     /**
      * @tpTestDetails Check new client
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNewClient() throws Exception {

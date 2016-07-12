@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Jettison provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Namespace mapping test for jettison provider
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -60,7 +60,7 @@ public class NamespaceMappingTest {
 
     /**
      * @tpTestDetails Test "application/*+json" media type
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJsonReqRes() throws Exception {

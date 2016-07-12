@@ -22,35 +22,35 @@ import java.lang.reflect.Type;
  * @tpSubChapter Util tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for Types class for generic types.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class TypesGenericTest {
 
-    protected static final Logger logger = LogManager.getLogger(TypesGenericTest.class.getName());
+    protected final Logger logger = LogManager.getLogger(TypesGenericTest.class.getName());
 
     /**
      * @tpTestDetails Check findParameterizedTypes method of Types class for corrected parametrized type.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInterfaceGenericTypeDiscovery() throws Exception {
         Type[] types = Types.findParameterizedTypes(TypesGenericFooBar.class, TypesGenericBar.class);
         for (Type t : types) {
-            logger.info(t);
+            logger.debug(t);
         }
 
         Assert.assertEquals("Expected type for the class doesn't match", types[0], Float.class);
 
         types = Types.findParameterizedTypes(TypesGenericSubClass.class, TypesGenericBar.class);
         for (Type t : types) {
-            logger.info(t);
+            logger.debug(t);
         }
 
         Assert.assertEquals("Expected type for the class doesn't match", types[0], Float.class);
 
         types = Types.findParameterizedTypes(TypesGenericSub.class, TypesGenericBar.class);
         for (Type t : types) {
-            logger.info(t);
+            logger.debug(t);
         }
 
         Assert.assertEquals("Expected type for the class doesn't match", types[0], Float.class);
@@ -61,7 +61,7 @@ public class TypesGenericTest {
 
     /**
      * @tpTestDetails Check getImplementingMethod method of Types class for implemented methods.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFindImplementedMethod() throws Exception {
@@ -86,29 +86,24 @@ public class TypesGenericTest {
 
         Assert.assertEquals("The method implemented by the class an returned by getImplementingMethod() is not the expected one",
                 implented, actual);
-
-        logger.info("Implemented:");
-        logger.info(implented);
-        logger.info("Actual");
-        logger.info(actual);
     }
 
     /**
      * @tpTestDetails Check findParameterizedTypes method of Types class for generic type discovery.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testClassGenericTypeDiscovery() throws Exception {
         Type[] types = Types.findParameterizedTypes(TypesGenericClassFooBar.class, TypesGenericClassBar.class);
         for (Type t : types) {
-            logger.info(t);
+            logger.debug(t);
         }
 
         Assert.assertEquals("Expected type for the class doesn't match", types[0], Float.class);
 
         types = Types.findParameterizedTypes(TypesGenericClassSub.class, TypesGenericClassBar.class);
         for (Type t : types) {
-            logger.info(t);
+            logger.debug(t);
         }
 
         Assert.assertEquals("Expected type for the class doesn't match", types[0], Float.class);

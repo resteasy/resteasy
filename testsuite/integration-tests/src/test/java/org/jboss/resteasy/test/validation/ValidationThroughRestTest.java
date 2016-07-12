@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Validator provider
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test - RESTEASY-1296
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -51,7 +51,7 @@ public class ValidationThroughRestTest {
 
     /**
      * @tpTestDetails Field and EJB parameter validation.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void validationOfFieldAndParameterOfEjbResource() {

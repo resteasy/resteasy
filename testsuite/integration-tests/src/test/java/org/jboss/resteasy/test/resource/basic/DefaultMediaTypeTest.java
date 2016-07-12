@@ -32,13 +32,13 @@ import java.io.ByteArrayOutputStream;
  * @tpSubChapter Resources
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for JBEAP-2847. DefaultTextPlain should be used, if produce annotation annotation is not used in end-point.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class DefaultMediaTypeTest {
 
-    protected static final Logger logger = Logger.getLogger(DefaultMediaTypeResource.class.getName());
+    protected final Logger logger = Logger.getLogger(DefaultMediaTypeResource.class.getName());
 
     static ResteasyClient client;
 
@@ -57,6 +57,7 @@ public class DefaultMediaTypeTest {
     @After
     public void after() throws Exception {
         client.close();
+        client = null;
     }
 
     private String generateURL(String path) {
@@ -65,7 +66,7 @@ public class DefaultMediaTypeTest {
 
     /**
      * @tpTestDetails Test Date object with produce annotation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void postDateProduce() throws Exception {
@@ -82,7 +83,7 @@ public class DefaultMediaTypeTest {
 
     /**
      * @tpTestDetails Test Date object without produce annotation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @Category({ ExpectedFailing.class, NotForForwardCompatibility.class })
@@ -100,7 +101,7 @@ public class DefaultMediaTypeTest {
 
     /**
      * @tpTestDetails Test Foo object with produce annotation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void postFooProduce() throws Exception {
@@ -117,7 +118,7 @@ public class DefaultMediaTypeTest {
 
     /**
      * @tpTestDetails Test Foo object without produce annotation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     @Category({ ExpectedFailing.class, NotForForwardCompatibility.class })
@@ -135,7 +136,7 @@ public class DefaultMediaTypeTest {
 
     /**
      * @tpTestDetails Test int primitive with produce annotation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void postIntProduce() throws Exception {
@@ -152,7 +153,7 @@ public class DefaultMediaTypeTest {
 
     /**
      * @tpTestDetails Test int primitive without produce annotation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void postInt() throws Exception {
@@ -169,7 +170,7 @@ public class DefaultMediaTypeTest {
 
     /**
      * @tpTestDetails Test Integer object with produce annotation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void postIntegerProduce() throws Exception {
@@ -186,7 +187,7 @@ public class DefaultMediaTypeTest {
 
     /**
      * @tpTestDetails Test Integer object without produce annotation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void postInteger() throws Exception {

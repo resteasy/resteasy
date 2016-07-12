@@ -27,7 +27,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Response
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test getter validation
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -57,7 +57,7 @@ public class ValidationOnGetterTest {
 
     /**
      * @tpTestDetails Test xml media type.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetter() throws Exception {

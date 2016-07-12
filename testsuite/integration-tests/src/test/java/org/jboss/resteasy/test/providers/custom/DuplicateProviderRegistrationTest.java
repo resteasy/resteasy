@@ -24,7 +24,7 @@ import javax.ws.rs.ext.ReaderInterceptor;
  * @tpSubChapter Providers
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for JBEAP-4703
- * @tpSince EAP 7.0.1
+ * @tpSince RESTEasy 3.0.17
  */
 @RunWith(Arquillian.class)
 public class DuplicateProviderRegistrationTest {
@@ -45,7 +45,7 @@ public class DuplicateProviderRegistrationTest {
 
     /**
      * @tpTestDetails Basic test
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     @Category({NotForForwardCompatibility.class})
@@ -65,7 +65,7 @@ public class DuplicateProviderRegistrationTest {
 
     /**
      * @tpTestDetails This test is taken from javax.ws.rs.core.Configurable javadoc
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     @Category({NotForForwardCompatibility.class})

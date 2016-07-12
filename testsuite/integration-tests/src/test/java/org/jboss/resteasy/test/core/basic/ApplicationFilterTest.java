@@ -33,7 +33,7 @@ import java.util.List;
  * @tpSubChapter Configuration
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-541
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -68,7 +68,7 @@ public class ApplicationFilterTest {
 
     /**
      * @tpTestDetails Test for not founded method
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMethodNotFound() throws Exception {
@@ -87,7 +87,7 @@ public class ApplicationFilterTest {
 
     /**
      * @tpTestDetails Test for getting html file that is not processed by resteasy
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testStaticResource() throws Exception {
@@ -98,7 +98,7 @@ public class ApplicationFilterTest {
 
     /**
      * @tpTestDetails Test common application usage
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCustomerResource() throws Exception {

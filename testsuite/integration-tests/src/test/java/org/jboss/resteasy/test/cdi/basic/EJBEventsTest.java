@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter CDI
  * @tpChapter Integration tests
  * @tpTestCaseDetails EJB, Events and RESTEasy integration test.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class EJBEventsTest {
@@ -50,7 +50,7 @@ public class EJBEventsTest {
 
     /**
      * @tpTestDetails Invokes additional methods of JAX-RS resource as local EJB.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAsLocalEJB() throws Exception {

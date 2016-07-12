@@ -24,7 +24,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -60,7 +60,7 @@ public class ResponseFilterTest {
      * to 200 (OK) and puts the original response code into the body of the response.
      * @tpPassCrit The response code status is changed to 200 (SUCCESS) and response contains the original code from the
      * request
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testStatus() {
@@ -83,7 +83,7 @@ public class ResponseFilterTest {
      * the entity of the response is set up to null.
      * @tpPassCrit The response code status is changed to 200 (SUCCESS) and response contains the original code from the
      * request
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testStatusInfo() {
@@ -103,7 +103,7 @@ public class ResponseFilterTest {
      * uses getEntityType() method of the responseContext to get information about type of the entity in the Response.
      * @tpPassCrit The response code status is changed to 200 (SUCCESS) and response contains the original code from the
      * request
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEntityType() {

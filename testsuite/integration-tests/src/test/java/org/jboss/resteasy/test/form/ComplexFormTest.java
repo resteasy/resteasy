@@ -27,7 +27,7 @@ import static junit.framework.Assert.assertEquals;
  * @tpSubChapter Form tests
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test complex inner form parameters. Check return value, it is based on form.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -42,7 +42,7 @@ public class ComplexFormTest {
 
     /**
      * @tpTestDetails Set all relevant parameters to form and check return value.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void shouldSupportNestedForm() throws Exception {

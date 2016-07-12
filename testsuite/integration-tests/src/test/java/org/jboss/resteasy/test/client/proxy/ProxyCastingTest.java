@@ -30,7 +30,7 @@ import static org.junit.Assert.assertEquals;
  * @tpChapter Integration tests
  * @tpTestCaseDetails Any interface could be cast to ResteasyClientProxy.
  *                JBEAP-3197, JBEAP-4700
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -63,7 +63,7 @@ public class ProxyCastingTest {
 
     /**
      * @tpTestDetails Cast one proxy to other proxy. Old client.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testOldClient() throws Exception {
@@ -75,7 +75,7 @@ public class ProxyCastingTest {
 
     /**
      * @tpTestDetails Cast one proxy to other proxy. New client.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testNewClient() throws Exception {

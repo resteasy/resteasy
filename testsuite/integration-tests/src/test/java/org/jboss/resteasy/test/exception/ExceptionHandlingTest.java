@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.exception;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -27,13 +25,11 @@ import javax.ws.rs.Path;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ExceptionHandlingTest {
-
-    protected static final Logger logger = LogManager.getLogger(ExceptionHandlingTest.class.getName());
 
     static ResteasyClient client;
 
@@ -52,6 +48,7 @@ public class ExceptionHandlingTest {
     @After
     public void after() throws Exception {
         client.close();
+        client = null;
     }
 
     private String generateURL(String path) {
@@ -69,7 +66,7 @@ public class ExceptionHandlingTest {
      * @tpTestDetails POST request is sent by client via client proxy. The resource on the server throws exception,
      * which is handled by ExceptionMapper.
      * @tpPassCrit The response with expected Exception text is returned
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testThrowsException() throws Exception {
@@ -80,7 +77,6 @@ public class ExceptionHandlingTest {
         } catch (InternalServerErrorException e) {
             Response response = e.getResponse();
             String errorText = response.readEntity(String.class);
-            logger.info("Error text: " + errorText);
             Assert.assertNotNull("Missing the expected exception text", errorText);
         }
 

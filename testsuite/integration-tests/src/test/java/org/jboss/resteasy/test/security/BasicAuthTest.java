@@ -6,8 +6,6 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -39,14 +37,12 @@ import java.util.Hashtable;
  * @tpSubChapter Security
  * @tpChapter Integration tests
  * @tpTestCaseDetails Basic test for RESTEasy authentication.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @ServerSetup({UsersRolesSecurityDomainSetup.class})
 @RunWith(Arquillian.class)
 @RunAsClient
 public class BasicAuthTest {
-
-    protected static final Logger logger = LogManager.getLogger(BasicAuthTest.class.getName());
 
     private static final String WRONG_RESPONSE = "Wrong response content.";
     private static final String ACCESS_FORBIDDEN_MESSAGE = "Access forbidden: role not allowed";
@@ -99,8 +95,6 @@ public class BasicAuthTest {
                 .addAsWebInfResource(BasicAuthTest.class.getPackage(), "jboss-web.xml", "/jboss-web.xml")
                 .addAsWebInfResource(BasicAuthTest.class.getPackage(), "web.xml", "/web.xml");
 
-        logger.info("War archive: " + war.toString(true));
-
         return TestUtil.finishContainerPrepare(war, contextParams, BasicAuthBaseResource.class,
                 BasicAuthBaseResourceMoreSecured.class, BasicAuthBaseResourceAnybody.class);
     }
@@ -111,7 +105,7 @@ public class BasicAuthTest {
 
     /**
      * @tpTestDetails Basic ProxyFactory test. Correct credentials are used.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testProxy() throws Exception {
@@ -122,7 +116,7 @@ public class BasicAuthTest {
 
     /**
      * @tpTestDetails Basic ProxyFactory test. No credentials are used.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testProxyFailure() throws Exception {
@@ -137,7 +131,7 @@ public class BasicAuthTest {
 
     /**
      * @tpTestDetails Test secured resource with correct and incorrect credentials.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSecurity() throws Exception {
@@ -180,7 +174,7 @@ public class BasicAuthTest {
 
     /**
      * @tpTestDetails Regression test for RESTEASY-579
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void test579() throws Exception {
@@ -191,7 +185,7 @@ public class BasicAuthTest {
 
     /**
      * @tpTestDetails Check failures for secured resource.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSecurityFailure() throws Exception {
@@ -216,7 +210,7 @@ public class BasicAuthTest {
 
     /**
      * @tpTestDetails Regression test for JBEAP-1589, RESTEASY-1249
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAccesForbiddenMessage() throws Exception {

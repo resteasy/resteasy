@@ -41,7 +41,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Parameters
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test all variants of primitive URI parameters (boolean, int, long, float, etc.)
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -122,7 +122,7 @@ public class UriParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test boolean primitive object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetBoolean() {
@@ -132,7 +132,7 @@ public class UriParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test byte primitive object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetByte() {
@@ -142,7 +142,7 @@ public class UriParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test short primitive object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetShort() {
@@ -151,7 +151,7 @@ public class UriParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test int primitive object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetInt() {
@@ -160,7 +160,7 @@ public class UriParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test long primitive object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetLong() {
@@ -169,7 +169,7 @@ public class UriParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test float primitive object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetFloat() {
@@ -178,7 +178,7 @@ public class UriParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test double primitive object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetDouble() {

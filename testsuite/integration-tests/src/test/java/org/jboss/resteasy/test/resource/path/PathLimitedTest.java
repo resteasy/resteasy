@@ -27,7 +27,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Resource
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for limited and unlimited path
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -60,7 +60,7 @@ public class PathLimitedTest {
 
     /**
      * @tpTestDetails Check unlimited behaviour on class
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testUnlimitedOnClass() {
@@ -70,7 +70,7 @@ public class PathLimitedTest {
 
     /**
      * @tpTestDetails Check unlimited behaviour on method
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testUnlimitedOnMethod() {
@@ -81,7 +81,7 @@ public class PathLimitedTest {
 
     /**
      * @tpTestDetails Check location of resources
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testLocator() {

@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
  * @tpSubChapter Injection tests
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for org.jboss.resteasy.cdi.Utils class.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class JaxrsComponentDetectionTest {
     private static final String WRONG_RESOURCE = "Method isJaxrsResource works incorrectly";
@@ -20,7 +20,7 @@ public class JaxrsComponentDetectionTest {
 
     /**
      * @tpTestDetails Check root resource.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRootResource() {
@@ -30,7 +30,7 @@ public class JaxrsComponentDetectionTest {
 
     /**
      * @tpTestDetails Check subresource.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSubresource() {
@@ -40,7 +40,7 @@ public class JaxrsComponentDetectionTest {
 
     /**
      * @tpTestDetails Check application subclass.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testApplicationSubclass() {
@@ -49,7 +49,7 @@ public class JaxrsComponentDetectionTest {
 
     /**
      * @tpTestDetails Check provider.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testProvider() {

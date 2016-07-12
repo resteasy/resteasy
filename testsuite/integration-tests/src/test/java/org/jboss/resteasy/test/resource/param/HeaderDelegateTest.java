@@ -34,7 +34,7 @@ import java.util.Date;
  * @tpSubChapter Parameters
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-915
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class HeaderDelegateTest {
@@ -64,7 +64,7 @@ public class HeaderDelegateTest {
 
     /**
      * @tpTestDetails Test delegation by client
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void lastModifiedTest() throws Exception {
@@ -74,8 +74,6 @@ public class HeaderDelegateTest {
         Response response = request.get();
         logger.info("lastModified string: " + response.getHeaderString("last-modified"));
         Date last = response.getLastModified();
-        logger.info("lastModified Date:   " + DateUtil.formatDate(last));
-        logger.info("expected:            " + DateUtil.formatDate(RIGHT_AFTER_BIG_BANG));
         Assert.assertEquals(response.getStatus(), HttpResponseCodes.SC_OK);
         Assert.assertEquals("Wrong response", DateUtil.formatDate(RIGHT_AFTER_BIG_BANG), DateUtil.formatDate(last));
         client.close();
@@ -83,7 +81,7 @@ public class HeaderDelegateTest {
 
     /**
      * @tpTestDetails Check delegation rules from ResteasyProviderFactory
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void localTest() throws Exception {

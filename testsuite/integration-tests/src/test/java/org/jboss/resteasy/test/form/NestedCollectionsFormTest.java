@@ -30,7 +30,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Resources
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test nested form parameters
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -64,7 +64,7 @@ public class NestedCollectionsFormTest {
 
     /**
      * @tpTestDetails Set all relevant parameters to form.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void shouldSupportCollectionsWithNestedObjectsInForm() throws Exception {

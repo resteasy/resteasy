@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
  * @tpSubChapter CDI
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for asynchronous behavior of RESTEasy with CDI.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -57,7 +57,7 @@ public class AsynchronousCdiTest {
 
     /**
      * @tpTestDetails Delay is in stateless bean.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAsynchJaxRs() throws Exception {
@@ -74,7 +74,7 @@ public class AsynchronousCdiTest {
 
     /**
      * @tpTestDetails Delay is in RESTEasy resource.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testAsynchResourceAsynchEJB() throws Exception {

@@ -85,7 +85,7 @@ import static org.junit.Assert.assertTrue;
  *                    *) a variety of Resteasy resources are injected into StatelessEJBwithJaxRsComponents and similar EJBs.
  *                    Also, the EJBs like StatelessEJBwithJaxRsComponents are injected into ReverseInjectionEJBHolder using both.
  *                    Annotation @EJB and @Inject, and the semantics of both are tested.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class ReverseInjectionTest extends AbstractInjectionTestBase {
@@ -155,7 +155,7 @@ public class ReverseInjectionTest extends AbstractInjectionTestBase {
      *                obtained through JNDI, so CDI performs injections when the SLSB is created,
      *                but there is no scope management.  It follows that the target SLSB is not recreated
      *                for the second invocation.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSLSB() throws Exception {
@@ -178,7 +178,7 @@ public class ReverseInjectionTest extends AbstractInjectionTestBase {
      *                since it is obtained through JNDI, so CDI performs injections when the SFSB is created,
      *                but there is no scope management.  It follows that the target SFSB is not recreated
      *                for the second invocation.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSFSBDependentScope() throws Exception {
@@ -192,7 +192,7 @@ public class ReverseInjectionTest extends AbstractInjectionTestBase {
      *                since it is obtained through JNDI, so CDI performs injections when the SFSB is created,
      *                but there is no scope management.  It follows that the target SFSB is not recreated
      *                for the second invocation.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSFSBRequestScope() throws Exception {
@@ -207,7 +207,7 @@ public class ReverseInjectionTest extends AbstractInjectionTestBase {
      *                since it is obtained through JNDI, so CDI performs injections when the SFSB is created,
      *                but there is no scope management.  It follows that the target SFSB is not recreated
      *                for the second invocation.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSFSBApplicationScope() throws Exception {
@@ -232,7 +232,7 @@ public class ReverseInjectionTest extends AbstractInjectionTestBase {
 
     /**
      * @tpTestDetails Verifies the scopes of the EJBs used in this set of tests.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEJBHolderInResourceScopes() throws Exception {
@@ -244,7 +244,7 @@ public class ReverseInjectionTest extends AbstractInjectionTestBase {
 
     /**
      * @tpTestDetails Test static hash map in RequestScoped bean used as REST point.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testEJBHolderInResource() throws Exception {
@@ -261,7 +261,7 @@ public class ReverseInjectionTest extends AbstractInjectionTestBase {
 
     /**
      * @tpTestDetails Tests the injection of a JAX-RS resource (BookResource) into an MDB.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMDB() throws Exception {

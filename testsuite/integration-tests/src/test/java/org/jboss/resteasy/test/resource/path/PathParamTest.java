@@ -24,7 +24,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Resource
  * @tpChapter Integration tests
  * @tpTestCaseDetails Spec requires that HEAD and OPTIONS are handled in a default manner
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -42,7 +42,7 @@ public class PathParamTest {
      *                Client invokes GET on root resource at /PathParamTest;
      *                Verify that right Method is invoked using
      *                PathParam primitive type List<String>.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void test6() throws Exception {
@@ -62,7 +62,7 @@ public class PathParamTest {
 
     /**
      * @tpTestDetails Check digits on path
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void test178() throws Exception {
@@ -85,7 +85,7 @@ public class PathParamTest {
 
     /**
      * @tpTestDetails Check example car resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCarResource() throws Exception {

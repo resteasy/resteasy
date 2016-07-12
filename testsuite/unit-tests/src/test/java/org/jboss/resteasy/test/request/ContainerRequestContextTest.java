@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @tpSubChapter Request
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.1
+ * @tpSince RESTEasy 3.0.17
  * @tpTestCaseDetails Regression test for JBEAP-4707
  */
 public class ContainerRequestContextTest {
@@ -36,7 +36,7 @@ public class ContainerRequestContextTest {
 
     /**
      * @tpTestDetails Test that ContainerRequestContext setRequestUri clear previous query parameters
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testQueryParamatersClear() throws URISyntaxException {

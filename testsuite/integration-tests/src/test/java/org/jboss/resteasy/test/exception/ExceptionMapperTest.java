@@ -29,7 +29,7 @@ import java.lang.reflect.Type;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -64,7 +64,7 @@ public class ExceptionMapperTest {
      * exception is caught by application provided ExceptionMapper. The application provides two providers for mapping
      * exceptions. General RuntimeException mapping and MyCustomException mapping which extends the RuntimeException.
      * @tpPassCrit The more specific MyCustomException mapping will be used.
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCustomExceptionsUsed() {
@@ -81,7 +81,7 @@ public class ExceptionMapperTest {
      * @tpTestDetails Client sends GET request to the server, which causes WebapplicationException being thrown, this
      * exception is caught by application provided ExceptionMapper
      * @tpPassCrit Application provided ExceptionMapper serves the exception and creates response with ACCEPTED status
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testWAEResponseUsed() {

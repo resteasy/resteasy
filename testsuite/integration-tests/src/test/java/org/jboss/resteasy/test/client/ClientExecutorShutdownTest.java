@@ -30,7 +30,7 @@ import static org.junit.Assert.fail;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails https://issues.jboss.org/browse/RESTEASY-621
  */
 @RunWith(Arquillian.class)
@@ -60,7 +60,7 @@ public class ClientExecutorShutdownTest {
      * then ApacheHttpClient4Executor.finalize() will close the HttpClient's
      * org.apache.http.conn.ClientConnectionManager.
      * @tpPassCrit ApacheHttpClient4Executor.finalize() will close the connection
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testApacheHttpClient4ExecutorNonSharedHttpClientFinalize() throws Throwable {
@@ -84,7 +84,7 @@ public class ClientExecutorShutdownTest {
      * then ApacheHttpClient4Executor.close() will close the HttpClient's
      * org.apache.http.conn.ClientConnectionManager.
      * @tpPassCrit ApacheHttpClient4Executor.close() will close the connection
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testApacheHttpClient4ExecutorNonSharedHttpClientClose() throws Throwable {
@@ -108,7 +108,7 @@ public class ClientExecutorShutdownTest {
      * a constructor, then ApacheHttpClient4Executor.finalize() will not close the
      * HttpClient's org.apache.http.conn.ClientConnectionManager.
      * @tpPassCrit ApacheHttpClient4Executor.finalize() will not close the connection
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testApacheHttpClient4ExecutorSharedHttpClientFinalize() throws Throwable {
@@ -131,7 +131,7 @@ public class ClientExecutorShutdownTest {
      * a constructor, then ApacheHttpClient4Executor.close() will not close the
      * HttpClient's org.apache.http.conn.ClientConnectionManager.
      * @tpPassCrit ApacheHttpClient4Executor.close() will not close the connection
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testApacheHttpClient4ExecutorSharedHttpClientClose() throws Throwable {

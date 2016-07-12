@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Parameters
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for special characters in url
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -58,7 +58,7 @@ public class SpecialCharsInUrlTest {
 
     /**
      * @tpTestDetails Test for '+' and '@' characters in url, RESTEASY-137
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGet() throws Exception {

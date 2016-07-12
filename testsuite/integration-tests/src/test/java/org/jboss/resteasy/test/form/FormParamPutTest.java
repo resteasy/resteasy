@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter Form tests
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for JBEAP-982
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -41,7 +41,7 @@ public class FormParamPutTest {
 
     /**
      * @tpTestDetails Test with query param and without query param
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void test1() throws Exception {

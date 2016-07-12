@@ -27,7 +27,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Configuration
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-381, RESTEASY-518 and RESTEASY-582. Check ServletConfig instance.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -59,7 +59,7 @@ public class ServletConfigTest {
 
     /**
      * @tpTestDetails Regression test for RESTEASY-381
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCount() throws Exception {
@@ -69,7 +69,7 @@ public class ServletConfigTest {
 
     /**
      * @tpTestDetails Regression test for RESTEASY-518
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNullJaxb() throws Exception {
@@ -80,7 +80,7 @@ public class ServletConfigTest {
 
     /**
      * @tpTestDetails Regression test for RESTEASY-582
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBadMediaTypeNoSubtype() throws Exception {

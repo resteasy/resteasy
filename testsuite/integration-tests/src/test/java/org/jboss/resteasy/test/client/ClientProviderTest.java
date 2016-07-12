@@ -38,7 +38,7 @@ import java.io.Reader;
  * The entity providers registered by client have to be used before built-in ones. See spec 4.2.4:
  * "An implementation MUST support application-provided entity providers and MUST use those in preference to
  * its own pre-packaged providers when either could handle the same request."
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -99,7 +99,7 @@ public class ClientProviderTest  {
      * @tpTestDetails Create WebTarget from client and register custom MessageBodyReader on it
      * @tpPassCrit Verify application provided MessageBodyReader is used instead of built-in one,
      * verify that following request is is processed by built-in MessageBodyReader again
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void applicationDefinedMessageBodyReaderTest() {
@@ -116,7 +116,7 @@ public class ClientProviderTest  {
      * @tpTestDetails Create WebTarget from client and register custom MessageBodyWriter on it
      * @tpPassCrit Verify application provided MessageBodyWriter is used instead of built-in one,
      * verify that following request is is processed by built-in MessageBodyWriter again
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void applicationDefinedMessageBodyWriterTest() {

@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Regression for RESTEASY-699
  */
 @RunWith(Arquillian.class)
@@ -44,7 +44,7 @@ public class InvalidMediaTypeTest {
 
     /**
      * @tpTestDetails Check various wrong media type
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInvalidMediaTypes() throws Exception {

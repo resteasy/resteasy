@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter Response
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1058
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 public class MultipleWarTest {
@@ -73,7 +73,7 @@ public class MultipleWarTest {
 
     /**
      * @tpTestDetails Check validation of invalid inputs
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInputsInvalid() throws Exception {
@@ -115,7 +115,7 @@ public class MultipleWarTest {
 
     /**
      * @tpTestDetails Check validation of invalid return value
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testReturnValueInvalid() throws Exception {

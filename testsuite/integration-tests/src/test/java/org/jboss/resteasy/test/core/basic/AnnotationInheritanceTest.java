@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Configuration
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for resource without @Path annotation.
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -55,7 +55,7 @@ public class AnnotationInheritanceTest {
 
     /**
      * @tpTestDetails Test basic functionality of test resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSuperclassInterfaceAnnotation() {
@@ -65,7 +65,7 @@ public class AnnotationInheritanceTest {
 
     /**
      * @tpTestDetails Check wrong resource without @Path annotation
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDetectionOfNonResource() {

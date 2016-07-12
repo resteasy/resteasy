@@ -12,7 +12,7 @@ import java.beans.PropertyEditor;
  * @tpSubChapter Spring
  * @tpChapter Unit test
  * @tpTestCaseDetails  Tests MediaTypeEditor
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class MediaTypePropertyEditorTest {
 
@@ -27,7 +27,7 @@ public class MediaTypePropertyEditorTest {
 
     /**
      * @tpTestDetails Tests that mediatype is set correctly to MediaTypeEditor
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSetAsText() {
@@ -39,7 +39,7 @@ public class MediaTypePropertyEditorTest {
 
     /**
      * @tpTestDetails Tests that mediatype and charset is set correctly to MediaTypeEditor
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSetAsTextWithCharset() {
@@ -52,7 +52,7 @@ public class MediaTypePropertyEditorTest {
 
     /**
      * @tpTestDetails Tests that custom mediatype is set correctly to MediaTypeEditor
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSetAsTextCustom() {
@@ -64,7 +64,7 @@ public class MediaTypePropertyEditorTest {
 
     /**
      * @tpTestDetails Tests that getAsText() of MediaTypeEditor returns correct value
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetAsText() {
@@ -76,7 +76,7 @@ public class MediaTypePropertyEditorTest {
 
     /**
      * @tpTestDetails Tests that getAsText() of MediaTypeEditor with custom MediaType returns correct value
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testGetAsTextCustom() {

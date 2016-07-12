@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Configuration
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test for custom Application class
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -67,7 +67,7 @@ public class ApplicationConfigTest {
 
     /**
      * @tpTestDetails Test base resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testIt() {
@@ -77,7 +77,7 @@ public class ApplicationConfigTest {
 
     /**
      * @tpTestDetails Injection test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testFieldInjection() {
@@ -86,7 +86,7 @@ public class ApplicationConfigTest {
 
     /**
      * @tpTestDetails Setter injection test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testSetterInjection() {
@@ -95,7 +95,7 @@ public class ApplicationConfigTest {
 
     /**
      * @tpTestDetails Setter injection test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testConstructorInjection() {

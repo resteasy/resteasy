@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  * @tpTestCaseDetails Regression for RESTEASY-699
  */
 @RunWith(Arquillian.class)
@@ -61,7 +61,7 @@ public class ContextTest {
 
     /**
      * @tpTestDetails Test for forwarding request to external HTML file
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testForward() throws Exception {
@@ -73,7 +73,7 @@ public class ContextTest {
 
     /**
      * @tpTestDetails Base URL should not be affected by URL parameter
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testRepeat() throws Exception {
@@ -89,7 +89,7 @@ public class ContextTest {
 
     /**
      * @tpTestDetails Test for getting servlet context in REST resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testServletContext() throws Exception {
@@ -106,7 +106,7 @@ public class ContextTest {
 
     /**
      * @tpTestDetails Test for getting servlet config in REST resource
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testServletConfig() throws Exception {
@@ -118,7 +118,7 @@ public class ContextTest {
 
     /**
      * @tpTestDetails XML extension mapping test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testXmlMappings() throws Exception {
@@ -131,7 +131,7 @@ public class ContextTest {
 
     /**
      * @tpTestDetails Json extension mapping test
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testJsonMappings() throws Exception {

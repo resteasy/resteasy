@@ -32,7 +32,7 @@ import java.nio.charset.StandardCharsets;
  * @tpSubChapter Form tests
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for JBEAP-4693
- * @tpSince EAP 7.0.1
+ * @tpSince RESTEasy 3.0.17
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -65,7 +65,7 @@ public class FormUrlEncodedCharsetTest {
 
     /**
      * @tpTestDetails Test for default charset.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testFormDefault() throws UnsupportedEncodingException {
@@ -80,7 +80,7 @@ public class FormUrlEncodedCharsetTest {
 
     /**
      * @tpTestDetails Test for UTF8 charset.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     public void testFormUTF8() throws UnsupportedEncodingException {
@@ -95,7 +95,7 @@ public class FormUrlEncodedCharsetTest {
 
     /**
      * @tpTestDetails Test for UTF16 charset.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     @Category({NotForForwardCompatibility.class})

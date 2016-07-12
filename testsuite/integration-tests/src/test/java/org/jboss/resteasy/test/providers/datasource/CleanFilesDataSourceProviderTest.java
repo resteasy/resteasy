@@ -29,7 +29,7 @@ import java.io.FilenameFilter;
 /**
  * @tpSubChapter DataSource provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -63,7 +63,7 @@ public class CleanFilesDataSourceProviderTest {
      * files is same as before request. The manipulation with DataSourceProvider happens on the server, no data are send
      * back and forth
      * @tpInfo RESTEASY-1182
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDataSourceProviderInputStreamOnce() throws Exception {
@@ -111,7 +111,7 @@ public class CleanFilesDataSourceProviderTest {
      * files is same as before request. The manipulation with DataSourceProvider happens on the server, no data are send
      * back and forth
      * @tpInfo RESTEASY-1182
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testDataSourceProviderInputStreamTwice() throws Exception {

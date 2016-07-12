@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -53,7 +53,7 @@ public class PrimitiveTest {
     /**
      * @tpTestDetails Client sends POST request with text entity, server sends echoes to value and returns int.
      * @tpPassCrit Correct response is returned from the server
-     * @tpSince EAP7.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testInt() {
@@ -66,7 +66,7 @@ public class PrimitiveTest {
     /**
      * @tpTestDetails Client sends POST request with text entity, server sends echoes to value and returns boolean.
      * @tpPassCrit Correct response is returned from the server
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBoolean() {
@@ -79,7 +79,7 @@ public class PrimitiveTest {
     /**
      * @tpTestDetails Client sends GET request, server sends Accepted response
      * @tpPassCrit Correct response is returned from the server
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testBuildResponse() {

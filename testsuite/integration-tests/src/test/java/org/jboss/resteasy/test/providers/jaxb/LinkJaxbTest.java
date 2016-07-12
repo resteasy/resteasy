@@ -23,7 +23,7 @@ import javax.ws.rs.client.ClientBuilder;
 /**
  * @tpSubChapter Jaxb provider
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -54,7 +54,7 @@ public class LinkJaxbTest {
 
     /**
      * @tpTestDetails Test for javax.ws.rs.core.Link class with Jaxb object
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testCustomer() throws Exception {

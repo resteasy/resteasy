@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 /**
  * @tpSubChapter Providers - jaxb
  * @tpChapter Unit tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class JaxbNamespacePrefixTest {
 
@@ -27,7 +27,7 @@ public class JaxbNamespacePrefixTest {
 
     /**
      * @tpTestDetails Create xml schema from provided class and set "namespacePrefixMapper" for the Marshaller
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testNamespacePrefix() throws Exception {

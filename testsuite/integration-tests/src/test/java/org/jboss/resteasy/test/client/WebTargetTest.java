@@ -25,7 +25,7 @@ import java.util.Map;
  * @author <a href="mailto:kanovotn@redhat.com">Katerina Novotna</a>
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -63,7 +63,7 @@ public class WebTargetTest {
      *              <li>Resolve "username" template, create separate WebTarget instance, again resolve "username" template, resolve "id" twice</li>
      *              <li>Check original web target instance stayed untouched</li>
      *              </ul>
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResolveTemplate() {
@@ -87,7 +87,7 @@ public class WebTargetTest {
     /**
      * @tpTestDetails Create WebTarget instance and call resolveTemplate with 'null' parameter
      * @tpPassCrit NullPointerException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = NullPointerException.class)
     public void testResolveTemplateNull() {
@@ -100,7 +100,7 @@ public class WebTargetTest {
     /**
      * @tpTestDetails Create WebTarget Instance from another base WebTarget instance, slash in the path.
      * @tpPassCrit Response from the server matches the pattern
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResolveTemplateSlash() {
@@ -114,7 +114,7 @@ public class WebTargetTest {
      * @tpTestDetails Create WebTarget Instance from another base WebTarget instance, resolve template
      * from decoded characters
      * @tpPassCrit Response from the server matches the pattern
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResolveTemplateDecoded() {
@@ -135,7 +135,7 @@ public class WebTargetTest {
      * @tpTestDetails Create WebTarget Instance from another base WebTarget instance, resolve template
      * from encoded characters
      * @tpPassCrit Response from the server matches the pattern
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResolveTemplateEncoded() {
@@ -152,7 +152,7 @@ public class WebTargetTest {
     /**
      * @tpTestDetails Create WebTarget Instance from another base WebTarget instance, resolve multiple templates at once.
      * @tpPassCrit Response from the server matches the pattern
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResolveTemplates() {
@@ -173,7 +173,7 @@ public class WebTargetTest {
     /**
      * @tpTestDetails Create WebTarget Instance from another base WebTarget instance, resolve templates with empty map
      * @tpPassCrit Response from the server matches the pattern
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResolveTemplatesEmptyMap() {
@@ -191,7 +191,7 @@ public class WebTargetTest {
      * @tpTestDetails Create WebTarget Instance from another base WebTarget instance, resolve multiple templates
      * at once, path includes slash
      * @tpPassCrit Response from the server matches the pattern
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResolveTemplatesSlash() {
@@ -213,7 +213,7 @@ public class WebTargetTest {
      * @tpTestDetails Create WebTarget Instance from another base WebTarget instance, resolve multiple
      * templates at once, encode values
      * @tpPassCrit Response from the server matches the pattern
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testResolveTemplatesEncoded() {
@@ -234,7 +234,7 @@ public class WebTargetTest {
     /**
      * @tpTestDetails Create WebTarget Instance from another base WebTarget instance, add and remove query params
      * @tpPassCrit Response from the server matches the pattern
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testQueryParamAddAndRemove() {
@@ -261,7 +261,7 @@ public class WebTargetTest {
     /**
      * @tpTestDetails Create WebTarget Instance from another base WebTarget instance, test NullPointerException
      * @tpPassCrit NullPointerException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = NullPointerException.class)
     public void testQueryParamNullPointer() {
@@ -281,7 +281,7 @@ public class WebTargetTest {
      *              <li>Add matrix param already in the path and send the resulting request to the server,
      *              verify tha  both values from matrix param are present</li>
      *              </ul>
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testMatrixParamModification() {
@@ -305,7 +305,7 @@ public class WebTargetTest {
     /**
      * @tpTestDetails Create WebTarget Instance from another base WebTarget instance, call MatrixParam with null argument
      * @tpPassCrit NullPointerException is raised
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = NullPointerException.class)
     public void testMatrixParamNullPointer() {

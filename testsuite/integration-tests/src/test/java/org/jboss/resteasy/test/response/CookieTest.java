@@ -27,13 +27,13 @@ import java.util.Map;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class CookieTest {
 
-    protected static final Logger logger = LogManager.getLogger(VariantsTest.class.getName());
+    protected final Logger logger = LogManager.getLogger(VariantsTest.class.getName());
 
     static Client client;
 
@@ -55,6 +55,7 @@ public class CookieTest {
     @AfterClass
     public static void close() {
         client.close();
+        client = null;
     }
 
 
@@ -62,7 +63,7 @@ public class CookieTest {
      * @tpTestDetails Client sends GET request to the server, server text response, the response is then checked, that
      * it contains cookie with guid parameter sent by server.
      * @tpPassCrit Response contains cookie sent by server
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testWeirdCookie() {
@@ -88,7 +89,7 @@ public class CookieTest {
      * @tpTestDetails Client sends GET request to the server, server text response, the response is then checked, that
      * it contains standard cookie sent by server.
      * @tpPassCrit Response contains cookie sent by server
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void testStandardCookie() {

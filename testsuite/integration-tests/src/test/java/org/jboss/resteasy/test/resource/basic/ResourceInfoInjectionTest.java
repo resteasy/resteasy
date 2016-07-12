@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
  * @tpSubChapter Resources
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for JBEAP-4701
- * @tpSince EAP 7.0.1
+ * @tpSince RESTEasy 3.0.17
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -58,7 +58,7 @@ public class ResourceInfoInjectionTest {
 
     /**
      * @tpTestDetails Check for injecting ResourceInfo object in ContainerResponseFilter
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     @Category({NotForForwardCompatibility.class})
@@ -72,7 +72,7 @@ public class ResourceInfoInjectionTest {
 
     /**
      * @tpTestDetails Check for injecting ResourceInfo object in end-point
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     @Category({NotForForwardCompatibility.class})

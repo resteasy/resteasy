@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
 /**
  * @tpSubChapter Resteasy-client
  * @tpChapter Client tests
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -107,7 +107,7 @@ public class TraceTest {
     /**
      * @tpTestDetails Client sends request for custom defined http method 'TRACE'
      * @tpPassCrit Successful response is returned
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void TraceTest() {

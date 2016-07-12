@@ -17,7 +17,7 @@ import java.io.StringWriter;
  * @tpSubChapter Providers
  * @tpChapter Unit tests
  * @tpTestCaseDetails Test for atom categories
- * @tpSince EAP 7.0.0
+ * @tpSince RESTEasy 3.0.16
  */
 public class AppCategoriesTest {
     /**
@@ -35,7 +35,7 @@ public class AppCategoriesTest {
 
     /**
      * @tpTestDetails Marshall categories
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void marshallAppCategories() throws Exception {
@@ -68,7 +68,7 @@ public class AppCategoriesTest {
 
     /**
      * @tpTestDetails Unmarshall categories
-     * @tpSince EAP 7.0.0
+     * @tpSince RESTEasy 3.0.16
      */
     @Test
     public void unmarshallAppCategories() throws Exception {

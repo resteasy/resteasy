@@ -25,7 +25,7 @@ import java.io.IOException;
 /**
  * @tpSubChapter Core
  * @tpChapter Integration tests
- * @tpSince EAP 7.0.1
+ * @tpSince RESTEasy 3.0.17
  * @tpTestCaseDetails Regression test for JBEAP-3725
  */
 @RunWith(Arquillian.class)
@@ -60,7 +60,7 @@ public class NotFoundErrorMessageTest {
 
     /**
      * @tpTestDetails Check that no ERROR message was in logs after 404.
-     * @tpSince EAP 7.0.1
+     * @tpSince RESTEasy 3.0.17
      */
     @Test
     @Category({NotForForwardCompatibility.class})
