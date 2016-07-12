@@ -22,7 +22,6 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.NotForForwardInteroperability;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBook;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBag;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBagLocal;
@@ -67,7 +66,6 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Category({ NotForForwardInteroperability.class }) // specific queue settings works only on EAP7
 public class InjectionTest extends AbstractInjectionTestBase {
     protected static final Logger log = LogManager.getLogger(InjectionTest.class.getName());
 
