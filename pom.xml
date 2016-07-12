@@ -157,7 +157,6 @@
                 <module>arquillian</module>
                 <module>integration-tests</module>
                 <module>testsuite</module>
-                <module>examples</module>
             </modules>
             <build>
                 <plugins>
@@ -207,7 +206,6 @@
                 <module>arquillian</module>
                 <module>integration-tests</module>
                 <module>testsuite</module>
-                <module>examples</module>
             </modules>
         </profile>
         <profile>
