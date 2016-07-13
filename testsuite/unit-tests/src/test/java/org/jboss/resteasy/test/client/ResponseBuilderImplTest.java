@@ -1,4 +1,4 @@
-package org.jboss.resteasy.specimpl;
+package org.jboss.resteasy.test.client;
 
 import org.junit.Test;
 
