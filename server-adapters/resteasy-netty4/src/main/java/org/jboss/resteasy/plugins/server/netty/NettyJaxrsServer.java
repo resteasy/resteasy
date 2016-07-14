@@ -13,6 +13,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.ssl.SniHandler;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.EventExecutor;
@@ -55,6 +56,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    private int ioWorkerCount = Runtime.getRuntime().availableProcessors() * 2;
    private int executorThreadCount = 16;
    private SSLContext sslContext;
+   private SniConfiguration sniConfiguration;
    private int maxRequestSize = 1024 * 1024 * 10;
    private int maxInitialLineLength = 4096;
    private int maxHeaderSize = 8192;
@@ -70,6 +72,16 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    public void setSSLContext(SSLContext sslContext)
    {
       this.sslContext = sslContext;
+   }
+
+   public void setSniConfiguration(SniConfiguration sniConfiguration)
+   {
+      this.sniConfiguration = sniConfiguration;
+   }
+
+   public SniConfiguration getSniConfiguration()
+   {
+      return sniConfiguration;
    }
 
    /**
@@ -255,20 +267,28 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
 
     private ChannelInitializer<SocketChannel> createChannelInitializer() {
         final RequestDispatcher dispatcher = createRequestDispatcher();
-        if (sslContext == null) {
+        if (sslContext == null && sniConfiguration == null) {
             return new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
                     setupHandlers(ch, dispatcher, HTTP);
                 }
             };
-        } else {
+        } else if (sniConfiguration == null) {
             final SSLEngine engine = sslContext.createSSLEngine();
             engine.setUseClientMode(false);
             return new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
                     ch.pipeline().addFirst(new SslHandler(engine));
+                    setupHandlers(ch, dispatcher, HTTPS);
+                }
+            };
+        } else {
+            return new ChannelInitializer<SocketChannel>() {
+                @Override
+                public void initChannel(SocketChannel ch) throws Exception {
+                    ch.pipeline().addFirst(new SniHandler(sniConfiguration.buildMapping()));
                     setupHandlers(ch, dispatcher, HTTPS);
                 }
             };

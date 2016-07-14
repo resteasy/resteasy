@@ -1,10 +1,5 @@
 package org.jboss.resteasy.client.jaxrs;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocket;
 import org.apache.http.HttpHost;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.ClientConnectionManager;
@@ -31,6 +26,14 @@ import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SNIHostName;
+import javax.net.ssl.SNIServerName;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Configuration;
@@ -38,7 +41,10 @@ import java.io.IOException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -92,6 +98,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    protected HostnameVerifier verifier = null;
    protected HttpHost defaultProxy;
    protected int responseBufferSize;
+   protected List<String> sniHostNames = new ArrayList<>();
 
    /**
     * Changing the providerFactory will wipe clean any registered components or properties.
@@ -295,6 +302,17 @@ public class ResteasyClientBuilder extends ClientBuilder
       return this;
    }
 
+    /**
+     * Adds a TLS/SSL SNI Host Name for authentication.
+     *
+     * @param sniHostNames
+     * @return
+     */
+   public ResteasyClientBuilder sniHostNames(String... sniHostNames) {
+      this.sniHostNames.addAll(Arrays.asList(sniHostNames));
+      return this;
+   }
+
    /**
     * Specify a default proxy.  Default port and schema will be used
     *
@@ -468,11 +486,23 @@ public class ResteasyClientBuilder extends ClientBuilder
          }
          else if (theContext != null)
          {
-            sslsf = new SSLSocketFactory(theContext, verifier);
+            sslsf = new SSLSocketFactory(theContext, verifier) {
+               @Override
+               protected void prepareSocket(SSLSocket socket) throws IOException
+               {
+                  prepareSocketForSni(socket);
+               }
+            };
          }
          else if (clientKeyStore != null || truststore != null)
          {
-            sslsf = new SSLSocketFactory(SSLSocketFactory.TLS, clientKeyStore, clientPrivateKeyPassword, truststore, null, verifier);
+            sslsf = new SSLSocketFactory(SSLSocketFactory.TLS, clientKeyStore, clientPrivateKeyPassword, truststore, null, verifier) {
+               @Override
+               protected void prepareSocket(SSLSocket socket) throws IOException
+               {
+                  prepareSocketForSni(socket);
+               }
+            };
          }
          else
          {
@@ -527,6 +557,20 @@ public class ResteasyClientBuilder extends ClientBuilder
       catch (Exception e)
       {
          throw new RuntimeException(e);
+      }
+   }
+
+   private void prepareSocketForSni(SSLSocket socket)
+   {
+      if(!sniHostNames.isEmpty()) {
+         List<SNIServerName> sniNames = new ArrayList<>(sniHostNames.size());
+         for(String sniHostName : sniHostNames) {
+            sniNames.add(new SNIHostName(sniHostName));
+         }
+
+         SSLParameters sslParameters = socket.getSSLParameters();
+         sslParameters.setServerNames(sniNames);
+         socket.setSSLParameters(sslParameters);
       }
    }
 
