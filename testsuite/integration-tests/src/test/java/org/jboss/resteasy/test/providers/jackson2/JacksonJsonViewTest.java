@@ -107,29 +107,4 @@ public class JacksonJsonViewTest {
         return PortProviderUtil.generateURL(path, JacksonJsonViewTest.class.getSimpleName());
     }
 
-//    /**
-//     * @tpTestDetails Tests usage of proxied subresource
-//     * @tpPassCrit The resource returns Success response
-//     * @tpSince RESTEasy 3.0.16
-//     */
-//    @Test
-//    public void testProxyWithGenericReturnType() throws Exception {
-//        WebTarget target = client.target(generateURL("/test/one/"));
-//        logger.info("Sending request");
-//        Response response = target.request().get();
-//        String entity = response.readEntity(String.class);
-//        logger.info("Received response: " + entity);
-//        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-//        Assert.assertTrue("Type property is missing.", entity.contains("type"));
-//        response.close();
-//
-//        target = client.target(generateURL("/test/list/"));
-//        logger.info("Sending request");
-//        response = target.request().get();
-//        entity = response.readEntity(String.class);
-//        logger.info("Received response: " + entity);
-//        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-//        Assert.assertTrue("Type property is missing.", entity.contains("type"));
-//        response.close();
-//    }
 }
