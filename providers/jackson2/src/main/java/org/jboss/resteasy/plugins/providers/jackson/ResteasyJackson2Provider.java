@@ -9,9 +9,12 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.jaxrs.cfg.AnnotationBundleKey;
+import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
+import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.fasterxml.jackson.jaxrs.json.JsonEndpointConfig;
 import com.fasterxml.jackson.jaxrs.util.ClassKey;
+
 import org.jboss.resteasy.annotations.providers.jackson.Formatted;
 import org.jboss.resteasy.annotations.providers.NoJackson;
 import org.jboss.resteasy.util.DelegatingOutputStream;
@@ -22,6 +25,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -204,6 +208,10 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
             writer = writer.withType(rootType);
          }
          value = endpoint.modifyBeforeWrite(value);
+         ObjectWriterModifier mod = ObjectWriterInjector.getAndClear();
+         if (mod != null) {
+             writer = mod.modify(endpoint, httpHeaders, value, writer, jg);
+         }
          writer.writeValue(jg, value);
       } finally {
          jg.close();
