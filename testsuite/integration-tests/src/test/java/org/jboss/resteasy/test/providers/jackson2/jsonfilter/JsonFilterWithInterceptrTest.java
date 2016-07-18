@@ -24,14 +24,14 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class JsonFilterTest {
+public class JsonFilterWithInterceptrTest {
 	@ArquillianResource
 	URL baseUrl;
     @Deployment(name = "default")
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive("jsonfilter");
         war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
-
+        
         return TestUtil.finishContainerPrepare(war, null, ObjectFilterModifier.class, Jackson2Resource.class, Jackson2Product.class, JsonFilterWriteInterceptor.class);
     }
     @Test

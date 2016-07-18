@@ -16,10 +16,8 @@ import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
  *
  */
 public class ObjectFilterModifier extends ObjectWriterModifier {
-
 	public ObjectFilterModifier() {
 	}
-
 	@Override
 	public ObjectWriter modify(EndpointConfigBase<?> endpoint,
 			MultivaluedMap<String, Object> httpHeaders, Object valueToWrite,
