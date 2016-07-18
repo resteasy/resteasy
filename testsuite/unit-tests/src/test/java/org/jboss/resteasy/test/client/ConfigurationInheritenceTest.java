@@ -138,23 +138,12 @@ public class ConfigurationInheritenceTest extends ResteasyProviderFactory {
     private void checkFirstConfiguration(Configuration config) {
         Set<Class<?>> classes = config.getClasses();
         Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFeature1.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFeature2.class));
         Assert.assertFalse(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFeature3.class));
-        Assert.assertFalse(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFeature4.class));
         Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFeature5.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFeature6.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFilter1.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFilter2.class));
         Assert.assertFalse(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFilter3.class));
         Assert.assertFalse(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFilter4.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFilter5.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFilter6.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestMessageBodyReader1.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestMessageBodyReader2.class));
         Assert.assertFalse(ERROR_MSG, classes.contains(ConfigurationInheritenceTestMessageBodyReader3.class));
         Assert.assertFalse(ERROR_MSG, classes.contains(ConfigurationInheritenceTestMessageBodyReader4.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestMessageBodyReader5.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestMessageBodyReader6.class));
 
         Assert.assertTrue(ERROR_MSG, config.isEnabled(ConfigurationInheritenceTestFeature1.class));
         Assert.assertTrue(ERROR_MSG, config.isEnabled(ConfigurationInheritenceTestFeature2.class));
@@ -222,23 +211,8 @@ public class ConfigurationInheritenceTest extends ResteasyProviderFactory {
     private void checkSecondConfiguration(Configuration config) {
         Set<Class<?>> classes = config.getClasses();
         Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFeature1.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFeature2.class));
         Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFeature3.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFeature4.class));
         Assert.assertFalse(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFeature5.class));
-        Assert.assertFalse(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFeature6.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFilter1.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFilter2.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFilter3.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFilter4.class));
-        Assert.assertFalse(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFilter5.class));
-        Assert.assertFalse(ERROR_MSG, classes.contains(ConfigurationInheritenceTestFilter6.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestMessageBodyReader1.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestMessageBodyReader2.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestMessageBodyReader3.class));
-        Assert.assertTrue(ERROR_MSG, classes.contains(ConfigurationInheritenceTestMessageBodyReader4.class));
-        Assert.assertFalse(ERROR_MSG, classes.contains(ConfigurationInheritenceTestMessageBodyReader5.class));
-        Assert.assertFalse(ERROR_MSG, classes.contains(ConfigurationInheritenceTestMessageBodyReader6.class));
 
         Assert.assertTrue(ERROR_MSG, config.isEnabled(ConfigurationInheritenceTestFeature1.class));
         Assert.assertTrue(ERROR_MSG, config.isEnabled(ConfigurationInheritenceTestFeature2.class));
