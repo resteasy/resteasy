@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
 import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
-import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -13,6 +13,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Invocation.Builder;
+
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -116,14 +118,14 @@ public class StringParamUnmarshallerTest extends BaseResourceTest
    @Test
    public void testMe() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/datetest/04-23-1977"));
-      System.out.println(request.getTarget(String.class));
+      Builder builder = ResteasyClientBuilder.newClient().target(generateURL("/datetest/04-23-1977")).request();
+      System.out.println(builder.get().readEntity(String.class));
    }
 
    @Test
    public void testMe2() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/fromstring/ORANGE/football"));
-      System.out.println(request.getTarget(String.class));
+      Builder builder = ResteasyClientBuilder.newClient().target(generateURL("/fromstring/ORANGE/football")).request();
+      System.out.println(builder.get().readEntity(String.class));
    }
 }

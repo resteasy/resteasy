@@ -1,22 +1,20 @@
 package org.jboss.resteasy.test.providers.multipart.resource;
 
-import org.jboss.resteasy.annotations.interception.ServerInterceptor;
-import org.jboss.resteasy.core.ResourceMethodInvoker;
-import org.jboss.resteasy.core.ServerResponse;
-import org.jboss.resteasy.plugins.providers.multipart.InputPart;
-import org.jboss.resteasy.spi.Failure;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
-import org.jboss.resteasy.test.providers.multipart.InputPartDefaultCharsetOverwriteTest;
+import java.io.IOException;
 
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.ext.Provider;
 
+import org.jboss.resteasy.plugins.providers.multipart.InputPart;
+import org.jboss.resteasy.test.providers.multipart.InputPartDefaultCharsetOverwriteTest;
+
 @Provider
-@ServerInterceptor
-public class InputPartDefaultCharsetOverwriteContentTypeNoCharsetUTF16 implements PreProcessInterceptor {
-    public ServerResponse preProcess(HttpRequest request, ResourceMethodInvoker method) throws Failure, WebApplicationException {
-        request.setAttribute(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY, InputPartDefaultCharsetOverwriteTest.TEXT_HTTP_WITH_CHARSET_UTF_16);
-        return null;
-    }
+public class InputPartDefaultCharsetOverwriteContentTypeNoCharsetUTF16 implements ContainerRequestFilter {
+
+   @Override
+   public void filter(ContainerRequestContext requestContext) throws IOException
+   {
+      requestContext.setProperty(InputPart.DEFAULT_CONTENT_TYPE_PROPERTY, InputPartDefaultCharsetOverwriteTest.TEXT_HTTP_WITH_CHARSET_UTF_16);
+   }
 }

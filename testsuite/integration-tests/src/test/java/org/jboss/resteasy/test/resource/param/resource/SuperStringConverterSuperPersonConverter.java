@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
-import org.jboss.resteasy.spi.StringConverter;
+import javax.ws.rs.ext.ParamConverter;
 
-public abstract class SuperStringConverterSuperPersonConverter implements StringConverter<SuperStringConverterPerson> {
+public abstract class SuperStringConverterSuperPersonConverter implements ParamConverter<SuperStringConverterPerson> {
     public SuperStringConverterPerson fromString(String value) {
         return new SuperStringConverterPerson(value);
     }

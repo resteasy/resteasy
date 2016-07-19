@@ -3,8 +3,6 @@ package org.jboss.resteasy.test.providers.atom;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.ClientRequest; //@cs-: clientrequest (Old client test)
-import org.jboss.resteasy.client.ClientResponse; //@cs-: clientresponse (Old client test)
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.atom.Entry;
@@ -57,25 +55,6 @@ public class JAXBContextFinderTest {
 
     private String generateURL(String path) {
         return PortProviderUtil.generateURL(path, JAXBContextFinderTest.class.getSimpleName());
-    }
-
-    /**
-     * @tpTestDetails Test old client
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testAtomFeedOldClient() throws Exception {
-        ClientRequest request = new ClientRequest(generateURL("/atom/feed"));
-        ClientResponse<Feed> response = request.get(Feed.class);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Feed feed = response.getEntity();
-        Iterator<Entry> it = feed.getEntries().iterator();
-        Entry entry1 = it.next();
-        Entry entry2 = it.next();
-        Field field = Entry.class.getDeclaredField("finder");
-        field.setAccessible(true);
-        Assert.assertNotNull("First feet is not correct", field.get(entry1));
-        Assert.assertEquals("Second feet is not correct", field.get(entry1), field.get(entry2));
     }
 
     /**

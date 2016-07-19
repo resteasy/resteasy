@@ -1,11 +1,12 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.GET;
@@ -13,13 +14,14 @@ import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -30,7 +32,8 @@ import java.util.Set;
  */
 public class PathParamTest extends BaseResourceTest
 {
-
+   private static Client client;
+   
    @Path(value = "/PathParamTest")
    public static class Resource
    {
@@ -104,7 +107,7 @@ public class PathParamTest extends BaseResourceTest
 
          sb.append("/" + id.getPath());
          MultivaluedMap<String, String> matrix = id.getMatrixParameters();
-         Set keys = matrix.keySet();
+         Set<?> keys = matrix.keySet();
          for (Object key : keys)
          {
             sb.append(";" + key.toString() + "=" +
@@ -139,6 +142,17 @@ public class PathParamTest extends BaseResourceTest
       }
    }
 
+   @BeforeClass
+   public static void startUp()
+   {
+      client = ResteasyClientBuilder.newClient();
+   }
+   
+   @AfterClass
+   public static void tearDown()
+   {
+      client.close();
+   }
 
    @Before
    public void setUp() throws Exception
@@ -152,9 +166,8 @@ public class PathParamTest extends BaseResourceTest
    @Test
    public void testEmail() throws Exception
    {
-
-      ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/employeeinfo/employees/bill.burke@burkecentral.com"));
-      String str = request.getTarget(String.class);
+      Response response = client.target(TestPortProvider.generateURL("/employeeinfo/employees/bill.burke@burkecentral.com")).request().get();
+      String str = response.readEntity(String.class);
       Assert.assertEquals("burke", str);
    }
 
@@ -169,14 +182,12 @@ public class PathParamTest extends BaseResourceTest
    {
 
       String[] Headers = {"list=abcdef"};//, "list=fedcba"};
-      
+      Builder builder = client.target(TestPortProvider.generateURL("/PathParamTest/a/b/c/d/e/f")).request();
       for (String header : Headers)
       {
-         ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/PathParamTest/a/b/c/d/e/f"));
-         request.header("Accept", "text/plain");
-         ClientResponse<String> response = request.get(String.class);
+         Response response = builder.accept("text/plain").get();
          Assert.assertEquals(200, response.getStatus());
-         Assert.assertEquals(header, response.getEntity());
+         Assert.assertEquals(header, response.readEntity(String.class));  
       }
    }
 
@@ -184,17 +195,15 @@ public class PathParamTest extends BaseResourceTest
    public void test178() throws Exception
    {
       {
-         ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/digits/5150"));
-         ClientResponse<?> response = request.get();
+         Response response = client.target(TestPortProvider.generateURL("/digits/5150")).request().get();
          Assert.assertEquals(200, response.getStatus());
-         response.releaseConnection();
+         response.close();
       }
       
-      {
-         ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/digits/5150A"));
-         ClientResponse<?> response = request.get();
+      {  
+         Response response = client.target(TestPortProvider.generateURL("/digits/5150A")).request().get();
          Assert.assertEquals(404, response.getStatus());
-         response.releaseConnection();         
+         response.close();
       }
    }
 
@@ -306,53 +315,45 @@ public class PathParamTest extends BaseResourceTest
    {
 
       System.out.println("**** Via @MatrixParam ***");
-      ClientRequest get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/matrixparam/e55;color=black/2006"));
-      ClientResponse<String> response = get.get(String.class);
+      Response response = client.target(TestPortProvider.generateURL("/cars/mercedes/matrixparam/e55;color=black/2006")).request().get();
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("A black 2006 mercedes e55", response.getEntity());
+      Assert.assertEquals("A black 2006 mercedes e55", response.readEntity(String.class));
       // This must be a typo.  Should be "A midnight blue 2006 Porsche 911 Carrera S".
 
-      System.out.println("**** Via PathSegment ***");
-      get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/pathsegment/e55;color=black/2006"));
-      response = get.get(String.class);
+//      System.out.println("**** Via PathSegment ***");
+      response = client.target(TestPortProvider.generateURL("/cars/mercedes/pathsegment/e55;color=black/2006")).request().get();
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("A black 2006 mercedes e55", response.getEntity());
+      Assert.assertEquals("A black 2006 mercedes e55", response.readEntity(String.class));
 
-      System.out.println("**** Via PathSegments ***");
-      get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/pathsegments/e55/amg/year/2006"));
-      response = get.get(String.class);
+//      System.out.println("**** Via PathSegments ***");
+      response = client.target(TestPortProvider.generateURL("/cars/mercedes/pathsegments/e55/amg/year/2006")).request().get();
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("A 2006 mercedes e55 amg", response.getEntity());
+      Assert.assertEquals("A 2006 mercedes e55 amg", response.readEntity(String.class));
 
-      System.out.println("**** Via PathSegment ***");
-      get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/uriinfo/e55;color=black/2006"));
-      response = get.get(String.class);
+//      System.out.println("**** Via PathSegment ***");
+      response = client.target(TestPortProvider.generateURL("/cars/mercedes/uriinfo/e55;color=black/2006")).request().get();
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("A black 2006 mercedes e55", response.getEntity());
+      Assert.assertEquals("A black 2006 mercedes e55", response.readEntity(String.class));
       
-      System.out.println("**** Via Concatenated plain***");
-      get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/concat/mlk2006?color=black"));
-      response = get.get(String.class);
+//      System.out.println("**** Via Concatenated plain***");
+      response = client.target(TestPortProvider.generateURL("/cars/mercedes/concat/mlk2006?color=black")).request().get();
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("A black 2006 mercedes mlk", response.getEntity());   
+      Assert.assertEquals("A black 2006 mercedes mlk", response.readEntity(String.class));   
       
-      System.out.println("**** Via Concatenated with regex character***");
-      get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/concat2/$mlk2006?color=black"));
-      response = get.get(String.class);
+//      System.out.println("**** Via Concatenated with regex character***");
+      response = client.target(TestPortProvider.generateURL("/cars/mercedes/concat2/$mlk2006?color=black")).request().get();
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("A black 2006 mercedes $mlk", response.getEntity());
+      Assert.assertEquals("A black 2006 mercedes $mlk", response.readEntity(String.class));
       
-      System.out.println("**** Via Concatenated with regex character with $ ***");
-      get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/concat3/$glk?color=black"));
-      response = get.get(String.class);
+//      System.out.println("**** Via Concatenated with regex character with $ ***");
+      response = client.target(TestPortProvider.generateURL("/cars/mercedes/concat3/$glk?color=black")).request().get();
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("A black mercedes $glk", response.getEntity());      
+      Assert.assertEquals("A black mercedes $glk", response.readEntity(String.class));      
       
-      System.out.println("**** Via grouping chars in regex ***");
-      get = new ClientRequest(TestPortProvider.generateURL("/cars/mercedes/group/glk()?color=black"));
-      response = get.get(String.class);
+//      System.out.println("**** Via grouping chars in regex ***");
+      response = client.target(TestPortProvider.generateURL("/cars/mercedes/group/glk()?color=black")).request().get();
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("A black mercedes glk", response.getEntity());      
+      Assert.assertEquals("A black mercedes glk", response.readEntity(String.class));      
    }
 
 

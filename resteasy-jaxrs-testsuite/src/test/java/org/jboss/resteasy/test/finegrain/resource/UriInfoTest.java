@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -16,9 +14,12 @@ import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.Collections;
@@ -100,16 +101,20 @@ public class UriInfoTest
 
    private void _test(String path)
    {
-      ClientRequest request = new ClientRequest(generateURL(path));
+      Builder builder = ClientBuilder.newClient().target(generateURL(path)).request();
+      Response response = null;
       try
       {
-         ClientResponse<?> response = request.get();
+         response = builder.get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         response.releaseConnection();
       }
       catch (Exception e)
       {
          throw new RuntimeException(e);
+      }
+      finally
+      {
+         response.close();
       }
    }
 

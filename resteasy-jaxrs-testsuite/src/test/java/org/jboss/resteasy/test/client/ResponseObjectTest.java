@@ -9,6 +9,8 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.specimpl.LinkBuilderImpl;
+import org.jboss.resteasy.specimpl.LinkImpl;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.junit.AfterClass;
@@ -20,6 +22,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
@@ -91,9 +94,7 @@ public class ResponseObjectTest
         public Response getWithHeader(@Context UriInfo uri)
         {
             URI subUri = uri.getAbsolutePathBuilder().path("next-link").build();
-            org.jboss.resteasy.spi.Link link = new org.jboss.resteasy.spi.Link();
-            link.setHref(subUri.toASCIIString());
-            link.setRelationship("nextLink");
+            Link link = new LinkBuilderImpl().uri(subUri).rel("nextLink").build();
             return Response.noContent().header("Link", link.toString()).build();
         }
 

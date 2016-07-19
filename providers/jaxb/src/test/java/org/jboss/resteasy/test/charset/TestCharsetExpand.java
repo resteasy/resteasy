@@ -7,8 +7,10 @@ import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.core.Response;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -18,7 +20,7 @@ import org.junit.BeforeClass;
  * @author <a href="mailto:ron.sigal@jboss.com">Ron Sigal</a>
  * @date Aug 13, 2014
  */
-public class TestCharsetExpand
+public class TestCharsetExpand extends TestCharsetParent
 {
    protected static Process process;
    
@@ -57,16 +59,15 @@ public class TestCharsetExpand
          e1.printStackTrace();
       }
       
-      ClientRequest request = new ClientRequest(generateURL("/junk"));
-      ClientResponse<?> response = null;
+      Builder builder = ClientBuilder.newClient().target(generateURL("/junk")).request();
       while (true)
       {
          try
          {
-            response = request.get();
+            Response response = builder.get();
             if (response.getStatus() == 200)
             {
-               System.out.println("Server started: " + response.getEntity(String.class));
+               System.out.println("Server started: " + response.readEntity(String.class));
             	break;
             }
             System.out.println("Waiting on server ...");

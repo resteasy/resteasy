@@ -1,9 +1,6 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
-
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -15,6 +12,10 @@ import org.junit.Test;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.core.Response;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
@@ -27,7 +28,8 @@ import static org.jboss.resteasy.util.HttpClient4xUtils.updateQuery;
 public class UriParamAsPrimitiveTest
 {
    private static ResteasyDeployment deployment;
-
+   private static Client client;
+   
    private static IResourceUriBoolean resourceUriBoolean;
 
    private static IResourceUriByte resourceUriByte;
@@ -50,13 +52,17 @@ public class UriParamAsPrimitiveTest
       deployment.getRegistry().addPerRequestResource(ResourceUriLongWrapper.class);
       deployment.getRegistry().addPerRequestResource(ResourceUriFloatWrapper.class);
       deployment.getRegistry().addPerRequestResource(ResourceUriDoubleWrapper.class);
-      resourceUriBoolean = ProxyFactory.create(IResourceUriBoolean.class, generateBaseUrl());
-      resourceUriByte = ProxyFactory.create(IResourceUriByte.class, generateBaseUrl());
+      
+      client = ClientBuilder.newClient();
+      ResteasyWebTarget target = (ResteasyWebTarget) client.target(generateBaseUrl());
+      resourceUriBoolean = target.proxy(IResourceUriBoolean.class);
+      resourceUriByte = target.proxy(IResourceUriByte.class);
    }
 
    @AfterClass
    public static void after() throws Exception
    {
+      client.close();
       EmbeddedContainer.stop();
    }
 
@@ -231,28 +237,36 @@ public class UriParamAsPrimitiveTest
    void _test(String type, String value)
    {
       {
-         ClientRequest request = new ClientRequest(generateURL("/" + type + "/" + value));
+         Builder builder = client.target(generateURL("/" + type + "/" + value)).request();
+         Response response = null;
          try
          {
-            ClientResponse<?> response = request.get();
+            response = builder.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            response.releaseConnection();
          } catch (Exception e)
          {
             throw new RuntimeException(e);
          }
+         finally
+         {
+            response.close();
+         }
       }
       
       {
-         ClientRequest request = new ClientRequest(generateURL("/" + type + "/wrapper/" + value));
+         Builder builder = client.target(generateURL("/" + type + "/wrapper/" + value)).request();
+         Response response = null;
          try
          {
-            ClientResponse<?> response = request.get();
+            response = builder.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            response.releaseConnection();
          } catch (Exception e)
          {
             throw new RuntimeException(e);
+         }
+         finally
+         {
+            response.close();
          }
       }
    }
@@ -304,30 +318,38 @@ public class UriParamAsPrimitiveTest
    public void testBadPrimitiveValue()
    {
       String uri = updateQuery(generateURL("/int/abcdef"), "int=abcdef");
-      ClientRequest request = new ClientRequest(uri);
+      Builder builder = client.target(uri).request();
+      Response response = null;
       try
       {
-         ClientResponse<?> response = request.get();
+         response = builder.get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         response.releaseConnection();
       } catch (Exception e)
       {
          throw new RuntimeException(e);
+      }
+      finally
+      {
+         response.close();
       }
    }
 
    public void testBadPrimitiveWrapperValue()
    {
       String uri = updateQuery(generateURL("/int/wrapper/abcdef"), "int=abcdef");
-      ClientRequest request = new ClientRequest(uri);
+      Builder builder = client.target(uri).request();
+      Response response = null;
       try
       {
-         ClientResponse<?> response = request.get();
+         response = builder.get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         response.releaseConnection();
       } catch (Exception e)
       {
          throw new RuntimeException(e);
+      }
+      finally
+      {
+         response.close();
       }
    }
 }

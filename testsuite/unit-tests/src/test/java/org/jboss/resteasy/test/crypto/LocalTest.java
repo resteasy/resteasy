@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.crypto;
 
-import org.apache.logging.log4j.LogManager;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.logging.Logger;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.security.doseta.DKIMSignature;
 import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
 import org.jboss.resteasy.security.doseta.Verification;
@@ -27,7 +27,7 @@ import java.util.List;
  * @tpSince RESTEasy 3.0.16
  */
 public class LocalTest {
-    protected static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(LocalTest.class.getName());
+    protected static final LogMessages logger = Logger.getMessageLogger(LogMessages.class, LocalTest.class.getName());
     public static KeyPair keys;
     public static DosetaKeyRepository repository;
     static final String filePath = TestUtil.getResourcePath(LocalTest.class, "LocalTest.jks");
@@ -35,7 +35,6 @@ public class LocalTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Logger.setLoggerType(Logger.LoggerType.JUL);
         repository = new DosetaKeyRepository();
         repository.setKeyStoreFile(filePath);
         repository.setKeyStorePassword("password");

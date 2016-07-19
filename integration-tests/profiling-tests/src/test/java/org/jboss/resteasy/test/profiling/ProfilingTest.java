@@ -1,13 +1,15 @@
 package org.jboss.resteasy.test.profiling;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.core.executors.InMemoryClientExecutor;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.junit.Test;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation.Builder;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -69,17 +71,16 @@ public class ProfilingTest
    @Test
    public void testJson() throws Exception
    {
-      InMemoryClientExecutor executor = new InMemoryClientExecutor();
-      executor.getDispatcher().getRegistry().addPerRequestResource(JsonTest.class);
-
+      InMemoryClientEngine engine = new InMemoryClientEngine();
+      engine.getDispatcher().getRegistry().addPerRequestResource(JsonTest.class);
+      Client client = new ResteasyClientBuilder().httpEngine(engine).build();
       final int ITERATIONS = 1000;
 
       long start = System.currentTimeMillis();
       for (int i = 0; i < ITERATIONS; i++)
       {
-         ClientRequest request = new ClientRequest("/", executor);
-         request.body("application/json", new Customer("bill", "burke"));
-         String response = request.postTarget(String.class);
+         Builder request = client.target("/").request();
+         request.post(Entity.entity(new Customer("bill", "burke"), "application/json"), String.class);
       }
       long end = System.currentTimeMillis() - start;
       System.out.println(ITERATIONS + " iterations took " + end + "ms");

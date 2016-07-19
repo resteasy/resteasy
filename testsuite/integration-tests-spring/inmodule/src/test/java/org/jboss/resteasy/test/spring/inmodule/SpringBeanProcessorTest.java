@@ -19,7 +19,8 @@ import org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorMyPro
 import org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorMyResource;
 import org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorMyWriter;
 import org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorResourceConfiguration;
-import org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorCustomerStringConverter;
+import org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorCustomerParamConverter;
+import org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorCustomerParamConverterProvider;
 import org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorScannedResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -85,7 +86,8 @@ public class SpringBeanProcessorTest {
         archive.addClass(SpringBeanProcessorMyResource.class);
         archive.addClass(SpringBeanProcessorMyWriter.class);
         archive.addClass(SpringBeanProcessorResourceConfiguration.class);
-        archive.addClass(SpringBeanProcessorCustomerStringConverter.class);
+        archive.addClass(SpringBeanProcessorCustomerParamConverter.class);
+        archive.addClass(SpringBeanProcessorCustomerParamConverterProvider.class);
         archive.addClass(SpringBeanProcessorScannedResource.class);
         return archive;
     }

@@ -1,0 +1,82 @@
+<chapter id="Asynchronous">
+   <title>Asynchronous HTTP Request Processing</title>
+   
+   <para>
+   Asynchronous request processing is another case in which a facility from Resteasy 2 has been
+   formalized in JAX-RS 2.0. The result in Resteasy is quite similar to the old version. For example,
+   </para>
+   
+   <programlisting>
+@Path("/")
+public static class TestResource
+{
+   @GET
+   @Produces("text/plain")
+   public void test(@Suspend(2000) AsynchronousResponse response)
+   {
+      Thread t = new Thread()
+      {
+         @Override
+         public void run()
+         {
+            try
+            {
+               System.out.println("STARTED!!!!");
+               Thread.sleep(100);
+               Response jaxrs = Response.ok().type("text/plain").build();
+               response.setResponse(jaxrs);
+            }
+            catch (Exception e)
+            {
+               e.printStackTrace();
+            }
+         }
+      };
+      t.start();
+   }
+}
+   </programlisting>
+   
+   <para>
+   would be turned into
+   </para>
+   
+   <programlisting>
+@Path("/")
+public static class TestResource
+{
+   @GET
+   @Produces("text/plain")
+   public void get(@Suspended final AsyncResponse response)
+   {
+      response.setTimeout(2000, TimeUnit.MILLISECONDS);
+      Thread t = new Thread()
+      {
+         @Override
+         public void run()
+         {
+            try
+            {
+               System.out.println("STARTED!!!!");
+               Thread.sleep(100);
+               Response jaxrs = Response.ok().type("text/plain").build();
+               response.setResponse(jaxrs);
+            }
+            catch (Exception e)
+            {
+               e.printStackTrace();
+            }
+         }
+      };
+      t.start();
+   }
+}
+   </programlisting>
+   
+   <para>
+   Other than the name changes, the one change to note is that the <classname>@Suspended</classname>
+   annotation does not have a timeout field. Instead, the timeout can be set on the
+   <classname>AsyncResponse</classname>.
+   </para>
+   
+</chapter>

@@ -4,7 +4,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -151,16 +150,6 @@ public class ReaderWriterTest {
         Assert.assertEquals("text/plain", response.getStringHeaders().getFirst("content-type"));
         String s = new String(response.readEntity(byte[].class), "US-ASCII");
         Assert.assertEquals("Response contains wrong content", "hello world", s);
-    }
-
-    /**
-     * @tpTestDetails Test for resource mapped to nowhere using deprecated proxy.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testItDeprecatedProxy() throws Exception {
-        ReaderWriterNowhereClient client = ProxyFactory.create(ReaderWriterNowhereClient.class, PortProviderUtil.generateBaseUrl("app"));
-        client.read();
     }
 
     /**

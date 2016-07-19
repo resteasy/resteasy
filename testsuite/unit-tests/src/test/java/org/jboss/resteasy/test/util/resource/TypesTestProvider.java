@@ -1,22 +1,26 @@
 package org.jboss.resteasy.test.util.resource;
 
-import org.jboss.resteasy.spi.StringConverter;
+import org.jboss.resteasy.spi.MarshalledEntity;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
-public class TypesTestProvider implements ExceptionMapper<NullPointerException>, StringConverter<Integer> {
+public class TypesTestProvider implements ExceptionMapper<NullPointerException>, MarshalledEntity<Integer> {
 
     public Response toResponse(NullPointerException exception) {
         return null;
     }
 
-    public Integer fromString(String str) {
-        return null;
-    }
+   @Override
+   public byte[] getMarshalledBytes()
+   {
+      return null;
+   }
 
-    public String toString(Integer value) {
-        return null;
-    }
+   @Override
+   public Integer getEntity()
+   {
+      return null;
+   }
 
 }

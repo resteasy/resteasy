@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.asynch.resource;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.asynch.AsynchBasicTest;
 import org.junit.Assert;
 
@@ -14,7 +14,7 @@ import javax.ws.rs.core.Context;
 @Path("/")
 public class AsynchBasicResource {
 
-    private static Logger logger = Logger.getLogger(AsynchBasicResource.class);
+    protected final Logger logger = Logger.getLogger(AsynchBasicResource.class.getName());
 
     @Context
     private ServletConfig config;

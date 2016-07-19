@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.util;
 
-import org.jboss.resteasy.spi.StringConverter;
+import org.jboss.resteasy.spi.MarshalledEntity;
 import org.jboss.resteasy.test.util.resource.TypesTestProvider;
 import org.jboss.resteasy.test.util.resource.TypesTestProviderSubclass;
 import org.jboss.resteasy.util.Types;
@@ -29,7 +29,7 @@ public class TypesBuiltInTest {
         assertEquals("Wrong count of parameters", 1, parameters.length);
         assertEquals("Wrong type of exception", NullPointerException.class, (Class<?>) parameters[0]);
 
-        parameters = Types.getActualTypeArgumentsOfAnInterface(TypesTestProvider.class, StringConverter.class);
+        parameters = Types.getActualTypeArgumentsOfAnInterface(TypesTestProvider.class, MarshalledEntity.class);
         assertEquals("Wrong count of parameters", 1, parameters.length);
         assertEquals("Wrong type of parameter", Integer.class, (Class<?>) parameters[0]);
     }
@@ -45,7 +45,7 @@ public class TypesBuiltInTest {
         assertEquals("Wrong count of parameters", 1, parameters.length);
         assertEquals("Wrong type of exception", NullPointerException.class, (Class<?>) parameters[0]);
 
-        parameters = Types.getActualTypeArgumentsOfAnInterface(TypesTestProviderSubclass.class, StringConverter.class);
+        parameters = Types.getActualTypeArgumentsOfAnInterface(TypesTestProviderSubclass.class, MarshalledEntity.class);
         assertEquals("Wrong count of parameters", 1, parameters.length);
         assertEquals("Wrong type of parameter", Integer.class, (Class<?>) parameters[0]);
     }

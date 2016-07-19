@@ -1,7 +1,6 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -14,6 +13,8 @@ import org.junit.Test;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -29,9 +30,12 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 public class ExceptionMapperTest
 {
    private static Dispatcher dispatcher;
+   private static Client client;
 
    public static class MyException extends Exception
    {
+      private static final long serialVersionUID = 1L;
+
       public MyException()
       {
       }
@@ -54,6 +58,8 @@ public class ExceptionMapperTest
 
    public static class SubclassException extends MyException
    {
+      private static final long serialVersionUID = 1L;
+
       public SubclassException(String s)
       {
          super(s);
@@ -93,11 +99,13 @@ public class ExceptionMapperTest
       dispatcher.getRegistry().addPerRequestResource(Throwme.class);
       ResteasyProviderFactory.getInstance().registerProvider(MyExceptionMapper.class);
       ResteasyProviderFactory.getInstance().registerProvider(NotFoundMapper.class);
+      client = ResteasyClientBuilder.newClient();
    }
 
    @AfterClass
    public static void after() throws Exception
    {
+      client.close();
       EmbeddedContainer.stop();
    }
 
@@ -117,6 +125,7 @@ public class ExceptionMapperTest
       Assert.assertNotNull(ResteasyProviderFactory.getInstance().getExceptionMapper(NotFoundException.class));
    }
 
+   @SuppressWarnings("unused")
    private static boolean notFoundMapper = false;
 
    @Provider
@@ -132,13 +141,12 @@ public class ExceptionMapperTest
    @Test
    public void testProvidersInjection()
    {
-      ClientRequest request = new ClientRequest(generateURL("/providers"));
-      ClientResponse<?> response;
+      Builder builder = client.target(generateURL("/providers")).request();
       try
       {
-         response = request.get();
+         Response response = builder.get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-         response.releaseConnection();
+         response.close();
       } catch (Exception e)
       {
          throw new RuntimeException(e);
@@ -148,13 +156,12 @@ public class ExceptionMapperTest
    @Test
    public void testMapping()
    {
-      ClientRequest request = new ClientRequest(generateURL(""));
-      ClientResponse<?> response;
+      Builder builder = client.target(generateURL("")).request();
       try
       {
-         response = request.get();
+         Response response = builder.get();
          Assert.assertEquals(HttpResponseCodes.SC_NOT_MODIFIED, response.getStatus());
-         response.releaseConnection();
+         response.close();
       } catch (Exception e)
       {
          throw new RuntimeException(e);
@@ -164,13 +171,12 @@ public class ExceptionMapperTest
    @Test
    public void testSubclassMapping()
    {
-      ClientRequest request = new ClientRequest(generateURL("/subclass"));
-      ClientResponse<?> response;
+      Builder builder = client.target(generateURL("/subclass")).request();
       try
       {
-         response = request.get();
+         Response response = builder.get();
          Assert.assertEquals(HttpResponseCodes.SC_NOT_MODIFIED, response.getStatus());
-         response.releaseConnection();
+         response.close();
       } catch (Exception e)
       {
          throw new RuntimeException(e);
@@ -180,13 +186,12 @@ public class ExceptionMapperTest
    @Test
    public void testResteasyExceptionMapping()
    {
-      ClientRequest request = new ClientRequest(generateURL("/notexist"));
-      ClientResponse<?> response;
+      Builder builder = client.target(generateURL("/notexist")).request();
       try
       {
-         response = request.get();
+         Response response = builder.get();
          Assert.assertEquals(410, response.getStatus());
-         response.releaseConnection();
+         response.close();
       } catch (Exception e)
       {
          throw new RuntimeException(e);

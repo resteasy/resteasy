@@ -8,15 +8,15 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
 
 import org.junit.Assert;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.After;
@@ -85,23 +85,23 @@ public class FileExtensionMappingTest
    @Test
    public void testFileExtensionMappingPlain() throws Exception
    {
-//      ClientRequest request = new ClientRequest("http://localhost:8081/test.txt?query=whosOnFirst");
-//      ClientResponse<String> response = request.get(String.class);
-//      System.out.println("status: " + response.getStatus());
-//      System.out.println("response: " + response.getEntity());
-//      Assert.assertEquals(200, response.getStatus());
-//      Assert.assertEquals("plain: whosOnFirst", response.getEntity());
+      Response response = ClientBuilder.newClient().target("http://localhost:8081/test.txt?query=whosOnFirst").request().get();
+      System.out.println("status: " + response.getStatus());
+      String entity = response.readEntity(String.class);
+      System.out.println("response: " + entity);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("plain: whosOnFirst", entity);
    }
    
 
    @Test
    public void testFileExtensionMappingHtml() throws Exception
    {
-//      ClientRequest request = new ClientRequest("http://localhost:8081/test.html?query=whosOnFirst");
-//      ClientResponse<String> response = request.get(String.class);
-//      System.out.println("status: " + response.getStatus());
-//      System.out.println("response: " + response.getEntity());
-//      Assert.assertEquals(200, response.getStatus());
-//      Assert.assertEquals("html: whosOnFirst", response.getEntity());
+      Response response = ClientBuilder.newClient().target("http://localhost:8081/test.html?query=whosOnFirst").request().get();
+      System.out.println("status: " + response.getStatus());
+      String entity = response.readEntity(String.class);
+      System.out.println("response: " + entity);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("html: whosOnFirst", entity);
    }
 }

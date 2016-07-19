@@ -1,10 +1,7 @@
 package org.jboss.resteasy.test.finegrain.application;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.core.ServerResponse;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -17,10 +14,17 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
+
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,6 +36,8 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  */
 public class ApplicationConfigWithInterceptorTest
 {
+   private static Client client;
+   
    @Path("/my")
    public static class MyResource
    {
@@ -60,12 +66,13 @@ public class ApplicationConfigWithInterceptorTest
    }
 
    @Provider
-   public static class AddHeader implements PostProcessInterceptor
+   public static class AddHeader implements ContainerResponseFilter
    {
-      public void postProcess(ServerResponse response)
+      @Override
+      public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException
       {
          System.out.println("HERE!!!!!");
-         response.getMetadata().add("custom-header", "hello");
+         responseContext.getHeaders().add("custom-header", "hello");
       }
    }
 
@@ -93,11 +100,13 @@ public class ApplicationConfigWithInterceptorTest
       ResteasyDeployment deployment = new ResteasyDeployment();
       deployment.setApplication(new MyApplicationConfig());
       EmbeddedContainer.start(deployment);
+      client = ResteasyClientBuilder.newClient();
    }
 
    @AfterClass
    public static void after() throws Exception
    {
+      client.close();
       EmbeddedContainer.stop();
    }
 
@@ -119,19 +128,17 @@ public class ApplicationConfigWithInterceptorTest
       doTest("/my/123", 204, false);
    }
 
-   @SuppressWarnings("unchecked")
    private void doTest(String path, int expectedStatus) throws Exception
    {
       doTest(path, expectedStatus, true);
    }
 
-   @SuppressWarnings("unchecked")
    private void doTest(String path, int expectedStatus, boolean get) throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL(path));
-      ClientResponse response = get ? request.get() : request.delete();
+      Builder builder = client.target(generateURL(path)).request();
+      Response response = get ? builder.get() : builder.delete();
       Assert.assertEquals(expectedStatus, response.getStatus());
-      Assert.assertNotNull(response.getResponseHeaders().getFirst("custom-header"));
-
+      Assert.assertNotNull(response.getHeaderString("custom-header"));
+      response.close();
    }
 }

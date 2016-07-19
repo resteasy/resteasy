@@ -5,12 +5,9 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.ClientResponse; //@cs-: clientresponse (Old client test)
-import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.test.client.resource.ClientResponseRedirectClientResponseOld;
 import org.jboss.resteasy.test.client.resource.ClientResponseRedirectIntf;
 import org.jboss.resteasy.test.client.resource.ClientResponseRedirectResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -63,16 +60,6 @@ public class ClientResponseRedirectTest {
     }
 
     /**
-     * @tpTestDetails Tests redirection of the request using deprecated ProxyFactory client
-     * @tpPassCrit The header 'location' contains the redirected target
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testRedirectProxyFactory() throws Exception {
-        testRedirect(ProxyFactory.create(ClientResponseRedirectClientResponseOld.class, PortProviderUtil.generateBaseUrl(ClientResponseRedirectTest.class.getSimpleName())).get());
-    }
-
-    /**
      * @tpTestDetails Tests redirection of the request using ProxyBuilder client
      * @tpPassCrit The header 'location' contains the redirected target
      * @tpSince RESTEasy 3.0.16
@@ -80,16 +67,6 @@ public class ClientResponseRedirectTest {
     @Test
     public void testRedirectProxyBuilder() throws Exception {
         testRedirect(ProxyBuilder.builder(ClientResponseRedirectIntf.class, client.target(generateURL(""))).build().get());
-    }
-
-    /**
-     * @tpTestDetails Tests redirection of the request using deprecated ClientRequest
-     * @tpPassCrit The header 'location' contains the redirected target
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testRedirectClientRequest() throws Exception {
-        testRedirect(PortProviderUtil.createClientRequest("/redirect", ClientResponseRedirectTest.class.getSimpleName()).get());
     }
 
     /**
@@ -118,15 +95,6 @@ public class ClientResponseRedirectTest {
         }
         logger.info("The response from the server was: " + conn.getResponseCode());
         Assert.assertEquals(HttpResponseCodes.SC_SEE_OTHER, conn.getResponseCode());
-    }
-
-    private void testRedirect(ClientResponse response) {
-        MultivaluedMap headers = response.getResponseHeaders();
-        logger.info("size: " + headers.size());
-        for (Object name : headers.keySet()) {
-            logger.info(name + ":" + headers.getFirst(name.toString()));
-        }
-        Assert.assertEquals("The location header doesn't have the expected value", generateURL("/redirect/data"), headers.getFirst("location"));
     }
 
     private void testRedirect(Response response) {

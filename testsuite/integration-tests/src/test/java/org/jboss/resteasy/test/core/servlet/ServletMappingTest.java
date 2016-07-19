@@ -7,7 +7,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -93,17 +92,6 @@ public class ServletMappingTest {
         } finally {
             response1.close();
         }
-    }
-
-    /**
-     * @tpTestDetails Test for old resteasy client with proxy
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testFormParamOldRESTEasyClient() {
-        final ServletMappingProxy client = ProxyFactory.create(ServletMappingProxy.class, generateURL("/resteasy/rest"));
-        final String result = client.postForm("value");
-        Assert.assertEquals(WRONG_RESPONSE_ERROR_MSG, result, "value");
     }
 
     /**

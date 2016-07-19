@@ -19,7 +19,8 @@ import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorMyP
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorMyResource;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorMyWriter;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorResourceConfiguration;
-import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorCustomerStringConverter;
+import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorCustomerParamConverter;
+import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorCustomerParamConverterProvider;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorScannedResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -84,7 +85,8 @@ public class SpringBeanProcessorDependenciesInDeploymentTest {
         archive.addClass(SpringBeanProcessorMyResource.class);
         archive.addClass(SpringBeanProcessorMyWriter.class);
         archive.addClass(SpringBeanProcessorResourceConfiguration.class);
-        archive.addClass(SpringBeanProcessorCustomerStringConverter.class);
+        archive.addClass(SpringBeanProcessorCustomerParamConverter.class);
+        archive.addClass(SpringBeanProcessorCustomerParamConverterProvider.class);
         archive.addClass(SpringBeanProcessorScannedResource.class);
         TestUtilSpring.addSpringLibraries(archive);
         return archive;

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.client;
 
-import org.jboss.resteasy.client.core.SelfExpandingBufferredInputStream;
+import org.jboss.resteasy.client.jaxrs.engines.SelfExpandingBufferredInputStream;
 import org.junit.Before;
 import org.junit.Test;
 

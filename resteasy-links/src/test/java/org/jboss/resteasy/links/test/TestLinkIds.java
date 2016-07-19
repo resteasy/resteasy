@@ -2,8 +2,9 @@ package org.jboss.resteasy.links.test;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.links.RESTServiceDiscovery.AtomLink;
@@ -31,10 +32,10 @@ public class TestLinkIds
 		POJOResourceFactory noDefaults = new POJOResourceFactory(IDServiceTestBean.class);
 		dispatcher.getRegistry().addResourceFactory(noDefaults);
 		httpClient = new DefaultHttpClient();
-		ApacheHttpClient4Executor executor = new ApacheHttpClient4Executor(httpClient);
+		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
 		url = generateBaseUrl();
-		client = ProxyFactory.create(IDServiceTest.class, url,
-					executor);
+		ResteasyWebTarget target = new ResteasyClientBuilder().httpEngine(engine).build().target(url);
+		client = target.proxy(IDServiceTest.class);
 	}
 
 	@AfterClass

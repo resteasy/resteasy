@@ -1,9 +1,7 @@
 package org.jboss.resteasy.test.finegrain.methodparams;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -18,6 +16,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.core.Response;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,9 +37,10 @@ public class QueryParamAsPrimitiveTest
    private static final double ASSERT_DOUBLE_THRESHOLD = 0.000000000000001d;
 
    private static Dispatcher dispatcher;
+   
 
    private static IResourceQueryPrimitives resourceQueryPrimitives;
-
+   private static Client client;
    private static IResourceQueryPrimitiveWrappers resourceQueryPrimitiveWrappers;
 
    private static IResourceQueryPrimitiveList resourceQueryPrimitiveList;
@@ -47,6 +50,8 @@ public class QueryParamAsPrimitiveTest
    @BeforeClass
    public static void before() throws Exception
    {
+      client = ResteasyClientBuilder.newClient();
+      ResteasyWebTarget target = (ResteasyWebTarget) client.target(generateBaseUrl());
       dispatcher = EmbeddedContainer.start().getDispatcher();
       dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitives.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitivesDefault.class);
@@ -64,16 +69,17 @@ public class QueryParamAsPrimitiveTest
       dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveArrayDefault.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveArrayDefaultNull.class);
       dispatcher.getRegistry().addPerRequestResource(ResourceQueryPrimitiveArrayDefaultOverride.class);
-      resourceQueryPrimitives = ProxyFactory.create(IResourceQueryPrimitives.class, generateBaseUrl());
-      resourceQueryPrimitiveWrappers = ProxyFactory.create(IResourceQueryPrimitiveWrappers.class,
-              generateBaseUrl());
-      resourceQueryPrimitiveList = ProxyFactory.create(IResourceQueryPrimitiveList.class, generateBaseUrl());
-      resourceQueryPrimitiveArray = ProxyFactory.create(IResourceQueryPrimitiveArray.class, generateBaseUrl());
+      resourceQueryPrimitives = target.proxy(IResourceQueryPrimitives.class);
+      resourceQueryPrimitiveWrappers = target.proxy(IResourceQueryPrimitiveWrappers.class);
+      resourceQueryPrimitiveList = target.proxy(IResourceQueryPrimitiveList.class);
+      resourceQueryPrimitiveArray = target.proxy(IResourceQueryPrimitiveArray.class);
+      client = ResteasyClientBuilder.newClient();
    }
 
    @AfterClass
    public static void after() throws Exception
    {
+      client.close();
       dispatcher.getRegistry().removeRegistrations(ResourceQueryPrimitives.class);
       dispatcher.getRegistry().removeRegistrations(ResourceQueryPrimitivesDefault.class);
       dispatcher.getRegistry().removeRegistrations(ResourceQueryPrimitivesDefaultOverride.class);
@@ -1087,13 +1093,13 @@ public class QueryParamAsPrimitiveTest
 
       {
          String uri = updateQuery(generateURL("/"), param);
-         ClientRequest request = new ClientRequest(uri);
-         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         Builder builder = client.target(uri).request();
+         builder.header(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
-            ClientResponse<?> response = request.get();
+            Response response = builder.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            shutdown(request);
+            response.close();
          }
          catch (Exception e)
          {
@@ -1103,13 +1109,13 @@ public class QueryParamAsPrimitiveTest
 
       {
          String uri = updateQuery(generateURL("/wrappers"), param);
-         ClientRequest request = new ClientRequest(uri);
-         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         Builder builder = client.target(uri).request();
+         builder.header(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
-            ClientResponse<?> response = request.get();
+            Response response = builder.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            shutdown(request);
+            response.close();
          }
          catch (Exception e)
          {
@@ -1119,13 +1125,13 @@ public class QueryParamAsPrimitiveTest
 
       {
          String uri = updateQuery(generateURL("/list"), param + "&" + param + "&" + param);
-         ClientRequest request = new ClientRequest(uri);
-         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         Builder builder = client.target(uri).request();
+         builder.header(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
-            ClientResponse<?> response = request.get();
+            Response response = builder.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            shutdown(request);
+            response.close();
          }
          catch (Exception e)
          {
@@ -1135,13 +1141,13 @@ public class QueryParamAsPrimitiveTest
 
       {
          String uri = updateQuery(generateURL("/array"), param + "&" + param + "&" + param);
-         ClientRequest request = new ClientRequest(uri);
-         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         Builder builder = client.target(uri).request();
+         builder.header(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
-            ClientResponse<?> response = request.get();
+            Response response = builder.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            shutdown(request);
+            response.close();
          }
          catch (Exception e)
          {
@@ -1153,13 +1159,13 @@ public class QueryParamAsPrimitiveTest
    public void _testDefault(String base, String type, String value)
    {
       {
-         ClientRequest request = new ClientRequest(generateURL("" + base + "default/null"));
-         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         Builder builder = client.target(generateURL("" + base + "default/null")).request();
+         builder.header(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
-            ClientResponse<?> response = request.get();
+            Response response = builder.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            shutdown(request);
+            response.close();
          }
          catch (Exception e)
          {
@@ -1168,13 +1174,13 @@ public class QueryParamAsPrimitiveTest
       }
 
       {
-         ClientRequest request = new ClientRequest(generateURL("" + base + "default"));
-         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         Builder builder = client.target(generateURL("" + base + "default")).request();
+         builder.header(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
-            ClientResponse<?> response = request.get();
+            Response response = builder.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            shutdown(request);
+            response.close();
          }
          catch (Exception e)
          {
@@ -1185,13 +1191,13 @@ public class QueryParamAsPrimitiveTest
       String param = type + "=" + value;
       {
          String uri = updateQuery(generateURL("" + base + "default/override"), param);
-         ClientRequest request = new ClientRequest(uri);
-         request.header(HttpHeaderNames.ACCEPT, "application/" + type);
+         Builder builder = client.target(uri).request();
+         builder.header(HttpHeaderNames.ACCEPT, "application/" + type);
          try
          {
-            ClientResponse<?> response = request.get();
+            Response response = builder.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            shutdown(request);
+            response.close();
          }
          catch (Exception e)
          {
@@ -1424,14 +1430,13 @@ public class QueryParamAsPrimitiveTest
    public void testBadPrimitiveValue()
    {
       {
-         String uri = updateQuery(generateURL("/"), "int=abcdef");
-         ClientRequest request = new ClientRequest(uri);
-         request.header(HttpHeaderNames.ACCEPT, "application/int");
+         String uri = updateQuery(generateURL("/"), "int=abcdef");         Builder builder = client.target(uri).request();
+         builder.header(HttpHeaderNames.ACCEPT, "application/int");
          try
          {
-            ClientResponse<?> response = request.get();
+            Response response = builder.get();
             Assert.assertEquals(404, response.getStatus());
-            shutdown(request);
+            response.close();
          }
          catch (Exception e)
          {
@@ -1445,13 +1450,13 @@ public class QueryParamAsPrimitiveTest
    {
       {
          String uri = updateQuery(generateURL("/wrappers"), "int=abcdef");
-         ClientRequest request = new ClientRequest(uri);
-         request.header(HttpHeaderNames.ACCEPT, "application/int");
+         Builder builder = client.target(uri).request();
+         builder.header(HttpHeaderNames.ACCEPT, "application/int");
          try
          {
-            ClientResponse<?> response = request.get();
+            Response response = builder.get();
             Assert.assertEquals(404, response.getStatus());
-            shutdown(request);
+            response.close();
          }
          catch (Exception e)
          {
@@ -1465,13 +1470,13 @@ public class QueryParamAsPrimitiveTest
    {
       {
          String uri = updateQuery(generateURL("/list"), "int=abcdef&int=abcdef");
-         ClientRequest request = new ClientRequest(uri);
-         request.header(HttpHeaderNames.ACCEPT, "application/int");
+         Builder builder = client.target(uri).request();
+         builder.header(HttpHeaderNames.ACCEPT, "application/int");
          try
          {
-            ClientResponse<?> response = request.get();
+            Response response = builder.get();
             Assert.assertEquals(404, response.getStatus());
-            shutdown(request);
+            response.close();
          }
          catch (Exception e)
          {
@@ -1606,12 +1611,5 @@ public class QueryParamAsPrimitiveTest
       @GET
       @Produces("application/double")
       String doGetDouble(@QueryParam("double") double[] v);
-   }
-   
-   static private void shutdown(ClientRequest request) throws Exception
-   {
-//      request.getExecutor().close();
-      ApacheHttpClient4Executor executor = (ApacheHttpClient4Executor) request.getExecutor();
-      executor.getHttpClient().getConnectionManager().shutdown();
    }
 }
