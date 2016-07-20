@@ -81,7 +81,7 @@ public class DuplicitePathTest {
      * @tpSince RESTEasy 3.0.17
      */
     @Test
-    @Category({NotForForwardCompatibility.class, ExpectedFailing.class}) //[RESTEASY-1369] FIXME
+    @Category({NotForForwardCompatibility.class, ExpectedFailing.class}) //[RESTEASY-1445] FIXME
     public void testDuplicationTwoAppTwoResourceSameMethodPath() throws Exception {
         int initWarningsCount = getWarningCount();
         WebTarget base = client.target(generateURL("/a/b/c"));
@@ -96,7 +96,7 @@ public class DuplicitePathTest {
         } finally {
             response.close();
         }
-        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-3459", "Wrong count of warnings in server log"),
+        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1445", "Wrong count of warnings in server log"),
                             1, getWarningCount() - initWarningsCount);
     }
 
@@ -106,7 +106,7 @@ public class DuplicitePathTest {
      * @tpSince RESTEasy 3.0.17
      */
     @Test
-    @Category({ExpectedFailing.class}) //[RESTEASY-1369] FIXME
+    @Category({NotForForwardCompatibility.class})
     public void testDuplicationMoreAccepts() throws Exception {
         int initWarningsCount = getWarningCount();
         WebTarget base = client.target(generateURL("/f/g/i"));
@@ -130,7 +130,7 @@ public class DuplicitePathTest {
      * @tpSince RESTEasy 3.0.17
      */
     @Test
-    @Category({ExpectedFailing.class}) //[RESTEASY-1369] FIXME
+    @Category({NotForForwardCompatibility.class})
     public void testDuplicationMoretypes() throws Exception {
         int initWarningsCount = getWarningCount();
         WebTarget base = client.target(generateURL("/f/g/j"));
