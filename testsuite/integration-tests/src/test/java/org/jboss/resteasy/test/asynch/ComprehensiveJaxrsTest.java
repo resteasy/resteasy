@@ -199,7 +199,7 @@ public class ComprehensiveJaxrsTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    @Category({ExpectedFailing.class}) //FIXME
+    @Category({ExpectedFailing.class}) // [RESTEASY-1446] FIXME
     public void complexTest() throws Exception {
         // cancelVoidTest
         {
