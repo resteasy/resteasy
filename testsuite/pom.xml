@@ -25,6 +25,7 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <failIfNoTests>false</failIfNoTests>
                     <systemPropertyVariables>
                         <additionalJvmArgs></additionalJvmArgs>
                         <ipv6>false</ipv6>
