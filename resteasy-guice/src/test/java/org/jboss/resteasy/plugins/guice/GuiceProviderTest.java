@@ -1,14 +1,12 @@
 package org.jboss.resteasy.plugins.guice;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
-
 import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Module;
 
-import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.TestPortProvider;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -51,7 +49,7 @@ public class GuiceProviderTest
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
       processor.processInjector(Guice.createInjector(module));
-      final TestResource resource = ProxyFactory.create(TestResource.class, generateBaseUrl());
+      final TestResource resource = TestPortProvider.createProxy(TestResource.class, TestPortProvider.generateBaseUrl());
       Assert.assertEquals("exception", resource.getName());
       dispatcher.getRegistry().removeRegistrations(TestResource.class);
    }

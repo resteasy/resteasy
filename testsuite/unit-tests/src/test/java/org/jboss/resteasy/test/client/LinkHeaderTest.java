@@ -1,7 +1,9 @@
 package org.jboss.resteasy.test.client;
 
+import javax.ws.rs.core.Link;
+
 import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
-import org.jboss.resteasy.spi.Link;
+import org.jboss.resteasy.specimpl.LinkBuilderImpl;
 import org.jboss.resteasy.spi.LinkHeader;
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,12 +26,12 @@ public class LinkHeaderTest {
         LinkHeader header = delegate.fromString("<http://localhost:8081/linkheader/topic/sender>; rel=\"sender\"; title=\"sender\", <http://localhost:8081/linkheader/topic/poller>; rel=\"top-message\"; title=\"top-message\"");
         Link sender = header.getLinkByTitle("sender");
         Assert.assertNotNull("Link should not be null", sender);
-        Assert.assertEquals("Wrong url", "http://localhost:8081/linkheader/topic/sender", sender.getHref());
-        Assert.assertEquals("Wrong rel", "sender", sender.getRelationship());
+        Assert.assertEquals("Wrong url", "http://localhost:8081/linkheader/topic/sender", sender.getUri().toString());
+        Assert.assertEquals("Wrong rel", "sender", sender.getRel());
         Link top = header.getLinkByTitle("top-message");
         Assert.assertNotNull(top);
-        Assert.assertEquals("Wrong URL in link", "http://localhost:8081/linkheader/topic/poller", top.getHref());
-        Assert.assertEquals("Wrong rel in link", "top-message", top.getRelationship());
+        Assert.assertEquals("Wrong URL in link", "http://localhost:8081/linkheader/topic/poller", top.getUri().toString());
+        Assert.assertEquals("Wrong rel in link", "top-message", top.getRel());
 
     }
 
@@ -43,12 +45,12 @@ public class LinkHeaderTest {
         LinkHeader header = delegate.fromString("<http://localhost:8081/topics/test/poller/next?index=0>; rel=\"next-message\"; title=\"next-message\",<http://localhost:8081/topics/test/poller>; rel=\"generator\"; title=\"generator\"");
         Link next = header.getLinkByTitle("next-message");
         Assert.assertNotNull("Link is not found", next);
-        Assert.assertEquals("Wrong URL in link", "http://localhost:8081/topics/test/poller/next?index=0", next.getHref());
-        Assert.assertEquals("Wrong rel in link", "next-message", next.getRelationship());
+        Assert.assertEquals("Wrong URL in link", "http://localhost:8081/topics/test/poller/next?index=0", next.getUri().toString());
+        Assert.assertEquals("Wrong rel in link", "next-message", next.getRel());
         Link generator = header.getLinkByTitle("generator");
         Assert.assertNotNull(generator);
-        Assert.assertEquals("Wrong URL in link", "http://localhost:8081/topics/test/poller", generator.getHref());
-        Assert.assertEquals("Wrong rel in link", "generator", generator.getRelationship());
+        Assert.assertEquals("Wrong URL in link", "http://localhost:8081/topics/test/poller", generator.getUri().toString());
+        Assert.assertEquals("Wrong rel in link", "generator", generator.getRel());
     }
 
     /**
@@ -59,9 +61,9 @@ public class LinkHeaderTest {
     public void testAdd() {
         final LinkHeader linkHeader = new LinkHeader();
         Assert.assertEquals("Wrong size of linkHeader", linkHeader.getLinks().size(), 0);
-        linkHeader.addLink(new Link("one", "resl-1", "href-1", null, null));
+        linkHeader.addLink(new LinkBuilderImpl().title("one").rel("resl-1").uri("href-1").build());
         Assert.assertEquals("Wrong size of linkHeader", linkHeader.getLinks().size(), 1);
-        linkHeader.addLink(new Link("two", "resl-2", "href-2", null, null));
+        linkHeader.addLink(new LinkBuilderImpl().title("two").rel("resl-2").uri("href-2").build());
         Assert.assertEquals("Wrong size of linkHeader", linkHeader.getLinks().size(), 2);
     }
 
@@ -77,11 +79,11 @@ public class LinkHeaderTest {
 
         Assert.assertTrue("Link is not present", header.getLinksByTitle().containsKey("previous chapter"));
         Assert.assertTrue("Wrong link", header.getLinksByRelationship().containsKey("previous"));
-        Assert.assertEquals("Wrong link", header.getLinksByTitle().get("previous chapter").getHref(), "http://example.com/TheBook/chapter2");
+        Assert.assertEquals("Wrong link", header.getLinksByTitle().get("previous chapter").getUri().toString(), "http://example.com/TheBook/chapter2");
         String str = delegate.toString(header);
         header = delegate.fromString(str);
         Assert.assertTrue("Wrong link", header.getLinksByTitle().containsKey("previous chapter"));
         Assert.assertTrue("Wrong link", header.getLinksByRelationship().containsKey("previous"));
-        Assert.assertEquals("Wrong link", header.getLinksByTitle().get("previous chapter").getHref(), "http://example.com/TheBook/chapter2");
+        Assert.assertEquals("Wrong link", header.getLinksByTitle().get("previous chapter").getUri().toString(), "http://example.com/TheBook/chapter2");
     }
 }

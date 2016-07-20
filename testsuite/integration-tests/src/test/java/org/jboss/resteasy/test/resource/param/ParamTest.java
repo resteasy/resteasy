@@ -1,9 +1,11 @@
 package org.jboss.resteasy.test.resource.param;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.resource.param.resource.ParamInterfaceResource;
 import org.jboss.resteasy.test.resource.param.resource.ParamResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -42,7 +44,8 @@ public class ParamTest {
      */
     @Test
     public void testNullMatrixParam() throws Exception {
-        ParamInterfaceResource proxy = ProxyFactory.create(ParamInterfaceResource.class, generateBaseUrl());
+        ResteasyWebTarget target = (ResteasyWebTarget) ClientBuilder.newClient().target(generateBaseUrl());
+        ParamInterfaceResource proxy = target.proxy(ParamInterfaceResource.class);
         String rtn = proxy.getMatrix(null);
         Assert.assertEquals("null", rtn);
     }
@@ -54,7 +57,8 @@ public class ParamTest {
      */
     @Test
     public void testNullCookieParam() throws Exception {
-        ParamInterfaceResource proxy = ProxyFactory.create(ParamInterfaceResource.class, generateBaseUrl());
+        ResteasyWebTarget target = (ResteasyWebTarget) ClientBuilder.newClient().target(generateBaseUrl());
+        ParamInterfaceResource proxy = target.proxy(ParamInterfaceResource.class);
         String rtn = proxy.getCookie(null);
         Assert.assertEquals("null", rtn);
     }
@@ -66,7 +70,8 @@ public class ParamTest {
      */
     @Test
     public void testNullHeaderParam() throws Exception {
-        ParamInterfaceResource proxy = ProxyFactory.create(ParamInterfaceResource.class, generateBaseUrl());
+        ResteasyWebTarget target = (ResteasyWebTarget) ClientBuilder.newClient().target(generateBaseUrl());
+        ParamInterfaceResource proxy = target.proxy(ParamInterfaceResource.class);
         String rtn = proxy.getHeader(null);
         Assert.assertEquals("null", rtn);
     }

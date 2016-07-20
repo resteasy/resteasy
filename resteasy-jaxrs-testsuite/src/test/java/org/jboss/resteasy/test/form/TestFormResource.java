@@ -1,15 +1,13 @@
 package org.jboss.resteasy.test.form;
 
 import org.jboss.resteasy.annotations.Form;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.test.BaseResourceTest;
-import org.jboss.resteasy.util.GenericType;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletResponse;
@@ -18,8 +16,15 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.URLDecoder;
@@ -50,9 +55,8 @@ public class TestFormResource extends BaseResourceTest
    private static final String BOOLEAN_VALUE_FIELD = "booleanValue";
 
    private static final String TEST_URI = generateURL("/form/42?query=42");
-
-   @SuppressWarnings("unused")
-   private static final Logger logger = Logger.getLogger(TestFormResource.class);
+   
+   private static Client client;
 
    @Path("/form/{id}")
    public interface FormClientProxy
@@ -114,6 +118,18 @@ public class TestFormResource extends BaseResourceTest
       }
    }
 
+   @BeforeClass
+   public static void beforeSub()
+   {
+      client = ClientBuilder.newClient();
+   }
+   
+   @AfterClass
+   public static void afterSub()
+   {
+      client.close();
+   }
+   
    /**
     * FIXME Comment this
     *
@@ -131,18 +147,17 @@ public class TestFormResource extends BaseResourceTest
     *
     * @throws Exception
     */
+   @SuppressWarnings("unchecked")
    @Test
    public void testMultiValueParam() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/myform/server"));
-      ClientResponse<MultivaluedMap<String, String>> response = request.get(new GenericType<MultivaluedMap<String, String>>()
-      {
-      });
+      Builder builder = client.target(generateURL("/myform/server")).request();
+      Response response = builder.get();
       int status = response.getStatus();
       Assert.assertEquals(200, status);
       boolean sv1 = false;
       boolean sv2 = false;
-      MultivaluedMap<String, String> form = response.getEntity();
+      MultivaluedMap<String, String> form = response.readEntity(new GenericType<MultivaluedMap<String, String>>() {});
       Assert.assertEquals(2, form.get("servername").size());
       for (String str : form.get("servername"))
       {
@@ -161,14 +176,16 @@ public class TestFormResource extends BaseResourceTest
    @Test
    public void testProxy691() throws Exception
    {
-      MyFormProxy proxy = ProxyFactory.create(MyFormProxy.class, generateBaseUrl());
+      ResteasyWebTarget target = (ResteasyWebTarget) client.target(generateBaseUrl());
+      MyFormProxy proxy = target.proxy(MyFormProxy.class);
       proxy.post(null);
    }
 
    @Test
    public void testProxy() throws Exception
    {
-      FormClientProxy proxy = ProxyFactory.create(FormClientProxy.class, generateBaseUrl());
+      ResteasyWebTarget target = (ResteasyWebTarget) client.target(generateBaseUrl());
+      FormClientProxy proxy = target.proxy(FormClientProxy.class);
       ClientForm form = new ClientForm();
       form.setBooleanValue(true);
       form.setName("This is My Name");
@@ -211,19 +228,21 @@ public class TestFormResource extends BaseResourceTest
       InputStream in = null;
       try
       {
-         ClientRequest request = new ClientRequest(TEST_URI);
-         request.header("custom-header", "42");
-         request.formParameter(BOOLEAN_VALUE_FIELD, "true");
-         request.formParameter(NAME_FIELD, "This is My Name");
-         request.formParameter(DOUBLE_VALUE_FIELD, "123.45");
-         request.formParameter(LONG_VALUE_FIELD, "566780");
-         request.formParameter(INTEGER_VALUE_FIELD, "3");
-         request.formParameter(SHORT_VALUE_FIELD, "12345");
-         ClientResponse<InputStream> response = request.post(InputStream.class);
+         Builder builder = client.target(TEST_URI).request();
+         builder.header("custom-header", "42");
+         MultivaluedMap<String, String> map = new MultivaluedMapImpl<String, String>();
+         map.add(BOOLEAN_VALUE_FIELD, "true");
+         map.add(NAME_FIELD, "This is My Name");
+         map.add(DOUBLE_VALUE_FIELD, "123.45");
+         map.add(LONG_VALUE_FIELD, "566780");
+         map.add(INTEGER_VALUE_FIELD, "3");
+         map.add(SHORT_VALUE_FIELD, "12345");
+         Response response = builder.post(Entity.form(map));
+
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-         String contentType = response.getResponseHeaders().getFirst("content-type");
+         String contentType = response.getHeaderString("content-type");
          Assert.assertEquals("application/x-www-form-urlencoded", contentType);
-         InputStream responseStream = response.getEntity();
+         InputStream responseStream = response.readEntity(InputStream.class);
          in = new BufferedInputStream(responseStream);
          String formData = readString(in);
          String[] keys = formData.split("&");

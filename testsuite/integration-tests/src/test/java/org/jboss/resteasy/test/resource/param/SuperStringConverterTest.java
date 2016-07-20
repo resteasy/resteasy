@@ -8,10 +8,12 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.resource.param.resource.SuperStringConverterCompany;
 import org.jboss.resteasy.test.resource.param.resource.SuperStringConverterCompanyConverter;
+import org.jboss.resteasy.test.resource.param.resource.SuperStringConverterCompanyConverterProvider;
 import org.jboss.resteasy.test.resource.param.resource.SuperStringConverterMyClient;
 import org.jboss.resteasy.test.resource.param.resource.SuperStringConverterObjectConverter;
 import org.jboss.resteasy.test.resource.param.resource.SuperStringConverterPerson;
 import org.jboss.resteasy.test.resource.param.resource.SuperStringConverterPersonConverter;
+import org.jboss.resteasy.test.resource.param.resource.SuperStringConverterPersonConverterProvider;
 import org.jboss.resteasy.test.resource.param.resource.SuperStringConverterResource;
 import org.jboss.resteasy.test.resource.param.resource.SuperStringConverterSuperPersonConverter;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -40,10 +42,12 @@ public class SuperStringConverterTest {
         war.addClass(SuperStringConverterPerson.class);
         war.addClass(SuperStringConverterObjectConverter.class);
         war.addClass(SuperStringConverterSuperPersonConverter.class);
+        war.addClass(SuperStringConverterPersonConverterProvider.class);
         war.addClass(SuperStringConverterMyClient.class);
         war.addClass(SuperStringConverterCompany.class);
+        war.addClass(SuperStringConverterCompanyConverterProvider.class);
         return TestUtil.finishContainerPrepare(war, null, SuperStringConverterPersonConverter.class,
-                SuperStringConverterCompanyConverter.class,
+                SuperStringConverterCompanyConverter.class, SuperStringConverterCompanyConverterProvider.class,
                 SuperStringConverterResource.class);
     }
 
@@ -58,8 +62,8 @@ public class SuperStringConverterTest {
     @Test
     public void testPerson() throws Exception {
         ResteasyClient client = new ResteasyClientBuilder().build();
-        client.register(SuperStringConverterPersonConverter.class);
-        client.register(SuperStringConverterCompanyConverter.class);
+        client.register(SuperStringConverterPersonConverterProvider.class);
+        client.register(SuperStringConverterCompanyConverterProvider.class);
 
         SuperStringConverterMyClient proxy = ProxyBuilder.builder(SuperStringConverterMyClient.class, client.target(generateBaseUrl())).build();
         SuperStringConverterPerson person = new SuperStringConverterPerson("name");
@@ -74,8 +78,8 @@ public class SuperStringConverterTest {
     @Test
     public void testCompany() throws Exception {
         ResteasyClient client = new ResteasyClientBuilder().build();
-        client.register(SuperStringConverterPersonConverter.class);
-        client.register(SuperStringConverterCompanyConverter.class);
+        client.register(SuperStringConverterPersonConverterProvider.class);
+        client.register(SuperStringConverterCompanyConverterProvider.class);
         SuperStringConverterMyClient proxy = ProxyBuilder.builder(SuperStringConverterMyClient.class, client.target(generateBaseUrl())).build();
         SuperStringConverterCompany company = new SuperStringConverterCompany("name");
         proxy.putCompany(company);

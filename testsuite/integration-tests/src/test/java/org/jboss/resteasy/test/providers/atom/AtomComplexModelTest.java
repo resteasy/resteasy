@@ -3,8 +3,6 @@ package org.jboss.resteasy.test.providers.atom;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.ClientRequest; //@cs-: clientrequest (Old client test)
-import org.jboss.resteasy.client.ClientResponse; //@cs-: clientresponse (Old client test)
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.atom.Content;
@@ -145,81 +143,6 @@ public class AtomComplexModelTest {
         atomAssetMetadata = newEntry.getAnyOtherJAXBObject(AtomAssetMetadata.class);
         assertNotNull("Metadata of complex type is null", atomAssetMetadata);
         assertNotNull("Categories from metadata is missing", atomAssetMetadata.getCategories());
-    }
-
-    /**
-     * @tpTestDetails Check old client
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testOldClient() throws Exception {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                "<entry xmlns=\"http://www.w3.org/2005/Atom\">" +
-                "<title>testCreatePackageFromAtom7</title>" +
-                "<summary>desc for testCreatePackageFromAtom</summary>" +
-                "<metadata xmlns=\"\"><categories><value>c1</value></categories> <note><value>meta</value> </note></metadata>" +
-                "</entry>";
-
-        {
-            URL url = new URL(generateURL("/entry"));
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Accept", MediaType.APPLICATION_ATOM_XML);
-            connection.setRequestProperty("Content-Type", MediaType.APPLICATION_ATOM_XML);
-            connection.setRequestProperty("Content-Length", Integer.toString(xml.getBytes().length));
-            connection.setUseCaches(false);
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-
-            //Send request
-            DataOutputStream wr = new DataOutputStream(
-                    connection.getOutputStream());
-            wr.writeBytes(xml);
-            wr.flush();
-            wr.close();
-
-            assertEquals(HttpResponseCodes.SC_OK, connection.getResponseCode());
-        }
-
-        {
-            ClientRequest request = new ClientRequest(generateURL("/entry2"));
-            request.header("Accept", MediaType.APPLICATION_ATOM_XML);
-            request.header("Content-Type", MediaType.APPLICATION_ATOM_XML);
-            ClientResponse<Entry> response = request.get(Entry.class);
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-
-            assertNotNull("Wrong content of response", response.getEntity().getAnyOtherJAXBObject(AtomAssetMetadata.class));
-        }
-
-        {
-            URL url = new URL(generateURL("/entry3"));
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Accept", MediaType.APPLICATION_XML);
-            connection.setRequestProperty("Content-Type", MediaType.APPLICATION_XML);
-            connection.setRequestProperty("Content-Length", Integer.toString(xml.getBytes().length));
-            connection.setUseCaches(false);
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-
-            //Send request
-            DataOutputStream wr = new DataOutputStream(
-                    connection.getOutputStream());
-            wr.writeBytes(xml);
-            wr.flush();
-            wr.close();
-
-            assertEquals(HttpResponseCodes.SC_OK, connection.getResponseCode());
-        }
-
-        {
-            ClientRequest request = new ClientRequest(generateURL("/entry4"));
-            request.header("Accept", MediaType.APPLICATION_XML);
-            request.header("Content-Type", MediaType.APPLICATION_XML);
-            ClientResponse<Entry> response = request.get(Entry.class);
-            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            assertNotNull("Wrong content of response", response.getEntity().getAnyOtherJAXBObject(AtomAssetMetadata.class));
-        }
     }
 
     /**

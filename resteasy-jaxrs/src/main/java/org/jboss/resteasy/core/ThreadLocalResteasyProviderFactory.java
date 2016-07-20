@@ -1,11 +1,8 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.client.core.ClientErrorInterceptor;
-import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
 import org.jboss.resteasy.core.interception.ClientResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.ContainerRequestFilterRegistry;
 import org.jboss.resteasy.core.interception.ContainerResponseFilterRegistry;
-import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.ReaderInterceptorRegistry;
 import org.jboss.resteasy.core.interception.WriterInterceptorRegistry;
@@ -15,14 +12,11 @@ import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ProviderFactoryDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.StringConverter;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
-import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.util.ThreadLocalStack;
 
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Configuration;
@@ -37,7 +31,6 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.ParamConverter;
-import javax.ws.rs.ext.RuntimeDelegate;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -141,12 +134,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public <T extends Throwable> ClientExceptionMapper<T> getClientExceptionMapper(Class<T> type)
-   {
-      return getDelegate().getClientExceptionMapper(type);
-   }
-
-   @Override
    public Set<Class<?>> getFeatureClasses()
    {
       return getDelegate().getFeatureClasses();
@@ -168,12 +155,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public Set<DynamicFeature> getClientDynamicFeatures()
    {
       return getDelegate().getClientDynamicFeatures();
-   }
-
-   @Override
-   public void addClientExceptionMapper(Class<? extends ClientExceptionMapper<?>> providerClass)
-   {
-      getDelegate().addClientExceptionMapper(providerClass);
    }
 
    @Override
@@ -199,19 +180,7 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    {
       getDelegate().registerProviderInstance(provider);
    }
-
-   @Override
-   public void addClientExceptionMapper(ClientExceptionMapper<?> provider, Type exceptionType)
-   {
-      getDelegate().addClientExceptionMapper(provider, exceptionType);
-   }
-
-   @Override
-   public StringConverter getStringConverter(Class<?> clazz)
-   {
-      return getDelegate().getStringConverter(clazz);
-   }
-
+   
    @Override
    public <T> StringParameterUnmarshaller<T> createStringParameterUnmarshaller(Class<T> clazz)
    {
@@ -222,12 +191,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public Set<Object> getFeatureInstances()
    {
       return getDelegate().getFeatureInstances();
-   }
-
-   @Override
-   public void addClientExceptionMapper(ClientExceptionMapper<?> provider)
-   {
-      getDelegate().addClientExceptionMapper(provider);
    }
 
    @Override
@@ -261,21 +224,9 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public InterceptorRegistry<ClientExecutionInterceptor> getClientExecutionInterceptorRegistry()
-   {
-      return getDelegate().getClientExecutionInterceptorRegistry();
-   }
-
-   @Override
    public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return getDelegate().getMessageBodyReader(type, genericType, annotations, mediaType);
-   }
-
-   @Override
-   public void addClientErrorInterceptor(ClientErrorInterceptor handler)
-   {
-      getDelegate().addClientErrorInterceptor(handler);
    }
 
    @Override
@@ -339,18 +290,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public void addClientExceptionMapper(ClientExceptionMapper<?> provider, Class<?> providerClass)
-   {
-      getDelegate().addClientExceptionMapper(provider, providerClass);
-   }
-
-   @Override
-   public void insertInterceptorPrecedenceAfter(String after, String newPrecedence)
-   {
-      getDelegate().insertInterceptorPrecedenceAfter(after, newPrecedence);
-   }
-
-   @Override
    public ResteasyProviderFactory register(Object provider)
    {
       return getDelegate().register(provider);
@@ -372,12 +311,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public boolean isRegistered(Class<?> componentClass)
    {
       return getDelegate().isRegistered(componentClass);
-   }
-
-   @Override
-   public void insertInterceptorPrecedenceBefore(String before, String newPrecedence)
-   {
-      getDelegate().insertInterceptorPrecedenceBefore(before, newPrecedence);
    }
 
    @Override
@@ -423,12 +356,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public List<ClientErrorInterceptor> getClientErrorInterceptors()
-   {
-      return getDelegate().getClientErrorInterceptors();
-   }
-
-   @Override
    public void injectProperties(Class declaring, Object obj)
    {
       getDelegate().injectProperties(declaring, obj);
@@ -450,12 +377,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public <T> T injectedInstance(Class<? extends T> clazz)
    {
       return getDelegate().injectedInstance(clazz);
-   }
-
-   @Override
-   public void appendInterceptorPrecedence(String precedence)
-   {
-      getDelegate().appendInterceptorPrecedence(precedence);
    }
 
    @Override

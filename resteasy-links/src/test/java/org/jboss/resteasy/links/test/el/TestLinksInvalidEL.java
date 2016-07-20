@@ -2,10 +2,11 @@ package org.jboss.resteasy.links.test.el;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.jboss.resteasy.client.ClientResponseFailure;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.links.test.BookStoreService;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.After;
@@ -21,6 +22,8 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import javax.ws.rs.InternalServerErrorException;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
@@ -63,10 +66,10 @@ public class TestLinksInvalidEL
 		POJOResourceFactory noDefaults = new POJOResourceFactory(resourceType);
 		dispatcher.getRegistry().addResourceFactory(noDefaults);
 		httpClient = new DefaultHttpClient();
-		ApacheHttpClient4Executor executor = new ApacheHttpClient4Executor(httpClient);
+		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
 		url = generateBaseUrl();
-		client = ProxyFactory.create(BookStoreService.class, url,
-					executor);
+		ResteasyWebTarget target = new ResteasyClientBuilder().httpEngine(engine).build().target(url);
+		client = target.proxy(BookStoreService.class);
 	}
 
 	@After
@@ -84,10 +87,12 @@ public class TestLinksInvalidEL
 		try{
 			client.getBookXML("foo");
 			Assert.fail("This should have caused a 500");
-		}catch(ClientResponseFailure x){
-			System.err.println("Failure is "+x.getResponse().getEntity(String.class));
+		}catch(InternalServerErrorException x){
+			System.err.println("Failure is "+x.getResponse().readEntity(String.class));
 			Assert.assertEquals(500, x.getResponse().getStatus());
-		}
+	    }catch(Exception x){
+	         Assert.fail("Expected InternalServerErrorException");
+	    }
 	}
 	@SuppressWarnings("unchecked")
 	@Test
@@ -96,9 +101,11 @@ public class TestLinksInvalidEL
 		try{
 			client.getBookJSON("foo");
 			Assert.fail("This should have caused a 500");
-		}catch(ClientResponseFailure x){
-			System.err.println("Failure is "+x.getResponse().getEntity(String.class));
+		}catch(InternalServerErrorException x){
+			System.err.println("Failure is "+x.getResponse().readEntity(String.class));
 			Assert.assertEquals(500, x.getResponse().getStatus());
+		}catch(Exception x){
+		   Assert.fail("Expected InternalServerErrorException");
 		}
 	}
 }

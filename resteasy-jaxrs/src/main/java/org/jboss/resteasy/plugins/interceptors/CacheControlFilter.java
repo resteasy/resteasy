@@ -1,7 +1,5 @@
 package org.jboss.resteasy.plugins.interceptors;
 
-import org.jboss.resteasy.annotations.interception.HeaderDecoratorPrecedence;
-
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;

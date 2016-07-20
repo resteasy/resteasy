@@ -4,8 +4,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.client.ClientRequest; //@cs-: clientrequest (Old client test)
-import org.jboss.resteasy.client.ClientResponse; //@cs-: clientresponse (Old client test)
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.jaxb.resource.StreamResetPlace;
@@ -104,32 +102,6 @@ public class StreamResetTest {
         } catch (IllegalStateException e) {
             logger.info("Expected IllegalStateException was thrown");
         }
-    }
-
-    /**
-     * @tpTestDetails Tests streamReset method of deprecated ClientResponse class. In case exception is thrown during processing
-     * response from the server, the stream of the response must be reset before reading it again.
-     * @tpPassCrit After exception is thrown the response is parsed correctly with getEntity()
-     * @tpInfo RESTEASY-456
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testClientRequestResetStream() throws Exception {
-        ClientRequest request = new ClientRequest(generateURL("/test"));
-        ClientResponse<StreamResetPlace> response = request.get(StreamResetPlace.class);
-        boolean exceptionThrown = false;
-        try {
-            StreamResetPlace place = response.getEntity();
-
-        } catch (Exception e) {
-            exceptionThrown = true;
-        }
-        Assert.assertTrue("The expected exception didn't happen", exceptionThrown);
-
-        response.resetStream();
-        StreamResetPerson person = response.getEntity(StreamResetPerson.class);
-        Assert.assertNotNull("The stream was not correctly reset", person);
-        Assert.assertEquals("The response from the server is not the one expected", "bill", person.getName());
     }
 
 }

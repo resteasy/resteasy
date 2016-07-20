@@ -3,8 +3,6 @@ package org.jboss.resteasy.test.providers.multipart;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.ClientRequest; //@cs-: clientrequest (Old client test)
-import org.jboss.resteasy.client.ClientResponse; //@cs-: clientresponse (Old client test)
 import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultContentTypeWildcardOverwriteContainerBean;
 import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultContentTypeWildcardOverwriteNewInterceptor;
 import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultContentTypeWildcardOverwriteService;
@@ -44,28 +42,6 @@ public class InputPartDefaultContentTypeWildcardOverwriteNewInterceptorTest {
         war.addClasses(InputPartDefaultContentTypeWildcardOverwriteXmlBean.class, InputPartDefaultContentTypeWildcardOverwriteNewInterceptorTest.class);
         return TestUtil.finishContainerPrepare(war, null, InputPartDefaultContentTypeWildcardOverwriteNewInterceptor.class,
                 InputPartDefaultContentTypeWildcardOverwriteService.class);
-    }
-
-    /**
-     * @tpTestDetails Test for old client
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testContentTypeOldClient() throws Exception {
-        String message = "--boo\r\n"
-                + "Content-Disposition: form-data; name=\"foo\"\r\n"
-                + "Content-Transfer-Encoding: 8bit\r\n\r\n"
-                + "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
-                + "<inputPartDefaultContentTypeWildcardOverwriteXmlBean><myInt>27</myInt><myString>Lorem Ipsum</myString></inputPartDefaultContentTypeWildcardOverwriteXmlBean>\r\n"
-                + "--boo--\r\n";
-
-        ClientRequest request = new ClientRequest(PortProviderUtil.generateURL("/mime", InputPartDefaultContentTypeWildcardOverwriteNewInterceptorTest.class.getSimpleName()));
-
-        request.body("multipart/form-data; boundary=boo", message.getBytes("utf-8"));
-        ClientResponse<String> response = request.post(String.class);
-        Assert.assertEquals("MultiPart provider is unable to process xml, if media type is set in interceptor",
-                20, response.getStatus() / 10);
-        Assert.assertEquals("Response text is wrong", "27", response.getEntity());
     }
 
     /**

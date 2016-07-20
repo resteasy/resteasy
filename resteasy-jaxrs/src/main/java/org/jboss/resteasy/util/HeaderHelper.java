@@ -1,10 +1,6 @@
 package org.jboss.resteasy.util;
 
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.StringConverter;
-
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.RuntimeDelegate;
 import java.util.Set;
 
 /**

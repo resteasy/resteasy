@@ -6,7 +6,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.test.providers.jaxb.resource.Order;
 import org.jboss.resteasy.test.providers.jaxb.resource.Ordertype;
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlJaxbProvidersOrderClient;
@@ -45,7 +44,6 @@ import java.io.InputStream;
 @RunAsClient
 public class XmlJaxbProvidersTest {
 
-    private static final Logger logger = Logger.getLogger(XmlJaxbProvidersTest.class);
     private XmlJaxbProvidersOrderClient proxy;
     static ResteasyClient client;
 

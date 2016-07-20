@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.ClientRequest; //@cs-: clientrequest (Old client test)
 import org.jboss.resteasy.test.response.resource.HttpRequestParameterInjectorClassicParam;
 import org.jboss.resteasy.test.response.resource.HttpRequestParameterInjectorParamFactoryImpl;
 import org.jboss.resteasy.test.response.resource.HttpRequestParameterInjectorResource;
@@ -64,23 +63,6 @@ public class HttpRequestParameterInjectorTest {
         Assert.assertEquals("postValue, , postValue", postResult);
 
         client.close();
-    }
-
-    /**
-     * @tpTestDetails Old Client usage.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testCustomInjectorFactoryOldClient() throws Exception {
-        String url = generateURL("/foo");
-
-        String getResult = new ClientRequest(url).queryParameter("param", "getValue").accept(
-                "text/plain").get(String.class).getEntity();
-        Assert.assertEquals("getValue, getValue, ", getResult);
-
-        String postResult = new ClientRequest(generateURL("/foo")).formParameter("param", "postValue").accept(
-                "text/plain").post(String.class).getEntity();
-        Assert.assertEquals("postValue, , postValue", postResult);
     }
 
 }

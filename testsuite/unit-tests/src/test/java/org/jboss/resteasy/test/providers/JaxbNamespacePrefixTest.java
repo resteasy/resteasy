@@ -1,7 +1,8 @@
 package org.jboss.resteasy.test.providers;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.jaxb.XmlNamespacePrefixMapper;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.test.providers.resource.jaxbNameSpacePrefix.JaxbNameSpacePrefixItems;
 import org.jboss.resteasy.test.providers.resource.jaxbNameSpacePrefix.JaxbNameSpacePrefixPurchaseOrderType;
 import org.jboss.resteasy.test.providers.resource.jaxbNameSpacePrefix.JaxbNameSpacePrefixItem;
@@ -23,7 +24,7 @@ import java.math.BigDecimal;
  */
 public class JaxbNamespacePrefixTest {
 
-    private static final Logger logger = Logger.getLogger(JaxbNamespacePrefixTest.class);
+   private static final LogMessages logger = Logger.getMessageLogger(LogMessages.class, JaxbNamespacePrefixTest.class.getName());
 
     /**
      * @tpTestDetails Create xml schema from provided class and set "namespacePrefixMapper" for the Marshaller

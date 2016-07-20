@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.providers.multipart;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.multipart.resource.MyServiceProxy;
 import org.jboss.resteasy.test.providers.multipart.resource.NullPartBean;
@@ -48,19 +47,5 @@ public class NullPartTest {
         Assert.assertNotNull(bean);
         Assert.assertNull(bean.getSomeBinary());
     }
-
-    /**
-     * @tpTestDetails Test old client
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testOldClient() throws Exception {
-        MyServiceProxy proxy = ProxyFactory.create(MyServiceProxy.class, generateBaseUrl());
-
-        NullPartBean bean = proxy.createMyBean(); // should just be ok
-        Assert.assertNotNull(bean);
-        Assert.assertNull(bean.getSomeBinary());
-    }
-
 
 }

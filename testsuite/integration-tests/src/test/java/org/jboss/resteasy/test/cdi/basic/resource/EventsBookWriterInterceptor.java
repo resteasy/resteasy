@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.cdi.basic.resource;
 
-import org.jboss.resteasy.annotations.interception.ServerInterceptor;
-
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;
@@ -12,7 +10,6 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 @Provider
-@ServerInterceptor
 public class EventsBookWriterInterceptor implements WriterInterceptor {
     @Inject
     @EventsWriteIntercept

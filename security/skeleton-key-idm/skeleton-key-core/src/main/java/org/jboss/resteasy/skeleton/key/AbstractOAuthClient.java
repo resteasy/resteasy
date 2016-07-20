@@ -1,7 +1,7 @@
 package org.jboss.resteasy.skeleton.key;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.skeleton.key.i18n.LogMessages;
 import org.jboss.resteasy.skeleton.key.i18n.Messages;
 import org.jboss.resteasy.skeleton.key.representations.AccessTokenResponse;
 import org.jboss.resteasy.util.BasicAuthHelper;
@@ -25,8 +25,6 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class AbstractOAuthClient
 {
-   private static final Logger LOG = Logger.getLogger(AbstractOAuthClient.class);
-
    protected String clientId;
    protected String password;
    protected KeyStore truststore;
@@ -157,7 +155,7 @@ public class AbstractOAuthClient
 
    protected String stripOauthParametersFromRedirect(String uri)
    {
-      LOG.info(Messages.MESSAGES.redirectUri(uri));
+      LogMessages.LOGGER.info(Messages.MESSAGES.redirectUri(uri));
       UriBuilder builder = UriBuilder.fromUri(uri)
               .replaceQueryParam("code", null)
               .replaceQueryParam("state", null);

@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.client.proxy;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyInputStreamProxy;
@@ -52,20 +51,6 @@ public class ProxyInputStreamTest {
     @After
     public void after() throws Exception {
         client.close();
-    }
-
-    /**
-     * @tpTestDetails Old client version
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testInputStreamOldClient() throws Exception {
-        ProxyInputStreamProxy proxy = ProxyFactory.create(ProxyInputStreamProxy.class, generateURL("/"));
-        InputStream is = proxy.get();
-        byte[] bytes = ReadFromStream.readFromStream(100, is);
-        is.close();
-        String str = new String(bytes);
-        Assert.assertEquals("hello world", str);
     }
 
     /**

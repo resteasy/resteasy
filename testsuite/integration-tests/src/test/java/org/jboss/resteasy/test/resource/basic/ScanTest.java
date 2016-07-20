@@ -3,8 +3,6 @@ package org.jboss.resteasy.test.resource.basic;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.ClientRequest; //@cs-: clientrequest (Old client test)
-import org.jboss.resteasy.client.ClientResponse; //@cs-: clientresponse (Old client test)
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.resource.basic.resource.ScanProxy;
@@ -55,19 +53,6 @@ public class ScanTest {
         Map<String, String> contextParams = new HashMap<>();
         contextParams.put("resteasy.scan", "true");
         return TestUtil.finishContainerPrepare(war, contextParams, ScanResource.class, ScanSubresource.class);
-    }
-
-    /**
-     * @tpTestDetails Test with old client
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testOldClient() throws Exception {
-        RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
-        ClientRequest request = new ClientRequest(PortProviderUtil.generateURL("/test/doit", ScanTest.class.getSimpleName()));
-        ClientResponse response = request.get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("Wrong content of response", "hello world", response.getEntity(String.class));
     }
 
     /**

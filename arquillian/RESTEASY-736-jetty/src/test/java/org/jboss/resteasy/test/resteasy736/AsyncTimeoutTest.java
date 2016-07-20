@@ -2,8 +2,7 @@ package org.jboss.resteasy.test.resteasy736;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.resteasy736.TestApplication;
 import org.jboss.resteasy.resteasy736.TestResource;
 import org.jboss.shrinkwrap.api.Archive;
@@ -14,6 +13,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;
+
+import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.core.Response;
 
 /**
  * 
@@ -39,13 +41,13 @@ public class AsyncTimeoutTest
    @Test
    public void testAsynchTimeout() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9090/RESTEASY-736/test/");
+      Builder request = ResteasyClientBuilder.newClient().target("http://localhost:9090/RESTEASY-736/test/").request();
       long start = System.currentTimeMillis();
       System.out.println("start:   " + start);
-      ClientResponse<String> response = null;
+      Response response = null;
       try
       {
-         response = request.get(String.class);
+         response = request.get();
       }
       catch (Exception e)
       {
@@ -58,7 +60,7 @@ public class AsyncTimeoutTest
          System.out.println("elapsed: " + elapsed + " ms");;
          System.out.println("status: " + response.getStatus());
          assertTrue(response != null);
-         System.out.println("response: " + response.getEntity());
+         System.out.println("response: " + response.readEntity(String.class));
          assertTrue(response.getStatus() == 503);
          assertTrue(elapsed < 10000);
       }
@@ -68,13 +70,13 @@ public class AsyncTimeoutTest
    @Test
    public void testDefaultAsynchTimeout() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9090/RESTEASY-736/default/");
+      Builder request = ResteasyClientBuilder.newClient().target("http://localhost:9090/RESTEASY-736/default/").request();
       long start = System.currentTimeMillis();
       System.out.println("start:   " + start);
-      ClientResponse<String> response = null;
+      Response response = null;
       try
       {
-         response = request.get(String.class);
+         response = request.get();
       }
       catch (Exception e)
       {
@@ -87,7 +89,7 @@ public class AsyncTimeoutTest
          System.out.println("elapsed: " + elapsed + " ms");;
          System.out.println("status: " + response.getStatus());
          assertTrue(response != null);
-         System.out.println("response: " + response.getEntity());
+         System.out.println("response: " + response.readEntity(String.class));
          assertTrue(response.getStatus() == 503);
          assertTrue(elapsed < 35000); // Jetty async timeout defaults to 30000.
       }

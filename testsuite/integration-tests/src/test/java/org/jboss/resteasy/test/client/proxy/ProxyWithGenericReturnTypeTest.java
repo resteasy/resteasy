@@ -3,8 +3,6 @@ package org.jboss.resteasy.test.client.proxy;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.ClientRequest; //@cs-: clientrequest (Old client test)
-import org.jboss.resteasy.client.ClientResponse; //@cs-: clientresponse (Old client test)
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyWithGenericReturnTypeMessageBodyWriter;
@@ -47,18 +45,6 @@ public class ProxyWithGenericReturnTypeTest {
         List<Class<?>> singletons = new ArrayList<>();
         singletons.add(ProxyWithGenericReturnTypeMessageBodyWriter.class);
         return TestUtil.finishContainerPrepare(war, null, singletons, ProxyWithGenericReturnTypeResource.class);
-    }
-
-    /**
-     * @tpTestDetails Test for old client
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void oldClientTest() throws Exception {
-        ClientRequest request = new ClientRequest(PortProviderUtil.generateURL("/test/list/", ProxyWithGenericReturnTypeTest.class.getSimpleName()));
-        ClientResponse<String> response = request.get(String.class);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertTrue("Wrong content of response, list was not decoden on server", response.getEntity(String.class).indexOf("List<String>") >= 0);
     }
 
     /**

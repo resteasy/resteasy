@@ -3,8 +3,6 @@ package org.jboss.resteasy.test.client.proxy;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.core.marshallers.ResteasyClientProxy;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.client.proxy.resource.ProxyCastingResource;
@@ -59,18 +57,6 @@ public class ProxyCastingTest {
     @AfterClass
     public static void after() throws Exception {
         client.close();
-    }
-
-    /**
-     * @tpTestDetails Cast one proxy to other proxy. Old client.
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testOldClient() throws Exception {
-        ProxyCastingInterfaceA a = ProxyFactory.create(ProxyCastingInterfaceA.class, generateURL("/foobar"));
-        assertEquals("FOO", a.getFoo());
-        ProxyCastingInterfaceB b = ((ResteasyClientProxy) a).as(ProxyCastingInterfaceB.class);
-        assertEquals("BAR", b.getBar());
     }
 
     /**

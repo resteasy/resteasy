@@ -3,8 +3,6 @@ package org.jboss.resteasy.test.providers.inputstream;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.ClientRequest; //@cs-: clientrequest (Old client test)
-import org.jboss.resteasy.client.ClientResponse; //@cs-: clientresponse (Old client test)
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.inputstream.resource.InputStreamCloseInputStream;
@@ -53,24 +51,6 @@ public class InputStreamCloseTest {
     @After
     public void after() throws Exception {
         client.close();
-    }
-
-    /**
-     * @tpTestDetails Old client test
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void oldClient() throws Exception {
-        // Resource creates and returns InputStream.
-        ClientRequest request = new ClientRequest(generateURL("/create/"));
-        ClientResponse<?> response = request.get(String.class);
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("hello", response.getEntity());
-
-        // Verify previously created InputStream has been closed.
-        request = new ClientRequest(generateURL("/test/"));
-        response = request.get();
-        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
     }
 
     /**

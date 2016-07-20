@@ -5,9 +5,8 @@
 	<bean class="org.jboss.resteasy.springmvc.tjws.TJWSEmbeddedSpringMVCServerBean"
 		p:port="9092" p:applicationContextConfiguration="classpath:spring-test-server.xml" />
 
-	<bean class="org.jboss.resteasy.client.ProxyFactory"
-		factory-method="create">
-		<constructor-arg value="org.jboss.resteasy.springmvc.test.client.BasicResource" />
-		<constructor-arg value="http://localhost:9092/" />
+	<bean class="org.jboss.resteasy.test.TestPortProvider" factory-method="createProxy">
+	   <constructor-arg value="org.jboss.resteasy.springmvc.test.client.BasicResource" />
+      <constructor-arg value="http://localhost:9092/" />
 	</bean>
 </beans>

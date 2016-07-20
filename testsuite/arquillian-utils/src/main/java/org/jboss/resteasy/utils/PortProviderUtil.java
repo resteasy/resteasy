@@ -1,8 +1,7 @@
 package org.jboss.resteasy.utils;
 
-import org.jboss.resteasy.client.ClientRequest; //@cs-: clientrequest (Method for testing deprecated ClientRequest)
-import org.jboss.resteasy.client.ClientRequestFactory;
-import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -58,19 +57,19 @@ public class PortProviderUtil {
         }
     }
 
-    /**
-     * Create a Resteasy deprecated ClientRequest object using the configured port.
-     *
-     * @param path the request path
-     * @return the ClientRequest object
-     */
-    public static ClientRequest createClientRequest(String path, String testName) {
-        return new ClientRequest(generateURL(path, testName));
-    }
-
-    public static ClientRequest createClientRequest(ClientRequestFactory factory, String path, String testName) {
-        return factory.createRequest(generateURL(path, testName));
-    }
+//    /**
+//     * Create a Resteasy deprecated ClientRequest object using the configured port.
+//     *
+//     * @param path the request path
+//     * @return the ClientRequest object
+//     */
+//    public static ClientRequest createClientRequest(String path, String testName) {
+//        return new ClientRequest(generateURL(path, testName));
+//    }
+//
+//    public static ClientRequest createClientRequest(ClientRequestFactory factory, String path, String testName) {
+//        return factory.createRequest(generateURL(path, testName));
+//    }
 
     /**
      * Create a Resteasy client proxy with an empty base request path.
@@ -90,7 +89,8 @@ public class PortProviderUtil {
      * @path the base request path
      */
     public static <T> T createProxy(Class<T> clazz, String path, String testName) {
-        return ProxyFactory.create(clazz, generateURL(path, testName));
+       ResteasyWebTarget target = (ResteasyWebTarget) ResteasyClientBuilder.newClient().target(generateURL(path, testName));
+       return target.proxy(clazz);
     }
 
     /**

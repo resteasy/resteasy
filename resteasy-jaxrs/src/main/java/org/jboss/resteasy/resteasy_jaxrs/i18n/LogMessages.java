@@ -83,6 +83,10 @@ public interface LogMessages extends BasicLogger
    @LogMessage(level = Level.WARN)
    @Message(id = BASE + 120, value = "ClassNotFoundException: Unable to load builtin provider {0} from {1}", format=Format.MESSAGE_FORMAT)
    void classNotFoundException(String line, URL url, @Cause Throwable cause);
+
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 123, value = "Could not bind to specified download directory %s so will use temp dir.")
+   void couldNotBind(String downloadDirectory);
    
    @LogMessage(level = Level.WARN)
    @Message(id = BASE + 125, value = "Could not delete file '%s' for request: ")

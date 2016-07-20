@@ -1,6 +1,5 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation;
 
-import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.InvocationProcessor;
 
@@ -16,12 +15,12 @@ import java.lang.reflect.Type;
  */
 public class MessageBodyParameterProcessor implements InvocationProcessor
 {
-   private Class type;
+   private Class<?> type;
    private MediaType mediaType;
    private Type genericType;
    private Annotation[] annotations;
 
-   public MessageBodyParameterProcessor(MediaType mediaType, Class type, Type genericType, Annotation[] annotations)
+   public MessageBodyParameterProcessor(MediaType mediaType, Class<?> type, Type genericType, Annotation[] annotations)
    {
       this.type = type;
       this.mediaType = mediaType;
@@ -33,15 +32,10 @@ public class MessageBodyParameterProcessor implements InvocationProcessor
    @Override
    public void process(ClientInvocationBuilder invocation, Object param)
    {
-      invocation.getInvocation().setEntity(Entity.entity(new GenericEntity(param, genericType), mediaType, annotations));
+      invocation.getInvocation().setEntity(Entity.entity(new GenericEntity<Object>(param, genericType), mediaType, annotations));
    }
 
-   public void build(ClientRequest request, Object object)
-   {
-      request.body(mediaType, object, type, genericType, annotations);
-   }
-
-   public Class getType()
+   public Class<?> getType()
    {
       return type;
    }

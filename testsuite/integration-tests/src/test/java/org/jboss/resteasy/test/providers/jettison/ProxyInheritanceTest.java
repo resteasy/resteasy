@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.providers.jettison;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.jettison.resource.CRUDEntityWebservice;
@@ -71,21 +70,6 @@ public class ProxyInheritanceTest {
         u.setUsername("user");
 
         UserEntityWebservice serviceClient =  client.target(generateBaseUrl()).proxy(UserEntityWebservice.class);
-        UserEntity newUser = serviceClient.create(u);
-
-        assertEquals("Wrong response from proxy", "user", newUser.getUsername());
-    }
-
-    /**
-     * @tpTestDetails Test for old client
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test
-    public void testOldClient() {
-        UserEntity u = new UserEntity();
-        u.setUsername("user");
-
-        UserEntityWebservice serviceClient = ProxyFactory.create(UserEntityWebservice.class, generateBaseUrl());
         UserEntity newUser = serviceClient.create(u);
 
         assertEquals("Wrong response from proxy", "user", newUser.getUsername());

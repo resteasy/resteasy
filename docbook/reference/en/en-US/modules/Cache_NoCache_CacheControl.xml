@@ -33,7 +33,7 @@ public @interface NoCache
    </programlisting>
    <para>
       While @Cache builds a complex Cache-Control header, @NoCache is a simplified notation to say that you don't
-      want anything cached i.e. Cache-Control: nocache.
+      want anything cached; i.e. Cache-Control: nocache.
    </para>
    <para>
       These annotations can be put on the resource class or interface and specifies a default cache value for each
@@ -43,8 +43,8 @@ public @interface NoCache
    <sect1 id="client_cache">
      <title>Client "Browser" Cache</title>
      <para>
-        Resteasy has the ability to set up a client-side, browser-like, cache.  You can use it with the Client Proxy Framework, or with raw
-        ClientRequests.  This cache looks for Cache-Control headers sent back with a server response.  If the Cache-Control headers specify
+        Resteasy has the ability to set up a client-side, browser-like, cache.  You can use it with the Client Proxy Framework, or with 
+        ordinary requests.  This cache looks for Cache-Control headers sent back with a server response.  If the Cache-Control headers specify
        that the client is allowed to cache the response, Resteasy caches it within local memory.  The cache obeys max-age requirements 
        and will also automatically do HTTP 1.1 cache revalidation if either or both the Last-Modified and/or ETag headers are sent back with the
        original response.  See the HTTP 1.1 specification for details on how Cache-Control or cache revalidation works.
@@ -60,38 +60,41 @@ public interface OrderServiceClient {
    public Order getOrder(@PathParam("id") String id);
 }
 </programlisting>
-    <para>To create a proxy for this interface and enable caching for that proxy requires only a few simple steps:</para>
+
+     <para>To create a proxy for this interface and enable caching for that proxy requires only a few simple steps
+     in which the <classname>BrowserCacheFeature</classname> is registered:</para>
+    
 <programlisting>
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.cache.CacheFactory;
-import org.jboss.resteasy.client.cache.LightweightBrowserCache;
-
-public static void main(String[] args) throws Exception
-{
-      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
-      OrderServiceClient proxy = ProxyFactory.create(OrderServiceClient.class, generateBaseUrl());
-
-      // This line enables caching
-      LightweightBrowserCache cache = CacheFactory.makeCacheable(proxy);
-}
+ResteasyWebTarget target = (ResteasyWebTarget) ClientBuilder.newClient().target("http://localhost:8081");
+BrowserCacheFeature cacheFeature = new BrowserCacheFeature();
+OrderServiceClient orderService = target.register(cacheFeature).proxy(OrderServiceClient.class);
 </programlisting>
-   <para>If you are using the ClientRequest class to make invocations rather than the proxy framework, it is just as easy</para>
+
+     <para>
+     <classname>BrowserCacheFeature</classname> will create a Resteasy
+     <classname>LightweightBrowserCache</classname> by default. It is also possible to configure
+     the cache, or install a completely different cache implementation:
+     </para>
+   
 <programlisting>
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.cache.CacheFactory;
-import org.jboss.resteasy.client.cache.LightweightBrowserCache;
-
-public static void main(String[] args) throws Exception
-{
-      RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
-
-      // This line enables caching
-      LightweightBrowserCache cache = new LightweightBrowserCache();
-
-      ClientRequest request = new ClientRequest("http://example.com/orders/333");
-      CacheFactory.makeCacheable(request, cache);
-}
+ResteasyWebTarget target = (ResteasyWebTarget) ClientBuilder.newClient().target("http://localhost:8081");
+LightweightBrowserCache cache = new LightweightBrowserCache();
+cache.setMaxBytes(20);
+BrowserCacheFeature cacheFeature = new BrowserCacheFeature();
+cacheFeature.setCache(cache);
+OrderServiceClient orderService = target.register(cacheFeature).proxy(OrderServiceClient.class); 
 </programlisting>
+
+   <para>If you are using the standard JAX-RS client framework to make invocations rather than the
+   proxy framework, it is just as easy:</para>
+
+<programlisting>
+ResteasyWebTarget target = (ResteasyWebTarget) ClientBuilder.newClient().target("http://localhost:8081/orders/{id}");
+BrowserCacheFeature cacheFeature = new BrowserCacheFeature();
+target.register(cacheFeature);
+String rtn = target.resolveTemplate("id", "1").request().get(String.class);
+</programlisting>
+
    <para>The LightweightBrowserCache, by default, has a maximum 2 megabytes of caching space.  You can change this programmatically by callings
          its setMaxBytes() method.   If the cache gets full, the cache completely wipes itself of all cached data.  This may seem
          a bit draconian, but the cache was written to avoid unnecessary synchronizations in a concurrent environment where the cache is 

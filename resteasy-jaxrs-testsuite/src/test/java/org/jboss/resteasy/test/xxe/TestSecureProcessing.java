@@ -7,19 +7,22 @@ import java.util.Hashtable;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.junit.Assert;
-
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
+import org.junit.BeforeClass;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -35,6 +38,7 @@ public class TestSecureProcessing
 {
    protected static ResteasyDeployment deployment;
    protected static Dispatcher dispatcher;
+   protected static Client client;
    protected static enum MapInclusion {DEFAULT, FALSE, TRUE};
    
    ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -104,6 +108,18 @@ public class TestSecureProcessing
    }
    
    ///////////////////////////////////////////////////////////////////////////////////////////////
+   @BeforeClass
+   public static void beforeClass()
+   {
+      client = ClientBuilder.newClient();
+   }
+   
+   @AfterClass
+   public static void afterClass()
+   {
+      client.close();
+   }
+   
    public static void before(Hashtable<String, String> contextParams) throws Exception
    {
       Hashtable<String,String> initParams = new Hashtable<String,String>();
@@ -360,11 +376,10 @@ public class TestSecureProcessing
    void doEntityExpansionFails() throws Exception
    {
       //System.out.println("entering doEntityExpansionFails()");
-      ClientRequest request = new ClientRequest(generateURL("/test"));
-      request.body("application/xml", bigExpansionDoc);
-      ClientResponse<?> response = request.post();
+      Builder builder = client.target(generateURL("/test")).request();
+      Response response = builder.post(Entity.entity(bigExpansionDoc, "application/xml"));
       //System.out.println("status: " + response.getStatus());
-      String entity = response.getEntity(String.class);
+      String entity = response.readEntity(String.class);
       //System.out.println("doEntityExpansionFails() result: " + entity);
       Assert.assertEquals(400, response.getStatus());
       Assert.assertTrue(entity.contains("org.xml.sax.SAXParseException"));
@@ -373,11 +388,10 @@ public class TestSecureProcessing
    void doEntityExpansionPasses() throws Exception
    {
       //System.out.println("entering doEntityExpansionFails()");
-      ClientRequest request = new ClientRequest(generateURL("/test"));
-      request.body("application/xml", bigExpansionDoc);
-      ClientResponse<?> response = request.post();
+      Builder builder = client.target(generateURL("/test")).request();
+      Response response = builder.post(Entity.entity(bigExpansionDoc, "application/xml"));
       //System.out.println("status: " + response.getStatus());
-      String entity = response.getEntity(String.class);
+      String entity = response.readEntity(String.class);
       int len = Math.min(entity.length(), 30);
       //System.out.println("doEntityExpansionPasses() result: " + entity.substring(0, len) + "...");
       Assert.assertEquals(200, response.getStatus());
@@ -394,11 +408,10 @@ public class TestSecureProcessing
          return;
       }
       //System.out.println("entering doMaxAttributesFails()");
-      ClientRequest request = new ClientRequest(generateURL("/test"));
-      request.body("application/xml", bigAttributeDoc);
-      ClientResponse<?> response = request.post();
+      Builder builder = client.target(generateURL("/test")).request();
+      Response response = builder.post(Entity.entity(bigAttributeDoc, "application/xml"));
       //System.out.println("doMaxAttributesFails() status: " + response.getStatus());
-      String entity = response.getEntity(String.class);
+      String entity = response.readEntity(String.class);
       //System.out.println("doMaxAttributesFails() result: " + entity);
       Assert.assertEquals(400, response.getStatus());
       Assert.assertTrue(entity.contains("org.xml.sax.SAXParseException"));
@@ -413,11 +426,10 @@ public class TestSecureProcessing
    void doMaxAttributesPasses() throws Exception
    {
       //System.out.println("entering doMaxAttributesPasses()");
-      ClientRequest request = new ClientRequest(generateURL("/test"));
-      request.body("application/xml", bigAttributeDoc);
-      ClientResponse<?> response = request.post();
+      Builder builder = client.target(generateURL("/test")).request();
+      Response response = builder.post(Entity.entity(bigAttributeDoc, "application/xml"));
       //System.out.println("doMaxAttributesPasses() status: " + response.getStatus());
-      String entity = response.getEntity(String.class);
+      String entity = response.readEntity(String.class);
       //System.out.println("doMaxAttributesPasses() result: " + entity);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bar", entity);
@@ -426,11 +438,10 @@ public class TestSecureProcessing
    void doDTDFails() throws Exception
    {
       //System.out.println("entering doDTDFails()");
-      ClientRequest request = new ClientRequest(generateURL("/test"));
-      request.body("application/xml", smallDtd);
-      ClientResponse<?> response = request.post();
+      Builder builder = client.target(generateURL("/test")).request();
+      Response response = builder.post(Entity.entity(smallDtd, "application/xml"));
       //System.out.println("status: " + response.getStatus());
-      String entity = response.getEntity(String.class);
+      String entity = response.readEntity(String.class);
       //System.out.println("doDTDFails(): result: " + entity);
       Assert.assertEquals(400, response.getStatus());
       Assert.assertTrue(entity.contains("org.xml.sax.SAXParseException"));
@@ -442,11 +453,10 @@ public class TestSecureProcessing
    void doDTDPasses() throws Exception
    {
       //System.out.println("entering doDTDPasses()");
-      ClientRequest request = new ClientRequest(generateURL("/test"));
-      request.body("application/xml", smallDtd);
-      ClientResponse<?> response = request.post();
+      Builder builder = client.target(generateURL("/test")).request();
+      Response response = builder.post(Entity.entity(smallDtd, "application/xml"));
       //System.out.println("status: " + response.getStatus());
-      String entity = response.getEntity(String.class);
+      String entity = response.readEntity(String.class);
       //System.out.println("doDTDPasses() result: " + entity);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("bar", entity);
@@ -455,11 +465,10 @@ public class TestSecureProcessing
    void doExternalEntityExpansionFails() throws Exception
    {
       //System.out.println("entering doExternalEntityExpansionFails()");
-      ClientRequest request = new ClientRequest(generateURL("/test"));
-      request.body("application/xml", externalEntityDoc);
-      ClientResponse<?> response = request.post();
+      Builder builder = client.target(generateURL("/test")).request();
+      Response response = builder.post(Entity.entity(externalEntityDoc, "application/xml"));
       //System.out.println("status: " + response.getStatus());
-      String entity = response.getEntity(String.class);
+      String entity = response.readEntity(String.class);
       //System.out.println("doExternalEntityExpansionFails() result: " + entity);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("", entity);
@@ -468,11 +477,10 @@ public class TestSecureProcessing
    void doExternalEntityExpansionPasses() throws Exception
    {
       //System.out.println("entering doExternalEntityExpansionPasses()");
-      ClientRequest request = new ClientRequest(generateURL("/test"));
-      request.body("application/xml", externalEntityDoc);
-      ClientResponse<?> response = request.post();
+      Builder builder = client.target(generateURL("/test")).request();
+      Response response = builder.post(Entity.entity(externalEntityDoc, "application/xml"));
       //System.out.println("status: " + response.getStatus());
-      String entity = response.getEntity(String.class);
+      String entity = response.readEntity(String.class);
       int len = Math.min(entity.length(), 30);
       //System.out.println("doExternalEntityExpansionPasses() result: " + entity.substring(0, len) + "...");
       Assert.assertEquals(200, response.getStatus());

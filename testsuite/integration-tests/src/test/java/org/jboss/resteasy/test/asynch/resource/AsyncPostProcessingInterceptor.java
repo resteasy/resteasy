@@ -1,18 +1,20 @@
 package org.jboss.resteasy.test.asynch.resource;
 
+import java.io.IOException;
+
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.Provider;
 
-import org.jboss.resteasy.annotations.interception.ServerInterceptor;
-import org.jboss.resteasy.core.ServerResponse;
-import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
-
 @Provider
-@ServerInterceptor
-public class AsyncPostProcessingInterceptor implements PostProcessInterceptor {
+public class AsyncPostProcessingInterceptor implements ContainerResponseFilter {
     public static boolean called;
 
-    @Override
-    public void postProcess(ServerResponse response) {
-        called = true;
-    }
+   @Override
+   public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
+         throws IOException
+   {
+      called = true;
+   }
 }

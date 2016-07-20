@@ -4,18 +4,17 @@ import java.io.IOException;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.ext.Provider;
-
-import org.jboss.resteasy.annotations.interception.ServerInterceptor;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterContext;
-import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
+import javax.ws.rs.ext.WriterInterceptor;
+import javax.ws.rs.ext.WriterInterceptorContext;
 
 @Provider
-@ServerInterceptor
-public class AsyncPostProcessingMsgBodyWriterInterceptor implements MessageBodyWriterInterceptor {
+public class AsyncPostProcessingMsgBodyWriterInterceptor implements WriterInterceptor {
     public static boolean called;
 
-    public void write(MessageBodyWriterContext context) throws IOException, WebApplicationException {
-        called = true;
-        context.proceed();
-    }
+   @Override
+   public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException
+   {
+      called = true;
+      context.proceed();
+   }
 }

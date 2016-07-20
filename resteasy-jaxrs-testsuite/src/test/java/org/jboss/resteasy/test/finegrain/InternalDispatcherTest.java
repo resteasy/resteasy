@@ -1,15 +1,14 @@
 package org.jboss.resteasy.test.finegrain;
 
 import org.junit.Assert;
-import org.jboss.resteasy.annotations.ClientResponseType;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.MessageBodyParameterInjector;
 import org.jboss.resteasy.spi.BadRequestException;
 import org.jboss.resteasy.spi.InternalDispatcher;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -30,6 +29,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.Stack;
 
+import static org.jboss.resteasy.test.TestPortProvider.createProxy;
 import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 /**
@@ -82,13 +82,11 @@ public class InternalDispatcherTest
       @GET
       @Produces("text/plain")
       @Path("/forward/object/{id}")
-      @ClientResponseType(entityType = String.class)
       Response getForwardedObject(@PathParam("id") Integer id);
 
       @GET
       @Produces("text/plain")
       @Path("/object/{id}")
-      @ClientResponseType(entityType = String.class)
       Response getObject(@PathParam("id") Integer id);
 
       @GET
@@ -269,16 +267,15 @@ public class InternalDispatcherTest
    @Test
    public void testClientResponse() throws Exception
    {
-      Client client = ProxyFactory.create(Client.class, generateBaseUrl());
-
+      Client client = createProxy(Client.class, TestPortProvider.generateBaseUrl());
       Assert.assertEquals("basic", client.getBasic());
       Assert.assertEquals("basic", client.getForwardBasic());
-      Assert.assertEquals("object1", client.getObject(1).getEntity());
-      Assert.assertEquals("object1", client.getForwardedObject(1).getEntity());
-      ClientResponse<?> cr = (ClientResponse<?>) client.getObject(0);
+      Assert.assertEquals("object1", client.getObject(1).readEntity(String.class));
+      Assert.assertEquals("object1", client.getForwardedObject(1).readEntity(String.class));
+      ClientResponse cr = (ClientResponse) client.getObject(0);
       Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), cr.getStatus());
       cr.releaseConnection();
-      cr = (ClientResponse<?>) client.getForwardedObject(0);
+      cr = (ClientResponse) client.getForwardedObject(0);
       Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), cr.getStatus());
       cr.releaseConnection();
       
@@ -294,7 +291,7 @@ public class InternalDispatcherTest
    @Test
    public void testInfinitForward()
    {
-      Client client = ProxyFactory.create(Client.class, generateBaseUrl());
+      Client client = createProxy(Client.class, TestPortProvider.generateBaseUrl());
       // assert that even though there were infinite forwards, there still was
       // only 1 level of "context" data and that clean up occurred correctly.
       // This should not spin forever, since RESTEasy stops the recursive loop
@@ -305,7 +302,7 @@ public class InternalDispatcherTest
       @Test
    public void testUriInfoBasic() {
        String baseUrl = generateBaseUrl();
-       Client client = ProxyFactory.create(Client.class, baseUrl);
+       Client client = createProxy(Client.class, TestPortProvider.generateBaseUrl());
 
        client.getBasic();
        Assert.assertEquals(baseUrl + "/basic", forwardingResource.uriStack.pop());
@@ -316,7 +313,7 @@ public class InternalDispatcherTest
    @Test
    public void testUriInfoForwardBasic() {
       String baseUrl = generateBaseUrl();
-       Client client = ProxyFactory.create(Client.class, baseUrl);
+      Client client = createProxy(Client.class, TestPortProvider.generateBaseUrl());
 
        client.getForwardBasic();
        Assert.assertEquals(baseUrl + "/basic", forwardingResource.uriStack.pop());
@@ -327,7 +324,7 @@ public class InternalDispatcherTest
    @Test
    public void testUriInfoForwardBasicComplexUri() {
       String baseUrl = generateBaseUrl();
-      Client client = ProxyFactory.create(Client.class, baseUrl);
+      Client client = createProxy(Client.class, TestPortProvider.generateBaseUrl());
 
       client.getComplexForwardBasic();
       Assert.assertEquals(baseUrl + PATH + "/basic", forwardingResource.uriStack.pop());

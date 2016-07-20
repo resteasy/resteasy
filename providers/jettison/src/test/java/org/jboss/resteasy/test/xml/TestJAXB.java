@@ -3,8 +3,9 @@ package org.jboss.resteasy.test.xml;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.jboss.resteasy.annotations.providers.jaxb.json.Mapped;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.providers.jaxb.json.BadgerContext;
 import org.jboss.resteasy.plugins.providers.jaxb.json.JettisonMappedContext;
@@ -56,10 +57,10 @@ public class TestJAXB
       dispatcher.getRegistry().addResourceFactory(noDefaults);
 
       HttpClient httpClient = new DefaultHttpClient();
-      ApacheHttpClient4Executor executor = new ApacheHttpClient4Executor(httpClient);
-      BookStoreClient client = ProxyFactory.create(BookStoreClient.class, generateBaseUrl(),
-              executor);
-
+      ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
+      ResteasyWebTarget target = new ResteasyClientBuilder().httpEngine(engine).build().target(generateBaseUrl());
+      BookStoreClient client = target.proxy(BookStoreClient.class);
+       
       Book book = client.getBookByISBN("596529260");
       Assert.assertNotNull(book);
       Assert.assertEquals("RESTful Web Services", book.getTitle());

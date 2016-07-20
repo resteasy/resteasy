@@ -14,6 +14,7 @@ import javax.enterprise.util.AnnotationLiteral;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
@@ -28,8 +29,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
 import org.jboss.resteasy.annotations.providers.multipart.XopWithMultipartRelated;
-import org.jboss.resteasy.client.ClientRequest; //@cs-: clientrequest (Old client test)
-import org.jboss.resteasy.client.ClientResponse; //@cs-: clientresponse (Old client test)
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
@@ -69,11 +68,6 @@ public class ContextProvidersTest {
 
     protected final Logger logger = LogManager.getLogger(ContextProvidersTest.class.getName());
 
-    protected enum Version {
-        TWO,
-        THREE
-    }
-
     public static final Annotation PART_TYPE_APPLICATION_XML = new S1() {
         private static final long serialVersionUID = 1L;
 
@@ -109,13 +103,12 @@ public class ContextProvidersTest {
      */
     @Test
     public void testGetFormData() throws Exception {
-        doTestGetFormData(Version.TWO);
-        doTestGetFormData(Version.THREE);
+        doTestGetFormData();
     }
 
-    public void doTestGetFormData(Version version) throws Exception {
+    public void doTestGetFormData() throws Exception {
         try {
-            MultipartFormDataInput entity = get(version, "/get/form", MultipartFormDataInput.class);
+            MultipartFormDataInput entity = get("/get/form", MultipartFormDataInput.class);
 
             // Get parts by name.
             ContextProvidersCustomer c = entity.getFormDataPart("bill", ContextProvidersCustomer.class, null);
@@ -152,13 +145,12 @@ public class ContextProvidersTest {
      */
     @Test
     public void testGetMixed() throws Exception {
-        doTestGetMixed(Version.TWO);
-        doTestGetMixed(Version.THREE);
+        doTestGetMixed();
     }
 
-    void doTestGetMixed(Version version) throws Exception {
+    void doTestGetMixed() throws Exception {
         try {
-            MultipartInput entity = get(version, "/get/mixed", MultipartInput.class);
+            MultipartInput entity = get("/get/mixed", MultipartInput.class);
 
             // Iterate over list of parts.
             List<InputPart> parts = entity.getParts();
@@ -184,13 +176,12 @@ public class ContextProvidersTest {
      */
     @Test
     public void testGetList() throws Exception {
-        doTestGetList(Version.TWO);
-        doTestGetList(Version.THREE);
+        doTestGetList();
     }
 
-    void doTestGetList(Version version) throws Exception {
+    void doTestGetList() throws Exception {
         try {
-            MultipartInput entity = get(version, "/get/list", MultipartInput.class);
+            MultipartInput entity = get("/get/list", MultipartInput.class);
 
             // Iterate over list of parts.
             List<InputPart> parts = entity.getParts();
@@ -214,13 +205,12 @@ public class ContextProvidersTest {
      */
     @Test
     public void testGetMap() throws Exception {
-        doTestGetMap(Version.TWO);
-        doTestGetMap(Version.THREE);
+        doTestGetMap();
     }
 
-    public void doTestGetMap(Version version) throws Exception {
+    public void doTestGetMap() throws Exception {
         try {
-            MultipartFormDataInput entity = get(version, "/get/map", MultipartFormDataInput.class);
+            MultipartFormDataInput entity = get("/get/map", MultipartFormDataInput.class);
 
             // Get parts by name.
             ContextProvidersCustomer c = entity.getFormDataPart("bill", ContextProvidersCustomer.class, null);
@@ -254,13 +244,12 @@ public class ContextProvidersTest {
      */
     @Test
     public void testGetRelated() throws Exception {
-        doTestGetRelated(Version.TWO);
-        doTestGetRelated(Version.THREE);
+        doTestGetRelated();
     }
 
-    void doTestGetRelated(Version version) throws Exception {
+    void doTestGetRelated() throws Exception {
         try {
-            MultipartRelatedInput entity = get(version, "/get/related", MultipartRelatedInput.class);
+            MultipartRelatedInput entity = get("/get/related", MultipartRelatedInput.class);
 
             // Iterate over map of parts.
             Map<String, InputPart> map = entity.getRelatedMap();
@@ -289,14 +278,13 @@ public class ContextProvidersTest {
      */
     @Test
     public void testGetMultipartForm() throws Exception {
-        doTestGetMultipartForm(Version.TWO);
-        doTestGetMultipartForm(Version.THREE);
+        doTestGetMultipartForm();
     }
 
-    void doTestGetMultipartForm(Version version) throws Exception {
+    void doTestGetMultipartForm() throws Exception {
         Annotation[] annotations = new Annotation[1];
         annotations[0] = MULTIPART_FORM;
-        ContextProvidersCustomerForm form = get(version, "/get/multipartform", ContextProvidersCustomerForm.class, annotations);
+        ContextProvidersCustomerForm form = get("/get/multipartform", ContextProvidersCustomerForm.class, annotations);
         ContextProvidersCustomer customer = form.getCustomer();
         Assert.assertEquals("Wrong response", "Bill", customer.getName());
     }
@@ -308,14 +296,13 @@ public class ContextProvidersTest {
      */
     @Test
     public void testGetXop() throws Exception {
-        doTestGetXop(Version.TWO);
-        doTestGetXop(Version.THREE);
+        doTestGetXop();
     }
 
-    void doTestGetXop(Version version) throws Exception {
+    void doTestGetXop() throws Exception {
         Annotation[] annotations = new Annotation[1];
         annotations[0] = XOP_WITH_MULTIPART_RELATED;
-        ContextProvidersXop xop = get(version, "/get/xop", ContextProvidersXop.class, annotations);
+        ContextProvidersXop xop = get("/get/xop", ContextProvidersXop.class, annotations);
         Assert.assertEquals("Wrong response", "goodbye world", new String(xop.getBytes()));
     }
 
@@ -326,19 +313,18 @@ public class ContextProvidersTest {
      */
     @Test
     public void testPostMixed() throws Exception {
-        doTestPostMixed(Version.TWO);
-        doTestPostMixed(Version.THREE);
+        doTestPostMixed();
     }
 
     @SuppressWarnings("unchecked")
-    void doTestPostMixed(Version version) throws Exception {
+    void doTestPostMixed() throws Exception {
         MultipartOutput output = new MultipartOutput();
         output.addPart(new ContextProvidersCustomer("Bill"), MediaType.APPLICATION_XML_TYPE);
         output.addPart("Bob", MediaType.TEXT_PLAIN_TYPE);
         Annotation[] annotations = new Annotation[1];
         annotations[0] = PART_TYPE_APPLICATION_XML;
         List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
-        names = post(version, "/post/mixed", output, MULTIPART_MIXED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
+        names = post("/post/mixed", output, MULTIPART_MIXED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
         Assert.assertEquals(2, names.size());
         Assert.assertTrue(names.contains(new ContextProvidersName("Bill")));
         Assert.assertTrue(names.contains(new ContextProvidersName("Bob")));
@@ -351,12 +337,11 @@ public class ContextProvidersTest {
      */
     @Test
     public void testPostFormData() throws Exception {
-        doTestPostFormData(Version.TWO);
-        doTestPostFormData(Version.THREE);
+        doTestPostFormData();
     }
 
     @SuppressWarnings("unchecked")
-    public void doTestPostFormData(Version version) throws Exception {
+    public void doTestPostFormData() throws Exception {
 
         MultipartFormDataOutput output = new MultipartFormDataOutput();
         output.addFormData("bill", new ContextProvidersCustomer("Bill"), MediaType.APPLICATION_XML_TYPE);
@@ -364,7 +349,7 @@ public class ContextProvidersTest {
         Annotation[] annotations = new Annotation[1];
         annotations[0] = PART_TYPE_APPLICATION_XML;
         List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
-        names = post(version, "/post/form", output, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
+        names = post("/post/form", output, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
         Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
         Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bill")));
         Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
@@ -377,19 +362,18 @@ public class ContextProvidersTest {
      */
     @Test
     public void testPostList() throws Exception {
-        doTestPostList(Version.TWO);
-        doTestPostList(Version.THREE);
+        doTestPostList();
     }
 
     @SuppressWarnings("unchecked")
-    public void doTestPostList(Version version) throws Exception {
+    public void doTestPostList() throws Exception {
         List<ContextProvidersCustomer> customers = new ArrayList<ContextProvidersCustomer>();
         customers.add(new ContextProvidersCustomer("Bill"));
         customers.add(new ContextProvidersCustomer("Bob"));
         Annotation[] annotations = new Annotation[1];
         annotations[0] = PART_TYPE_APPLICATION_XML;
         List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
-        names = post(version, "/post/list", customers, MULTIPART_MIXED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
+        names = post("/post/list", customers, MULTIPART_MIXED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
         Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
         Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bill")));
         Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
@@ -402,19 +386,18 @@ public class ContextProvidersTest {
      */
     @Test
     public void testPostMap() throws Exception {
-        doTestPostMap(Version.TWO);
-        doTestPostMap(Version.THREE);
+        doTestPostMap();
     }
 
     @SuppressWarnings("unchecked")
-    public void doTestPostMap(Version version) throws Exception {
+    public void doTestPostMap() throws Exception {
         Map<String, ContextProvidersCustomer> customers = new HashMap<String, ContextProvidersCustomer>();
         customers.put("bill", new ContextProvidersCustomer("Bill"));
         customers.put("bob", new ContextProvidersCustomer("Bob"));
         Annotation[] annotations = new Annotation[1];
         annotations[0] = PART_TYPE_APPLICATION_XML;
         List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
-        names = post(version, "/post/map", customers, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
+        names = post("/post/map", customers, MULTIPART_FORM_DATA, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
         Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
         Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("bill:Bill")));
         Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("bob:Bob")));
@@ -427,12 +410,11 @@ public class ContextProvidersTest {
      */
     @Test
     public void testPostRelated() throws Exception {
-        doTestPostRelated(Version.TWO);
-        doTestPostRelated(Version.THREE);
+        doTestPostRelated();
     }
 
     @SuppressWarnings("unchecked")
-    void doTestPostRelated(Version version) throws Exception {
+    void doTestPostRelated() throws Exception {
         MultipartRelatedOutput output = new MultipartRelatedOutput();
         output.setStartInfo("text/html");
         output.addPart("Bill", new MediaType("image", "png"), "bill", "binary");
@@ -440,7 +422,7 @@ public class ContextProvidersTest {
         Annotation[] annotations = new Annotation[1];
         annotations[0] = PART_TYPE_APPLICATION_XML;
         List<ContextProvidersName> names = new ArrayList<ContextProvidersName>();
-        names = post(version, "/post/related", output, MULTIPART_RELATED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
+        names = post("/post/related", output, MULTIPART_RELATED, names.getClass(), LIST_NAME_TYPE.getType(), annotations);
         Assert.assertThat("Wrong count of customers from response", new Integer(names.size()), is(2));
         Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bill")));
         Assert.assertThat("Received customers list do not contain all items", names, hasItems(new ContextProvidersName("Bob")));
@@ -453,16 +435,15 @@ public class ContextProvidersTest {
      */
     @Test
     public void testPostMultipartForm() throws Exception {
-        doTestPostMultipartForm(Version.TWO);
-        doTestPostMultipartForm(Version.THREE);
+        doTestPostMultipartForm();
     }
 
-    void doTestPostMultipartForm(Version version) throws Exception {
+    void doTestPostMultipartForm() throws Exception {
         ContextProvidersCustomerForm form = new ContextProvidersCustomerForm();
         form.setCustomer(new ContextProvidersCustomer("Bill"));
         Annotation[] annotations = new Annotation[1];
         annotations[0] = MULTIPART_FORM;
-        String name = post(version, "/post/multipartform", form, MULTIPART_FORM_DATA, String.class, null, annotations);
+        String name = post("/post/multipartform", form, MULTIPART_FORM_DATA, String.class, null, annotations);
         Assert.assertEquals("Wrong response", "Bill", name);
     }
 
@@ -473,86 +454,48 @@ public class ContextProvidersTest {
      */
     @Test
     public void testPostXop() throws Exception {
-        doTestPostXop(Version.TWO);
-        doTestPostXop(Version.THREE);
+        doTestPostXop();
     }
 
-    void doTestPostXop(Version version) throws Exception {
+    void doTestPostXop() throws Exception {
         ContextProvidersXop xop = new ContextProvidersXop("hello world".getBytes());
         Annotation[] annotations = new Annotation[1];
         annotations[0] = XOP_WITH_MULTIPART_RELATED;
-        String s = post(version, "/post/xop", xop, MULTIPART_RELATED, String.class, null, annotations);
+        String s = post("/post/xop", xop, MULTIPART_RELATED, String.class, null, annotations);
         Assert.assertEquals("Wrong response", "hello world", s);
     }
 
-    <T> T get(Version version, String path, Class<T> clazz) throws Exception {
-        return get(version, path, clazz, null);
+    <T> T get(String path, Class<T> clazz) throws Exception {
+        return get(path, clazz, null);
     }
 
-    <T> T get(Version version, String path, Class<T> clazz, Annotation[] annotations) throws Exception {
-        try {
-            switch (version) {
-                case TWO: {
-                    ClientRequest request = new ClientRequest(PortProviderUtil.generateURL(path, ContextProvidersTest.class.getSimpleName()));
-
-                    ClientResponse<T> response = request.get(clazz);
-                    Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-                    T entity = response.getEntity(clazz, null, annotations);
-                    return entity;
-                }
-
-                case THREE: {
-                    Client client = ClientBuilder.newClient();
-                    WebTarget target = client.target(PortProviderUtil.generateURL(path, ContextProvidersTest.class.getSimpleName()));
-                    Response response = target.request().get();
-                    Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-                    T entity = response.readEntity(clazz, annotations);
-                    return entity;
-                }
-
-                default:
-                    throw new Exception("Unknown version of response: " + version);
-            }
+    <T> T get(String path, Class<T> clazz, Annotation[] annotations) throws Exception {
+       try {
+          Client client = ClientBuilder.newClient();
+          WebTarget target = client.target(PortProviderUtil.generateURL(path, ContextProvidersTest.class.getSimpleName()));
+          Response response = target.request().get();
+          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+          T entity = response.readEntity(clazz, annotations);
+          return entity;
         } catch (Exception e) {
             throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
         }
     }
 
     @SuppressWarnings({"unchecked"})
-    <S, T> T post(Version version, String path, S payload, MediaType mediaType, Class<T> returnType, Type genericReturnType, Annotation[] annotations) throws Exception {
-        switch (version) {
-            case TWO: {
-                ClientRequest request = new ClientRequest(PortProviderUtil.generateURL(path, ContextProvidersTest.class.getSimpleName()));
-                request.body(mediaType, payload, payload.getClass(), null, annotations);
-                ClientResponse<T> response = request.post();
-                T entity = null;
-                if (genericReturnType != null) {
-                    entity = response.getEntity(returnType, genericReturnType);
-                } else {
-                    entity = response.getEntity(returnType);
-                }
-
-                return entity;
-            }
-
-            case THREE: {
-                Client client = ClientBuilder.newClient();
-                WebTarget target = client.target(PortProviderUtil.generateURL(path, ContextProvidersTest.class.getSimpleName()));
-                Entity<S> entity = Entity.entity(payload, mediaType, annotations);
-                Response response = target.request().post(entity);
-                Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-                T result = null;
-                if (genericReturnType != null) {
-                    result = response.readEntity(new GenericType<T>(genericReturnType));
-                } else {
-                    result = response.readEntity(returnType);
-                }
-                return result;
-            }
-
-            default:
-                throw new Exception("Unknown version of response: " + version);
-        }
+    <S, T> T post(String path, S payload, MediaType mediaType, Class<T> returnType, Type genericReturnType, Annotation[] annotations) throws Exception {
+       Client client = ClientBuilder.newClient();
+       WebTarget target = client.target(PortProviderUtil.generateURL(path, ContextProvidersTest.class.getSimpleName()));
+       Entity<S> entity = Entity.entity(payload, mediaType, annotations);
+       Response response = target.request().post(entity);
+       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+       T result = null;
+       if (genericReturnType != null) {
+          result = response.readEntity(new GenericType<T>(genericReturnType));
+       } else {
+          result = response.readEntity(returnType);
+       }
+       return result;
     }
 
     public abstract static class S1 extends AnnotationLiteral<PartType> implements PartType {
