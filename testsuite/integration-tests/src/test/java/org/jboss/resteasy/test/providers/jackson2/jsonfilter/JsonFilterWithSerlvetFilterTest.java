@@ -33,7 +33,7 @@ public class JsonFilterWithSerlvetFilterTest {
         war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
         war.addClasses(ObjectFilterModifier.class, Jackson2Resource.class, Jackson2Product.class, ObjectWriterModifierFilter.class);
         war.addAsWebInfResource(JsonFilterWithSerlvetFilterTest.class.getPackage(), "web.xml", "web.xml");
-        return TestUtil.finishContainerPrepare(war, null, null);
+        return war;
     }
     @Test
     public void testJacksonString() throws Exception {

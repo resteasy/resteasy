@@ -31,8 +31,8 @@ public class JsonFilterWithInterceptrTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive("jsonfilter");
         war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
-        
-        return TestUtil.finishContainerPrepare(war, null, ObjectFilterModifier.class, Jackson2Resource.class, Jackson2Product.class, JsonFilterWriteInterceptor.class);
+        war.addClasses(ObjectFilterModifier.class, Jackson2Resource.class, Jackson2Product.class, JsonFilterWriteInterceptor.class);
+        return war;
     }
     @Test
     public void testJacksonString() throws Exception {
