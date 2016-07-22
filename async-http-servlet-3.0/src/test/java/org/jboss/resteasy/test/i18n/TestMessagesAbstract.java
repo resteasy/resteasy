@@ -4,7 +4,7 @@ import java.util.Locale;
 
 import org.junit.Assert;
 
-import org.jboss.resteasy.plugins.server.servlet.i18n.Messages;
+import org.jboss.resteasy.plugins.server.servlet.servlet3.i18n.Messages;
 import org.junit.Test;
 
 /**
