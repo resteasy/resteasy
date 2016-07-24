@@ -335,23 +335,12 @@ public class ConfigurationInheritenceTest extends ResteasyProviderFactory
    {
       Set<Class<?>> classes = config.getClasses();
       Assert.assertTrue( classes.contains(TestFeature1.class));
-      Assert.assertTrue( classes.contains(TestFeature2.class));
       Assert.assertFalse(classes.contains(TestFeature3.class));
-      Assert.assertFalse(classes.contains(TestFeature4.class));
       Assert.assertTrue( classes.contains(TestFeature5.class));
-      Assert.assertTrue( classes.contains(TestFeature6.class));
-      Assert.assertTrue( classes.contains(TestFilter1.class));
-      Assert.assertTrue( classes.contains(TestFilter2.class));
       Assert.assertFalse(classes.contains(TestFilter3.class));
       Assert.assertFalse(classes.contains(TestFilter4.class));
-      Assert.assertTrue( classes.contains(TestFilter5.class));
-      Assert.assertTrue( classes.contains(TestFilter6.class));
-      Assert.assertTrue( classes.contains(TestMessageBodyReader1.class));
-      Assert.assertTrue( classes.contains(TestMessageBodyReader2.class));
       Assert.assertFalse(classes.contains(TestMessageBodyReader3.class));
       Assert.assertFalse(classes.contains(TestMessageBodyReader4.class));
-      Assert.assertTrue( classes.contains(TestMessageBodyReader5.class));
-      Assert.assertTrue( classes.contains(TestMessageBodyReader6.class));
       
       Assert.assertTrue( config.isEnabled(TestFeature1.class));
       Assert.assertTrue( config.isEnabled(TestFeature2.class));
@@ -420,23 +409,8 @@ public class ConfigurationInheritenceTest extends ResteasyProviderFactory
    {
       Set<Class<?>> classes = config.getClasses();
       Assert.assertTrue( classes.contains(TestFeature1.class));
-      Assert.assertTrue( classes.contains(TestFeature2.class));
       Assert.assertTrue( classes.contains(TestFeature3.class));
-      Assert.assertTrue( classes.contains(TestFeature4.class));
       Assert.assertFalse(classes.contains(TestFeature5.class));
-      Assert.assertFalse(classes.contains(TestFeature6.class));
-      Assert.assertTrue( classes.contains(TestFilter1.class));
-      Assert.assertTrue( classes.contains(TestFilter2.class));
-      Assert.assertTrue( classes.contains(TestFilter3.class));
-      Assert.assertTrue( classes.contains(TestFilter4.class));
-      Assert.assertFalse(classes.contains(TestFilter5.class));
-      Assert.assertFalse(classes.contains(TestFilter6.class));
-      Assert.assertTrue( classes.contains(TestMessageBodyReader1.class));
-      Assert.assertTrue( classes.contains(TestMessageBodyReader2.class));
-      Assert.assertTrue( classes.contains(TestMessageBodyReader3.class));
-      Assert.assertTrue( classes.contains(TestMessageBodyReader4.class));
-      Assert.assertFalse(classes.contains(TestMessageBodyReader5.class));
-      Assert.assertFalse(classes.contains(TestMessageBodyReader6.class));
       
       Assert.assertTrue( config.isEnabled(TestFeature1.class));
       Assert.assertTrue( config.isEnabled(TestFeature2.class));
