@@ -3,7 +3,7 @@
         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
      <filter>
         <filter-name>JsonFilter</filter-name>
-        <filter-class>org.jboss.resteasy.test.providers.jackson2.jsonfilter.ObjectWriterModifierFilter</filter-class>
+        <filter-class>org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.ObjectWriterModifierFilter</filter-class>
     </filter>
 
     <filter-mapping>
