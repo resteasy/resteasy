@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.server.tjws;
 
 import org.junit.Assert;
-import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.Before;
@@ -11,6 +10,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.client.Invocation.Builder;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -49,8 +50,8 @@ public class TJWSServletServerTest
       });
       server.start();
 
-      ClientRequest request = TestPortProvider.createClientRequest("/hello");
-      Assert.assertEquals("world", request.get(String.class).getEntity());
+      Builder request = TestPortProvider.createTarget("/hello").request();
+      Assert.assertEquals("world", request.get().readEntity(String.class));
    }
 
    @Test
@@ -71,8 +72,8 @@ public class TJWSServletServerTest
 
    private void checkText(String uri, final String text) throws Exception
    {
-      ClientRequest request = TestPortProvider.createClientRequest(uri);
-      Assert.assertEquals(text, request.get(String.class).getEntity());
+      Builder request = TestPortProvider.createTarget(uri).request();
+      Assert.assertEquals(text, request.get().readEntity(String.class));
    }
 
 

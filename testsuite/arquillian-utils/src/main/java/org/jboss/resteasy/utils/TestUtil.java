@@ -1,0 +1,339 @@
+package org.jboss.resteasy.utils;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jboss.resteasy.api.validation.ResteasyViolationException;
+import org.jboss.resteasy.api.validation.ViolationReport;
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.ArchivePath;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.Asset;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
+import org.wildfly.extras.creaper.core.ManagementClient;
+import org.wildfly.extras.creaper.core.ServerType;
+import org.wildfly.extras.creaper.core.online.ModelNodeResult;
+import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
+import org.wildfly.extras.creaper.core.online.OnlineOptions;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.MalformedInputException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * Base util class for RESTEasy testing.
+ */
+public class TestUtil {
+
+    protected static Logger logger;
+
+    private static String baseResourcePath = new StringBuilder()
+            .append("src").append(File.separator)
+            .append("test").append(File.separator)
+            .append("resources").append(File.separator).toString();
+    /**
+     * Try to initialize logger. This is unsuccessful on EAP deployment, because EAP do not contain log4j.
+     * Logger is not necessary for this class. Some methods could be used without it.
+     */
+    static {
+        try {
+            logger = LogManager.getLogger(TestUtil.class.getName());
+        } catch (NoClassDefFoundError e) {
+            // unable to initialize logger, finishContainerPrepare method could not be used
+        }
+    }
+    /**
+     * Initialize deployment.
+     *
+     * @return Deployment.
+     */
+    public static WebArchive prepareArchive(String deploymentName) {
+        WebArchive war = ShrinkWrap.create(WebArchive.class, deploymentName + ".war");
+        war.addClass(TestApplication.class);
+        return war;
+    }
+
+    /**
+     * Finish preparing war deployment and deploy it.
+     *
+     * Add classes in @resources to deployment. Also all sub-classes of classes in @resources are added to deployment.
+     * But only classes in @resources (not sub-classes of classes in @resources) can be used as resources
+     * (getClasses function of TestApplication class return only classes in @resources).
+     *
+     * @param resources classes used in deployment as resources
+     */
+    public static Archive<?> finishContainerPrepare(WebArchive war, Map<String, String> contextParams, final Class<?>... resources) {
+        return finishContainerPrepare(war, contextParams, null, resources);
+    }
+
+    /**
+     * Finish preparing war deployment and deploy it.
+     *
+     * Add classes in @resources to deployment. Also all sub-classes of classes in @resources are added to deployment.
+     * But only classes in @resources (not sub-classes of classes in @resources) can be used as resources
+     * (getClasses function of TestApplication class return only classes in @resources).
+     *
+     * @param singletons classes used in deployment as singletons
+     * @param resources classes used in deployment as resources
+     */
+    public static Archive<?> finishContainerPrepare(WebArchive war, Map<String, String> contextParams, List<Class<?>> singletons, final Class<?>... resources) {
+
+        if (contextParams == null) {
+            contextParams = new Hashtable<>();
+        }
+
+        Set<String> classNamesInDeployment = new HashSet<>();
+        Set<String> singletonsNamesInDeployment = new HashSet<>();
+
+        if (resources != null) {
+            for (final Class<?> clazz : resources) {
+                war.addClass(clazz);
+                classNamesInDeployment.add(clazz.getTypeName());
+            }
+        }
+
+        if (singletons != null) {
+            for (Class<?> singleton : singletons) {
+                war.addClass(singleton);
+                singletonsNamesInDeployment.add(singleton.getTypeName());
+            }
+        }
+
+        if (contextParams != null && contextParams.size() > 0 && !war.contains("WEB-INF/web.xml")) {
+            StringBuilder webXml = new StringBuilder();
+            webXml.append("<web-app version=\"3.0\" xmlns=\"http://java.sun.com/xml/ns/javaee\" \n");
+            webXml.append(" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n");
+            webXml.append(" xsi:schemaLocation=\"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd\"> \n");
+            for (Map.Entry<String, String> entry : contextParams.entrySet()) {
+                String paramName = entry.getKey();
+                String paramValue = entry.getValue();
+                logger.info("Context param " + paramName + " value " + paramValue);
+
+                webXml.append("<context-param>\n");
+                webXml.append("<param-name>" + paramName + "</param-name>\n");
+                webXml.append("<param-value>" + paramValue + "</param-value>\n");
+                webXml.append("</context-param>\n");
+            }
+
+            webXml.append("</web-app>\n");
+            Asset resource = new StringAsset(webXml.toString());
+            war.addAsWebInfResource(resource, "web.xml");
+        }
+
+        // prepare class list for getClasses function of TestApplication class
+        StringBuilder classes = new StringBuilder();
+        boolean start = true;
+        for (String clazz : classNamesInDeployment) {
+            if (start) {
+                start = false;
+            } else {
+                classes.append(",");
+            }
+            classes.append(clazz);
+        }
+        war.addAsResource(new StringAsset(classes.toString()), "classes.txt");
+
+
+        // prepare singleton list for getSingletons function of TestApplication class
+        StringBuilder singletonBuilder = new StringBuilder();
+        start = true;
+        for (String clazz : singletonsNamesInDeployment) {
+            if (start) {
+                start = false;
+            } else {
+                singletonBuilder.append(",");
+            }
+            singletonBuilder.append(clazz);
+        }
+        war.addAsResource(new StringAsset(singletonBuilder.toString()), "singletons.txt");
+
+        if (System.getProperty("STORE_WAR") != null) {
+            war.as(ZipExporter.class).exportTo(new File("target", war.getName()), true);
+        }
+        return war;
+    }
+
+    public static OnlineManagementClient clientInit() throws IOException {
+        OnlineOptions onlineOptions = OnlineOptions
+                    .standalone()
+                    .hostAndPort(PortProviderUtil.getHost(), 9990) // 9990 is default port for EAP 7
+                    .serverType(ServerType.WILDFLY)
+                    .connectionTimeout(120000)
+                    .build();
+        return ManagementClient.online(onlineOptions);
+    }
+
+    public static ModelNodeResult runCmd(OnlineManagementClient client, String cmd) throws Exception {
+        ModelNodeResult result = client.execute(cmd);
+        logger.info("CLI command: " + cmd);
+        logger.info("Result: " + result.toString());
+        return result;
+    }
+
+
+    /**
+     * Add package info to deployment.
+     *
+     * @param clazz Package info is for package of this class.
+     */
+    protected WebArchive addPackageInfo(WebArchive war, final Class<?> clazz) {
+        return war.addPackages(false, new org.jboss.shrinkwrap.api.Filter<org.jboss.shrinkwrap.api.ArchivePath>() {
+            @Override
+            public boolean include(final ArchivePath path) {
+                return path.get().endsWith("package-info.class");
+            }
+        }, clazz.getPackage());
+    }
+
+    /**
+     * Convert input stream to String.
+     *
+     * @param in Input stream
+     * @return Converted string
+     */
+    public static String readString(final InputStream in) throws IOException {
+        char[] buffer = new char[1024];
+        StringBuilder builder = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        int wasRead = 0;
+        do {
+            wasRead = reader.read(buffer, 0, 1024);
+            if (wasRead > 0) {
+                builder.append(buffer, 0, wasRead);
+            }
+        }
+        while (wasRead > -1);
+
+        return builder.toString();
+    }
+
+    public static String getErrorMessageForKnownIssue(String jira, String message) {
+        StringBuilder s = new StringBuilder();
+        s.append("https://issues.jboss.org/browse/");
+        s.append(jira);
+        s.append(" - ");
+        s.append(message);
+        return s.toString();
+    }
+
+    public static String getErrorMessageForKnownIssue(String jira) {
+        return getErrorMessageForKnownIssue(jira, "known issue");
+    }
+
+    public static String getJbossHome() {
+        return System.getProperty("jboss.home");
+    }
+
+
+    public static String getJbossHome(boolean onServer) {
+        if (onServer == false) {
+            return getJbossHome();
+        }
+        return System.getProperty("jboss.home.dir", "");
+    }
+
+    public static boolean isOpenJDK() {
+        return System.getProperty("java.runtime.name").toLowerCase().contains("openjdk");
+    }
+
+    public static boolean isOracleJDK() {
+        if (isOpenJDK()) {
+            return false;
+        }
+        String vendor = System.getProperty("java.vendor").toLowerCase();
+        return vendor.contains("sun") || vendor.contains("oracle");
+    }
+
+    public static boolean isIbmJdk() {
+        return System.getProperty("java.vendor").toLowerCase().contains("ibm");
+    }
+
+    /**
+     * Get resource in test scope for some class.
+     * Example: class org.test.MyTest and name "my_resource.txt" returns "src/test/resource/org/test/my_resource.txt"
+     */
+    public static String getResourcePath(Class<?> c, String name) {
+        return new StringBuilder()
+                .append(baseResourcePath)
+                .append(c.getPackage().getName().replace('.', File.separatorChar))
+                .append(File.separator).append(name)
+                .toString();
+    }
+
+    /**
+     * Read server log file from standalone/log/server.log
+     */
+    public static List<String> readServerLogLines() {
+        return readServerLogLines(false);
+    }
+
+    public static List<String> readServerLogLines(boolean onServer) {
+        String jbossHome = TestUtil.getJbossHome(onServer);
+        String logPath = String.format("%s%sstandalone%slog%sserver.log", jbossHome,
+                (jbossHome.endsWith(File.separator) || jbossHome.endsWith("/")) ? "" : File.separator,
+                File.separator, File.separator);
+        logPath = logPath.replace('/', File.separatorChar);
+        try {
+            return Files.readAllLines(Paths.get(logPath)); // UTF8 is used by default
+        } catch (MalformedInputException e1) {
+            // some windows machines could accept only StandardCharsets.ISO_8859_1 encoding
+            try {
+                return Files.readAllLines(Paths.get(logPath), StandardCharsets.ISO_8859_1);
+            } catch (IOException e4) {
+                throw new RuntimeException("Server logs has not standard Charsets (UTF8 or ISO_8859_1)");
+            }
+        } catch (IOException e) {
+            // server.log file is not created, it is the same as server.log is empty
+        }
+        return new ArrayList<>();
+    }
+
+    /**
+     * Get count of lines with specific string in log
+     */
+    public static int getWarningCount(String findedString, boolean onServer) {
+        int count = 0;
+        List<String> lines = TestUtil.readServerLogLines(onServer);
+        for (String line : lines) {
+            if (line.contains(findedString)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Check count of violations in ResteasyViolationException.
+     */
+    public static void countViolations(ResteasyViolationException e,
+                                   int totalCount, int fieldCount, int propertyCount, int classCount, int parameterCount, int returnValueCount) {
+        Assert.assertEquals("Different total count of violations expected", totalCount, e.getViolations().size());
+        Assert.assertEquals("Different count of field violations expected", fieldCount, e.getFieldViolations().size());
+        Assert.assertEquals("Different count of property violations expected", propertyCount, e.getPropertyViolations().size());
+        Assert.assertEquals("Different count of class violations expected", classCount, e.getClassViolations().size());
+        Assert.assertEquals("Different count of parameter violations expected", parameterCount, e.getParameterViolations().size());
+        Assert.assertEquals("Different count of return value violations expected", returnValueCount, e.getReturnValueViolations().size());
+    }
+
+    public static void countViolations(ViolationReport e, int fieldCount, int propertyCount, int classCount, int parameterCount, int returnValueCount) {
+        Assert.assertEquals("Different count of field violations expected", fieldCount, e.getFieldViolations().size());
+        Assert.assertEquals("Different count of property violations expected", propertyCount, e.getPropertyViolations().size());
+        Assert.assertEquals("Different count of class violations expected", classCount, e.getClassViolations().size());
+        Assert.assertEquals(parameterCount, e.getParameterViolations().size());
+        Assert.assertEquals(returnValueCount, e.getReturnValueViolations().size());
+    }
+}

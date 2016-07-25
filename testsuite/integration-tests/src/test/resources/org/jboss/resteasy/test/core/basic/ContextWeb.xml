@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+    <display-name>Archetype RestEasy Web Application</display-name>
+
+    <!-- testing configuration -->
+    <context-param>
+        <param-name>resteasy.append.interceptor.precedence</param-name>
+        <param-value>END</param-value>
+    </context-param>
+    <context-param>
+        <param-name>resteasy.interceptor.before.precedence</param-name>
+        <param-value>ENCODER : BEFORE_ENCODER</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>resteasy.interceptor.after.precedence</param-name>
+        <param-value>ENCODER : AFTER_ENCODER</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>resteasy.media.type.mappings</param-name>
+        <param-value>xml : application/xml,
+            json : application/json
+        </param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>resteasy.resources</param-name>
+        <param-value>org.jboss.resteasy.test.core.basic.resource.ContextService</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>resteasy.providers</param-name>
+        <param-value>org.jboss.resteasy.test.core.basic.resource.ContextAfterEncoderInterceptor,
+            org.jboss.resteasy.test.core.basic.resource.ContextEncoderInterceptor,
+            org.jboss.resteasy.test.core.basic.resource.ContextEndInterceptor,
+            org.jboss.resteasy.test.core.basic.resource.ContextBeforeEncoderInterceptor
+        </param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>resteasy.servlet.mapping.prefix</param-name>
+        <param-value>/test</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>Resteasy</servlet-name>
+        <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+        <init-param>
+            <param-name>servlet.greeting</param-name>
+            <param-value>servlet hello</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Resteasy</servlet-name>
+        <url-pattern>/test/*</url-pattern>
+    </servlet-mapping>
+
+</web-app>

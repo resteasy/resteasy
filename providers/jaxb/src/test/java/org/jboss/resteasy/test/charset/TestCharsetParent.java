@@ -11,13 +11,15 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.junit.Assert;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.junit.Test;
@@ -113,18 +115,17 @@ public abstract class TestCharsetParent
    @Test
    public void testXmlDefault() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/xml/default"));
+      Builder request = ClientBuilder.newClient().target(generateURL("/xml/default")).request();
       String str = "<?xml version=\"1.0\"?>\r"
             + "<favoriteMovieXmlRootElement><title>La Règle du Jeu</title></favoriteMovieXmlRootElement>";
       System.out.println(str);
       System.out.println("client default charset: " + Charset.defaultCharset());
-      request.body(MediaType.APPLICATION_XML_TYPE, str);
       request.accept(MediaType.APPLICATION_XML_TYPE);
       System.out.println("Sending request");
-      ClientResponse<?> response = request.post();
+      Response response = request.post(Entity.entity(str, MediaType.APPLICATION_XML_TYPE));
       System.out.println("Received response");
       Assert.assertEquals(200, response.getStatus());
-      FavoriteMovieXmlRootElement entity = response.getEntity(FavoriteMovieXmlRootElement.class);
+      FavoriteMovieXmlRootElement entity = response.readEntity(FavoriteMovieXmlRootElement.class);
       System.out.println("Result: " + entity);
       System.out.println("title: " + entity.getTitle());
       Assert.assertEquals("La Règle du Jeu", entity.getTitle());
@@ -133,15 +134,14 @@ public abstract class TestCharsetParent
    @Test
    public void testXmlProduces() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/xml/produces"));
+      Builder request = ClientBuilder.newClient().target(generateURL("/xml/produces")).request();
       String str = "<?xml version=\"1.0\"?>\r"
             + "<favoriteMovieXmlRootElement><title>La Règle du Jeu</title></favoriteMovieXmlRootElement>";
       System.out.println(str);
       System.out.println("client default charset: " + Charset.defaultCharset());
-      request.body(APPLICATION_XML_UTF16_TYPE, str);
-      ClientResponse<?> response = request.post();
+      Response response = request.post(Entity.entity(str, APPLICATION_XML_UTF16_TYPE));
       Assert.assertEquals(200, response.getStatus());
-      FavoriteMovieXmlRootElement entity = response.getEntity(FavoriteMovieXmlRootElement.class);
+      FavoriteMovieXmlRootElement entity = response.readEntity(FavoriteMovieXmlRootElement.class);
       System.out.println("Result: " + entity);
       System.out.println("title: " + entity.getTitle());
       Assert.assertEquals("La Règle du Jeu", entity.getTitle());
@@ -150,16 +150,15 @@ public abstract class TestCharsetParent
    @Test
    public void testXmlAccepts() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/xml/accepts"));
+      Builder request = ClientBuilder.newClient().target(generateURL("/xml/accepts")).request();
       String str = "<?xml version=\"1.0\"?>\r"
             + "<favoriteMovieXmlRootElement><title>La Règle du Jeu</title></favoriteMovieXmlRootElement>";
       System.out.println(str);
       System.out.println("client default charset: " + Charset.defaultCharset());
-      request.body(APPLICATION_XML_UTF16_TYPE, str);
       request.accept(APPLICATION_XML_UTF16_TYPE);
-      ClientResponse<?> response = request.post();
+      Response response = request.post(Entity.entity(str, APPLICATION_XML_UTF16_TYPE));
       Assert.assertEquals(200, response.getStatus());
-      FavoriteMovieXmlRootElement entity = response.getEntity(FavoriteMovieXmlRootElement.class);
+      FavoriteMovieXmlRootElement entity = response.readEntity(FavoriteMovieXmlRootElement.class);
       System.out.println("Result: " + entity);
       System.out.println("title: " + entity.getTitle());
       Assert.assertEquals("La Règle du Jeu", entity.getTitle());

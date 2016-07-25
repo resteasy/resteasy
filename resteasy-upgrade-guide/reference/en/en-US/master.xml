@@ -1,0 +1,53 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+                         "http://www.docbook.org/xml/4.4/docbookx.dtd"
+        [
+                <!ENTITY Client_Framework SYSTEM "modules/Client_Framework.xml">
+                <!ENTITY Interceptors SYSTEM "modules/Interceptors.xml">
+                <!ENTITY Asynchronous SYSTEM "modules/Asynchronous.xml">
+                <!ENTITY Asynchronous "modules/Asynchronous.xml">
+                <!ENTITY Validation SYSTEM "modules/Validation.xml">
+                <!ENTITY Cache SYSTEM "modules/Cache.xml">
+                <!ENTITY Miscellaneous SYSTEM "modules/Miscellaneous.xml">
+                ]>
+
+<book>
+
+   <bookinfo>
+      <title>Upgrading from Resteasy 2 to Resteasy 3</title>
+      <releaseinfo>3.1.0-SNAPSHOT</releaseinfo>
+   </bookinfo>
+
+   <toc/>
+
+   <preface id="preface" revision="1">
+   
+   <para>
+   A number of API classes in Resteasy 2, which is based on the JAX-RS 1.1 specification 
+   (<ulink url="https://jcp.org/en/jsr/detail?id=311">https://jcp.org/en/jsr/detail?id=311</ulink>),
+   have been deprecated in, and eventually removed from, Resteasy 3, which is based on JAX-RS 2.0
+   (<ulink url="https://jcp.org/aboutJava/communityprocess/final/jsr339/index.html">https://jcp.org/aboutJava/communityprocess/final/jsr339/index.html</ulink>).
+   In particular, those classes are deprecated by the end of the 3.0.x series of releases, and removed
+   as of the 3.1.0.Final release. For the most part, these changes are due to the fact that a number
+   of facilities specific to Resteasy were introduced in Resteasy 2 and then formalized, in somewhat different
+   form, in JAX-RS 2.0. A few other facilities in Resteasy simply were not carried over to Resteasy 3.
+   </para>
+   
+   <para>
+   This short document describes the principal changes from Resteasy 2 to Resteasy 3 and gives some
+   hints about upgrading code from the Resteasy 2 API to Resteasy 3. Additional information can be found in the 
+   Resteasy Users Guides (<ulink url="http://resteasy.jboss.org/docs.html">http://resteasy.jboss.org/docs.html</ulink>).
+   A more extensive treatment may be found in the O'Reilly book <emphasis>RESTful Java with JAX-RS 2.0, 2nd Edition</emphasis>,
+   by Bill Burke.
+   </para>
+   
+   </preface>
+
+   &Client_Framework;
+   &Interceptors;
+   &Asynchronous;
+   &Validation;
+   &Cache;
+   &Miscellaneous;
+
+</book>
+

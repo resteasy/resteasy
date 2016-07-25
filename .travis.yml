@@ -9,3 +9,9 @@ jdk:
 cache:
  directories:
   - $HOME/.m2
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+before_install:
+    - "sudo unzip -j -o  travis-libs/jce_policy-8.zip *.jar -d $JAVA_HOME/jre/lib/security"

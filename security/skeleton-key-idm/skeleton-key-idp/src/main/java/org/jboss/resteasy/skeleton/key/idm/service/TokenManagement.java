@@ -5,7 +5,6 @@ import org.jboss.resteasy.jose.jws.JWSBuilder;
 import org.jboss.resteasy.jose.jws.JWSInput;
 import org.jboss.resteasy.jose.jws.crypto.RSAProvider;
 import org.jboss.resteasy.jwt.JsonSerialization;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.skeleton.key.idm.IdentityManager;
 import org.jboss.resteasy.skeleton.key.idm.i18n.LogMessages;
 import org.jboss.resteasy.skeleton.key.idm.i18n.Messages;
@@ -115,7 +114,6 @@ public class TokenManagement
    }
 
    protected IdentityManager identityManager;
-   protected Logger logger = Logger.getLogger(TokenManagement.class);
    protected Map<String, AccessCode> accessCodeMap = new HashMap<String, AccessCode>();
    @Context
    protected UriInfo uriInfo;

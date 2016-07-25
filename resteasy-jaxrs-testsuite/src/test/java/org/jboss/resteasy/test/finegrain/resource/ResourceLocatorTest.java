@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockDispatcherFactory;
 import org.jboss.resteasy.mock.MockHttpRequest;
@@ -21,8 +19,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -170,6 +171,7 @@ public class ResourceLocatorTest
 
    public static class Subresource3 implements Subresource3Interface
    {
+      @SuppressWarnings("unused")
       @Override
       public String get(List<Double> params)
       {
@@ -184,8 +186,8 @@ public class ResourceLocatorTest
    @Test
    public void testProxiedSubresource() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/proxy/3"));
-      ClientResponse res = request.queryParameter("foo", "1.2").queryParameter("foo", "1.3").get();
+      WebTarget target = ClientBuilder.newClient().target(generateURL("/proxy/3"));
+      Response res = target.queryParam("foo", "1.2").queryParam("foo", "1.3").request().get();
       Assert.assertEquals(200, res.getStatus());
 
    }

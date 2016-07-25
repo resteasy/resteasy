@@ -3,7 +3,6 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.StringConverter;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.util.StringToPrimitive;
 import org.jboss.resteasy.util.Types;
@@ -50,7 +49,6 @@ public class StringParameterInjector
    protected Class<? extends Collection> collectionType;
    protected AccessibleObject target;
    protected ParamConverter paramConverter;
-   protected StringConverter converter;
    protected StringParameterUnmarshaller unmarshaller;
    protected RuntimeDelegate.HeaderDelegate delegate;
 
@@ -143,9 +141,6 @@ public class StringParameterInjector
                return;
             }
          }
-
-         converter = factory.getStringConverter(baseType);
-         if (converter != null) return;
 
          if (paramType.equals(HeaderParam.class))
          {
@@ -301,10 +296,6 @@ public class StringParameterInjector
       if (paramConverter != null)
       {
          return paramConverter.fromString(strVal);
-      }
-      if (converter != null)
-      {
-         return converter.fromString(strVal);
       }
       else if (unmarshaller != null)
       {

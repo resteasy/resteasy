@@ -1,0 +1,69 @@
+<chapter id="Cache">
+   <title>Resteasy Caching Features</title>
+   
+   <para>
+   Client and server side caching facilities are Resteasy specific extensions of JAX-RS, and they each
+   work differently in Resteasy 2 and Resteasy 3.
+   </para>
+   
+   <sect1 id="client_cache">
+   <title>Client side</title>
+   
+   <para>
+   Resteasy 3 offers the same client side cache facility as Resteasy 2, but it is enabled differently,
+   by way of <classname>org.jboss.resteasy.client.jaxrs.cache.BrowserCacheFeature</classname>, which
+   implements the JAX-RS 2.0 class <classname>javax.ws.rs.core.Feature</classname>:
+   </para>
+   
+   <programlisting>
+Client client = ClientBuilder.newClient();
+String url = "http://localhost:8081/orders/{id}";
+ResteasyWebTarget target = (ResteasyWebTarget) client.target(url);
+BrowserCacheFeature cacheFeature = new BrowserCacheFeature();
+target.register(cacheFeature);
+String rtn = target.resolveTemplate("id", "1").request().get(String.class);
+   </programlisting>
+   
+   <para>
+   Client side caching also works for proxies:
+   </para>
+   
+   <programlisting>
+@Path("/orders")
+public interface OrderServiceClient
+{
+   @Path("{id}")
+   @GET
+   @Produces("application/xml")
+   public Order getOrder(@PathParam("id") String id);
+}
+...
+Client client = ClientBuilder.newClient();
+String "http://localhost:8081";
+ResteasyWebTarget target = (ResteasyWebTarget) client.target(url);
+BrowserCacheFeature cacheFeature = new BrowserCacheFeature();
+target.register(cacheFeature);
+OrderServiceClient orderService = target.proxy(OrderServiceClient.class);
+   </programlisting>
+
+   </sect1>
+   
+   <sect1 id="server_cache">
+   <title>Server side</title>
+   
+   <para>
+   As in Resteasy 2, a server side caching facility that sits in front of JAX-RS resources is made available
+   in Resteasy 3, but the default underlying cache in Resteasy 3 is Infinispan, which supercedes the JBoss Cache
+   project. It is highly configurable, and the documentation should be consulted for additional information:
+   <ulink url="http://infinispan.org/documentation/">http://infinispan.org/documentation/</ulink>.
+   </para>
+   
+   <para>
+   Server side caching is also enabled differently. Resteasy 3 uses the JAX-RS 2.0
+   <classname>javax.ws.rs.core.Feature</classname> facility, in the form of
+   <classname>org.jboss.resteasy.plugins.cache.server.ServerCacheFeature</classname>, which should be
+   registered via the <classname>javax.ws.rs.core.Application.</classname>
+   </para>
+   
+   </sect1>
+</chapter>

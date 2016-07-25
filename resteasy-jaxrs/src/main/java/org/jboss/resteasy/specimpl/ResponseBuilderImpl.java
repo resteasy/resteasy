@@ -231,8 +231,7 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
          metadata.remove(HttpHeaderNames.ETAG);
          return this;
       }
-      metadata.putSingle(HttpHeaderNames.ETAG, tag);
-      return this;
+      return tag(new EntityTag(tag));
    }
 
    @Override

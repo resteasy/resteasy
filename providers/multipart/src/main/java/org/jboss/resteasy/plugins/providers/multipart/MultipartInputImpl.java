@@ -130,21 +130,30 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
             decodedStream = is;
          }
 
+         BodyFactory factory;
          try
          {
-            BodyFactory factory = (BodyFactory)bodyFactoryField.get(this);
-            body = factory.binaryBody(decodedStream);
-
-            @SuppressWarnings("unchecked")
-            Stack<Object> st = (Stack<Object>)stackField.get(this);
-            Entity entity = ((Entity) st.peek());
-            entity.setBody(body);
+            factory = (BodyFactory)bodyFactoryField.get(this);
          }
          catch (Exception e)
          {
             throw new RuntimeException(e);
          }
 
+         body = factory.binaryBody(decodedStream);
+
+         @SuppressWarnings("unchecked")
+         Stack<Object> st;
+         try
+         {
+            st = (Stack<Object>)stackField.get(this);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+         Entity entity = ((Entity) st.peek());
+         entity.setBody(body);
       }
    }
 

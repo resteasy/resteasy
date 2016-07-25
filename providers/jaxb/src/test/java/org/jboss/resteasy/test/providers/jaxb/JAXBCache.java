@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
 import org.jboss.resteasy.core.ExceptionAdapter;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.LogMessages;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -15,8 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class JAXBCache
 {
-
-   private static final Logger logger = Logger.getLogger(JAXBCache.class);
 
    /**
     *
@@ -67,7 +65,7 @@ public final class JAXBCache
          }
          contextCache.putIfAbsent(classes, context);
       }
-      logger.debug("Locating JAXBContext for package: {0}", classes);
+      LogMessages.LOGGER.debug("Locating JAXBContext for package: " + classes[0]);
       return context;
    }
 
@@ -80,7 +78,7 @@ public final class JAXBCache
    public JAXBContext getJAXBContext(String... packageNames)
    {
       String contextPath = buildContextPath(packageNames);
-      logger.debug("Locating JAXBContext for packages: {0}", contextPath);
+      LogMessages.LOGGER.debug("Locating JAXBContext for packages: " + contextPath);
       // FIXME This was the original call causing an infinitive recursive loop.
       // However I don't know how to fix it, but this method is not used currently
       // so instead of fixing it modified it to return a null and not going into

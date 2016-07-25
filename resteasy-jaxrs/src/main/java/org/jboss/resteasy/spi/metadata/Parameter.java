@@ -29,7 +29,6 @@ abstract public class Parameter
       // resteasy specific
       FORM,
       QUERY,
-      SUSPEND // deprecated
    }
 
    protected ResourceClass resourceClass;

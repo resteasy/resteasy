@@ -1,7 +1,6 @@
 package org.jboss.resteasy.springmvc.test.spring;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.core.AsynchronousDispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.springmvc.tjws.TJWSEmbeddedSpringMVCServerBean;
@@ -16,7 +15,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
+
 import java.net.URI;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -71,128 +76,124 @@ public class AsynchSpringTest
    public void testOneway() throws Exception
    {
       latch = new CountDownLatch(1);
-      ClientRequest request = new ClientRequest("http://localhost:9091?oneway=true");
-      request.body("text/plain", "content");
+      Client client = ResteasyClientBuilder.newClient();
+      WebTarget target = client.target("http://localhost:9091?oneway=true");
       long start = System.currentTimeMillis();
-      ClientResponse<?> response = request.put();
+      Response response = target.request().put(Entity.entity("content", "text/plain"));
       long end = System.currentTimeMillis() - start;
       Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
       Assert.assertTrue(end < 1000);
       Assert.assertTrue(latch.await(2, TimeUnit.SECONDS));
-      response.releaseConnection();
+      response.close();
    }
    
    @Test
    public void testAsynch() throws Exception
    {
-      ClientRequest request = null;
-      ClientResponse<?> response = null;
+      Client client = ResteasyClientBuilder.newClient();
+      Response response = null;
       {
          latch = new CountDownLatch(1);
-         request = new ClientRequest("http://localhost:9091?asynch=true");
-         request.body("text/plain", "content");
          long start = System.currentTimeMillis();
-         response = request.post();
-         @SuppressWarnings("unused")
+         response = client.target("http://localhost:9091?asynch=true").request().post(Entity.entity("content", "text/plain"));
          long end = System.currentTimeMillis() - start;
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
-         String jobUrl = response.getResponseHeaders().getFirst(HttpHeaders.LOCATION);
+         String jobUrl = response.getHeaderString(HttpHeaders.LOCATION);
          System.out.println("JOB: " + jobUrl);
-         response.releaseConnection();
+         response.close();
          
-         request = new ClientRequest(jobUrl);
-         response = request.get();
+         Builder jobBuilder = client.target(jobUrl).request();
+         response = jobBuilder.get();
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
-         response.releaseConnection();
+         response.close();
          // there's a lag between when the latch completes and the executor
          // registers the completion of the call
-         URI oldUri = new URI(request.getUri());
+         URI oldUri = new URI(jobUrl);
          String existingQueryString = oldUri.getQuery();
          String newQuery = (existingQueryString == null ? "" : "&") + "wait=1000";
          URI newUri = new URI(oldUri.getScheme(), oldUri.getAuthority(), oldUri.getPath(), newQuery, oldUri.getFragment());
-         request = new ClientRequest(newUri.toString());
-         response = request.get();
+         response = client.target(newUri).request().get();
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-         Assert.assertEquals("content", response.getEntity(String.class));
+         Assert.assertEquals("content", response.readEntity(String.class));
          
          // test its still there
-         response = request.get();
+         response = jobBuilder.get();
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-         Assert.assertEquals("content", response.getEntity(String.class));
+         Assert.assertEquals("content", response.readEntity(String.class));
 
          // delete and test delete
-         request = new ClientRequest(jobUrl);
-         response = request.delete();
+         response = jobBuilder.delete();
          Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());      
          
-         response = request.get();
+         response = jobBuilder.get();
          Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
-         response.releaseConnection();
+         response.close();
       }
 
       {
          dispatcher.setMaxCacheSize(1);
          latch = new CountDownLatch(1);
-         request = new ClientRequest("http://localhost:9091?asynch=true");
-         request.body("text/plain", "content");
-         response = request.post();
+         Builder builder = client.target("http://localhost:9091?asynch=true").request();
+         response = builder.post(Entity.entity("content", "text/plain"));
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
-         String jobUrl1 = response.getResponseHeaders().getFirst(HttpHeaders.LOCATION);
+         String jobUrl1 = response.getHeaderString(HttpHeaders.LOCATION);
+         System.out.println("JOB: " + jobUrl1);
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
-         response.releaseConnection();
+         response.close();
 
          latch = new CountDownLatch(1);
-         response = request.post();
+         response = builder.post(Entity.entity("content", "text/plain"));
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
-         String jobUrl2 = response.getResponseHeaders().getFirst(HttpHeaders.LOCATION);
+         String jobUrl2 = response.getHeaderString(HttpHeaders.LOCATION);
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
          Assert.assertTrue(!jobUrl1.equals(jobUrl2));
-         response.releaseConnection();
+         response.close();
          
-         request = new ClientRequest(jobUrl1);
-         response = request.get();
+         builder = client.target(jobUrl1).request();
+         response = builder.get();
          Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
-         response.releaseConnection();
+         response.close();
 
          // test its still there
          Thread.sleep(1000);
-         request = new ClientRequest(jobUrl2);
-         response = request.get();
+         builder = client.target(jobUrl2).request();
+         response = builder.get();
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-         Assert.assertEquals("content", response.getEntity(String.class));
+         Assert.assertEquals("content", response.readEntity(String.class));
          
          // delete and test delete
-         response = request.delete();
+         response = builder.delete();
          Assert.assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());         
 
-         response = request.get();
+         response = builder.get();
          Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
-         response.releaseConnection();
+         response.close();
       }
       
       // test readAndRemove
       {
          dispatcher.setMaxCacheSize(10);
          latch = new CountDownLatch(1);
-         request = new ClientRequest("http://localhost:9091?asynch=true");
-         request.body("text/plain", "content");
-         response = request.post();
+         Builder builder = client.target("http://localhost:9091?asynch=true").request();
+         response = builder.post(Entity.entity("content", "text/plain"));
          Assert.assertEquals(HttpServletResponse.SC_ACCEPTED, response.getStatus());
-         String jobUrl2 = response.getResponseHeaders().getFirst(HttpHeaders.LOCATION);
+         String jobUrl2 = response.getHeaderString(HttpHeaders.LOCATION);
+         System.out.println("JOB: " + jobUrl2);
          Assert.assertTrue(latch.await(3, TimeUnit.SECONDS));
-         response.releaseConnection();
+         response.close();
 
          Thread.sleep(1000);
          // test its still there
-         request = new ClientRequest(jobUrl2);
-         response = request.post();
+         builder = client.target(jobUrl2).request();
+         response = builder.post(Entity.entity("content", "text/plain"));
          Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-         Assert.assertEquals("content", response.getEntity(String.class));
+         Assert.assertEquals("content", response.readEntity(String.class));
          
-         response = request.get();
+         builder = client.target(jobUrl2).request();
+         response = builder.get();
          Assert.assertEquals(HttpServletResponse.SC_GONE, response.getStatus());
-         response.releaseConnection();
+         response.close();
       }
    }
 }

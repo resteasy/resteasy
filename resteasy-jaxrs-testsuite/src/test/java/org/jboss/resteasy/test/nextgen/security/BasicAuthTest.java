@@ -12,12 +12,6 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.util.EntityUtils;
-import org.jboss.resteasy.client.ClientExecutor;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.ClientResponseFailure;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -194,8 +188,9 @@ public class BasicAuthTest
       DefaultHttpClient client = new DefaultHttpClient();
       UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("bill", "password");
       client.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY), credentials);
-      ClientExecutor executor = createAuthenticatingExecutor(client);
-      BaseProxy proxy = ProxyFactory.create(BaseProxy.class, generateURL(""), executor);
+      ClientHttpEngine engine = createAuthenticatingEngine(client);
+      ResteasyClient resteasyClient = new ResteasyClientBuilder().httpEngine(engine).build();
+      BaseProxy proxy = resteasyClient.target(generateURL("")).proxy(BaseProxy.class);
       String val = proxy.get();
       Assert.assertEquals(val, "hello");
       val = proxy.getAuthorized();
@@ -331,28 +326,8 @@ public class BasicAuthTest
    }
 
    /**
-    * Create a ClientExecutor which does preemptive authentication.
+    * Create a ClientHttpEngine which does preemptive authentication.
     */
-   
-   static private ClientExecutor createAuthenticatingExecutor(DefaultHttpClient client)
-   {
-      // Create AuthCache instance
-      AuthCache authCache = new BasicAuthCache();
-      
-      // Generate BASIC scheme object and add it to the local auth cache
-      BasicScheme basicAuth = new BasicScheme();
-      HttpHost targetHost = new HttpHost("localhost", 8081);
-      authCache.put(targetHost, basicAuth);
-
-      // Add AuthCache to the execution context
-      BasicHttpContext localContext = new BasicHttpContext();
-      localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
-      
-      // Create ClientExecutor.
-      ApacheHttpClient4Executor executor = new ApacheHttpClient4Executor(client, localContext);
-      return executor;
-   }
-   
    static private ClientHttpEngine createAuthenticatingEngine(DefaultHttpClient client)
    {
       // Create AuthCache instance

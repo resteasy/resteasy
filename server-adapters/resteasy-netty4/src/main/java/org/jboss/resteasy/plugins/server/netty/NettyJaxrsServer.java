@@ -1,17 +1,7 @@
 package org.jboss.resteasy.plugins.server.netty;
 
-import static org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol.HTTP;
-import static org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol.HTTPS;
-
-import java.net.InetSocketAddress;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -20,16 +10,27 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.ssl.SniHandler;
 import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.EventExecutor;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import java.net.InetSocketAddress;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol.HTTP;
+import static org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol.HTTPS;
 
 /**
  * An HTTP server that sends back the content of the received HTTP request
@@ -45,7 +46,8 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
 {
    protected ServerBootstrap bootstrap = new ServerBootstrap();
    protected String hostname = null;
-   protected int port = 8080;
+   protected int configuredPort = 8080;
+   protected int runtimePort = -1;
    protected ResteasyDeployment deployment = new ResteasyDeployment();
    protected String root = "";
    protected SecurityDomain domain;
@@ -54,6 +56,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    private int ioWorkerCount = Runtime.getRuntime().availableProcessors() * 2;
    private int executorThreadCount = 16;
    private SSLContext sslContext;
+   private SniConfiguration sniConfiguration;
    private int maxRequestSize = 1024 * 1024 * 10;
    private int maxInitialLineLength = 4096;
    private int maxHeaderSize = 8192;
@@ -69,6 +72,16 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    public void setSSLContext(SSLContext sslContext)
    {
       this.sslContext = sslContext;
+   }
+
+   public void setSniConfiguration(SniConfiguration sniConfiguration)
+   {
+      this.sniConfiguration = sniConfiguration;
+   }
+
+   public SniConfiguration getSniConfiguration()
+   {
+      return sniConfiguration;
    }
 
    /**
@@ -123,11 +136,11 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
     }
 
     public int getPort() {
-        return port;
+        return runtimePort > 0 ? runtimePort : configuredPort;
     }
 
     public void setPort(int port) {
-        this.port = port;
+        this.configuredPort = port;
     }
 
     public void setBacklog(int backlog)
@@ -243,30 +256,39 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
 
         final InetSocketAddress socketAddress;
         if (null == hostname || hostname.isEmpty()) {
-            socketAddress = new InetSocketAddress(port);
+            socketAddress = new InetSocketAddress(configuredPort);
         } else {
-            socketAddress = new InetSocketAddress(hostname, port);
+            socketAddress = new InetSocketAddress(hostname, configuredPort);
         }
 
-        bootstrap.bind(socketAddress).syncUninterruptibly();
+        Channel channel = bootstrap.bind(socketAddress).syncUninterruptibly().channel();
+        runtimePort = ((InetSocketAddress) channel.localAddress()).getPort();
     }
 
     private ChannelInitializer<SocketChannel> createChannelInitializer() {
         final RequestDispatcher dispatcher = createRequestDispatcher();
-        if (sslContext == null) {
+        if (sslContext == null && sniConfiguration == null) {
             return new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
                     setupHandlers(ch, dispatcher, HTTP);
                 }
             };
-        } else {
+        } else if (sniConfiguration == null) {
             final SSLEngine engine = sslContext.createSSLEngine();
             engine.setUseClientMode(false);
             return new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
                     ch.pipeline().addFirst(new SslHandler(engine));
+                    setupHandlers(ch, dispatcher, HTTPS);
+                }
+            };
+        } else {
+            return new ChannelInitializer<SocketChannel>() {
+                @Override
+                public void initChannel(SocketChannel ch) throws Exception {
+                    ch.pipeline().addFirst(new SniHandler(sniConfiguration.buildMapping()));
                     setupHandlers(ch, dispatcher, HTTPS);
                 }
             };
@@ -291,6 +313,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    @Override
    public void stop()
    {
+       runtimePort = -1;
        eventLoopGroup.shutdownGracefully();
        eventExecutor.shutdownGracefully();
    }

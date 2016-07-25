@@ -18,7 +18,10 @@ public interface Messages
 
    @Message(id = BASE + 0, value = "Already committed")
    String alreadyCommitted();
-
+   
+   @Message(id = BASE + 2, value = "Exception caught by handler")
+   String exceptionCaught();
+   
    @Message(id = BASE + 5, value = "Failed to parse request.")
    String failedToParseRequest();
    

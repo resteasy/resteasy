@@ -23,6 +23,11 @@
             <artifactId>resteasy-jaxrs</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- test -->
         <dependency>
             <groupId>org.jboss.spec.javax.servlet</groupId>

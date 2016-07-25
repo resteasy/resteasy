@@ -1,17 +1,15 @@
 package org.jboss.resteasy.plugins.guice.ext;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
-
 import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Module;
 
-import org.jboss.resteasy.client.ClientExecutor;
-import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.guice.ModuleProcessor;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.TestPortProvider;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -54,7 +52,7 @@ public class JaxrsModuleTest
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
       processor.processInjector(Guice.createInjector(module, new JaxrsModule()));
-      final TestResource resource = ProxyFactory.create(TestResource.class, generateBaseUrl());
+      final TestResource resource = TestPortProvider.createProxy(TestResource.class, TestPortProvider.generateBaseUrl());
       Assert.assertEquals("ok", resource.getName());
       dispatcher.getRegistry().removeRegistrations(TestResource.class);
    }
@@ -68,14 +66,14 @@ public class JaxrsModuleTest
 
    public static class JaxrsTestResource implements TestResource
    {
-      private final ClientExecutor clientExecutor;
+      private final ClientHttpEngine clientExecutor;
       private final RuntimeDelegate runtimeDelegate;
       private final Response.ResponseBuilder responseBuilder;
       private final UriBuilder uriBuilder;
       private final Variant.VariantListBuilder variantListBuilder;
 
       @Inject
-      public JaxrsTestResource(final ClientExecutor clientExecutor, final RuntimeDelegate runtimeDelegate, final Response.ResponseBuilder responseBuilder, final UriBuilder uriBuilder, final Variant.VariantListBuilder variantListBuilder)
+      public JaxrsTestResource(final ClientHttpEngine clientExecutor, final RuntimeDelegate runtimeDelegate, final Response.ResponseBuilder responseBuilder, final UriBuilder uriBuilder, final Variant.VariantListBuilder variantListBuilder)
       {
          this.clientExecutor = clientExecutor;
          this.runtimeDelegate = runtimeDelegate;

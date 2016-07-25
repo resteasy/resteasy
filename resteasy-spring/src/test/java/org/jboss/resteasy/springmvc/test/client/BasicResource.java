@@ -1,12 +1,12 @@
 package org.jboss.resteasy.springmvc.test.client;
 
-import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.springmvc.test.jaxb.BasicJaxbObject;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
 
 @Path("/basic")
 public interface BasicResource
@@ -25,7 +25,7 @@ public interface BasicResource
    @GET
    @Produces("application/json")
    @Path("object")
-   public ClientResponse<BasicJaxbObject> getWrongContentTypeBasicObject();
+   public Response getWrongContentTypeBasicObject();
 
    /** test Spring MVC ModelAndView **/
    @GET
@@ -80,7 +80,7 @@ public interface BasicResource
    @GET
    @Produces("text/plain")
    @Path("bogus-rul-test")
-   public ClientResponse<String> testBogusUrl();
+   public Response testBogusUrl();
    
    @GET
    @Produces("application/xml")

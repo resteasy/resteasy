@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.finegrain.resource;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -14,6 +12,9 @@ import org.junit.Test;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
@@ -31,6 +32,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 public class VariantsTest
 {
    private static Dispatcher dispatcher;
+   private static Client client;
 
    @BeforeClass
    public static void before() throws Exception
@@ -39,11 +41,13 @@ public class VariantsTest
       dispatcher.getRegistry().addPerRequestResource(LanguageVariantResource.class);
       dispatcher.getRegistry().addPerRequestResource(ComplexVariantResource.class);
       dispatcher.getRegistry().addPerRequestResource(EncodingVariantResource.class);
+      client = ClientBuilder.newClient();
    }
 
    @AfterClass
    public static void after() throws Exception
    {
+      client.close();
       EmbeddedContainer.stop();
    }
 
@@ -81,66 +85,66 @@ public class VariantsTest
    @Test
    public void testGetLanguageEn() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/"));
-      request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "en");
-      ClientResponse<String> response = request.get(String.class);
+      Builder builder = client.target(generateURL("/")).request();
+      builder.header(HttpHeaderNames.ACCEPT_LANGUAGE, "en");
+      Response response = builder.get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertEquals("en", response.getEntity());
-      Assert.assertEquals("en", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+      Assert.assertEquals("en", response.readEntity(String.class));
+      Assert.assertEquals("en", response.getHeaderString(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
    @Test
    public void testGetLanguageWildcard() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/"));
-      request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "*");
-      ClientResponse<String> response = request.get(String.class);
+      Builder builder = client.target(generateURL("/")).request();
+      builder.header(HttpHeaderNames.ACCEPT_LANGUAGE, "*");
+      Response response = builder.get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      System.out.println(response.getEntity());
-      Assert.assertNotNull(response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+      System.out.println(response.readEntity(String.class));
+      Assert.assertNotNull(response.getHeaderString(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
    @Test
    public void testGetLanguageSubLocal() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/brazil"));
-      request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "pt");
-      ClientResponse<String> response = request.get(String.class);
+      Builder builder = client.target(generateURL("/brazil")).request();
+      builder.header(HttpHeaderNames.ACCEPT_LANGUAGE, "pt");
+      Response response = builder.get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      System.out.println(response.getEntity());
-      Assert.assertNotNull(response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+      System.out.println(response.readEntity(String.class));
+      Assert.assertNotNull(response.getHeaderString(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
    @Test
    public void testGetLanguageZero() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/"));
-      request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "*,zh;q=0,en;q=0,fr;q=0");
-      ClientResponse<String> response = request.get(String.class);
+      Builder builder = client.target(generateURL("/")).request();
+      builder.header(HttpHeaderNames.ACCEPT_LANGUAGE, "*,zh;q=0,en;q=0,fr;q=0");
+      Response response = builder.get();
       Assert.assertEquals(HttpResponseCodes.SC_NOT_ACCEPTABLE, response.getStatus());
-      System.out.println(response.getEntity());
+      System.out.println(response.readEntity(String.class));
    }
 
    @Test
    public void testGetLanguageZh() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/"));
-      request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "zh");
-      ClientResponse<String> response = request.get(String.class);
+      Builder builder = client.target(generateURL("/")).request();
+      builder.header(HttpHeaderNames.ACCEPT_LANGUAGE, "zh");
+      Response response = builder.get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertEquals("zh", response.getEntity());
-      Assert.assertEquals("zh", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+      Assert.assertEquals("zh", response.readEntity(String.class));
+      Assert.assertEquals("zh", response.getHeaderString(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
    @Test
    public void testGetLanguageMultiple() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/"));
-      request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "en;q=0.3, zh;q=0.4, fr");
-      ClientResponse<String> response = request.get(String.class);
+      Builder builder = client.target(generateURL("/")).request();
+      builder.header(HttpHeaderNames.ACCEPT_LANGUAGE, "en;q=0.3, zh;q=0.4, fr");
+      Response response = builder.get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertEquals("fr", response.getEntity());
-      Assert.assertEquals("fr", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+      Assert.assertEquals("fr", response.readEntity(String.class));
+      Assert.assertEquals("fr", response.getHeaderString(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
    @Path("/complex")
@@ -165,77 +169,77 @@ public class VariantsTest
    @Test
    public void testGetComplex1() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/complex"));
-      request.header(HttpHeaderNames.ACCEPT, "text/xml");
-      request.header(HttpHeaderNames.ACCEPT, "application/xml");
-      request.header(HttpHeaderNames.ACCEPT, "application/xhtml+xml");
-      request.header(HttpHeaderNames.ACCEPT, "image/png");
-      request.header(HttpHeaderNames.ACCEPT, "text/html;q=0.9");
-      request.header(HttpHeaderNames.ACCEPT, "text/plain;q=0.8");
-      request.header(HttpHeaderNames.ACCEPT, "*/*;q=0.5");
-      request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "en-us, en;q=0.5");
-      ClientResponse<String> response = request.get(String.class);
+      Builder builder = client.target(generateURL("/complex")).request();
+      builder.header(HttpHeaderNames.ACCEPT, "text/xml");
+      builder.header(HttpHeaderNames.ACCEPT, "application/xml");
+      builder.header(HttpHeaderNames.ACCEPT, "application/xhtml+xml");
+      builder.header(HttpHeaderNames.ACCEPT, "image/png");
+      builder.header(HttpHeaderNames.ACCEPT, "text/html;q=0.9");
+      builder.header(HttpHeaderNames.ACCEPT, "text/plain;q=0.8");
+      builder.header(HttpHeaderNames.ACCEPT, "*/*;q=0.5");
+      builder.header(HttpHeaderNames.ACCEPT_LANGUAGE, "en-us, en;q=0.5");
+      Response response = builder.get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertEquals("GET", response.getEntity());
-      Assert.assertEquals("application/xml", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
-      Assert.assertEquals("en-us", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+      Assert.assertEquals("GET", response.readEntity(String.class));
+      Assert.assertEquals("application/xml", response.getHeaderString(HttpHeaderNames.CONTENT_TYPE));
+      Assert.assertEquals("en-us", response.getHeaderString(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
    @Test
    public void testGetComplex2() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/complex"));
-      request.header(HttpHeaderNames.ACCEPT, "text/xml");
-      request.header(HttpHeaderNames.ACCEPT, "application/xml");
-      request.header(HttpHeaderNames.ACCEPT, "application/xhtml+xml");
-      request.header(HttpHeaderNames.ACCEPT, "image/png");
-      request.header(HttpHeaderNames.ACCEPT, "text/html;q=0.9");
-      request.header(HttpHeaderNames.ACCEPT, "text/plain;q=0.8");
-      request.header(HttpHeaderNames.ACCEPT, "*/*;q=0.5");
-      request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "en, en-us");
-      ClientResponse<String> response = request.get(String.class);
+      Builder builder = client.target(generateURL("/complex")).request();
+      builder.header(HttpHeaderNames.ACCEPT, "text/xml");
+      builder.header(HttpHeaderNames.ACCEPT, "application/xml");
+      builder.header(HttpHeaderNames.ACCEPT, "application/xhtml+xml");
+      builder.header(HttpHeaderNames.ACCEPT, "image/png");
+      builder.header(HttpHeaderNames.ACCEPT, "text/html;q=0.9");
+      builder.header(HttpHeaderNames.ACCEPT, "text/plain;q=0.8");
+      builder.header(HttpHeaderNames.ACCEPT, "*/*;q=0.5");
+      builder.header(HttpHeaderNames.ACCEPT_LANGUAGE, "en, en-us");
+      Response response = builder.get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertEquals("GET", response.getEntity());
-      Assert.assertEquals("application/xml", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
-      Assert.assertEquals("en-us", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+      Assert.assertEquals("GET", response.readEntity(String.class));
+      Assert.assertEquals("application/xml", response.getHeaderString(HttpHeaderNames.CONTENT_TYPE));
+      Assert.assertEquals("en-us", response.getHeaderString(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
    @Test
    public void testGetComplex3() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/complex"));
-      request.header(HttpHeaderNames.ACCEPT, "application/xml");
-      request.header(HttpHeaderNames.ACCEPT, "text/xml");
-      request.header(HttpHeaderNames.ACCEPT, "application/xhtml+xml");
-      request.header(HttpHeaderNames.ACCEPT, "image/png");
-      request.header(HttpHeaderNames.ACCEPT, "text/html;q=0.9");
-      request.header(HttpHeaderNames.ACCEPT, "text/plain;q=0.8");
-      request.header(HttpHeaderNames.ACCEPT, "*/*;q=0.5");
-      request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "en-us, en;q=0.5");
-      ClientResponse<String> response = request.get(String.class);
+      Builder builder = client.target(generateURL("/complex")).request();
+      builder.header(HttpHeaderNames.ACCEPT, "application/xml");
+      builder.header(HttpHeaderNames.ACCEPT, "text/xml");
+      builder.header(HttpHeaderNames.ACCEPT, "application/xhtml+xml");
+      builder.header(HttpHeaderNames.ACCEPT, "image/png");
+      builder.header(HttpHeaderNames.ACCEPT, "text/html;q=0.9");
+      builder.header(HttpHeaderNames.ACCEPT, "text/plain;q=0.8");
+      builder.header(HttpHeaderNames.ACCEPT, "*/*;q=0.5");
+      builder.header(HttpHeaderNames.ACCEPT_LANGUAGE, "en-us, en;q=0.5");
+      Response response = builder.get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertEquals("GET", response.getEntity());
-      Assert.assertEquals("application/xml", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
-      Assert.assertEquals("en-us", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
+      Assert.assertEquals("GET", response.readEntity(String.class));
+      Assert.assertEquals("application/xml", response.getHeaderString(HttpHeaderNames.CONTENT_TYPE));
+      Assert.assertEquals("en-us", response.getHeaderString(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
    @Test
    public void testGetComplex4() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/complex"));
-      request.header(HttpHeaderNames.ACCEPT, "application/xml");
-      request.header(HttpHeaderNames.ACCEPT, "text/xml");
-      request.header(HttpHeaderNames.ACCEPT, "application/xhtml+xml");
-      request.header(HttpHeaderNames.ACCEPT, "image/png");
-      request.header(HttpHeaderNames.ACCEPT, "text/html;q=0.9");
-      request.header(HttpHeaderNames.ACCEPT, "text/plain;q=0.8");
-      request.header(HttpHeaderNames.ACCEPT, "*/*;q=0.5");
-      request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "en, en-us;q=0.5");
-      ClientResponse<String> response = request.get(String.class);
+      Builder builder = client.target(generateURL("/complex")).request();
+      builder.header(HttpHeaderNames.ACCEPT, "application/xml");
+      builder.header(HttpHeaderNames.ACCEPT, "text/xml");
+      builder.header(HttpHeaderNames.ACCEPT, "application/xhtml+xml");
+      builder.header(HttpHeaderNames.ACCEPT, "image/png");
+      builder.header(HttpHeaderNames.ACCEPT, "text/html;q=0.9");
+      builder.header(HttpHeaderNames.ACCEPT, "text/plain;q=0.8");
+      builder.header(HttpHeaderNames.ACCEPT, "*/*;q=0.5");
+      builder.header(HttpHeaderNames.ACCEPT_LANGUAGE, "en, en-us;q=0.5");
+      Response response = builder.get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-      Assert.assertEquals("GET", response.getEntity());
-      Assert.assertEquals("en", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
-      Assert.assertEquals("text/xml", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
+      Assert.assertEquals("GET", response.readEntity(String.class));
+      Assert.assertEquals("en", response.getHeaderString(HttpHeaderNames.CONTENT_LANGUAGE));
+      Assert.assertEquals("text/xml", response.getHeaderString(HttpHeaderNames.CONTENT_TYPE));
    }
 
 
@@ -243,31 +247,31 @@ public class VariantsTest
    public void testGetComplexNotAcceptable() throws Exception
    {
       {
-         ClientRequest request = new ClientRequest(generateURL("/complex"));
-         request.header(HttpHeaderNames.ACCEPT, "application/atom+xml");
-         request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "en-us, en");
-         ClientResponse<?> response = request.get();
+         Builder builder = client.target(generateURL("/complex")).request();
+         builder.header(HttpHeaderNames.ACCEPT, "application/atom+xml");
+         builder.header(HttpHeaderNames.ACCEPT_LANGUAGE, "en-us, en");
+         Response response = builder.get();
          Assert.assertEquals(406, response.getStatus());;
-         String vary = response.getResponseHeaders().getFirst(HttpHeaderNames.VARY);
+         String vary = response.getHeaderString(HttpHeaderNames.VARY);
          Assert.assertNotNull(vary);
          System.out.println("vary: " + vary);
          Assert.assertTrue(contains(vary, "Accept"));
          Assert.assertTrue(contains(vary, "Accept-Language"));
-         response.releaseConnection();
+         response.close();
       }
 
       {
-         ClientRequest request = new ClientRequest(generateURL("/complex"));
-         request.header(HttpHeaderNames.ACCEPT, "application/xml");
-         request.header(HttpHeaderNames.ACCEPT_LANGUAGE, "fr");
-         ClientResponse<?> response = request.get();
+         Builder builder = client.target(generateURL("/complex")).request();
+         builder.header(HttpHeaderNames.ACCEPT, "application/xml");
+         builder.header(HttpHeaderNames.ACCEPT_LANGUAGE, "fr");
+         Response response = builder.get();
          Assert.assertEquals(406, response.getStatus());;
-         String vary = response.getResponseHeaders().getFirst(HttpHeaderNames.VARY);
+         String vary = response.getHeaderString(HttpHeaderNames.VARY);
          Assert.assertNotNull(vary);
          System.out.println("vary: " + vary);
          Assert.assertTrue(contains(vary, "Accept"));
          Assert.assertTrue(contains(vary, "Accept-Language"));
-         response.releaseConnection();
+         response.close();
       }
    }
 
@@ -289,56 +293,56 @@ public class VariantsTest
    @Test
    public void testGetEncoding1() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/encoding"));
-      request.header(HttpHeaderNames.ACCEPT_ENCODING, "enc1");
-      ClientResponse<String> response = request.get(String.class);
+      Builder builder = client.target(generateURL("/encoding")).request();
+      builder.header(HttpHeaderNames.ACCEPT_ENCODING, "enc1");
+      Response response = builder.get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());;
-      Assert.assertEquals("enc1", response.getEntity());
-      Assert.assertEquals("enc1", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
+      Assert.assertEquals("enc1", response.readEntity(String.class));
+      Assert.assertEquals("enc1", response.getHeaderString(HttpHeaderNames.CONTENT_ENCODING));
    }
 
    @Test
    public void testGetEncoding2() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/encoding"));
-      request.header(HttpHeaderNames.ACCEPT_ENCODING, "enc2");
-      ClientResponse<String> response = request.get(String.class);
+      Builder builder = client.target(generateURL("/encoding")).request();
+      builder.header(HttpHeaderNames.ACCEPT_ENCODING, "enc2");
+      Response response = builder.get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());;
-      Assert.assertEquals("enc2", response.getEntity());
-      Assert.assertEquals("enc2", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
+      Assert.assertEquals("enc2", response.readEntity(String.class));
+      Assert.assertEquals("enc2", response.getHeaderString(HttpHeaderNames.CONTENT_ENCODING));
    }
 
    @Test
    public void testGetEncoding3() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/encoding"));
-      request.header(HttpHeaderNames.ACCEPT_ENCODING, "enc3");
-      ClientResponse<String> response = request.get(String.class);
+      Builder builder = client.target(generateURL("/encoding")).request();
+      builder.header(HttpHeaderNames.ACCEPT_ENCODING, "enc3");
+      Response response = builder.get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());;
-      Assert.assertEquals("enc3", response.getEntity());
-      Assert.assertEquals("enc3", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
+      Assert.assertEquals("enc3", response.readEntity(String.class));
+      Assert.assertEquals("enc3", response.getHeaderString(HttpHeaderNames.CONTENT_ENCODING));
    }
 
    @Test
    public void testGetEncodingQ() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/encoding"));
-      request.header(HttpHeaderNames.ACCEPT_ENCODING, "enc1;q=0.5, enc2;q=0.9");
-      ClientResponse<String> response = request.get(String.class);
+      Builder builder = client.target(generateURL("/encoding")).request();
+      builder.header(HttpHeaderNames.ACCEPT_ENCODING, "enc1;q=0.5, enc2;q=0.9");
+      Response response = builder.get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());;
-      Assert.assertEquals("enc2", response.getEntity());
-      Assert.assertEquals("enc2", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
+      Assert.assertEquals("enc2", response.readEntity(String.class));
+      Assert.assertEquals("enc2", response.getHeaderString(HttpHeaderNames.CONTENT_ENCODING));
    }
 
    @Test
    public void testGetEncodingQ2() throws Exception
    {
-      ClientRequest request = new ClientRequest(generateURL("/encoding"));
-      request.header(HttpHeaderNames.ACCEPT_ENCODING, "enc1;q=0, enc2;q=0.888, enc3;q=0.889");
-      ClientResponse<String> response = request.get(String.class);
+      Builder builder = client.target(generateURL("/encoding")).request();
+      builder.header(HttpHeaderNames.ACCEPT_ENCODING, "enc1;q=0, enc2;q=0.888, enc3;q=0.889");
+      Response response = builder.get();
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());;
-      Assert.assertEquals("enc3", response.getEntity());
-      Assert.assertEquals("enc3", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_ENCODING));
+      Assert.assertEquals("enc3", response.readEntity(String.class));
+      Assert.assertEquals("enc3", response.getHeaderString(HttpHeaderNames.CONTENT_ENCODING));
    }
 
    private boolean contains(String l, String v)

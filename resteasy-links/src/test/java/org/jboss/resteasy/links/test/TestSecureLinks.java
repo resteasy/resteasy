@@ -10,8 +10,9 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
@@ -95,8 +96,9 @@ public class TestSecureLinks
 		localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
 		
 		httpClient = new DefaultHttpClient();
-		ApacheHttpClient4Executor executor = new ApacheHttpClient4Executor(httpClient, localContext);
-		client = ProxyFactory.create(BookStoreService.class, url, executor);
+		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient, localContext);
+		ResteasyWebTarget target = new ResteasyClientBuilder().httpEngine(engine).build().target(url);
+		client = target.proxy(BookStoreService.class);
 	}
 
 	@After

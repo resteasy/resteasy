@@ -1,19 +1,23 @@
 package org.jboss.resteasy.test.xxe;
 
 import org.junit.Assert;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.util.GenericType;
 import org.junit.After;
 import org.junit.Test;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
@@ -40,6 +44,7 @@ public class TestXXE
 {
    protected static ResteasyDeployment deployment;
    protected static Dispatcher dispatcher;
+   protected static Client client;
 
    @Path("/")
    public static class MovieResource
@@ -154,6 +159,7 @@ public class TestXXE
       deployment = EmbeddedContainer.start(initParams, contextParams);
       dispatcher = deployment.getDispatcher();
       deployment.getRegistry().addPerRequestResource(MovieResource.class);
+      client = ClientBuilder.newClient();
    }
 
    public static void before() throws Exception
@@ -161,11 +167,13 @@ public class TestXXE
       deployment = EmbeddedContainer.start();
       dispatcher = deployment.getDispatcher();
       deployment.getRegistry().addPerRequestResource(MovieResource.class);
+      client = ClientBuilder.newClient();
    }
    
    @After
    public void after() throws Exception
    {
+      client.close();
       EmbeddedContainer.stop();
       dispatcher = null;
       deployment = null;
@@ -177,11 +185,10 @@ public class TestXXE
       before();
       FavoriteMovieXmlRootElement m = new FavoriteMovieXmlRootElement();
       m.setTitle("&xxe");
-      ClientRequest request = new ClientRequest(generateURL("/xmlRootElement"));
-      request.body("application/*+json", m);
-      ClientResponse<?> response = request.post();
+      Builder request = client.target(generateURL("/xmlRootElement")).request();
+      Response response = request.post(Entity.entity(m, "application/*+json"));
       Assert.assertEquals(200, response.getStatus());
-      String entity = response.getEntity(String.class);
+      String entity = response.readEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
    }
@@ -192,11 +199,10 @@ public class TestXXE
       before("false");
       FavoriteMovieXmlRootElement m = new FavoriteMovieXmlRootElement();
       m.setTitle("&xxe");
-      ClientRequest request = new ClientRequest(generateURL("/xmlRootElement"));
-      request.body("application/*+json", m);
-      ClientResponse<?> response = request.post();
+      Builder request = client.target(generateURL("/xmlRootElement")).request();
+      Response response = request.post(Entity.entity(m, "application/*+json"));
       Assert.assertEquals(200, response.getStatus());
-      String entity = response.getEntity(String.class);
+      String entity = response.readEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
    }
@@ -207,55 +213,51 @@ public class TestXXE
       before("true");
       FavoriteMovieXmlRootElement m = new FavoriteMovieXmlRootElement();
       m.setTitle("&xxe");
-      ClientRequest request = new ClientRequest(generateURL("/xmlRootElement"));
-      request.body("application/*+json", m);
-      ClientResponse<?> response = request.post();
+      Builder request = client.target(generateURL("/xmlRootElement")).request();
+      Response response = request.post(Entity.entity(m, "application/*+json"));
       Assert.assertEquals(200, response.getStatus());
-      String entity = response.getEntity(String.class);
+      String entity = response.readEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
    }
 
-//   @Test
+   @Test
    public void testXmlTypeDefault() throws Exception
    {
       before();
       FavoriteMovieXmlType m = new FavoriteMovieXmlType();
       m.setTitle("&xxe");
-      ClientRequest request = new ClientRequest(generateURL("/xmlType"));
-      request.body("application/*+json", m);
-      ClientResponse<?> response = request.post();
+      Builder request = client.target(generateURL("/xmlType")).request();
+      Response response = request.post(Entity.entity(m, "application/*+json"));
       Assert.assertEquals(200, response.getStatus());
-      String entity = response.getEntity(String.class);
+      String entity = response.readEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
    }
    
-//   @Test
+   @Test
    public void testXmlTypeWithoutExpansion() throws Exception
    {
       before("false");
       FavoriteMovieXmlType m = new FavoriteMovieXmlType();
       m.setTitle("&xxe");
-      ClientRequest request = new ClientRequest(generateURL("/xmlType"));
-      request.body("application/*+json", m);
-      ClientResponse<?> response = request.post();
+      Builder request = client.target(generateURL("/xmlType")).request();
+      Response response = request.post(Entity.entity(m, "application/*+json"));
       Assert.assertEquals(200, response.getStatus());
-      String entity = response.getEntity(String.class);
+      String entity = response.readEntity(String.class);
       System.out.println("Result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
    }
 
-//   @Test
+   @Test
    public void testXmlTypeWithExpansion() throws Exception
    {
       before("true");
       FavoriteMovieXmlType m = new FavoriteMovieXmlType();
       m.setTitle("&xxe");
-      ClientRequest request = new ClientRequest(generateURL("/xmlType"));
-      request.body("application/*+json", m);
-      ClientResponse<?> response = request.post();
+      Builder request = client.target(generateURL("/xmlType")).request();
+      Response response = request.post(Entity.entity(m, "application/*+json"));
       Assert.assertEquals(200, response.getStatus());
-      String entity = response.getEntity(String.class);
+      String entity = response.readEntity(String.class);
       System.out.println("result: " + entity);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
    }
@@ -266,11 +268,10 @@ public class TestXXE
       before();
       FavoriteMovieXmlType m = new FavoriteMovieXmlType();
       m.setTitle("&xxe");
-      ClientRequest request = new ClientRequest(generateURL("/JAXBElement"));
-      request.body("application/*+json", m);
-      ClientResponse<?> response = request.post();
+      Builder request = client.target(generateURL("/JAXBElement")).request();
+      Response response = request.post(Entity.entity(m, "application/*+json"));
       Assert.assertEquals(200, response.getStatus());
-      String entity = response.getEntity(String.class);
+      String entity = response.readEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
    }
    
@@ -280,11 +281,10 @@ public class TestXXE
       before("false");
       FavoriteMovieXmlType m = new FavoriteMovieXmlType();
       m.setTitle("&xxe");
-      ClientRequest request = new ClientRequest(generateURL("/JAXBElement"));
-      request.body("application/*+json", m);
-      ClientResponse<?> response = request.post();
+      Builder request = client.target(generateURL("/JAXBElement")).request();
+      Response response = request.post(Entity.entity(m, "application/*+json"));
       Assert.assertEquals(200, response.getStatus());
-      String entity = response.getEntity(String.class);
+      String entity = response.readEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
    }
    
@@ -294,11 +294,10 @@ public class TestXXE
       before("true");
       FavoriteMovieXmlType m = new FavoriteMovieXmlType();
       m.setTitle("&xxe");
-      ClientRequest request = new ClientRequest(generateURL("/JAXBElement"));
-      request.body("application/*+json", m);
-      ClientResponse<?> response = request.post();
+      Builder request = client.target(generateURL("/JAXBElement")).request();
+      Response response = request.post(Entity.entity(m, "application/*+json"));
       Assert.assertEquals(200, response.getStatus());
-      String entity = response.getEntity(String.class);
+      String entity = response.readEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
    }
    
@@ -392,12 +391,14 @@ public class TestXXE
       FavoriteMovieXmlRootElement m2 = new FavoriteMovieXmlRootElement();
       m2.setTitle("Le Regle de Jeu");
       list.add(m2);
-      ClientRequest request = new ClientRequest(generateURL("/list"));  
-      request.body(MediaType.APPLICATION_JSON_TYPE, list, new GenericType<ArrayList<FavoriteMovieXmlRootElement>>(){});
-      ClientResponse<?> response = request.post();
+      Builder request = client.target(generateURL("/list")).request();
+      GenericType<?> type = new GenericType<List<FavoriteMovieXmlRootElement>>() {};
+      GenericEntity<List<FavoriteMovieXmlRootElement>> genericEntity = new GenericEntity<List<FavoriteMovieXmlRootElement>>(list, type.getType());
+      Entity<GenericEntity<List<FavoriteMovieXmlRootElement>>> entity = Entity.entity(genericEntity, MediaType.APPLICATION_JSON_TYPE);
+      Response response = request.post(entity);
       Assert.assertEquals(200, response.getStatus());
-      String entity = response.getEntity(String.class);
-      Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+      String result = response.readEntity(String.class);
+      Assert.assertTrue(result.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
    }
    
    void doSetTest(Boolean expand) throws Exception
@@ -418,12 +419,14 @@ public class TestXXE
       FavoriteMovieXmlRootElement m2 = new FavoriteMovieXmlRootElement();
       m2.setTitle("Le Regle de Jeu");
       set.add(m2);
-      ClientRequest request = new ClientRequest(generateURL("/set"));  
-      request.body(MediaType.APPLICATION_JSON_TYPE, set, new GenericType<Set<FavoriteMovieXmlRootElement>>(){});
-      ClientResponse<?> response = request.post();
+      GenericType<?> type = new GenericType<Set<FavoriteMovieXmlRootElement>>() {};
+      GenericEntity<Set<FavoriteMovieXmlRootElement>> genericEntity = new GenericEntity<Set<FavoriteMovieXmlRootElement>>(set, type.getType());
+      Entity<GenericEntity<Set<FavoriteMovieXmlRootElement>>> entity = Entity.entity(genericEntity, MediaType.APPLICATION_JSON_TYPE);
+      Builder request = client.target(generateURL("/set")).request();
+      Response response = request.post(entity);
       Assert.assertEquals(200, response.getStatus());
-      String entity = response.getEntity(String.class);
-      Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+      String result = response.readEntity(String.class);
+      Assert.assertTrue(result.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
    }
    
    void doArrayTest(Boolean expand) throws Exception
@@ -444,11 +447,10 @@ public class TestXXE
       FavoriteMovieXmlRootElement m2 = new FavoriteMovieXmlRootElement();
       m2.setTitle("Le Regle de Jeu");
       array[1] = m2;
-      ClientRequest request = new ClientRequest(generateURL("/array"));
-      request.body(MediaType.APPLICATION_JSON_TYPE, array, new GenericType<FavoriteMovieXmlRootElement[]>(){});
-      ClientResponse<?> response = request.post();
+      Builder request = client.target(generateURL("/array")).request();
+      Response response = request.post(Entity.entity(array, MediaType.APPLICATION_JSON_TYPE));
       Assert.assertEquals(200, response.getStatus());
-      String entity = response.getEntity(String.class);
+      String entity = response.readEntity(String.class);
       Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
    }
    
@@ -470,11 +472,13 @@ public class TestXXE
       m = new FavoriteMovieXmlRootElement();
       m.setTitle("La Regle de Jeu");
       map.put("french", m);
-      ClientRequest request = new ClientRequest(generateURL("/map"));
-      request.body(MediaType.APPLICATION_JSON_TYPE, map, new GenericType<HashMap<String, FavoriteMovieXmlRootElement>>(){});
-      ClientResponse<?> response = request.post();
+      GenericType<?> type = new GenericType<Map<String, FavoriteMovieXmlRootElement>>() {};
+      GenericEntity<Map<String, FavoriteMovieXmlRootElement>> genericEntity = new GenericEntity<Map<String, FavoriteMovieXmlRootElement>>(map, type.getType());
+      Entity<GenericEntity<Map<String, FavoriteMovieXmlRootElement>>> entity = Entity.entity(genericEntity, MediaType.APPLICATION_JSON_TYPE);
+      Builder request = client.target(generateURL("/map")).request();
+      Response response = request.post(entity);
       Assert.assertEquals(200, response.getStatus());
-      String entity = response.getEntity(String.class);
-      Assert.assertTrue(entity.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
+      String result = response.readEntity(String.class);
+      Assert.assertTrue(result.indexOf("xx:xx:xx:xx:xx:xx:xx") < 0);
    }
 }

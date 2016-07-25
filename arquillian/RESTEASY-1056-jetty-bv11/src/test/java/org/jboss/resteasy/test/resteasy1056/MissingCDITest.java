@@ -1,14 +1,16 @@
 package org.jboss.resteasy.test.resteasy1056;
 
 import static org.junit.Assert.assertEquals;
+
+import javax.ws.rs.core.Response;
+
 import org.junit.Assert;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.resteasy1056.TestApplication;
 import org.jboss.resteasy.resteasy1056.TestResource;
 import org.jboss.shrinkwrap.api.Archive;
@@ -42,24 +44,23 @@ public class MissingCDITest
    @Test
    public void testMissingCDIValid() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9090/RESTEASY-1056/test/17");
-      ClientResponse<?> response = request.get();
+      Response response = ResteasyClientBuilder.newClient().target("http://localhost:9090/RESTEASY-1056/test/17").request().get();
       System.out.println("Status: " + response.getStatus());
-      System.out.println("Result: " + response.getEntity(String.class));
+      String entity = response.readEntity(String.class);
+      System.out.println("Result: " + entity);
       assertEquals(200, response.getStatus());
-      Assert.assertEquals("17", response.getEntity(String.class));
+      Assert.assertEquals("17", entity);
    }
    
    @Test
    public void testMissingCDIInvalid() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:9090/RESTEASY-1056/test/0");
-      ClientResponse<?> response = request.get();
+      Response response = ResteasyClientBuilder.newClient().target("http://localhost:9090/RESTEASY-1056/test/0").request().get();
       System.out.println("Status: " + response.getStatus());
-      System.out.println("Result: " + response.getEntity(String.class));
-      String answer = response.getEntity(String.class);
+      String entity = response.readEntity(String.class);
+      System.out.println("Result: " + entity);
       assertEquals(400, response.getStatus());
-      ResteasyViolationException e = new ResteasyViolationException(answer);
+      ResteasyViolationException e = new ResteasyViolationException(entity);
       countViolations(e, 1, 0, 0, 0, 1, 0);
       ResteasyConstraintViolation cv = e.getParameterViolations().iterator().next();
       Assert.assertTrue(cv.getMessage().equals("must be greater than or equal to 7"));

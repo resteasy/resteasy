@@ -2,7 +2,6 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.annotations.Query;
-import org.jboss.resteasy.annotations.Suspend;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.MethodInjector;
@@ -119,8 +118,6 @@ public class InjectorFactoryImpl implements InjectorFactory
             return new FormInjector(parameter.getType(), providerFactory);
          case MATRIX_PARAM:
             return new MatrixParamInjector(parameter.getType(), parameter.getGenericType(), parameter.getAccessibleObject(), parameter.getParamName(), parameter.getDefaultValue(), parameter.isEncoded(), parameter.getAnnotations(), providerFactory);
-         case SUSPEND:
-            return new SuspendInjector(parameter.getSuspendTimeout(), parameter.getType());
          case CONTEXT:
             return createContextProxy(parameter.getType(), providerFactory);
          case SUSPENDED:
@@ -155,7 +152,6 @@ public class InjectorFactoryImpl implements InjectorFactory
       CookieParam cookie;
       FormParam formParam;
       Form form;
-      Suspend suspend;
       Suspended suspended;
       Query query;
 
@@ -211,10 +207,6 @@ public class InjectorFactoryImpl implements InjectorFactory
       else if ((matrix = findAnnotation(annotations, MatrixParam.class)) != null)
       {
          return new MatrixParamInjector(type, genericType, injectTarget, matrix.value(), defaultVal, encode, annotations, providerFactory);
-      }
-      else if ((suspend = findAnnotation(annotations, Suspend.class)) != null)
-      {
-         return new SuspendInjector(suspend.value(), type);
       }
       else if (findAnnotation(annotations, Context.class) != null)
       {

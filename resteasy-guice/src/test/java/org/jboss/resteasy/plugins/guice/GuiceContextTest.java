@@ -1,14 +1,12 @@
 package org.jboss.resteasy.plugins.guice;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
-
 import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Module;
 
-import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.TestPortProvider;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -24,10 +22,8 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class GuiceContextTest
@@ -59,7 +55,7 @@ public class GuiceContextTest
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
       processor.processInjector(Guice.createInjector(module));
-      final TestResource resource = ProxyFactory.create(TestResource.class, generateBaseUrl());
+      final TestResource resource = TestPortProvider.createProxy(TestResource.class, TestPortProvider.generateBaseUrl());
       Assert.assertEquals("method", resource.getName());
       dispatcher.getRegistry().removeRegistrations(MethodTestResource.class);
    }
@@ -77,7 +73,7 @@ public class GuiceContextTest
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
       processor.processInjector(Guice.createInjector(module));
-      final TestResource resource = ProxyFactory.create(TestResource.class, generateBaseUrl());
+      final TestResource resource = TestPortProvider.createProxy(TestResource.class, TestPortProvider.generateBaseUrl());
       Assert.assertEquals("field", resource.getName());
       dispatcher.getRegistry().removeRegistrations(FieldTestResource.class);
    }
@@ -96,7 +92,7 @@ public class GuiceContextTest
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
       processor.processInjector(Guice.createInjector(module));
-      ProxyFactory.create(TestResource.class, generateBaseUrl());
+      TestPortProvider.createProxy(TestResource.class, TestPortProvider.generateBaseUrl());
    }
 
    //@Test // not (yet) supprted
@@ -112,7 +108,7 @@ public class GuiceContextTest
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
       processor.processInjector(Guice.createInjector(module));
-      final TestResource resource = ProxyFactory.create(TestResource.class, generateBaseUrl());
+      final TestResource resource = TestPortProvider.createProxy(TestResource.class, TestPortProvider.generateBaseUrl());
       Assert.assertEquals("constructor", resource.getName());
       dispatcher.getRegistry().removeRegistrations(ConstructorTestResource.class);
    }

@@ -1,0 +1,124 @@
+<chapter id="Miscellaneous">
+   <title>Miscellaneous changes</title>
+   
+   <para>
+   In addition to the various updated frameworks discussed in previous sections, a few individual
+   classes have been updated or discarded.
+   </para>
+
+   <section>
+   <title>Link</title>
+   
+   <para>
+   <classname>org.jboss.resteasy.spi.Link</classname> has been replaced by
+   the abstract class <classname>javax.ws.rs.core.Link</classname> and its implementation
+   <classname>org.jboss.resteasy.specimpl.LinkImpl</classname>. They both represent links as
+   described in <ulink url="https://tools.ietf.org/html/rfc5988">RFC 5988</ulink>, with slight
+   variations. For example, there is now <methodname>javax.ws.rs.core.Link.getRel()</methodname>
+   instead of <methodname>org.jboss.resteasy.spi.Link.getRelationship()</methodname>. Also, they
+   are constructed differently. For example,
+   </para>
+   
+   <programlisting>
+@GET
+@Path("/link-header")
+public Response getWithHeader(@Context UriInfo uri)
+{
+   URI subUri = uri.getAbsolutePathBuilder().path("next-link").build();
+   Link link = new Link();
+   link.setHref(subUri.toASCIIString());
+   link.setRelationship("nextLink");
+   return Response.noContent().header("Link", link.toString()).build();
+}
+   </programlisting>
+   
+   <para>
+   would now be written
+   </para>
+   
+   <programlisting>
+@GET
+@Path("/link-header")
+public Response getWithHeader(@Context UriInfo uri)
+{
+   URI subUri = uri.getAbsolutePathBuilder().path("next-link").build();
+   Link link = new LinkBuilderImpl().uri(subUri).rel("nextLink").build();
+   return Response.noContent().header("Link", link.toString()).build();
+}
+   </programlisting>
+   </section>
+
+   <section>
+   <title>GenericType</title>
+   
+   <para>
+   <classname>org.jboss.resteasy.util.GenericType</classname>, which allows the creation of 
+   parameterized type objects at runtime, is now replaced by
+   <classname>javax.ws.rs.core.GenericType</classname>. They are essentially the same class, with
+   minor method name changes. In particular, <methodname>getGenericType()</methodname> becomes 
+   <methodname>getType()</methodname> and <methodname>getType()</methodname> becomes
+   <methodname>getRawType()</methodname>. 
+   </para>
+   
+   </section>
+   
+   <section>
+   <title>StringConverter</title>
+   
+   <para>
+   Implementations of the <classname>org.jboss.resteasy.spi.StringConverter</classname> interface in
+   Resteasy 2 are providers that can marshal and unmarshal string-based parameters labelled with @HeaderParam,
+   @MatrixParam, @QueryParam, or @PathParam. JAX-RS 2.0 introduces a similar interface, 
+   <classname>javax.ws.rs.ext.ParamConverter</classname>, but implementations of 
+   <classname>ParamConverter</classname> are not recognized as providers. Rather, a provider
+   that implements <classname>javax.ws.rs.ext.ParamConverterProvider</classname>, which produces a
+   <classname>ParamConverter</classname>, may be registered. For example,
+   </para>
+   
+   <programlisting>
+public static class POJO { ... }
+   
+public static class POJOConverter implements ParamConverter&lt;POJO&gt;
+{
+   public POJO fromString(String str)
+   {
+      POJO pojo = new POJO();
+      return pojo;
+   }
+
+   public String toString(POJO value)
+   {
+      return value.getName();
+   }
+}
+
+public static class POJOConverterProvider implements ParamConverterProvider
+{
+   @Override
+   public &lt;T&gt; ParamConverter&lt;T&gt; getConverter(Class&lt;T&gt; rawType, Type genericType, Annotation[] annotations)
+   {
+      if (!POJO.class.equals(rawType)) return null;
+      return (ParamConverter&lt;T&gt;)new POJOConverter();
+   }
+}
+
+...
+ResteasyProviderFactory.getInstance().registerProvider(POJOConverterProvider.class);
+...
+   </programlisting>
+   </section>
+   
+   <section>
+   <title>Logger</title>
+   
+   <para>
+   Resteasy 2 comes with a logging abstraction called <classname>org.jboss.resteasy.logging.Logger</classname>,
+   extensions of which delegate to logging frameworks such as log4j and slf4j. Resteasy 3 no longer uses its
+   own logging abstraction but rather adopts the JBoss Logging framework, a brief description of which can
+   be found at 
+   <ulink url="http://docs.jboss.org/hibernate/orm/4.3/topical/html/logging/Logging.html">http://docs.jboss.org/hibernate/orm/4.3/topical/html/logging/Logging.html</ulink>.
+   JBoss Logging was chosen for its internationalization and localization support.
+   </para>
+   
+   </section>
+</chapter>

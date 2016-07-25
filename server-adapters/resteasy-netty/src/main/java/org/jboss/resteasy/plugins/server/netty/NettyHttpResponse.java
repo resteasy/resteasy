@@ -116,12 +116,13 @@ public class NettyHttpResponse implements HttpResponse
            responseStatus = HttpResponseStatus.valueOf(status);
        }
        DefaultHttpResponse response = new DefaultHttpResponse(HTTP_1_1, responseStatus);
-       if (keepAlive) 
-       {
-           // Add keep alive and content length if needed
-           response.addHeader(Names.CONNECTION, Values.KEEP_ALIVE);
-           response.addHeader(Names.CONTENT_LENGTH, 0);
-       }
+      if (keepAlive)
+      {
+         // Add keep alive and content length if needed
+         response.headers()
+            .add(Names.CONNECTION, Values.KEEP_ALIVE)
+            .add(Names.CONTENT_LENGTH, 0);
+      }
        channel.write(response);
        committed = true;
    }

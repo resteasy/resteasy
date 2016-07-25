@@ -5,10 +5,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.EmbeddedContainer;
@@ -69,27 +70,25 @@ public class MatrixParamEncodingTest
    @Test
    public void testMatrixParamRequestDecoded() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:8081/decoded");
-      request.matrixParameter("param", "ac/dc");
-      System.out.println("Sending request: " + request.getUri());
-      ClientResponse<String> response = request.get(String.class);
-      System.out.println("Received response: " + response.getEntity());
+      WebTarget target = ResteasyClientBuilder.newClient().target("http://localhost:8081/decoded");
+      Response response = target.matrixParam("param", "ac/dc").request().get();
+      String entity = response.readEntity(String.class);
+      System.out.println("Received response: " + entity);
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("ac/dc", response.getEntity());
-      response.releaseConnection();
+      Assert.assertEquals("ac/dc", entity);
+      response.close();
    }
    
    @Test
    public void testMatrixParamRequestEncoded() throws Exception
    {
-      ClientRequest request = new ClientRequest("http://localhost:8081/encoded");
-      request.matrixParameter("param", "ac/dc");
-      System.out.println("Sending request: " + request.getUri());
-      ClientResponse<String> response = request.get(String.class);
-      System.out.println("Received response: " + response.getEntity());
+      WebTarget target = ResteasyClientBuilder.newClient().target("http://localhost:8081/encoded");
+      Response response = target.matrixParam("param", "ac/dc").request().get();
+      String entity = response.readEntity(String.class);
+      System.out.println("Received response: " + entity);
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("ac%2Fdc", response.getEntity());
-      response.releaseConnection();
+      Assert.assertEquals("ac%2Fdc", entity);
+      response.close();
    }
    
    @Test
@@ -97,13 +96,13 @@ public class MatrixParamEncodingTest
    {
       UriBuilder uriBuilder = ResteasyUriBuilder.fromUri("http://localhost:8081/decoded");
       uriBuilder.matrixParam("param", "ac/dc");
-      ClientRequest request = new ClientRequest(uriBuilder.build().toString());
-      System.out.println("Sending request to " + uriBuilder.build().toString());
-      ClientResponse<String> response = request.get(String.class);
-      System.out.println("Received response: " + response.getEntity());
+      WebTarget target = ResteasyClientBuilder.newClient().target(uriBuilder);
+      Response response = target.request().get();
+      String entity = response.readEntity(String.class);
+      System.out.println("Received response: " + entity);
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("ac/dc", response.getEntity());
-      response.releaseConnection();
+      Assert.assertEquals("ac/dc", entity);
+      response.close();
    }
    
    @Test
@@ -111,12 +110,12 @@ public class MatrixParamEncodingTest
    {
       UriBuilder uriBuilder = ResteasyUriBuilder.fromUri("http://localhost:8081/encoded");
       uriBuilder.matrixParam("param", "ac/dc");
-      ClientRequest request = new ClientRequest(uriBuilder.build().toString());
-      System.out.println("Sending request to " + uriBuilder.build().toString());
-      ClientResponse<String> response = request.get(String.class);
-      System.out.println("Received response: " + response.getEntity());
+      WebTarget target = ResteasyClientBuilder.newClient().target(uriBuilder);
+      Response response = target.request().get();
+      String entity = response.readEntity(String.class);
+      System.out.println("Received response: " + entity);
       Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("ac%2Fdc", response.getEntity());
-      response.releaseConnection();
+      Assert.assertEquals("ac%2Fdc", entity);
+      response.close();
    }
 }
