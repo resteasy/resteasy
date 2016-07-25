@@ -20,7 +20,9 @@ e.g. link to issue/bugzilla
 ~~~
 
 ## Communication
-- [Mailing Lists](https://lists.sourceforge.net/lists/listinfo/resteasy-developers)
+- General discussion: (https://lists.jboss.org/mailman/listinfo/resteasy)
+- Development issues discussion: (https://lists.jboss.org/mailman/listinfo/resteasy-dev)
+
 
 ### More information
 Read more about best practices in [this github guide](https://guides.github.com/activities/contributing-to-open-source/)
