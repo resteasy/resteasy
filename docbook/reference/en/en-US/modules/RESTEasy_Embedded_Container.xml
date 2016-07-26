@@ -251,5 +251,73 @@ If you want to use Spring, see the SpringBeanProcessor.  Here's a pseudo-code ex
 ]]></programlisting>
 
     </section>
+  <section>
+    <title>Vert.x</title>
+    <para>
+      Resteasy has integration with the popular Vert.x project as well..
+    </para>
+    <programlisting> <![CDATA[
+   public static void start(VertxResteasyDeployment deployment) throws Exception
+   {
+      VertxJaxrsServer server = new VertxJaxrsServer();
+      server.setDeployment(deployment);
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("");
+      server.setSecurityDomain(null);
+      server.start();
+   }
+    ]]></programlisting>
+
+    <para>Maven project you must include is:</para>
+    <programlisting> <![CDATA[
+  <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-vertx</artifactId>
+      <version>3.1.0-SNAPSHOT</version>
+  </dependency>
+    ]]></programlisting>
+
+    <para>The server will bootstrap its own Vert.x instance and Http server.</para>
+
+    <para>When a resource is called, it is done with the Vert.x Event Loop thread, keep in mind to
+    not block this thread and respect the Vert.x programming model, see the related Vert.x <ulink url="http://vertx.io/docs/vertx-core/java/#_don_t_block_me">manual page</ulink>.</para>
+
+    <para>Vert.x extends the Resteasy registry to  provide a new binding scope that creates resources per Event Loop:</para>
+    <programlisting> <![CDATA[
+  VertxResteasyDeployment deployment = new VertxResteasyDeployment();
+  // Create an instance of resource per Event Loop
+  deployment.getRegistry().addPerInstanceResource(Resource.class);
+    ]]></programlisting>
+
+    <para>The per instance binding scope caches the same resource instance for each event loop providing the same
+    concurrency model than a verticle deployed multiple times.</para>
+
+    <para>Vert.x can also embed a Resteasy deployment, making easy to use Jax-RS annotated controller in Vert.x applications: </para>
+    <programlisting> <![CDATA[
+  Vertx vertx = Vertx.vertx();
+  HttpServer server = vertx.createHttpServer();
+
+  // Set an handler calling Resteasy
+  server.requestHandler(new VertxRequestHandler(vertx, deployment));
+
+  // Start the server
+  server.listen(8080, "localhost");
+    ]]></programlisting>
+
+    <para>Vert.x objects can be injected in annotated resources:</para>
+    <programlisting> <![CDATA[
+  @GET
+  @Path("/somepath")
+  @Produces("text/plain")
+  public String context(
+      @Context io.vertx.core.Context context,
+      @Context io.vertx.core.Vertx vertx,
+      @Context io.vertx.core.http.HttpServerRequest req,
+      @Context io.vertx.core.http.HttpServerResponse resp) {
+    return "the-response";
+  }
+    ]]></programlisting>
+
+  </section>
 
 </chapter>
