@@ -25,7 +25,6 @@ public class WADLNettyContainerTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-
         ResteasyDeployment deployment = new ResteasyDeployment();
         deployment.setSecurityEnabled(true);
 
