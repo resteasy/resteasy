@@ -1,15 +1,14 @@
 package org.jboss.resteasy.test;
 
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
-import io.vertx.core.http.HttpServerOptions;
-import org.jboss.resteasy.plugins.server.vertx.VertxRequestHandler;
-import org.jboss.resteasy.plugins.server.vertx.VertxResteasyDeployment;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -19,13 +18,10 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import org.jboss.resteasy.plugins.server.vertx.VertxRequestHandler;
+import org.jboss.resteasy.plugins.server.vertx.VertxResteasyDeployment;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>

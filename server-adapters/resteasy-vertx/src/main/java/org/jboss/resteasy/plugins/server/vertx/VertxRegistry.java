@@ -1,12 +1,10 @@
 package org.jboss.resteasy.plugins.server.vertx;
 
-import io.vertx.core.Vertx;
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
-import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.metadata.ResourceClass;
 
 /**
