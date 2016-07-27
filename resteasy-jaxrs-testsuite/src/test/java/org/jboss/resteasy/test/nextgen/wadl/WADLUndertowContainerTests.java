@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.nextgen.wadl;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.test.nextgen.wadl.resources.BasicResource;
-import org.jboss.resteasy.wadl.ResteasyWadlDefaultResource;
 import org.jboss.resteasy.wadl.WadlUndertowConnector;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -29,6 +28,8 @@ public class WADLUndertowContainerTests {
         WADLBasicTests basicTest = new WADLBasicTests();
         basicTest.setPort(TestPortProvider.getPort());
         basicTest.setClient(client);
+        basicTest.setUrl("http://127.0.0.1:${port}/base/application.xml".replaceAll("\\$\\{port\\}",
+                Integer.valueOf(TestPortProvider.getPort()).toString()));
         basicTest.testBasicSet();
         client.close();
     }
@@ -45,7 +46,7 @@ public class WADLUndertowContainerTests {
         server.stop();
     }
 
-    @ApplicationPath("/")
+    @ApplicationPath("/base")
     public static class MyApp extends Application {
         @Override
         public Set<Class<?>> getClasses() {
