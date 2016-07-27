@@ -91,8 +91,6 @@ public class JaxrsAsyncTest
    public void testEmpty() throws Exception
    {
       callEmpty(client);
-      callEmpty(client);
-      callEmpty(client);
    }
 
    private void callEmpty(Client client)
