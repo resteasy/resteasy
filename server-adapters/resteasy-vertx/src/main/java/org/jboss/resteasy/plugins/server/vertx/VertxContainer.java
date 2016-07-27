@@ -1,5 +1,6 @@
-package org.jboss.resteasy.test;
+package org.jboss.resteasy.plugins.server.vertx;
 
+import org.jboss.resteasy.client.jaxrs.util.PortProvider;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.vertx.VertxJaxrsServer;
 import org.jboss.resteasy.plugins.server.vertx.VertxResteasyDeployment;
@@ -26,7 +27,7 @@ public class VertxContainer
    {
       vertx = new VertxJaxrsServer();
       vertx.setDeployment(deployment);
-      vertx.setPort(TestPortProvider.getPort());
+      vertx.setPort(PortProvider.getPort());
       vertx.setRootResourcePath("");
       vertx.setSecurityDomain(null);
       vertx.start();
@@ -43,7 +44,7 @@ public class VertxContainer
    {
       vertx = new VertxJaxrsServer();
       vertx.setDeployment(deployment);
-      vertx.setPort(TestPortProvider.getPort());
+      vertx.setPort(PortProvider.getPort());
       vertx.setRootResourcePath(bindPath);
       vertx.setSecurityDomain(domain);
       vertx.start();

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test;
 
+import org.jboss.resteasy.plugins.server.vertx.VertxContainer;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;

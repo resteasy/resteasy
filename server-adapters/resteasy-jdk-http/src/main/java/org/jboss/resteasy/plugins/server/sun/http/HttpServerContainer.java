@@ -1,5 +1,6 @@
-package org.jboss.resteasy.test;
+package org.jboss.resteasy.plugins.server.sun.http;
 
+import org.jboss.resteasy.client.jaxrs.util.PortProvider;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.sun.http.SunHttpJaxrsServer;
 import org.jboss.resteasy.plugins.server.sun.http.i18n.Messages;
@@ -12,10 +13,7 @@ import java.util.Hashtable;
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * 
- * @deprecated Use org.jboss.resteasy.plugins.server.sun.http.HttpServerContainer instead
  */
-@Deprecated
 public class HttpServerContainer
 {
    public static SunHttpJaxrsServer sun;
@@ -45,7 +43,7 @@ public class HttpServerContainer
       System.out.println(Messages.MESSAGES.embeddedContainerStart());
       sun = new SunHttpJaxrsServer();
       sun.setDeployment(deployment);
-      sun.setPort(TestPortProvider.getPort());
+      sun.setPort(PortProvider.getPort());
       sun.setRootResourcePath("");
       sun.setSecurityDomain(null);
       sun.start();
@@ -67,7 +65,7 @@ public class HttpServerContainer
    {
       sun = new SunHttpJaxrsServer();
       sun.setDeployment(deployment);
-      sun.setPort(TestPortProvider.getPort());
+      sun.setPort(PortProvider.getPort());
       sun.setRootResourcePath(bindPath);
       sun.setSecurityDomain(domain);
       sun.start();
