@@ -6,6 +6,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.HttpHeaders.Values;
+
+import org.jboss.resteasy.plugins.server.netty.NettyContainer;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.junit.*;
 
