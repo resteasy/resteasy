@@ -27,7 +27,7 @@ public class RESTEASY1323Test
 {
    static String BASE_URI = generateURL("");
 
-   static final int REQUEST_TIMEOUT = 4000;
+   static final int REQUEST_TIMEOUT = 5000;
 
    @BeforeClass
    public static void setupSuite() throws Exception
