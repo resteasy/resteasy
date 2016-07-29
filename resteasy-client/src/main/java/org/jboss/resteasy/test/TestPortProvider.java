@@ -2,7 +2,7 @@ package org.jboss.resteasy.test;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.client.jaxrs.util.PortProvider;
+import org.jboss.resteasy.util.PortProvider;
 
 import java.net.MalformedURLException;
 import java.net.URI;
