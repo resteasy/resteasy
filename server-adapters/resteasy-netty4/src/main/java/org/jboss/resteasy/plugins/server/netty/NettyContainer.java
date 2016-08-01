@@ -1,5 +1,6 @@
-package org.jboss.resteasy.test;
+package org.jboss.resteasy.plugins.server.netty;
 
+import org.jboss.resteasy.util.PortProvider;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
@@ -26,7 +27,7 @@ public class NettyContainer
    {
       netty = new NettyJaxrsServer();
       netty.setDeployment(deployment);
-      netty.setPort(TestPortProvider.getPort());
+      netty.setPort(PortProvider.getPort());
       netty.setRootResourcePath("");
       netty.setSecurityDomain(null);
       netty.start();
@@ -43,7 +44,7 @@ public class NettyContainer
    {
       netty = new NettyJaxrsServer();
       netty.setDeployment(deployment);
-      netty.setPort(TestPortProvider.getPort());
+      netty.setPort(PortProvider.getPort());
       netty.setRootResourcePath(bindPath);
       netty.setSecurityDomain(domain);
       netty.start();

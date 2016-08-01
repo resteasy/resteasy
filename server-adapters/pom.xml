@@ -18,5 +18,6 @@
         <module>resteasy-netty4</module>
         <module>resteasy-netty4-cdi</module>
         <module>resteasy-undertow</module>
+        <module>resteasy-vertx</module>
     </modules>
 </project>

@@ -6,6 +6,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.HttpHeaders.Values;
+
+import org.jboss.resteasy.plugins.server.netty.NettyContainer;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.junit.*;
 
@@ -27,7 +29,7 @@ public class RESTEASY1323Test
 {
    static String BASE_URI = generateURL("");
 
-   static final int REQUEST_TIMEOUT = 4000;
+   static final int REQUEST_TIMEOUT = 5000;
 
    @BeforeClass
    public static void setupSuite() throws Exception
