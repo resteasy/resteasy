@@ -1,6 +1,6 @@
 package org.jboss.resteasy.plugins.spring;
 
-import org.jboss.resteasy.client.jaxrs.util.PortProvider;
+import org.jboss.resteasy.util.PortProvider;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;

@@ -7,6 +7,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
+import org.jboss.resteasy.plugins.server.netty.NettyContainer;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.AfterClass;

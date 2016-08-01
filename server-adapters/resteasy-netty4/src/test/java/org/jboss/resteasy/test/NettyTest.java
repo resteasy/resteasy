@@ -1,6 +1,8 @@
 package org.jboss.resteasy.test;
 
 import io.netty.channel.ChannelHandlerContext;
+
+import org.jboss.resteasy.plugins.server.netty.NettyContainer;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
