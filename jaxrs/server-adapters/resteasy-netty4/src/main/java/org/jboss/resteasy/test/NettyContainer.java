@@ -7,7 +7,10 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * 
+ * @deprecated Use org.jboss.resteasy.plugins.server.netty.NettyContainer instead
  */
+@Deprecated
 public class NettyContainer
 {
    public static NettyJaxrsServer netty;
