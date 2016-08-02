@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 
 public class AnnotationResolver
 {
+   @SuppressWarnings(value = "unchecked")
    public static Class getClassWithAnnotation(Class<?> clazz, Class<? extends Annotation> annotation)
    {
       if (clazz.isAnnotationPresent(annotation))

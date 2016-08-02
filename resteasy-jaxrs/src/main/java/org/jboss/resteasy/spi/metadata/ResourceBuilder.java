@@ -46,6 +46,7 @@ import static org.jboss.resteasy.util.FindAnnotation.findAnnotation;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings(value = "unchecked")
 public class ResourceBuilder
 {
    public static class ResourceClassBuilder
@@ -109,7 +110,7 @@ public class ResourceBuilder
       }
    }
 
-   public static class ParameterBuilder<T extends ParameterBuilder>
+   public static class ParameterBuilder<T extends ParameterBuilder<T>>
    {
       final Parameter parameter;
 
@@ -348,8 +349,7 @@ public class ResourceBuilder
 
    }
 
-
-   public static class LocatorMethodParameterBuilder<T extends LocatorMethodParameterBuilder> extends ParameterBuilder<T>
+   public static class LocatorMethodParameterBuilder<T extends LocatorMethodParameterBuilder<T>>  extends ParameterBuilder<T>
    {
       final ResourceLocatorBuilder locator;
       final MethodParameter param;
@@ -429,7 +429,7 @@ public class ResourceBuilder
       }
    }
 
-   public static class ResourceLocatorBuilder<T extends ResourceLocatorBuilder>
+   public static class ResourceLocatorBuilder<T extends ResourceLocatorBuilder<T>>
    {
 
       ResourceLocator locator;

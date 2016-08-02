@@ -22,6 +22,7 @@ import java.util.Map;
  */
 public class MediaTypeHelper
 {
+   @SuppressWarnings(value = "unchecked")
    public static MediaType getConsumes(Class declaring, AccessibleObject method)
    {
       Consumes consume = method.getAnnotation(Consumes.class);
@@ -37,7 +38,8 @@ public class MediaTypeHelper
    {
 	   return getProduces(declaring, method, null);
    }
-   
+
+   @SuppressWarnings(value = "unchecked")
    public static MediaType getProduces(Class declaring, Method method, MediaType defaultProduces)
    {
       Produces consume = method.getAnnotation(Produces.class);

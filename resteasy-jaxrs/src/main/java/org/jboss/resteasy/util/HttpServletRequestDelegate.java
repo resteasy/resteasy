@@ -72,12 +72,12 @@ public class HttpServletRequestDelegate implements HttpServletRequest
       return delegate.getHeader(s);
    }
 
-   public Enumeration getHeaders(String s)
+   public Enumeration<String> getHeaders(String s)
    {
       return delegate.getHeaders(s);
    }
 
-   public Enumeration getHeaderNames()
+   public Enumeration<String> getHeaderNames()
    {
       return delegate.getHeaderNames();
    }
@@ -173,7 +173,7 @@ public class HttpServletRequestDelegate implements HttpServletRequest
       return delegate.getAttribute(s);
    }
 
-   public Enumeration getAttributeNames()
+   public Enumeration<String> getAttributeNames()
    {
       return delegate.getAttributeNames();
    }
@@ -210,7 +210,7 @@ public class HttpServletRequestDelegate implements HttpServletRequest
       return delegate.getParameter(s);
    }
 
-   public Enumeration getParameterNames()
+   public Enumeration<String> getParameterNames()
    {
       return delegate.getParameterNames();
    }
@@ -220,7 +220,7 @@ public class HttpServletRequestDelegate implements HttpServletRequest
       return delegate.getParameterValues(s);
    }
 
-   public Map getParameterMap()
+   public Map<String, String[]> getParameterMap()
    {
       return delegate.getParameterMap();
    }
@@ -276,7 +276,7 @@ public class HttpServletRequestDelegate implements HttpServletRequest
       return delegate.getLocale();
    }
 
-   public Enumeration getLocales()
+   public Enumeration<Locale> getLocales()
    {
       return delegate.getLocales();
    }

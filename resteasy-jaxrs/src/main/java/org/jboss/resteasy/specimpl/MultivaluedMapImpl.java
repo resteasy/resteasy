@@ -21,6 +21,7 @@ public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements Mul
       put(key, list);
    }
 
+   @SuppressWarnings(value = "unchecked")
    @Override
    public void addAll(K key, V... newValues)
    {

@@ -150,6 +150,7 @@ public class SSLAcceptor implements Acceptor
       }
    }
 
+   @SuppressWarnings(value = "unchecked")
    public void init(Map inProperties, Map outProperties) throws IOException
    {
       javax.net.ssl.SSLServerSocketFactory sslSoc = null;

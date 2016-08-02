@@ -34,6 +34,7 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
       this.request = request;
    }
 
+   @SuppressWarnings(value = "unchecked")
    @Override
    protected MessageBodyWriter resolveWriter()
    {

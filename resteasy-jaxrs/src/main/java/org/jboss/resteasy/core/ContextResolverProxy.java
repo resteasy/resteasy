@@ -16,6 +16,7 @@ public class ContextResolverProxy implements ContextResolver
       if (resolvers == null) return null;
       for (ContextResolver resolver : resolvers)
       {
+         @SuppressWarnings(value = "unchecked")
          Object rtn = resolver.getContext(type);
          if (rtn != null) return rtn;
       }

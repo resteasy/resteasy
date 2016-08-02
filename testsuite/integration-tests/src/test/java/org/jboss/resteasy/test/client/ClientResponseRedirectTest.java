@@ -97,6 +97,7 @@ public class ClientResponseRedirectTest {
         Assert.assertEquals(HttpResponseCodes.SC_SEE_OTHER, conn.getResponseCode());
     }
 
+    @SuppressWarnings(value = "unchecked")
     private void testRedirect(Response response) {
         MultivaluedMap headers = response.getHeaders();
         logger.info("size: " + headers.size());

@@ -51,6 +51,7 @@ public class ClientResponseContextImpl implements ClientResponseContext
       response.setStatus(statusInfo.getStatusCode());
    }
 
+   @SuppressWarnings(value = "unchecked")
    @Override
    public MultivaluedMap<String, String> getHeaders()
    {

@@ -29,6 +29,7 @@ import java.util.Map;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ValidationSurpressPathFalseTest extends ValidationSuppressPathTestBase {
+    @SuppressWarnings(value = "unchecked")
     @Deployment
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive("Validation-test")

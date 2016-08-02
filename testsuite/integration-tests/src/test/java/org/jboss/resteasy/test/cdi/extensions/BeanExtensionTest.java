@@ -48,6 +48,7 @@ import org.junit.runner.RunWith;
 public class BeanExtensionTest {
     protected static final Logger log = LogManager.getLogger(BeanExtensionTest.class.getName());
 
+    @SuppressWarnings(value = "unchecked")
     @Deployment
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive(BeanExtensionTest.class.getSimpleName());

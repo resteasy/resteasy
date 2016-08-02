@@ -33,6 +33,7 @@ public class JaxrsFormProvider implements MessageBodyReader<Form>, MessageBodyWr
    @Override
    public Form readFrom(Class<Form> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
    {
+      @SuppressWarnings(value = "unchecked")
       MultivaluedMap<String, String> map = new FormUrlEncodedProvider().readFrom(null, null, annotations, mediaType, httpHeaders, entityStream);
       return new Form(map);
    }

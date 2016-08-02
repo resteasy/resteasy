@@ -17,6 +17,7 @@ import java.util.Set;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings(value = "unchecked")
 public class HttpServletResponseHeaders implements MultivaluedMap<String, Object>
 {
 
@@ -62,6 +63,7 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
          list.add(0, value);
       }
    }
+
    public void putSingle(String key, Object value)
    {
       cachedHeaders.putSingle(key, value);
