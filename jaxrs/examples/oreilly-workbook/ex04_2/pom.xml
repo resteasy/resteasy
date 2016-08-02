@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>3.0.19.Final</version>
+            <version>3.0.20.Final-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
