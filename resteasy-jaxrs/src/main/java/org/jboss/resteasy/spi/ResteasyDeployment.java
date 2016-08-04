@@ -263,6 +263,34 @@ public class ResteasyDeployment
       }
    }
 
+   public void merge(ResteasyDeployment other)
+   {
+      scannedResourceClasses.addAll(other.getScannedResourceClasses());
+      scannedProviderClasses.addAll(other.getScannedProviderClasses());
+      scannedJndiComponentResources.addAll(other.getScannedJndiComponentResources());
+
+      jndiComponentResources.addAll(other.getJndiComponentResources());
+      providerClasses.addAll(other.getProviderClasses());
+      actualProviderClasses.addAll(other.getActualProviderClasses());
+      providers.addAll(other.getProviders());
+
+      jndiResources.addAll(other.getJndiResources());
+      resourceClasses.addAll(other.getResourceClasses());
+      unwrappedExceptions.addAll(other.getUnwrappedExceptions());
+      actualResourceClasses.addAll(other.getActualResourceClasses());
+      resourceFactories.addAll(other.getResourceFactories());
+      resources.addAll(other.getResources());
+
+      mediaTypeMappings.putAll(other.getMediaTypeMappings());
+      languageExtensions.putAll(other.getLanguageExtensions());
+      interceptorPrecedences.addAll(other.getInterceptorPrecedences());
+      interceptorBeforePrecedences.putAll(other.getInterceptorBeforePrecedences());
+      interceptorAfterPrecedences.putAll(other.getInterceptorAfterPrecedences());
+
+      defaultContextObjects.putAll(other.getDefaultContextObjects());
+      constructedDefaultContextObjects.putAll(other.getConstructedDefaultContextObjects());
+   }
+
    public static Application createApplication(String applicationClass, Dispatcher dispatcher, ResteasyProviderFactory providerFactory)
    {
       Class<?> clazz = null;
