@@ -1,14 +1,19 @@
 package org.jboss.resteasy.client.jaxrs;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.TrustManager;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.ssl.DefaultHostnameVerifier;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.DefaultHostnameVerifier;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -18,10 +23,9 @@ import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.client.jaxrs.engines.PassthroughTrustManager;
 import org.jboss.resteasy.client.jaxrs.engines.factory.ApacheHttpClient4EngineFactory;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
+import java.io.IOException;
 import java.security.SecureRandom;
+
 
 /**
  * A temporary class for transition between Apache pre-4.3 apis and 4.3.
@@ -38,7 +42,6 @@ public class HttpClientBuilder43 {
      * Create ClientHttpEngine using Apache 4.3.x+ apis.
      * @return
      */
-
     protected static ClientHttpEngine initDefaultEngine43(ResteasyClientBuilder that)
     {
         HttpClient httpClient = null;
@@ -49,7 +52,18 @@ public class HttpClientBuilder43 {
         }
         else
         {
-            verifier = new DefaultHostnameVerifier();
+            switch (that.policy)
+            {
+                case ANY:
+                    verifier = new NoopHostnameVerifier();
+                    break;
+                case WILDCARD:
+                    verifier = new DefaultHostnameVerifier();
+                    break;
+                case STRICT:
+                    verifier = new DefaultHostnameVerifier();
+                    break;
+            }
         }
         try
         {
@@ -60,11 +74,18 @@ public class HttpClientBuilder43 {
                 theContext = SSLContext.getInstance("SSL");
                 theContext.init(null, new TrustManager[]{new PassthroughTrustManager()},
                     new SecureRandom());
+                verifier = new NoopHostnameVerifier();
                 sslsf = new SSLConnectionSocketFactory(theContext, verifier);
             }
             else if (theContext != null)
             {
-                sslsf = new SSLConnectionSocketFactory(theContext, verifier);
+                sslsf = new SSLConnectionSocketFactory(theContext, verifier) {
+                    @Override
+                    protected void prepareSocket(SSLSocket socket) throws IOException
+                    {
+                        that.prepareSocketForSni(socket);
+                    }
+                };
             }
             else if (that.clientKeyStore != null || that.truststore != null)
             {
@@ -75,7 +96,13 @@ public class HttpClientBuilder43 {
                         that.clientPrivateKeyPassword != null ? that.clientPrivateKeyPassword.toCharArray() : null)
                     .loadTrustMaterial(that.truststore, TrustSelfSignedStrategy.INSTANCE)
                     .build();
-                sslsf = new SSLConnectionSocketFactory(ctx, verifier);
+                sslsf = new SSLConnectionSocketFactory(ctx, verifier) {
+                    @Override
+                    protected void prepareSocket(SSLSocket socket) throws IOException
+                    {
+                        that.prepareSocketForSni(socket);
+                    }
+                };
             }
             else
             {
@@ -95,7 +122,9 @@ public class HttpClientBuilder43 {
                 PoolingHttpClientConnectionManager tcm = new PoolingHttpClientConnectionManager(
                     registry, null, null ,null, that.connectionTTL, that.connectionTTLUnit);
                 tcm.setMaxTotal(that.connectionPoolSize);
-                if (that.maxPooledPerRoute == 0) that.maxPooledPerRoute = that.connectionPoolSize;
+                if (that.maxPooledPerRoute == 0) {
+                    that.maxPooledPerRoute = that.connectionPoolSize;
+                }
                 tcm.setDefaultMaxPerRoute(that.maxPooledPerRoute);
                 cm = tcm;
 
@@ -120,6 +149,7 @@ public class HttpClientBuilder43 {
             }
 
             httpClient = HttpClientBuilder.create()
+                .setConnectionManager(cm)
                 .setDefaultRequestConfig(rcBuilder.build())
                 .setProxy(that.defaultProxy)
                 .build();
@@ -136,4 +166,5 @@ public class HttpClientBuilder43 {
             throw new RuntimeException(e);
         }
     }
+
 }

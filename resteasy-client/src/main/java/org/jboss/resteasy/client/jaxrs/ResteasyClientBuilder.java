@@ -560,7 +560,7 @@ public class ResteasyClientBuilder extends ClientBuilder
       }
    }
 
-   private void prepareSocketForSni(SSLSocket socket)
+   protected void prepareSocketForSni(SSLSocket socket)
    {
       if(!sniHostNames.isEmpty()) {
          List<SNIServerName> sniNames = new ArrayList<>(sniHostNames.size());
