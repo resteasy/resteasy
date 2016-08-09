@@ -12,7 +12,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.MediaType;
@@ -23,6 +22,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyDeployment;
@@ -222,7 +222,7 @@ public class TestSecureProcessingFeature
    @BeforeClass
    public static void beforeClass()
    {
-      client = ClientBuilder.newClient();
+      client = new ResteasyClientBuilder().buildOld();
    }
    
    @AfterClass

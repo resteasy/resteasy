@@ -75,6 +75,7 @@ public class ResteasyClientBuilder extends ClientBuilder
       STRICT
    }
 
+   private static final boolean useOldHTTPClient = Boolean.getBoolean("org.jboss.resteasy.client.useOldHTTPClient");
    protected KeyStore truststore;
    protected KeyStore clientKeyStore;
    protected String clientPrivateKeyPassword;
@@ -361,8 +362,8 @@ public class ResteasyClientBuilder extends ClientBuilder
       return providerFactory;
    }
 
-   @Override
-   public ResteasyClient build()
+   @Deprecated
+   public ResteasyClient buildOld()
    {
       ClientConfiguration config = new ClientConfiguration(getProviderFactory());
       for (Map.Entry<String, Object> entry : properties.entrySet())
@@ -386,15 +387,12 @@ public class ResteasyClientBuilder extends ClientBuilder
 
    }
 
-   /**
-    * Maintain 2 version of build for testing.  Confirm Apache (deprectaed) Apis
-    * continue running and new Apache 4.3 run properly. (testcases will be setup
-    * to run both.
-    * @return
-     */
-
-   public ResteasyClient build43()
+   @Override
+   public ResteasyClient build()
    {
+      if (useOldHTTPClient) {
+         return buildOld();
+      }
       ClientConfiguration config = new ClientConfiguration(getProviderFactory());
       for (Map.Entry<String, Object> entry : properties.entrySet())
       {
