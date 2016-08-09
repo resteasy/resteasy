@@ -228,7 +228,7 @@ public class ParameterParser
    {
       if (str == null)
       {
-         return new HashMap();
+         return new HashMap<String, String>();
       }
       return parse(str.toCharArray(), separator);
    }
@@ -246,7 +246,7 @@ public class ParameterParser
    {
       if (chars == null)
       {
-         return new HashMap();
+         return new HashMap<String, String>();
       }
       return parse(chars, 0, chars.length, separator);
    }

@@ -30,6 +30,7 @@ public class MapFormInjector extends AbstractCollectionFormInjector<Map>
    /**
     * {@inheritDoc}
     */
+   @SuppressWarnings(value = "unchecked")
    @Override
    protected Map createInstance(Class collectionType)
    {
@@ -47,6 +48,7 @@ public class MapFormInjector extends AbstractCollectionFormInjector<Map>
    /**
     * {@inheritDoc}
     */
+   @SuppressWarnings(value = "unchecked")
    @Override
    protected void addTo(Map collection, String key, Object value)
    {

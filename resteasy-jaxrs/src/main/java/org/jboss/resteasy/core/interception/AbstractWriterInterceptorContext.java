@@ -126,6 +126,7 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
       }
    }
 
+   @SuppressWarnings(value = "unchecked")
    protected void writeTo(MessageBodyWriter writer) throws IOException
    {
       writer.writeTo(entity, type, genericType, annotations, mediaType, headers, outputStream);

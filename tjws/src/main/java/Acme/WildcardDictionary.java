@@ -152,6 +152,7 @@ public class WildcardDictionary extends Dictionary
    // @return the old value of the key, or null if it did not have one.
    // @exception NullPointerException If the value of the specified
    // element is null.
+   @SuppressWarnings(value = "unchecked")
    public synchronized Object put(Object key, Object element)
    {
       int i = keys.indexOf(key);

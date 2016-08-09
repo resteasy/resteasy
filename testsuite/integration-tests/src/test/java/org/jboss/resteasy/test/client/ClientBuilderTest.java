@@ -24,6 +24,7 @@ import javax.ws.rs.core.FeatureContext;
 @RunWith(Arquillian.class)
 public class ClientBuilderTest {
 
+    @SuppressWarnings(value = "unchecked")
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(ClientBuilderTest.class.getSimpleName());

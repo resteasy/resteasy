@@ -38,7 +38,7 @@ public abstract class AbstractTokenAuthFilter implements ContainerRequestFilter
 
    @Context
    Providers providers;
-
+   @SuppressWarnings(value = "unchecked")
    protected Access signed(String header)
    {
       PKCS7SignatureInput input = null;

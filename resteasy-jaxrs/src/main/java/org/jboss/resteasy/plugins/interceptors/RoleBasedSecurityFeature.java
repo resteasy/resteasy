@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
  */
 public class RoleBasedSecurityFeature implements DynamicFeature
 {
-
+   @SuppressWarnings(value = "unchecked")
    @Override
    public void configure(ResourceInfo resourceInfo, FeatureContext configurable)
    {

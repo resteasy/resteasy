@@ -86,6 +86,15 @@ public class TypeConverterTest {
         assertEquals(CONVERSION_ERROR, 23L, (long) TypeConverter.getType(Long.class, "23"));
     }
 
+   /**
+    * @tpTestDetails character conversion.
+    */
+   @Test
+    public void testCharacterTypes() {
+        assertEquals(CONVERSION_ERROR, 'A', TypeConverter.getType(Character.class, "A").charValue());
+        assertEquals(CONVERSION_ERROR, 'A', (char)TypeConverter.getType(char.class, "A"));
+    }
+
     /**
      * @tpTestDetails Date conversion.
      * @tpSince RESTEasy 3.0.16

@@ -59,6 +59,7 @@ public class UriInfoTest {
         client = null;
     }
 
+    @SuppressWarnings(value = "unchecked")
     @Deployment(name = "UriInfoSimpleResource")
     public static Archive<?> deployUriInfoSimpleResource() {
         WebArchive war = TestUtil.prepareArchive(UriInfoSimpleResource.class.getSimpleName());

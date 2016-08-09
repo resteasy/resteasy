@@ -56,6 +56,7 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
       // index--;  we used to pop the index, but the TCK does not like this
    }
 
+   @SuppressWarnings(value = "unchecked")
    protected Object readFrom(MessageBodyReader reader) throws IOException
    {
       return reader.readFrom(type, genericType, annotations, mediaType, headers, inputStream);

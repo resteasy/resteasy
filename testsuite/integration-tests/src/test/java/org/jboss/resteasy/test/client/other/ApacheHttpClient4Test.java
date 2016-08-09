@@ -310,6 +310,7 @@ public class ApacheHttpClient4Test {
         }
     }
 
+    @SuppressWarnings(value = "unchecked")
     private ResteasyClient createEngine(Class engine) {
         RequestConfig reqConfig = RequestConfig.custom()   // apache HttpClient specific
                 .setConnectTimeout(5000)

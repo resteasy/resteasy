@@ -21,6 +21,7 @@ public class HeaderFlushedOutputStream extends OutputStream {
 		this.stream = delegate;
 	}
 
+	@SuppressWarnings(value = "unchecked")
 	protected void flushHeaders() throws IOException {
 		if (headersFlushed)
 			return;

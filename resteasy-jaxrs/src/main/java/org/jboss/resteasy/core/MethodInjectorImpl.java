@@ -53,6 +53,7 @@ public class MethodInjectorImpl implements MethodInjector
       return expectsBody;
    }
 
+   @SuppressWarnings(value = "unchecked")
    public static Method findInterfaceBasedMethod(Class root, Method method)
    {
       if (method.getDeclaringClass().isInterface() || root.isInterface()) return method;

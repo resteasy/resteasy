@@ -25,6 +25,7 @@ public class NoContent
    public static boolean isContentLengthZero(MultivaluedMap httpHeaders)
    {
       if (httpHeaders == null) return false;
+      @SuppressWarnings(value = "unchecked")
       String contentLength = (String)httpHeaders.getFirst(HttpHeaders.CONTENT_LENGTH);
       if (contentLength != null)
       {

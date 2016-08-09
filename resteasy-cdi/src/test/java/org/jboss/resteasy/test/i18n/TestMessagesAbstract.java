@@ -23,6 +23,7 @@ import org.junit.Test;
  *
  * Copyright Aug 25, 2015
  */
+@SuppressWarnings(value = "unchecked")
 abstract public class TestMessagesAbstract extends TestMessagesParent
 {
    protected static final Annotation testAnnotation = new Annotation()
@@ -49,7 +50,7 @@ abstract public class TestMessagesAbstract extends TestMessagesParent
    
    protected static final String BASE = String.format("0%5s", Messages.BASE).substring(0, 4);
    protected static final String BASE3 = BASE.substring(0, 3);
-   
+
    static
    {
       beanSet.add(testBean);

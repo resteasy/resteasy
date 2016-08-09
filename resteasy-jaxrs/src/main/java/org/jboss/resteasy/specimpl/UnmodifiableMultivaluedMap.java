@@ -41,6 +41,7 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V>
         return delegate.getFirst(key);
     }
 
+    @SuppressWarnings(value = "unchecked")
     @Override
     public void addAll(K k, V... vs)
     {

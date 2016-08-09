@@ -37,6 +37,7 @@ public class PKCS7SignatureReader implements MessageBodyReader<PKCS7SignatureInp
       return PKCS7SignatureInput.class.isAssignableFrom(type);
    }
 
+   @SuppressWarnings(value = "unchecked")
    public PKCS7SignatureInput readFrom(Class<PKCS7SignatureInput> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> headers, InputStream entityStream) throws IOException, WebApplicationException
    {
       Class<?> baseType = null;

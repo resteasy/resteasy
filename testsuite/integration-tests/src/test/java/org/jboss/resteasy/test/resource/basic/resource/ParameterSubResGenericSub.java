@@ -8,6 +8,7 @@ import java.util.List;
 
 @Path("generic")
 public class ParameterSubResGenericSub {
+    @SuppressWarnings(value = "unchecked")
     @Path("sub")
     public ParameterSubResDoubleInterface doit() {
         InvocationHandler handler = new InvocationHandler() {

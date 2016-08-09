@@ -23,6 +23,7 @@ public class DelegatingMultivaluedMap<K, V> implements MultivaluedMap<K, V>
       this.delegate = delegate;
    }
 
+   @SuppressWarnings(value = "unchecked")
    @Override
    public void addAll(K key, V... newValues)
    {

@@ -76,6 +76,7 @@ public class PKCS7SignatureWriter implements MessageBodyWriter<SignedOutput>
       }
    }
 
+   @SuppressWarnings(value = "unchecked")
    public static byte[] sign(Providers providers, SignedOutput out) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, CMSException, OperatorCreationException, CertificateEncodingException {
       ByteArrayOutputStream bodyOs = new ByteArrayOutputStream();
       MessageBodyWriter writer = providers.getMessageBodyWriter(out.getType(), out.getGenericType(), null, out.getMediaType());

@@ -101,6 +101,7 @@ public class NamespaceMappingTest {
         XMLStreamReader xmlStreamReader = new MappedXMLStreamReader(new JSONObject(output), con);
 
         Unmarshaller unmarshaller = jc.createUnmarshaller();
+        @SuppressWarnings(value = "unchecked")
         JAXBElement<NamespaceMappingTestExtends> val = (JAXBElement<NamespaceMappingTestExtends>) unmarshaller.unmarshal(xmlStreamReader);
         return val.getValue();
     }
