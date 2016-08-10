@@ -9,6 +9,7 @@ import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAcceptableException;
 import javax.ws.rs.NotAllowedException;
@@ -192,6 +193,8 @@ public class ClientInvocation implements Invocation
             throw new BadRequestException(response);
          case 401:
             throw new NotAuthorizedException(response);
+         case 403:
+            throw new ForbiddenException(response);
          case 404:
             throw new NotFoundException(response);
          case 405:
