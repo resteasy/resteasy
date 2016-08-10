@@ -63,8 +63,7 @@
                                 <artifactItem>
                                     <groupId>org.wildfly</groupId>
                                     <artifactId>wildfly-dist</artifactId>
-                                    <!-- <version>${wildfly-version}</version> TODO!!! -->
-                                    <version>10.0.0.Final</version>
+                                    <version>${server.version}</version>
                                     <type>zip</type>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${project.build.directory}/test-server</outputDirectory>
@@ -84,7 +83,7 @@
                         <configuration>
                             <target>
                                 <unzip src="../../../jboss-modules/target/resteasy-jboss-modules-wf8-${project.version}.zip"
-                                       dest="${project.build.directory}/test-server/wildfly-10.0.0.Final/modules/system/layers/base"
+                                       dest="${project.build.directory}/test-server/wildfly-${server.version}/modules/system/layers/base"
                                        overwrite="true"/>
                                 <delete dir="target/dependency-maven-plugin-markers"/>
                             </target>
@@ -98,7 +97,7 @@
             </plugins>
           </build>
           <properties>
-            <jboss.home>${project.build.directory}/test-server/wildfly-10.0.0.Final</jboss.home>
+            <jboss.home>${project.build.directory}/test-server/wildfly-${server.version}</jboss.home>
           </properties>
         </profile>
 
