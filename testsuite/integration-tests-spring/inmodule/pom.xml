@@ -69,7 +69,6 @@
                                 <artifactItem>
                                     <groupId>org.wildfly</groupId>
                                     <artifactId>wildfly-dist</artifactId>
-                                    <!-- <version>${wildfly-version}</version> TODO!!! -->
                                     <version>${server.version}</version>
                                     <type>zip</type>
                                     <overWrite>false</overWrite>
@@ -89,6 +88,11 @@
                         <phase>process-test-classes</phase>
                         <configuration>
                             <target>
+                                <!-- Explicitly remove resteasy-spring contents as the module.xml does not reference resource jars in this case
+                                     so adding jars without removing old ones basically messes up the classloader -->
+                                <delete>
+                                    <fileset dir="${project.build.directory}/test-server/wildfly-${server.version}/modules/system/layers/base/org/jboss/resteasy/resteasy-spring/main" includes="**/*.jar"/>
+                                </delete>
                                 <unzip src="../../../jboss-modules/target/resteasy-jboss-modules-wf8-${project.version}.zip"
                                        dest="${project.build.directory}/test-server/wildfly-${server.version}/modules/system/layers/base"
                                        overwrite="true"/>
