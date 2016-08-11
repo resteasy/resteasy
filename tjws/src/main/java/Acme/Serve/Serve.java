@@ -171,6 +171,7 @@ import java.util.logging.StreamHandler;
 /**
  * @deprecated See resteasy-undertow module.
  */
+@SuppressWarnings(value = "unchecked")
 @Deprecated
 public class Serve implements ServletContext, Serializable
 {

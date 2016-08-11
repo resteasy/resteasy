@@ -114,6 +114,7 @@ public class SelectorAcceptor implements Acceptor
          throw new IOException(exceptions);
    }
 
+   @SuppressWarnings(value = "unchecked")
    public void init(Map inProperties, Map outProperties) throws IOException
    {
       selector = Selector.open();

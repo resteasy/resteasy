@@ -47,7 +47,7 @@ public class ServletContainerDispatcher
       return dispatcher;
    }
 
-
+   @SuppressWarnings(value = "unchecked")
    public void init(ServletContext servletContext, ConfigurationBootstrap bootstrap, HttpRequestFactory requestFactory, HttpResponseFactory responseFactory) throws ServletException
    {
       this.requestFactory = requestFactory;
@@ -133,8 +133,8 @@ public class ServletContainerDispatcher
       LogMessages.LOGGER.deployingApplication(Application.class.getName(), config.getClass());
       ArrayList<Class> actualResourceClasses = new ArrayList<Class>();
       ArrayList<Class> actualProviderClasses = new ArrayList<Class>();
-      ArrayList resources = new ArrayList();
-      ArrayList providers = new ArrayList();
+      ArrayList<Object> resources = new ArrayList<>();
+      ArrayList<Object> providers = new ArrayList<>();
       if (config.getClasses() != null)
       {
          for (Class clazz : config.getClasses())

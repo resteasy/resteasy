@@ -59,6 +59,8 @@ public class ResteasyWadlServlet extends HttpServlet {
 
         ServletConfig config = getServletConfig();
         ServletContext servletContext = config.getServletContext();
+
+        @SuppressWarnings(value = "unchecked")
         Map<String, ResteasyDeployment> deployments = (Map<String, ResteasyDeployment>) servletContext.getAttribute(ResteasyContextParameters.RESTEASY_DEPLOYMENTS);
         if (deployments == null) return;
         synchronized (this) {

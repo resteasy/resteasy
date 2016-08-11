@@ -40,6 +40,7 @@ public class ServerReaderInterceptorContext extends AbstractReaderInterceptorCon
    @Override
    protected MessageBodyReader resolveReader(MediaType mediaType)
    {
+      @SuppressWarnings(value = "unchecked")
       MessageBodyReader reader =  providerFactory.getServerMessageBodyReader(type,
               genericType, annotations, mediaType);
       //logger.info("**** picked reader: " + reader.getClass().getName());

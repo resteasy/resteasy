@@ -164,6 +164,7 @@ public class ResponseBuilderTest {
             Assert.assertNotNull("Link-Header 'Link3' missing", r1.getLink("rel3"));
             Assert.assertNotNull("Link-Header 'Link4' missing", r1.getLink("rel4"));
 
+            @SuppressWarnings(value = "unchecked")
             Response r2 = Response.ok()
                     .link("Link1", "rel1")
                     .links(null)

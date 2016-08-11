@@ -65,7 +65,7 @@ public class ResteasyHttpHeaders implements HttpHeaders
    public List<String> getRequestHeader(String name)
    {
       List<String> vals = requestHeaders.get(name);
-      if (vals == null) return Collections.EMPTY_LIST;
+      if (vals == null) return Collections.<String>emptyList();
       return Collections.unmodifiableList(vals);
    }
 

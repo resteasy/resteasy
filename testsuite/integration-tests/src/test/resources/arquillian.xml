@@ -16,4 +16,7 @@
             <property name="managementAddress">${node}</property>
         </configuration>
     </container>
+    <extension qualifier="systemproperties">
+        <property name="prefix">org.jboss.resteasy.</property>
+    </extension>
 </arquillian>

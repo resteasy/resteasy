@@ -225,6 +225,7 @@ public class MultivaluedTreeMap<K, V> implements MultivaluedMap<K, V>, Serializa
       return map.values();
    }
 
+   @SuppressWarnings(value = "unchecked")
    @Override
    public void addAll(K key, V... newValues)
    {

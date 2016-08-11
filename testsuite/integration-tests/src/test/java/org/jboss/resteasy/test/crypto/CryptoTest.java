@@ -55,6 +55,7 @@ import java.util.Base64;
  * @tpTestCaseDetails Test for response secured by BouncyCastleProvider
  * @tpSince RESTEasy 3.0.16
  */
+@SuppressWarnings(value = "unchecked")
 @RunWith(Arquillian.class)
 @RunAsClient
 public class CryptoTest {

@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class BeanUtils {
-
+	@SuppressWarnings(value = "unchecked")
 	private static final Class<Annotation>[] IdAnnotationList = new Class[]{ResourceID.class, XmlID.class, Id.class};
 
 	public static List<Object> findIDs(Object entity){

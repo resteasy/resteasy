@@ -39,6 +39,7 @@ import static org.junit.Assert.assertEquals;
 public class AlternativeSelectedInheritanceTest {
     protected static final Logger log = LogManager.getLogger(AlternativeSelectedInheritanceTest.class.getName());
 
+    @SuppressWarnings(value = "unchecked")
     @Deployment
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive(AlternativeSelectedInheritanceTest.class.getSimpleName());

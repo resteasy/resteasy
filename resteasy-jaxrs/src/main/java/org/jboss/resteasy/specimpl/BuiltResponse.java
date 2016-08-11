@@ -205,6 +205,7 @@ public class BuiltResponse extends Response
       return readEntity(type, null, annotations);
    }
 
+   @SuppressWarnings(value = "unchecked")
    @Override
    public <T> T readEntity(GenericType<T> entityType, Annotation[] annotations)
    {
@@ -217,6 +218,8 @@ public class BuiltResponse extends Response
       return readEntity(type, null, null);
    }
 
+
+   @SuppressWarnings(value = "unchecked")
    @Override
    public <T> T readEntity(GenericType<T> entityType)
    {

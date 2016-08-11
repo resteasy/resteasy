@@ -69,7 +69,7 @@ public class ReadDataSourceTwiceCountTempFileTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    @Category({ExpectedFailing.class}) //[RESTEASY-1361] FIXME test failing on Travis CI but passing locally
+    @Category({ExpectedFailing.class}) //[RESTEASY-1448] FIXME test failing on Travis CI but passing locally
     public void testFileNotFound() throws Exception {
         WebTarget target = client.target(generateURL("/post"));
 
@@ -100,7 +100,7 @@ public class ReadDataSourceTwiceCountTempFileTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    @Category({ExpectedFailing.class}) //[RESTEASY-1361] FIXME test failing on Travis CI but passing locally
+    @Category({ExpectedFailing.class}) //[RESTEASY-1448] FIXME test failing on Travis CI but passing locally
     public void testFileNotFoundMultipleRequests() throws Exception {
         WebTarget target = client.target(generateURL("/post"));
         ByteArrayOutputStream baos = new ByteArrayOutputStream(5000);

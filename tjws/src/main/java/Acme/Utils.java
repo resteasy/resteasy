@@ -80,6 +80,7 @@ import java.util.StringTokenizer;
 /**
  * @deprecated See resteasy-undertow module.
  */
+@SuppressWarnings(value = "unchecked")
 @Deprecated
 public class Utils
 {

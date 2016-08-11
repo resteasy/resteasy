@@ -30,6 +30,7 @@ import javax.ws.rs.ext.ReaderInterceptor;
 public class DuplicateProviderRegistrationTest {
 
     private static final String ERR_MSG = "Wrong cound of RESTEASY002155 warning message";
+    @SuppressWarnings(value = "unchecked")
     @Deployment
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive(DuplicateProviderRegistrationTest.class.getSimpleName());
