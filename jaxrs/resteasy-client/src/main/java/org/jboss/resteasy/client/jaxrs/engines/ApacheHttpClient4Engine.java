@@ -448,6 +448,14 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
             httpMethod.addHeader(header.getKey(), value);
          }
       }
+
+       //RESTEASY-1407
+       if (request.getEntity() instanceof java.io.ByteArrayInputStream &&
+               httpMethod.containsHeader("Content-Length") &&
+               httpMethod.getFirstHeader("Content-Length").getValue().equals("0"))
+       {
+           httpMethod.removeHeaders("Content-Length");
+       }
    }
 
    public void close()
