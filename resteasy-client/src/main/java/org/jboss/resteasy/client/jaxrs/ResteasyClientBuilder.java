@@ -76,6 +76,16 @@ public class ResteasyClientBuilder extends ClientBuilder
    }
 
    private static final boolean useOldHTTPClient = Boolean.getBoolean("org.jboss.resteasy.client.useOldHTTPClient");
+   private static final boolean newHTTPClientAvailable;
+   static {
+      boolean res = true;
+      try {
+         Class.forName(HttpClientBuilder43.class.getName());
+      } catch (Throwable t) {
+         res = false;
+      }
+      newHTTPClientAvailable = res;
+   }
    protected KeyStore truststore;
    protected KeyStore clientKeyStore;
    protected String clientPrivateKeyPassword;
@@ -390,7 +400,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    @Override
    public ResteasyClient build()
    {
-      if (useOldHTTPClient) {
+      if (useOldHTTPClient || !newHTTPClientAvailable) {
          return buildOld();
       }
       ClientConfiguration config = new ClientConfiguration(getProviderFactory());
