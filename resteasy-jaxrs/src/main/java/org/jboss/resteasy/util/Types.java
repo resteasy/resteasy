@@ -23,6 +23,7 @@ public class Types
    /**
     * Is the genericType of a certain class?
     */
+   @SuppressWarnings(value = "unchecked")
    public static boolean isA(Class clazz, ParameterizedType pType)
    {
       return clazz.isAssignableFrom((Class) pType.getRawType());
@@ -102,6 +103,7 @@ public class Types
     * @param intfMethod
     * @return
     */
+   @SuppressWarnings(value = "unchecked")
    public static boolean isCompatible(Method method, Method intfMethod)
    {
       if (method == intfMethod) return true;
@@ -125,6 +127,7 @@ public class Types
     * @param intfMethod
     * @return
     */
+   @SuppressWarnings(value = "unchecked")
    public static Method getImplementingMethod(Class clazz, Method intfMethod)
    {
       Class<?> declaringClass = intfMethod.getDeclaringClass();

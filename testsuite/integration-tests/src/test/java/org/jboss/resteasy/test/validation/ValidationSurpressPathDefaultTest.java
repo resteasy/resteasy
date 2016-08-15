@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ValidationSurpressPathDefaultTest extends ValidationSuppressPathTestBase {
+    @SuppressWarnings(value = "unchecked")
     @Deployment
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive("Validation-test")

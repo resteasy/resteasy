@@ -442,7 +442,7 @@ public class UriBuilderTest {
             boolean pass = true;
             URI uri;
 
-            Map maps = new HashMap();
+            Map<String, String> maps = new HashMap<>();
             maps.put("x", "x%20yz");
             maps.put("y", "/path-absolute/%test1");
             maps.put("z", "fred@example.com");
@@ -469,7 +469,7 @@ public class UriBuilderTest {
 
         // testEncodedMapTest3 - from TCK 1.1
         {
-            Map maps = new HashMap();
+            Map<String, String> maps = new HashMap<>();
             maps.put("x", null);
             maps.put("y", "/path-absolute/test1");
             maps.put("z", "fred@example.com");
@@ -486,7 +486,7 @@ public class UriBuilderTest {
 
         // testEncodedMapTest4
         {
-            Map maps = new HashMap();
+            Map<String, String> maps = new HashMap<>();
             maps.put("x", "x%yz");
             maps.put("y", "/path-absolute/test1");
             maps.put("z", "fred@example.com");
@@ -506,7 +506,7 @@ public class UriBuilderTest {
             boolean pass = true;
             URI uri;
 
-            Map maps = new HashMap();
+            Map<String, String> maps = new HashMap<>();
             maps.put("x", "x%yz");
             maps.put("y", "/path-absolute/test1");
             maps.put("z", "fred@example.com");
@@ -542,7 +542,7 @@ public class UriBuilderTest {
             boolean pass = true;
             URI uri;
 
-            Map maps = new HashMap();
+            Map<String, String> maps = new HashMap<>();
             maps.put("x", "x%yz");
             maps.put("y", "/path-absolute/test1");
             maps.put("z", "fred@example.com");
@@ -575,7 +575,7 @@ public class UriBuilderTest {
 
         // testBuildFromMapTest3
         {
-            Map maps = new HashMap();
+            Map<String, String> maps = new HashMap<>();
             maps.put("x", null);
             maps.put("y", "/path-absolute/test1");
             maps.put("z", "fred@example.com");
@@ -591,7 +591,7 @@ public class UriBuilderTest {
 
         // testBuildFromMapTest4
         {
-            Map maps = new HashMap();
+            Map<String, String> maps = new HashMap<>();
             maps.put("x", "x%yz");
             maps.put("y", "/path-absolute/test1");
             maps.put("z", "fred@example.com");
@@ -612,19 +612,19 @@ public class UriBuilderTest {
             URI uri;
             UriBuilder ub;
 
-            Map maps = new HashMap();
+            Map<String, String> maps = new HashMap<>();
             maps.put("x", "x%yz");
             maps.put("y", "/path-absolute/test1");
             maps.put("z", "fred@example.com");
             maps.put("w", "path-rootless/test2");
 
-            Map maps1 = new HashMap();
+            Map<String, String> maps1 = new HashMap<>();
             maps1.put("x", "x%20yz");
             maps1.put("y", "/path-absolute/test1");
             maps1.put("z", "fred@example.com");
             maps1.put("w", "path-rootless/test2");
 
-            Map maps2 = new HashMap();
+            Map<String, String> maps2 = new HashMap<>();
             maps2.put("x", "x%yz");
             maps2.put("y", "/path-absolute/test1");
             maps2.put("z", "fred@example.com");

@@ -31,6 +31,7 @@ public class ListFormInjector extends AbstractCollectionFormInjector<List> {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings(value = "unchecked")
     @Override
     protected void addTo(List collection, String key, Object value) {
         int index = Integer.parseInt(key);

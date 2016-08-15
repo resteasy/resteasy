@@ -91,6 +91,7 @@ public class CgiServlet extends HttpServlet
          res.sendError(HttpServletResponse.SC_NOT_FOUND);
    }
 
+   @SuppressWarnings(value = "unchecked")
    private void serveFile(HttpServletRequest req, HttpServletResponse res, String path) throws IOException
    {
       String queryString = req.getQueryString();

@@ -48,6 +48,7 @@ public class ExceptionHandler
     * @param exception
     * @return
     */
+   @SuppressWarnings(value = "unchecked")
    public Response executeExactExceptionMapper(Throwable exception)
    {
       ExceptionMapper mapper = providerFactory.getExceptionMappers().get(exception.getClass());
@@ -56,7 +57,7 @@ public class ExceptionHandler
       return mapper.toResponse(exception);
    }
 
-
+   @SuppressWarnings(value = "unchecked")
    public Response executeExceptionMapperForClass(Throwable exception, Class clazz)
    {
       ExceptionMapper mapper = providerFactory.getExceptionMappers().get(clazz);
@@ -85,6 +86,7 @@ public class ExceptionHandler
     * @param exception
     * @return true if an ExceptionMapper was found and executed
     */
+   @SuppressWarnings(value = "unchecked")
    public Response executeExceptionMapper(Throwable exception)
    {
       ExceptionMapper mapper = null;

@@ -53,6 +53,7 @@ public final class TypeConverter
     * @param targetType
     * @return the object instance
     */
+   @SuppressWarnings(value = "unchecked")
    public static <T> T getType(final Class<T> targetType, final String source)
    {
       // just return that source if it's a String

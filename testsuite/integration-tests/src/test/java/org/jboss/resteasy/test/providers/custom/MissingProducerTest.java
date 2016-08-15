@@ -36,6 +36,7 @@ public class MissingProducerTest {
         return TestUtil.getWarningCount("classes/META-INF/services/javax.ws.rs.ext.Providers", false);
     }
 
+    @SuppressWarnings(value = "unchecked")
     @Deployment
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive(MissingProducerTest.class.getSimpleName());

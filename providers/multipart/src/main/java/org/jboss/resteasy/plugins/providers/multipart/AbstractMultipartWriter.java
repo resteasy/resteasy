@@ -45,6 +45,7 @@ public class AbstractMultipartWriter
       }
    }
 
+   @SuppressWarnings(value = "unchecked")
    protected void writePart(OutputStream entityStream, byte[] boundaryBytes, OutputPart part, MultivaluedMap<String, Object> headers)
            throws IOException
    {

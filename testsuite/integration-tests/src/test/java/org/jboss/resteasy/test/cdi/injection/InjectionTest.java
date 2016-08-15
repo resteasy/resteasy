@@ -106,6 +106,7 @@ public class InjectionTest extends AbstractInjectionTestBase {
 
     private static int invocationCounter;
 
+    @SuppressWarnings(value = "unchecked")
     @Deployment
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive(InjectionTest.class.getSimpleName());

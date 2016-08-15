@@ -129,6 +129,7 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>
 
    public void writeTo(MultivaluedMap data, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
+      @SuppressWarnings(value = "unchecked")
       MultivaluedMap<String, String> formData = (MultivaluedMap<String, String>)data;
       String charset = mediaType.getParameters().get(MediaType.CHARSET_PARAMETER);
       if (charset == null)

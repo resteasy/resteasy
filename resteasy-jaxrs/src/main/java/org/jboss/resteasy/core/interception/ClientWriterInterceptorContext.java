@@ -43,6 +43,7 @@ public class ClientWriterInterceptorContext extends AbstractWriterInterceptorCon
    @Override
    protected MessageBodyWriter resolveWriter()
    {
+      @SuppressWarnings(value = "unchecked")
       MessageBodyWriter writer = providerFactory.getClientMessageBodyWriter(
               type, genericType, annotations, mediaType);
       //logger.info("********* WRITER: " + writer.getClass().getName());

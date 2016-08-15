@@ -77,6 +77,7 @@ public class ResteasyDeployment
    protected ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
    protected String paramMapping;
 
+   @SuppressWarnings(value = "unchecked")
    public void start()
    {
       // it is very important that each deployment create their own provider factory
@@ -168,7 +169,7 @@ public class ResteasyDeployment
             providerFactory.setInjectorFactory(injectorFactory);
          }
 
-         // feed context data map with constructed objects 
+         // feed context data map with constructed objects
          // see ResteasyContextParameters.RESTEASY_CONTEXT_OBJECTS
          if (constructedDefaultContextObjects != null && constructedDefaultContextObjects.size() > 0)
          {

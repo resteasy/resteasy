@@ -7,6 +7,7 @@ import java.lang.reflect.Constructor;
 /**
  * Created by Simon Ström on 7/17/14.
  */
+@SuppressWarnings(value = "unchecked")
 public class QueryInjector implements ValueInjector {
 
    private Class type;

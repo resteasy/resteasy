@@ -411,7 +411,7 @@ public class Entry extends CommonAttributes
 
    public void setAnyOtherJAXBObject(Object obj)
    {
-      if (anyOther == null) anyOther = new ArrayList();
+      if (anyOther == null) anyOther = new ArrayList<Object>();
       if (anyOtherJaxbObject != null && anyOther != null) anyOther.clear();
       if (!obj.getClass().isAnnotationPresent(XmlRootElement.class) && obj.getClass().isAnnotationPresent(XmlType.class))
       {

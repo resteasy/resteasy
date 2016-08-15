@@ -37,6 +37,7 @@ import static org.junit.Assert.assertEquals;
 public class VanillaInheritanceTest {
     protected static final Logger log = LogManager.getLogger(SpecializedInheritanceTest.class.getName());
 
+    @SuppressWarnings(value = "unchecked")
     @Deployment
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive(VanillaInheritanceTest.class.getSimpleName());
