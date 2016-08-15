@@ -14,25 +14,6 @@
     <artifactId>resteasy-unit-tests</artifactId>
     <name>RESTEasy testsuite: Unit tests</name>
 
-    <properties>
-            <resteasy.version.unit.tests>${project.version}</resteasy.version.unit.tests>
-    </properties>
-
-    <!-- If resteasy.version is specified, it will be used for unit tests instead of the project.version -->
-    <profiles>
-        <profile>
-            <id>custom-resteasy-version</id>
-            <activation>
-                <property>
-                    <name>resteasy.version</name>
-                </property>
-            </activation>
-            <properties>
-                <resteasy.version.unit.tests>${resteasy.version}</resteasy.version.unit.tests>
-            </properties>
-        </profile>
-    </profiles>
-
 
     <dependencies>
         <dependency>
@@ -44,49 +25,49 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>${resteasy.version.unit.tests}</version>
+            <version>${version.resteasy.testsuite}</version>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
-            <version>${resteasy.version.unit.tests}</version>
+            <version>${version.resteasy.testsuite}</version>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-atom-provider</artifactId>
-            <version>${resteasy.version.unit.tests}</version>
+            <version>${version.resteasy.testsuite}</version>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jettison-provider</artifactId>
-            <version>${resteasy.version.unit.tests}</version>
+            <version>${version.resteasy.testsuite}</version>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-cdi</artifactId>
-            <version>${resteasy.version.unit.tests}</version>
+            <version>${version.resteasy.testsuite}</version>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-crypto</artifactId>
-            <version>${resteasy.version.unit.tests}</version>
+            <version>${version.resteasy.testsuite}</version>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>jose-jwt</artifactId>
-            <version>${resteasy.version.unit.tests}</version>
+            <version>${version.resteasy.testsuite}</version>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-validator-provider-11</artifactId>
-            <version>${resteasy.version.unit.tests}</version>
+            <version>${version.resteasy.testsuite}</version>
         </dependency>
 
         <dependency>
