@@ -6,6 +6,9 @@ script:
 language: java
 jdk:
   - oraclejdk8
+env:
+  - server.version=10.1.0.CR1
+  - server.version=10.0.0.Final
 cache:
  directories:
   - $HOME/.m2
