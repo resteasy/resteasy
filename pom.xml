@@ -77,7 +77,7 @@
         <version.org.slf4j>1.7.7</version.org.slf4j>
         <version.org.springframework.spring-webmvc>3.0.6.RELEASE</version.org.springframework.spring-webmvc>
         <version.org.wildfly.core.wildfly-cli>2.1.0.Final</version.org.wildfly.core.wildfly-cli>
-        <version.org.wildfly.extras.creaper>0.9.4</version.org.wildfly.extras.creaper>
+        <version.org.wildfly.extras.creaper>1.4.0</version.org.wildfly.extras.creaper>
         <version.org.wildfly.wildfly-arquillian-container-managed>2.0.0.Final
         </version.org.wildfly.wildfly-arquillian-container-managed>
         <version.org.wildfly-security>10.0.0.Final</version.org.wildfly-security>

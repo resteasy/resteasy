@@ -64,19 +64,19 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>${project.version}</version>
+            <version>${version.resteasy.testsuite}</version>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
-            <version>${project.version}</version>
+            <version>${version.resteasy.testsuite}</version>
         </dependency>
         
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-validator-provider-11</artifactId>
-            <version>${project.version}</version>
+            <version>${version.resteasy.testsuite}</version>
         </dependency>
 
         <dependency>
