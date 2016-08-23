@@ -1,7 +1,7 @@
 install:
  - mvn clean
 script:
- - mvn -B -fn -Dserver.version=$SERVER_VERSION install
+ - mvn -B -fae -Dserver.version=$SERVER_VERSION install
 
 language: java
 jdk:
