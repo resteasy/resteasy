@@ -116,8 +116,19 @@ public class UndertowJaxrsServer
       if (appPath != null) path = appPath.value();
       return undertowDeployment(application, path);
    }
-
-
+   
+   /**
+    * Maps a path prefix to a resource handler to allow serving resources other than the JAX-RS endpoints.
+    * For example, this can be used for serving static resources like web pages or API documentation that might 
+    * be deployed with the REST application server. 
+    * 
+    * @param path 
+    * @param handler
+    */
+   public void addResourcePrefixPath(String path, ResourceHandler handler) 
+   {
+      root.addPrefixPath(path, handler);
+   }
 
    /**
     * Creates a web deployment under "/"
