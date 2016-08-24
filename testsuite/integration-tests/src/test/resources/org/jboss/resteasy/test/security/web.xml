@@ -4,7 +4,7 @@
 
     <login-config>
         <auth-method>BASIC</auth-method>
-        <realm-name>RealmUsersRoles</realm-name>
+        <realm-name>jaxrsSecDomain</realm-name>
     </login-config>
 
     <context-param>
