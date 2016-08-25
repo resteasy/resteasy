@@ -90,31 +90,6 @@
                 <version.resteasy.testsuite>${version.resteasy.testsuite}</version.resteasy.testsuite>
             </properties>
         </profile>
-
-
-<!--         <profile>
-            <id>excludeFailing</id>
-            <activation>
-                <property>
-                    <name>excludeFailing</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <systemPropertyVariables>
-                                <additionalJvmArgs></additionalJvmArgs>
-                                <ipv6>false</ipv6>
-                                <ipv6ArquillianSettings></ipv6ArquillianSettings>
-                                <node>127.0.0.1</node>
-                            </systemPropertyVariables>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile> -->
         <profile>
             <id>ipv6</id>
             <activation>
@@ -138,6 +113,25 @@
                         </configuration>
                     </plugin>
 
+                </plugins>
+            </build>
+        </profile>
+        <!-- For testing purposes enable to run all tests including the failing ones -->
+        <profile>
+            <id>enable.expected.failing</id>
+            <activation>
+                <property>
+                    <name>enable.expected.failing</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration combine.children="append">
+                            <excludedGroups></excludedGroups>
+                        </configuration>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
