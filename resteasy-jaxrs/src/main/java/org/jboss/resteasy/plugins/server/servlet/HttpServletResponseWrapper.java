@@ -3,7 +3,6 @@ package org.jboss.resteasy.plugins.server.servlet;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
@@ -95,14 +94,7 @@ public class HttpServletResponseWrapper implements HttpResponse
 
    public void addNewCookie(NewCookie cookie)
    {
-      Cookie cook = new Cookie(cookie.getName(), cookie.getValue());
-      cook.setMaxAge(cookie.getMaxAge());
-      cook.setVersion(cookie.getVersion());
-      if (cookie.getDomain() != null) cook.setDomain(cookie.getDomain());
-      if (cookie.getPath() != null) cook.setPath(cookie.getPath());
-      cook.setSecure(cookie.isSecure());
-      if (cookie.getComment() != null) cook.setComment(cookie.getComment());
-      response.addCookie(cook);
+      outputHeaders.add(javax.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
    }
 
    public void sendError(int status) throws IOException
