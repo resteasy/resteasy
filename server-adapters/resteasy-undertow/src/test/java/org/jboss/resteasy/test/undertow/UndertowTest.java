@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.undertow;
 
+import static io.undertow.Handlers.resource;
+import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.servlet.api.DeploymentInfo;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.jboss.resteasy.test.TestPortProvider;
@@ -15,6 +17,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Application;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -91,6 +96,23 @@ public class UndertowTest
       Client client = ClientBuilder.newClient();
       String val = client.target(TestPortProvider.generateURL("/di/base/test")).request().get(String.class);
       Assert.assertEquals("hello world", val);
+      client.close();
+   }
+
+   @Test
+   public void testAddResourcePrefixPath() throws Exception 
+   {
+      File staticFile = new File( "index.html" );
+      BufferedWriter writer = new BufferedWriter( new FileWriter( staticFile ) );
+      final String staticFileContent = "Hello static world!";
+      writer.write( staticFileContent );
+      writer.close();
+
+      server.addResourcePrefixPath( "/index.html", resource( new FileResourceManager( staticFile, 0L ) ) );
+      server.deploy( MyApp.class );
+      Client client = ClientBuilder.newClient();
+      String val = client.target( TestPortProvider.generateURL( "/index.html" ) ).request().get( String.class );
+      Assert.assertEquals( staticFileContent, val );
       client.close();
    }
 
