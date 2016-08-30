@@ -97,22 +97,6 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
       }
 
 
-      String sProviders = getParameter(ResteasyContextParameters.RESTEASY_SCAN_PROVIDERS);
-      if (sProviders != null)
-      {
-         LogMessages.LOGGER.noLongerSupported(ResteasyContextParameters.RESTEASY_SCAN_PROVIDERS);
-      }
-      String scanAll = getParameter(ResteasyContextParameters.RESTEASY_SCAN);
-      if (scanAll != null)
-      {
-         LogMessages.LOGGER.noLongerSupported(ResteasyContextParameters.RESTEASY_SCAN);
-      }
-      String sResources = getParameter(ResteasyContextParameters.RESTEASY_SCAN_RESOURCES);
-      if (sResources != null)
-      {
-         LogMessages.LOGGER.noLongerSupported(ResteasyContextParameters.RESTEASY_SCAN_RESOURCES);
-      }
-
       // Check to see if scanning is being done by deployer (i.e. JBoss App Server)
       String sScannedByDeployer = getParameter(ResteasyContextParameters.RESTEASY_SCANNED_BY_DEPLOYER);
       if (sScannedByDeployer != null)
