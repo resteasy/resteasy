@@ -16,9 +16,6 @@ public interface ResteasyContextParameters
    String RESTEASY_RESOURCE_METHOD_INTERCEPTORS = "resteasy.resource.method.interceptors";
 
    String RESTEASY_USE_BUILTIN_PROVIDERS = "resteasy.use.builtin.providers";
-   String RESTEASY_SCAN_PROVIDERS = "resteasy.scan.providers";
-   String RESTEASY_SCAN = "resteasy.scan";
-   String RESTEASY_SCAN_RESOURCES = "resteasy.scan.resources";
    String RESTEASY_JNDI_RESOURCES = "resteasy.jndi.resources";
    String RESTEASY_RESOURCES = "resteasy.resources";
    String RESTEASY_MEDIA_TYPE_MAPPINGS = "resteasy.media.type.mappings";
