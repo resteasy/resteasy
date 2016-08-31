@@ -16,8 +16,13 @@ public class AbstractInjectionTestBase {
         OnlineManagementClient client = TestUtil.clientInit();
 
         // disable security and create queue
-        TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default:write-attribute(name=security-enabled,value=false)");
-        TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default/jms-queue=test:add(entries=[java:/jms/queue/test])");
+        if (TestUtil.isWildFly9x()) {
+            TestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default:write-attribute(name=security-enabled,value=false)");
+            TestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default/jms-queue=test:add(entries=[java:/jms/queue/test])");
+        } else {
+            TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default:write-attribute(name=security-enabled,value=false)");
+            TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default/jms-queue=test:add(entries=[java:/jms/queue/test])");
+        }
 
         // reload server
         Administration admin = new Administration(client, 240);
@@ -31,8 +36,13 @@ public class AbstractInjectionTestBase {
         OnlineManagementClient client = TestUtil.clientInit();
 
         // remove queue and enable security
-        TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default:write-attribute(name=security-enabled,value=true)");
-        TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default/jms-queue=test:remove");
+        if (TestUtil.isWildFly9x()) {
+            TestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default:write-attribute(name=security-enabled,value=true)");
+            TestUtil.runCmd(client, "/subsystem=messaging/hornetq-server=default/jms-queue=test:remove");
+        } else {
+            TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default:write-attribute(name=security-enabled,value=true)");
+            TestUtil.runCmd(client, "/subsystem=messaging-activemq/server=default/jms-queue=test:remove");
+        }
 
         // reload server
         Administration admin = new Administration(client, 240);
