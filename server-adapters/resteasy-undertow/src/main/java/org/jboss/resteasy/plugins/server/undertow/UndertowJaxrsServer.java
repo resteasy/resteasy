@@ -8,7 +8,6 @@ import io.undertow.servlet.api.ServletContainer;
 import io.undertow.servlet.api.ServletInfo;
 
 import org.jboss.resteasy.util.PortProvider;
-import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.servlet3.HttpServlet30Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 
