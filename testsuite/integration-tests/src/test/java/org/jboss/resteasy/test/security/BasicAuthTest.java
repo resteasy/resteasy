@@ -13,7 +13,7 @@ import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
-import org.jboss.resteasy.setup.UsersRolesSecurityDomainSetup;
+import org.jboss.resteasy.setup.UsersRolesSecurityDomainSetupCreaper;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseProxy;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResource;
 import org.jboss.resteasy.test.security.resource.BasicAuthBaseResourceAnybody;
@@ -39,7 +39,7 @@ import java.util.Hashtable;
  * @tpTestCaseDetails Basic test for RESTEasy authentication.
  * @tpSince RESTEasy 3.0.16
  */
-@ServerSetup({UsersRolesSecurityDomainSetup.class})
+@ServerSetup({UsersRolesSecurityDomainSetupCreaper.class})
 @RunWith(Arquillian.class)
 @RunAsClient
 public class BasicAuthTest {

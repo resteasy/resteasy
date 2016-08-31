@@ -1,6 +1,25 @@
 # Introduction
 The aim of testsuite module is to provide unit and integration tests for Resteasy.
 
+# Run testsuite module
+
+## All tests
+Run default tests:
+> mvn clean verify -Djboss.home=PATH_TO_WIDLFLY_HOME
+
+By default all tests annotated with ``@Category({ ExpectedFailing.class })``
+are excluded. 
+
+To run the testsuite with failing tests included for testing purposes:
+
+> mvn clean verify -Djboss.home=PATH_TO_WIDLFLY_HOME -Denable.expected.failing -fn
+
+## Single test
+> mvn clean verify -Djboss.home=PATH_TO_WIDLFLY_HOME -Dtest=NAME_OF_THE_TEST_CLASS -fn
+
+For example:
+> mvn clean verify -Djboss.home=PATH_TO_WIDLFLY_HOME -Dtest=TraceTest -fn
+
 # Test documentation
 With each new test write appropriate javadoc documentation.
 

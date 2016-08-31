@@ -85,6 +85,7 @@
         <version.javax.validation-api>1.1.0.Final</version.javax.validation-api>
         <version.jboss-javaee-6.0.spec>1.0.0.Final</version.jboss-javaee-6.0.spec>
         <version.weld21>2.1.0.Final</version.weld21>
+        <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -805,7 +806,6 @@
                     <configuration>
                         <forkMode>once</forkMode>
                         <argLine>-Xms512m -Xmx512m</argLine>
-                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     </configuration>
                 </plugin>
                 <plugin>
