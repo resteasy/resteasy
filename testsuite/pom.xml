@@ -22,6 +22,7 @@
 
     <properties>
         <version.resteasy.testsuite>${project.version}</version.resteasy.testsuite>
+        <additional.surefire.excluded.groups></additional.surefire.excluded.groups>
     </properties>
 
     <build>
@@ -37,7 +38,7 @@
                         <node>127.0.0.1</node>
                         <jboss.home>${jboss.home}</jboss.home>
                     </systemPropertyVariables>
-                    <excludedGroups>org.jboss.resteasy.category.ExpectedFailing</excludedGroups>
+                    <excludedGroups>org.jboss.resteasy.category.ExpectedFailing,${additional.surefire.excluded.groups}</excludedGroups>
                 </configuration>
             </plugin>
             <plugin>
@@ -76,6 +77,18 @@
             </activation>
             <properties>
                 <server.version>10.0.0.Final</server.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>server-version-9x-exclusions</id>
+            <activation>
+              <property>
+                <name>server.version</name>
+                <value>9.0.2.Final</value>
+              </property>
+            </activation>
+            <properties>
+              <additional.surefire.excluded.groups>org.jboss.resteasy.category.NotForWildFly9</additional.surefire.excluded.groups>
             </properties>
         </profile>
         <!-- If resteasy.version is specified, it will be used for tests instead of the project.version -->

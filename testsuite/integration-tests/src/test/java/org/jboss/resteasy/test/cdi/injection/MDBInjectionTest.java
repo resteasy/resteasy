@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForWildFly9;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBook;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBag;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBagLocal;
@@ -56,6 +57,7 @@ import javax.ws.rs.core.Response;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category(NotForWildFly9.class) //fails on 9.x due to: [WFLY-3355] MDB fails to deploy on reload
 public class MDBInjectionTest extends AbstractInjectionTestBase {
     protected static final Logger log = LogManager.getLogger(MDBInjectionTest.class.getName());
 
