@@ -37,7 +37,7 @@ public class DuplicateProviderRegistrationTest {
         war.addClasses(DuplicateProviderRegistrationFeature.class, DuplicateProviderRegistrationFilter.class,
                 TestUtil.class, DuplicateProviderRegistrationInterceptor.class);
         war.addClass(NotForForwardCompatibility.class);
-        return TestUtil.finishContainerPrepare(war, null, null);
+        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 
     private static int getWarningCount() {

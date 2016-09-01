@@ -44,7 +44,7 @@ public class AlternativeVanillaInheritanceTest {
         war.addClasses(UtilityProducer.class)
                 .addClasses(CDIInheritenceBook.class, CDIInheritenceSelectBook.class, CDIInheritenceStereotypeAlternative.class, CDIInheritenceBookVanillaAlternative.class, CDIInheritenceInheritanceResource.class)
                 .addAsWebInfResource(SpecializedInheritanceTest.class.getPackage(), "alternativeVanillaBeans.xml", "beans.xml");
-        return TestUtil.finishContainerPrepare(war, null, null);
+        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 
     /**

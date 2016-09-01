@@ -35,7 +35,7 @@ public class CDIInjectionBookMDB implements MessageListener {
             CountDownLatch latch = resource.getCountDownLatch();
             latch.countDown(); // Tell BookResource book has been stored.
         } catch (JMSException e) {
-            log.info(String.format("Stacktrace: %s", e.getStackTrace()));
+            log.info(String.format("Stacktrace: %s", (Object[]) e.getStackTrace()));
         }
     }
 

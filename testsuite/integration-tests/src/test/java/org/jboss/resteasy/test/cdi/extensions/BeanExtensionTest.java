@@ -61,7 +61,7 @@ public class BeanExtensionTest {
         JavaArchive jar = ShrinkWrap.create(JavaArchive.class).addClasses(CDIExtensionsBostonHolder.class, CDIExtensionsBostonlLeaf.class);
         war.addAsLibrary(jar);
 
-        return TestUtil.finishContainerPrepare(war, null, null);
+        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 
     /**

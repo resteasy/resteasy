@@ -48,7 +48,7 @@ public class InternalDispatcherTest {
         List<Class<?>> singletons = new ArrayList<>();
         singletons.add(InternalDispatcherForwardingResource.class);
 
-        return TestUtil.finishContainerPrepare(war, null, singletons, null);
+        return TestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);
     }
 
     private String generateBaseUrl() {

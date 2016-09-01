@@ -38,7 +38,7 @@ public class JSAPIGetBasicJsapiHandlingScriptTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(JSAPIGetBasicJsapiHandlingScriptTest.class.getSimpleName());
         war.addAsWebInfResource(JSAPIGetBasicJsapiHandlingScriptTest.class.getPackage(), "web.xml", "web.xml");
-        return TestUtil.finishContainerPrepare(war, null, null);
+        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 
     @Before
