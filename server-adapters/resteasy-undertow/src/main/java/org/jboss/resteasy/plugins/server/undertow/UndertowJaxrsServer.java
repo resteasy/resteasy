@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.server.undertow;
 
 import io.undertow.Undertow;
 import io.undertow.server.handlers.PathHandler;
+import io.undertow.server.handlers.resource.ResourceHandler;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.api.ServletContainer;
@@ -116,8 +117,19 @@ public class UndertowJaxrsServer
       if (appPath != null) path = appPath.value();
       return undertowDeployment(application, path);
    }
-
-
+   
+   /**
+    * Maps a path prefix to a resource handler to allow serving resources other than the JAX-RS endpoints.
+    * For example, this can be used for serving static resources like web pages or API documentation that might 
+    * be deployed with the REST application server. 
+    * 
+    * @param path 
+    * @param handler
+    */
+   public void addResourcePrefixPath(String path, ResourceHandler handler) 
+   {
+      root.addPrefixPath(path, handler);
+   }
 
    /**
     * Creates a web deployment under "/"
