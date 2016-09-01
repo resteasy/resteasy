@@ -52,7 +52,7 @@ public class ValidationCoreTest {
                 .addClasses(ValidationCoreClassConstraint.class, ValidationCoreClassValidator.class)
                 .addClasses(ValidationCoreResourceWithAllViolationTypes.class, ValidationCoreResourceWithReturnValues.class)
                 .addAsResource("META-INF/services/javax.ws.rs.ext.Providers");
-        return TestUtil.finishContainerPrepare(war, null, null);
+        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 
     @Before

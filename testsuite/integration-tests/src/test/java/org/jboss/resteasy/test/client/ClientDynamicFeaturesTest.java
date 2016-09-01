@@ -44,7 +44,7 @@ public class ClientDynamicFeaturesTest {
                 ClientDynamicFeaturesDualFeature1.class,
                 ClientDynamicFeaturesServerFeature2.class,
                 ClientDynamicFeaturesServerFeature1.class);
-        return TestUtil.finishContainerPrepare(war, null, null);
+        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 
     /**

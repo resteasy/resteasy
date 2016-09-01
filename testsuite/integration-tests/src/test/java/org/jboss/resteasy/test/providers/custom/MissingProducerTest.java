@@ -41,7 +41,7 @@ public class MissingProducerTest {
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive(MissingProducerTest.class.getSimpleName());
         war.addAsResource(MissingProducerTest.class.getPackage(), "MissingProducer.Providers", "META-INF/services/javax.ws.rs.ext.Providers");
-        return TestUtil.finishContainerPrepare(war, null, null);
+        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 
     /**

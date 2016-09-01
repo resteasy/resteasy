@@ -13,6 +13,7 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -20,8 +21,6 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import static junit.framework.Assert.assertEquals;
 
 /**
  * @tpSubChapter Form tests
@@ -55,7 +54,7 @@ public class ComplexFormTest {
         WebTarget base = client.target(PortProviderUtil.generateURL("/person", CollectionsFormTest.class.getSimpleName()));
         Response response = base.request().accept(MediaType.TEXT_PLAIN).post(Entity.form(form));
 
-        assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        assertEquals("Wrong content of response", "name:'John Doe', invoice:'Main Street', shipping:'Station Street'", response.readEntity(String.class));
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assert.assertEquals("Wrong content of response", "name:'John Doe', invoice:'Main Street', shipping:'Station Street'", response.readEntity(String.class));
     }
 }

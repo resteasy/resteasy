@@ -49,7 +49,7 @@ public class ApplicationFilterTest {
         war.add(new UrlAsset(ApplicationFilterTest.class.getResource("ApplicationFilter.html")), "foo.html");
         List<Class<?>> singletons = new ArrayList<>();
         singletons.add(ApplicationFilterCustomerResource.class);
-        return TestUtil.finishContainerPrepare(war, null, singletons, null);
+        return TestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);
     }
 
     private String generateURL(String path) {

@@ -14,13 +14,12 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.core.Response;
-
-import static junit.framework.Assert.assertEquals;
 
 /**
  * @tpSubChapter Providers
@@ -63,8 +62,8 @@ public class CustomProviderPreferenceTest {
     @Test
     public void testCustomProviderPreference() throws Exception {
         Response response = client.target(generateURL("/user")).request().get();
-        assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        assertEquals("Wrong content of response", "jharting;email@example.com", response.readEntity(String.class));
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assert.assertEquals("Wrong content of response", "jharting;email@example.com", response.readEntity(String.class));
         response.close();
     }
 }

@@ -363,7 +363,7 @@ public class CDIInjectionBookResource {
             log.info("sent: " + message.getText());
             return Response.ok().build();
         } catch (JMSException e) {
-            log.info(String.format("Stacktrace: %s", e.getStackTrace()));
+            log.info(String.format("Stacktrace: %s", (Object[]) e.getStackTrace()));
             return Response.serverError().entity("JMS error: " + e.getMessage()).build();
         }
     }

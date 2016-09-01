@@ -167,7 +167,7 @@ public class ResponseBuilderTest {
             @SuppressWarnings(value = "unchecked")
             Response r2 = Response.ok()
                     .link("Link1", "rel1")
-                    .links(null)
+                    .links((Link[]) null)
                     .link("Link2", "rel2").build();
 
             Assert.assertEquals(ERROR_MSG, 1, r2.getLinks().size());
