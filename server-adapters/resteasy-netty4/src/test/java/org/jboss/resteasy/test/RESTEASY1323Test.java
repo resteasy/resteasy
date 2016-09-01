@@ -29,7 +29,7 @@ public class RESTEASY1323Test
 {
    static String BASE_URI = generateURL("");
 
-   static final int REQUEST_TIMEOUT = 5000;
+   static final int REQUEST_TIMEOUT = 6000;
 
    @BeforeClass
    public static void setupSuite() throws Exception
@@ -53,7 +53,7 @@ public class RESTEASY1323Test
    {
    }
 
-   @Test(timeout=REQUEST_TIMEOUT*5)
+   @Test(timeout=REQUEST_TIMEOUT*10)
    public void testAsyncKeepConnection() throws Exception
    {
       callAsyncTwiceWithKeepAlive();
@@ -114,7 +114,7 @@ public class RESTEASY1323Test
             responseLatch.await();
          } finally {
             // Shut down executor threads to exit.
-            group.shutdownGracefully();
+            group.shutdownGracefully().await();
          }
    }
 
@@ -168,7 +168,7 @@ public class RESTEASY1323Test
          ch.closeFuture().await();
       } finally {
          // Shut down executor threads to exit.
-         group.shutdownGracefully();
+         group.shutdownGracefully().await();
       }
    }
 }
