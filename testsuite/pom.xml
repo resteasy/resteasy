@@ -62,7 +62,9 @@
         <profile>
             <id>home</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <property>
+                  <name>!jboss.home</name>
+                </property>
             </activation>
             <properties>
                 <jboss.home>${server.home}</jboss.home>
