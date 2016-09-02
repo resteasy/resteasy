@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.nextgen.wadl;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.ws.rs.client.Client;
@@ -13,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
+@Ignore
 public class WADLBasicTests extends WADLTestSetup {
 
 
