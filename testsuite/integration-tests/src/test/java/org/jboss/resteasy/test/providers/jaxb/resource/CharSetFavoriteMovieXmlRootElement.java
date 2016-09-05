@@ -1,9 +1,9 @@
-package org.jboss.resteasy.test.charset;
+package org.jboss.resteasy.test.providers.jaxb.resource;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class FavoriteMovieXmlRootElement {
+public class CharSetFavoriteMovieXmlRootElement {
    private String _title;
    public String getTitle() {
      return _title;
