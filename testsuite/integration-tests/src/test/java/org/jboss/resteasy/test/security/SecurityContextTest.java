@@ -1,12 +1,14 @@
 package org.jboss.resteasy.test.security;
 
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.client.jaxrs.BasicAuthentication;
 import org.jboss.resteasy.setup.UsersRolesSecurityDomainSetupCreaper;
 import org.jboss.resteasy.test.security.resource.SecurityContextResource;
+import org.jboss.resteasy.test.security.resource.SecurityContextContainerRequestFilter;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -34,11 +36,11 @@ import java.io.IOException;
 @RunAsClient
 public class SecurityContextTest {
 
-    private static final String USERNAME="bill";
-    private static final String PASSWORD="password1";
+    private static final String USERNAME = "bill";
+    private static final String PASSWORD = "password1";
 
-    private static final String USERNAME2="ordinaryUser";
-    private static final String PASSWORD2="password2";
+    private static final String USERNAME2 = "ordinaryUser";
+    private static final String PASSWORD2 = "password2";
 
     private Client authorizedClient;
     private Client nonauthorizedClient;
@@ -73,8 +75,15 @@ public class SecurityContextTest {
         return TestUtil.finishContainerPrepare(war, null, SecurityContextResource.class);
     }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, SecurityContextTest.class.getSimpleName());
+    @Deployment(name="containerRequestFilter")
+    public static Archive<?> deploy2() {
+        WebArchive war = TestUtil.prepareArchive(SecurityContextTest.class.getSimpleName() + "Filter");
+        war.addAsResource(SecurityContextTest.class.getPackage(), "roles.properties", "roles.properties")
+                .addAsResource(SecurityContextTest.class.getPackage(), "users.properties", "users.properties")
+                .addAsWebInfResource(SecurityContextTest.class.getPackage(), "jboss-web.xml", "jboss-web.xml")
+                .addAsWebInfResource(SecurityContextTest.class.getPackage(), "securityContext/web.xml", "web.xml");
+        return TestUtil.finishContainerPrepare(war, null, SecurityContextResource.class,
+                SecurityContextContainerRequestFilter.class);
     }
 
     /**
@@ -83,7 +92,8 @@ public class SecurityContextTest {
      */
     @Test
     public void testSecurityContextAuthorized() {
-        Response response = authorizedClient.target(generateURL("/test")).request().get();
+        Response response = authorizedClient
+                .target(PortProviderUtil.generateURL("/test", SecurityContextTest.class.getSimpleName())).request().get();
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         Assert.assertEquals("Good user bill", response.readEntity(String.class));
     }
@@ -94,8 +104,35 @@ public class SecurityContextTest {
      */
     @Test
     public void testSecurityContextNonAuthorized() {
-        Response response = nonauthorizedClient.target(generateURL("/test")).request().get();
+        Response response = nonauthorizedClient
+                .target(PortProviderUtil.generateURL("/test", SecurityContextTest.class.getSimpleName())).request().get();
         Assert.assertEquals("User ordinaryUser is not authorized", response.readEntity(String.class));
+        Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
+    }
+
+    /**
+     * @tpTestDetails ContainerRequestFilter and correct credentials are used
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    @OperateOnDeployment("containerRequestFilter")
+    public void testSecurityContextAuthorizedUsingFilter() {
+        Response response = authorizedClient
+                .target(PortProviderUtil.generateURL("/test", SecurityContextTest.class.getSimpleName() + "Filter")).request().get();
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assert.assertEquals("Good user bill", response.readEntity(String.class));
+    }
+
+    /**
+     * @tpTestDetails ContainerRequestFilter and incorrect credentials are used.
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    @OperateOnDeployment("containerRequestFilter")
+    public void testSecurityContextNonAuthorizedUsingFilter() {
+        Response response = nonauthorizedClient
+                .target(PortProviderUtil.generateURL("/test", SecurityContextTest.class.getSimpleName() + "Filter")).request().get();
+        Assert.assertEquals("User ordinaryUser is not authorized, coming from filter", response.readEntity(String.class));
         Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
     }
 }
