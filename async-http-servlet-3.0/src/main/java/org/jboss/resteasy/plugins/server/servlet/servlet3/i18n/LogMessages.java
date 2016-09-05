@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.server.servlet.i18n;
+package org.jboss.resteasy.plugins.server.servlet.servlet3.i18n;
 
 import org.jboss.logging.BasicLogger;
 import org.jboss.logging.Logger;

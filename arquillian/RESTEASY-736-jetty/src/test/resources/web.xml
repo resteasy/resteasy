@@ -9,7 +9,7 @@
 
         <!--org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher-->
         <servlet-class>
-            org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher
+            org.jboss.resteasy.plugins.server.servlet.servlet3.HttpServlet30Dispatcher
         </servlet-class>
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>
