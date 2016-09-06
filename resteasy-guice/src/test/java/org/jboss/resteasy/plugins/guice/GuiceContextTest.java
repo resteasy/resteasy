@@ -1,12 +1,8 @@
 package org.jboss.resteasy.plugins.guice;
 
-import com.google.inject.Binder;
-import com.google.inject.Guice;
-import com.google.inject.Module;
-
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.test.TestPortProvider;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Arrays;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -17,29 +13,39 @@ import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.ParamConverterProvider;
 import javax.ws.rs.ext.Provider;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.inject.Binder;
+import com.google.inject.Guice;
+import com.google.inject.Module;
+
 public class GuiceContextTest
 {
+   private NettyJaxrsServer server;
    private Dispatcher dispatcher;
 
    @Before
-   public void beforeClass() throws Exception
+   public void before() throws Exception
    {
-      dispatcher = EmbeddedContainer.start().getDispatcher();
+      server = new NettyJaxrsServer();
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("/");
+      server.start();
+      dispatcher = server.getDeployment().getDispatcher();
    }
 
    @After
-   public void afterClass() throws Exception
+   public void after() throws Exception
    {
-      EmbeddedContainer.stop();
+      server.stop();
+      server = null;
+      dispatcher = null;
    }
 
    @Test
