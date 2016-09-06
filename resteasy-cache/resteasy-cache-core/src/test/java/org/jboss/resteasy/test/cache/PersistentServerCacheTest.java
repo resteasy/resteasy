@@ -21,8 +21,9 @@ import org.apache.commons.io.FileUtils;
 import org.jboss.resteasy.annotations.cache.Cache;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.cache.server.ServerCacheFeature;
+import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -45,6 +46,7 @@ public class PersistentServerCacheTest
    private static int plainCount = 0;
    private static int htmlCount = 0;
    
+   private static NettyJaxrsServer server;
    protected static ResteasyDeployment deployment;
    protected static Dispatcher dispatcher;
    protected static Client client;
@@ -127,7 +129,13 @@ public class PersistentServerCacheTest
       Hashtable<String,String> contextParams = new Hashtable<String,String>();
       contextParams.put("server.request.cache.infinispan.config.file", "infinispan.xml");
       contextParams.put("server.request.cache.infinispan.cache.name", "TestCache");
-      deployment = EmbeddedContainer.start(initParams, contextParams);
+      
+      server = new NettyJaxrsServer();
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("/");
+      server.start();
+      deployment = server.getDeployment();
+      
       dispatcher = deployment.getDispatcher();
       deployment.getProviderFactory().property("server.request.cache.infinispan.config.file", "infinispan.xml");
       deployment.getProviderFactory().property("server.request.cache.infinispan.cache.name", "TestCache");
@@ -139,7 +147,8 @@ public class PersistentServerCacheTest
    public void after() throws Exception
    {
       FileUtils.deleteDirectory(new File("target/TestCache"));
-      EmbeddedContainer.stop();
+      server.stop();
+      server = null;
       dispatcher = null;
       deployment = null;
    }
