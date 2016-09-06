@@ -1,6 +1,20 @@
 package org.jboss.resteasy.test.keystone;
 
-import org.junit.Assert;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Configurable;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+
 import org.infinispan.Cache;
 import org.infinispan.manager.DefaultCacheManager;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -14,24 +28,12 @@ import org.jboss.resteasy.keystone.model.StoredUser;
 import org.jboss.resteasy.keystone.model.User;
 import org.jboss.resteasy.keystone.server.Loader;
 import org.jboss.resteasy.keystone.server.SkeletonKeyApplication;
+import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.TestPortProvider;
+import org.junit.Assert;
 import org.junit.Test;
-
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Configurable;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -39,6 +41,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
  */
 public class PersistenceTest
 {
+   private static NettyJaxrsServer server;
    private static ResteasyDeployment deployment;
    private static SkeletonKeyApplication app;
 
@@ -85,7 +88,8 @@ public class PersistenceTest
       app.getCache().stop();
       deployment = null;
       app = null;
-      EmbeddedContainer.stop();
+      server.stop();
+      server = null;
    }
 
    public static class SApp extends Application
@@ -116,7 +120,11 @@ public class PersistenceTest
       factory.property(SkeletonKeyApplication.SKELETON_KEY_INFINISPAN_CONFIG_FILE, "cache.xml");
       factory.property(SkeletonKeyApplication.SKELETON_KEY_INFINISPAN_CACHE_NAME, "idp-store");
 
-      EmbeddedContainer.start(deployment);
+      server = new NettyJaxrsServer();
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("/");
+      server.setDeployment(deployment);
+      server.start();
       app = ((SApp)deployment.getApplication()).app;
    }
 
