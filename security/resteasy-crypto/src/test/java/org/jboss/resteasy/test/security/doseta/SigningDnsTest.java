@@ -1,17 +1,8 @@
 package org.jboss.resteasy.test.security.doseta;
 
-import org.jboss.resteasy.annotations.security.doseta.Signed;
-import org.jboss.resteasy.annotations.security.doseta.Verify;
-import org.jboss.resteasy.security.doseta.DKIMSignature;
-import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
-import org.jboss.resteasy.security.doseta.KeyRepository;
-import org.jboss.resteasy.test.BaseResourceTest;
-import org.jboss.resteasy.test.TestPortProvider;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import se.unlogic.eagledns.EagleDNS;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -25,24 +16,64 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
+
+import org.jboss.resteasy.annotations.security.doseta.Signed;
+import org.jboss.resteasy.annotations.security.doseta.Verify;
+import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
+import org.jboss.resteasy.security.doseta.DKIMSignature;
+import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
+import org.jboss.resteasy.security.doseta.KeyRepository;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.test.TestPortProvider;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import se.unlogic.eagledns.EagleDNS;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class SigningDnsTest extends BaseResourceTest
+public class SigningDnsTest
 {
+   private static NettyJaxrsServer server;
+   private static ResteasyDeployment deployment;
    public static DosetaKeyRepository clientRepository;
    public static DosetaKeyRepository serverRepository;
    public static PrivateKey badKey;
    private static Client client;
 
+   public Registry getRegistry()
+   {
+      return deployment.getRegistry();
+   }
+
+   public ResteasyProviderFactory getProviderFactory()
+   {
+      return deployment.getProviderFactory();
+   }
+
+   /**
+    * @param resource
+    */
+   public static void addPerRequestResource(Class<?> resource)
+   {
+      deployment.getRegistry().addPerRequestResource(resource);
+   }   
+   
    @BeforeClass
    public static void setup() throws Exception
    {
+      server = new NettyJaxrsServer();
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("/");
+      server.start();
+      deployment = server.getDeployment();
+      
       clientRepository = new DosetaKeyRepository();
       clientRepository.setKeyStorePath("test1.jks");
       clientRepository.setKeyStorePassword("password");
@@ -61,7 +92,7 @@ public class SigningDnsTest extends BaseResourceTest
       badKey = keyPair.getPrivate();
 
 
-      dispatcher.getDefaultContextObjects().put(KeyRepository.class, serverRepository);
+      deployment.getDispatcher().getDefaultContextObjects().put(KeyRepository.class, serverRepository);
       addPerRequestResource(SignedResource.class);
       configureDNS();
       client = ClientBuilder.newClient();
@@ -81,7 +112,9 @@ public class SigningDnsTest extends BaseResourceTest
    {
       dns.shutdown();
       client.close();
-
+      server.stop();
+      server = null;
+      deployment = null;
    }
 
 

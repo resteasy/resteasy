@@ -1,26 +1,14 @@
 package org.jboss.resteasy.test.security.doseta;
 
-import org.jboss.resteasy.annotations.security.doseta.After;
-import org.jboss.resteasy.annotations.security.doseta.Signed;
-import org.jboss.resteasy.annotations.security.doseta.Verify;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.security.doseta.DKIMSignature;
-import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
-import org.jboss.resteasy.security.doseta.KeyRepository;
-import org.jboss.resteasy.security.doseta.UnauthorizedSignatureException;
-import org.jboss.resteasy.security.doseta.Verification;
-import org.jboss.resteasy.security.doseta.Verifier;
-import org.jboss.resteasy.spi.MarshalledEntity;
-import org.jboss.resteasy.test.BaseResourceTest;
-import org.jboss.resteasy.test.TestPortProvider;
-import org.jboss.resteasy.util.Base64;
-import org.jboss.resteasy.util.ParameterParser;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+
+import java.net.URL;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SignatureException;
+import java.util.HashMap;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -39,26 +27,62 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.net.URL;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.SignatureException;
-import java.util.HashMap;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+import org.jboss.resteasy.annotations.security.doseta.After;
+import org.jboss.resteasy.annotations.security.doseta.Signed;
+import org.jboss.resteasy.annotations.security.doseta.Verify;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
+import org.jboss.resteasy.security.doseta.DKIMSignature;
+import org.jboss.resteasy.security.doseta.DosetaKeyRepository;
+import org.jboss.resteasy.security.doseta.KeyRepository;
+import org.jboss.resteasy.security.doseta.UnauthorizedSignatureException;
+import org.jboss.resteasy.security.doseta.Verification;
+import org.jboss.resteasy.security.doseta.Verifier;
+import org.jboss.resteasy.spi.MarshalledEntity;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.test.TestPortProvider;
+import org.jboss.resteasy.util.Base64;
+import org.jboss.resteasy.util.ParameterParser;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class SigningTest extends BaseResourceTest
+public class SigningTest
 {
+   private static NettyJaxrsServer server;
+   private static ResteasyDeployment deployment;
    public static KeyPair keys;
    public static DosetaKeyRepository repository;
    public static PrivateKey badKey;
    public static ResteasyClient client;
+   
+   public Registry getRegistry()
+   {
+      return deployment.getRegistry();
+   }
+
+   public ResteasyProviderFactory getProviderFactory()
+   {
+      return deployment.getProviderFactory();
+   }
+
+   /**
+    * @param resource
+    */
+   public static void addPerRequestResource(Class<?> resource)
+   {
+      deployment.getRegistry().addPerRequestResource(resource);
+   }
 
    @Test
    public void testMe() throws Exception
@@ -70,6 +94,12 @@ public class SigningTest extends BaseResourceTest
    @BeforeClass
    public static void setup() throws Exception
    {
+      server = new NettyJaxrsServer();
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("/");
+      server.start();
+      deployment = server.getDeployment();
+      
       repository = new DosetaKeyRepository();
       repository.setKeyStorePath("test.jks");
       repository.setKeyStorePassword("password");
@@ -85,7 +115,7 @@ public class SigningTest extends BaseResourceTest
       badKey = keyPair.getPrivate();
 
 
-      dispatcher.getDefaultContextObjects().put(KeyRepository.class, repository);
+      deployment.getDispatcher().getDefaultContextObjects().put(KeyRepository.class, repository);
       addPerRequestResource(SignedResource.class);
       client = new ResteasyClientBuilder().build();
    }
@@ -94,6 +124,10 @@ public class SigningTest extends BaseResourceTest
    public static void afterIt() throws Exception
    {
       client.close();
+      server.stop();
+      server = null;
+      deployment = null;
+
    }
 
    @Path("/signed")
