@@ -148,7 +148,6 @@
                 <module>resteasy-test-data</module>
                 <module>resteasy-jaxrs</module>
                 <module>resteasy-client</module>
-                <module>resteasy-jaxrs-testsuite</module>
                 <module>providers</module>
                 <module>resteasy-bom</module>
                 <module>resteasy-cache</module>
@@ -198,7 +197,6 @@
                 <module>resteasy-test-data</module>
                 <module>resteasy-jaxrs</module>
                 <module>resteasy-client</module>
-                <module>resteasy-jaxrs-testsuite</module>
                 <module>providers</module>
                 <module>resteasy-bom</module>
                 <module>resteasy-cache</module>
@@ -227,7 +225,6 @@
                 <module>resteasy-test-data</module>
                 <module>resteasy-jaxrs</module>
                 <module>resteasy-client</module>
-                <module>resteasy-jaxrs-testsuite</module>
                 <module>providers</module>
                 <module>resteasy-bom</module>
                 <module>resteasy-cache</module>
