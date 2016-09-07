@@ -836,16 +836,26 @@
             </plugin>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>src/main/resources</directory>
-                            <includes>
-                                <include>org/**</include>
-                            </includes>
-                        </fileset>
-                    </filesets>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>i18n cleanup</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>src/main/resources</directory>
+                                    <includes>
+                                        <include>org/**</include>
+                                    </includes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
