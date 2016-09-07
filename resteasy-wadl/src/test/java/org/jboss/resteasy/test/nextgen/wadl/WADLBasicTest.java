@@ -1,30 +1,104 @@
 package org.jboss.resteasy.test.nextgen.wadl;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.InetSocketAddress;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
+import org.jboss.resteasy.plugins.server.sun.http.HttpContextBuilder;
+import org.jboss.resteasy.test.TestPortProvider;
+import org.jboss.resteasy.test.nextgen.wadl.resources.BasicResource;
+import org.jboss.resteasy.test.nextgen.wadl.resources.issues.RESTEASY1246;
+import org.jboss.resteasy.wadl.ResteasyWadlDefaultResource;
+import org.jboss.resteasy.wadl.ResteasyWadlGenerator;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import com.sun.net.httpserver.HttpServer;
+
 /**
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
-@Ignore
-public class WADLBasicTests extends WADLTestSetup {
+public class WADLBasicTest extends WADLTestSetup {
 
+    private static HttpServer httpServer;
+    private static HttpContextBuilder contextBuilder;
+    private Client client;
+	private String url;
 
-    public WADLBasicTests() {
+    
+    public Client getClient() {
+		return client;
+	}
+
+	public void setClient(Client client) {
+		this.client = client;
+	}
+
+    public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	@BeforeClass
+    public static void before() throws Exception {
+		
+        httpServer = HttpServer.create(new InetSocketAddress(TestPortProvider.getPort()), 10);
+        contextBuilder = new HttpContextBuilder();
+        contextBuilder.getDeployment().getActualResourceClasses().add(BasicResource.class);
+        contextBuilder.getDeployment().getActualResourceClasses().add(ResteasyWadlDefaultResource.class);
+        contextBuilder.getDeployment().getActualResourceClasses().add(RESTEASY1246.class);
+        contextBuilder.bind(httpServer);
+        ResteasyWadlDefaultResource.getServices().put("/", ResteasyWadlGenerator.generateServiceRegistry(contextBuilder.getDeployment()));
+        httpServer.start();
+    }
+
+    @AfterClass
+    public static void after() throws Exception {
+        
+        contextBuilder.cleanup();
+        httpServer.stop(0);
+        Thread.sleep(100);
+    }
+    
+    @Before
+    public void init() {
+        setClient(ClientBuilder.newClient());
+    	setUrl("http://127.0.0.1:${port}/application.xml".replaceAll("\\$\\{port\\}",
+            Integer.valueOf(TestPortProvider.getPort()).toString()));
+    }
+    
+    @After
+    public void clean() {
+    	try {
+            getClient().close();
+            setClient(null);
+        } catch (Exception e) {
+        	//ignore
+        }
+    }
+
+	
+    public WADLBasicTest() {
+    	
     }
 
 
     @Test
     public void testBasicSet() throws Exception {
-        WebTarget target = client.target(getUrl());
+        WebTarget target = getClient().target(getUrl());
         Response response = target.request().get();
 
         // get Application
@@ -96,7 +170,7 @@ public class WADLBasicTests extends WADLTestSetup {
 
     @Test
     public void testResteasy1246() throws Exception {
-        WebTarget target = client.target(getUrl());
+        WebTarget target = getClient().target(getUrl());
         Response response = target.request().get();
         // get Application
         org.jboss.resteasy.wadl.jaxb.Application application = response.readEntity(org.jboss.resteasy.wadl.jaxb.Application.class);
