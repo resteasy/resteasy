@@ -28,7 +28,6 @@ public class MatrixPathParamTest extends BaseResourceTest {
    @Path("/")
    static public class TestResourceServer
    {
-      @GET
       @Path("matrix1")
       public TestSubResourceServer getM1(@MatrixParam("m1") String m1) {
          return new TestSubResourceServer(m1);
