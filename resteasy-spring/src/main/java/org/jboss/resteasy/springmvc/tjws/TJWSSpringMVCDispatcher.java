@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
  * @version $Revision: 1 $
  */
 
-
+@Deprecated
 public class TJWSSpringMVCDispatcher extends DispatcherServlet
 {
 
