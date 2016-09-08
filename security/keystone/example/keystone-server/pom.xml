@@ -11,7 +11,7 @@
     <groupId>org.jboss.resteasy.example</groupId>
     <artifactId>keystone-server</artifactId>
     <packaging>war</packaging>
-    <name>keystone-server</name>
+    <name>RESTEasy Security: keystone-server</name>
     <description/>
     <url>http://maven.apache.org</url>
 

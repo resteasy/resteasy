@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>resteasy-oauth</artifactId>
-    <name>RESTEasy JAX-RS OAuth</name>
+    <name>RESTEasy Security: JAX-RS OAuth</name>
     <description/>
 
     <dependencies>

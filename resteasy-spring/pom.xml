@@ -167,17 +167,6 @@
             <artifactId>jboss-logging-processor</artifactId>
         </dependency> 
     </dependencies>
-    <build>
-        <finalName>resteasy-spring</finalName>
-        <plugins>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <forkMode>always</forkMode>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     
     <profiles>
         <profile>

@@ -10,7 +10,7 @@
 
     <groupId>org.jboss.security.web</groupId>
     <artifactId>login-module-authenticator</artifactId>
-    <name>AS7 Login Module Authenticator</name>
+    <name>RESTEasy Security: AS7 Login Module Authenticator</name>
     <description/>
 
     <dependencies>

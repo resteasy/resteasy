@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>resteasy-integration-tests-spring-unit</artifactId>
-    <name>RESTEasy testsuite: Integration tests - Spring - Unit tests</name>
+    <name>RESTEasy Main testsuite: Spring integration tests - Unit tests</name>
 
     <dependencies>
         <dependency>

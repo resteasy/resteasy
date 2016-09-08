@@ -165,7 +165,7 @@
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
                 <module>arquillian</module>
-                <module>integration-tests</module>
+                <module>profiling-tests</module>
                 <module>testsuite</module>
             </modules>
             <build>
@@ -214,7 +214,7 @@
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
                 <module>arquillian</module>
-                <module>integration-tests</module>
+                <module>profiling-tests</module>
                 <module>testsuite</module>
             </modules>
         </profile>
@@ -243,7 +243,7 @@
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
                 <module>arquillian</module>
-                <module>integration-tests</module>
+                <module>profiling-tests</module>
                 <module>testsuite</module>
             </modules>
         </profile>

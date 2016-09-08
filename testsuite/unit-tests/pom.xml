@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>resteasy-unit-tests</artifactId>
-    <name>RESTEasy testsuite: Unit tests</name>
+    <name>RESTEasy Main testsuite: Unit tests</name>
 
 
     <dependencies>
