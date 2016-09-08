@@ -6,11 +6,7 @@ import static org.junit.Assert.assertEquals;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
 
-import org.jboss.resteasy.client.ProxyFactory;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -32,7 +28,7 @@ public class MatrixPathParamTest extends BaseResourceTest {
    //#####################################
    
    @Path("/")
-   public class TestResourceServer
+   static public class TestResourceServer
    {
       @Path("matrix1")
       public TestSubResourceServer getM1(@MatrixParam("m1") String m1) {
@@ -40,7 +36,7 @@ public class MatrixPathParamTest extends BaseResourceTest {
       }
    }
    
-   public class TestSubResourceServer
+   static public class TestSubResourceServer
    {
       protected String m1;
       

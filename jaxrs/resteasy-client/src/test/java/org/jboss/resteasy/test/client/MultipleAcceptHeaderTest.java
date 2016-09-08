@@ -13,7 +13,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.BaseResourceTest;
-import org.jboss.resteasy.test.client.MatrixPathParamTest.TestInterfaceClient;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,7 +32,7 @@ public class MultipleAcceptHeaderTest extends BaseResourceTest {
    //#####################################
    
    @Path("/test")
-   public class TestResourceServer
+   static public class TestResourceServer
    {
       @GET
       @Path("accept")
