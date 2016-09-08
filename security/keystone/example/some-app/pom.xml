@@ -11,7 +11,7 @@
     <groupId>org.jboss.resteasy.test</groupId>
     <artifactId>keystone-app</artifactId>
     <packaging>war</packaging>
-    <name>request-auth-test</name>
+    <name>RESTEasy Security: request-auth-test</name>
 
     <dependencies>
         <dependency>

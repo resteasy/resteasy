@@ -9,7 +9,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <name>RESTEasy Maven Import</name>
+    <name>RESTEasy Maven Import (BOM)</name>
     <description/>
     <artifactId>resteasy-bom</artifactId>
     <packaging>pom</packaging>

@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>resteasy-integration-tests</artifactId>
-    <name>RESTEasy testsuite: Integration tests</name>
+    <name>RESTEasy Main testsuite: Integration tests</name>
 
     <profiles>
         <!-- Forward compatibility: use EAP 7.0.0.GA and newer Client from CP stream (e.g. client from RESTEasy delivered by EAP 7.0.2 -->

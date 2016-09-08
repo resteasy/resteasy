@@ -13,7 +13,7 @@
 
     <artifactId>resteasy-integration-tests-spring</artifactId>
     <packaging>pom</packaging>
-    <name>RESTEasy testsuite: Integration tests - Spring</name>
+    <name>RESTEasy Main testsuite: Spring integration tests</name>
 
     <properties>
         <version.org.springframework>4.2.5.RELEASE</version.org.springframework>

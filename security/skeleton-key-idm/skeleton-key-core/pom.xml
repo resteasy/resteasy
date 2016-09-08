@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>skeleton-key-core</artifactId>
-    <name>RESTEasy Skeleton Key Core</name>
+    <name>RESTEasy Security: Skeleton Key Core</name>
     <description/>
 
     <dependencies>

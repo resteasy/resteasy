@@ -36,7 +36,7 @@
 
     <artifactId>resteasy-keystone-as7-modules</artifactId>
 
-    <name>RESTEasy Keystone AS7 Modules</name>
+    <name>RESTEasy Security: Keystone AS7 Modules</name>
     <packaging>pom</packaging>
     <dependencies>
         <dependency>
