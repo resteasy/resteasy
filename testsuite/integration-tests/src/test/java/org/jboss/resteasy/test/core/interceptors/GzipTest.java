@@ -10,12 +10,15 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor;
 import org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor;
+import org.jboss.resteasy.test.core.interceptors.resource.GzipProxy;
 import org.jboss.resteasy.test.core.interceptors.resource.GzipResource;
 import org.jboss.resteasy.test.core.interceptors.resource.GzipIGZIP;
+import org.jboss.resteasy.test.core.interceptors.resource.Pair;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -50,7 +53,7 @@ public class GzipTest {
     @Deployment
     public static Archive<?> deploySimpleResource() {
         WebArchive war = TestUtil.prepareArchive(GzipTest.class.getSimpleName());
-        war.addClass(GzipIGZIP.class);
+        war.addClasses(GzipIGZIP.class, Pair.class);
         return TestUtil.finishContainerPrepare(war, null, GzipResource.class);
     }
 
@@ -246,5 +249,20 @@ public class GzipTest {
         // test that it is actually zipped
         String entity = EntityUtils.toString(response.getEntity());
         Assert.assertEquals("Response contains wrong content", entity, "HELLO WORLD");
+    }
+
+    /**
+     * @tpTestDetails Send POST request with gzip encoded data using @GZIP annotation and client proxy framework
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testGzipPost() {;
+        GzipProxy gzipProxy = ProxyBuilder.builder(GzipProxy.class, client.target(generateURL(""))).build();
+        Pair data = new Pair();
+        data.setP1("first");
+        data.setP2("second");
+
+        Response response = gzipProxy.post(data);
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
     }
 }
