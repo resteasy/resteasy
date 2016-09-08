@@ -6,8 +6,14 @@ import static org.junit.Assert.assertEquals;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Before;
@@ -26,7 +32,7 @@ public class MatrixPathParamTest extends BaseResourceTest {
    //#####################################
    
    @Path("/")
-   static public class TestResourceServer
+   public class TestResourceServer
    {
       @Path("matrix1")
       public TestSubResourceServer getM1(@MatrixParam("m1") String m1) {
@@ -34,7 +40,7 @@ public class MatrixPathParamTest extends BaseResourceTest {
       }
    }
    
-   static public class TestSubResourceServer
+   public class TestSubResourceServer
    {
       protected String m1;
       
@@ -69,7 +75,9 @@ public class MatrixPathParamTest extends BaseResourceTest {
    public void setUp() throws Exception
    {
       addPerRequestResource(TestResourceServer.class);
-      service = ProxyFactory.create(TestInterfaceClient.class, generateURL("/"));
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyWebTarget target = client.target(generateURL("/"));
+      service = target.proxy(TestInterfaceClient.class);
    }
    
    @Test

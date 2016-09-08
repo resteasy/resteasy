@@ -8,8 +8,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.test.BaseResourceTest;
+import org.jboss.resteasy.test.client.MatrixPathParamTest.TestInterfaceClient;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,7 +33,7 @@ public class MultipleAcceptHeaderTest extends BaseResourceTest {
    //#####################################
    
    @Path("/test")
-   static public class TestResourceServer
+   public class TestResourceServer
    {
       @GET
       @Path("accept")
@@ -47,7 +51,7 @@ public class MultipleAcceptHeaderTest extends BaseResourceTest {
    }
    
    @Path("test")
-   public interface TestInterfaceClient
+   interface TestInterfaceClient
    {
       @GET
       @Path("accept")
@@ -76,7 +80,9 @@ public class MultipleAcceptHeaderTest extends BaseResourceTest {
    public void setUp() throws Exception
    {
       addPerRequestResource(TestResourceServer.class);
-      service = ProxyFactory.create(TestInterfaceClient.class, generateURL("/"));
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyWebTarget target = client.target(generateURL("/"));
+      service = target.proxy(TestInterfaceClient.class);
    }
    
    @Test
