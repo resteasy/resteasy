@@ -6,7 +6,6 @@ import org.junit.Assert;
 
 import org.jboss.resteasy.security.doseta.DKIMSignature;
 import org.jboss.resteasy.security.doseta.i18n.Messages;
-import org.jboss.resteasy.test.resteasy_jaxrs.i18n.TestMessagesParent;
 import org.junit.Test;
 
 /**

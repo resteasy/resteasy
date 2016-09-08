@@ -1,16 +1,5 @@
 package org.jboss.resteasy.plugins.guice.ext;
 
-import com.google.inject.Binder;
-import com.google.inject.Guice;
-import com.google.inject.Inject;
-import com.google.inject.Module;
-
-import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.plugins.guice.ModuleProcessor;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.jboss.resteasy.test.TestPortProvider;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -18,25 +7,42 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.plugins.guice.ModuleProcessor;
+import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.google.inject.Binder;
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.google.inject.Module;
+
 public class JaxrsModuleTest
 {
+   private static NettyJaxrsServer server;
    private static Dispatcher dispatcher;
 
    @BeforeClass
    public static void beforeClass() throws Exception
    {
-      dispatcher = EmbeddedContainer.start().getDispatcher();
+      server = new NettyJaxrsServer();
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("/");
+      server.start();
+      dispatcher = server.getDeployment().getDispatcher();
    }
 
    @AfterClass
    public static void afterClass() throws Exception
    {
-      EmbeddedContainer.stop();
+      server.stop();
+      server = null;
+      dispatcher = null;
    }
 
    @Test

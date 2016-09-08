@@ -242,7 +242,7 @@ public class UndertowJaxrsServer
       manager.deploy();
       try
       {
-         root.addPath(builder.getContextPath(), manager.start());
+         root.addPrefixPath(builder.getContextPath(), manager.start());
       }
       catch (ServletException e)
       {
@@ -261,7 +261,7 @@ public class UndertowJaxrsServer
    public UndertowJaxrsServer start()
    {
       server = Undertow.builder()
-              .addListener(PortProvider.getPort(), "localhost")
+              .addHttpListener(PortProvider.getPort(), "localhost")
               .setHandler(root)
               .build();
       server.start();

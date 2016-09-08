@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.resource.path;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-//import org.jboss.resteasy.test.EmbeddedContainer;
 import org.jboss.resteasy.test.resource.path.resource.ResourceLocatorWithBaseExpressionResource;
 import org.jboss.resteasy.test.resource.path.resource.ResourceLocatorWithBaseExpressionSubresource;
 import org.jboss.resteasy.test.resource.path.resource.ResourceLocatorWithBaseExpressionSubresource2;
@@ -62,7 +61,7 @@ public class ResourceLocatorWithBaseExpressionTest {
 
     @AfterClass
     public static void after() throws Exception {
-//        EmbeddedContainer.stop();
+
     }
 
     /**

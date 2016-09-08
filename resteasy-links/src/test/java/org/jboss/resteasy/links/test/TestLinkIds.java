@@ -1,5 +1,9 @@
 package org.jboss.resteasy.links.test;
 
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+
+import java.util.concurrent.TimeUnit;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -8,41 +12,45 @@ import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.links.RESTServiceDiscovery.AtomLink;
+import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
-import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.concurrent.TimeUnit;
-
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
-
 public class TestLinkIds
 {
+   private static NettyJaxrsServer server;
 
-	private static Dispatcher dispatcher;
+   private static Dispatcher dispatcher;
 
-	@BeforeClass
-	public static void beforeClass() throws Exception
-	{
-		dispatcher = EmbeddedContainer.start().getDispatcher();
-		POJOResourceFactory noDefaults = new POJOResourceFactory(IDServiceTestBean.class);
-		dispatcher.getRegistry().addResourceFactory(noDefaults);
-		httpClient = new DefaultHttpClient();
-		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
-		url = generateBaseUrl();
-		ResteasyWebTarget target = new ResteasyClientBuilder().httpEngine(engine).build().target(url);
-		client = target.proxy(IDServiceTest.class);
-	}
+   @BeforeClass
+   public static void beforeClass() throws Exception
+   {
+      server = new NettyJaxrsServer();
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("/");
+      server.start();
+      dispatcher = server.getDeployment().getDispatcher();
+      POJOResourceFactory noDefaults = new POJOResourceFactory(IDServiceTestBean.class);
+      dispatcher.getRegistry().addResourceFactory(noDefaults);
+      httpClient = new DefaultHttpClient();
+      ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
+      url = generateBaseUrl();
+      ResteasyWebTarget target = new ResteasyClientBuilder().httpEngine(engine).build().target(url);
+      client = target.proxy(IDServiceTest.class);
+   }
 
-	@AfterClass
-	public static void afterClass() throws Exception
-	{
-		EmbeddedContainer.stop();
-	}
+   @AfterClass
+   public static void afterClass() throws Exception
+   {
+      server.stop();
+      server = null;
+      dispatcher = null;
+   }
 
 	private static Class<?> resourceType;
 	private static String url;

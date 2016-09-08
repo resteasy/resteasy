@@ -1,25 +1,27 @@
 package org.jboss.resteasy.test.keystone;
 
-import org.junit.Assert;
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.keystone.model.User;
-import org.jboss.resteasy.keystone.server.SkeletonKeyApplication;
-import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.test.EmbeddedContainer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+
+import java.util.Set;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import java.util.Set;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.keystone.model.User;
+import org.jboss.resteasy.keystone.server.SkeletonKeyApplication;
+import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
+import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.test.TestPortProvider;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -27,6 +29,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
  */
 public class UsersResourceTest
 {
+   private static NettyJaxrsServer server;
    private static ResteasyDeployment deployment;
 
    public static class SApp extends Application
@@ -52,13 +55,19 @@ public class UsersResourceTest
    {
       deployment = new ResteasyDeployment();
       deployment.setApplicationClass(SApp.class.getName());
-      EmbeddedContainer.start(deployment);
+      server = new NettyJaxrsServer();
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("/");
+      server.setDeployment(deployment);
+      server.start();
    }
 
    @AfterClass
    public static void after() throws Exception
    {
-      EmbeddedContainer.stop();
+      server.stop();
+      server = null;
+      deployment = null;
    }
 
    @Test

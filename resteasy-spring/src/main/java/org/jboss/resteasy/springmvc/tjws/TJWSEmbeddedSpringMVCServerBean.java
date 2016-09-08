@@ -9,7 +9,7 @@ import org.springframework.beans.factory.InitializingBean;
 * @version $Revision: 1 $
 * 
 */
-
+@Deprecated
 public class TJWSEmbeddedSpringMVCServerBean implements InitializingBean,
       DisposableBean, FactoryBean<TJWSEmbeddedSpringMVCServer>
 {
