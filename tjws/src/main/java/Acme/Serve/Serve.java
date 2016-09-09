@@ -3203,7 +3203,7 @@ public class Serve implements ServletContext, Serializable
       // / Returns an Enumeration of the header names.
       public Enumeration getHeaderNames()
       {
-         return reqHeaderNames.elements();
+         return new Vector(new HashSet(reqHeaderNames)).elements();
       }
 
       // / Gets the current valid session associated with this request, if
