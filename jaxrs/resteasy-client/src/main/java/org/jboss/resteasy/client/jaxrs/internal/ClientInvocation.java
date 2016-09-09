@@ -1,9 +1,9 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
+import org.jboss.resteasy.annotations.ContentEncoding;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.core.interception.AbstractWriterInterceptorContext;
 import org.jboss.resteasy.core.interception.ClientWriterInterceptorContext;
-import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.DelegatingOutputStream;
 import org.jboss.resteasy.util.Types;
@@ -32,7 +32,6 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.WriterInterceptor;
 import java.io.IOException;
@@ -44,10 +43,7 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -327,7 +323,17 @@ public class ClientInvocation implements Invocation
          Variant v = entity.getVariant();
          headers.setMediaType(v.getMediaType());
          headers.setLanguage(v.getLanguage());
-         headers.header("Content-Encoding", v.getEncoding());
+
+         headers.header("Content-Encoding", null);
+
+         if(v.getEncoding() == null) {
+            for(Annotation annotation : this.entityAnnotations) {
+                ContentEncoding contentEncoding = annotation.annotationType().getAnnotation(ContentEncoding.class);
+               if(contentEncoding != null) {
+                  headers.header("Content-Encoding", contentEncoding.value());
+               }
+            }
+         }
       }
 
    }
