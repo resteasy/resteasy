@@ -21,16 +21,11 @@ import java.util.Locale;
  */
 public class ClientInvocationBuilder implements Invocation.Builder
 {
-   protected ClientInvocation invocation;
+   private final ClientInvocation invocation;
 
    public ClientInvocationBuilder(ResteasyClient client, URI uri, ClientConfiguration configuration)
    {
       invocation = new ClientInvocation(client, uri, new ClientRequestHeaders(configuration), configuration);
-   }
-
-   public ClientInvocation getInvocation()
-   {
-      return invocation;
    }
 
    public ClientRequestHeaders getHeaders()
