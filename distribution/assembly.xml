@@ -63,7 +63,6 @@
                 <include>org.jboss.resteasy:resteasy-yaml-provider</include>
                 <include>org.jboss.resteasy:resteasy-spring</include>
                 <include>org.jboss.resteasy:resteasy-guice</include>
-                <include>org.jboss.resteasy:async-http-servlet-3.0</include>
                 <include>org.jboss.resteasy:resteasy-cache-core</include>
                 <include>org.jboss.resteasy:resteasy-oauth</include>
                 <include>org.jboss.resteasy:resteasy-cdi</include>

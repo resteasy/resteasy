@@ -160,7 +160,6 @@
                 <module>resteasy-cdi</module>
                 <module>resteasy-servlet-initializer</module>
                 <module>server-adapters</module>
-                <module>async-http-servlet-3.0</module>
                 <module>jboss-modules</module>
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
@@ -209,7 +208,6 @@
                 <module>resteasy-cdi</module>
                 <module>resteasy-servlet-initializer</module>
                 <module>server-adapters</module>
-                <module>async-http-servlet-3.0</module>
                 <module>jboss-modules</module>
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
@@ -238,7 +236,6 @@
                 <module>resteasy-cdi</module>
                 <module>resteasy-servlet-initializer</module>
                 <module>server-adapters</module>
-                <module>async-http-servlet-3.0</module>
                 <module>jboss-modules</module>
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
