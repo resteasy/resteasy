@@ -40,7 +40,7 @@ public class ValidationSurpressPathFalseTest extends ValidationSuppressPathTestB
                 .addAsResource("META-INF/services/javax.ws.rs.ext.Providers");
         Map<String, String> contextParams = new HashMap<>();
         contextParams.put("resteasy.validation.suppress.path", "false");
-        return TestUtil.finishContainerPrepare(war, contextParams, null);
+        return TestUtil.finishContainerPrepare(war, contextParams, (Class<?>[]) null);
     }
 
     /**

@@ -5,7 +5,6 @@ import java.util.Locale;
 import org.junit.Assert;
 
 import org.jboss.resteasy.skeleton.key.i18n.Messages;
-import org.jboss.resteasy.test.resteasy_jaxrs.i18n.TestMessagesParent;
 import org.junit.Test;
 
 /**

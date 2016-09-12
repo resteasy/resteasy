@@ -34,7 +34,6 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -99,9 +98,22 @@
                     <plugin>
                        <groupId>org.apache.maven.plugins</groupId>
                        <artifactId>maven-surefire-plugin</artifactId>
-                       <configuration>
-                           <reuseForks>false</reuseForks>
-                        </configuration>
+                       <executions>
+                           <execution>
+                               <id>i18</id>
+                               <phase>test</phase>
+                               <goals>
+                                   <goal>test</goal>
+                               </goals>
+                               <configuration>
+                                   <skip>false</skip>
+                                   <reuseForks>false</reuseForks>
+                                   <includes>
+                                       <include>**/I18nTestMessages_*.java</include>
+                                   </includes>
+                               </configuration>
+                           </execution>
+                       </executions>
                     </plugin>
                 </plugins>
             </build>

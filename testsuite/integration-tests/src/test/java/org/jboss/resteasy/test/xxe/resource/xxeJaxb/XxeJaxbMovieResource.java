@@ -19,7 +19,7 @@ public class XxeJaxbMovieResource {
     @Path("xmlRootElement")
     @Consumes({"application/xml"})
     public String addFavoriteMovie(XxeJaxbFavoriteMovieXmlRootElement movie) {
-        logger.info("MovieResource(xmlRootElment): title = " + movie.getTitle());
+        logger.info("CharSetMovieResource(xmlRootElment): title = " + movie.getTitle());
         return movie.getTitle();
     }
 
@@ -27,7 +27,7 @@ public class XxeJaxbMovieResource {
     @Path("xmlType")
     @Consumes({"application/xml"})
     public String addFavoriteMovie(XxeJaxbFavoriteMovieXmlType movie) {
-        logger.info("MovieResource(xmlType): title = " + movie.getTitle());
+        logger.info("CharSetMovieResource(xmlType): title = " + movie.getTitle());
         return movie.getTitle();
     }
 
@@ -35,7 +35,7 @@ public class XxeJaxbMovieResource {
     @Path("JAXBElement")
     @Consumes("application/xml")
     public String addFavoriteMovie(JAXBElement<XxeJaxbFavoriteMovie> value) {
-        logger.info("MovieResource(JAXBElement): title = " + value.getValue().getTitle());
+        logger.info("CharSetMovieResource(JAXBElement): title = " + value.getValue().getTitle());
         return value.getValue().getTitle();
     }
 
@@ -47,7 +47,7 @@ public class XxeJaxbMovieResource {
         Iterator<XxeJaxbFavoriteMovieXmlRootElement> it = list.iterator();
         while (it.hasNext()) {
             String title = it.next().getTitle();
-            logger.info("MovieResource(list): title = " + title);
+            logger.info("CharSetMovieResource(list): title = " + title);
             titles += title;
         }
         return titles;
@@ -61,7 +61,7 @@ public class XxeJaxbMovieResource {
         Iterator<XxeJaxbFavoriteMovieXmlRootElement> it = set.iterator();
         while (it.hasNext()) {
             String title = it.next().getTitle();
-            logger.info("MovieResource(list): title = " + title);
+            logger.info("CharSetMovieResource(list): title = " + title);
             titles += title;
         }
         return titles;
@@ -74,7 +74,7 @@ public class XxeJaxbMovieResource {
         String titles = "";
         for (int i = 0; i < array.length; i++) {
             String title = array[i].getTitle();
-            logger.info("MovieResource(list): title = " + title);
+            logger.info("CharSetMovieResource(list): title = " + title);
             titles += title;
         }
         return titles;
@@ -88,7 +88,7 @@ public class XxeJaxbMovieResource {
         Iterator<String> it = map.keySet().iterator();
         while (it.hasNext()) {
             String title = map.get(it.next()).getTitle();
-            logger.info("MovieResource(map): title = " + title);
+            logger.info("CharSetMovieResource(map): title = " + title);
             titles += title;
         }
         return titles;

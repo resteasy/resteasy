@@ -16,6 +16,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -97,7 +98,20 @@ public class CookieInjectionTest {
         _test("/param");
         _test("/default");
     }
-
+    @Test
+    public void testCookieExpire() {
+        WebTarget target = client.target(generateURL("/expire"));
+        try {
+            Response response = target.request().get();
+            Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+            String res = response.readEntity(String.class);
+            MultivaluedMap<String, String> headers = response.getStringHeaders();
+            Assert.assertTrue("Unexpected cookie expires:" + res, headers.get("Set-Cookie").contains(res));
+            response.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
     /**
      * @tpTestDetails Injection of the cookie into resource, request issued with proxy
      * @tpSince RESTEasy 3.0.16

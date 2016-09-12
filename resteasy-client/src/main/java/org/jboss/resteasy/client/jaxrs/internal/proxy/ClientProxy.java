@@ -53,7 +53,7 @@ public class ClientProxy implements InvocationHandler
       {
          if (method.getName().equals("equals"))
          {
-            return this.equals(o);
+            return o == args[0];
          }
          else if (method.getName().equals("hashCode"))
          {

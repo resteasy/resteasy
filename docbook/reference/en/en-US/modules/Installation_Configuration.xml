@@ -14,16 +14,16 @@
         <title>Upgrading Resteasy Within JBoss AS 7</title>
         <para>
             Resteasy is bundled with JBoss AS 7.  You may have the need to upgrade Resteasy in AS7.  The Resteasy
-            distribution comes with a zip file called resteasy-jboss-modules-3.1.0-SNAPSHOT.zip.  Unzip this file while
-            with the modules/ directory of the JBoss AS7 distribution.  This will overwrite some of the existing files there.
+            distribution comes with a zip file called resteasy-jboss-modules-3.1.0-SNAPSHOT.zip.  Unzip this file
+            within the modules/ directory of the JBoss AS7 distribution.  This will overwrite some of the existing files there.
         </para>
     </section>
     <section id="upgrading-eap61">
         <title>Upgrading Resteasy Within JBoss EAP 6.1</title>
         <para>
             Resteasy is bundled with JBoss EAP 6.1.  You may have the need to upgrade Resteasy in JBoss EAP 6.1.  The Resteasy
-            distribution comes with a zip file called resteasy-jboss-modules-3.1.0-SNAPSHOT.zip.  Unzip this file while
-            with the modules/system/layers/base/ directory of the JBoss EAP 6.1 distribution.  This will overwrite some of the existing files there.
+            distribution comes with a zip file called resteasy-jboss-modules-3.1.0-SNAPSHOT.zip.  Unzip this file
+            within the modules/system/layers/base/ directory of the JBoss EAP 6.1 distribution.  This will overwrite some of the existing files there.
         </para>
         <warning>
             <para>
@@ -36,8 +36,8 @@
         <title>Upgrading Resteasy Within Wildfly</title>
         <para>
             Resteasy is bundled with Wildfly.  You may have the need to upgrade Resteasy in Wildfly.  The Resteasy
-            distribution comes with a zip file called resteasy-jboss-modules-wf8-3.1.0-SNAPSHOT.zip.  Unzip this file while
-            with the modules/system/layers/base/ directory of the Wildfly distribution.  This will overwrite some of the existing files there.
+            distribution comes with a zip file called resteasy-jboss-modules-wf8-3.1.0-SNAPSHOT.zip.  Unzip this file
+            within the modules/system/layers/base/ directory of the Wildfly distribution.  This will overwrite some of the existing files there.
         </para>
     </section>
     <section>
@@ -341,40 +341,6 @@ public class MyApplication extends Application
                             </entry>
                             <entry>
                                 If the url-pattern for the Resteasy servlet-mapping is not /*
-                            </entry>
-                        </row>
-                        <row>
-                            <entry>
-                                resteasy.scan
-                            </entry>
-                            <entry>
-                                false
-                            </entry>
-                            <entry>
-                                Automatically scan WEB-INF/lib jars and WEB-INF/classes directory for both @Provider and
-                                JAX-RS resource classes (@Path, @GET, @POST etc..) and register them
-                            </entry>
-                        </row>
-                        <row>
-                            <entry>
-                                resteasy.scan.providers
-                            </entry>
-                            <entry>
-                                false
-                            </entry>
-                            <entry>
-                                Scan for @Provider classes and register them
-                            </entry>
-                        </row>
-                        <row>
-                            <entry>
-                                resteasy.scan.resources
-                            </entry>
-                            <entry>
-                                false
-                            </entry>
-                            <entry>
-                                Scan for JAX-RS resource classes
                             </entry>
                         </row>
                         <row>

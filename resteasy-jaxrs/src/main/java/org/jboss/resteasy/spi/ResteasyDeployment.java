@@ -264,6 +264,34 @@ public class ResteasyDeployment
       }
    }
 
+   public void merge(ResteasyDeployment other)
+   {
+      scannedResourceClasses.addAll(other.getScannedResourceClasses());
+      scannedProviderClasses.addAll(other.getScannedProviderClasses());
+      scannedJndiComponentResources.addAll(other.getScannedJndiComponentResources());
+
+      jndiComponentResources.addAll(other.getJndiComponentResources());
+      providerClasses.addAll(other.getProviderClasses());
+      actualProviderClasses.addAll(other.getActualProviderClasses());
+      providers.addAll(other.getProviders());
+
+      jndiResources.addAll(other.getJndiResources());
+      resourceClasses.addAll(other.getResourceClasses());
+      unwrappedExceptions.addAll(other.getUnwrappedExceptions());
+      actualResourceClasses.addAll(other.getActualResourceClasses());
+      resourceFactories.addAll(other.getResourceFactories());
+      resources.addAll(other.getResources());
+
+      mediaTypeMappings.putAll(other.getMediaTypeMappings());
+      languageExtensions.putAll(other.getLanguageExtensions());
+      interceptorPrecedences.addAll(other.getInterceptorPrecedences());
+      interceptorBeforePrecedences.putAll(other.getInterceptorBeforePrecedences());
+      interceptorAfterPrecedences.putAll(other.getInterceptorAfterPrecedences());
+
+      defaultContextObjects.putAll(other.getDefaultContextObjects());
+      constructedDefaultContextObjects.putAll(other.getConstructedDefaultContextObjects());
+   }
+
    public static Application createApplication(String applicationClass, Dispatcher dispatcher, ResteasyProviderFactory providerFactory)
    {
       Class<?> clazz = null;
@@ -512,22 +540,22 @@ public class ResteasyDeployment
             }
          }
       }
-      if (config.getProperties() != null)
+      final Map<String, Object> properties = config.getProperties();
+      if (properties != null && !properties.isEmpty())
       {
-         for (Map.Entry<String,Object> property : config.getProperties().entrySet())
-         {
-            final Map.Entry<String,Object> prop = property;
-            Object obj = new Feature() {
-
-                    @Override
-                    public boolean configure(FeatureContext featureContext) {
-                        featureContext = featureContext.property(prop.getKey(), prop.getValue());
-                        return featureContext.getConfiguration()
-                                .getProperties().containsKey(featureContext.getConfiguration().getProperties().containsKey(prop.getKey()));
-                    }
-                };
-            providers.add(0,obj);
-         }
+          Feature appliationPropertiesRegistrationfeature = new Feature()
+          {
+			 @Override
+			 public boolean configure(FeatureContext featureContext)
+			 {
+				for (Map.Entry<String, Object> property : properties.entrySet())
+				{
+				   featureContext = featureContext.property(property.getKey(), property.getValue());
+				}
+				return true;
+			 }
+          };
+	      this.providers.add(0, appliationPropertiesRegistrationfeature);
       }
       return registered;
    }

@@ -77,7 +77,7 @@
         <version.org.slf4j>1.7.7</version.org.slf4j>
         <version.org.springframework.spring-webmvc>3.0.6.RELEASE</version.org.springframework.spring-webmvc>
         <version.org.wildfly.core.wildfly-cli>2.1.0.Final</version.org.wildfly.core.wildfly-cli>
-        <version.org.wildfly.extras.creaper>0.9.4</version.org.wildfly.extras.creaper>
+        <version.org.wildfly.extras.creaper>1.4.0</version.org.wildfly.extras.creaper>
         <version.org.wildfly.wildfly-arquillian-container-managed>2.0.0.Final
         </version.org.wildfly.wildfly-arquillian-container-managed>
         <version.org.wildfly-security>10.0.0.Final</version.org.wildfly-security>
@@ -85,6 +85,7 @@
         <version.javax.validation-api>1.1.0.Final</version.javax.validation-api>
         <version.jboss-javaee-6.0.spec>1.0.0.Final</version.jboss-javaee-6.0.spec>
         <version.weld21>2.1.0.Final</version.weld21>
+        <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -147,7 +148,6 @@
                 <module>resteasy-test-data</module>
                 <module>resteasy-jaxrs</module>
                 <module>resteasy-client</module>
-                <module>resteasy-jaxrs-testsuite</module>
                 <module>providers</module>
                 <module>resteasy-bom</module>
                 <module>resteasy-cache</module>
@@ -160,12 +160,11 @@
                 <module>resteasy-cdi</module>
                 <module>resteasy-servlet-initializer</module>
                 <module>server-adapters</module>
-                <module>async-http-servlet-3.0</module>
                 <module>jboss-modules</module>
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
                 <module>arquillian</module>
-                <module>integration-tests</module>
+                <module>profiling-tests</module>
                 <module>testsuite</module>
             </modules>
             <build>
@@ -197,7 +196,6 @@
                 <module>resteasy-test-data</module>
                 <module>resteasy-jaxrs</module>
                 <module>resteasy-client</module>
-                <module>resteasy-jaxrs-testsuite</module>
                 <module>providers</module>
                 <module>resteasy-bom</module>
                 <module>resteasy-cache</module>
@@ -210,12 +208,11 @@
                 <module>resteasy-cdi</module>
                 <module>resteasy-servlet-initializer</module>
                 <module>server-adapters</module>
-                <module>async-http-servlet-3.0</module>
                 <module>jboss-modules</module>
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
                 <module>arquillian</module>
-                <module>integration-tests</module>
+                <module>profiling-tests</module>
                 <module>testsuite</module>
             </modules>
         </profile>
@@ -226,7 +223,6 @@
                 <module>resteasy-test-data</module>
                 <module>resteasy-jaxrs</module>
                 <module>resteasy-client</module>
-                <module>resteasy-jaxrs-testsuite</module>
                 <module>providers</module>
                 <module>resteasy-bom</module>
                 <module>resteasy-cache</module>
@@ -240,12 +236,11 @@
                 <module>resteasy-cdi</module>
                 <module>resteasy-servlet-initializer</module>
                 <module>server-adapters</module>
-                <module>async-http-servlet-3.0</module>
                 <module>jboss-modules</module>
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
                 <module>arquillian</module>
-                <module>integration-tests</module>
+                <module>profiling-tests</module>
                 <module>testsuite</module>
             </modules>
         </profile>
@@ -805,7 +800,6 @@
                     <configuration>
                         <forkMode>once</forkMode>
                         <argLine>-Xms512m -Xmx512m</argLine>
-                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -836,16 +830,26 @@
             </plugin>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>src/main/resources</directory>
-                            <includes>
-                                <include>org/**</include>
-                            </includes>
-                        </fileset>
-                    </filesets>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>i18n cleanup</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>src/main/resources</directory>
+                                    <includes>
+                                        <include>org/**</include>
+                                    </includes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

@@ -6,16 +6,19 @@ import org.jboss.resteasy.annotations.GZIP;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.junit.Assert;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -85,5 +88,20 @@ public class GzipResource {
     @Path("text")
     public void putText(String text) throws Exception {
         Assert.assertEquals("hello world", text);
+    }
+
+    @POST
+    @Path("/gzippost")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response postGZipped(@GZIP Pair pair, @Context HttpHeaders headers) {
+        MultivaluedMap<String, String> requestHeaders = headers.getRequestHeaders();
+        for (String key : requestHeaders.keySet()) {
+            logger.info(key + ": " + requestHeaders.get(key));
+        }
+        Assert.assertEquals("gzip", headers.getRequestHeaders().getFirst(HttpHeaders.CONTENT_ENCODING));
+        Assert.assertEquals("first", pair.getP1());
+        Assert.assertEquals("second", pair.getP2());
+
+        return Response.ok().build();
     }
 }

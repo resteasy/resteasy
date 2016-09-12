@@ -30,7 +30,7 @@ public class ClientBuilderTest {
         WebArchive war = TestUtil.prepareArchive(ClientBuilderTest.class.getSimpleName());
         war.addClass(TestUtil.class);
         war.addClass(NotForForwardCompatibility.class);
-        return TestUtil.finishContainerPrepare(war, null, null);
+        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 
 

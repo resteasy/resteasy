@@ -1,11 +1,15 @@
 install:
  - mvn clean
 script:
- - mvn -B -fn install
+ - mvn -B -fae -Dserver.version=$SERVER_VERSION install
 
 language: java
 jdk:
   - oraclejdk8
+env:
+  - SERVER_VERSION=9.0.2.Final
+  - SERVER_VERSION=10.1.0.Final
+  - SERVER_VERSION=10.0.0.Final
 cache:
  directories:
   - $HOME/.m2

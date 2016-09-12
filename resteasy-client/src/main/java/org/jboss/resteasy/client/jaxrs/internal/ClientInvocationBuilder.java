@@ -76,6 +76,10 @@ public class ClientInvocationBuilder implements Invocation.Builder
    @Override
    public Invocation.Builder cookie(Cookie cookie)
    {
+      if (!(Cookie.class.equals(cookie.getClass())))
+      {
+         cookie = new Cookie(cookie.getName(), cookie.getValue(), cookie.getPath(), cookie.getDomain(), cookie.getVersion());
+      }
       getHeaders().cookie(cookie);
       return this;
    }

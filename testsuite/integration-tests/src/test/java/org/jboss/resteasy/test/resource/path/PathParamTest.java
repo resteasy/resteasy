@@ -5,6 +5,8 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.test.TestPortProvider;
+import org.jboss.resteasy.test.resource.path.resource.EmailResource;
 import org.jboss.resteasy.test.resource.path.resource.PathParamCarResource;
 import org.jboss.resteasy.test.resource.path.resource.PathParamDigits;
 import org.jboss.resteasy.test.resource.path.resource.PathParamResource;
@@ -34,7 +36,7 @@ public class PathParamTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(PathLimitedTest.class.getSimpleName());
         return TestUtil.finishContainerPrepare(war, null, PathParamDigits.class, PathParamResource.class,
-                            PathParamCarResource.class);
+                            PathParamCarResource.class, EmailResource.class);
     }
 
     /**
@@ -113,5 +115,15 @@ public class PathParamTest {
         client.close();
     }
 
-
+    /**
+     * @tpTestDetails Test email format on path
+     * @tpSince RESTEasy 3.0.20
+     */
+    @Test
+    public void testEmail() throws Exception {
+       ResteasyClient client = new ResteasyClientBuilder().build();
+       Response response = client.target(PortProviderUtil.generateURL("/employeeinfo/employees/bill.burke@burkecentral.com", PathLimitedTest.class.getSimpleName())).request().get();
+       String str = response.readEntity(String.class);
+       Assert.assertEquals("burke", str);
+    }
 }

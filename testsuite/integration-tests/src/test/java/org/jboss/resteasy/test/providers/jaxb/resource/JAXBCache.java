@@ -33,7 +33,7 @@ public final class JAXBCache {
             }
             contextCache.putIfAbsent(classes, context);
         }
-        logger.debug("Locating JAXBContext for package: {0}", classes);
+        logger.debugv("Locating JAXBContext for package: {0}", (Object[]) classes);
         return context;
     }
 

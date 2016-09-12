@@ -35,7 +35,7 @@ public class ValidationSurpressPathDefaultTest extends ValidationSuppressPathTes
                 .addClasses(ValidationCoreResourceWithAllViolationTypes.class, ValidationCoreResourceWithReturnValues.class)
                 .addClass(ValidationSuppressPathTestBase.class)
                 .addAsResource("META-INF/services/javax.ws.rs.ext.Providers");
-        return TestUtil.finishContainerPrepare(war, null, null);
+        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 
     /**

@@ -18,6 +18,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.HashSet;
+
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
@@ -92,6 +94,11 @@ public class OptionsTest {
         response = base.request().get();
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
+        
+        base = client.target(generateURL("/users/53/contacts"));
+        response = base.request().options();
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        response.close();
 
         base = client.target(generateURL("/users/53/contacts"));
         response = base.request().delete();
@@ -108,5 +115,43 @@ public class OptionsTest {
         Assert.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
         response.close();
     }
+    
+    /**
+     * @tpTestDetails Check Allow header on 200 status
+     * @tpSince RESTEasy 3.0.20
+     */
+    @Test
+    public void testAllowHeaderOK() {
+        WebTarget base = client.target(generateURL("/users/53/contacts"));
+        Response response = base.request().options();
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        checkOptions(response, "GET", "POST", "HEAD", "OPTIONS");
+        response.close();   
+    }
+    
+    /**
+     * @tpTestDetails Check Allow header on 405 status
+     * @tpSince RESTEasy 3.0.20
+     */
+    @Test
+    public void testAllowHeaderMethodNotAllowed() {
+        WebTarget base = client.target(generateURL("/params/customers/333/phonenumbers"));
+        Response response = base.request().post(Entity.text(new String()));
+        Assert.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
+        checkOptions(response, "GET", "HEAD", "OPTIONS");
+        response.close();
+    }
 
+    private void checkOptions(Response response, String... verbs) {
+        String allowed = response.getHeaderString("Allow");
+        Assert.assertNotNull(allowed);
+        HashSet<String> vals = new HashSet<String>();
+        for (String v : allowed.split(",")) {
+           vals.add(v.trim());
+        }
+        Assert.assertEquals(verbs.length, vals.size());
+        for (String verb : verbs) {
+           Assert.assertTrue(vals.contains(verb));
+        }
+    }
 }

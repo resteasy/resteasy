@@ -14,7 +14,7 @@ import org.jboss.logging.annotations.MessageBundle;
 public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
-   int BASE = 18500;
+   int BASE = 19500;
 
    @Message(id = BASE + 0, value = "Already committed")
    String alreadyCommitted();
@@ -24,9 +24,6 @@ public interface Messages
    
    @Message(id = BASE + 10, value = "Chunk size must be at least 1")
    String chunkSizeMustBeAtLeastOne();
-   
-   @Message(id = BASE + 15, value = "Failed to parse request.")
-   String failedToParseRequest();
    
    @Message(id = BASE + 20, value = "response is committed")
    String responseIsCommitted();

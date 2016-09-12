@@ -14,10 +14,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
             <version>${project.version}</version>
@@ -34,23 +30,6 @@
             <artifactId>FastInfoset</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jboss.spec.javax.servlet</groupId>
-            <artifactId>jboss-servlet-api_3.1_spec</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>tjws</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!--
-        <dependency>
-           <groupId>tjws</groupId>
-           <artifactId>webserver</artifactId>
-           <scope>test</scope>
-        </dependency>
-        -->
-        <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
         </dependency>
@@ -62,16 +41,7 @@
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-processor</artifactId>
         </dependency> 
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs-testsuite</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        
     </dependencies>
-
-
 
     <profiles>
         <profile>
@@ -112,9 +82,22 @@
                     <plugin>
                        <groupId>org.apache.maven.plugins</groupId>
                        <artifactId>maven-surefire-plugin</artifactId>
-                       <configuration>
-                           <reuseForks>false</reuseForks>
-                        </configuration>
+                       <executions>
+                           <execution>
+                               <id>i18</id>
+                               <phase>test</phase>
+                               <goals>
+                                   <goal>test</goal>
+                               </goals>
+                               <configuration>
+                                   <skip>false</skip>
+                                   <reuseForks>false</reuseForks>
+                                   <includes>
+                                       <include>**/I18nTestMessages_*.java</include>
+                                   </includes>
+                               </configuration>
+                           </execution>
+                       </executions>
                     </plugin>
                 </plugins>
             </build>

@@ -77,4 +77,7 @@ public interface Messages
    
    @Message(id = BASE + 90, value = "Starting up Jetty")
    String startingUpJetty();
+
+   @Message(id = BASE + 95, value = "RESTeasy Deployment is null, do you have the ResteasyBootstrap listener configured?")
+   String deploymentIsNull();
 }

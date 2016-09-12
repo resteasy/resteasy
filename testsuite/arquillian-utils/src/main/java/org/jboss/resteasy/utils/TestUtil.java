@@ -13,7 +13,6 @@ import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.wildfly.extras.creaper.core.ManagementClient;
-import org.wildfly.extras.creaper.core.ServerType;
 import org.wildfly.extras.creaper.core.online.ModelNodeResult;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 import org.wildfly.extras.creaper.core.online.OnlineOptions;
@@ -171,7 +170,6 @@ public class TestUtil {
         OnlineOptions onlineOptions = OnlineOptions
                     .standalone()
                     .hostAndPort(PortProviderUtil.getHost(), 9990) // 9990 is default port for EAP 7
-                    .serverType(ServerType.WILDFLY)
                     .connectionTimeout(120000)
                     .build();
         return ManagementClient.online(onlineOptions);
@@ -248,6 +246,11 @@ public class TestUtil {
 
     public static boolean isOpenJDK() {
         return System.getProperty("java.runtime.name").toLowerCase().contains("openjdk");
+    }
+
+    public static boolean isWildFly9x() {
+        final String sv = System.getProperty("server.version");
+        return ("9.0.2.Final".equals(sv) || "9.0.1.Final".equals(sv) || "9.0.0.Final".equals(sv));
     }
 
     public static boolean isOracleJDK() {

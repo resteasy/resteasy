@@ -4,6 +4,7 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.mock.MockDispatcherFactory;
 import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,36 +30,11 @@ public class SpringContextLoaderTest {
     }
 
     /**
-     * @tpTestDetails Tests that ProviderFactory is required for customizeContext() of SpringContextLoader
-     * @tpSince RESTEasy 3.0.16
+     * @tpTestDetails Tests that ResteasyDeployment is required for customizeContext() of SpringContextLoader
      */
     @Test(expected = RuntimeException.class)
-    public void testThatProviderFactoryIsRequired() {
-        contextLoader.customizeContext(
-                mockServletContext(null, someRegistry(), someDispatcher()),
-                mockWebApplicationContext());
-    }
-
-    /**
-     * @tpTestDetails Tests that Registry is required for customizeContext() of SpringContextLoader
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test(expected = RuntimeException.class)
-    public void testThatRegistryIsRequired() {
-        contextLoader.customizeContext(
-                mockServletContext(someProviderFactory(), null, someDispatcher()),
-                mockWebApplicationContext());
-    }
-
-    /**
-     * @tpTestDetails Tests that Dispatcher is required for customizeContext() of SpringContextLoader
-     * @tpSince RESTEasy 3.0.16
-     */
-    @Test(expected = RuntimeException.class)
-    public void testThatDispatcherIsRequired() {
-        contextLoader.customizeContext(
-                mockServletContext(someProviderFactory(), someRegistry(), null),
-                mockWebApplicationContext());
+    public void testThatDeploymentIsRequired() {
+        contextLoader.customizeContext(mockServletContext(null), mockWebApplicationContext());
     }
 
     /**
@@ -69,9 +45,7 @@ public class SpringContextLoaderTest {
     public void testThatWeAddedAnApplicationListener() {
         StaticWebApplicationContext context = mockWebApplicationContext();
         int numListeners = context.getApplicationListeners().size();
-        contextLoader.customizeContext(
-                mockServletContext(someProviderFactory(), someRegistry(), someDispatcher()),
-                context);
+        contextLoader.customizeContext(mockServletContext(someDeployment()), context);
         int numListenersNow = context.getApplicationListeners().size();
         assertEquals("Expected to add exactly one new listener; in fact added " + (numListenersNow - numListeners),
                 numListeners + 1, numListenersNow);
@@ -81,36 +55,17 @@ public class SpringContextLoaderTest {
         return new StaticWebApplicationContext();
     }
 
-    private ServletContext mockServletContext(
-            ResteasyProviderFactory providerFactory,
-            Registry registry,
-            Dispatcher dispatcher) {
+    private ServletContext mockServletContext(ResteasyDeployment deployment) {
         MockServletContext context = new MockServletContext();
 
-        if (providerFactory != null) {
-            context.setAttribute(ResteasyProviderFactory.class.getName(), providerFactory);
-        }
-
-        if (registry != null) {
-            context.setAttribute(Registry.class.getName(), registry);
-        }
-
-        if (dispatcher != null) {
-            context.setAttribute(Dispatcher.class.getName(), dispatcher);
+        if (deployment != null) {
+            context.setAttribute(ResteasyDeployment.class.getName(), deployment);
         }
 
         return context;
     }
 
-    private Registry someRegistry() {
-        return new ResourceMethodRegistry(someProviderFactory());
-    }
-
-    private ResteasyProviderFactory someProviderFactory() {
-        return new ResteasyProviderFactory();
-    }
-
-    private Dispatcher someDispatcher() {
-        return MockDispatcherFactory.createDispatcher();
+    private ResteasyDeployment someDeployment() {
+        return new ResteasyDeployment();
     }
 }

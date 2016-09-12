@@ -59,6 +59,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
    protected Registry registry;
    protected ResteasyProviderFactory providerFactory;
    protected Dispatcher dispatcher;
+   protected ResteasyDeployment deployment;
 
    protected Set<String> resourceFactoryNames;
    protected Map<String, SpringResourceFactory> resourceFactories = new HashMap<String, SpringResourceFactory>();
@@ -92,12 +93,14 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
        * <ol>
        * <p/>
        * <li>RESTEasy injection of singleton @Providers, as well as @Provider
-       * registration
+       * registration</li>
        * <p/>
        * <li>either singleton or request/prototype RESTeasy injection... but not
        * registration. The RESTEasy registration happens in the
        * onApplicationEvent() below, which happens at the end of the Spring
-       * life-cycle
+       * life-cycle</li>
+       * <p/>
+       * <li>merges the {@link ResteasyDeployment} bean with the user deployment</li>
        * <p/>
        * </ol>
        *
@@ -122,7 +125,13 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
             SpringResourceFactory resourceFactory = new SpringResourceFactory(registeredBeanName, beanFactory, beanClass);
             resourceFactory.setContext(registration.getContext());
             resourceFactories.put(registeredBeanName, resourceFactory);
-         } 
+         }
+
+         else if (bean instanceof ResteasyDeployment) {
+            ResteasyDeployment beanDeployment = (ResteasyDeployment) bean;
+            deployment.merge(beanDeployment);
+            deployment.start();
+         }
 
          else 
          {
@@ -178,6 +187,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
    public SpringBeanProcessor(ResteasyDeployment deployment)
    {
       this(deployment.getDispatcher(), deployment.getRegistry(), deployment.getProviderFactory());
+      this.deployment = deployment;
    }
 
    public SpringBeanProcessor(Dispatcher dispatcher)

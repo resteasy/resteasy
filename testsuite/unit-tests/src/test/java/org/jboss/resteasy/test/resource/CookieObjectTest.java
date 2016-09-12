@@ -7,11 +7,14 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import java.util.Date;
 import java.util.List;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @tpSubChapter Resource tests
@@ -158,7 +161,9 @@ public class CookieObjectTest {
         int version = 1;
         String comment = "";
         int maxAge = 150000000;
-        Date expiry = new Date(Date.UTC(118, 4, 3, 10, 36, 34));
+        GregorianCalendar cal = new GregorianCalendar(2018, Calendar.MAY, 3, 10, 36, 34);
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date expiry = cal.getTime();
         boolean secure = true;
         boolean httpOnly = true;
 
