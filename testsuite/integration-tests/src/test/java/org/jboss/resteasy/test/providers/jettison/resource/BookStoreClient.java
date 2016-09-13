@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.xml;
+package org.jboss.resteasy.test.providers.jettison.resource;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -8,40 +8,36 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import java.util.Collection;
 
-/**
- * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
- * @version $Revision: 1 $
- */
-@Path("bookstore")
-public interface BookStoreClient
-{
+@Path("/bookstore")
+public interface BookStoreClient {
+
    @GET
-   @Path("books/{isbn}")
+   @Path("/books/{isbn}")
    @Produces("text/xml")
    Book getBookByISBN(@PathParam("isbn") String isbn);
 
    @PUT
-   @Path("books")
+   @Path("/books")
    @Consumes("text/xml")
    void addBook(Book book);
 
    @GET
-   @Path("books")
+   @Path("/books")
    @Produces("text/xml")
    Collection<Book> getAllBooks();
 
    @GET
-   @Path("books/{isbn}")
+   @Path("/books/{isbn}")
    @Produces("application/json")
    Book getBookByISBNJson(@PathParam("isbn") String isbn);
 
    @PUT
-   @Path("books")
+   @Path("/books")
    @Consumes("application/json")
    void addBookJson(Book book);
 
    @GET
-   @Path("books")
+   @Path("/books")
    @Produces("application/json")
    Collection<Book> getAllBooksJson();
 }
