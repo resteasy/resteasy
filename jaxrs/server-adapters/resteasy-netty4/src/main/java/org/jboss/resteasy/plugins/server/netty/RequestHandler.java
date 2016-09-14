@@ -89,8 +89,9 @@ public class RequestHandler extends SimpleChannelInboundHandler
       }
       else
       {
-          e.getCause().printStackTrace();
+          // make sure context close always call.
           ctx.close();
+          e.printStackTrace();
       }
    }
 }
