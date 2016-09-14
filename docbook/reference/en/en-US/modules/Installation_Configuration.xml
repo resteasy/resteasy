@@ -501,6 +501,17 @@ public class MyApplication extends Application
                                 Enables <link linkend='Http_Precondition'>RFC7232 compliant HTTP preconditions handling</link>.
                             </entry>
                         </row>
+                        <row>
+                            <entry>
+                                resteasy.secure.random.max.use
+                            </entry>
+                            <entry>
+                                100
+                            </entry>
+                            <entry>
+                                The number of times a SecureRandom can be used before reseeding.
+                            </entry>
+                        </row>
                     </tbody>
                 </tgroup>
             </table>

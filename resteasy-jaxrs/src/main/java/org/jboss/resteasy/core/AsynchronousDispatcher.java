@@ -2,6 +2,7 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -10,6 +11,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -22,6 +24,7 @@ import javax.ws.rs.core.Response;
 
 import java.io.IOException;
 import java.net.URI;
+import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,7 +36,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -62,13 +64,63 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
          this.maxSize = maxSize;
       }
    }
+   
+   private static class SecureRandomWrapper
+   {
+      private static final int DEFAULT_MAX_USES = 100;
+      private SecureRandom random;
+      private int maxUses = -1;
+      private int uses = 0; // uses > maxUses so that context parameters will get checked upon first use.
+      
+      public int nextInt()
+      {
+         if (++uses > maxUses)
+         {
+            reset();
+         }
+         return random.nextInt();
+      }
+      
+      private void reset()
+      {
+         if (maxUses < 0)
+         {
+            maxUses = getMaxUses();
+         }
+         random = new SecureRandom();
+         random.nextBytes(new byte[20]); // Causes SecureRandom to self seed.
+         uses = 0;
+      }
+      
+      private int getMaxUses()
+      {
+         maxUses = DEFAULT_MAX_USES;
+         ServletContext context = ResteasyProviderFactory.getContextData(ServletContext.class);
+         if (context != null)
+         {
+            String s = context.getInitParameter(ResteasyContextParameters.RESTEASY_SECURE_RANDOM_MAX_USE);
+            if (s != null)
+            {
+               try
+               {
+                  maxUses = Integer.parseInt(s);
+               }
+               catch (NumberFormatException e)
+               {
+                  LogMessages.LOGGER.invalidFormat(ResteasyContextParameters.RESTEASY_SECURE_RANDOM_MAX_USE, Integer.toString(DEFAULT_MAX_USES));
+               }
+            }
+         }
+         return maxUses;
+      }
+   }
 
    protected ExecutorService executor;
    private int threadPoolSize = 100;
    private Map<String, Future<MockHttpResponse>> jobs;
    private Cache cache;
    private String basePath = "/asynch/jobs";
-   private AtomicLong counter = new AtomicLong(0);
+   private volatile SecureRandomWrapper counter;
    private long maxWaitMilliSeconds = 300000;
    private int maxCacheSize = 100;
 
@@ -76,6 +128,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
    public AsynchronousDispatcher(ResteasyProviderFactory providerFactory)
    {
       super(providerFactory);
+      counter = new SecureRandomWrapper();
    }
 
    /**
@@ -286,7 +339,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
 
       };
       Future<MockHttpResponse> future = executor.submit(callable);
-      String id = "" + System.currentTimeMillis() + "-" + counter.incrementAndGet();
+      String id = "" + System.currentTimeMillis() + "-" + counter.nextInt();
       jobs.put(id, future);
       response.setStatus(HttpResponseCodes.SC_ACCEPTED);
       URI uri = request.getUri().getBaseUriBuilder().path(basePath).path(id).build();
