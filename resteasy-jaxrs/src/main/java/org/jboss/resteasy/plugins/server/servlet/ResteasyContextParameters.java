@@ -31,6 +31,7 @@ public interface ResteasyContextParameters
    String RESTEASY_EXPAND_ENTITY_REFERENCES = "resteasy.document.expand.entity.references";
    String RESTEASY_SECURE_PROCESSING_FEATURE = "resteasy.document.secure.processing.feature";
    String RESTEASY_DISABLE_DTDS = "resteasy.document.secure.disableDTDs";
+   String RESTEASY_GZIP_MAX_INPUT = "resteasy.gzip.max.input";
    
    // these scanned variables are provided by a deployer
    String RESTEASY_SCANNED_RESOURCES = "resteasy.scanned.resources";
