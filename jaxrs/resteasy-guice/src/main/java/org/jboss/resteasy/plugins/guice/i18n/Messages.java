@@ -34,4 +34,10 @@ public interface Messages
    
    @Message(id = BASE + 25, value = "registering provider instance for %s")
    String registeringProviderInstance(String className);
+
+   @Message(id = BASE + 30, value = "Call of provider : %s.%s , start of method call : %s .")
+   String providerStartMethodCall(String providerPackage, String providerClass, String providerMethod);
+
+   @Message(id = BASE + 35, value = "Call of provider : %s.%s , leave of method call : %s .")
+   String providerLeaveMethodCall(String providerPackage, String providerClass, String providerMethod);
 }

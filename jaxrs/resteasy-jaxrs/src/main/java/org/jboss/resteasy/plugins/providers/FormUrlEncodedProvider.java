@@ -4,6 +4,7 @@ import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.NoContent;
+import org.jboss.resteasy.plugins.i18n.*;
 
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.Consumes;
@@ -30,6 +31,10 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+import org.jboss.logging.Logger.Level;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -40,6 +45,8 @@ import java.util.Map;
 @ConstrainedTo(RuntimeType.CLIENT)
 public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>, MessageBodyWriter<MultivaluedMap>
 {
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider Factory : org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider , method call : isReadable .")
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return MultivaluedMap.class.equals(type);
@@ -54,6 +61,8 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>
       */
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider Factory : org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider , method call : readFrom .")
    public MultivaluedMap readFrom(Class<MultivaluedMap> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
       if (NoContent.isContentLengthZero(httpHeaders)) return new MultivaluedMapImpl<String, String>();
@@ -67,6 +76,8 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>
       else return Encode.decode(parseForm(entityStream, charset), charset);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider Factory : org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider , method call : parseForm .")
    public static MultivaluedMap<String, String> parseForm(InputStream entityStream, String charset)
            throws IOException
    {
@@ -105,9 +116,12 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>
             formData.add(param, "");
          }
       }
+
       return formData;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider Factory : org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider , method call : isWriteable .")
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return MultivaluedMap.class.isAssignableFrom(type);
@@ -122,11 +136,15 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>
       */
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider Factory : org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider , method call : getSize .")
    public long getSize(MultivaluedMap stringStringMultivaluedMap, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider Factory : org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider , method call : writeTo .")
    public void writeTo(MultivaluedMap data, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
       MultivaluedMap<String, String> formData = (MultivaluedMap<String, String>)data;

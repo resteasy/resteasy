@@ -17,6 +17,10 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -26,12 +30,16 @@ import java.lang.reflect.Type;
 public class JsonArrayProvider extends AbstractJsonpProvider implements MessageBodyReader<JsonArray>, MessageBodyWriter<JsonArray>
 {
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jsonp.JsonArrayProvider , method call : isReadable .")
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return JsonArray.class.isAssignableFrom(type);
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jsonp.JsonArrayProvider , method call : readFrom .")
    public JsonArray readFrom(Class<JsonArray> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
    {
       JsonReader reader = findReader(mediaType, entityStream);
@@ -46,18 +54,24 @@ public class JsonArrayProvider extends AbstractJsonpProvider implements MessageB
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jsonp.JsonArrayProvider , method call : isWriteable .")
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return JsonArray.class.isAssignableFrom(type);
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jsonp.JsonArrayProvider , method call : getSize .")
    public long getSize(JsonArray jsonValues, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jsonp.JsonArrayProvider , method call : writeTo .")
    public void writeTo(JsonArray jsonValues, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
       JsonWriter writer = findWriter(mediaType, entityStream);

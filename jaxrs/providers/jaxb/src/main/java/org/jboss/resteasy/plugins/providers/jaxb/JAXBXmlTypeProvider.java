@@ -30,6 +30,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * <p>
  * A JAXB entity provider that handles classes without {@link XmlRootElement} annotation. Classes which have
@@ -67,6 +71,8 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
     *
     */
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider , method call : writeTo .")
    public void writeTo(Object t,
                        Class<?> type,
                        Type genericType,
@@ -80,6 +86,8 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider , method call : readFrom .")
    public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
       try
@@ -146,6 +154,8 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
     *
     */
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider , method call : isReadWritable .")
    protected boolean isReadWritable(Class<?> type,
                                     Type genericType,
                                     Annotation[] annotations,
@@ -163,6 +173,8 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
     * @param type
     * @return
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider , method call : findObjectFactory .")
    public static Object findObjectFactory(Class<?> type)
    {
       try
@@ -197,6 +209,8 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
     * @param type
     * @return
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlTypeProvider , method call : wrapInJAXBElement .")
    public static JAXBElement<?> wrapInJAXBElement(Object t, Class<?> type)
    {
       try

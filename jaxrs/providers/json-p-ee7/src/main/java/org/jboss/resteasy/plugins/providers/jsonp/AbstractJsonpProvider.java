@@ -12,6 +12,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+import org.jboss.logging.Logger.Level;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -21,6 +25,8 @@ public class AbstractJsonpProvider
    @Context
    javax.ws.rs.ext.Providers providers;
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jsonp.AbstractJsonpProvider , method call : getCharset .")
    public static Charset getCharset(final MediaType mediaType)
    {
       if (mediaType != null)
@@ -31,6 +37,8 @@ public class AbstractJsonpProvider
       return Charset.defaultCharset();
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jsonp.AbstractJsonpProvider , method call : findReader .")
    protected JsonReader findReader(MediaType mediaType, InputStream is)
    {
       ContextResolver<JsonReaderFactory> resolver = providers.getContextResolver(JsonReaderFactory.class, mediaType);
@@ -47,6 +55,8 @@ public class AbstractJsonpProvider
       return factory.createReader(is, charset);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jsonp.AbstractJsonpProvider , method call : findWriter .")
    protected JsonWriter findWriter(MediaType mediaType, OutputStream os)
    {
       ContextResolver<JsonWriterFactory> resolver = providers.getContextResolver(JsonWriterFactory.class, mediaType);

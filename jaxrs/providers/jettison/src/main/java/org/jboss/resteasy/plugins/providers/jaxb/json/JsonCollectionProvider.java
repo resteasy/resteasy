@@ -37,6 +37,10 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -46,7 +50,8 @@ import java.util.TreeSet;
 @Consumes("application/*+json")
 public class JsonCollectionProvider extends CollectionProvider
 {
-
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.json.JsonCollectionProvider , method call : readFrom .")
    public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
    {
       Class baseType = Types.getCollectionBaseType(type, genericType);
@@ -125,6 +130,8 @@ public class JsonCollectionProvider extends CollectionProvider
       }
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.json.JsonCollectionProvider , method call : writeTo .")
    public void writeTo(Object entry, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
       JAXBContextFinder finder = getFinder(mediaType);

@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.plugins.i18n.*;
 
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.Consumes;
@@ -16,6 +17,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -38,6 +43,8 @@ public class ServerFormUrlEncodedProvider extends FormUrlEncodedProvider
 
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.ServerFormUrlEncodedProvider , method call : readFrom .")
    public MultivaluedMap readFrom(Class<MultivaluedMap> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
       if (!useContainerParams) return super.readFrom(type, genericType, annotations, mediaType, httpHeaders, entityStream);

@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.providers.multipart;
 import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.WriterException;
+import org.jboss.resteasy.plugins.providers.multipart.i18n.*;
 
 import javax.activation.DataSource;
 import javax.mail.MessagingException;
@@ -20,6 +21,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
 
 /**
  * A provider to handle multipart representations. This implementation will be
@@ -51,6 +56,8 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
     * @return
     * @throws IOException
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.MimeMultipartProvider , method call : readDataSource .")
    public static DataSource readDataSource(InputStream in, MediaType mediaType) throws IOException
    {
       ByteArrayDataSource ds = new ByteArrayDataSource(new BufferedInputStream(in), mediaType
@@ -65,6 +72,8 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
     * @param annotations
     * @return
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.MimeMultipartProvider , method call : mediaType .")
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return MimeMultipart.class.equals(type);
@@ -76,6 +85,8 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
     * @param annotations
     * @return
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.MimeMultipartProvider , method call : isWriteable .")
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return MimeMultipart.class.equals(type);
@@ -95,6 +106,8 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
     * @throws WebApplicationException
     * @see @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.MimeMultipartProvider , method call : readFrom .")
    public MimeMultipart readFrom(Class<MimeMultipart> type,
                                  Type genericType,
                                  Annotation[] annotations,
@@ -105,6 +118,7 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
       try
       {
          DataSource ds = readDataSource(entityStream, mediaType);
+
          return new MimeMultipart(ds);
       }
       catch (MessagingException e)
@@ -126,6 +140,8 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
     * @throws IOException
     * @see @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.MimeMultipartProvider , method call : mimeMultipart .")
    public void writeTo(MimeMultipart mimeMultipart,
                        Class<?> type,
                        Type genericType,
@@ -138,6 +154,7 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
       {
          // replace the Content-Type header to include the boundry
          // information
+
          httpHeaders.putSingle("Content-Type", MediaType.valueOf(mimeMultipart.getContentType()));
          mimeMultipart.writeTo(entityStream);
       }

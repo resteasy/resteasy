@@ -29,6 +29,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * Only different from Jackson one is *+json in @Produces/@Consumes
  *
@@ -41,6 +45,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
 {
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.ResteasyJackson2Provider , method call : isReadable .")
    public boolean isReadable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType)
    {
       if (FindAnnotation.findAnnotation(aClass, annotations, NoJackson.class) != null) return false;
@@ -48,6 +54,8 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.ResteasyJackson2Provider , method call : isWriteable .")
    public boolean isWriteable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType)
    {
       if (FindAnnotation.findAnnotation(aClass, annotations, NoJackson.class) != null) return false;
@@ -96,6 +104,8 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
            = new ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig>();
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.ResteasyJackson2Provider , method call : readFrom .")
    public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String,String> httpHeaders, InputStream entityStream)
            throws IOException
    {
@@ -125,6 +135,8 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
            = new ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig>();
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.ResteasyJackson2Provider , method call : writeTo .")
    public void writeTo(Object value, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                        MultivaluedMap<String,Object> httpHeaders, OutputStream entityStream)
            throws IOException

@@ -2,6 +2,7 @@ package org.jboss.resteasy.core.interception;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.ProcessingException;
@@ -17,6 +18,10 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
+
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
 
 import static java.lang.String.format;
 
@@ -34,6 +39,7 @@ public class ClientReaderInterceptorContext extends AbstractReaderInterceptorCon
                                          Map<String, Object> properties)
    {
       super(mediaType, providerFactory, annotations, interceptors, headers, genericType, type, inputStream);
+
       this.properties = properties;
    }
 
@@ -43,6 +49,8 @@ public class ClientReaderInterceptorContext extends AbstractReaderInterceptorCon
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.ClientReaderInterceptorContext , method call : resolveReader .")
    protected MessageBodyReader resolveReader(MediaType mediaType)
    {
       return providerFactory.getClientMessageBodyReader(type,
@@ -50,18 +58,24 @@ public class ClientReaderInterceptorContext extends AbstractReaderInterceptorCon
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.ClientReaderInterceptorContext , method call : getProperty .")
    public Object getProperty(String name)
    {
       return properties.get(name);
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.ClientReaderInterceptorContext , method call : getPropertyNames .")
    public Collection<String> getPropertyNames()
    {
       return properties.keySet();
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.ClientReaderInterceptorContext , method call : setProperty .")
    public void setProperty(String name, Object object)
    {
       if (object == null)
@@ -75,6 +89,8 @@ public class ClientReaderInterceptorContext extends AbstractReaderInterceptorCon
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.ClientReaderInterceptorContext , method call : removeProperty .")
    public void removeProperty(String name)
    {
       properties.remove(name);

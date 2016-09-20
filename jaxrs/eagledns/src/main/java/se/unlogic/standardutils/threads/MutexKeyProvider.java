@@ -10,10 +10,16 @@ package se.unlogic.standardutils.threads;
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 public class MutexKeyProvider<T> {
 
 	private final WeakHashMap<MutexKey<T>, WeakReference<MutexKey<T>>> keyMap = new WeakHashMap<MutexKey<T>, WeakReference<MutexKey<T>>>();
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Call of provider : se.unlogic.standardutils.threads.MutexKeyProvider , method call : getKey .")
 	public MutexKey<T> getKey(T object) {
 
 		MutexKey<T> newKey = new MutexKey<T>(object);

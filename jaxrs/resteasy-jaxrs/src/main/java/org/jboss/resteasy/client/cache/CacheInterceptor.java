@@ -10,6 +10,7 @@ import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.util.WeightedMediaType;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.core.CacheControl;
@@ -24,6 +25,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
 
 /**
  * 
@@ -66,12 +71,16 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
       this.cache = cache;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.client.cache.CacheInterceptor , method call : accept .")
    public boolean accept(Class declaring, Method method)
    {
       if (declaring == null || method == null) return true;
       return method.isAnnotationPresent(GET.class);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.client.cache.CacheInterceptor , method call : execute .")
    public ClientResponse execute(ClientExecutionContext ctx) throws Exception
    {
       ClientRequest request = ctx.getRequest();
@@ -100,6 +109,8 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
       return createClientResponse(request, entry);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.client.cache.CacheInterceptor , method call : handleExpired .")
    protected ClientResponse handleExpired(ClientExecutionContext ctx,
                                           ClientRequest request, BrowserCache.Entry entry) throws Exception
    {
@@ -118,6 +129,8 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
       return cacheIfPossible(request, (BaseClientResponse) response);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.client.cache.CacheInterceptor , method call : updateOnNotModified .")
    public ClientResponse updateOnNotModified(ClientRequest request, BrowserCache.Entry old, BaseClientResponse response) throws Exception
    {
       old.getHeaders().remove(HttpHeaders.CACHE_CONTROL);
@@ -169,6 +182,7 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
 
 
       BrowserCache.Entry entry = cache.put(request.getUri(), old.getMediaType(), old.getHeaders(), old.getCached(), expires, etag, lastModified);
+
       return createClientResponse(request, entry);
 
    }
@@ -183,6 +197,8 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
    }
 
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.client.cache.CacheInterceptor , method call : cacheIfPossible .")
    public ClientResponse cacheIfPossible(ClientRequest request, BaseClientResponse response) throws Exception
    {
       String cc = (String) response.getResponseHeaders().getFirst(HttpHeaders.CACHE_CONTROL);
@@ -218,6 +234,8 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
       return response;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.client.cache.CacheInterceptor , method call : getEntry .")
    protected BrowserCache.Entry getEntry(ClientRequest request) throws Exception
    {
       String uri = request.getUri();

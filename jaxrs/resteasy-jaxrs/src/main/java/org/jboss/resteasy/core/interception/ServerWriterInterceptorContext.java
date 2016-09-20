@@ -3,6 +3,7 @@ package org.jboss.resteasy.core.interception;
 import org.jboss.resteasy.core.NoMessageBodyWriterFoundFailure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -15,6 +16,10 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -31,12 +36,16 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
                                          HttpRequest request)
    {
       super(interceptors, annotations, entity, genericType, mediaType, type, outputStream, providerFactory, headers);
+
       this.request = request;
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.ServerWriterInterceptorContext , method call : resolveWriter .")
    protected MessageBodyWriter resolveWriter()
    {
+
       return providerFactory.getServerMessageBodyWriter(
               type, genericType, annotations, mediaType);
 
@@ -48,12 +57,16 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.ServerWriterInterceptorContext , method call : getProperty .")
    public Object getProperty(String name)
    {
       return request.getAttribute(name);
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.ServerWriterInterceptorContext , method call : writeTo .")
    protected void writeTo(MessageBodyWriter writer) throws IOException
    {
       //logger.info("*** " + request.getUri().getPath() + " writeTo(" + entity.toString() + ", " + mediaType);
@@ -61,6 +74,8 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.ServerWriterInterceptorContext , method call : getPropertyNames .")
    public Collection<String> getPropertyNames()
    {
       ArrayList<String> names = new ArrayList<String>();
@@ -69,10 +84,13 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
       {
          names.add(enames.nextElement());
       }
+
       return names;
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.ServerWriterInterceptorContext , method call : setProperty .")
    public void setProperty(String name, Object object)
    {
       if (object == null)
@@ -86,6 +104,8 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.ServerWriterInterceptorContext , method call : removeProperty .")
    public void removeProperty(String name)
    {
       request.removeAttribute(name);

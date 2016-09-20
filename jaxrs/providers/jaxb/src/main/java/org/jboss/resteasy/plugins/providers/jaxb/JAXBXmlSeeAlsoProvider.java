@@ -18,6 +18,10 @@ import javax.xml.bind.annotation.XmlType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * A JAXBXmlRootElementProvider.
  *
@@ -30,6 +34,8 @@ import java.lang.reflect.Type;
 public class JAXBXmlSeeAlsoProvider extends AbstractJAXBProvider<Object>
 {
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlSeeAlsoProvider , method call : findJAXBContext .")
    public JAXBContext findJAXBContext(Class<?> type, Annotation[] annotations, MediaType mediaType, boolean reader)
            throws JAXBException
    {
@@ -47,6 +53,8 @@ public class JAXBXmlSeeAlsoProvider extends AbstractJAXBProvider<Object>
 
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlSeeAlsoProvider , method call : isReadWritable .")
    protected boolean isReadWritable(Class<?> type,
                                     Type genericType,
                                     Annotation[] annotations,

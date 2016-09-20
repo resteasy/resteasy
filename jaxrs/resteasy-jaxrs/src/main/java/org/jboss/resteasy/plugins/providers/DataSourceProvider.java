@@ -5,6 +5,7 @@ package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.plugins.server.servlet.Cleanable;
 import org.jboss.resteasy.plugins.server.servlet.Cleanables;
+import org.jboss.resteasy.plugins.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.NoContent;
@@ -30,6 +31,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
@@ -37,6 +42,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @Consumes("*/*")
 @Produces("*/*")
+
 public class DataSourceProvider extends AbstractEntityProvider<DataSource>
 {
 
@@ -66,6 +72,8 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
       }
 
       @Override
+      @LogMessage(level = Level.DEBUG)
+      @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.DataSourceProvider.SequencedDataSource , method call : getInputStream .")
       public InputStream getInputStream() throws IOException
       {
          InputStream bis = new ByteArrayInputStream(byteBuffer, byteBufferOffset, byteBufferLength);
@@ -78,6 +86,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
          {
              cleanables.addCleanable(csis);
          }
+
          return csis;
       }
 
@@ -102,6 +111,8 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
     * @return
     * @throws IOException
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.SequencedDataSource , method call : readDataSource .")
    public static DataSource readDataSource(final InputStream in, final MediaType mediaType) throws IOException
    {
       byte[] memoryBuffer = new byte[4096];
@@ -144,6 +155,8 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
     * @see javax.ws.rs.ext.MessageBodyReader
     */
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.SequencedDataSource , method call : isReadable .")
    public boolean isReadable(Class<?> type,
                              Type genericType,
                              Annotation[] annotations, MediaType mediaType)
@@ -167,6 +180,8 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
     * @see @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
     */
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.SequencedDataSource , method call : readFrom .")
    public DataSource readFrom(Class<DataSource> type,
                               Type genericType,
                               Annotation[] annotations,
@@ -189,6 +204,8 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
     * @see @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[])
     */
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.SequencedDataSource , method call : isWriteable .")
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return DataSource.class.isAssignableFrom(type);
@@ -209,6 +226,8 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
     * @see @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
     */
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.SequencedDataSource , method call : writeTo .")
    public void writeTo(DataSource dataSource,
                        Class<?> type,
                        Type genericType,
@@ -226,7 +245,6 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
       {
          in.close();
       }
-
    }
 
    private static class CleanableSequenceInputStream extends SequenceInputStream implements Cleanable

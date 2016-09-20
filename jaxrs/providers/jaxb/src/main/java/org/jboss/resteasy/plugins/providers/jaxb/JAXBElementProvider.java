@@ -23,6 +23,10 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * <p>
  * A JAXB Provider which handles parameter and return types of {@link JAXBElement}. This provider will be
@@ -45,6 +49,8 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
 {
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider , method call : isReadWritable .")
    protected boolean isReadWritable(Class<?> type,
                                     Type genericType,
                                     Annotation[] annotations,
@@ -57,6 +63,8 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
    /**
     *
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider , method call : readFrom .")
    public JAXBElement<?> readFrom(Class<JAXBElement<?>> type,
                                   Type genericType,
                                   Annotation[] annotations,
@@ -122,6 +130,8 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.JAXBElementProvider , method call : writeTo .")
    public void writeTo(JAXBElement<?> t,
                        Class<?> type,
                        Type genericType,

@@ -5,6 +5,7 @@ package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.annotations.providers.img.ImageWriterParams;
 import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.plugins.i18n.*;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -27,6 +28,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Locale;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * @author <a href="mailto:ryan@damnhandy.com">Ryan J. McDonough</a>
  * @version $Revision:$
@@ -44,6 +49,8 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
     * @see javax.ws.rs.ext.MessageBodyReader#isReadable(java.lang.Class,
     *      java.lang.reflect.Type, java.lang.annotation.Annotation[])
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.IIOImageProvider , method call : isReadable .")
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return IIOImage.class.equals(type);
@@ -64,6 +71,8 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
     *      java.io.InputStream)
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.IIOImageProvider , method call : readFrom .")
    public IIOImage readFrom(Class<IIOImage> type,
                             Type genericType,
                             Annotation[] annotations,
@@ -71,7 +80,6 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
                             MultivaluedMap<String, String> httpHeaders,
                             InputStream entityStream) throws IOException
    {
-
       ImageReader reader = IIOImageProviderHelper.getImageReaderByMediaType(mediaType);
       try
       {
@@ -93,6 +101,8 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class,
     *      java.lang.reflect.Type, java.lang.annotation.Annotation[])
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.IIOImageProvider , method call : isWriteable .")
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return IIOImage.class.equals(type);
@@ -113,6 +123,8 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
     *      java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType,
     *      javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.IIOImageProvider , method call : writeTo .")
    public void writeTo(IIOImage t,
                        Class<?> type,
                        Type genericType,

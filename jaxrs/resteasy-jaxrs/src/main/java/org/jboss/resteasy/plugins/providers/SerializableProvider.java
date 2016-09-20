@@ -8,6 +8,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import org.jboss.resteasy.plugins.i18n.*;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -19,6 +20,9 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
 
 /**
  * MessageBodyReader+Writer for serialized java objects.<p/>
@@ -45,6 +49,8 @@ public class SerializableProvider implements MessageBodyReader<Serializable>, Me
    public static final MediaType APPLICATION_SERIALIZABLE_TYPE = new MediaType("application", "x-java-serialized-object");
    public static final String APPLICATION_SERIALIZABLE = APPLICATION_SERIALIZABLE_TYPE.toString();
    
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.SerializableProvider , method call : isWriteable .")
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return Serializable.class.isAssignableFrom(type)
@@ -52,22 +58,29 @@ public class SerializableProvider implements MessageBodyReader<Serializable>, Me
             && APPLICATION_SERIALIZABLE_TYPE.getSubtype().equals(mediaType.getSubtype());
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.SerializableProvider , method call : getSize .")
    public long getSize(Serializable t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.SerializableProvider , method call : writeTo .")
    public void writeTo(Serializable t, Class<?> type, Type genericType,
          Annotation[] annotations, MediaType mediaType,
          MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
          throws IOException, WebApplicationException
    {
+
       BufferedOutputStream bos = new BufferedOutputStream(entityStream);
       ObjectOutputStream oos = new ObjectOutputStream(bos);
       oos.writeObject(t);
       oos.close();
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.SerializableProvider , method call : isReadable .")
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return Serializable.class.isAssignableFrom(type)
@@ -75,6 +88,8 @@ public class SerializableProvider implements MessageBodyReader<Serializable>, Me
             && APPLICATION_SERIALIZABLE_TYPE.getSubtype().equals(mediaType.getSubtype());
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.SerializableProvider , method call : readFrom .")
    public Serializable readFrom(Class<Serializable> type, Type genericType,
          Annotation[] annotations, MediaType mediaType,
          MultivaluedMap<String, String> httpHeaders, InputStream entityStream)

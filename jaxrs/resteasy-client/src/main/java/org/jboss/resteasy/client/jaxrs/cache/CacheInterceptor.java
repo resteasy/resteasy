@@ -2,6 +2,8 @@ package org.jboss.resteasy.client.jaxrs.cache;
 
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.ReadFromStream;
+import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
@@ -16,6 +18,10 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -32,6 +38,8 @@ public class CacheInterceptor implements ClientRequestFilter, ClientResponseFilt
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.client.jaxrs.cache.CacheInterceptor , method call : filter .")
    public void filter(ClientRequestContext request) throws IOException
    {
       if (!request.getMethod().equalsIgnoreCase("GET")) return;
@@ -81,6 +89,8 @@ public class CacheInterceptor implements ClientRequestFilter, ClientResponseFilt
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.client.jaxrs.cache.CacheInterceptor , method call : filter .")
    public void filter(ClientRequestContext request, ClientResponseContext response) throws IOException
    {
       if (!request.getMethod().equalsIgnoreCase("GET") || request.getProperty("cached") != null) return;
@@ -118,6 +128,8 @@ public class CacheInterceptor implements ClientRequestFilter, ClientResponseFilt
       cacheIfPossible(request, response);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.client.jaxrs.cache.CacheInterceptor , method call : updateOnNotModified .")
    public void updateOnNotModified(ClientRequestContext request, BrowserCache.Entry old, ClientResponseContext response)
    {
       old.getHeaders().remove(HttpHeaders.CACHE_CONTROL);
@@ -176,7 +188,8 @@ public class CacheInterceptor implements ClientRequestFilter, ClientResponseFilt
    }
 
 
-
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.client.jaxrs.cache.CacheInterceptor , method call : cacheIfPossible .")
    public void cacheIfPossible(ClientRequestContext request, ClientResponseContext response) throws IOException
    {
       String cc = (String) response.getHeaderString(HttpHeaders.CACHE_CONTROL);
@@ -207,8 +220,11 @@ public class CacheInterceptor implements ClientRequestFilter, ClientResponseFilt
               response.getHeaders(), cached, expires, etag, lastModified);
 
       response.setEntityStream(new ByteArrayInputStream(cached));
+
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.client.jaxrs.cache.CacheInterceptor , method call : getEntry .")
    protected BrowserCache.Entry getEntry(ClientRequestContext request) throws Exception
    {
       String uri = request.getUri().toString();

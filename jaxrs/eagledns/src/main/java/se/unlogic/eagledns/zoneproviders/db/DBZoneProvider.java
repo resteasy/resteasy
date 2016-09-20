@@ -23,6 +23,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+import org.jboss.logging.Logger.Level;
+
 public class DBZoneProvider implements ZoneProvider {
 
 	private static final Field RECORD_RELATION = ReflectionUtils.getField(DBZone.class, "records");
@@ -43,6 +47,8 @@ public class DBZoneProvider implements ZoneProvider {
 	private QueryParameterFactory<DBZone, Integer> zoneIDQueryParameterFactory;
 	private QueryParameterFactory<DBRecord, DBZone> recordZoneQueryParameterFactory;
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.db.DBZoneProvider , method call : init .")
 	public void init(String name) throws ClassNotFoundException {
 
 		this.name = name;
@@ -73,6 +79,8 @@ public class DBZoneProvider implements ZoneProvider {
 		this.recordZoneQueryParameterFactory = recordDAO.getParamFactory("zone", DBZone.class);
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.db.DBZoneProvider , method call : getPrimaryZones .")
 	public Collection<Zone> getPrimaryZones() {
 
 		try {
@@ -104,6 +112,8 @@ public class DBZoneProvider implements ZoneProvider {
 		return null;
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.db.DBZoneProvider , method call : getSecondaryZones .")
 	public Collection<SecondaryZone> getSecondaryZones() {
 
 		try {
@@ -142,6 +152,8 @@ public class DBZoneProvider implements ZoneProvider {
 		return null;
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.db.DBZoneProvider , method call : zoneUpdated .")
 	public void zoneUpdated(SecondaryZone zone) {
 
 		if(!(zone instanceof DBSecondaryZone)){
@@ -195,6 +207,8 @@ public class DBZoneProvider implements ZoneProvider {
 		}
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.db.DBZoneProvider , method call : zoneChecked .")
 	public void zoneChecked(SecondaryZone zone) {
 
 		if(!(zone instanceof DBSecondaryZone)){
@@ -235,26 +249,36 @@ public class DBZoneProvider implements ZoneProvider {
 		}
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.db.DBZoneProvider , method call : unload .")
 	public void unload() {
 
 		//Nothing to do here...
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.db.DBZoneProvider , method call : setDriver .")
 	public void setDriver(String driver) {
 
 		this.driver = driver;
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.db.DBZoneProvider , method call : setUsername .")
 	public void setUsername(String username) {
 
 		this.username = username;
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.db.DBZoneProvider , method call : setPassword .")
 	public void setPassword(String password) {
 
 		this.password = password;
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.db.DBZoneProvider , method call : setUrl .")
 	public void setUrl(String url) {
 
 		this.url = url;

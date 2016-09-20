@@ -10,12 +10,19 @@ import javax.ws.rs.ext.Provider;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 @Provider
 @Produces("application/*+json")
 @Consumes("application/*+json")
 public class JettisonXmlTypeProvider extends JAXBXmlTypeProvider
 {
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.json.JettisonXmlTypeProvider , method call : needsSecurity .")
    protected boolean needsSecurity()
    {
       return false;

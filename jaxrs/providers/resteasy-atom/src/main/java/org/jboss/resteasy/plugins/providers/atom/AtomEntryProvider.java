@@ -29,6 +29,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+import org.jboss.logging.Logger.Level;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -41,6 +45,8 @@ public class AtomEntryProvider implements MessageBodyReader<Entry>, MessageBodyW
    @Context
    protected Providers providers;
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.atom.AtomEntryProvider , method call : getFinder .")
    protected JAXBContextFinder getFinder(MediaType type)
    {
       ContextResolver<JAXBContextFinder> resolver = providers.getContextResolver(JAXBContextFinder.class, type);
@@ -48,11 +54,15 @@ public class AtomEntryProvider implements MessageBodyReader<Entry>, MessageBodyW
       return resolver.getContext(null);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.atom.AtomEntryProvider , method call : isReadable .")
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return Entry.class.isAssignableFrom(type);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.atom.AtomEntryProvider , method call : readFrom .")
    public Entry readFrom(Class<Entry> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
    {
       JAXBContextFinder finder = getFinder(mediaType);
@@ -75,16 +85,22 @@ public class AtomEntryProvider implements MessageBodyReader<Entry>, MessageBodyW
       }
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.atom.AtomEntryProvider , method call : isWriteable .")
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return Entry.class.isAssignableFrom(type);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.atom.AtomEntryProvider , method call : getSize .")
    public long getSize(Entry entry, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.atom.AtomEntryProvider , method call : writeTo .")
    public void writeTo(Entry entry, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
       JAXBContextFinder finder = getFinder(mediaType);

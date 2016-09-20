@@ -2,10 +2,10 @@ package org.jboss.resteasy.security.doseta;
 
 import org.jboss.resteasy.annotations.interception.DecoderPrecedence;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.ClientExecutionContext;
 import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
+import org.jboss.resteasy.security.doseta.i18n.*;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
@@ -32,6 +32,10 @@ import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -41,7 +45,8 @@ import java.util.List;
 @Priority(Priorities.ENTITY_CODER)
 public class DigitalSigningInterceptor implements WriterInterceptor, ClientExecutionInterceptor, ContainerResponseFilter, ClientRequestFilter
 {
-
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.security.doseta.DigitalSigningInterceptor , method call : getHeaders .")
    protected List<DKIMSignature> getHeaders(MultivaluedMap<String, Object> headers)
    {
       List<DKIMSignature> list = new ArrayList<DKIMSignature>();
@@ -59,10 +64,13 @@ public class DigitalSigningInterceptor implements WriterInterceptor, ClientExecu
             list.add((DKIMSignature) obj);
          }
       }
+
       return list;
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.security.doseta.DigitalSigningInterceptor , method call : filter .")
    public void filter(ClientRequestContext requestContext) throws IOException
    {
       if (requestContext.hasEntity())
@@ -89,6 +97,8 @@ public class DigitalSigningInterceptor implements WriterInterceptor, ClientExecu
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.security.doseta.DigitalSigningInterceptor , method call : execute .")
    public ClientResponse execute(ClientExecutionContext context) throws Exception
    {
       if (context.getRequest().getBody() != null)
@@ -110,6 +120,8 @@ public class DigitalSigningInterceptor implements WriterInterceptor, ClientExecu
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.security.doseta.DigitalSigningInterceptor , method call : filter .")
    public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException
    {
       if (responseContext.getEntity() != null)
@@ -134,6 +146,8 @@ public class DigitalSigningInterceptor implements WriterInterceptor, ClientExecu
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.security.doseta.DigitalSigningInterceptor , method call : aroundWriteTo .")
    public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException
    {
       MultivaluedMap<String, Object> headers = context.getHeaders();
@@ -174,6 +188,8 @@ public class DigitalSigningInterceptor implements WriterInterceptor, ClientExecu
       }
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.security.doseta.DigitalSigningInterceptor , method call : sign .")
    protected void sign(KeyRepository repository, MultivaluedMap<String, Object> headers, byte[] body, DKIMSignature dosetaSignature) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, UnsupportedEncodingException
    {
       // if its already signed, don't bother
