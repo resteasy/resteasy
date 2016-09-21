@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
+import java.util.HashMap;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.MimeIOException;
 import org.apache.james.mime4j.codec.Base64InputStream;
@@ -47,7 +48,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -411,7 +412,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
               + "\r\n"
               + "hello world\r\n" + "--B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3--";
       ByteArrayInputStream bais = new ByteArrayInputStream(input.getBytes());
-      Map<String, String> parameters = new HashMap<String, String>();
+      Map<String, String> parameters = new LinkedHashMap<String, String>();
       parameters.put("boundary", "B98hgCmKsQ-B5AUFnm2FnDRCgHPDE3");
       MediaType contentType = new MediaType("multipart", "form-data",
               parameters);
@@ -472,7 +473,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
    private MediaType getMediaTypeWithCharset(MediaType mediaType, String charset)
    {
       Map<String, String> params = mediaType.getParameters();
-      Map<String, String> newParams = new HashMap<String, String>();
+      Map<String, String> newParams = new LinkedHashMap<String, String>();
       newParams.put("charset", charset);
       for (Iterator<String> it = params.keySet().iterator(); it.hasNext(); )
       {
