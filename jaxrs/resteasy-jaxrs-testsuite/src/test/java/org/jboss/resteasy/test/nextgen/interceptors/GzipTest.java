@@ -5,31 +5,30 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.jboss.resteasy.annotations.ContentEncoding;
 import org.jboss.resteasy.annotations.GZIP;
+import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.internal.ClientWebTarget;
 import org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor;
 import org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
+import org.jboss.resteasy.test.nextgen.interceptors.resource.GzipProxy;
+import org.jboss.resteasy.test.nextgen.interceptors.resource.Pair;
+import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.core.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -140,6 +139,17 @@ public class GzipTest extends BaseResourceTest
       public void putText(String text) throws Exception
       {
          Assert.assertEquals("hello world", text);
+      }
+
+      @POST
+      @Path("/gzippost")
+      @Consumes(MediaType.TEXT_PLAIN)
+      public Response postGZipped(@GZIP String value, @Context HttpHeaders headers) {
+         MultivaluedMap<String, String> requestHeaders = headers.getRequestHeaders();
+         Assert.assertEquals(true, requestHeaders.containsKey("accept-encoding"));
+         Assert.assertEquals(true, requestHeaders.get("accept-encoding").toString().contains("gzip"));
+
+         return Response.ok().type(MediaType.TEXT_PLAIN).encoding("gzip").build();
       }
    }
 
@@ -342,5 +352,21 @@ public class GzipTest extends BaseResourceTest
 
    }
 
+   /**
+    * Send POST request with gzip encoded data using @GZIP annotation and client proxy framework
+    */
+   @Test
+   public void testGzipPost() {
+      Client client = new ResteasyClientBuilder().build();
+      WebTarget target = client.target(TestPortProvider.generateURL(""));
+      GzipProxy gzipProxy = ProxyBuilder.builder(GzipProxy.class, target).build();
+      Pair data = new Pair();
+      data.setP1("first");
+      data.setP2("second");
+
+      Response response = gzipProxy.post(data);
+      Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+      Assert.assertEquals("gzip", response.getHeaderString("Content-Encoding"));
+   }
 
 }
