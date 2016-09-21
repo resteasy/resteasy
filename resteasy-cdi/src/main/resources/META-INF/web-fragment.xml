@@ -3,11 +3,12 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="
       http://java.sun.com/xml/ns/javaee
-      http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd"
+      http://java.sun.com/xml/ns/javaee/web-fragment_3_1.xsd"
 	version="3.0">
 
 	<context-param>
 		<param-name>resteasy.injector.factory</param-name>
 		<param-value>org.jboss.resteasy.cdi.CdiInjectorFactory</param-value>
 	</context-param>
+        <distributable/>
 </web-fragment>
