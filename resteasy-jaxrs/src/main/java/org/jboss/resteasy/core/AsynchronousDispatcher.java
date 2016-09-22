@@ -72,7 +72,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
       private int maxUses = -1;
       private int uses = 0; // uses > maxUses so that context parameters will get checked upon first use.
       
-      public int nextInt()
+      synchronized public int nextInt()
       {
          if (++uses > maxUses)
          {
@@ -120,7 +120,7 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
    private Map<String, Future<MockHttpResponse>> jobs;
    private Cache cache;
    private String basePath = "/asynch/jobs";
-   private volatile SecureRandomWrapper counter;
+   private SecureRandomWrapper counter;
    private long maxWaitMilliSeconds = 300000;
    private int maxCacheSize = 100;
 
