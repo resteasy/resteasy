@@ -105,10 +105,6 @@ public interface LogMessages extends BasicLogger
    void invalidFormat(String parameterName, String defaultValue); 
 
    @LogMessage(level = Level.WARN)
-   @Message(id = BASE + 137, value =  "Invalid format for {0}, using default value {1}", format=Format.MESSAGE_FORMAT)
-   void invalidFormat(String parameterName, String defaultValue); 
-   
-   @LogMessage(level = Level.WARN)
    @Message(id = BASE + 140, value =  "JAX-RS annotations found at non-public method: {0}.{1}(); Only public methods may be exposed as resource methods.", format=Format.MESSAGE_FORMAT)
    void JAXRSAnnotationsFoundAtNonPublicMethod(String className, String method);  
 
