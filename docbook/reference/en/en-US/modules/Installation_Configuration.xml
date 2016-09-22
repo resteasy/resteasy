@@ -512,6 +512,17 @@ public class MyApplication extends Application
                                 Imposes maximum size on decompressed gzipped .
                             </entry>
                         </row>
+                        <row>
+                            <entry>
+                                resteasy.secure.random.max.use
+                            </entry>
+                            <entry>
+                                100
+                            </entry>
+                            <entry>
+                                The number of times a SecureRandom can be used before reseeding.
+                            </entry>
+                        </row>
                     </tbody>
                 </tgroup>
             </table>
