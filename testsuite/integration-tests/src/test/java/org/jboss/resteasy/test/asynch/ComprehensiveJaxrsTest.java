@@ -1,31 +1,14 @@
 package org.jboss.resteasy.test.asynch;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.category.ExpectedFailing;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletApp;
-import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletAsyncResponseBlockingQueue;
-import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletJaxrsResource;
-import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletResource;
-import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletServiceUnavailableExceptionMapper;
-import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletTimeoutHandler;
-import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletXmlData;
-import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletPrintingErrorHandler;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.jboss.resteasy.utils.PortProviderUtil;
-import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.concurrent.Future;
 
 import javax.ws.rs.client.AsyncInvoker;
 import javax.ws.rs.client.Client;
@@ -36,15 +19,31 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
-import java.util.concurrent.Future;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletApp;
+import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletAsyncResponseBlockingQueue;
+import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletJaxrsResource;
+import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletPrintingErrorHandler;
+import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletResource;
+import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletServiceUnavailableExceptionMapper;
+import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletTimeoutHandler;
+import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletXmlData;
+import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PortProviderUtil;
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @tpSubChapter Asynchronous RESTEasy
@@ -199,7 +198,6 @@ public class ComprehensiveJaxrsTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    @Category({ExpectedFailing.class}) // [RESTEASY-1446] FIXME
     public void complexTest() throws Exception {
         // cancelVoidTest
         {
