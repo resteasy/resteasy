@@ -1,8 +1,8 @@
 package org.jboss.resteasy.core.interception;
 
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotSupportedException;
@@ -20,6 +20,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -34,15 +38,19 @@ public class ServerReaderInterceptorContext extends AbstractReaderInterceptorCon
                                          HttpRequest request)
    {
       super(mediaType, providerFactory, annotations, interceptors, headers, genericType, type, inputStream);
+
       this.request = request;
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.ServerReaderInterceptorContext , method call : resolveReader .")
    protected MessageBodyReader resolveReader(MediaType mediaType)
    {
       MessageBodyReader reader =  providerFactory.getServerMessageBodyReader(type,
               genericType, annotations, mediaType);
       //logger.info("**** picked reader: " + reader.getClass().getName());
+
       return reader;
    }
 
@@ -53,6 +61,8 @@ public class ServerReaderInterceptorContext extends AbstractReaderInterceptorCon
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.ServerReaderInterceptorContext , method call : readFrom .")
    protected Object readFrom(MessageBodyReader reader) throws IOException
    {
       try
@@ -66,12 +76,16 @@ public class ServerReaderInterceptorContext extends AbstractReaderInterceptorCon
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.ServerReaderInterceptorContext , method call : getProperty .")
    public Object getProperty(String name)
    {
       return request.getAttribute(name);
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.ServerReaderInterceptorContext , method call : getPropertyNames .")
    public Collection<String> getPropertyNames()
    {
       ArrayList<String> names = new ArrayList<String>();
@@ -80,10 +94,13 @@ public class ServerReaderInterceptorContext extends AbstractReaderInterceptorCon
       {
          names.add(enames.nextElement());
       }
+
       return names;
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.ServerReaderInterceptorContext , method call : setProperty .")
    public void setProperty(String name, Object object)
    {
       if (object == null)
@@ -97,6 +114,8 @@ public class ServerReaderInterceptorContext extends AbstractReaderInterceptorCon
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.ServerReaderInterceptorContext , method call : removeProperty .")
    public void removeProperty(String name)
    {
       request.removeAttribute(name);

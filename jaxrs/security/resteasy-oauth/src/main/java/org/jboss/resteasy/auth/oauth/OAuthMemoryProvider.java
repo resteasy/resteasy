@@ -7,6 +7,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.jboss.resteasy.auth.oauth.i18n.Messages;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * OAuthProvider that keeps all data in memory. Mainly used as an example and for tests.
  * @author Stéphane Épardaud <stef@epardaud.fr>
@@ -73,6 +77,8 @@ public class OAuthMemoryProvider implements OAuthProvider {
         return ret;
     }
     
+    @LogMessage(level = Level.DEBUG)
+    @Message(value = "Call of provider : org.jboss.resteasy.auth.oauth.OAuthMemoryProvider , method call : verifyAndRemoveRequestToken .")
     public OAuthRequestToken verifyAndRemoveRequestToken(String customerKey, String requestToken, String verifier) throws OAuthException {
         OAuthRequestToken request = getRequestToken(requestToken);
         checkCustomerKey(request, customerKey);
@@ -95,6 +101,8 @@ public class OAuthMemoryProvider implements OAuthProvider {
 	//
 	// For subclassers
 	
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Call of provider : org.jboss.resteasy.auth.oauth.OAuthMemoryProvider , method call : addConsumer .")
 	protected void addConsumer(String consumerKey, String consumerSecret){
 		consumers.put(consumerKey, new OAuthConsumer(consumerKey, consumerSecret, null, null));
 	}
@@ -106,6 +114,8 @@ public class OAuthMemoryProvider implements OAuthProvider {
 		requestTokens.put(requestToken, token);
 	}
 	
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Call of provider : org.jboss.resteasy.auth.oauth.OAuthMemoryProvider , method call : addAccessKey .")
 	protected void addAccessKey(String consumerKey,	String accessToken, String accessSecret, String[] permissions) throws OAuthException {
 		OAuthConsumer consumer = _getConsumer(consumerKey);
 		OAuthToken token = new OAuthToken(accessToken, accessSecret, 
@@ -113,10 +123,14 @@ public class OAuthMemoryProvider implements OAuthProvider {
 		accessTokens.put(accessToken, token);
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Call of provider : org.jboss.resteasy.auth.oauth.OAuthMemoryProvider , method call : authoriseRequestToken .")
 	protected void authoriseRequestToken(String consumerKey, String requestToken, String verifier) throws OAuthException{
 		doGetRequestToken(consumerKey, requestToken).setVerifier(verifier);
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Call of provider : org.jboss.resteasy.auth.oauth.OAuthMemoryProvider , method call : _getConsumer .")
 	protected OAuthConsumer _getConsumer(String consumerKey) throws OAuthException{
 		OAuthConsumer ret = consumers.get(consumerKey); 
 		if(ret == null)
@@ -126,17 +140,22 @@ public class OAuthMemoryProvider implements OAuthProvider {
 
 	//
 	// OAuthProvider interface
-	
+	@LogMessage(level = Level.DEBUG)
+        @Message(value = "Call of provider : org.jboss.resteasy.auth.oauth.OAuthMemoryProvider , method call : getRealm .")
 	public String getRealm() {
 		return realm;
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Call of provider : org.jboss.resteasy.auth.oauth.OAuthMemoryProvider , method call : authoriseRequestToken .")
 	public String authoriseRequestToken(String consumerKey, String requestToken) throws OAuthException{
 	    String verifier = makeRandomString();
 		doGetRequestToken(consumerKey, requestToken).setVerifier(verifier);
 		return verifier;
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Call of provider : org.jboss.resteasy.auth.oauth.OAuthMemoryProvider , method call : registerConsumer .")
 	public OAuthConsumer registerConsumer(String consumerKey, 
 	        String displayName, String connectURI) throws OAuthException {
 	    OAuthConsumer consumer = consumers.get(consumerKey);
@@ -148,10 +167,14 @@ public class OAuthMemoryProvider implements OAuthProvider {
         return consumer;
 	}
 	
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Call of provider : org.jboss.resteasy.auth.oauth.OAuthMemoryProvider , method call : getConsumer .")
 	public OAuthConsumer getConsumer(String consumerKey) throws OAuthException {
 		return _getConsumer(consumerKey);
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Call of provider : org.jboss.resteasy.auth.oauth.OAuthMemoryProvider , method call : getRequestToken .")
 	public OAuthRequestToken getRequestToken(String consumerKey, String requestToken)
 	throws OAuthException {
 	    OAuthRequestToken token = getRequestToken(requestToken);
@@ -161,22 +184,30 @@ public class OAuthMemoryProvider implements OAuthProvider {
 		return token;
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Call of provider : org.jboss.resteasy.auth.oauth.OAuthMemoryProvider , method call : getAccessToken .")
 	public OAuthToken getAccessToken(String consumerKey, String accessToken)
 	throws OAuthException {
 		return doGetAccessToken(consumerKey, accessToken);
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Call of provider : org.jboss.resteasy.auth.oauth.OAuthMemoryProvider , method call : checkTimestamp .")
 	public void checkTimestamp(OAuthToken token, long timestamp) throws OAuthException {
 	    if(token.getTimestamp() > timestamp)
 	       throw new OAuthException(HttpURLConnection.HTTP_UNAUTHORIZED, Messages.MESSAGES.invalidTimestampLong(timestamp));
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Call of provider : org.jboss.resteasy.auth.oauth.OAuthMemoryProvider , method call : makeAccessToken .")
 	public OAuthToken makeAccessToken(String consumerKey,
 			String requestToken, String verifier) throws OAuthException {
 		OAuthRequestToken token = verifyAndRemoveRequestToken(consumerKey, requestToken, verifier);
 		return doMakeAccessTokens(token);
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Call of provider : org.jboss.resteasy.auth.oauth.OAuthMemoryProvider , method call : makeRequestToken .")
 	public OAuthRequestToken makeRequestToken(String consumerKey, String callback,
 	        String[] scopes, String[] permissions) throws OAuthException {
 	    OAuthRequestToken token = doMakeRequestToken(consumerKey, callback, scopes, permissions);
@@ -184,6 +215,8 @@ public class OAuthMemoryProvider implements OAuthProvider {
 		return token;
 	}
 
+    @LogMessage(level = Level.DEBUG)
+    @Message(value = "Call of provider : org.jboss.resteasy.auth.oauth.OAuthMemoryProvider , method call : getRequestToken .")
     public OAuthRequestToken getRequestToken(String requestToken)
             throws OAuthException {
         OAuthRequestToken token = requestTokens.get(requestToken);
@@ -193,18 +226,24 @@ public class OAuthMemoryProvider implements OAuthProvider {
         return token;
     }
 
+    @LogMessage(level = Level.DEBUG)
+    @Message(value = "Call of provider : org.jboss.resteasy.auth.oauth.OAuthMemoryProvider , method call : registerConsumerScopes .")
     public void registerConsumerScopes(String consumerKey, String[] scopes)
             throws OAuthException {
         OAuthConsumer consumer = _getConsumer(consumerKey);
         consumer.setScopes(scopes);
     }
 
+    @LogMessage(level = Level.DEBUG)
+    @Message(value = "Call of provider : org.jboss.resteasy.auth.oauth.OAuthMemoryProvider , method call : registerConsumerPermissions .")
     public void registerConsumerPermissions(String consumerKey,
             String[] permissions) throws OAuthException {
         // TODO Auto-generated method stub
         
     }
 
+    @LogMessage(level = Level.DEBUG)
+    @Message(value = "Call of provider : org.jboss.resteasy.auth.oauth.OAuthMemoryProvider , method call : convertPermissionsToRoles .")
     public Set<String> convertPermissionsToRoles(String[] permissions) {
         // TODO Auto-generated method stub
         return null;

@@ -30,6 +30,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -39,7 +43,8 @@ import java.util.Map;
 @Consumes("application/*+json")
 public class JsonMapProvider extends MapProvider
 {
-
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.json.JsonMapProvider , method call : readFrom .")
    public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
    {
       Class baseType = Types.getMapValueType(genericType);
@@ -94,6 +99,8 @@ public class JsonMapProvider extends MapProvider
       return map;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.json.JsonMapProvider , method call : getCharset .")
    public static String getCharset(MediaType mediaType)
    {
       if (mediaType != null)
@@ -104,6 +111,8 @@ public class JsonMapProvider extends MapProvider
       return "UTF-8";
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.json.JsonMapProvider , method call : writeTo .")
    public void writeTo(Object target, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
       JAXBContextFinder finder = getFinder(mediaType);

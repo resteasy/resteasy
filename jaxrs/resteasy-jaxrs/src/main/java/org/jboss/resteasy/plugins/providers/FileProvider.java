@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.NoContent;
+import org.jboss.resteasy.plugins.i18n.*;
 
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.Consumes;
@@ -31,6 +32,10 @@ import java.lang.reflect.Type;
  * @version $Revision: 1 $
  */
 
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+import org.jboss.logging.Logger.Level;
+
 @Provider
 @Produces("*/*")
 @Consumes("*/*")
@@ -45,12 +50,16 @@ public class FileProvider implements MessageBodyReader<File>,
    // consider allowing it to be
    // defined at runtime
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.FileProvider , method call : isReadable .")
    public boolean isReadable(Class<?> type, Type genericType,
                              Annotation[] annotations, MediaType mediaType)
    {
       return File.class == type;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.FileProvider , method call : readFrom .")
    public File readFrom(Class<File> type, Type genericType,
                         Annotation[] annotations, MediaType mediaType,
                         MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
@@ -95,17 +104,23 @@ public class FileProvider implements MessageBodyReader<File>,
       return downloadedFile;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.FileProvider , method call : isWriteable .")
    public boolean isWriteable(Class<?> type, Type genericType,
                               Annotation[] annotations, MediaType mediaType)
    {
       return File.class.isAssignableFrom(type); // catch subtypes
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.FileProvider , method call : getSize .")
    public long getSize(File o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return o.length();
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.FileProvider , method call : writeTo .")
    public void writeTo(File uploadFile, Class<?> type, Type genericType,
                        Annotation[] annotations, MediaType mediaType,
                        MultivaluedMap<String, Object> httpHeaders,
@@ -192,6 +207,8 @@ public class FileProvider implements MessageBodyReader<File>,
       }
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.FileProvider , method call : writeIt .")
    protected void writeIt(File uploadFile, OutputStream entityStream) throws IOException
    {
       InputStream inputStream = new BufferedInputStream(new FileInputStream(uploadFile));

@@ -5,9 +5,14 @@ import org.jboss.resteasy.annotations.interception.HeaderDecoratorPrecedence;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.interception.ClientExecutionContext;
 import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
+import org.jboss.resteasy.plugins.i18n.*;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.ext.Provider;
+
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
 
 /**
  * Must be used in conjunction with GZIPDecodingInterceptor
@@ -29,6 +34,8 @@ import javax.ws.rs.ext.Provider;
 @HeaderDecoratorPrecedence
 public class AcceptEncodingGZIPInterceptor implements ClientExecutionInterceptor
 {
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPInterceptor , method call : execute .")
    public ClientResponse execute(ClientExecutionContext ctx) throws Exception
    {
       String encoding = ctx.getRequest().getHeaders().getFirst(HttpHeaders.ACCEPT_ENCODING);
@@ -44,6 +51,7 @@ public class AcceptEncodingGZIPInterceptor implements ClientExecutionInterceptor
             ctx.getRequest().header(HttpHeaders.ACCEPT_ENCODING, encoding);
          }
       }
+
       return ctx.proceed();
    }
 }

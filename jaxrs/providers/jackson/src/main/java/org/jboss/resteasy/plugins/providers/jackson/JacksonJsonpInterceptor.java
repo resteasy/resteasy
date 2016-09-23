@@ -17,6 +17,11 @@ import javax.ws.rs.ext.WriterInterceptorContext;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.plugins.providers.jackson.i18n.*;
+
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
 
 /**
  * <p>
@@ -99,6 +104,8 @@ public class JacksonJsonpInterceptor implements WriterInterceptor{
      * {@inheritDoc}
      */
     @Override
+    @LogMessage(level = Level.DEBUG)
+    @Message(value = "Call of interceptor : org.jboss.resteasy.plugins.providers.jackson.JacksonJsonpInterceptor , method call : aroundWriteTo .")
     public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException {
         String function = uri.getQueryParameters().getFirst(callbackQueryParameter);
         if (function != null && !function.trim().isEmpty() && !jsonpCompatibleMediaTypes.getPossible(context.getMediaType()).isEmpty()){
@@ -121,6 +128,8 @@ public class JacksonJsonpInterceptor implements WriterInterceptor{
      * @param mediaType the response {@link MediaType}
      * @return the {@link ObjectMapper}
      */
+    @LogMessage(level = Level.DEBUG)
+    @Message(value = "Call of interceptor : org.jboss.resteasy.plugins.providers.jackson.JacksonJsonpInterceptor , method call : getObjectMapper .")
     protected ObjectMapper getObjectMapper(Class<?> type, MediaType mediaType)
     {
         if (objectMapper != null) {
@@ -147,6 +156,8 @@ public class JacksonJsonpInterceptor implements WriterInterceptor{
      * @param uri the uri to set
      */
     @Context
+    @LogMessage(level = Level.DEBUG)
+    @Message(value = "Call of interceptor : org.jboss.resteasy.plugins.providers.jackson.JacksonJsonpInterceptor , method call : setUri .")
     public void setUri(UriInfo uri) {
         this.uri = uri;
     }
@@ -157,6 +168,8 @@ public class JacksonJsonpInterceptor implements WriterInterceptor{
      * @param providers
      */
     @Context
+    @LogMessage(level = Level.DEBUG)
+    @Message(value = "Call of interceptor : org.jboss.resteasy.plugins.providers.jackson.JacksonJsonpInterceptor , method call : setProviders .")
     public void setProviders(Providers providers) {
         this.providers = providers;
     }
@@ -166,6 +179,8 @@ public class JacksonJsonpInterceptor implements WriterInterceptor{
      * 
      * @param objectMapper
      */
+    @LogMessage(level = Level.DEBUG)
+    @Message(value = "Call of interceptor : org.jboss.resteasy.plugins.providers.jackson.JacksonJsonpInterceptor , method call : setObjectMapper .")
     public void setObjectMapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
@@ -175,6 +190,8 @@ public class JacksonJsonpInterceptor implements WriterInterceptor{
      * 
      * @return the callbackQueryParameter
      */
+    @LogMessage(level = Level.DEBUG)
+    @Message(value = "Call of interceptor : org.jboss.resteasy.plugins.providers.jackson.JacksonJsonpInterceptor , method call : getCallbackQueryParameter .")
     public String getCallbackQueryParameter() {
         return callbackQueryParameter;
     }
@@ -185,6 +202,8 @@ public class JacksonJsonpInterceptor implements WriterInterceptor{
      * @see #getCallbackQueryParameter()
      * @param callbackQueryParameter the callbackQueryParameter to set
      */
+    @LogMessage(level = Level.DEBUG)
+    @Message(value = "Call of interceptor : org.jboss.resteasy.plugins.providers.jackson.JacksonJsonpInterceptor , method call : setCallbackQueryParameter .")
     public void setCallbackQueryParameter(String callbackQueryParameter) {
         this.callbackQueryParameter = callbackQueryParameter;
     }

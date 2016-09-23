@@ -11,12 +11,18 @@ import javax.crypto.spec.SecretKeySpec;
 
 import java.security.NoSuchAlgorithmException;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
 public class HMACProvider
 {
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.jose.jws.crypto.HMACProvider , method call : getJavaAlgorithm .")
    public static String getJavaAlgorithm(Algorithm alg)
    {
       switch (alg)
@@ -32,6 +38,8 @@ public class HMACProvider
       }
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.jose.jws.crypto.HMACProvider , method call : getMAC .")
    public static Mac getMAC(final Algorithm alg)
    {
 
@@ -47,6 +55,8 @@ public class HMACProvider
       }
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.jose.jws.crypto.HMACProvider , method call : sign .")
    public static byte[] sign(byte[] data, Algorithm algorithm, byte[] sharedSecret)
    {
       try
@@ -62,6 +72,8 @@ public class HMACProvider
       }
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.jose.jws.crypto.HMACProvider , method call : sign .")
    public static byte[] sign(byte[] data, Algorithm algorithm, SecretKey key)
    {
       try
@@ -76,6 +88,9 @@ public class HMACProvider
          throw new RuntimeException(e);
       }
    }
+
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.jose.jws.crypto.HMACProvider , method call : verify .")
    public static boolean verify(JWSInput input, SecretKey key)
    {
       try
@@ -91,7 +106,8 @@ public class HMACProvider
    }
 
 
-
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.jose.jws.crypto.HMACProvider , method call : verify .")
    public static boolean verify(JWSInput input, byte[] sharedSecret)
    {
       try

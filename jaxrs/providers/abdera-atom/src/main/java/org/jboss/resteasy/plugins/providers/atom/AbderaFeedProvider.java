@@ -19,6 +19,10 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+import org.jboss.logging.Logger.Level;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -28,11 +32,15 @@ import java.lang.reflect.Type;
 @Produces(MediaType.APPLICATION_ATOM_XML)
 public class AbderaFeedProvider extends AbstractAbdera implements MessageBodyReader<Feed>, MessageBodyWriter<Feed>
 {
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.atom.AbderaFeedProvider , method call : isReadable .")
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return type.equals(Feed.class);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.atom.AbderaFeedProvider , method call : readFrom .")
    public Feed readFrom(Class<Feed> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
    {
       Parser parser = abdera.getParser();
@@ -40,16 +48,22 @@ public class AbderaFeedProvider extends AbstractAbdera implements MessageBodyRea
       return doc.getRoot();
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.atom.AbderaFeedProvider , method call : isWriteable .")
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return Feed.class.isAssignableFrom(type);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.atom.AbderaFeedProvider , method call : getSize .")
    public long getSize(Feed feed, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.atom.AbderaFeedProvider , method call : writeTo .")
    public void writeTo(Feed feed, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
       Writer writer = abdera.getWriter();

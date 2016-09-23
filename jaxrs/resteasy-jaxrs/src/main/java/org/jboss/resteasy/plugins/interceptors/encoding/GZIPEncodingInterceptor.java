@@ -12,6 +12,11 @@ import javax.ws.rs.ext.WriterInterceptorContext;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.zip.GZIPOutputStream;
+import org.jboss.resteasy.plugins.i18n.*;
+
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -51,6 +56,8 @@ public class GZIPEncodingInterceptor implements WriterInterceptor
       }
 
       @Override
+      @LogMessage(level = Level.DEBUG)
+      @Message(value = "Call of interceptor : org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor , method call : commit .")
       public void commit()
       {
          if (isHeadersCommitted) return;
@@ -70,6 +77,8 @@ public class GZIPEncodingInterceptor implements WriterInterceptor
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor , method call : aroundWriteTo .")
    public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException
    {
       Object encoding = context.getHeaders().getFirst(HttpHeaders.CONTENT_ENCODING);

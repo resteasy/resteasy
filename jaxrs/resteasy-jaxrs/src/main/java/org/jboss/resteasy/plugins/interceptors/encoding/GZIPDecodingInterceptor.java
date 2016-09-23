@@ -10,6 +10,11 @@ import javax.ws.rs.ext.ReaderInterceptorContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
+import org.jboss.resteasy.plugins.i18n.*;
+
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -33,6 +38,8 @@ public class GZIPDecodingInterceptor implements ReaderInterceptor
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor , method call : aroundReadFrom .")
    public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException
    {
       Object encoding = context.getHeaders().getFirst(HttpHeaders.CONTENT_ENCODING);

@@ -1,8 +1,8 @@
 package org.jboss.resteasy.security.doseta;
 
-import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.InputStreamToByteArray;
+import org.jboss.resteasy.security.doseta.i18n.*;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
@@ -17,6 +17,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -26,6 +30,8 @@ import java.util.List;
 public class DigitalVerificationInterceptor implements ReaderInterceptor
 {
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.security.doseta.DigitalVerificationInterceptor , method call : aroundReadFrom .")
    public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException
    {
       Verifier verifier = (Verifier) context.getProperty(Verifier.class.getName());
@@ -78,6 +84,7 @@ public class DigitalVerificationInterceptor implements ReaderInterceptor
          {
             throw new UnauthorizedSignatureException(results);
          }
+
          return rtn;
       }
       finally

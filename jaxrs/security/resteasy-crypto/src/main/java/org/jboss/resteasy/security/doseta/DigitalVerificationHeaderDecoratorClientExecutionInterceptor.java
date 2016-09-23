@@ -7,9 +7,14 @@ import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.spi.interception.AcceptedByMethod;
 import org.jboss.resteasy.spi.interception.ClientExecutionContext;
 import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
+import org.jboss.resteasy.security.doseta.i18n.*;
 
 import javax.ws.rs.ext.Provider;
 import java.lang.reflect.Method;
+
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -26,6 +31,8 @@ import java.lang.reflect.Method;
 public class DigitalVerificationHeaderDecoratorClientExecutionInterceptor extends AbstractDigitalVerificationHeaderDecorator implements ClientExecutionInterceptor, AcceptedByMethod
 {
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.security.doseta.DigitalVerificationHeaderDecoratorClientExecutionInterceptor , method call : accept .")
    public boolean accept(Class declaring, Method method)
    {
       verify = (Verify) method.getAnnotation(Verify.class);
@@ -35,10 +42,13 @@ public class DigitalVerificationHeaderDecoratorClientExecutionInterceptor extend
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.security.doseta.DigitalVerificationHeaderDecoratorClientExecutionInterceptor , method call : execute .")
    public ClientResponse execute(ClientExecutionContext ctx) throws Exception
    {
       ClientResponse response = ctx.proceed();
       response.getAttributes().put(Verifier.class.getName(), create());
+
       return response;
    }
 

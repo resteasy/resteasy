@@ -19,13 +19,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+import org.jboss.logging.Logger.Level;
 
 /**
  * This class loads primary zones from zone files in the file system.
  * The zone files have to formated accordingly to RFC 1035 (http://tools.ietf.org/html/rfc1035)
  * and RFC 1034 (http://tools.ietf.org/html/rfc1034).
  * 
- * @author Robert "Unlogic" Olofsson
+ * @author Robert "Unlogic" Olofsson 
  * @author Michael Neale, Red Hat (JBoss division)
  *
  */
@@ -93,6 +96,8 @@ public class FileZoneProvider implements ZoneProvider, ZoneProviderUpdatable, Ru
 		}
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.file.FileZoneProvider , method call : getPrimaryZones .")
 	public Collection<Zone> getPrimaryZones() {
 
 		File zoneDir = new File(this.zoneFileDirectory);
@@ -154,16 +159,22 @@ public class FileZoneProvider implements ZoneProvider, ZoneProviderUpdatable, Ru
 		return null;
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.file.FileZoneProvider , method call : unload .")
 	public void unload() {
 
 	}
 
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.file.FileZoneProvider , method call : getZoneFileDirectory .")
 	public String getZoneFileDirectory() {
 		return zoneFileDirectory;
 	}
 
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.file.FileZoneProvider , method call : setZoneFileDirectory .")
 	public void setZoneFileDirectory(String zoneFileDirectory) {
 
 		this.zoneFileDirectory = zoneFileDirectory;
@@ -171,32 +182,44 @@ public class FileZoneProvider implements ZoneProvider, ZoneProviderUpdatable, Ru
 		log.debug("zoneFileDirectory set to " + zoneFileDirectory);
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.file.FileZoneProvider , method call : getSecondaryZones .")
 	public Collection<SecondaryZone> getSecondaryZones() {
 
 		//Not supported
 		return null;
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.file.FileZoneProvider , method call : zoneUpdated .")
 	public void zoneUpdated(SecondaryZone secondaryZone) {
 
 		//Not supported
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.file.FileZoneProvider , method call : zoneChecked .")
 	public void zoneChecked(SecondaryZone secondaryZone) {
 
 		//Not supported
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.file.FileZoneProvider , method call : setChangeListener .")
 	public void setChangeListener(ZoneChangeCallback ev) {
 		this.changeCallback = ev;
 	}
 
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.file.FileZoneProvider , method call : setAutoReloadZones .")
 	public void setAutoReloadZones(String autoReloadZones) {
 		this.autoReloadZones = Boolean.parseBoolean(autoReloadZones);
 	}
 
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Provider : se.unlogic.eagledns.zoneproviders.file.FileZoneProvider , method call : setPollingInterval .")
 	public void setPollingInterval(String pollingInterval) {
 
 		Long value = NumberUtils.toLong(pollingInterval);

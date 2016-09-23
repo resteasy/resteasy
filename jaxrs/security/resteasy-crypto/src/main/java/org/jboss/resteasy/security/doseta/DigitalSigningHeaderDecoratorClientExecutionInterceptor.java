@@ -7,9 +7,14 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.AcceptedByMethod;
 import org.jboss.resteasy.spi.interception.ClientExecutionContext;
 import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
+import org.jboss.resteasy.security.doseta.i18n.*;
 
 import javax.ws.rs.ext.Provider;
 import java.lang.reflect.Method;
+
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -26,6 +31,8 @@ import java.lang.reflect.Method;
 public class DigitalSigningHeaderDecoratorClientExecutionInterceptor extends AbstractDigitalSigningHeaderDecorator implements ClientExecutionInterceptor, AcceptedByMethod
 {
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.security.doseta.DigitalSigningHeaderDecoratorClientExecutionInterceptor , method call : accept .")
    public boolean accept(Class declaring, Method method)
    {
       signed = method.getAnnotation(Signed.class);
@@ -33,10 +40,13 @@ public class DigitalSigningHeaderDecoratorClientExecutionInterceptor extends Abs
       {
          signed = (Signed) declaring.getAnnotation(Signed.class);
       }
+
       return signed != null;
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.security.doseta.DigitalSigningHeaderDecoratorClientExecutionInterceptor , method call : execute .")
    public ClientResponse execute(ClientExecutionContext ctx) throws Exception
    {
       KeyRepository repository = (KeyRepository) ctx.getRequest().getAttributes().get(KeyRepository.class.getName());
@@ -46,6 +56,7 @@ public class DigitalSigningHeaderDecoratorClientExecutionInterceptor extends Abs
       }
       DKIMSignature header = createHeader(repository);
       ctx.getRequest().header(DKIMSignature.DKIM_SIGNATURE, header);
+
       return ctx.proceed();
    }
 

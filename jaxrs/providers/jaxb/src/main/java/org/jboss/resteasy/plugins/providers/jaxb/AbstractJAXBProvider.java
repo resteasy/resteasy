@@ -28,6 +28,10 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+import org.jboss.logging.Logger.Level;
+
 /**
  * A AbstractJAXBProvider.
  *
@@ -67,6 +71,8 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       }
    }
    
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider , method call : findJAXBContext .")
    public JAXBContext findJAXBContext(Class<?> type, Annotation[] annotations, MediaType mediaType, boolean reader)
            throws JAXBException
    {
@@ -80,12 +86,16 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       return finder.findCachedContext(type, mediaType, annotations);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider , method call : decorateMarshaller .")
    public static Marshaller decorateMarshaller(Class type, Annotation[] annotations, MediaType mediaType, Marshaller marshaller) throws JAXBException
    {
       DecoratorMatcher processor = new DecoratorMatcher();
       return processor.decorate(Marshaller.class, marshaller, type, annotations, mediaType);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider , method call : decorateUnmarshaller .")
    public static Unmarshaller decorateUnmarshaller(Class type, Annotation[] annotations, MediaType mediaType, Unmarshaller marshaller) throws JAXBException
    {
       DecoratorMatcher processor = new DecoratorMatcher();
@@ -95,6 +105,8 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    /**
     *
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider , method call : readFrom .")
    public T readFrom(Class<T> type,
                      Type genericType,
                      Annotation[] annotations,
@@ -136,6 +148,8 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    /**
     *
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider , method call : writeTo .")
    public void writeTo(T t,
                        Class<?> type,
                        Type genericType,
@@ -164,6 +178,8 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
     * @param httpHeaders
     * @return
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider , method call : getMarshaller .")
    protected Marshaller getMarshaller(Class<?> type,
                                       Annotation[] annotations,
                                       MediaType mediaType)
@@ -188,6 +204,8 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       }
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider , method call : setCharset .")
    public static void setCharset(MediaType mediaType, Marshaller marshaller)
            throws PropertyException
    {
@@ -211,6 +229,8 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
     * @param annotations
     * @return
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider , method call : isReadWritable .")
    protected abstract boolean isReadWritable(Class<?> type,
                                              Type genericType,
                                              Annotation[] annotations, MediaType mediaType);
@@ -218,6 +238,8 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    /**
     *
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider , method call : isReadable .")
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return isReadWritable(type, genericType, annotations, mediaType);
@@ -226,6 +248,8 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    /**
     *
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider , method call : isWriteable .")
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return isReadWritable(type, genericType, annotations, mediaType);
@@ -237,6 +261,8 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
     * @param mediaType
     * @return
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider , method call : getCharset .")
    public static String getCharset(final MediaType mediaType)
    {
       if (mediaType != null)
@@ -246,41 +272,57 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
       return null;
    }
    
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider , method call : isDisableExternalEntities .")
    public boolean isDisableExternalEntities()
    {
       return disableExternalEntities;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider , method call : setDisableExternalEntities .")
    public void setDisableExternalEntities(boolean disableExternalEntities)
    {
       this.disableExternalEntities = disableExternalEntities;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider , method call : isEnableSecureProcessingFeature .")
    public boolean isEnableSecureProcessingFeature()
    {
       return enableSecureProcessingFeature;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider , method call : setEnableSecureProcessingFeature .")
    public void setEnableSecureProcessingFeature(boolean enableSecureProcessingFeature)
    {
       this.enableSecureProcessingFeature = enableSecureProcessingFeature;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider , method call : isDisableDTDs .")
    public boolean isDisableDTDs()
    {
       return disableDTDs;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider , method call : setDisableDTDs .")
    public void setDisableDTDs(boolean disableDTDs)
    {
       this.disableDTDs = disableDTDs;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider , method call : needsSecurity .")
    protected boolean needsSecurity()
    {
       return true;
    }
    
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider , method call : processWithSecureProcessing .")
    protected T processWithSecureProcessing(Unmarshaller unmarshaller, InputStream entityStream, String charset) throws JAXBException
    {  
       unmarshaller = new SecureUnmarshaller(unmarshaller, disableExternalEntities, enableSecureProcessingFeature, disableDTDs);

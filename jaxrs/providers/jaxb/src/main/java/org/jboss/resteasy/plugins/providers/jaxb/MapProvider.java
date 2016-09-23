@@ -44,6 +44,10 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -82,6 +86,8 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
       }
    }
    
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.MapProvider , method call : getFinder .")
    protected JAXBContextFinder getFinder(MediaType type)
    {
       ContextResolver<JAXBContextFinder> resolver = providers.getContextResolver(JAXBContextFinder.class, type);
@@ -89,11 +95,15 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
       return resolver.getContext(null);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.MapProvider , method call : isReadable .")
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return isWrapped(type, genericType, annotations, mediaType);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.MapProvider , method call : isWrapped .")
    protected boolean isWrapped(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       if (Map.class.isAssignableFrom(type) && genericType != null)
@@ -110,6 +120,8 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
       return false;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.MapProvider , method call : getJAXBObject .")
    public Object getJAXBObject(JAXBContextFinder finder, MediaType mediaType, Class<?> clazz, Element element) throws JAXBException
    {
       JAXBContext ctx = finder.findCachedContext(clazz, mediaType, null);
@@ -117,6 +129,8 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
    }
 
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.MapProvider , method call : readFrom .")
    public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
    {
       JAXBContextFinder finder = getFinder(mediaType);
@@ -234,16 +248,22 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
       }
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.MapProvider , method call : isWriteable .")
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return isWrapped(type, genericType, annotations, mediaType);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.MapProvider , method call : getSize .")
    public long getSize(Object entry, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.MapProvider , method call : writeTo .")
    public void writeTo(Object target, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
       JAXBContextFinder finder = getFinder(mediaType);
@@ -308,36 +328,50 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
       }
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.MapProvider , method call : isDisableExternalEntities .")
    public boolean isDisableExternalEntities()
    {
       return disableExternalEntities;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.MapProvider , method call : setDisableExternalEntities .")
    public void setDisableExternalEntities(boolean disableExternalEntities)
    {
       this.disableExternalEntities = disableExternalEntities;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.MapProvider , method call : isEnableSecureProcessingFeature .")
    public boolean isEnableSecureProcessingFeature()
    {
       return enableSecureProcessingFeature;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.MapProvider , method call : setEnableSecureProcessingFeature .")
    public void setEnableSecureProcessingFeature(boolean enableSecureProcessingFeature)
    {
       this.enableSecureProcessingFeature = enableSecureProcessingFeature;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.MapProvider , method call : isDisableDTDs .")
    public boolean isDisableDTDs()
    {
       return disableDTDs;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.MapProvider , method call : setDisableDTDs .")
    public void setDisableDTDs(boolean disableDTDs)
    {
       this.disableDTDs = disableDTDs;
    }
    
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.MapProvider , method call : getCharset .")
    public static String getCharset(final MediaType mediaType)
    {
       if (mediaType != null)
@@ -347,6 +381,8 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
       return null;
    }
    
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.MapProvider , method call : needsSecurity .")
    protected boolean needsSecurity()
    {
       return true;

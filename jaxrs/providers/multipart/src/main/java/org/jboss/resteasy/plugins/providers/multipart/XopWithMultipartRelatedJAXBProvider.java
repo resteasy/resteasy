@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
 import org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider;
-import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
+import org.jboss.resteasy.plugins.providers.multipart.i18n.*;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -29,6 +29,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * A special JAXB Provider. It is not a real provider, it is only used as a
  * helper class inside {@link XopWithMultipartRelatedReader} and
@@ -48,12 +52,16 @@ public class XopWithMultipartRelatedJAXBProvider extends
 		}
 
 		@Override
+                @LogMessage(level = Level.DEBUG)
+                @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedJAXBProvider.XopAttachmentMarshaller , method call : addMtomAttachment .")
 		public String addMtomAttachment(DataHandler data,
 				String elementNamespace, String elementLocalName) {
 			return addBinary(data.getDataSource(), data.getContentType());
 		}
 
 		@Override
+                @LogMessage(level = Level.DEBUG)
+                @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedJAXBProvider.XopAttachmentMarshaller , method call : addMtomAttachment .")
 		public String addMtomAttachment(byte[] data, int offset, int length,
 				String mimeType, String elementNamespace,
 				String elementLocalName) {
@@ -62,6 +70,8 @@ public class XopWithMultipartRelatedJAXBProvider extends
 			return addBinary(byteArrayInputStream, mimeType);
 		}
 
+                @LogMessage(level = Level.DEBUG)
+                @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedJAXBProvider.XopAttachmentMarshaller , method call : addBinary .")
 		protected String addBinary(Object object, String mimeType) {
 			String addrSpec = ContentIDUtils.generateRFC822AddrSpec();
 			String contentID = ContentIDUtils
@@ -72,11 +82,15 @@ public class XopWithMultipartRelatedJAXBProvider extends
 		}
 
 		@Override
+                @LogMessage(level = Level.DEBUG)
+                @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedJAXBProvider.XopAttachmentMarshaller , method call : addSwaRefAttachment .")
 		public String addSwaRefAttachment(DataHandler data) {
 		   throw new UnsupportedOperationException(Messages.MESSAGES.swaRefsNotSupported());
 		}
 
 		@Override
+                @LogMessage(level = Level.DEBUG)
+                @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedJAXBProvider.XopAttachmentMarshaller , method call : isXOPPackage .")
 		public boolean isXOPPackage() {
 			return true;
 		}
@@ -91,18 +105,26 @@ public class XopWithMultipartRelatedJAXBProvider extends
 			this.inputPart = inputPart;
 		}
 
+                @LogMessage(level = Level.DEBUG)
+                @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedJAXBProvider.InputPartBackedDataSource , method call : getContentType .")
 		public String getContentType() {
 			return inputPart.getMediaType().toString();
 		}
 
+                @LogMessage(level = Level.DEBUG)
+                @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedJAXBProvider.InputPartBackedDataSource , method call : getName .")
 		public String getName() {
 			return cid;
 		}
 
+                @LogMessage(level = Level.DEBUG)
+                @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedJAXBProvider.InputPartBackedDataSource , method call : getInputStream .")
 		public InputStream getInputStream() throws IOException {
 			return inputPart.getBody(InputStream.class, null);
 		}
 
+                @LogMessage(level = Level.DEBUG)
+                @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedJAXBProvider.InputPartBackedDataSource , method call : getOutputStream .")
 		public OutputStream getOutputStream() throws IOException {
 		   throw new IOException(Messages.MESSAGES.dataSourceRepresentsXopMessagePart());
 		}
@@ -118,6 +140,8 @@ public class XopWithMultipartRelatedJAXBProvider extends
 		}
 
 		@Override
+                @LogMessage(level = Level.DEBUG)
+                @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedJAXBProvider.XopAttachmentUnmarshaller , method call : getAttachmentAsByteArray .")
 		public byte[] getAttachmentAsByteArray(String cid) {
 			InputPart inputPart = getInputPart(cid);
 			try {
@@ -128,12 +152,16 @@ public class XopWithMultipartRelatedJAXBProvider extends
 		}
 
 		@Override
+                @LogMessage(level = Level.DEBUG)
+                @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedJAXBProvider.XopAttachmentUnmarshaller , method call : getAttachmentAsDataHandler .")
 		public DataHandler getAttachmentAsDataHandler(final String cid) {
 			final InputPart inputPart = getInputPart(cid);
 			return new DataHandler(
 					new InputPartBackedDataSource(cid, inputPart));
 		}
 
+                @LogMessage(level = Level.DEBUG)
+                @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedJAXBProvider.XopAttachmentUnmarshaller , method call : getInputPart .")
 		protected InputPart getInputPart(String cid) {
 			String contentID = ContentIDUtils.convertCidToContentID(cid);
 			InputPart inputPart = xopPackage.getRelatedMap().get(contentID);
@@ -143,6 +171,8 @@ public class XopWithMultipartRelatedJAXBProvider extends
 		}
 
 		@Override
+                @LogMessage(level = Level.DEBUG)
+                @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedJAXBProvider.XopAttachmentUnmarshaller , method call : isXOPPackage .")
 		public boolean isXOPPackage() {
 			return true;
 		}
@@ -150,15 +180,20 @@ public class XopWithMultipartRelatedJAXBProvider extends
 
 	public XopWithMultipartRelatedJAXBProvider(Providers providers) {
 		super();
+
 		this.providers = providers;
 	}
 
 	@Override
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedJAXBProvider , method call : isReadWritable .")
 	protected boolean isReadWritable(Class<?> type, Type genericType,
 			Annotation[] annotations, MediaType mediaType) {
 	   throw new UnsupportedOperationException(Messages.MESSAGES.notMeantForStandaloneUsage());
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedJAXBProvider , method call : readFrom .")
 	public Object readFrom(Class<Object> type, Type genericType,
 			Annotation[] annotations, MediaType mediaType,
 			MultivaluedMap<String, String> httpHeaders,
@@ -172,6 +207,7 @@ public class XopWithMultipartRelatedJAXBProvider extends
 			unmarshaller
 					.setAttachmentUnmarshaller(new XopAttachmentUnmarshaller(
 							xopPackage));
+
 			return unmarshaller.unmarshal(new StreamSource(rootPart.getBody(
 					InputStream.class, null)));
 		} catch (JAXBException e) {
@@ -180,6 +216,8 @@ public class XopWithMultipartRelatedJAXBProvider extends
 		}
 	}
 
+        @LogMessage(level = Level.DEBUG)
+        @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.multipart.XopWithMultipartRelatedJAXBProvider , method call : writeTo .")
 	public void writeTo(Object t, Class<?> type, Type genericType,
 			Annotation[] annotations, MediaType mediaType,
 			MultivaluedMap<String, Object> httpHeaders,
@@ -204,6 +242,7 @@ public class XopWithMultipartRelatedJAXBProvider extends
 			List<OutputPart> outputParts = xopPackage.getParts();
 			outputParts.remove(outputPart);
 			outputParts.add(0, outputPart);
+
 		} catch (JAXBException e) {
 			Response response = Response.serverError().build();
 			throw new WebApplicationException(e, response);

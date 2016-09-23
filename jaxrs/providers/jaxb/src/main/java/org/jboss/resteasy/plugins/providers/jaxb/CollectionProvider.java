@@ -51,6 +51,10 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+import org.jboss.logging.Logger.Level;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
@@ -90,6 +94,8 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       }
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider , method call : getFinder .")
    protected JAXBContextFinder getFinder(MediaType type)
    {
       ContextResolver<JAXBContextFinder> resolver = providers.getContextResolver(JAXBContextFinder.class, type);
@@ -97,11 +103,15 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       return resolver.getContext(null);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider , method call : isReadable .")
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return isWrapped(type, genericType, annotations, mediaType);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider , method call : isWrapped .")
    protected boolean isWrapped(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       if ((Collection.class.isAssignableFrom(type) || type.isArray()) && genericType != null)
@@ -114,6 +124,8 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       return false;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider , method call : getJAXBObject .")
    public Object getJAXBObject(JAXBContextFinder finder, MediaType mediaType, Class<?> clazz, Element element) throws JAXBException
    {
       JAXBContext ctx = finder.findCachedContext(clazz, mediaType, null);
@@ -121,6 +133,8 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
    }
 
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider , method call : readFrom .")
    public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
    {
       JAXBContextFinder finder = getFinder(mediaType);
@@ -269,16 +283,22 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       }
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider , method call : isWriteable .")
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return isWrapped(type, genericType, annotations, mediaType);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider , method call : getSize .")
    public long getSize(Object entry, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider , method call : writeTo .")
    public void writeTo(Object entry, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
       JAXBContextFinder finder = getFinder(mediaType);
@@ -360,36 +380,50 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       }
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider , method call : isDisableExternalEntities .")
    public boolean isDisableExternalEntities()
    {
       return disableExternalEntities;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider , method call : setDisableExternalEntities .")
    public void setDisableExternalEntities(boolean disableExternalEntities)
    {
       this.disableExternalEntities = disableExternalEntities;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider , method call : isEnableSecureProcessingFeature .")
    public boolean isEnableSecureProcessingFeature()
    {
       return enableSecureProcessingFeature;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider , method call : setEnableSecureProcessingFeature .")
    public void setEnableSecureProcessingFeature(boolean enableSecureProcessingFeature)
    {
       this.enableSecureProcessingFeature = enableSecureProcessingFeature;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider , method call : isDisableDTDs .")
    public boolean isDisableDTDs()
    {
       return disableDTDs;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider , method call : setDisableDTDs .")
    public void setDisableDTDs(boolean disableDTDs)
    {
       this.disableDTDs = disableDTDs;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider , method call : getCharset .")
    public static String getCharset(final MediaType mediaType)
    {
       if (mediaType != null)
@@ -399,6 +433,8 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
       return null;
    }
    
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Provider : org.jboss.resteasy.plugins.providers.jaxb.CollectionProvider , method call : needsSecurity .")
    protected boolean needsSecurity()
    {
       return true;

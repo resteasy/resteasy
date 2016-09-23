@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.cache.server;
 
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.NoLogWebApplicationException;
+import org.jboss.resteasy.plugins.cache.server.i18n.*;
 
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.RuntimeType;
@@ -19,6 +20,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -46,9 +51,10 @@ public class ServerCacheInterceptor implements WriterInterceptor
            "9", "A", "B", "C", "D", "E",
            "F"};
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.plugins.cache.server.ServerCacheInterceptor , method call : byteArrayToHexString .")
    public static String byteArrayToHexString(byte[] bytes)
    {
-
       byte ch = 0x00;
 
       StringBuffer out = new StringBuffer(bytes.length * 2);
@@ -71,6 +77,8 @@ public class ServerCacheInterceptor implements WriterInterceptor
 
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.plugins.cache.server.ServerCacheInterceptor , method call : createHash .")
    protected String createHash(byte[] entity)
    {
       try
@@ -86,6 +94,8 @@ public class ServerCacheInterceptor implements WriterInterceptor
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of interceptor : org.jboss.resteasy.plugins.cache.server.ServerCacheInterceptor , method call : aroundWriteTo .")
    public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException
    {
       if (!request.getHttpMethod().equalsIgnoreCase("GET") || request.getAttribute(ServerCacheHitFilter.DO_NOT_CACHE_RESPONSE) != null)

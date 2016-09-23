@@ -27,6 +27,10 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * Provider that reads and writes org.w3c.dom.Document
  *
@@ -77,12 +81,16 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
       }
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.DocumentProvider , method call : isReadable .")
    public boolean isReadable(Class<?> clazz, Type type,
                              Annotation[] annotation, MediaType mediaType)
    {
       return Document.class.isAssignableFrom(clazz);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.DocumentProvider , method call : readFrom .")
    public Document readFrom(Class<Document> clazz, Type type,
                             Annotation[] annotations, MediaType mediaType,
                             MultivaluedMap<String, String> headers, InputStream input)
@@ -106,6 +114,7 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
                //jaxp 1.5 feature not supported
             }
          }
+
          return documentBuilder.newDocumentBuilder().parse(input);
       }
       catch (Exception e)
@@ -114,12 +123,16 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
       }
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.DocumentProvider , method call : isWriteable .")
    public boolean isWriteable(Class<?> clazz, Type type,
                               Annotation[] annotation, MediaType mediaType)
    {
       return Document.class.isAssignableFrom(clazz);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.DocumentProvider , method call : writeTo .")
    public void writeTo(Document document, Class<?> clazz, Type type,
                        Annotation[] annotation, MediaType mediaType,
                        MultivaluedMap<String, Object> headers, OutputStream output)

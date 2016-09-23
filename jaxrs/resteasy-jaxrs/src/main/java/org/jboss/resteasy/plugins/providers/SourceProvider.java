@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.resteasy.util.NoContent;
+import org.jboss.resteasy.plugins.i18n.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -29,6 +30,10 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">BillBurke</a>
  * @version $Revision: 1 $
@@ -38,27 +43,37 @@ import java.lang.reflect.Type;
 @Consumes({MediaType.TEXT_XML, "application/*+xml"})
 public class SourceProvider implements MessageBodyReader<Source>, MessageBodyWriter<Source>
 {
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.SourceProvider , method call : isReadable .")
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return type.equals(Source.class);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.SourceProvider , method call : readFrom .")
    public Source readFrom(Class<Source> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
       if (NoContent.isContentLengthZero(httpHeaders)) return new StreamSource(new ByteArrayInputStream(new byte[0]));
       return new StreamSource(entityStream);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.SourceProvider , method call : isWriteable .")
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return Source.class.isAssignableFrom(type);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.SourceProvider , method call : getSize .")
    public long getSize(Source inputStream, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       return -1;
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.SourceProvider , method call : writeTo .")
    public void writeTo(Source source, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
       try
@@ -75,7 +90,6 @@ public class SourceProvider implements MessageBodyReader<Source>, MessageBodyWri
 
          StreamResult sr = new StreamResult(entityStream);
          TransformerFactory.newInstance().newTransformer().transform(source, sr);
-
       }
       catch (SAXException ex)
       {

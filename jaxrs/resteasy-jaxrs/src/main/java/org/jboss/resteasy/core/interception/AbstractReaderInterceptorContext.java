@@ -1,6 +1,6 @@
 package org.jboss.resteasy.core.interception;
 
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.NotSupportedException;
@@ -15,6 +15,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -45,6 +49,8 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext , method call : proceed .")
    public Object proceed() throws IOException
    {
       if (interceptors == null || index >= interceptors.length)
@@ -52,15 +58,20 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
          MessageBodyReader reader = getReader();
          return readFrom(reader);
       }
+
       return interceptors[index++].aroundReadFrom(this);
       // index--;  we used to pop the index, but the TCK does not like this
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext , method call : readFrom .")
    protected Object readFrom(MessageBodyReader reader) throws IOException
    {
       return reader.readFrom(type, genericType, annotations, mediaType, headers, inputStream);
    }
 
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext , method call : getReader .")
    protected MessageBodyReader getReader()
    {
       MediaType mediaType = this.mediaType;
@@ -74,6 +85,7 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
       {
          throwReaderNotFound();
       }
+
       return reader;
    }
 
@@ -82,30 +94,40 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
    abstract protected void throwReaderNotFound();
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext , method call : getInputStream .")
    public InputStream getInputStream()
    {
       return inputStream;
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext , method call : setInputStream .")
    public void setInputStream(InputStream is)
    {
       this.inputStream = is;
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext , method call : getHeaders .")
    public MultivaluedMap<String, String> getHeaders()
    {
       return headers;
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext , method call : getAnnotations .")
    public Annotation[] getAnnotations()
    {
       return annotations;
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext , method call : setAnnotations .")
    public void setAnnotations(Annotation[] annotations)
    {
       if (annotations == null) throw new NullPointerException(Messages.MESSAGES.annotationsParamNull());
@@ -113,36 +135,48 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext , method call : getType .")
    public Class getType()
    {
       return type;
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext , method call : setType .")
    public void setType(Class type)
    {
       this.type = type;
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext , method call : getGenericType .")
    public Type getGenericType()
    {
       return genericType;
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext , method call : setGenericType .")
    public void setGenericType(Type genericType)
    {
       this.genericType = genericType;
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext , method call : getMediaType .")
    public MediaType getMediaType()
    {
       return mediaType;
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Interceptor context : org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext , method call : setMediaType .")
    public void setMediaType(MediaType mediaType)
    {
       this.mediaType = mediaType;

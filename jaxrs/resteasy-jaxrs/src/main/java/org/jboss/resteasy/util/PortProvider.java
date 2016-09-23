@@ -15,6 +15,9 @@
  */
 package org.jboss.resteasy.util;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
 
 /**
  * Utility class that provides a port number for the Resteasy embedded container.
@@ -43,6 +46,8 @@ public class PortProvider
     *
     * @return the port number specified in either the environment or system properties
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.util.PortProvider , method call : getPort .")
    public static int getPort()
    {
       int port = -1;
@@ -86,6 +91,8 @@ public class PortProvider
     *
     * @return the host specified in either the environment or system properties
     */
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.util.PortProvider , method call : getHost .")
    public static String getHost()
    {
       String host = null;

@@ -11,6 +11,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * A JAXBXmlRootElementProvider.
  *
@@ -24,6 +28,8 @@ public class JAXBXmlRootElementProvider extends AbstractJAXBProvider<Object>
 {
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider , method call : isReadWritable .")
    protected boolean isReadWritable(Class<?> type,
                                     Type genericType,
                                     Annotation[] annotations,

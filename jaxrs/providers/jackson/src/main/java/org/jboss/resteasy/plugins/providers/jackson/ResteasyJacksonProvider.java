@@ -12,6 +12,10 @@ import javax.ws.rs.ext.Provider;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * Only different from Jackson one is *+json in @Produces/@Consumes
  *
@@ -28,6 +32,8 @@ public class ResteasyJacksonProvider extends JacksonJsonProvider
     }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.ResteasyJacksonProvider , method call : isReadable .")
    public boolean isReadable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType)
    {
       if (FindAnnotation.findAnnotation(aClass, annotations, NoJackson.class) != null) return false;
@@ -35,6 +41,8 @@ public class ResteasyJacksonProvider extends JacksonJsonProvider
    }
 
    @Override
+   @LogMessage(level = Level.DEBUG)
+   @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.ResteasyJacksonProvider , method call : isWriteable .")
    public boolean isWriteable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType)
    {
       if (FindAnnotation.findAnnotation(aClass, annotations, NoJackson.class) != null) return false;

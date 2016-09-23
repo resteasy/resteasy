@@ -25,6 +25,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jboss.logging.Logger.Level;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+
 /**
  * Provider for YAML &lt;-> Object marshalling. Uses the following mime
  * types:<pre><code>
@@ -41,10 +45,14 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
 
     // MessageBodyReader
 
+    @LogMessage(level = Level.DEBUG)
+    @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.YamlProvider , method call : isReadable .")
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return true;
     }
 
+    @LogMessage(level = Level.DEBUG)
+    @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.YamlProvider , method call : readFrom .")
     public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                            MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
             WebApplicationException {
@@ -57,12 +65,13 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
                 return new Yaml(customClassLoaderConstructor).loadAs(entityStream, type);
             }
         } catch (Exception e) {
-            LogMessages.LOGGER.debug(Messages.MESSAGES.failedToDecodeYamlMessage(e.getMessage()));
             throw new ReaderException(Messages.MESSAGES.failedToDecodeYaml(), e);
         }
     }
 
     // MessageBodyWriter
+    @LogMessage(level = Level.DEBUG)
+    @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.YamlProvider , method call : isValidInternalType .")
     protected boolean isValidInternalType(Class type) {
         if (List.class.isAssignableFrom(type)
                 || Set.class.isAssignableFrom(type)
@@ -74,7 +83,10 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
         }
     }
 
+    @LogMessage(level = Level.DEBUG)
+    @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.YamlProvider , method call : isValidType .")
     protected boolean isValidType(Class type) {
+
         if (isValidInternalType(type)) {
             return true;
         }
@@ -88,18 +100,20 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
     }
 
 
+    @LogMessage(level = Level.DEBUG)
+    @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.YamlProvider , method call : isWriteable .")
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return isValidType(type);
     }
 
+    @LogMessage(level = Level.DEBUG)
+    @Message(value = "Call of provider : org.jboss.resteasy.plugins.providers.YamlProvider , method call : writeTo .")
     public void writeTo(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
                         MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
             WebApplicationException {
 
         try {
-
             entityStream.write(new Yaml().dump(t).getBytes());
-
         } catch (Exception e) {
 
             LogMessages.LOGGER.debug(Messages.MESSAGES.failedToEncodeYaml(t.toString()));
