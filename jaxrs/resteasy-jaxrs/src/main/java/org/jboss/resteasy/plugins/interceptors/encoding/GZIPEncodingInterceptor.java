@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.interceptors.encoding;
 
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
@@ -72,6 +73,8 @@ public class GZIPEncodingInterceptor implements WriterInterceptor
    @Override
    public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Interceptor : %s, Method : aroundWriteTo", getClass().getName());
+
       Object encoding = context.getHeaders().getFirst(HttpHeaders.CONTENT_ENCODING);
 
       if (encoding != null && encoding.toString().equalsIgnoreCase("gzip"))

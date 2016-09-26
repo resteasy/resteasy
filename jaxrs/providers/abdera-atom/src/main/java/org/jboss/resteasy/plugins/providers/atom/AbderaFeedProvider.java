@@ -4,6 +4,7 @@ import org.apache.abdera.model.Document;
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.parser.Parser;
 import org.apache.abdera.writer.Writer;
+import org.jboss.resteasy.plugins.providers.resteasy_atom.i18n.*;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -35,6 +36,7 @@ public class AbderaFeedProvider extends AbstractAbdera implements MessageBodyRea
 
    public Feed readFrom(Class<Feed> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Provider : %s, Method : readFrom", getClass().getName());
       Parser parser = abdera.getParser();
       Document<Feed> doc = parser.parse(entityStream);
       return doc.getRoot();
@@ -52,6 +54,7 @@ public class AbderaFeedProvider extends AbstractAbdera implements MessageBodyRea
 
    public void writeTo(Feed feed, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Provider : %s, Method : writeTo", getClass().getName());
       Writer writer = abdera.getWriter();
       writer.writeTo(feed, entityStream);
    }

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.core.interception;
 
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -40,6 +40,8 @@ public class ServerReaderInterceptorContext extends AbstractReaderInterceptorCon
    @Override
    protected MessageBodyReader resolveReader(MediaType mediaType)
    {
+      LogMessages.LOGGER.debugf("Interceptor Context : %s, Method : resolveReader", getClass().getName());
+
       MessageBodyReader reader =  providerFactory.getServerMessageBodyReader(type,
               genericType, annotations, mediaType);
       //logger.info("**** picked reader: " + reader.getClass().getName());
@@ -57,6 +59,7 @@ public class ServerReaderInterceptorContext extends AbstractReaderInterceptorCon
    {
       try
       {
+         LogMessages.LOGGER.debugf("Interceptor Context : %s, Method : readFrom", getClass().getName());
          return super.readFrom(reader);
       }
       catch (NoContentException e)

@@ -8,6 +8,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -62,6 +63,7 @@ public class SerializableProvider implements MessageBodyReader<Serializable>, Me
          MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
          throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Provider : %s, Method : writeTo", getClass().getName());
       BufferedOutputStream bos = new BufferedOutputStream(entityStream);
       ObjectOutputStream oos = new ObjectOutputStream(bos);
       oos.writeObject(t);
@@ -80,6 +82,7 @@ public class SerializableProvider implements MessageBodyReader<Serializable>, Me
          MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
          throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Provider : %s, Method : readFrom", getClass().getName());
       BufferedInputStream bis = new BufferedInputStream(entityStream);
       ObjectInputStream ois = new ObjectInputStream(bis);
       try

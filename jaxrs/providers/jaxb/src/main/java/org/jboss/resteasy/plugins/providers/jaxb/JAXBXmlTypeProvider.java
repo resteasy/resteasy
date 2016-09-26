@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
-import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.*;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.xml.sax.InputSource;
 
@@ -75,6 +75,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
                        MultivaluedMap<String, Object> httpHeaders,
                        OutputStream entityStream) throws IOException
    {
+      LogMessages.LOGGER.debugf("Provider : %s, Method : writeTo", getClass().getName());
       JAXBElement<?> result = wrapInJAXBElement(t, type);
       super.writeTo(result, type, genericType, annotations, mediaType, httpHeaders, entityStream);
    }
@@ -84,6 +85,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
    {
       try
       {
+         LogMessages.LOGGER.debugf("Provider : %s, Method : readFrom", getClass().getName());
          ContextResolver<JAXBContextFinder> resolver = providers.getContextResolver(JAXBContextFinder.class, mediaType);
          JAXBContextFinder finder = resolver.getContext(type);
          if (finder == null)

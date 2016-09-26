@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.interceptors.encoding;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.ext.Provider;
@@ -35,6 +36,8 @@ public class GZIPDecodingInterceptor implements ReaderInterceptor
    @Override
    public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Interceptor : %s,  Method : aroundReadFrom", getClass().getName());
+
       Object encoding = context.getHeaders().getFirst(HttpHeaders.CONTENT_ENCODING);
 
       if (encoding != null && encoding.toString().equalsIgnoreCase("gzip"))

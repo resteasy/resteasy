@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -49,6 +50,7 @@ public class InputStreamProvider implements MessageBodyReader<InputStream>, Mess
    {
 	   try
 	   {
+                   LogMessages.LOGGER.debugf("Provider : %s, Method : writeTo", getClass().getName());
 		   int c = inputStream.read();
 		   if (c == -1)
 		   {

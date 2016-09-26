@@ -5,7 +5,7 @@ package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.plugins.server.servlet.Cleanable;
 import org.jboss.resteasy.plugins.server.servlet.Cleanables;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.NoContent;
 
@@ -174,6 +174,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
                               MultivaluedMap<String, String> httpHeaders,
                               InputStream entityStream) throws IOException
    {
+      LogMessages.LOGGER.debugf("Provider : %s, Method : readFrom", getClass().getName());
       if (NoContent.isContentLengthZero(httpHeaders)) return readDataSource(new ByteArrayInputStream(new byte[0]), mediaType);
       return readDataSource(entityStream, mediaType);
    }
@@ -217,6 +218,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
                        MultivaluedMap<String, Object> httpHeaders,
                        OutputStream entityStream) throws IOException
    {
+      LogMessages.LOGGER.debugf("Provider : %s, Method : writeTo", getClass().getName());
       InputStream in = dataSource.getInputStream();
       try
       {
