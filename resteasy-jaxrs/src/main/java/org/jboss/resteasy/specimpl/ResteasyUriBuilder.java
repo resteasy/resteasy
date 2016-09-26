@@ -1083,7 +1083,7 @@ public class ResteasyUriBuilder extends UriBuilder
       if (templateValues == null) throw new IllegalArgumentException(Messages.MESSAGES.templateValuesParamNull());
       if (templateValues.containsKey(null)) throw new IllegalArgumentException(Messages.MESSAGES.mapKeyNull());
       String str = buildString(templateValues, false, true, true);
-      return fromTemplate(str);
+      return uriTemplate(str);
    }
 
    @Override
@@ -1094,7 +1094,7 @@ public class ResteasyUriBuilder extends UriBuilder
       HashMap<String, Object> vals = new HashMap<String, Object>();
       vals.put(name, value);
       String str = buildString(vals, false, true, encodeSlashInPath);
-      return fromTemplate(str);
+      return uriTemplate(str);
    }
 
    @Override
@@ -1105,7 +1105,7 @@ public class ResteasyUriBuilder extends UriBuilder
       HashMap<String, Object> vals = new HashMap<String, Object>();
       vals.put(name, value);
       String str = buildString(vals, true, true, true);
-      return fromTemplate(str);
+      return uriTemplate(str);
    }
 
    @Override
@@ -1114,7 +1114,7 @@ public class ResteasyUriBuilder extends UriBuilder
       if (templateValues == null) throw new IllegalArgumentException(Messages.MESSAGES.templateValuesParamNull());
       if (templateValues.containsKey(null)) throw new IllegalArgumentException(Messages.MESSAGES.mapKeyNull());
       String str = buildString(templateValues, false, true, encodeSlashInPath);
-      return fromTemplate(str);
+      return uriTemplate(str);
    }
 
    @Override
@@ -1123,6 +1123,6 @@ public class ResteasyUriBuilder extends UriBuilder
       if (templateValues == null) throw new IllegalArgumentException(Messages.MESSAGES.templateValuesParamNull());
       if (templateValues.containsKey(null)) throw new IllegalArgumentException(Messages.MESSAGES.mapKeyNull());
       String str = buildString(templateValues, true, true, true);
-      return fromTemplate(str);
+      return uriTemplate(str);
    }
 }

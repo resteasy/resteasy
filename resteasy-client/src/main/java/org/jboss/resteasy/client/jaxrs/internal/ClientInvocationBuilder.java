@@ -115,8 +115,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
    @Override
    public Invocation build(String method)
    {
-      invocation.setMethod(method);
-      return invocation;
+      return build(method, null);
    }
 
    @Override
@@ -124,7 +123,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
    {
       invocation.setMethod(method);
       invocation.setEntity(entity);
-      return invocation;
+      return new ClientInvocation(this.invocation);
    }
 
    @Override
@@ -154,7 +153,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
    @Override
    public AsyncInvoker async()
    {
-      return new AsynchronousInvoke(invocation);
+      return new AsynchronousInvoke(new ClientInvocation(this.invocation));
    }
 
    @Override
