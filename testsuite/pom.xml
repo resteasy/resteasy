@@ -150,6 +150,74 @@
                 </plugins>
             </build>
         </profile>
+        <!--
+        Name:  download
+        Descr: Download WildFly
+        -->
+        <profile>
+            <id>download</id>
+            <activation>
+                <property>
+                    <name>!server.home</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <id>unpack</id>
+                                <phase>process-test-classes</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.wildfly</groupId>
+                                            <artifactId>wildfly-dist</artifactId>
+                                            <version>${server.version}</version>
+                                            <type>zip</type>
+                                            <overWrite>false</overWrite>
+                                            <outputDirectory>${project.build.directory}/test-server</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <id>unpack resteasy</id>
+                                <phase>process-test-classes</phase>
+                                <configuration>
+                                    <target>
+                                        <!-- Explicitly remove resteasy-spring contents as the module.xml does not reference resource jars in this case
+                                             so adding jars without removing old ones basically messes up the classloader -->
+                                        <delete>
+                                            <fileset dir="${project.build.directory}/test-server/wildfly-${server.version}/modules/system/layers/base/org/jboss/resteasy/resteasy-spring/main" includes="**/*.jar"/>
+                                        </delete>
+                                        <unzip src="../jboss-modules/target/resteasy-jboss-modules-wf8-${project.version}.zip"
+                                               dest="${project.build.directory}/test-server/wildfly-${server.version}/modules/system/layers/base"
+                                               overwrite="true"/>
+                                        <delete dir="target/dependency-maven-plugin-markers"/>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
 </project>
