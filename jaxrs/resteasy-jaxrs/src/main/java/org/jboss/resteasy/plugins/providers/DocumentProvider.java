@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.WriterException;
@@ -127,6 +127,7 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
    {
       try
       {
+         LogMessages.LOGGER.debugf("Provider : %s, Method : writeTo", getClass().getName());
          DOMSource source = new DOMSource(document);
          StreamResult result = new StreamResult(output);
          transformerFactory.newTransformer().transform(source, result);

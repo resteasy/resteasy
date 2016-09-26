@@ -10,6 +10,7 @@ import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.util.WeightedMediaType;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.core.CacheControl;
@@ -74,6 +75,8 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
 
    public ClientResponse execute(ClientExecutionContext ctx) throws Exception
    {
+      LogMessages.LOGGER.debugf("Interceptor : %s,  Method : execute", getClass().getName());
+
       ClientRequest request = ctx.getRequest();
       if (!request.getHttpMethod().equals("GET"))
       {

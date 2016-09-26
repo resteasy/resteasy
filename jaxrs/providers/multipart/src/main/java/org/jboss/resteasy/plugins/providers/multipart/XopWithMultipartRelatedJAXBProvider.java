@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
 import org.jboss.resteasy.plugins.providers.jaxb.AbstractJAXBProvider;
-import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
+import org.jboss.resteasy.plugins.providers.multipart.i18n.*;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -165,6 +165,7 @@ public class XopWithMultipartRelatedJAXBProvider extends
 			InputStream entityStream, final MultipartRelatedInput xopPackage)
 			throws IOException {
 		try {
+                        LogMessages.LOGGER.debugf("Provider : %s, Method : readFrom", getClass().getName());
 			InputPart rootPart = xopPackage.getRootPart();
 			JAXBContext jaxb = findJAXBContext(type, annotations, rootPart
 					.getMediaType(), true);
@@ -185,6 +186,7 @@ public class XopWithMultipartRelatedJAXBProvider extends
 			MultivaluedMap<String, Object> httpHeaders,
 			final MultipartRelatedOutput xopPackage) throws IOException {
 		try {
+                        LogMessages.LOGGER.debugf("Provider : %s, Method : writeTo", getClass().getName());
 			Map<String, String> mediaTypeParameters = new LinkedHashMap<String, String>();
 			mediaTypeParameters.put("charset", "UTF-8");
 			mediaTypeParameters.put("type", "text/xml");

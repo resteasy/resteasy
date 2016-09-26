@@ -1,6 +1,6 @@
 package org.jboss.resteasy.core.interception;
 
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.NotSupportedException;
@@ -45,6 +45,8 @@ public class ClientReaderInterceptorContext extends AbstractReaderInterceptorCon
    @Override
    protected MessageBodyReader resolveReader(MediaType mediaType)
    {
+      LogMessages.LOGGER.debugf("Interceptor Context : %s, Method : resolveReader", getClass().getName());
+
       return providerFactory.getClientMessageBodyReader(type,
               genericType, annotations, mediaType);
    }

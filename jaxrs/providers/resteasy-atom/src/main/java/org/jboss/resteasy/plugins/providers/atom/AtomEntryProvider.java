@@ -5,7 +5,7 @@ import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException;
-import org.jboss.resteasy.plugins.providers.resteasy_atom.i18n.Messages;
+import org.jboss.resteasy.plugins.providers.resteasy_atom.i18n.*;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -55,6 +55,7 @@ public class AtomEntryProvider implements MessageBodyReader<Entry>, MessageBodyW
 
    public Entry readFrom(Class<Entry> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Provider : %s, Method : readFrom", getClass().getName());
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
@@ -87,6 +88,7 @@ public class AtomEntryProvider implements MessageBodyReader<Entry>, MessageBodyW
 
    public void writeTo(Entry entry, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Provider : %s, Method : writeTo", getClass().getName());
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {

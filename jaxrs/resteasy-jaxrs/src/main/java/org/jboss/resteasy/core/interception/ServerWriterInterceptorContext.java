@@ -3,6 +3,7 @@ package org.jboss.resteasy.core.interception;
 import org.jboss.resteasy.core.NoMessageBodyWriterFoundFailure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -56,6 +57,7 @@ public class ServerWriterInterceptorContext extends AbstractWriterInterceptorCon
    @Override
    protected void writeTo(MessageBodyWriter writer) throws IOException
    {
+      LogMessages.LOGGER.debugf("Interceptor Context : %s, Method : writeTo", getClass().getName());
       //logger.info("*** " + request.getUri().getPath() + " writeTo(" + entity.toString() + ", " + mediaType);
       super.writeTo(writer);
    }

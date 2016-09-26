@@ -2,7 +2,7 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.providers.jaxb.DoNotUseJAXBProvider;
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
-import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.*;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.FindAnnotation;
@@ -69,6 +69,8 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
    
    public CollectionProvider()
    {
+      LogMessages.LOGGER.debugf("Provider : %s, Method : CollectionProvider", getClass().getName());
+
       ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
       if (context != null)
       {
@@ -123,6 +125,8 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
 
    public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Provider : %s, Method : readFrom", getClass().getName());
+
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {
@@ -281,6 +285,8 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
 
    public void writeTo(Object entry, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Provider : %s, Method : writeTo", getClass().getName());
+
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {

@@ -1,6 +1,6 @@
 package org.jboss.resteasy.core.interception;
 
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.ProcessingException;
@@ -43,6 +43,8 @@ public class ClientWriterInterceptorContext extends AbstractWriterInterceptorCon
    @Override
    protected MessageBodyWriter resolveWriter()
    {
+      LogMessages.LOGGER.debugf("Interceptor Context : %s, Method : resolveWriter", getClass().getName());
+
       MessageBodyWriter writer = providerFactory.getClientMessageBodyWriter(
               type, genericType, annotations, mediaType);
       //logger.info("********* WRITER: " + writer.getClass().getName());

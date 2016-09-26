@@ -2,7 +2,7 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.core.interception.DecoratorMatcher;
 import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
-import org.jboss.resteasy.plugins.providers.jaxb.i18n.Messages;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.*;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.NoContent;
@@ -104,6 +104,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    {
       try
       {
+         LogMessages.LOGGER.debugf("Provider : %s, Method : readFrom", getClass().getName());
          NoContent.contentLengthCheck(httpHeaders);
          JAXBContext jaxb = findJAXBContext(type, annotations, mediaType, true);
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
@@ -146,6 +147,7 @@ public abstract class AbstractJAXBProvider<T> extends AbstractEntityProvider<T>
    {
       try
       {
+         LogMessages.LOGGER.debugf("Provider : %s, Method : writeTo", getClass().getName());
          Marshaller marshaller = getMarshaller(type, annotations, mediaType);
          marshaller = decorateMarshaller(type, annotations, mediaType, marshaller);
          marshaller.marshal(t, outputStream);

@@ -50,6 +50,7 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
             WebApplicationException {
 
         try {
+            LogMessages.LOGGER.debugf("Provider : %s, Method : readFrom", getClass().getName());
             if (isValidInternalType(type)) {
                 return new Yaml().load(entityStream);
             } else {
@@ -97,7 +98,7 @@ public class YamlProvider extends AbstractEntityProvider<Object> {
             WebApplicationException {
 
         try {
-
+            LogMessages.LOGGER.debugf("Provider : %s, Method : writeTo", getClass().getName());
             entityStream.write(new Yaml().dump(t).getBytes());
 
         } catch (Exception e) {

@@ -1,6 +1,7 @@
 package org.jboss.resteasy.tests;
 
 import org.jboss.resteasy.util.ReadFromStream;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -42,6 +43,7 @@ public class XFormatProvider implements MessageBodyReader<XFormat>, MessageBodyW
    @Override
    public XFormat readFrom(Class<XFormat> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Provider : %s, Method : readFrom", getClass().getName());
       System.out.println("********** readFrom ********");
       if (bean != null)
       {
@@ -68,6 +70,7 @@ public class XFormatProvider implements MessageBodyReader<XFormat>, MessageBodyW
    @Override
    public void writeTo(XFormat xFormat, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Provider : %s, Method : writeTo", getClass().getName());
       System.out.println("********** writeTo ********");
       String message = "";
       if (bean != null)
