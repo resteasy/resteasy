@@ -16,6 +16,13 @@ public class SpringContextLoaderListener extends ContextLoaderListener
 {
    private SpringContextLoaderSupport springContextLoaderSupport = new SpringContextLoaderSupport();
 
+   public SpringContextLoaderListener() {
+   }
+
+   public SpringContextLoaderListener(WebApplicationContext context) {
+      super(context);
+   }
+
    @Override
    public void contextInitialized(ServletContextEvent event)
    {
