@@ -1,7 +1,7 @@
 package org.jboss.resteasy.core.interception;
 
 import org.jboss.resteasy.core.NoMessageBodyWriterFoundFailure;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.WebApplicationException;
@@ -114,6 +114,8 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
 
    public void proceed() throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Interceptor Context: %s,  Method : proceed", getClass().getName());
+
       if (interceptors == null || index >= interceptors.length)
       {
          MessageBodyWriter writer = getWriter();

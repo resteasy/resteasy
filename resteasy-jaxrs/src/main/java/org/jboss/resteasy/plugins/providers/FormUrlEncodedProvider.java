@@ -4,6 +4,7 @@ import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.Encode;
 import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.NoContent;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.Consumes;
@@ -56,6 +57,7 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>
 
    public MultivaluedMap readFrom(Class<MultivaluedMap> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
       if (NoContent.isContentLengthZero(httpHeaders)) return new MultivaluedMapImpl<String, String>();
       boolean encoded = FindAnnotation.findAnnotation(annotations, Encoded.class) != null;
       String charset = mediaType.getParameters().get(MediaType.CHARSET_PARAMETER);
@@ -129,6 +131,7 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>
 
    public void writeTo(MultivaluedMap data, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
       @SuppressWarnings(value = "unchecked")
       MultivaluedMap<String, String> formData = (MultivaluedMap<String, String>)data;
       String charset = mediaType.getParameters().get(MediaType.CHARSET_PARAMETER);

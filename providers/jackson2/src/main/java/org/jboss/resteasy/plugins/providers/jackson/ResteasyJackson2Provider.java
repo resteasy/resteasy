@@ -19,6 +19,7 @@ import org.jboss.resteasy.annotations.providers.jackson.Formatted;
 import org.jboss.resteasy.annotations.providers.NoJackson;
 import org.jboss.resteasy.util.DelegatingOutputStream;
 import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -103,6 +104,7 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
    public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String,String> httpHeaders, InputStream entityStream)
            throws IOException
    {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
       ClassAnnotationKey key = new ClassAnnotationKey(type, annotations);
       JsonEndpointConfig endpoint;
       endpoint = _readers.get(key);
@@ -133,6 +135,7 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
                        MultivaluedMap<String,Object> httpHeaders, OutputStream entityStream)
            throws IOException
    {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
       entityStream = new DelegatingOutputStream(entityStream) {
           @Override
           public void flush() throws IOException {

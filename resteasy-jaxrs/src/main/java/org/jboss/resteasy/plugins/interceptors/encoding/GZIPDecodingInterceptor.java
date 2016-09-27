@@ -68,6 +68,7 @@ public class GZIPDecodingInterceptor implements ReaderInterceptor
       
       public int read(byte[] buf, int off, int len) throws IOException 
       {
+         LogMessages.LOGGER.debugf("Interceptor : %s,  Method : read", getClass().getName());
          int n = super.read(buf, off, len);
          if (n > -1)
          {
@@ -98,6 +99,7 @@ public class GZIPDecodingInterceptor implements ReaderInterceptor
    @Override
    public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Interceptor : %s,  Method : aroundReadFrom", getClass().getName());
       Object encoding = context.getHeaders().getFirst(HttpHeaders.CONTENT_ENCODING);
       if (encoding != null && encoding.toString().equalsIgnoreCase("gzip"))
       {

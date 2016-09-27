@@ -15,6 +15,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">BillBurke</a>
@@ -32,6 +33,7 @@ public class InputStreamProvider implements MessageBodyReader<InputStream>, Mess
 
    public InputStream readFrom(Class<InputStream> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
       return entityStream;
    }
 
@@ -47,6 +49,7 @@ public class InputStreamProvider implements MessageBodyReader<InputStream>, Mess
 
    public void writeTo(InputStream inputStream, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
+           LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
 	   try
 	   {
 		   int c = inputStream.read();

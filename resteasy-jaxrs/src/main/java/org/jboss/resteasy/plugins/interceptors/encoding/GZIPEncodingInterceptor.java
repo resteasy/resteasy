@@ -12,6 +12,7 @@ import javax.ws.rs.ext.WriterInterceptorContext;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.zip.GZIPOutputStream;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -72,6 +73,8 @@ public class GZIPEncodingInterceptor implements WriterInterceptor
    @Override
    public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Interceptor : %s,  Method : aroundWriteTo", getClass().getName());
+
       Object encoding = context.getHeaders().getFirst(HttpHeaders.CONTENT_ENCODING);
 
       if (encoding != null && encoding.toString().equalsIgnoreCase("gzip"))

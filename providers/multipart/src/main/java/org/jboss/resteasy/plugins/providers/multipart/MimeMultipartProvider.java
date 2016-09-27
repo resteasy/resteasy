@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.providers.multipart;
 import org.jboss.resteasy.plugins.providers.AbstractEntityProvider;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.WriterException;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.activation.DataSource;
 import javax.mail.MessagingException;
@@ -104,6 +105,7 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
    {
       try
       {
+         LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
          DataSource ds = readDataSource(entityStream, mediaType);
          return new MimeMultipart(ds);
       }
@@ -136,6 +138,7 @@ public class MimeMultipartProvider extends AbstractEntityProvider<MimeMultipart>
    {
       try
       {
+         LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
          // replace the Content-Type header to include the boundry
          // information
          httpHeaders.putSingle("Content-Type", MediaType.valueOf(mimeMultipart.getContentType()));

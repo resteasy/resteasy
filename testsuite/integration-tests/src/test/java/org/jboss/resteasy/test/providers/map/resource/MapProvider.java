@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import org.jboss.resteasy.plugins.providers.jaxb.i18n.*;
 
 @Provider
 @Produces(MediaType.APPLICATION_FORM_URLENCODED)
@@ -40,6 +41,7 @@ public class MapProvider extends MapProviderAbstractProvider implements
                         MultivaluedMap<String, Object> httpHeaders,
                         OutputStream entityStream) throws IOException,
             WebApplicationException {
+        LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
         entityStream.write(t.getFirst(getClass().getSimpleName()).getBytes());
         entityStream.write(getWriterName().getBytes());
     }
@@ -56,6 +58,7 @@ public class MapProvider extends MapProviderAbstractProvider implements
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException, WebApplicationException {
+        LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
         MultivaluedMap<String, String> map = new MultivaluedHashMap<String, String>();
         map.add(getClass().getSimpleName(), getReaderName());
         return map;
