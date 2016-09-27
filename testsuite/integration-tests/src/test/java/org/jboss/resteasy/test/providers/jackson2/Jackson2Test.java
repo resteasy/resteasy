@@ -72,10 +72,10 @@ public class Jackson2Test {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(Jackson2Test.class.getSimpleName());
         war.addClass(Jackson2Test.class);
+            war.addAsResource(Jackson2Test.class.getPackage(), "javax.ws.rs.ext.Providers", "META-INF/services/javax.ws.rs.ext.Providers");
         return TestUtil.finishContainerPrepare(war, null, Jackson2Resource.class, Jackson2Product.class,
                 Jackson2XmlResource.class, Jackson2XmlProduct.class, Jackson2JAXBResource.class,
-                Jackson2XmlResourceWithJacksonAnnotation.class, Jackson2XmlResourceWithJAXB.class,
-                org.jboss.resteasy.plugins.providers.jackson.Jackson2JsonpInterceptor.class);
+                Jackson2XmlResourceWithJacksonAnnotation.class, Jackson2XmlResourceWithJAXB.class);
     }
 
     /**
@@ -88,8 +88,7 @@ public class Jackson2Test {
         war.addAsManifestResource("jboss-deployment-structure-jackson-v2-jettison.xml", "jboss-deployment-structure.xml");
         return TestUtil.finishContainerPrepare(war, null, Jackson2Resource.class, Jackson2Product.class,
                 Jackson2XmlResource.class, Jackson2XmlProduct.class, Jackson2JAXBResource.class,
-                Jackson2XmlResourceWithJacksonAnnotation.class, Jackson2XmlResourceWithJAXB.class,
-                org.jboss.resteasy.plugins.providers.jackson.Jackson2JsonpInterceptor.class);
+                Jackson2XmlResourceWithJacksonAnnotation.class, Jackson2XmlResourceWithJAXB.class);
     }
 
     @Before
@@ -148,7 +147,7 @@ public class Jackson2Test {
         String entity = response.readEntity(String.class);
         logger.info(entity);
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-1168"), "foo({\"name\":\"Iphone\",\"id\":333})", entity);
+        Assert.assertEquals("The response entity content doesn't match the expected", "foo({\"name\":\"Iphone\",\"id\":333})", entity);
         response.close();
     }
 
