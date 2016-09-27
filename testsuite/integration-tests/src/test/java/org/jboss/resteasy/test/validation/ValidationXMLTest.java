@@ -371,12 +371,12 @@ public class ValidationXMLTest {
         String classViolation =
                 "[CLASS]\r" +
                         "[]\r" +
-                        "[Concatenation of s and u must have length > 5]\r" +
+                        "[Concatenation of s and u must have length &gt; 5]\r" +
                         "[org.jboss.resteasy.test.validation.resource.ValidationXMLResourceWithAllFivePotentialViolations";
         String parameterViolation =
                 "[PARAMETER]\r" +
                         "[post.arg0]\r" +
-                        "[s must have length: 3 <= length <= 5]\r" +
+                        "[s must have length: 3 &lt;= length &lt;= 5]\r" +
                         "[ValidationXMLFoo[p]]";
         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(fieldViolation1));
         Assert.assertTrue(WRONG_ERROR_MSG, entity.contains(fieldViolation2));
