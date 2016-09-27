@@ -15,6 +15,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import org.jboss.resteasy.util.HttpHeaderNames;
 
@@ -34,6 +35,7 @@ public class ReaderProvider implements MessageBodyReader<Reader>, MessageBodyWri
 
    public Reader readFrom(Class<Reader> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
       String charset = mediaType.getParameters().get("charset");
       if (charset == null) return new InputStreamReader(entityStream);
       else return new InputStreamReader(entityStream, charset);
@@ -51,6 +53,7 @@ public class ReaderProvider implements MessageBodyReader<Reader>, MessageBodyWri
 
    public void writeTo(Reader inputStream, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
+           LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
 	   try
 	   {
 		   int c = inputStream.read();

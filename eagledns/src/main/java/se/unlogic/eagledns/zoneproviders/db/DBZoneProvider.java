@@ -44,7 +44,6 @@ public class DBZoneProvider implements ZoneProvider {
 	private QueryParameterFactory<DBRecord, DBZone> recordZoneQueryParameterFactory;
 
 	public void init(String name) throws ClassNotFoundException {
-
 		this.name = name;
 
 		DataSource dataSource;

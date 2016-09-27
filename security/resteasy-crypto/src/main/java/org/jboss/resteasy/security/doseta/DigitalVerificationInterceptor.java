@@ -3,6 +3,7 @@ package org.jboss.resteasy.security.doseta;
 import org.jboss.resteasy.security.doseta.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.InputStreamToByteArray;
+import org.jboss.resteasy.security.doseta.i18n.*;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
@@ -28,6 +29,7 @@ public class DigitalVerificationInterceptor implements ReaderInterceptor
    @Override
    public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Interceptor : %s,  Method : aroundReadFrom", getClass().getName());
       Verifier verifier = (Verifier) context.getProperty(Verifier.class.getName());
       if (verifier == null)
       {

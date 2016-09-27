@@ -22,6 +22,7 @@ import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 /**
  * <p>
@@ -149,6 +150,8 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
      */
     @Override
     public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException {
+        LogMessages.LOGGER.debugf("Interceptor : %s,  Method : aroundWriteTo", getClass().getName());
+
         String function = uri.getQueryParameters().getFirst(callbackQueryParameter);
         if (enabled && function != null && !function.trim().isEmpty() && !jsonpCompatibleMediaTypes.getPossible(context.getMediaType()).isEmpty()){
 

@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -40,6 +41,7 @@ public class ServerFormUrlEncodedProvider extends FormUrlEncodedProvider
    @Override
    public MultivaluedMap readFrom(Class<MultivaluedMap> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException
    {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
       if (!useContainerParams) return super.readFrom(type, genericType, annotations, mediaType, httpHeaders, entityStream);
 
       boolean encoded = FindAnnotation.findAnnotation(annotations, Encoded.class) != null;
