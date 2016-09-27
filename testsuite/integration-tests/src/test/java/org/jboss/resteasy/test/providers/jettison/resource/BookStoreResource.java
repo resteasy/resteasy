@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.xml;
+package org.jboss.resteasy.test.providers.jettison.resource;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -10,42 +10,33 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
- * @version $Revision: 1 $
- */
-@Path("bookstore")
-public class BookStore
-{
-   private static Map<String, Book> availableBooks = new HashMap<String, Book>();
+@Path("/bookstore")
+public class BookStoreResource {
+   private static Map<String, Book> availableBooks = new HashMap<>();
 
-   static
-   {
+   static {
       availableBooks.put("596529260", new Book("Leonard Richardson", "596529260", "RESTful Web Services"));
       availableBooks.put("3897217279", new Book("Sam Ruby", "3897217279", "Web Services mit REST"));
    }
 
    @GET
-   @Path("books/{isbn}")
+   @Path("/books/{isbn}")
    @Produces({"text/xml", "application/json"})
-   public Book getBookByISBN(@PathParam("isbn") String isbn)
-   {
+   public Book getBookByISBN(@PathParam("isbn") String isbn) {
       return availableBooks.get(isbn);
    }
 
    @PUT
-   @Path("books")
+   @Path("/books")
    @Consumes({"text/xml", "application/json"})
-   public void addBook(Book book)
-   {
+   public void addBook(Book book) {
       availableBooks.put(book.getISBN(), book);
    }
 
    @GET
-   @Path("books")
+   @Path("/books")
    @Produces({"text/xml", "application/json"})
-   public Collection<Book> getAllBooks()
-   {
+   public Collection<Book> getAllBooks() {
       return availableBooks.values();
    }
 
