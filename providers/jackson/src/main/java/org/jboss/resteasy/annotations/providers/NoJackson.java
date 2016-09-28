@@ -11,9 +11,11 @@ import java.lang.annotation.Target;
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * @deprecated Use resteasy-jackson2-provider
  */
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
+@Deprecated
 public @interface NoJackson
 {
 }

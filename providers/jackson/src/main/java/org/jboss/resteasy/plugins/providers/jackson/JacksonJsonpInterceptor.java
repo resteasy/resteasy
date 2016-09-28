@@ -33,9 +33,11 @@ import org.jboss.resteasy.core.MediaTypeMap;
  *
  * @author <a href="mailto:holger.morch@nokia.com">Holger Morch</a>
  * @version $Revision: 1 $
+ * @deprecated Use resteasy-jackson2-provider
  */
 @Provider
 @ConstrainedTo(RuntimeType.SERVER)
+@Deprecated
 public class JacksonJsonpInterceptor implements WriterInterceptor{
 
     /**
