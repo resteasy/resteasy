@@ -164,6 +164,24 @@ try{processStuffResponse(&lt;normal JSON body&gt;)}catch(e){}
 </programlisting>
             You can enable this feature by setting the resteasy.jsonp.silent property to true
         </para>
+        <para>
+        <emphasis role="bold">Note.</emphasis> Because JSONP can be used in 
+        <emphasis role="bold">Cross Site Scripting Inclusion (XSSI) attacks</emphasis>,
+        <methodname>Jackson2JsonpInterceptor</methodname>
+        is disabled by default. Two steps are necessary to enable it:
+        </para>
+        <orderedlist>
+           <listitem>As noted above, <methodname>Jackson2JsonpInterceptor</methodname> must be
+           included in the deployment. For example,
+           a service file META-INF/services/javax.ws.rs.ext.Providers with the line
+<programlisting>
+org.jboss.resteasy.plugins.providers.jackson.Jackson2JsonpInterceptor
+</programlisting>
+           may be included on the classpath
+           </listitem>
+           <listitem>Also, the servlet context parameter parameter "resteasy.jsonp.enable" must be set to "true".
+           </listitem>
+        </orderedlist>
     </sect1>
     <sect1 id="Jackson_JSON_Decorator">
         <title>Jackson JSON Decorator</title>
