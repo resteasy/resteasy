@@ -40,7 +40,7 @@ public class SpringContextLoaderListener extends ContextLoaderListener
       {
          boolean tmp = Boolean.valueOf(scanAll.trim());
          scanProviders = tmp || scanProviders;
-         scanResources = tmp || scanResources;
+         scanResources = tmp;
       }
       String sResources = event.getServletContext().getInitParameter("resteasy.scan.resources");
       if (sResources != null)
