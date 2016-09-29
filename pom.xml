@@ -38,7 +38,6 @@
         <version.com.sun.mail>1.5.5</version.com.sun.mail>
         <version.com.sun.xml.bind.jaxb-impl>2.2.7</version.com.sun.xml.bind.jaxb-impl>
         <version.commons-io.commons-io>2.4</version.commons-io.commons-io>
-        <version.commons-lang.commons-lang>2.6</version.commons-lang.commons-lang>
         <version.hamcrest>1.3</version.hamcrest>
         <version.io.netty.netty>3.10.6.Final</version.io.netty.netty>
         <version.io.netty.netty4>4.0.37.Final</version.io.netty.netty4>
@@ -388,12 +387,6 @@
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${version.commons-io.commons-io}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>${version.commons-lang.commons-lang}</version>
             </dependency>
 
             <dependency>
