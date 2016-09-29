@@ -25,6 +25,7 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletApp;
 import org.jboss.resteasy.test.asynch.resource.JaxrsAsyncServletAsyncResponseBlockingQueue;
@@ -43,6 +44,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -358,6 +360,7 @@ public class ComprehensiveJaxrsTest
    }
 
    @Test
+   @Category({ExpectedFailing.class}) // [RESTEASY-1446] FIXME
    public void isDoneWhenTimedOutTest() throws Exception
    {
       setTimeoutTestInternal();
@@ -444,6 +447,7 @@ public class ComprehensiveJaxrsTest
    }
 
    @Test
+   @Category({ExpectedFailing.class}) // [RESTEASY-1446] FIXME
    public void setTimeoutTest() throws Exception
    {
       setTimeoutTestInternal();
