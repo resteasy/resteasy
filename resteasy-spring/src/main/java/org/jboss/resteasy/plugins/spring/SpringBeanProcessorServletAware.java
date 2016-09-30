@@ -17,7 +17,7 @@ import javax.servlet.ServletContext;
  */
 public class SpringBeanProcessorServletAware extends SpringBeanProcessor implements ServletContextAware
 {
-   private ServletContext servletContext;
+   protected ServletContext servletContext;
 
    public void setServletContext(ServletContext servletContext)
    {
