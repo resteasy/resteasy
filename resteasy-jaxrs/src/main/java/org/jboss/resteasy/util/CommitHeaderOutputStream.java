@@ -43,7 +43,7 @@ public class CommitHeaderOutputStream extends OutputStream
       void commit();
    }
 
-   public void commit()
+   public synchronized void commit()
    {
       if (isHeadersCommitted) return;
       isHeadersCommitted = true;

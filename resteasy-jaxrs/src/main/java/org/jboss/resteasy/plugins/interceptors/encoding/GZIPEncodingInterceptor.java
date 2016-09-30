@@ -52,7 +52,7 @@ public class GZIPEncodingInterceptor implements WriterInterceptor
       }
 
       @Override
-      public void commit()
+      public synchronized void commit()
       {
          if (isHeadersCommitted) return;
          isHeadersCommitted = true;
