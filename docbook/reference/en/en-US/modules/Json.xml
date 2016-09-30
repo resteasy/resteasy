@@ -16,9 +16,9 @@
     </para>
     
     <sect1>
-        <title>Using Jackson 1.9.x Outside of Wildfly 10 or EAP 7</title>
-        <para>If you're deploying Resteasy outside of Wildfly 10 or EAP 7,
-        add the resteasy jackson provder to your WAR pom.xml build:</para>
+        <title>Using Jackson 1.9.x Outside of Wildfly</title>
+        <para>If you're deploying Resteasy outside of Wildfly,
+        add the Resteasy Jackson provder to your WAR pom.xml build:</para>
         <programlisting><![CDATA[
 <dependency>
    <groupId>org.jboss.resteasy</groupId>
@@ -28,17 +28,17 @@
 ]]></programlisting>
     </sect1>
     <sect1>
-        <title>Using Jackson 1.9.x Inside of Wildfly 10 or EAP 7</title>
-        <para>If you're deploying Resteasy with Wildfly 10 or EAP 7,
+        <title>Using Jackson 1.9.x Inside Wildfly 8</title>
+        <para>If you're deploying Resteasy with Wildfly 8,
         there's nothing you need to do except to make sure
         you've updated your installation with the latest and greatest Resteasy.  See the
         <link linkend='Installation_Configuration'>Installation/Configuration</link> section
         of this documentation for more details.</para>
     </sect1>
     <sect1>
-        <title>Using Jackson 2 Outside of Wildfly 10 or EAP 7</title>
-        <para>If you're deploying Resteasy outside of Wildfly 10 or EAP 7,
-        add the resteasy jackson provder to your WAR pom.xml build:</para>
+        <title>Using Jackson 2 Outside of Wildfly</title>
+        <para>If you're deploying Resteasy outside of Wildfly,
+        add the Resteasy Jackson provder to your WAR pom.xml build:</para>
         <programlisting><![CDATA[
 <dependency>
    <groupId>org.jboss.resteasy</groupId>
@@ -48,8 +48,8 @@
 ]]></programlisting>
     </sect1>
     <sect1>
-        <title>Using Jackson 2 Inside of Wildfly 10 or EAP 7</title>
-        <para>If you're deploying Resteasy with Wildfly 10 or EAP 7,
+        <title>Using Jackson 2 Inside Wildfly 9 and above</title>
+        <para>If you're deploying Resteasy with Wildfly 9 or above,
         there's nothing you need to do except to make sure
         you've updated your installation with the latest and greatest Resteasy.  See the
         <link linkend='Installation_Configuration'>Installation/Configuration</link> section
