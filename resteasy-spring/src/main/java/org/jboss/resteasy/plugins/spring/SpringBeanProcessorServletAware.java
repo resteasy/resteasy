@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.spring;
 
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.springframework.web.context.ServletContextAware;
 
@@ -35,7 +36,11 @@ public class SpringBeanProcessorServletAware extends SpringBeanProcessor impleme
    public ResteasyProviderFactory getProviderFactory()
    {
       if (providerFactory != null) return providerFactory;
-      providerFactory = (ResteasyProviderFactory) servletContext.getAttribute(ResteasyProviderFactory.class.getName());
+      ResteasyDeployment deployment = (ResteasyDeployment) servletContext.getAttribute(ResteasyDeployment.class.getName());
+      if (deployment != null)
+      {
+         providerFactory = deployment.getProviderFactory();
+      }
       return providerFactory;
    }
 
@@ -43,7 +48,11 @@ public class SpringBeanProcessorServletAware extends SpringBeanProcessor impleme
    public Dispatcher getDispatcher()
    {
       if (dispatcher != null) return dispatcher;
-      dispatcher = (Dispatcher) servletContext.getAttribute(Dispatcher.class.getName());
+      ResteasyDeployment deployment = (ResteasyDeployment) servletContext.getAttribute(ResteasyDeployment.class.getName());
+      if (deployment != null)
+      {
+         dispatcher = deployment.getDispatcher();
+      }
       return dispatcher;
    }
 }
