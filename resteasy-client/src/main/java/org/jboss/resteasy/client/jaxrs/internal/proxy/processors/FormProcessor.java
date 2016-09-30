@@ -1,7 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy.processors;
 
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.spi.LoggableFailure;
 
 import javax.ws.rs.client.WebTarget;
@@ -209,13 +209,13 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
    }
 
    @Override
-   public void process(ClientInvocationBuilder invocation, Object param)
+   public void process(ClientInvocation invocation, Object param)
    {
       process(new Process()  {
          @Override
          public Object process(Object target, Object value, Object processor)
          {
-            processParam((ClientInvocationBuilder)target, value, processor);
+            processParam((ClientInvocation)target, value, processor);
             return target;
          }
       }, invocation, param);
@@ -271,7 +271,7 @@ public class FormProcessor implements InvocationProcessor, WebTargetProcessor
       return target;
    }
 
-   private void processParam(ClientInvocationBuilder invocation, Object val, Object proc)
+   private void processParam(ClientInvocation invocation, Object val, Object proc)
    {
       if (proc instanceof InvocationProcessor)
       {

@@ -21,16 +21,11 @@ import java.util.Locale;
  */
 public class ClientInvocationBuilder implements Invocation.Builder
 {
-   protected ClientInvocation invocation;
+   private final ClientInvocation invocation;
 
    public ClientInvocationBuilder(ResteasyClient client, URI uri, ClientConfiguration configuration)
    {
       invocation = new ClientInvocation(client, uri, new ClientRequestHeaders(configuration), configuration);
-   }
-
-   public ClientInvocation getInvocation()
-   {
-      return invocation;
    }
 
    public ClientRequestHeaders getHeaders()
@@ -115,8 +110,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
    @Override
    public Invocation build(String method)
    {
-      invocation.setMethod(method);
-      return invocation;
+      return build(method, null);
    }
 
    @Override
@@ -124,7 +118,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
    {
       invocation.setMethod(method);
       invocation.setEntity(entity);
-      return invocation;
+      return new ClientInvocation(this.invocation);
    }
 
    @Override
@@ -154,7 +148,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
    @Override
    public AsyncInvoker async()
    {
-      return new AsynchronousInvoke(invocation);
+      return new AsynchronousInvoke(new ClientInvocation(this.invocation));
    }
 
    @Override

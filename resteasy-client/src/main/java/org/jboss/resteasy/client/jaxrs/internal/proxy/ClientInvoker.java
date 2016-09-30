@@ -5,6 +5,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.ClientRequestHeaders;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.extractors.ClientContext;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.extractors.DefaultEntityExtractorFactory;
@@ -19,7 +20,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
+import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
+
 import java.lang.reflect.Method;
 
 /**
@@ -106,7 +109,7 @@ public class ClientInvoker implements MethodInvoker
 
    protected ClientInvocation createRequest(Object[] args)
    {
-      WebTarget target = this.webTarget;
+	  WebTarget target = this.webTarget;
       for (int i = 0; i < processors.length; i++)
       {
          if (processors != null && processors[i] instanceof WebTargetProcessor)
@@ -117,26 +120,24 @@ public class ClientInvoker implements MethodInvoker
          }
       }
 
-      ClientInvocationBuilder builder = null;
+      ClientConfiguration parentConfiguration=(ClientConfiguration) target.getConfiguration();
+      ClientInvocation clientInvocation = new ClientInvocation(this.webTarget.getResteasyClient(), target.getUri(),
+    		  new ClientRequestHeaders(parentConfiguration), parentConfiguration);
       if (accepts != null)
       {
-         builder = (ClientInvocationBuilder)target.request(accepts);
+         clientInvocation.getHeaders().accept(accepts);
       }
-      else
-      {
-         builder = (ClientInvocationBuilder)target.request();
-      }
-
       for (int i = 0; i < processors.length; i++)
       {
          if (processors != null && processors[i] instanceof InvocationProcessor)
          {
             InvocationProcessor processor = (InvocationProcessor)processors[i];
-            processor.process(builder, args[i]);
+            processor.process(clientInvocation, args[i]);
 
          }
       }
-      return (ClientInvocation)builder.build(httpMethod);
+      clientInvocation.setMethod(httpMethod);
+      return clientInvocation;
    }
 
    public String getHttpMethod()
