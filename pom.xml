@@ -3,16 +3,14 @@
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>19</version>
+        <version>21</version>
         <relativePath/>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
     <name>RESTEasy JAX-RS</name>
-    <description>
-        Resteasy
-    </description>
+    <description>Resteasy</description>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -29,63 +27,54 @@
         <dep.arquillian-bom.version>1.1.11.Final</dep.arquillian-bom.version>
         <dep.arquillian-wildfly.version>8.2.1.Final</dep.arquillian-wildfly.version>
         <jboss.home/>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.com.fasterxml.classmate>1.3.1</version.com.fasterxml.classmate>
-        <version.com.fasterxml.jackson>2.7.4</version.com.fasterxml.jackson>
-        <version.com.google.inject.guice>4.0</version.com.google.inject.guice>
-        <version.com.sun.mail>1.5.5</version.com.sun.mail>
+        <version.com.fasterxml.classmate>1.3.3</version.com.fasterxml.classmate>
+        <version.com.fasterxml.jackson>2.8.3</version.com.fasterxml.jackson>
+        <version.com.google.inject.guice>4.1.0</version.com.google.inject.guice>
+        <version.com.sun.mail>1.5.6</version.com.sun.mail>
         <version.com.sun.xml.bind.jaxb-impl>2.2.7</version.com.sun.xml.bind.jaxb-impl>
-        <version.commons-io.commons-io>2.4</version.commons-io.commons-io>
+        <version.commons-io.commons-io>2.5</version.commons-io.commons-io>
         <version.hamcrest>1.3</version.hamcrest>
         <version.io.netty.netty>3.10.6.Final</version.io.netty.netty>
-        <version.io.netty.netty4>4.0.37.Final</version.io.netty.netty4>
+        <version.io.netty.netty4>4.1.5.Final</version.io.netty.netty4>
         <version.io.vertx>3.3.3</version.io.vertx>
-        <version.io.undertow>1.3.22.Final</version.io.undertow>
+        <version.io.undertow>1.3.25.Final</version.io.undertow>
         <version.javax.activation>1.1.1</version.javax.activation>
         <version.javax.enterprise.cdi-api>1.2</version.javax.enterprise.cdi-api>
-        <version.javax.persistence>1.0.1.Final</version.javax.persistence>
-        <version.log4j>2.3</version.log4j>
-        <version.org.apache.httpcomponents.httpclient>4.5</version.org.apache.httpcomponents.httpclient>
-        <version.org.apache.httpcomponents.httpcore>4.4.4</version.org.apache.httpcomponents.httpcore>
-        <version.org.apache.maven>3.2.1</version.org.apache.maven> <!-- Used to download aether-provider -->
-        <version.org.bouncycastle>1.52</version.org.bouncycastle>
+        <version.log4j>2.6.2</version.log4j>
+        <version.org.apache.httpcomponents.httpclient>4.5.2</version.org.apache.httpcomponents.httpclient>
+        <version.org.apache.httpcomponents.httpcore>4.4.5</version.org.apache.httpcomponents.httpcore>
+        <version.org.apache.maven>3.3.9</version.org.apache.maven> <!-- Used to download aether-provider -->
+        <version.org.bouncycastle>1.55</version.org.bouncycastle>
         <version.org.codehaus.jackson>1.9.13</version.org.codehaus.jackson>
-        <version.org.codehaus.jettison>1.3.3</version.org.codehaus.jettison>
-        <version.org.eclipse.aether>1.0.0.v20140518</version.org.eclipse.aether>
+        <version.org.codehaus.jettison>1.3.8</version.org.codehaus.jettison>
+        <version.org.eclipse.aether>1.1.0</version.org.eclipse.aether>
         <version.org.eclipse.jetty>9.2.13.v20150730</version.org.eclipse.jetty>
         <version.org.glassfish.javax.el>3.0.1-b08</version.org.glassfish.javax.el>
         <version.org.hibernate.hibernate-validator>5.2.4.Final</version.org.hibernate.hibernate-validator>
-        <version.org.infinispan>8.1.0.Final</version.org.infinispan>
+        <version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>1.0.0.Final</version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>
+        <version.org.infinispan>8.2.4.Final</version.org.infinispan>
         <version.org.javassist>3.20.0-GA</version.org.javassist>
         <version.org.jboss.logging.jboss-logging>3.3.0.Final</version.org.jboss.logging.jboss-logging>
-        <version.org.jboss.logging.jboss-logging-annotations>1.2.0.Final
-        </version.org.jboss.logging.jboss-logging-annotations>
-        <version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.2_spec>1.0.0.Final
-        </version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.2_spec>
-        <version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>1.0.5.Final
-        </version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>
-        <version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.1_spec>1.0.0.Final
-        </version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.1_spec>
-        <version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>1.0.0.Final
-        </version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>
-        <version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>1.0.0.Final
-        </version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>
-        <version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec>1.0.0.Final
-        </version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec>
-        <version.org.jboss.shrinkwrap.resolver>2.1.0-alpha-1</version.org.jboss.shrinkwrap.resolver>
+        <version.org.jboss.logging.jboss-logging-annotations>2.0.1.Final</version.org.jboss.logging.jboss-logging-annotations>
+        <version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.2_spec>1.0.0.Final</version.org.jboss.spec.javax.annotation.jboss-annotations-api_1.2_spec>
+        <version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>1.0.7.Final</version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec>
+        <version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>1.0.0.Final</version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>
+        <version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>1.0.0.Final</version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>
+        <version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>1.0.0.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>
+        <version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec>1.0.0.Final</version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec>
+        <version.org.jboss.shrinkwrap.resolver>2.2.4</version.org.jboss.shrinkwrap.resolver>
         <version.org.slf4j>1.7.7</version.org.slf4j>
         <version.org.wildfly.core.wildfly-cli>2.1.0.Final</version.org.wildfly.core.wildfly-cli>
-        <version.org.wildfly.extras.creaper>1.4.0</version.org.wildfly.extras.creaper>
-        <version.org.wildfly.wildfly-arquillian-container-managed>2.0.0.Final
-        </version.org.wildfly.wildfly-arquillian-container-managed>
+        <version.org.wildfly.extras.creaper>1.5.0</version.org.wildfly.extras.creaper>
+        <version.org.wildfly.wildfly-arquillian-container-managed>2.0.0.Final</version.org.wildfly.wildfly-arquillian-container-managed>
         <version.org.wildfly-security>10.0.0.Final</version.org.wildfly-security>
         <version.org.yaml.snakeyaml>1.17</version.org.yaml.snakeyaml>
         <version.javax.validation-api>1.1.0.Final</version.javax.validation-api>
         <version.jboss-javaee-6.0.spec>1.0.0.Final</version.jboss-javaee-6.0.spec>
         <version.weld21>2.1.0.Final</version.weld21>
-        <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
+        <!-- override version from jboss-parent -->
+        <version.surefire.plugin>2.18.1</version.surefire.plugin>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -341,15 +330,9 @@
 
             <dependency>
                 <groupId>org.jboss.spec.javax.ejb</groupId>
-                <artifactId>jboss-ejb-api_3.1_spec</artifactId>
+                <artifactId>jboss-ejb-api_3.2_spec</artifactId>
                 <scope>provided</scope>
-                <version>${version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.1_spec}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.jboss.spec.javax.servlet</groupId>
-                        <artifactId>jboss-servlet-api_3.0_spec</artifactId>
-                    </exclusion>
-                </exclusions>
+                <version>${version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec}</version>
             </dependency>
 
             <dependency>
@@ -390,8 +373,8 @@
 
             <dependency>
                 <groupId>org.hibernate.javax.persistence</groupId>
-                <artifactId>hibernate-jpa-2.0-api</artifactId>
-                <version>${version.javax.persistence}</version>
+                <artifactId>hibernate-jpa-2.1-api</artifactId>
+                <version>${version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api}</version>
             </dependency>
 
 
@@ -562,11 +545,6 @@
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-jaxrs</artifactId>
                 <version>${version.org.codehaus.jackson}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.cache</groupId>
-                <artifactId>jbosscache-core</artifactId>
-                <version>3.2.5.GA</version>
             </dependency>
             <dependency>
                 <groupId>org.infinispan</groupId>
@@ -801,6 +779,7 @@
                     <configuration>
                         <forkMode>once</forkMode>
                         <argLine>-Xms512m -Xmx512m</argLine>
+                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     </configuration>
                 </plugin>
                 <plugin>
