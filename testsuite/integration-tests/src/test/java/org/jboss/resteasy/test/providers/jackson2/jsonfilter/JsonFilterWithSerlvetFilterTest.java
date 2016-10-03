@@ -51,9 +51,11 @@ public class JsonFilterWithSerlvetFilterTest {
     @Test
     public void testJacksonString() throws Exception {
         Client client = new ResteasyClientBuilder().build();
-        WebTarget target = client.target(generateURL("products/333"));
+        WebTarget target = client.target(generateURL("/products/333"));
         Response response = target.request().get();
-        Assert.assertTrue("filter doesn't work", !response.readEntity(String.class).contains("id"));
+        response.bufferEntity();
+        Assert.assertTrue("filter doesn't work", !response.readEntity(String.class).contains("id") &&
+                response.readEntity(String.class).contains("name"));
         client.close();
     }
 }

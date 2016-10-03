@@ -10,11 +10,12 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.Jackson2Product;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.Jackson2Resource;
-import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.ObjectFilterModifier;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.JsonFilterWriteInterceptor;
+import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.ObjectFilterModifier;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
@@ -33,8 +34,9 @@ public class JsonFilterWithInterceptrTest {
     @Deployment(name = "default")
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(JsonFilterWithInterceptrTest.class.getSimpleName());
-        war.addClasses(Jackson2Product.class, ObjectFilterModifier.class, JsonFilterWriteInterceptor.class);
-        return TestUtil.finishContainerPrepare(war, null, Jackson2Resource.class);
+        war.addClasses(Jackson2Product.class, ObjectFilterModifier.class);
+        war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
+        return TestUtil.finishContainerPrepare(war, null, Jackson2Resource.class, JsonFilterWriteInterceptor.class);
     }
 
     private String generateURL(String path) {
@@ -48,9 +50,11 @@ public class JsonFilterWithInterceptrTest {
     @Test
     public void testJacksonString() throws Exception {
         Client client = new ResteasyClientBuilder().build();
-        WebTarget target = client.target(generateURL("products/333"));
+        WebTarget target = client.target(generateURL("/products/333"));
         Response response = target.request().get();
-        Assert.assertTrue("filter doesn't work", !response.readEntity(String.class).contains("id"));
+        response.bufferEntity();
+        Assert.assertTrue("filter doesn't work", !response.readEntity(String.class).contains("id") &&
+                response.readEntity(String.class).contains("name"));
         client.close();
     }
 }
