@@ -5,7 +5,6 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.client.resource.SyncInvokeResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
-import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -31,7 +30,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class SyncInvokeTest {
+public class SyncInvokeTest extends ClientTestBase{
 
     @java.lang.annotation.Target({ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
@@ -56,10 +55,6 @@ public class SyncInvokeTest {
     @After
     public void after() throws Exception {
         client.close();
-    }
-
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, SyncInvokeTest.class.getSimpleName());
     }
 
     /**

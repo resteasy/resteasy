@@ -33,7 +33,7 @@ import java.util.Collection;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class IndirectInvocationTest {
+public class IndirectInvocationTest extends ClientTestBase{
 
     public static final int REPEAT = 15;
 
@@ -53,10 +53,6 @@ public class IndirectInvocationTest {
     @AfterClass
     public static void close() {
         client.close();
-    }
-
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, IndirectInvocationTest.class.getSimpleName());
     }
 
     /**

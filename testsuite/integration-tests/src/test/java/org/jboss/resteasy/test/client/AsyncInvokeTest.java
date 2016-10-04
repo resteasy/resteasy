@@ -5,7 +5,6 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.client.resource.AsyncInvokeResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
-import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -33,7 +32,7 @@ import java.util.concurrent.Future;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class AsyncInvokeTest {
+public class AsyncInvokeTest extends ClientTestBase{
 
     @java.lang.annotation.Target({ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
@@ -47,6 +46,7 @@ public class AsyncInvokeTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(AsyncInvokeTest.class.getSimpleName());
         war.addClass(AsyncInvokeTest.class);
+        war.addClass(ClientTestBase.class);
         return TestUtil.finishContainerPrepare(war, null, AsyncInvokeResource.class);
     }
 
@@ -58,10 +58,6 @@ public class AsyncInvokeTest {
     @After
     public void after() throws Exception {
         client.close();
-    }
-
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, AsyncInvokeTest.class.getSimpleName());
     }
 
     /**

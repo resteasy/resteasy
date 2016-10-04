@@ -8,7 +8,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.dmr.ModelNode;
 import org.jboss.resteasy.test.client.resource.TraceResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
-import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -40,7 +39,7 @@ import java.lang.annotation.Target;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class TraceTest {
+public class TraceTest extends ClientTestBase{
 
     private static ModelNode origDisallowedMethodsValue;
     private static Address address = Address.subsystem("undertow").and("server", "default-server").and("http-listener", "default");
@@ -98,10 +97,6 @@ public class TraceTest {
     @After
     public void after() throws Exception {
         client.close();
-    }
-
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, TraceTest.class.getSimpleName());
     }
 
     /**

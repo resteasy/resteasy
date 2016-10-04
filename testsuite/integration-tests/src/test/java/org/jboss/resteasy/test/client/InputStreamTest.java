@@ -8,7 +8,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.client.resource.InputStreamResource;
-import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -31,7 +30,7 @@ import java.io.InputStream;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class InputStreamTest {
+public class InputStreamTest extends ClientTestBase{
 
     @Path("/")
     public interface InputStreamInterface {
@@ -65,9 +64,6 @@ public class InputStreamTest {
         client.close();
     }
 
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, InputStreamTest.class.getSimpleName());
-    }
 
     /**
      * @tpTestDetails Client sends GET request with requested return type of InputStream.
