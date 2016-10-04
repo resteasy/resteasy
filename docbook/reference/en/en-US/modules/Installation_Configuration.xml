@@ -352,7 +352,9 @@ public class MyApplication extends Application
                             </entry>
                             <entry>
                                 Automatically scan WEB-INF/lib jars and WEB-INF/classes directory for both @Provider and
-                                JAX-RS resource classes (@Path, @GET, @POST etc..) and register them
+                                JAX-RS resource classes (@Path, @GET, @POST etc..) and register them.
+                                This property is deprecated; please use a Servlet 3.0 container or higher and the
+                                ResteasyServletInitializer instead.
                             </entry>
                         </row>
                         <row>
@@ -363,7 +365,9 @@ public class MyApplication extends Application
                                 false
                             </entry>
                             <entry>
-                                Scan for @Provider classes and register them
+                                Scan for @Provider classes and register them.
+                                This property is deprecated; please use a Servlet 3.0 container or higher and the
+                                ResteasyServletInitializer instead.
                             </entry>
                         </row>
                         <row>
@@ -374,7 +378,9 @@ public class MyApplication extends Application
                                 false
                             </entry>
                             <entry>
-                                Scan for JAX-RS resource classes
+                                Scan for JAX-RS resource classes.
+                                This property is deprecated; please use a Servlet 3.0 container or higher and the
+                                ResteasyServletInitializer instead.
                             </entry>
                         </row>
                         <row>
