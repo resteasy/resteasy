@@ -71,8 +71,7 @@
         <version.org.wildfly-security>10.0.0.Final</version.org.wildfly-security>
         <version.org.yaml.snakeyaml>1.17</version.org.yaml.snakeyaml>
         <version.javax.validation-api>1.1.0.Final</version.javax.validation-api>
-        <version.jboss-javaee-6.0.spec>1.0.0.Final</version.jboss-javaee-6.0.spec>
-        <version.weld21>2.1.0.Final</version.weld21>
+        <version.weld>2.4.0.Final</version.weld>
         <!-- override version from jboss-parent -->
         <version.surefire.plugin>2.18.1</version.surefire.plugin>
     </properties>
@@ -595,12 +594,6 @@
                 <version>${version.org.jboss.spec.javax.el.jboss-el-api_3.0_spec}</version>
             </dependency>
             <dependency>
-                <groupId>org.jboss.spec</groupId>
-                <artifactId>jboss-javaee-6.0</artifactId>
-                <version>${version.jboss-javaee-6.0.spec}</version>
-                <type>pom</type>
-            </dependency>
-            <dependency>
                 <groupId>org.glassfish</groupId>
                 <artifactId>javax.el</artifactId>
                 <version>${version.org.glassfish.javax.el}</version>
@@ -728,12 +721,12 @@
             <dependency>
                 <groupId>org.jboss.weld</groupId>
                 <artifactId>weld-core</artifactId>
-                <version>${version.weld21}</version>
+                <version>${version.weld}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.weld.se</groupId>
                 <artifactId>weld-se</artifactId>
-                <version>${version.weld21}</version>
+                <version>${version.weld}</version>
             </dependency>
             <dependency>
                 <groupId>org.wildfly.core</groupId>
