@@ -11,11 +11,6 @@
   <packaging>jar</packaging>
   <name>RESTEASY-736-jetty</name>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <jetty.version>8.1.1.v20120215</jetty.version>
-  </properties>
-
   <build>
     <plugins>
       <plugin>
@@ -50,23 +45,35 @@
   <dependencies>
     <dependency>
        <groupId>org.jboss.arquillian.container</groupId>
-       <artifactId>arquillian-jetty-embedded-7</artifactId>
-       <version>1.0.0.CR1</version>
+       <artifactId>arquillian-jetty-embedded-9</artifactId>
+       <version>1.0.0.CR3</version>
        <scope>test</scope>
     </dependency>
-    <dependency>
-       <groupId>org.eclipse.jetty</groupId>
-       <artifactId>jetty-webapp</artifactId>
-       <version>${jetty.version}</version>
-       <scope>test</scope>
-    </dependency>
-    <!-- plus and naming requires for using JNDI -->
-    <dependency>
-       <groupId>org.eclipse.jetty</groupId>
-       <artifactId>jetty-plus</artifactId>
-       <version>${jetty.version}</version>
-       <scope>test</scope>
-    </dependency>
+
+      <dependency>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-deploy</artifactId>
+          <version>${version.org.eclipse.jetty}</version>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-annotations</artifactId>
+          <version>${version.org.eclipse.jetty}</version>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-webapp</artifactId>
+          <version>${version.org.eclipse.jetty}</version>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-plus</artifactId>
+          <version>${version.org.eclipse.jetty}</version>
+          <scope>test</scope>
+      </dependency>
     <dependency>
         <groupId>org.jboss.arquillian.protocol</groupId>
         <artifactId>arquillian-protocol-servlet</artifactId>
@@ -96,17 +103,19 @@
       <artifactId>arquillian-junit-container</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <!--<artifactId>slf4j-simple</artifactId>-->
-        <artifactId>slf4j-api</artifactId>
-      <version>1.6.4</version>
-      <!--<scope>test</scope>-->
-    </dependency>
       <dependency>
-            <groupId>org.jboss.spec.javax.servlet</groupId>
-            <artifactId>jboss-servlet-api_3.1_spec</artifactId>
-        </dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.jboss.spec.javax.servlet</groupId>
+          <artifactId>jboss-servlet-api_3.1_spec</artifactId>
+      </dependency>
   </dependencies>
 
 </project>

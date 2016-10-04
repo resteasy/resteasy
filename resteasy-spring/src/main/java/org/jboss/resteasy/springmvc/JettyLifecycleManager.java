@@ -1,8 +1,8 @@
 package org.jboss.resteasy.springmvc;
 
+import org.eclipse.jetty.server.Server;
 import org.jboss.resteasy.plugins.spring.i18n.LogMessages;
 import org.jboss.resteasy.plugins.spring.i18n.Messages;
-import org.mortbay.jetty.Server;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
