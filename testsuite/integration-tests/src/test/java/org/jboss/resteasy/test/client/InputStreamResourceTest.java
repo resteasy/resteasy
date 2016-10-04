@@ -14,7 +14,6 @@ import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.test.client.resource.InputStreamResourceClient;
 import org.jboss.resteasy.test.client.resource.InputStreamResourceService;
 import org.jboss.resteasy.util.ReadFromStream;
-import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -32,7 +31,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class InputStreamResourceTest {
+public class InputStreamResourceTest extends ClientTestBase{
 
    static Client resteasyClient;
 
@@ -50,10 +49,6 @@ public class InputStreamResourceTest {
    public static Archive<?> deploy() {
        WebArchive war = TestUtil.prepareArchive(InputStreamResourceTest.class.getSimpleName());
        return TestUtil.finishContainerPrepare(war, null, InputStreamResourceService.class);
-   }
-
-   private String generateURL(String path) {
-       return PortProviderUtil.generateURL(path, InputStreamResourceTest.class.getSimpleName());
    }
 
    /**

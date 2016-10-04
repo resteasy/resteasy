@@ -7,7 +7,6 @@ import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.client.resource.ClientFormResource;
-import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -33,7 +32,7 @@ import javax.ws.rs.core.MediaType;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class ClientFormParamTest {
+public class ClientFormParamTest extends ClientTestBase{
 
     static ResteasyClient client;
 
@@ -53,6 +52,7 @@ public class ClientFormParamTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(ClientFormParamTest.class.getSimpleName());
         war.addClass(ClientFormParamTest.class);
+        war.addClass(ClientTestBase.class);
         return TestUtil.finishContainerPrepare(war, null, ClientFormResource.class);
     }
 
@@ -64,10 +64,6 @@ public class ClientFormParamTest {
     @After
     public void after() throws Exception {
         client.close();
-    }
-
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ClientFormParamTest.class.getSimpleName());
     }
 
     /**

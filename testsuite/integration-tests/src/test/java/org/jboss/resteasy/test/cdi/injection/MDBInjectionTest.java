@@ -1,10 +1,19 @@
 package org.jboss.resteasy.test.cdi.injection;
 
+import java.net.URI;
+import javax.annotation.Resource;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.resteasy.category.NotForWildFly9;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBook;
 import org.jboss.resteasy.test.cdi.injection.resource.CDIInjectionBookBag;
@@ -28,25 +37,17 @@ import org.jboss.resteasy.test.cdi.util.Counter;
 import org.jboss.resteasy.test.cdi.util.PersistenceUnitProducer;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.util.HttpResponseCodes;
-import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.BeforeClass;
 import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-
-import javax.annotation.Resource;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
 
 /**
  * @tpSubChapter CDI
@@ -82,6 +83,9 @@ public class MDBInjectionTest extends AbstractInjectionTestBase {
         return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 
+    @ArquillianResource
+    URI baseUri;
+
     @BeforeClass
     public static void init() {
         client = ClientBuilder.newClient();
@@ -94,9 +98,9 @@ public class MDBInjectionTest extends AbstractInjectionTestBase {
 
     @Before
     public void preparePersistenceTest() throws Exception {
-        log.info("Dumping old records.");
-        WebTarget base = client.target(PortProviderUtil.generateURL("/empty/", MDBInjectionTest.class.getSimpleName()));
-        Response response = base.request().post(Entity.text(new String()));
+        log.trace("Dumping old records.");
+        WebTarget base = client.target(baseUri.resolve("empty/"));
+        Response response = base.request().post(Entity.text(""));
         response.close();
     }
 
@@ -106,22 +110,22 @@ public class MDBInjectionTest extends AbstractInjectionTestBase {
      */
     @Test
     public void testMDB() throws Exception {
-        log.info("starting testJMS()");
+        log.trace("starting testJMS()");
 
         // Send a book title.
-        WebTarget base = client.target(PortProviderUtil.generateURL("/produceMessage/", MDBInjectionTest.class.getSimpleName()));
+        WebTarget base = client.target(baseUri.resolve("produceMessage/"));
         String title = "Dead Man Lounging";
         CDIInjectionBook book = new CDIInjectionBook(23, title);
         Response response = base.request().post(Entity.entity(book, Constants.MEDIA_TYPE_TEST_XML));
-        log.info("status: " + response.getStatus());
-        log.info(response.readEntity(String.class));
+        log.trace("status: " + response.getStatus());
+        log.trace(response.readEntity(String.class));
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
 
         // Verify that the received book title is the one that was sent.
-        base = client.target(PortProviderUtil.generateURL("/mdb/consumeMessage/", MDBInjectionTest.class.getSimpleName()));
+        base = client.target(baseUri.resolve("mdb/consumeMessage/"));
         response = base.request().get();
-        log.info("status: " + response.getStatus());
+        log.trace("status: " + response.getStatus());
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         Assert.assertEquals("Wrong response", title, response.readEntity(String.class));
         response.close();

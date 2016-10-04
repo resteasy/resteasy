@@ -78,7 +78,7 @@
               </property>
             </activation>
             <properties>
-                <server.version>10.0.0.Final</server.version>
+                <server.version>10.1.0.Final</server.version>
             </properties>
         </profile>
         <profile>
