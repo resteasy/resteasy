@@ -93,7 +93,7 @@
                                 <delete>
                                     <fileset dir="${project.build.directory}/test-server/wildfly-${server.version}/modules/system/layers/base/org/jboss/resteasy/resteasy-spring/main" includes="**/*.jar"/>
                                 </delete>
-                                <unzip src="../../../jboss-modules/target/resteasy-jboss-modules-wf8-${project.version}.zip"
+                                <unzip src="../../../jboss-modules/target/resteasy-jboss-modules-${project.version}.zip"
                                        dest="${project.build.directory}/test-server/wildfly-${server.version}/modules/system/layers/base"
                                        overwrite="true"/>
                                 <delete dir="target/dependency-maven-plugin-markers"/>
