@@ -269,9 +269,47 @@
                         </exclusions>
                     </dependency>
                 </dependencies>
-
-
             </plugin>
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-assembly-plugin</artifactId>
+               <executions>
+                   <execution>
+                       <id>assemble</id>
+                       <phase>package</phase>
+                       <goals>
+                           <goal>single</goal>
+                       </goals>
+                       <configuration>
+                           <descriptors>
+                               <descriptor>assembly.xml</descriptor>
+                           </descriptors>
+                           <finalName>resteasy-jboss-modules-${project.version}</finalName>
+                           <appendAssemblyId>false</appendAssemblyId>
+                           <outputDirectory>${project.build.directory}</outputDirectory>
+                           <workDirectory>${project.build.directory}/assembly/work</workDirectory>
+                           <tarLongFileMode>gnu</tarLongFileMode>
+                       </configuration>
+                   </execution>
+                   <execution>
+                       <id>assemble-mavenized</id>
+                       <phase>package</phase>
+                       <goals>
+                           <goal>single</goal>
+                       </goals>
+                       <configuration>
+                           <descriptors>
+                               <descriptor>assembly-mavenized.xml</descriptor>
+                           </descriptors>
+                           <finalName>resteasy-jboss-modules-${project.version}</finalName>
+                           <appendAssemblyId>true</appendAssemblyId>
+                           <outputDirectory>${project.build.directory}</outputDirectory>
+                           <workDirectory>${project.build.directory}/assembly-mavenized/work</workDirectory>
+                           <tarLongFileMode>gnu</tarLongFileMode>
+                       </configuration>
+                   </execution>
+               </executions>
+           </plugin>
         </plugins>
     </build>
 </project>
