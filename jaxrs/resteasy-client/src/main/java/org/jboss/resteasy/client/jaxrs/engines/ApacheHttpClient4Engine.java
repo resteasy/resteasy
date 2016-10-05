@@ -280,6 +280,9 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       {
          loadHttpMethod(request, httpMethod);
 
+
+
+
          res = httpClient.execute(httpMethod, httpContext);
       }
       catch (Exception e)
@@ -444,8 +447,11 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
          List<String> values = header.getValue();
          for (String value : values)
          {
+            if(!header.getKey().equals("Content-Length"))
+            {
 //               System.out.println(String.format("setting %s = %s", header.getKey(), value));
-            httpMethod.addHeader(header.getKey(), value);
+               httpMethod.addHeader(header.getKey(), value);
+            }
          }
       }
    }
