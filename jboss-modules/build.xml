@@ -147,6 +147,10 @@
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jsapi"/>
         </module-def>
 
+        <module-def name="org.jboss.resteasy.resteasy-json-p-provider">
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-json-p-provider"/>
+        </module-def>
+        	
         <module-def name="org.jboss.resteasy.resteasy-multipart-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-multipart-provider"/>
         </module-def>
