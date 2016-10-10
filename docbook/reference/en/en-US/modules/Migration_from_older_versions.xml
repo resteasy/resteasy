@@ -9,6 +9,18 @@
 <chapter id="Migration_from_older_versions">
 <title>Migration from older versions</title>
 <sect1>
+    <title>Migrating from Resteasy 2 to Resteasy 3</title>
+    
+    <para>
+        Many facilities from Resteasy 2 appear in a different form in Resteasy 3. For example, much
+        of the client framework in Resteasy 2 is formalized, in modified form, in JAX-RS 2.0. Resteasy
+        versions 3.0.x implement both the older deprecated form and the newer conformant form. The
+        deprecated form is finally removed in Resteasy 3.1.0.Final. For more information on upgrading
+        from various deprecated facilities in Resteasy 2, see
+        <ulink url="http://docs.jboss.org/resteasy/docs/resteasy-upgrade-guide-en-US.pdf">http://docs.jboss.org/resteasy/docs/resteasy-upgrade-guide-en-US.pdf</ulink>
+    </para>
+</sect1>
+<sect1>
     <title>Migrating from 3.0.7 to 3.0.9</title>
     <itemizedlist>
         <listitem>
@@ -45,8 +57,8 @@
     <itemizedlist>
         <listitem>
             Servlet 3.0 deployments within standalone Tomcat or Jetty can now use the Resteasy <literal>ServletContainerInitializer</literal>.
-            This allows tighter integration with Resteasy much like you have within JBoss/Wildfly.  Check out the
-            Installation/Configuration section of this document for more information.
+            This allows tighter integration with Resteasy much like you have within JBoss/Wildfly.  Check out 
+            <xref linkend="Installation_Configuration"/> for more information.
         </listitem>
     </itemizedlist>
 </sect1>
