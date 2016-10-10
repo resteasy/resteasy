@@ -15,9 +15,9 @@
         protocol to access the protected resource.
     </para>
     <para>
-        Resteasy Skeleton Key is an OAuth 2.0 implementation that allows you to use existing JBoss AS7 security infrastructure
+        Resteasy Skeleton Key is an OAuth 2.0 implementation that allows you to use existing Wildfly security infrastructure
         to secure your web applications and restful services.  You can turn an existing web app into an OAuth 2.0 Access
-        Token Provider or you can turn a JBoss AS7 Security Domain into a central authentication and authorization
+        Token Provider or you can turn a Wildfly Security Domain into a central authentication and authorization
         server that a whole host of applications and services can use.  Here are the features in a nutshell:
     </para>
     <para>
@@ -65,17 +65,13 @@
         <title>System Requirements</title>
         <itemizedlist>
             <listitem>
-                <para>JBoss AS 7.1.x or higher</para>
+                <para>Wildfly</para>
             </listitem>
             <listitem>
-                <para>HTTPS is required.  See the JBoss 7 documentation on how to enable SSL for web applications</para>
+                <para>HTTPS is required.  See the Wildfly documentation on how to enable SSL for web applications</para>
             </listitem>
             <listitem>
-                Resteasy 3.0 or higher must be installed within your AS7 distribution.  View how to <link linkend="upgrading-as7">upgrade AS7</link>
-                to the latest version of Resteasy.
-            </listitem>
-            <listitem>
-                <para>A username/password based JBoss security domain</para>
+                <para>A username/password based Wildfly security domain</para>
             </listitem>
             <listitem>
                 <para>Browser-based apps must be configured to use servlet FORM authentication and web.xml security
@@ -95,7 +91,7 @@ $ keytool -genkey -alias mydomain -keyalg rsa -keystore realm.jks
         <para>
             This will ask you a series of questions that will be used to create the X509 public certificate. Basic PKI
             stuff that you hopefully are already familiar with.  Move this keystore file into a directory that you can
-            reference from a configuration file.  I suggest the standalone/configuration directory of your JBoss AS7
+            reference from a configuration file.  I suggest the standalone/configuration directory of your Wildfly
             distribution.
         </para>
     </section>
@@ -108,7 +104,7 @@ $ keytool -genkey -alias mydomain -keyalg rsa -keystore realm.jks
         <section>
             <title>Setting up your Security Domain</title>
             <para>
-                You can use any set of JBoss AS7 login modules you want to store your username, passwords and role mappings.
+                You can use any set of Wildfly login modules you want to store your username, passwords and role mappings.
                 Each security domain will be comprised of regular users, oauth clients, and admins.  Oauth clients
                 represent either a web application that wants to use the auth-server to do SSO, or they are traditional
                 oauth clients that want access permision to act on behalf of another user (the traditional OAuth use case).
@@ -231,7 +227,7 @@ oauthclient2=oauth,user
                             <para>
                                 Absolute path pointing to the keystore that contains the realm's keypair.  This keypair
                                 is used to digitally sign access tokens.  You may use <literal>${VARIABLE}</literal>
-                                to reference System properties.  The example is referencing the JBoss config dir.
+                                to reference System properties.  The example is referencing the Widlfly config dir.
                             </para>
                         </listitem>
                     </varlistentry>

@@ -119,9 +119,9 @@
         </warning>
     </section>
     <section>
-        <title>Configuration within JBoss 6 M4 and Higher</title>
+        <title>Configuration within Wildfly</title>
         <para>
-            CDI integration is provided with no additional configuration with JBoss AS 6-M4 and higher.
+            CDI integration is provided with no additional configuration with Wildfly.
         </para>
     </section>
     <section>
@@ -138,7 +138,7 @@
             maven, this can be achieve by defining the
             following
             dependency.
-            <programlisting language="xml"><![CDATA[<dependency>
+            <programlisting><![CDATA[<dependency>
 	<groupId>org.jboss.resteasy</groupId>
 	<artifactId>resteasy-cdi</artifactId>
 	<version>${project.version}</version>

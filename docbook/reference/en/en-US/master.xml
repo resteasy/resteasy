@@ -46,7 +46,6 @@
                 <!ENTITY Yaml SYSTEM "modules/Yaml.xml">
                 <!ENTITY Seam SYSTEM "modules/Seam.xml">
                 <!ENTITY Guice SYSTEM "modules/Guice.xml">
-                <!ENTITY JBoss SYSTEM "modules/JBoss.xml">
                 <!ENTITY Interceptors SYSTEM "modules/Interceptors.xml">
                 <!ENTITY Books SYSTEM "modules/Books.xml">
                 <!ENTITY OAuth2 SYSTEM "modules/OAuth2.xml">
