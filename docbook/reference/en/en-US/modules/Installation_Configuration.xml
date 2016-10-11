@@ -686,12 +686,12 @@ public class MyApplication extends Application
 &lt;/servlet-mapping&gt;</programlisting>
         </para>
         <para>
-            Then the value of Resteasy-servlet.mapping.prefix must be:
+            Then the value of resteasy.servlet.mapping.prefix must be:
         </para>
         <para>
             <programlisting>
 &lt;context-param&gt;
-&lt;param-name&gt;Resteasy.servlet.mapping.prefix&lt;/param-name&gt;
+&lt;param-name&gt;resteasy.servlet.mapping.prefix&lt;/param-name&gt;
 &lt;param-value&gt;/restful-services&lt;/param-value&gt;
 &lt;/context-param&gt;</programlisting>
         </para>
