@@ -16,6 +16,7 @@ import javax.ws.rs.ext.Providers;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 
 /**
@@ -80,14 +81,7 @@ public class JWSBuilder
       if (type != null) builder.append(",\"typ\" : \"").append(type).append("\"");
       if (contentType != null) builder.append(",\"cty\":\"").append(contentType).append("\"");
       builder.append("}");
-      try
-      {
-         return Base64Url.encode(builder.toString().getBytes("UTF-8"));
-      }
-      catch (UnsupportedEncodingException e)
-      {
-         throw new RuntimeException(e);
-      }
+      return Base64Url.encode(builder.toString().getBytes(StandardCharsets.UTF_8));
    }
 
    protected String encode(Algorithm alg, byte[] data, byte[] signature)

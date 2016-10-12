@@ -23,6 +23,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.io.FileInputStream;
 import java.io.ByteArrayInputStream;
 
@@ -119,7 +120,7 @@ public class BigSmallDataSourceTest {
     @Test
     public void testEchoDataSourceSmallData() throws Exception {
         WebTarget target = client.target(generateURL("/jaf/echo"));
-        byte[] input = "Hello World!".getBytes("utf-8");
+        byte[] input = "Hello World!".getBytes(StandardCharsets.UTF_8);
         Response response = target.request().post(Entity.entity(input, MediaType.APPLICATION_OCTET_STREAM));
         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 

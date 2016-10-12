@@ -5,6 +5,8 @@ import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Variant;
+
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +29,7 @@ public class VariantSelectionTest {
     public void mostSpecific() {
         ServerDrivenNegotiation negotiation = new ServerDrivenNegotiation();
         negotiation.setAcceptHeaders(Arrays.asList("text/plain"));
-        negotiation.setAcceptCharsetHeaders(Arrays.asList("UTF-8"));
+        negotiation.setAcceptCharsetHeaders(Arrays.asList(StandardCharsets.UTF_8.name()));
         negotiation.setAcceptEncodingHeaders(Arrays.asList("gzip"));
         negotiation.setAcceptLanguageHeaders(Arrays.asList("en-gb"));
 

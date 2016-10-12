@@ -8,6 +8,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 @Path("/test")
 public class CharSetResource {
@@ -16,18 +17,14 @@ public class CharSetResource {
 
     @POST
     @Consumes("application/xml")
-    public Response post(CharSetCustomer cust) {
+    public Response post(CharSetCustomer cust) throws UnsupportedEncodingException {
         logger.info(cust.getName());
         String name = "bill\u00E9";
         boolean equal = false;
-        try {
-            String test = new String(name.getBytes("UTF-8"), "UTF-8");
-            if (test.compareTo(cust.getName()) == 0) {
-                equal = true;
-            }
-        } catch (UnsupportedEncodingException e) {
-            Assert.fail("Not supported encoding.");
-        }
+        String test = new String(name.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+		if (test.compareTo(cust.getName()) == 0) {
+		    equal = true;
+		}
         return equal ? Response.ok().build() : Response.serverError().build();
     }
 

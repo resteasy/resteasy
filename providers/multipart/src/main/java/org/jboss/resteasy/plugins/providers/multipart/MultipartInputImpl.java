@@ -47,6 +47,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Iterator;
@@ -232,7 +233,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
    {
       String header = HttpHeaders.CONTENT_TYPE + ": " + contentType
               + "\r\n\r\n";
-      return new ByteArrayInputStream(header.getBytes("utf-8"));
+      return new ByteArrayInputStream(header.getBytes(StandardCharsets.UTF_8));
    }
 
    public String getPreamble()

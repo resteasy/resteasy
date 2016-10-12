@@ -18,6 +18,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -43,7 +45,7 @@ public class UsersService
    {
       String password = user.getCredentials().remove("password");
       MessageDigest digest = MessageDigest.getInstance("MD5");
-      String hashPassword = Base64.encodeBytes(digest.digest(password.getBytes("UTF-8")));
+      String hashPassword = Base64.encodeBytes(digest.digest(password.getBytes(StandardCharsets.UTF_8)));
       user.getCredentials().clear();
       user.getCredentials().put("password-hash", hashPassword);
       if (user.getId() == null)
@@ -85,7 +87,7 @@ public class UsersService
       {
          String password = user.getCredentials().remove("password");
          MessageDigest digest = MessageDigest.getInstance("MD5");
-         String hashPassword = Base64.encodeBytes(digest.digest(password.getBytes("UTF-8")));
+         String hashPassword = Base64.encodeBytes(digest.digest(password.getBytes(StandardCharsets.UTF_8)));
          stored.getCredentials().put("password", hashPassword);
       }
       cache.put("/users/" + id, stored, -1, TimeUnit.MILLISECONDS);

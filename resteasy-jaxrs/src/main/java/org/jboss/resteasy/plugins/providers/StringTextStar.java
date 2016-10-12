@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -60,7 +61,7 @@ public class StringTextStar implements MessageBodyReader<String>, MessageBodyWri
                        OutputStream entityStream) throws IOException
    {
       String charset = mediaType.getParameters().get("charset");
-      if (charset == null) entityStream.write(o.getBytes("UTF-8"));
+      if (charset == null) entityStream.write(o.getBytes(StandardCharsets.UTF_8));
       else entityStream.write(o.getBytes(charset));
 
    }

@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.interfaces.RSAPublicKey;
 
@@ -94,15 +95,8 @@ public class JWEBuilder
       if (type != null) builder.append(",\"typ\" : \"").append(type).append("\"");
       if (contentType != null) builder.append(",\"cty\":\"").append(contentType).append("\"");
       builder.append("}");
-      try
-      {
-         String json = builder.toString();
-         return Base64Url.encode(json.getBytes("UTF-8"));
-      }
-      catch (UnsupportedEncodingException e)
-      {
-         throw new RuntimeException(e);
-      }
+      String json = builder.toString();
+	 return Base64Url.encode(json.getBytes(StandardCharsets.UTF_8));
    }
 
    @SuppressWarnings({"unchecked", "rawtypes"})
@@ -188,7 +182,7 @@ public class JWEBuilder
       public String dir(String secret)
       {
          MessageDigest digest = encryptionMethod.createSecretDigester();
-         byte[] hash = digest.digest(secret.getBytes(Charset.forName("UTF-8")));
+         byte[] hash = digest.digest(secret.getBytes(StandardCharsets.UTF_8));
          return dir(hash);
       }
 

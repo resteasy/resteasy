@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.Security;
@@ -173,7 +174,7 @@ public class EnvelopedTest {
             Assert.assertEquals("Wrong decoded content", "<customer name=\"bill\"/>", body.trim());
         }
         {
-            ByteArrayInputStream is = new ByteArrayInputStream(python_smime.getBytes("utf-8"));
+            ByteArrayInputStream is = new ByteArrayInputStream(python_smime.getBytes(StandardCharsets.UTF_8));
             MimeBodyPart mp = decode2Mime(is);
 
             Assert.assertEquals("Wrong media type of content", "application/xml", mp.getContentType());
@@ -196,7 +197,7 @@ public class EnvelopedTest {
         builder.append("Content-Disposition: attachment; filename=\"smime.p7m\"\r\n");
         builder.append("Content-Type: application/pkcs7-mime; smime-type=enveloped-data; name=\"smime.p7m\"\r\n");
         builder.append("Content-Transfer-Encoding: base64\r\n\r\n");
-        ByteArrayInputStream is = new ByteArrayInputStream(builder.toString().getBytes("utf-8"));
+        ByteArrayInputStream is = new ByteArrayInputStream(builder.toString().getBytes(StandardCharsets.UTF_8));
         MimeBodyPart mp = new MimeBodyPart(new SequenceInputStream(is, body));
         return decode2Mime(mp);
     }

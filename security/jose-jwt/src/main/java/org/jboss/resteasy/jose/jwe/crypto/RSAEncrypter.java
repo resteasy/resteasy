@@ -10,6 +10,7 @@ import org.jboss.resteasy.jose.jwe.EncryptionMethod;
 import javax.crypto.SecretKey;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.interfaces.RSAPublicKey;
@@ -102,7 +103,7 @@ public class RSAEncrypter
       byte[] plainText = DeflateHelper.applyCompression(compressionAlgorithm, bytes);
 
       // Compose the AAD
-      byte[] aad = encodedJWEHeader.getBytes(Charset.forName("UTF-8"));
+      byte[] aad = encodedJWEHeader.getBytes(StandardCharsets.UTF_8);
 
       // Encrypt the plain text according to the JWE enc
       byte[] iv;

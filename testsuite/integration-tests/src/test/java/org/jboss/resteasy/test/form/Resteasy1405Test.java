@@ -7,6 +7,7 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static org.junit.Assert.assertEquals;
 
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -129,7 +130,7 @@ public class Resteasy1405Test
    private String asXml(Object obj) throws JAXBException
    {
       Marshaller m = jaxbc.createMarshaller();
-      m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+      m.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
 
       StringWriter writer = new StringWriter();
       m.marshal(obj, writer);

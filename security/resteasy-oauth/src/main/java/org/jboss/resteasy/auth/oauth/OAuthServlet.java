@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -244,17 +245,17 @@ public class OAuthServlet extends HttpServlet {
                 return;
             }
             
-            String consumerKey = URLDecoder.decode(values[0], "UTF-8");
+            String consumerKey = URLDecoder.decode(values[0], StandardCharsets.UTF_8.name());
             String displayName = null;
             values = req.getParameterValues("xoauth_consumer_display_name");
             if (values != null && values.length == 1) {
-                displayName = URLDecoder.decode(values[0], "UTF-8");
+                displayName = URLDecoder.decode(values[0], StandardCharsets.UTF_8.name());
             }
             
             String connectURI = null;
             values = req.getParameterValues("xoauth_consumer_connect_uri");
             if (values != null && values.length == 1) {
-                connectURI = URLDecoder.decode(values[0], "UTF-8");
+                connectURI = URLDecoder.decode(values[0], StandardCharsets.UTF_8.name());
             }
             
             org.jboss.resteasy.auth.oauth.OAuthConsumer consumer = 
@@ -294,7 +295,7 @@ public class OAuthServlet extends HttpServlet {
                 return;
             }
             
-            String consumerKey = URLDecoder.decode(values[0], "UTF-8");
+            String consumerKey = URLDecoder.decode(values[0], StandardCharsets.UTF_8.name());
             String[] scopes = req.getParameterValues("xoauth_scope");
             if (scopes != null) {
                 provider.registerConsumerScopes(consumerKey, scopes);

@@ -23,6 +23,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -124,7 +125,7 @@ public class TokenService
       if (user == null) throw new WebApplicationException(401);
       String password = auth.getPasswordCredentials().getPassword();
       MessageDigest digest = MessageDigest.getInstance("MD5");
-      String hashPassword = Base64.encodeBytes(digest.digest(password.getBytes("UTF-8")));
+      String hashPassword = Base64.encodeBytes(digest.digest(password.getBytes(StandardCharsets.UTF_8)));
       String savedPassword = user.getCredentials().get("password-hash");
       if (!hashPassword.equals(savedPassword)) throw new WebApplicationException(401);
 
@@ -175,7 +176,7 @@ public class TokenService
       if (user == null) throw new WebApplicationException(401);
       String password = auth.getPasswordCredentials().getPassword();
       MessageDigest digest = MessageDigest.getInstance("MD5");
-      String hashPassword = Base64.encodeBytes(digest.digest(password.getBytes("UTF-8")));
+      String hashPassword = Base64.encodeBytes(digest.digest(password.getBytes(StandardCharsets.UTF_8)));
       String savedPassword = user.getCredentials().get("password-hash");
       if (!hashPassword.equals(savedPassword)) throw new WebApplicationException(401);
 
