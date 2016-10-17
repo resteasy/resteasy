@@ -16,7 +16,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -92,7 +91,7 @@ public class StringUtils {
 		return sequence.replaceAll("\\<.*?>", "");
 	}
 
-	public static String parseUTF8(String encodedString) throws UnsupportedEncodingException {
+	public static String parseUTF8(String encodedString)  {
 
 		return new String(encodedString.getBytes(), StandardCharsets.UTF_8);
 	}

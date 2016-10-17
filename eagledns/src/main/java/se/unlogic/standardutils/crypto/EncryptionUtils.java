@@ -97,7 +97,7 @@ public class EncryptionUtils {
 		}
 	}
 
-	public static String mysqlPasswordHash(String string) throws UnsupportedEncodingException{
+	public static String mysqlPasswordHash(String string) {
 
 		try {
 			MessageDigest digest = MessageDigest.getInstance(HashAlgorithms.SHA1);

@@ -7,7 +7,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 @Path("/test")
@@ -17,7 +16,7 @@ public class CharSetResource {
 
     @POST
     @Consumes("application/xml")
-    public Response post(CharSetCustomer cust) throws UnsupportedEncodingException {
+    public Response post(CharSetCustomer cust)  {
         logger.info(cust.getName());
         String name = "bill\u00E9";
         boolean equal = false;
