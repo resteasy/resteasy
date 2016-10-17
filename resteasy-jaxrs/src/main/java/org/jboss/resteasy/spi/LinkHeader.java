@@ -1,14 +1,11 @@
 package org.jboss.resteasy.spi;
 
 import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
-import org.jboss.resteasy.specimpl.LinkBuilderImpl;
-import org.jboss.resteasy.specimpl.LinkImpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.Link;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -28,7 +25,7 @@ public class LinkHeader
 
    public LinkHeader addLink(final String title, final String rel, final String href, final String type)
    {
-      final Link link = new LinkBuilderImpl().uri(href).rel(rel).title(title).type(type).build();
+      final Link link = new Link(title, rel, href, type, null);
       return addLink(link);
    }
 

@@ -28,9 +28,9 @@ public class LinkHeaders
       for (String val : values)
       {
          LinkHeader linkHeader = new LinkHeaderDelegate().fromString(val);
-         for (Link link : linkHeader.getLinks())
+         for (org.jboss.resteasy.spi.Link link : linkHeader.getLinks())
          {
-            addLink(link);
+            addLink(link.toJaxrsLink());
          }
       }
       return this;

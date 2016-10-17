@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response.Status;
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.Message.Format;
 import org.jboss.logging.annotations.MessageBundle;
+import org.jboss.resteasy.logging.Logger.LoggerType;
 import org.jboss.resteasy.util.WeightedLanguage;
 
 /**
@@ -195,8 +196,8 @@ public interface Messages
    @Message(id = BASE + 225, value = "URITemplateAnnotationResolver could not introspect class %s")
    String couldNotIntrospectClass(String className);
 
-// @Message(id = BASE + 230, value = "Could not match up an implementation for LoggerType: %s")
-// String couldNotMatchUpLoggerTypeImplementation(LoggerType loggerType);
+   @Message(id = BASE + 230, value = "Could not match up an implementation for LoggerType: %s")
+   String couldNotMatchUpLoggerTypeImplementation(LoggerType loggerType);
    
    @Message(id = BASE + 235, value = "Could not process method %s")
    String couldNotProcessMethod(Method method);

@@ -1,10 +1,9 @@
 package org.jboss.resteasy.client.spring;
 
 import org.apache.http.client.HttpClient;
-import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
+import org.jboss.resteasy.client.ClientExecutor;
+import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.springframework.beans.factory.FactoryBean;
@@ -38,7 +37,7 @@ public class RestClientProxyFactoryBean<T> implements FactoryBean<T>,
    private URI baseUri;
    private T client;
    private HttpClient httpClient;
-   private ClientHttpEngine clientEngine;
+   private ClientExecutor clientExecutor;
    private ResteasyProviderFactory resteasyProviderFactory;
 
    /*
@@ -82,22 +81,23 @@ public class RestClientProxyFactoryBean<T> implements FactoryBean<T>,
       if (resteasyProviderFactory == null)
          resteasyProviderFactory = ResteasyProviderFactory.getInstance();
       RegisterBuiltin.register(resteasyProviderFactory);
-      ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder();
-      clientBuilder.providerFactory(resteasyProviderFactory);
-      
-      if (clientEngine == null)
+
+      if (clientExecutor == null)
       {
          if (httpClient == null)
          {
-            clientEngine = new ApacheHttpClient4Engine();
+            clientExecutor = new ApacheHttpClient4Executor();
          }
          else
          {
-            clientEngine = new ApacheHttpClient4Engine(httpClient);
+            clientExecutor = new ApacheHttpClient4Executor(httpClient);
          }
+         client = ProxyFactory.create(serviceInterface, baseUri, clientExecutor,
+                 resteasyProviderFactory);
       }
-      ResteasyWebTarget target = clientBuilder.httpEngine(clientEngine).build().target(baseUri);
-      client = target.proxy(serviceInterface);
+      else
+         client = ProxyFactory.create(serviceInterface, baseUri,
+                 clientExecutor, resteasyProviderFactory);
    }
 
    public Class<T> getServiceInterface()
@@ -136,7 +136,7 @@ public class RestClientProxyFactoryBean<T> implements FactoryBean<T>,
    }
 
    /**
-    * Optional property. If this property is set and {@link #clientEngine} is
+    * Optional property. If this property is set and {@link #clientExecutor} is
     * null, this will be used by proxy generation. This could be useful for
     * example when you want to use a
     * {@link org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager}
@@ -152,9 +152,9 @@ public class RestClientProxyFactoryBean<T> implements FactoryBean<T>,
       this.httpClient = httpClient;
    }
 
-   public ClientHttpEngine getClientEngine()
+   public ClientExecutor getClientExecutor()
    {
-      return clientEngine;
+      return clientExecutor;
    }
 
    /**
@@ -166,9 +166,9 @@ public class RestClientProxyFactoryBean<T> implements FactoryBean<T>,
     * @see ProxyFactory#create(Class, URI, ClientExecutor,
     *      ResteasyProviderFactory)
     */
-   public void setClientExecutor(ClientHttpEngine clientEngine)
+   public void setClientExecutor(ClientExecutor clientExecutor)
    {
-      this.clientEngine = clientEngine;
+      this.clientExecutor = clientExecutor;
    }
 
    public ResteasyProviderFactory getResteasyProviderFactory()

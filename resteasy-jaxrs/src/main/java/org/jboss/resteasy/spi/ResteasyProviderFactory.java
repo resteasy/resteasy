@@ -1,11 +1,22 @@
 package org.jboss.resteasy.spi;
 
+import org.jboss.resteasy.annotations.interception.ClientInterceptor;
+import org.jboss.resteasy.annotations.interception.DecoderPrecedence;
+import org.jboss.resteasy.annotations.interception.EncoderPrecedence;
+import org.jboss.resteasy.annotations.interception.HeaderDecoratorPrecedence;
+import org.jboss.resteasy.annotations.interception.RedirectPrecedence;
+import org.jboss.resteasy.annotations.interception.SecurityPrecedence;
+import org.jboss.resteasy.annotations.interception.ServerInterceptor;
+import org.jboss.resteasy.client.core.ClientErrorInterceptor;
+import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.core.interception.ClientResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.ContainerRequestFilterRegistry;
 import org.jboss.resteasy.core.interception.ContainerResponseFilterRegistry;
+import org.jboss.resteasy.core.interception.InterceptorRegistry;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.core.interception.LegacyPrecedence;
 import org.jboss.resteasy.core.interception.ReaderInterceptorRegistry;
 import org.jboss.resteasy.core.interception.WriterInterceptorRegistry;
 import org.jboss.resteasy.plugins.delegates.CacheControlDelegate;
@@ -25,6 +36,11 @@ import org.jboss.resteasy.specimpl.LinkBuilderImpl;
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.specimpl.VariantListBuilderImpl;
+import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
+import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
+import org.jboss.resteasy.spi.interception.MessageBodyWriterInterceptor;
+import org.jboss.resteasy.spi.interception.PostProcessInterceptor;
+import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.PickConstructor;
 import org.jboss.resteasy.util.ThreadLocalStack;
@@ -142,13 +158,16 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected MediaTypeMap<SortedKey<MessageBodyReader>> clientMessageBodyReaders;
    protected MediaTypeMap<SortedKey<MessageBodyWriter>> clientMessageBodyWriters;
    protected Map<Class<?>, ExceptionMapper> exceptionMappers;
+   protected Map<Class<?>, ClientExceptionMapper> clientExceptionMappers;
    protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> contextResolvers;
+   protected Map<Class<?>, StringConverter> stringConverters;
    protected List<ParamConverterProvider> paramConverterProviders;
    protected Map<Class<?>, Class<? extends StringParameterUnmarshaller>> stringParameterUnmarshallers;
    protected Map<Class<?>, Map<Class<?>, Integer>> classContracts;
 
    protected Map<Class<?>, HeaderDelegate> headerDelegates;
 
+   protected LegacyPrecedence precedence;
    protected ReaderInterceptorRegistry serverReaderInterceptorRegistry;
    protected WriterInterceptorRegistry serverWriterInterceptorRegistry;
    protected ContainerRequestFilterRegistry containerRequestFilterRegistry;
@@ -158,6 +177,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected ClientResponseFilterRegistry clientResponseFilters;
    protected ReaderInterceptorRegistry clientReaderInterceptorRegistry;
    protected WriterInterceptorRegistry clientWriterInterceptorRegistry;
+   protected InterceptorRegistry<ClientExecutionInterceptor> clientExecutionInterceptorRegistry;
+
+   protected List<ClientErrorInterceptor> clientErrorInterceptors;
 
    protected boolean builtinsRegistered = false;
    protected boolean registerBuiltins = true;
@@ -240,26 +262,33 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       clientMessageBodyReaders = new MediaTypeMap<SortedKey<MessageBodyReader>>();
       clientMessageBodyWriters = new MediaTypeMap<SortedKey<MessageBodyWriter>>();
       exceptionMappers = new ConcurrentHashMap<Class<?>, ExceptionMapper>();
+      clientExceptionMappers = new ConcurrentHashMap<Class<?>, ClientExceptionMapper>();
       contextResolvers = new ConcurrentHashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
       paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>();
+      stringConverters = new ConcurrentHashMap<Class<?>, StringConverter>();
       stringParameterUnmarshallers = new ConcurrentHashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
 
       headerDelegates = new ConcurrentHashMap<Class<?>, HeaderDelegate>();
 
-      serverReaderInterceptorRegistry = new ReaderInterceptorRegistry(this);
-      serverWriterInterceptorRegistry = new WriterInterceptorRegistry(this);
-      containerRequestFilterRegistry = new ContainerRequestFilterRegistry(this);
-      containerResponseFilterRegistry = new ContainerResponseFilterRegistry(this);
+      precedence = new LegacyPrecedence();
+      serverReaderInterceptorRegistry = new ReaderInterceptorRegistry(this, precedence);
+      serverWriterInterceptorRegistry = new WriterInterceptorRegistry(this, precedence);
+      containerRequestFilterRegistry = new ContainerRequestFilterRegistry(this, precedence);
+      containerResponseFilterRegistry = new ContainerResponseFilterRegistry(this, precedence);
 
       clientRequestFilters = new JaxrsInterceptorRegistry<ClientRequestFilter>(this, ClientRequestFilter.class);
       clientResponseFilters = new ClientResponseFilterRegistry(this);
-      clientReaderInterceptorRegistry = new ReaderInterceptorRegistry(this);
-      clientWriterInterceptorRegistry = new WriterInterceptorRegistry(this);
+      clientReaderInterceptorRegistry = new ReaderInterceptorRegistry(this, precedence);
+      clientWriterInterceptorRegistry = new WriterInterceptorRegistry(this, precedence);
+      clientExecutionInterceptorRegistry = new InterceptorRegistry<ClientExecutionInterceptor>(ClientExecutionInterceptor.class, this);
+
+      clientErrorInterceptors = new CopyOnWriteArrayList<ClientErrorInterceptor>();
 
       builtinsRegistered = false;
       registerBuiltins = true;
 
       injectorFactory = new InjectorFactoryImpl();
+      registerDefaultInterceptorPrecedences();
       addHeaderDelegate(MediaType.class, new MediaTypeHeaderDelegate());
       addHeaderDelegate(NewCookie.class, new NewCookieHeaderDelegate());
       addHeaderDelegate(Cookie.class, new CookieHeaderDelegate());
@@ -317,12 +346,23 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return exceptionMappers;
    }
 
+   protected Map<Class<?>, ClientExceptionMapper> getClientExceptionMappers()
+   {
+      if (clientExceptionMappers == null && parent != null) return parent.getClientExceptionMappers();
+      return clientExceptionMappers;
+   }
+
    protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> getContextResolvers()
    {
       if (contextResolvers == null && parent != null) return parent.getContextResolvers();
       return contextResolvers;
    }
-
+ 
+   protected Map<Class<?>, StringConverter> getStringConverters()
+   {
+      if (stringConverters == null && parent != null) return parent.getStringConverters();
+      return stringConverters;
+   }
    protected List<ParamConverterProvider> getParamConverterProviders()
    {
       if (paramConverterProviders == null && parent != null) return parent.getParamConverterProviders();
@@ -381,10 +421,96 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return classContracts;
    }
    
+   protected LegacyPrecedence getPrecedence()
+   {
+      if (precedence == null && parent != null) return parent.getPrecedence();
+      return precedence;
+   }
+
    public ResteasyProviderFactory getParent()
    {
       return parent;
    }
+
+   protected void registerDefaultInterceptorPrecedences(InterceptorRegistry registry)
+   {
+      // legacy
+      registry.appendPrecedence(SecurityPrecedence.PRECEDENCE_STRING);
+     registry.appendPrecedence(HeaderDecoratorPrecedence.PRECEDENCE_STRING);
+      registry.appendPrecedence(EncoderPrecedence.PRECEDENCE_STRING);
+      registry.appendPrecedence(RedirectPrecedence.PRECEDENCE_STRING);
+      registry.appendPrecedence(DecoderPrecedence.PRECEDENCE_STRING);
+
+   }
+
+   protected void registerDefaultInterceptorPrecedences()
+   {
+      precedence.addPrecedence(SecurityPrecedence.PRECEDENCE_STRING, Priorities.AUTHENTICATION);
+      precedence.addPrecedence(HeaderDecoratorPrecedence.PRECEDENCE_STRING, Priorities.HEADER_DECORATOR);
+      precedence.addPrecedence(EncoderPrecedence.PRECEDENCE_STRING, Priorities.ENTITY_CODER);
+      precedence.addPrecedence(RedirectPrecedence.PRECEDENCE_STRING, Priorities.ENTITY_CODER + 50);
+      precedence.addPrecedence(DecoderPrecedence.PRECEDENCE_STRING, Priorities.ENTITY_CODER);
+
+     registerDefaultInterceptorPrecedences(getClientExecutionInterceptorRegistry());
+   }
+
+   /**
+    * Append interceptor predence
+    *
+    * @param precedence
+    */
+   public void appendInterceptorPrecedence(String precedence)
+   {
+      if (this.precedence == null)
+      {
+         this.precedence = parent.getPrecedence().clone();
+      }
+      if (clientExecutionInterceptorRegistry == null)
+      {
+         clientExecutionInterceptorRegistry = parent.getClientExecutionInterceptorRegistry().cloneTo(this);
+      }
+      this.precedence.appendPrecedence(precedence);
+      clientExecutionInterceptorRegistry.appendPrecedence(precedence);
+   }
+
+   /**
+    * @param after         put newPrecedence after this
+    * @param newPrecedence
+    */
+   public void insertInterceptorPrecedenceAfter(String after, String newPrecedence)
+   {
+      if (this.precedence == null)
+     {
+         this.precedence = parent.getPrecedence().clone();
+      }
+      if (clientExecutionInterceptorRegistry == null)
+      {
+         clientExecutionInterceptorRegistry = parent.getClientExecutionInterceptorRegistry().cloneTo(this);
+      }
+      this.precedence.insertPrecedenceAfter(after, newPrecedence);
+
+      getClientExecutionInterceptorRegistry().insertPrecedenceAfter(after, newPrecedence);
+   }
+
+  /**
+    * @param before        put newPrecedence before this
+    * @param newPrecedence
+    */
+   public void insertInterceptorPrecedenceBefore(String before, String newPrecedence)
+   {
+      if (this.precedence == null)
+      {
+         this.precedence = parent.getPrecedence().clone();
+      }
+      if (clientExecutionInterceptorRegistry == null)
+      {
+         clientExecutionInterceptorRegistry = parent.getClientExecutionInterceptorRegistry().cloneTo(this);
+      }
+      this.precedence.insertPrecedenceBefore(before, newPrecedence);
+
+      getClientExecutionInterceptorRegistry().insertPrecedenceBefore(before, newPrecedence);
+   }
+
 
    public static <T> void pushContext(Class<T> type, T data)
    {
@@ -533,6 +659,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public void setInjectorFactory(InjectorFactory injectorFactory)
    {
       this.injectorFactory = injectorFactory;
+   }
+
+   public InterceptorRegistry<ClientExecutionInterceptor> getClientExecutionInterceptorRegistry()
+   {
+      if (clientExecutionInterceptorRegistry == null && parent != null)
+         return parent.getClientExecutionInterceptorRegistry();
+      return clientExecutionInterceptorRegistry;
    }
 
    public ReaderInterceptorRegistry getServerReaderInterceptorRegistry()
@@ -930,6 +1063,66 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       exceptionMappers.put(exceptionClass, provider);
    }
 
+   public void addClientExceptionMapper(Class<? extends ClientExceptionMapper<?>> providerClass)
+   {
+      ClientExceptionMapper<?> provider = createProviderInstance(providerClass);
+      addClientExceptionMapper(provider, providerClass);
+   }
+
+   public void addClientExceptionMapper(ClientExceptionMapper<?> provider)
+   {
+      addClientExceptionMapper(provider, provider.getClass());
+   }
+
+   public void addClientExceptionMapper(ClientExceptionMapper<?> provider, Class<?> providerClass)
+   {
+      Type exceptionType = Types.getActualTypeArgumentsOfAnInterface(providerClass, ClientExceptionMapper.class)[0];
+      addClientExceptionMapper(provider, exceptionType);
+   }
+
+   public void addClientExceptionMapper(ClientExceptionMapper<?> provider, Type exceptionType)
+   {
+     injectProperties(provider.getClass());
+
+      Class<?> exceptionClass = Types.getRawType(exceptionType);
+      if (!Throwable.class.isAssignableFrom(exceptionClass))
+      {
+         throw new RuntimeException(Messages.MESSAGES.incorrectTypeParameterClientExceptionMapper());
+      }
+      if (clientExceptionMappers == null)
+      {
+         clientExceptionMappers = new ConcurrentHashMap<Class<?>, ClientExceptionMapper>();
+         clientExceptionMappers.putAll(parent.getClientExceptionMappers());
+      }
+      clientExceptionMappers.put(exceptionClass, provider);
+   }
+
+   /**
+    * Add a {@link ClientErrorInterceptor} to this provider factory instance.
+    * Duplicate handlers are ignored. (For Client Proxy API only)
+    */
+   public void addClientErrorInterceptor(ClientErrorInterceptor handler)
+   {
+      if (clientErrorInterceptors == null)
+     {
+         clientErrorInterceptors = new CopyOnWriteArrayList<ClientErrorInterceptor>(parent.getClientErrorInterceptors());
+      }
+     if (!clientErrorInterceptors.contains(handler))
+      {
+         clientErrorInterceptors.add(handler);
+      }
+   }
+
+
+  /**
+    * Return the list of currently registered {@link ClientErrorInterceptor} instances.
+    */
+   public List<ClientErrorInterceptor> getClientErrorInterceptors()
+   {
+      if (clientErrorInterceptors == null && parent != null) return parent.getClientErrorInterceptors();
+      return clientErrorInterceptors;
+   }
+
    protected void addContextResolver(Class<? extends ContextResolver> resolver, boolean builtin)
    {
       ContextResolver writer = createProviderInstance(resolver);
@@ -986,6 +1179,35 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
    }
 
+   protected void addStringConverter(Class<? extends StringConverter> resolver)
+   {
+      StringConverter writer = createProviderInstance(resolver);
+      addStringConverter(writer, resolver);
+   }
+
+   protected void addStringConverter(StringConverter provider)
+   {
+      addStringConverter(provider, provider.getClass());
+   }
+
+   protected void addStringConverter(StringConverter provider, Class providerClass)
+   {
+      Type parameter = Types.getActualTypeArgumentsOfAnInterface(providerClass, StringConverter.class)[0];
+      addStringConverter(provider, parameter);
+   }
+
+   protected void addStringConverter(StringConverter provider, Type typeParameter)
+   {
+      injectProperties(provider.getClass(), provider);
+      Class<?> parameterClass = Types.getRawType(typeParameter);
+      if (stringConverters == null)
+      {
+         stringConverters = new ConcurrentHashMap<Class<?>, StringConverter>();
+         stringConverters.putAll(parent.getStringConverters());
+      }
+      stringConverters.put(parameterClass, provider);
+   }
+
    public void addStringParameterUnmarshaller(Class<? extends StringParameterUnmarshaller> provider)
    {
       if (stringParameterUnmarshallers == null)
@@ -1006,6 +1228,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             }
          }
       }
+   }
+
+   public StringConverter getStringConverter(Class<?> clazz)
+   {
+      if (getStringConverters().size() == 0) return null;
+      return getStringConverters().get(clazz);
    }
 
    public List<ContextResolver> getContextResolvers(Class<?> clazz, MediaType type)
@@ -1074,7 +1302,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          return paramConverter.toString(object);
       }
-      return object.toString();
+      StringConverter converter = getStringConverter(object
+              .getClass());
+      if (converter != null)
+         return converter.toString(object);
+      else
+         return object.toString();
+
    }
 
    @Override
@@ -1087,6 +1321,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          return paramConverter.toString(object);
       }
+      StringConverter converter = getStringConverter(aClass);
+      if (converter != null)
+         return converter.toString(object);
+
       HeaderDelegate delegate = getHeaderDelegate(aClass);
       if (delegate != null)
          return delegate.toString(object);
@@ -1220,6 +1458,18 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             throw new RuntimeException(Messages.MESSAGES.unableToInstantiateExceptionMapper(), e);
          }
       }
+      if (isA(provider, ClientExceptionMapper.class, contracts))
+      {
+         try
+         {
+            addClientExceptionMapper(provider);
+            newContracts.put(ClientExceptionMapper.class, getPriority(priorityOverride, contracts, ClientExceptionMapper.class, provider));
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateClientExceptionMapper(), e);
+         }
+      }
       if (isA(provider, ClientRequestFilter.class, contracts))
       {
          if (clientRequestFilters == null)
@@ -1239,6 +1489,33 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          int priority = getPriority(priorityOverride, contracts, ClientResponseFilter.class, provider);
          clientResponseFilters.registerClass(provider, priority);
          newContracts.put(ClientResponseFilter.class, priority);
+      }
+      if (isA(provider, ClientExecutionInterceptor.class, contracts))
+      {
+         if (clientExecutionInterceptorRegistry == null)
+         {
+            clientExecutionInterceptorRegistry = parent.getClientExecutionInterceptorRegistry().cloneTo(this);
+         }
+         clientExecutionInterceptorRegistry.register(provider);
+         newContracts.put(ClientExecutionInterceptor.class, 0);
+      }
+      if (isA(provider, PreProcessInterceptor.class, contracts))
+      {
+         if (containerRequestFilterRegistry == null)
+         {
+            containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(this);
+         }
+         containerRequestFilterRegistry.registerLegacy(provider);
+         newContracts.put(PreProcessInterceptor.class, 0);
+      }
+      if (isA(provider, PostProcessInterceptor.class, contracts))
+      {
+         if (containerResponseFilterRegistry == null)
+         {
+            containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
+         }
+         containerResponseFilterRegistry.registerLegacy(provider);
+         newContracts.put(PostProcessInterceptor.class, 0);
       }
       if (isA(provider, ContainerRequestFilter.class, contracts))
       {
@@ -1330,6 +1607,56 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          newContracts.put(WriterInterceptor.class, priority);
       }
+      if (isA(provider, MessageBodyWriterInterceptor.class, contracts))
+      {
+         if (provider.isAnnotationPresent(ServerInterceptor.class))
+         {
+            if (serverWriterInterceptorRegistry == null)
+            {
+               serverWriterInterceptorRegistry = parent.getServerWriterInterceptorRegistry().clone(this);
+            }
+            serverWriterInterceptorRegistry.registerLegacy(provider);
+         }
+         if (provider.isAnnotationPresent(ClientInterceptor.class))
+         {
+            if (clientWriterInterceptorRegistry == null)
+            {
+               clientWriterInterceptorRegistry = parent.getClientWriterInterceptorRegistry().clone(this);
+            }
+            clientWriterInterceptorRegistry.registerLegacy(provider);
+         }
+         if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
+         {
+            throw new RuntimeException(Messages.MESSAGES.interceptorClassMustBeAnnotated());
+         }
+         newContracts.put(MessageBodyWriterInterceptor.class, 0);
+
+      }
+      if (isA(provider, MessageBodyReaderInterceptor.class, contracts))
+      {
+         if (provider.isAnnotationPresent(ServerInterceptor.class))
+         {
+            if (serverReaderInterceptorRegistry == null)
+            {
+               serverReaderInterceptorRegistry = parent.getServerReaderInterceptorRegistry().clone(this);
+            }
+            serverReaderInterceptorRegistry.registerLegacy(provider);
+         }
+         if (provider.isAnnotationPresent(ClientInterceptor.class))
+         {
+            if (clientReaderInterceptorRegistry == null)
+            {
+               clientReaderInterceptorRegistry = parent.getClientReaderInterceptorRegistry().clone(this);
+            }
+            clientReaderInterceptorRegistry.registerLegacy(provider);
+         }
+         if (!provider.isAnnotationPresent(ServerInterceptor.class) && !provider.isAnnotationPresent(ClientInterceptor.class))
+         {
+            throw new RuntimeException(Messages.MESSAGES.interceptorClassMustBeAnnotated());
+         }
+         newContracts.put(MessageBodyReaderInterceptor.class, 0);
+
+      }
       if (isA(provider, ContextResolver.class, contracts))
       {
          try
@@ -1342,6 +1669,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          {
             throw new RuntimeException(Messages.MESSAGES.unableToInstantiateContextResolver(), e);
          }
+      }
+      if (isA(provider, StringConverter.class, contracts))
+      {
+         addStringConverter(provider);
+         int priority = getPriority(priorityOverride, contracts, StringConverter.class, provider);
+         newContracts.put(StringConverter.class, priority);
       }
       if (isA(provider, StringParameterUnmarshaller.class, contracts))
       {
@@ -1488,6 +1821,18 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             throw new RuntimeException(Messages.MESSAGES.unableToInstantiateExceptionMapper(), e);
          }
       }
+      if (isA(provider, ClientExceptionMapper.class, contracts))
+      {
+         try
+         {
+            addClientExceptionMapper((ClientExceptionMapper) provider);
+            newContracts.put(ClientExceptionMapper.class, 0);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateExceptionMapper(), e);
+         }
+      }
       if (isA(provider, ContextResolver.class, contracts))
       {
          try
@@ -1521,6 +1866,24 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          clientResponseFilters.registerSingleton((ClientResponseFilter) provider, priority);
          newContracts.put(ClientResponseFilter.class, priority);
       }
+      if (isA(provider, ClientExecutionInterceptor.class, contracts))
+      {
+         if (clientExecutionInterceptorRegistry == null)
+         {
+            clientExecutionInterceptorRegistry = parent.getClientExecutionInterceptorRegistry().cloneTo(this);
+         }
+         clientExecutionInterceptorRegistry.register((ClientExecutionInterceptor) provider);
+         newContracts.put(ClientExecutionInterceptor.class, 0);
+      }
+      if (isA(provider, PreProcessInterceptor.class, contracts))
+      {
+         if (containerRequestFilterRegistry == null)
+         {
+            containerRequestFilterRegistry = parent.getContainerRequestFilterRegistry().clone(this);
+         }
+         containerRequestFilterRegistry.registerLegacy((PreProcessInterceptor) provider);
+         newContracts.put(PreProcessInterceptor.class, 0);
+      }
       if (isA(provider, ContainerRequestFilter.class, contracts))
       {
          if (containerRequestFilterRegistry == null)
@@ -1530,6 +1893,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          int priority = getPriority(priorityOverride, contracts, ContainerRequestFilter.class, provider.getClass());
          containerRequestFilterRegistry.registerSingleton((ContainerRequestFilter) provider, priority);
          newContracts.put(ContainerRequestFilter.class, priority);
+      }
+      if (isA(provider, PostProcessInterceptor.class, contracts))
+      {
+         if (containerResponseFilterRegistry == null)
+         {
+            containerResponseFilterRegistry = parent.getContainerResponseFilterRegistry().clone(this);
+         }
+         containerResponseFilterRegistry.registerLegacy((PostProcessInterceptor) provider);
+         newContracts.put(PostProcessInterceptor.class, 0);
       }
       if (isA(provider, ContainerResponseFilter.class, contracts))
       {
@@ -1611,6 +1983,60 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          }
          newContracts.put(WriterInterceptor.class, priority);
       }
+      if (isA(provider, MessageBodyWriterInterceptor.class, contracts))
+      {
+         if (provider.getClass().isAnnotationPresent(ServerInterceptor.class))
+         {
+            if (serverWriterInterceptorRegistry == null)
+            {
+               serverWriterInterceptorRegistry = parent.getServerWriterInterceptorRegistry().clone(this);
+            }
+            serverWriterInterceptorRegistry.registerLegacy((MessageBodyWriterInterceptor) provider);
+         }
+         if (provider.getClass().isAnnotationPresent(ClientInterceptor.class))
+         {
+            if (clientWriterInterceptorRegistry == null)
+            {
+               clientWriterInterceptorRegistry = parent.getClientWriterInterceptorRegistry().clone(this);
+            }
+            clientWriterInterceptorRegistry.registerLegacy((MessageBodyWriterInterceptor) provider);
+         }
+         if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
+         {
+            throw new RuntimeException(Messages.MESSAGES.interceptorClassMustBeAnnotatedWithClass(provider.getClass()));
+         }
+         newContracts.put(MessageBodyWriterInterceptor.class, 0);
+      }
+      if (isA(provider, MessageBodyReaderInterceptor.class, contracts))
+      {
+         if (provider.getClass().isAnnotationPresent(ServerInterceptor.class))
+         {
+            if (serverReaderInterceptorRegistry == null)
+            {
+               serverReaderInterceptorRegistry = parent.getServerReaderInterceptorRegistry().clone(this);
+            }
+            serverReaderInterceptorRegistry.registerLegacy((MessageBodyReaderInterceptor) provider);
+         }
+         if (provider.getClass().isAnnotationPresent(ClientInterceptor.class))
+         {
+            if (clientReaderInterceptorRegistry == null)
+            {
+               clientReaderInterceptorRegistry = parent.getClientReaderInterceptorRegistry().clone(this);
+            }
+            clientReaderInterceptorRegistry.registerLegacy((MessageBodyReaderInterceptor) provider);
+         }
+         if (!provider.getClass().isAnnotationPresent(ServerInterceptor.class) && !provider.getClass().isAnnotationPresent(ClientInterceptor.class))
+         {
+            throw new RuntimeException(Messages.MESSAGES.interceptorClassMustBeAnnotatedWithClass(provider.getClass()));
+         }
+         newContracts.put(MessageBodyReaderInterceptor.class, 0);
+
+      }
+      if (isA(provider, StringConverter.class, contracts))
+      {
+         addStringConverter((StringConverter) provider);
+         newContracts.put(StringConverter.class, 0);
+      }
       if (isA(provider, InjectorFactory.class, contracts))
       {
          this.injectorFactory = (InjectorFactory) provider;
@@ -1680,6 +2106,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          if (mapper == null) exceptionType = exceptionType.getSuperclass();
       }
       return mapper;
+   }
+
+   public <T extends Throwable> ClientExceptionMapper<T> getClientExceptionMapper(Class<T> type)
+   {
+      return getClientExceptionMappers().get(type);
    }
 
    public MediaType getConcreteMediaTypeFromMessageBodyWriters(Class type, Type genericType, Annotation[] annotations, MediaType mediaType)

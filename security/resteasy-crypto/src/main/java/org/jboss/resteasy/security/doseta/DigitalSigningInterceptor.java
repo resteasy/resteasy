@@ -1,7 +1,11 @@
 package org.jboss.resteasy.security.doseta;
 
+import org.jboss.resteasy.annotations.interception.DecoderPrecedence;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.security.doseta.i18n.*;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.interception.ClientExecutionContext;
+import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
@@ -33,8 +37,9 @@ import java.util.List;
  * @version $Revision: 1 $
  */
 @Provider
+@DecoderPrecedence
 @Priority(Priorities.ENTITY_CODER)
-public class DigitalSigningInterceptor implements WriterInterceptor, ContainerResponseFilter, ClientRequestFilter
+public class DigitalSigningInterceptor implements WriterInterceptor, ClientExecutionInterceptor, ContainerResponseFilter, ClientRequestFilter
 {
 
    protected List<DKIMSignature> getHeaders(MultivaluedMap<String, Object> headers)
@@ -56,6 +61,28 @@ public class DigitalSigningInterceptor implements WriterInterceptor, ContainerRe
       }
       return list;
    }
+
+    @Override
+   public ClientResponse execute(ClientExecutionContext context) throws Exception
+   {
+      if (context.getRequest().getBody() != null)
+      {
+         return context.proceed(); // let WriterInterceptor handle this
+
+      }
+
+      MultivaluedMap<String, Object> headers = context.getRequest().getHeadersAsObjects();
+      List<DKIMSignature> list = getHeaders(headers);
+
+      for (DKIMSignature dosetaSignature : list)
+      {
+         KeyRepository repository = (KeyRepository) context.getRequest().getAttributes().get(KeyRepository.class.getName());
+         sign(repository, headers, null, dosetaSignature);
+      }
+
+      return context.proceed();
+   }
+
 
    @Override
    public void filter(ClientRequestContext requestContext) throws IOException

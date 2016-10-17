@@ -193,6 +193,32 @@ public class ResteasyDeployment
             }
          }
 
+         // Interceptor preferences should come before provider registration or builtin.
+
+         if (interceptorPrecedences != null)
+         {
+            for (String precedence : interceptorPrecedences)
+            {
+               providerFactory.appendInterceptorPrecedence(precedence.trim());
+            }
+         }
+
+         if (interceptorBeforePrecedences != null)
+         {
+            for (Map.Entry<String, String> ext : interceptorBeforePrecedences.entrySet())
+            {
+               providerFactory.insertInterceptorPrecedenceBefore(ext.getKey().trim(), ext.getValue().trim());
+            }
+         }
+         if (interceptorAfterPrecedences != null)
+         {
+            for (Map.Entry<String, String> ext : interceptorAfterPrecedences.entrySet())
+            {
+               providerFactory.insertInterceptorPrecedenceAfter(ext.getKey().trim(), ext.getValue().trim());
+            }
+         }
+
+
          if (securityEnabled)
          {
             providerFactory.register(RoleBasedSecurityFeature.class);

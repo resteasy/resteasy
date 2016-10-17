@@ -1,5 +1,8 @@
 package org.jboss.resteasy.client.jaxrs.internal.proxy;
 
+import org.jboss.resteasy.client.core.ClientInvoker;
+import org.jboss.resteasy.client.core.ClientInvokerModifier;
+
 import java.util.Collection;
 
 /**
