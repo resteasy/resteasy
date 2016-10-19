@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.MimeIOException;
@@ -7,20 +8,15 @@ import org.apache.james.mime4j.codec.Base64InputStream;
 import org.apache.james.mime4j.codec.QuotedPrintableInputStream;
 import org.apache.james.mime4j.descriptor.BodyDescriptor;
 import org.apache.james.mime4j.field.ContentTypeField;
-import org.apache.james.mime4j.message.BinaryBody;
-import org.apache.james.mime4j.message.Body;
-import org.apache.james.mime4j.message.BodyFactory;
-import org.apache.james.mime4j.message.BodyPart;
-import org.apache.james.mime4j.message.Entity;
-import org.apache.james.mime4j.message.Message;
-import org.apache.james.mime4j.message.MessageBuilder;
-import org.apache.james.mime4j.message.Multipart;
-import org.apache.james.mime4j.message.TextBody;
+import org.apache.james.mime4j.field.DefaultFieldParser;
+import org.apache.james.mime4j.field.ParsedField;
+import org.apache.james.mime4j.message.*;
 import org.apache.james.mime4j.parser.Field;
 import org.apache.james.mime4j.parser.MimeStreamParser;
 import org.apache.james.mime4j.storage.DefaultStorageProvider;
 import org.apache.james.mime4j.storage.StorageProvider;
-import org.apache.james.mime4j.util.CharsetUtil;
+import org.apache.james.mime4j.util.ByteSequence;
+import org.apache.james.mime4j.util.ContentUtil;
 import org.apache.james.mime4j.util.MimeUtil;
 import org.jboss.resteasy.core.ProvidersContextRetainer;
 import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
@@ -53,6 +49,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -75,6 +73,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
       private Method expectMethod;
       private java.lang.reflect.Field bodyFactoryField;
       private java.lang.reflect.Field stackField;
+      private String charset;
 
       private void init()
       {
@@ -99,28 +98,31 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          init();
       }
 
-      private BinaryOnlyMessageBuilder(Entity entity, StorageProvider storageProvider)
+      private BinaryOnlyMessageBuilder(Entity entity, StorageProvider storageProvider, String charset)
       {
          super(entity, storageProvider);
          init();
+         this.charset = charset;
       }
 
-      @SuppressWarnings(value = "unchecked")
       @Override
-      public void body(BodyDescriptor bd, InputStream is) throws MimeException, IOException
-      {
-         // the only thing different from the superclass is that we just return a BinaryBody no matter what
-         try
-         {
-            expectMethod.invoke(this, Entity.class);
+      public void field(Field field) throws MimeException {
+         this.expected(Header.class);
+         final ParsedField parsedField;
+         Charset charsetField = getCharset();
+         if(charsetField != null){
+            parsedField = BinaryAbstractField.parse(charsetField, field.getRaw());
+         } else {
+            parsedField = BinaryAbstractField.parse(field.getRaw());
          }
-         catch (Exception e)
-         {
-            throw new RuntimeException(e);
-         }
+         ((Header) getStack().peek()).addField(parsedField);
+      }
+
+      @Override
+      public void body(BodyDescriptor bd, InputStream is) throws MimeException, IOException {
+         expected(Entity.class);
 
          final String enc = bd.getTransferEncoding();
-
          final Body body;
 
          final InputStream decodedStream;
@@ -132,44 +134,97 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
             decodedStream = is;
          }
 
-         BodyFactory factory;
-         try
-         {
-            factory = (BodyFactory)bodyFactoryField.get(this);
-         }
-         catch (Exception e)
-         {
+         try {
+            BodyFactory factory = getBodyFactory();
+            body = factory.binaryBody(decodedStream);
+
+            Stack<Object> st = getStack();
+            Entity entity = ((Entity) st.peek());
+            entity.setBody(body);
+         } catch (Exception e) {
             throw new RuntimeException(e);
          }
 
-         body = factory.binaryBody(decodedStream);
+      }
 
-         @SuppressWarnings("unchecked")
-         Stack<Object> st;
-         try
-         {
-            st = (Stack<Object>)stackField.get(this);
-         }
-         catch (Exception e)
-         {
+      private Charset getCharset(){
+         try {
+            if(charset != null){
+               return Charset.forName(charset);
+            }
+         } catch (Exception e){
             throw new RuntimeException(e);
          }
-         Entity entity = ((Entity) st.peek());
-         entity.setBody(body);
+         return null;
+      }
+
+      private BodyFactory getBodyFactory(){
+         try {
+            return (BodyFactory) bodyFactoryField.get(this);
+         } catch (Exception e) {
+            throw new RuntimeException(e);
+         }
+      }
+
+      private Stack<Object> getStack(){
+         try {
+            return (Stack<Object>) stackField.get(this);
+         } catch (Exception e) {
+            throw new RuntimeException(e);
+         }
+      }
+
+      private void expected(Class<?> c){
+         try {
+            expectMethod.invoke(this, c);
+         } catch (Exception e) {
+            throw new RuntimeException(e);
+         }
       }
    }
 
    private static class BinaryMessage extends Message
    {
-      private BinaryMessage(InputStream is) throws IOException, MimeIOException
+      private BinaryMessage(InputStream is, String charset) throws IOException, MimeIOException
       {
          try {
             MimeStreamParser parser = new MimeStreamParser(null);
-            parser.setContentHandler(new BinaryOnlyMessageBuilder(this, DefaultStorageProvider.getInstance()));
+            parser.setContentHandler(new BinaryOnlyMessageBuilder(this, DefaultStorageProvider.getInstance(), charset));
             parser.parse(is);
          } catch (MimeException e) {
             throw new MimeIOException(e);
          }
+
+      }
+   }
+
+   private static class BinaryAbstractField {
+
+      private static final Pattern FIELD_NAME_PATTERN = Pattern.compile("^([\\x21-\\x39\\x3b-\\x7e]+):");
+      private static final DefaultFieldParser DEFAULT_FIELD_PARSER = new DefaultFieldParser();
+
+      public static ParsedField parse(ByteSequence raw) throws MimeException {
+         String rawStr = ContentUtil.decode(raw);
+         return parse(raw, rawStr);
+      }
+
+      public static ParsedField parse(final Charset charset, final ByteSequence raw) throws MimeException {
+         final String rawStr = ContentUtil.decode(charset, raw);
+         return parse(raw, rawStr);
+      }
+
+      private static ParsedField parse(ByteSequence raw, String rawStr) throws MimeException {
+         final String unfolded = MimeUtil.unfold(rawStr);
+         final Matcher fieldMatcher = FIELD_NAME_PATTERN.matcher(unfolded);
+         if (!fieldMatcher.find()) {
+            throw new MimeException("Invalid field in string");
+         }
+         final String name = fieldMatcher.group(1);
+         String body = unfolded.substring(fieldMatcher.end());
+         if (body.length() > 0 && body.charAt(0) == 32) {
+            body = body.substring(1);
+         }
+         return DEFAULT_FIELD_PARSER.parse(name, body, raw);
 
       }
    }
@@ -217,7 +272,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
 
    public void parse(InputStream is) throws IOException
    {
-      mimeMessage = new BinaryMessage(addHeaderToHeadlessStream(is));
+      mimeMessage = new BinaryMessage(addHeaderToHeadlessStream(is), defaultPartCharset);
       extractParts();
    }
 
