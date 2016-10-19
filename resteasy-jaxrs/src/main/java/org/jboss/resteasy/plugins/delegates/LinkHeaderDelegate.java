@@ -1,10 +1,11 @@
 package org.jboss.resteasy.plugins.delegates;
 
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.specimpl.LinkBuilderImpl;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.jboss.resteasy.spi.Link;
 import org.jboss.resteasy.spi.LinkHeader;
 
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.RuntimeDelegate;
 
@@ -98,7 +99,24 @@ public class LinkHeaderDelegate implements RuntimeDelegate.HeaderDelegate<LinkHe
             while (tokenizer.hasMoreTokens())
             {
                String rel = tokenizer.nextToken();
-               Link link = new Link(title, rel, href, type, attributes);
+               Link.Builder builder = new LinkBuilderImpl().uri(href);
+               if (title != null)
+               {
+                  builder.title(title);
+               }
+               if (rel != null)
+               {
+                  builder.rel(rel);
+               }
+               if (type != null)
+               {
+                  builder.type(type);
+               }
+               for (String key : attributes.keySet())
+               {
+                  builder.param(key, attributes.getFirst(key));
+               }
+               Link link = builder.build();
                header.getLinksByRelationship().put(rel, link);
                header.getLinksByTitle().put(title, link);
                header.getLinks().add(link);

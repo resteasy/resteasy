@@ -1,8 +1,8 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.core.interception.AbstractWriterInterceptorContext;
-import org.jboss.resteasy.core.interception.ClientWriterInterceptorContext;
+import org.jboss.resteasy.core.interception.jaxrs.AbstractWriterInterceptorContext;
+import org.jboss.resteasy.core.interception.jaxrs.ClientWriterInterceptorContext;
 import org.jboss.resteasy.specimpl.MultivaluedTreeMap;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.DelegatingOutputStream;

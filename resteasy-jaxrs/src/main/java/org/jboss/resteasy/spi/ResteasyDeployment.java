@@ -25,6 +25,7 @@ import javax.ws.rs.ext.Providers;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,7 +83,7 @@ public class ResteasyDeployment
    {
       // it is very important that each deployment create their own provider factory
       // this allows each WAR to have their own set of providers 
-      if (providerFactory == null) providerFactory = new ResteasyProviderFactory();
+      if (providerFactory == null) providerFactory = ResteasyProviderFactory.newInstance();
       providerFactory.setRegisterBuiltins(registerBuiltin);
 
       if (deploymentSensitiveFactoryEnabled)
@@ -194,7 +195,7 @@ public class ResteasyDeployment
          }
 
          // Interceptor preferences should come before provider registration or builtin.
-
+         
          if (interceptorPrecedences != null)
          {
             for (String precedence : interceptorPrecedences)

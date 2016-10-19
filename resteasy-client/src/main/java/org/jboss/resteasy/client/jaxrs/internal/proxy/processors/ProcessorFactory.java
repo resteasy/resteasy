@@ -22,7 +22,7 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 
 import org.jboss.resteasy.annotations.Form;
-import org.jboss.resteasy.client.ClientURI;
+import org.jboss.resteasy.annotations.ClientURI;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.invocation.CookieParamProcessor;

@@ -1,9 +1,9 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.core.interception.AbstractWriterInterceptorContext;
-import org.jboss.resteasy.core.interception.ContainerResponseContextImpl;
-import org.jboss.resteasy.core.interception.ResponseContainerRequestContext;
-import org.jboss.resteasy.core.interception.ServerWriterInterceptorContext;
+import org.jboss.resteasy.core.interception.jaxrs.AbstractWriterInterceptorContext;
+import org.jboss.resteasy.core.interception.jaxrs.ContainerResponseContextImpl;
+import org.jboss.resteasy.core.interception.jaxrs.ResponseContainerRequestContext;
+import org.jboss.resteasy.core.interception.jaxrs.ServerWriterInterceptorContext;
 import org.jboss.resteasy.core.registry.SegmentNode;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
