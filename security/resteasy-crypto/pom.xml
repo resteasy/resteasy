@@ -20,7 +20,7 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs</artifactId>
+            <artifactId>resteasy-legacy</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

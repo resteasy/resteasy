@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.client;
 
-import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
-import org.jboss.resteasy.spi.Link;
-import org.jboss.resteasy.spi.LinkHeader;
+import org.jboss.resteasy.client.LinkHeaderDelegate;
+import org.jboss.resteasy.client.Link;
+import org.jboss.resteasy.client.LinkHeader;
 import org.junit.Assert;
 import org.junit.Test;
 
