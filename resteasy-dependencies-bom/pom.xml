@@ -27,6 +27,7 @@
         <version.io.undertow>1.3.25.Final</version.io.undertow>
         <version.javax.activation>1.1.1</version.javax.activation>
         <version.javax.enterprise.cdi-api>1.2</version.javax.enterprise.cdi-api>
+        <version.junit>4.12</version.junit>
         <version.log4j>2.6.2</version.log4j>
         <version.net.jcip.jcip-annotations>1.0</version.net.jcip.jcip-annotations>
         <version.org.apache.httpcomponents.httpclient>4.5.2</version.org.apache.httpcomponents.httpclient>
@@ -305,7 +306,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.12</version>
+                <version>${version.junit}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -594,5 +595,4 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
 </project>
