@@ -49,7 +49,7 @@ public class RequestScopeModule extends AbstractModule
 
                @Override
                public String toString() {
-                  return String.format("%s[%s]", creator, this);
+                  return String.format("%s[%s]", creator, super.toString());
                }
             };
          }
