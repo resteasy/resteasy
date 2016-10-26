@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-legacy</artifactId>
+            <artifactId>resteasy-jaxrs</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
