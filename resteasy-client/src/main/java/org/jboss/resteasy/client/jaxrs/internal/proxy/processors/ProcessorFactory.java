@@ -136,7 +136,8 @@ public class ProcessorFactory
          processor = new CookieParamProcessor(null);
       }
       // this is for HATEAOS clients
-      else if (FindAnnotation.findAnnotation(annotations, ClientURI.class) != null)
+      //look for old (resteasy-legacy) annotation too for runtime backward compatibility
+      else if (FindAnnotation.findAnnotation(annotations, ClientURI.class.getName(), "org.jboss.resteasy.client.ClientURI") != null)
       {
          processor = new URIParamProcessor();
       }
