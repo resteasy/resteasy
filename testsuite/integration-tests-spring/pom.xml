@@ -50,7 +50,7 @@
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs</artifactId>
+            <artifactId>resteasy-legacy</artifactId>
             <version>${version.resteasy.testsuite}</version>
         </dependency>
 
