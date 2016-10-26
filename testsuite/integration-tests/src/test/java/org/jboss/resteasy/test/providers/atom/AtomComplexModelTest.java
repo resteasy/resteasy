@@ -26,6 +26,7 @@ import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Assert;
@@ -66,6 +67,8 @@ public class AtomComplexModelTest {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(AtomComplexModelTest.class.getSimpleName());
+        war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
+              + "Dependencies: org.jboss.resteasy.resteasy-legacy\n"));
         war.addClasses(AtomComplexModelArchived.class,
                 AtomAssetMetadata.class,
                 AtomComplexModelAtomAssetMetadataDecorators.class,
