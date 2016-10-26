@@ -1316,20 +1316,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          injectProperties(provider);
          if (paramConverterProviders == null)
          {
-            paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>(
-                  parent.getParamConverterProviders());
+            paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>(parent.getParamConverterProviders());
          }
          paramConverterProviders.add(paramConverterProvider);
-         newContracts.put(ParamConverterProvider.class,
-               getPriority(priorityOverride, contracts, ParamConverterProvider.class, provider));
+         newContracts.put(ParamConverterProvider.class, getPriority(priorityOverride, contracts, ParamConverterProvider.class, provider));
       }
       if (isA(provider, MessageBodyReader.class, contracts))
       {
          try
          {
             addMessageBodyReader(provider, isBuiltin);
-            newContracts.put(MessageBodyReader.class,
-                  getPriority(priorityOverride, contracts, MessageBodyReader.class, provider));
+            newContracts.put(MessageBodyReader.class, getPriority(priorityOverride, contracts, MessageBodyReader.class, provider));
          }
          catch (Exception e)
          {
@@ -1341,8 +1338,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addMessageBodyWriter(provider, isBuiltin);
-            newContracts.put(MessageBodyWriter.class,
-                  getPriority(priorityOverride, contracts, MessageBodyWriter.class, provider));
+            newContracts.put(MessageBodyWriter.class, getPriority(priorityOverride, contracts, MessageBodyWriter.class, provider));
          }
          catch (Exception e)
          {
@@ -1354,8 +1350,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          try
          {
             addExceptionMapper(provider);
-            newContracts.put(ExceptionMapper.class,
-                  getPriority(priorityOverride, contracts, ExceptionMapper.class, provider));
+            newContracts.put(ExceptionMapper.class, getPriority(priorityOverride, contracts, ExceptionMapper.class, provider));
          }
          catch (Exception e)
          {
@@ -1597,8 +1592,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          injectProperties(provider);
          if (paramConverterProviders == null)
          {
-            paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>(
-                  parent.getParamConverterProviders());
+            paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>(parent.getParamConverterProviders());
          }
          paramConverterProviders.add((ParamConverterProvider) provider);
          int priority = getPriority(priorityOverride, contracts, ParamConverterProvider.class, provider.getClass());
