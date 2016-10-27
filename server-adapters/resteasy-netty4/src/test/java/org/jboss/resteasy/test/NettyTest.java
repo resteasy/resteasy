@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -91,6 +92,12 @@ public class NettyTest
       @Produces("text/plain")
       public String post(String postBody) {
           return postBody;
+      }
+
+      @PUT
+      @Path("/leak")
+      public String put(String contents) {
+         return contents;
       }
 
       @GET
@@ -208,6 +215,17 @@ public class NettyTest
       String result = (String) target.request().post(Entity.text(postBody), String.class);
       Assert.assertEquals(postBody, result);
     }
+
+   @Test
+   public void testLeak() {
+      // Run test with -Dio.netty.leakDetection.level=paranoid -Dio.netty.leakDetection.maxRecords=10000
+      WebTarget target = client.target(generateURL("/leak"));
+      for (int i = 0; i < 1000; i++) {
+         String putBody = "some data #" + i;
+         String result = target.request().put(Entity.text(putBody), String.class);
+         Assert.assertEquals(putBody, result);
+      }
+   }
 
 
    /**
