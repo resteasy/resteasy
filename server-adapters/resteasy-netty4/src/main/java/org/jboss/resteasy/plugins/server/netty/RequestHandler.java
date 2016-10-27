@@ -7,7 +7,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.TooLongFrameException;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpResponse;
-
 import io.netty.handler.timeout.IdleStateEvent;
 import org.jboss.resteasy.plugins.server.netty.i18n.LogMessages;
 import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
@@ -39,39 +38,37 @@ public class RequestHandler extends SimpleChannelInboundHandler
       this.dispatcher = dispatcher;
    }
 
-   @Override
-   protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception
-   {
-      if (msg instanceof NettyHttpRequest) {
-          NettyHttpRequest request = (NettyHttpRequest) msg;
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
+        if (msg instanceof NettyHttpRequest) {
+            NettyHttpRequest request = (NettyHttpRequest) msg;
+            try {
 
-          if (request.is100ContinueExpected())
-          {
-             send100Continue(ctx);
-          }
+                if (request.is100ContinueExpected()) {
+                    send100Continue(ctx);
+                }
 
-          NettyHttpResponse response = request.getResponse();
-          try
-          {
-             dispatcher.service(ctx, request, response, true);
-          }
-          catch (Failure e1)
-          {
-             response.reset();
-             response.setStatus(e1.getErrorCode());
-          }
-          catch (Exception ex)
-          {
-             response.reset();
-             response.setStatus(500);
-             LogMessages.LOGGER.error(Messages.MESSAGES.unexpected(), ex);
-          }
+                NettyHttpResponse response = request.getResponse();
+                try {
+                    dispatcher.service(ctx, request, response, true);
+                } catch (Failure e1) {
+                    response.reset();
+                    response.setStatus(e1.getErrorCode());
+                } catch (Exception ex) {
+                    response.reset();
+                    response.setStatus(500);
+                    LogMessages.LOGGER.error(Messages.MESSAGES.unexpected(), ex);
+                }
 
-          if (!request.getAsyncContext().isSuspended()) {
-             response.finish();
-          }
-      }
-   }
+                if (!request.getAsyncContext().isSuspended()) {
+                    response.finish();
+                }
+            } finally {
+                request.releaseContentBuffer();
+            }
+
+        }
+    }
 
    private void send100Continue(ChannelHandlerContext ctx)
    {
