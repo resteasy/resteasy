@@ -1,6 +1,7 @@
 package org.jboss.resteasy.core.interception;
 
 import org.jboss.resteasy.core.ServerResponse;
+import org.jboss.resteasy.core.interception.jaxrs.ContainerResponseContextImpl;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.AcceptedByMethod;
