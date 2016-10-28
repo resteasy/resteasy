@@ -1,0 +1,12 @@
+<ejb-jar xmlns="http://java.sun.com/xml/ns/j2ee" version="2.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
+   <display-name>MEJB JAR</display-name>
+   <enterprise-beans>
+      <session>
+         <display-name>Injectable</display-name>
+         <ejb-name>Injectable</ejb-name>
+         <ejb-class>org.jboss.resteasy.test.cdi.modules.resource.CDIModulesInjectable</ejb-class>
+         <session-type>Stateless</session-type>
+         <transaction-type>Container</transaction-type>
+      </session>
+   </enterprise-beans>
+</ejb-jar>
