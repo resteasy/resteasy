@@ -56,7 +56,7 @@ public class HeaderDelegateTest {
         war.addClass(HeaderDelegateSubDelegate.class);
         war.addClass(PortProviderUtil.class);
         war.addClass(HeaderDelegateTest.class);
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy\n"));
+        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy services\n"));
         return TestUtil.finishContainerPrepare(war, null, HeaderDelegateResource.class);
     }
 

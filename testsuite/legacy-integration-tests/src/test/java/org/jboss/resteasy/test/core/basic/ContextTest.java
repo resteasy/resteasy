@@ -39,7 +39,7 @@ public class ContextTest {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = ShrinkWrap.create(WebArchive.class, ContextTest.class.getSimpleName() + ".war");
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy\n"));
+        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy services\n"));
         war.addClasses(ContextAfterEncoderInterceptor.class, ContextBeforeEncoderInterceptor.class, ContextService.class,
                 ContextEncoderInterceptor.class, ContextEndInterceptor.class);
         war.addAsWebInfResource(ContextTest.class.getPackage(), "ContextIndex.html", "index.html");

@@ -48,7 +48,7 @@ public class AsynchBasicTest {
         WebArchive war = TestUtil.prepareArchive(deploymentName);
         war.addClass(PortProviderUtil.class);
         war.addClass(TestUtil.class);
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy\n"));
+        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy services\n"));
         Map<String, String> contextParam = new HashMap<>();
         contextParam.put("resteasy.async.job.service.enabled", "true");
         if (maxSize != null) {

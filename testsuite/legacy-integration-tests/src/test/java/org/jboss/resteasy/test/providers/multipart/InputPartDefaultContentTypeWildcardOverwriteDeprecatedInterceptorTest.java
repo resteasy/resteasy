@@ -42,7 +42,7 @@ public class InputPartDefaultContentTypeWildcardOverwriteDeprecatedInterceptorTe
         WebArchive war = TestUtil.prepareArchive(InputPartDefaultContentTypeWildcardOverwriteDeprecatedInterceptorTest.class.getSimpleName());
         war.addClasses(InputPartDefaultContentTypeWildcardOverwriteContainerBean.class);
         war.addClasses(InputPartDefaultContentTypeWildcardOverwriteXmlBean.class, InputPartDefaultContentTypeWildcardOverwriteDeprecatedInterceptorTest.class);
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy\n"));
+        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy services\n"));
         return TestUtil.finishContainerPrepare(war, null, InputPartDefaultContentTypeWildcardOverwriteOldInterceptor.class,
                 InputPartDefaultContentTypeWildcardOverwriteService.class);
     }

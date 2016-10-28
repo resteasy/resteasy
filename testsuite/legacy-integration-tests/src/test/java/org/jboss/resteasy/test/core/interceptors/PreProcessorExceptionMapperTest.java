@@ -36,7 +36,7 @@ public class PreProcessorExceptionMapperTest {
     @Deployment
     public static Archive<?> deploySimpleResource() {
         WebArchive war = TestUtil.prepareArchive(GzipTest.class.getSimpleName());
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy\n"));
+        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy services\n"));
         war.addClass(PreProcessorExceptionMapperCandlepinException.class);
         war.addClass(PreProcessorExceptionMapperCandlepinUnauthorizedException.class);
         return TestUtil.finishContainerPrepare(war, null, PreProcessorExceptionMapperPreProcessSecurityInterceptor.class,

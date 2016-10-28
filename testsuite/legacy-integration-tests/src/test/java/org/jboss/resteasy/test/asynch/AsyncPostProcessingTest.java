@@ -40,7 +40,7 @@ public class AsyncPostProcessingTest {
         WebArchive war =  TestUtil.prepareArchive(AsyncPostProcessingTest.class.getSimpleName());
         war.addClasses(TestUtil.class, PortProviderUtil.class);
         war.addAsWebInfResource(AsyncPostProcessingTest.class.getPackage(), "AsyncPostProcessingTestWeb.xml", "web.xml");
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy\n"));
+        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy services\n"));
         return TestUtil.finishContainerPrepare(war, null, AsyncPostProcessingResource.class,
                 AsyncPostProcessingMsgBodyWriterInterceptor.class, AsyncPostProcessingInterceptor.class);
     }

@@ -43,7 +43,7 @@ public class LinkHeaderTest extends ClientTestBase{
     @Deployment
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive(LinkHeaderTest.class.getSimpleName());
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy\n"));
+        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy services\n"));
         return TestUtil.finishContainerPrepare(war, null, LinkHeaderService.class);
     }
 
