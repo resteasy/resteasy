@@ -105,6 +105,45 @@
             <jboss.home>${project.build.directory}/test-server/wildfly-${server.version}</jboss.home>
           </properties>
         </profile>
+        
+        <profile>
+          <id>groovy</id>
+          <activation>
+            <property>
+              <name>!no.groovy</name>
+            </property>
+          </activation>
+          <build>
+            <plugins>
+            
+            <plugin>
+            <groupId>org.codehaus.gmaven</groupId>
+            <artifactId>gmaven-plugin</artifactId>
+            <version>1.5</version>
+            <executions>
+              <execution>
+                <id>testsuite-default</id>
+                <phase>process-test-classes</phase>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <providerSelection>2.0</providerSelection>
+                  <source>${basedir}/src/test/scripts/legacy.groovy</source>
+                  <properties>
+                    <inputFile>${jboss.home}/standalone/configuration/standalone-full.xml</inputFile>
+                    <outputFile>${jboss.home}/standalone/configuration/standalone-resteasy-legacy.xml</outputFile>
+                  </properties>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+            
+            </plugins>
+          </build>
+        </profile>
+
+        
     </profiles>
 
     <dependencies>
@@ -327,6 +366,9 @@
                 </excludes>
             </testResource>
         </testResources>
+        <plugins>
+          
+        </plugins>
     </build>
 
 </project>

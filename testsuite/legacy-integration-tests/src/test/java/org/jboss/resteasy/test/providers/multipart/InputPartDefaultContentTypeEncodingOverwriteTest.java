@@ -39,7 +39,6 @@ public class InputPartDefaultContentTypeEncodingOverwriteTest {
         WebArchive war = TestUtil.prepareArchive(InputPartDefaultContentTypeEncodingOverwriteTest.class.getSimpleName());
         war.addClasses(InputPartDefaultContentTypeEncodingOverwriteTest.class);
         war.addClasses(TestUtil.class, PortProviderUtil.class);
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy services\n"));
         return TestUtil.finishContainerPrepare(war, null, InputPartDefaultContentTypeEncodingOverwriteSetterPreProcessorInterceptor.class,
                 InputPartDefaultContentTypeEncodingOverwriteService.class);
     }

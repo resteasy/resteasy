@@ -80,7 +80,6 @@ public class InputPartDefaultCharsetOverwriteTest {
         WebArchive war = TestUtil.prepareArchive(InputPartDefaultCharsetOverwriteTest.class.getSimpleName());
         war.addClasses(InputPartDefaultCharsetOverwriteTest.class);
         war.addClasses(TestUtil.class, PortProviderUtil.class);
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy services\n"));
         return TestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteService.class);
     }
 
@@ -89,7 +88,6 @@ public class InputPartDefaultCharsetOverwriteTest {
         WebArchive war = TestUtil.prepareArchive(InputPartDefaultCharsetOverwriteContentTypeCharsetUTF8.class.getSimpleName());
         war.addClasses(InputPartDefaultCharsetOverwriteTest.class);
         war.addClasses(TestUtil.class, PortProviderUtil.class);
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy services\n"));
         return TestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteContentTypeCharsetUTF8.class,
                 InputPartDefaultCharsetOverwriteService.class);
     }
@@ -99,7 +97,6 @@ public class InputPartDefaultCharsetOverwriteTest {
         WebArchive war = TestUtil.prepareArchive(InputPartDefaultCharsetOverwriteContentTypeCharsetUTF16.class.getSimpleName());
         war.addClasses(InputPartDefaultCharsetOverwriteTest.class);
         war.addClasses(TestUtil.class, PortProviderUtil.class);
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy services\n"));
         return TestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteContentTypeCharsetUTF16.class,
                 InputPartDefaultCharsetOverwriteService.class);
     }
@@ -109,7 +106,6 @@ public class InputPartDefaultCharsetOverwriteTest {
         WebArchive war = TestUtil.prepareArchive(InputPartDefaultCharsetOverwriteContentTypeNoCharsetUTF8.class.getSimpleName());
         war.addClasses(InputPartDefaultCharsetOverwriteTest.class);
         war.addClasses(TestUtil.class, PortProviderUtil.class);
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy services\n"));
         return TestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteContentTypeNoCharsetUTF8.class,
                 InputPartDefaultCharsetOverwriteService.class);
     }
@@ -119,7 +115,6 @@ public class InputPartDefaultCharsetOverwriteTest {
         WebArchive war = TestUtil.prepareArchive(InputPartDefaultCharsetOverwriteContentTypeNoCharsetUTF16.class.getSimpleName());
         war.addClasses(InputPartDefaultCharsetOverwriteTest.class);
         war.addClasses(TestUtil.class, PortProviderUtil.class);
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy services\n"));
         return TestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteContentTypeNoCharsetUTF16.class,
                 InputPartDefaultCharsetOverwriteService.class);
     }
@@ -129,7 +124,6 @@ public class InputPartDefaultCharsetOverwriteTest {
         WebArchive war = TestUtil.prepareArchive(InputPartDefaultCharsetOverwriteNoContentTypeCharsetUTF8.class.getSimpleName());
         war.addClasses(InputPartDefaultCharsetOverwriteTest.class);
         war.addClasses(TestUtil.class, PortProviderUtil.class);
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy services\n"));
         return TestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteNoContentTypeCharsetUTF8.class,
                 InputPartDefaultCharsetOverwriteService.class);
     }
@@ -139,7 +133,6 @@ public class InputPartDefaultCharsetOverwriteTest {
         WebArchive war = TestUtil.prepareArchive(InputPartDefaultCharsetOverwriteNoContentTypeCharsetUTF16.class.getSimpleName());
         war.addClasses(InputPartDefaultCharsetOverwriteTest.class);
         war.addClasses(TestUtil.class, PortProviderUtil.class);
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: org.jboss.resteasy.resteasy-legacy services\n"));
         return TestUtil.finishContainerPrepare(war, null, InputPartDefaultCharsetOverwriteNoContentTypeCharsetUTF16.class,
                 InputPartDefaultCharsetOverwriteService.class);
     }
