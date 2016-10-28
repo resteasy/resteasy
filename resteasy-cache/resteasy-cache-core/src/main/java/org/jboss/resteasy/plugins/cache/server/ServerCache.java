@@ -21,11 +21,13 @@ public interface ServerCache
       byte[] getCached();
 
       MultivaluedMap<String, Object> getHeaders();
+
+      MultivaluedMap<String, String> getVaryHeaders();
    }
 
-   Entry add(String uri, MediaType mediaType, CacheControl cc, MultivaluedMap<String, Object> headers, byte[] entity, String etag);
+   Entry add(String uri, MediaType mediaType, CacheControl cc, MultivaluedMap<String, Object> headers, byte[] entity, String etag, MultivaluedMap<String, String> varyHeaders);
 
-   Entry get(String uri, MediaType accept);
+   Entry get(String uri, MediaType accept, MultivaluedMap<String, String> headers);
 
    void remove(String uri);
 
