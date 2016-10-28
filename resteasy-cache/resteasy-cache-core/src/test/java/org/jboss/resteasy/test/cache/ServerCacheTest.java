@@ -160,7 +160,7 @@ public class ServerCacheTest
       public Response getVary(@HeaderParam("X-Test-Vary") @DefaultValue("default") String testVary)
       {
          count++;
-         return Response.ok(testVary).header(HttpHeaders.VARY, "X-Test-Vary").build();
+         return Response.ok(testVary + count).header(HttpHeaders.VARY, "X-Test-Vary").build();
       }
    }
 
@@ -433,12 +433,17 @@ public class ServerCacheTest
        {
            Builder request = client.target(generateURL("/cache/vary")).request();
            Response foo = request.accept("text/plain").header("X-Test-Vary", "foo").get();
-           Assert.assertEquals("foo", foo.readEntity(String.class));
+           Assert.assertEquals("foo1", foo.readEntity(String.class));
        }
        {
            Builder request = client.target(generateURL("/cache/vary")).request();
            Response bar = request.accept("text/plain").header("X-Test-Vary", "bar").get();
-           Assert.assertEquals("bar", bar.readEntity(String.class));
+           Assert.assertEquals("bar2", bar.readEntity(String.class));
+       }
+       {
+           Builder request = client.target(generateURL("/cache/vary")).request();
+           Response foo = request.accept("text/plain").header("X-Test-Vary", "foo").get();
+           Assert.assertEquals("foo1", foo.readEntity(String.class));
        }
    }
 

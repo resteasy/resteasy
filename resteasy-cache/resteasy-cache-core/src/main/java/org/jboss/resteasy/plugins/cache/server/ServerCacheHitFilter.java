@@ -47,7 +47,6 @@ public class ServerCacheHitFilter implements ContainerRequestFilter
    {
       ServerCache.Entry entry = null;
       List<MediaType> acceptableMediaTypes = request.getAcceptableMediaTypes();
-      request.getHeaders().forEach((name, values) -> System.out.println(String.format("%s: %s", name, String.join(",", values.toArray(new String[] {})))));
       if (acceptableMediaTypes != null && acceptableMediaTypes.size() > 0)
       {
          // only see if most desired is cached.

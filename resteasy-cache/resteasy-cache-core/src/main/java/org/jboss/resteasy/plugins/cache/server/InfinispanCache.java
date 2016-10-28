@@ -140,7 +140,9 @@ public class InfinispanCache implements ServerCache
       // there's a race condition here with a concurrent get() method above.  Too bad JBoss Cache doesn't have a way to create
       // a node before hand then insert it
       CacheEntry cacheEntry = new CacheEntry(headers, entity, cc.getMaxAge(), etag, mediaType, varyHeaders);
-      String entryName = uri + "    " + mediaType.toString();
+      StringBuffer varyHeadersString = new StringBuffer();
+      varyHeaders.forEach((name, values) -> values.forEach(value -> varyHeadersString.append(name).append(value)));
+      String entryName = uri + "    " + mediaType.toString() + "    " + varyHeadersString.toString();
       Set<String> entries = (Set<String>)cache.get(uri);
       Set<String> newEntries = new HashSet<String>();
       newEntries.add(entryName);
