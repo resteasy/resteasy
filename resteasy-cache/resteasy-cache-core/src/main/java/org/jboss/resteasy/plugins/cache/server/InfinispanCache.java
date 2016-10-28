@@ -126,7 +126,7 @@ public class InfinispanCache implements ServerCache
       {
          CacheEntry cacheEntry = (CacheEntry)cache.get(entry);
          if (cacheEntry == null) continue;
-         if (accept.isCompatible(cacheEntry.getMediaType()) && !hasVaried(cacheEntry.getVaryHeaders(), headers))
+         if (accept.isCompatible(cacheEntry.getMediaType()) && !mayVary(cacheEntry.getVaryHeaders(), headers))
          {
             return cacheEntry;
          }
@@ -171,7 +171,7 @@ public class InfinispanCache implements ServerCache
       cache.clear();
    }
 
-   protected static boolean hasVaried(MultivaluedMap<String, String> cached, MultivaluedMap<String, String> current) {
+   protected static boolean mayVary(MultivaluedMap<String, String> cached, MultivaluedMap<String, String> current) {
        boolean hasVaried = false;
        for (Map.Entry<String, List<String>> entry : cached.entrySet()) {
            String headerName = entry.getKey();
