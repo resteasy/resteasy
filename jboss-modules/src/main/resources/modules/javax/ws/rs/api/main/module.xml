@@ -32,5 +32,6 @@
         <module name="javax.xml.bind.api"/>
         <!--  needed because javax.ws.rs.core.Link uses JAXB annotations -->
         <module name="javax.api"/>
+        <module name="org.jboss.modules"/>
     </dependencies>
 </module>

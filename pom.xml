@@ -62,7 +62,7 @@
         <version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>1.0.0.Final</version.org.jboss.spec.javax.ejb.jboss-ejb-api_3.2_spec>
         <version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>1.0.0.Final</version.org.jboss.spec.javax.jms.jboss-jms-api_2.0_spec>
         <version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>1.0.0.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>
-        <version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec>1.0.1.Final-SNAPSHOT</version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec>
+        <version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec>1.0.1.Final-asoldano-JBEE-169-SNAPSHOT</version.org.jboss.spec.javax.ws.jboss-jaxrs-api_2.0_spec>
         <version.org.jboss.shrinkwrap.resolver>2.2.4</version.org.jboss.shrinkwrap.resolver>
         <version.org.slf4j>1.7.7</version.org.slf4j>
         <version.org.wildfly.core.wildfly-cli>2.1.0.Final</version.org.wildfly.core.wildfly-cli>
