@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,6 +16,7 @@ import java.util.logging.Logger;
 final class FactoryFinder {
 
    private static final Logger LOGGER = Logger.getLogger(FactoryFinder.class.getName());
+   private static final String RESTEASY_JAXRS_API_MODULE = "org.jboss.resteasy.resteasy-jaxrs-api";
 
    private FactoryFinder() {
        // prevents instantiation
@@ -153,6 +156,27 @@ final class FactoryFinder {
                    + " from a system property", se);
        }
 
+       ClassLoader moduleClassLoader = getModuleClassLoader();
+       if (moduleClassLoader != null) {
+          try {
+             InputStream is = moduleClassLoader.getResourceAsStream(serviceId);
+         
+             if( is!=null ) {
+                 BufferedReader rd =
+                     new BufferedReader(new InputStreamReader(is, "UTF-8"));
+         
+                 String factoryClassName = rd.readLine();
+                 rd.close();
+
+                 if (factoryClassName != null &&
+                     ! "".equals(factoryClassName)) {
+                     return newInstance(factoryClassName, moduleClassLoader);
+                 }
+             }
+         } catch( Exception ex ) {
+         }
+       }
+
        if (fallbackClassName == null) {
            throw new ClassNotFoundException(
                    "Provider for " + factoryId + " cannot be found", null);
@@ -160,4 +184,38 @@ final class FactoryFinder {
 
        return newInstance(fallbackClassName, classLoader);
    }
+
+   private static ClassLoader getModuleClassLoader() {
+      try {
+          final Class<?> moduleClass = Class.forName("org.jboss.modules.Module");
+          final Class<?> moduleIdentifierClass = Class.forName("org.jboss.modules.ModuleIdentifier");
+          final Class<?> moduleLoaderClass = Class.forName("org.jboss.modules.ModuleLoader");
+          final Object moduleLoader;
+          final SecurityManager sm = System.getSecurityManager();
+          if (sm == null) {
+              moduleLoader = moduleClass.getMethod("getBootModuleLoader").invoke(null);
+          } else {
+              try {
+                  moduleLoader = AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
+                      public Object run() throws Exception {
+                          return moduleClass.getMethod("getBootModuleLoader").invoke(null);
+                      }
+                  });
+              } catch (PrivilegedActionException pae) {
+                  throw pae.getException();
+              }
+          }
+          Object moduleIdentifier = moduleIdentifierClass.getMethod("create", String.class).invoke(null, RESTEASY_JAXRS_API_MODULE);
+          Object module = moduleLoaderClass.getMethod("loadModule", moduleIdentifierClass).invoke(moduleLoader, moduleIdentifier);
+          return (ClassLoader)moduleClass.getMethod("getClassLoader").invoke(module);
+       } catch (ClassNotFoundException e) {
+          //ignore, JBoss Modules might not be available at all
+           return null;
+       } catch (RuntimeException e) {
+          throw e;
+       } catch (Exception e) {
+          throw new RuntimeException(e);
+       }
+   }
+
 }

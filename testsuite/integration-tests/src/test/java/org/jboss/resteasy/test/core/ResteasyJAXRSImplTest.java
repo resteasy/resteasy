@@ -32,15 +32,13 @@ public class ResteasyJAXRSImplTest
    @RunAsClient
    public void testClientBuilder() throws Exception
    {
-      ClientBuilder client = ClientBuilder.newBuilder();
-      Assert.assertEquals(ResteasyClientBuilder.class.getName(), client.getClass().getName());
+      testClientBuilderNewBuilder();
    }
 
    @Test
    public void testInContainerClientBuilder() throws Exception
    {
-      ClientBuilder client = ClientBuilder.newBuilder();
-      Assert.assertEquals(ResteasyClientBuilder.class.getName(), client.getClass().getName());
+      testClientBuilderNewBuilder();
    }
 
    @Test
@@ -48,19 +46,58 @@ public class ResteasyJAXRSImplTest
    @Ignore
    public void testRuntimeDelegate() throws Exception
    {
-      RuntimeDelegate.setInstance(null);
-      RuntimeDelegate rd = RuntimeDelegate.getInstance();
-      Assert.assertEquals(ResteasyProviderFactory.class.getName(), rd.getClass().getName());
-      RuntimeDelegate.setInstance(null);
+      testRuntimeDelegateGetInstance();
+      testResteasyProviderFactoryGetInstance();
+      testResteasyProviderFactoryNewInstance();
    }
 
    @Test
    public void testInContainerRuntimeDegate() throws Exception
    {
+      testRuntimeDelegateGetInstance();
+      testResteasyProviderFactoryGetInstance();
+      testResteasyProviderFactoryNewInstance();
+   }
+   
+   private void testClientBuilderNewBuilder() {
+      ClientBuilder client = ClientBuilder.newBuilder();
+      Assert.assertEquals(ResteasyClientBuilder.class.getName(), client.getClass().getName());
+   }
+   
+   private void testRuntimeDelegateGetInstance() {
       RuntimeDelegate.setInstance(null);
       RuntimeDelegate rd = RuntimeDelegate.getInstance();
       Assert.assertEquals(ResteasyProviderFactory.class.getName(), rd.getClass().getName());
       RuntimeDelegate.setInstance(null);
+   }
+   
+   private void testResteasyProviderFactoryGetInstance() {
+      ResteasyProviderFactory.setInstance(null);
+      ResteasyProviderFactory rpf = ResteasyProviderFactory.getInstance();
+      Assert.assertEquals(ResteasyProviderFactory.class, rpf.getClass());
+      Assert.assertEquals(rpf, ResteasyProviderFactory.getInstance());
+      ResteasyProviderFactory.setInstance(null);
+      ResteasyProviderFactory rpf2 = ResteasyProviderFactory.getInstance();
+      Assert.assertEquals(ResteasyProviderFactory.class, rpf2.getClass());
+      Assert.assertNotEquals(rpf, rpf2);
+      ResteasyProviderFactory.setInstance(null);
+   }
+   
+   private void testResteasyProviderFactoryNewInstance() {
+      ResteasyProviderFactory.setInstance(null);
+      ResteasyProviderFactory rpf = ResteasyProviderFactory.newInstance();
+      ResteasyProviderFactory rpf2 = ResteasyProviderFactory.newInstance();
+      ResteasyProviderFactory rpf3 = ResteasyProviderFactory.newInstance();
+      Assert.assertEquals(ResteasyProviderFactory.class, rpf.getClass());
+      Assert.assertEquals(ResteasyProviderFactory.class, rpf2.getClass());
+      Assert.assertEquals(ResteasyProviderFactory.class, rpf3.getClass());
+      Assert.assertNotEquals(rpf, rpf2);
+      Assert.assertNotEquals(rpf, rpf3);
+      Assert.assertNotEquals(rpf2, rpf3);
+      
+      ResteasyProviderFactory rpfGI = ResteasyProviderFactory.getInstance();
+      Assert.assertEquals(ResteasyProviderFactory.class, rpfGI.getClass());
+      Assert.assertNotEquals(rpfGI, rpf3);
    }
 
 }
