@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.interceptors.encoding;
+package org.jboss.resteasy.plugins.interceptors;
 
 import javax.annotation.Priority;
 import javax.ws.rs.ConstrainedTo;

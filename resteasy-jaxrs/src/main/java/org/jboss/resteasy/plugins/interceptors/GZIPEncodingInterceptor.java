@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.interceptors.encoding;
+package org.jboss.resteasy.plugins.interceptors;
 
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
 

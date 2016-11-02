@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.interceptors.encoding.legacy;
+package org.jboss.resteasy.plugins.interceptors.encoding;
 
 import org.jboss.resteasy.annotations.interception.ClientInterceptor;
 import org.jboss.resteasy.annotations.interception.HeaderDecoratorPrecedence;

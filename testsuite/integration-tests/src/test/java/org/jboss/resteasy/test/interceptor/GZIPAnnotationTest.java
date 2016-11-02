@@ -7,9 +7,9 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPFilter;
-import org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor;
-import org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor;
+import org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter;
+import org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor;
+import org.jboss.resteasy.plugins.interceptors.GZIPEncodingInterceptor;
 import org.jboss.resteasy.test.interceptor.resource.GZIPAnnotationInterface;
 import org.jboss.resteasy.test.interceptor.resource.GZIPAnnotationResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -60,8 +60,8 @@ public class GZIPAnnotationTest {
    }
 
    /**
-    * @tpTestDetails Test that org.jboss.resteasy.plugins.interceptors.encoding.ClientContentEncodingAnnotationFilter
-    *                and org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPFilter
+    * @tpTestDetails Test that org.jboss.resteasy.plugins.interceptors.ClientContentEncodingAnnotationFilter
+    *                and org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter
     *                are called on client side
     * @tpSince RESTEasy 3.0.20
     */
