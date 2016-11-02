@@ -43,7 +43,6 @@ public class ResteasyJAXRSImplTest
 
    @Test
    @RunAsClient
-   @Ignore
    public void testRuntimeDelegate() throws Exception
    {
       testRuntimeDelegateGetInstance();
