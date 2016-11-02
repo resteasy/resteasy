@@ -478,10 +478,15 @@
                 <version>${version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec}</version>
                 <scope>provided</scope>
             </dependency>
-            <dependency>
+             <dependency>
                 <groupId>org.apache.james</groupId>
-                <artifactId>apache-mime4j</artifactId>
-                <version>0.6</version>
+                <artifactId>apache-mime4j-dom</artifactId>
+                <version>0.7.2</version>
+             </dependency>
+             <dependency>
+                <groupId>org.apache.james</groupId>
+                <artifactId>apache-mime4j-storage</artifactId>
+                <version>0.7.2</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
