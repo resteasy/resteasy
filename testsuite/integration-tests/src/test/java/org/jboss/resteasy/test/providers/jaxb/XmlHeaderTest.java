@@ -39,8 +39,6 @@ public class XmlHeaderTest {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(XmlHeaderTest.class.getSimpleName());
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-              + "Dependencies: org.jboss.resteasy.resteasy-legacy\n"));
         return TestUtil.finishContainerPrepare(war, null, XmlHeaderResource.class, XmlHeaderDecorator.class,
                 XmlHeaderDecorator2.class, XmlHeaderJunk2Intf.class, XmlHeaderJunkIntf.class, XmlHeaderThing.class);
     }

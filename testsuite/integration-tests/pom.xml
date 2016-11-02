@@ -114,10 +114,9 @@
             <version>${project.version}</version>
         </dependency>
 
-		<!--  TODO REMOVE -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-legacy</artifactId>
+            <artifactId>resteasy-jaxrs</artifactId>
             <version>${version.resteasy.testsuite}</version>
         </dependency>
         

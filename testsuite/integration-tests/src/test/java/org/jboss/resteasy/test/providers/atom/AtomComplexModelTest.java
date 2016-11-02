@@ -67,8 +67,6 @@ public class AtomComplexModelTest {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(AtomComplexModelTest.class.getSimpleName());
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-              + "Dependencies: org.jboss.resteasy.resteasy-legacy\n"));
         war.addClasses(AtomComplexModelArchived.class,
                 AtomAssetMetadata.class,
                 AtomComplexModelAtomAssetMetadataDecorators.class,
