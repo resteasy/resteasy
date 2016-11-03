@@ -14,7 +14,7 @@
 
    <bookinfo>
       <title>Upgrading from Resteasy 2 to Resteasy 3</title>
-      <releaseinfo>3.1.0.CR3</releaseinfo>
+      <releaseinfo>3.1.0-SNAPSHOT</releaseinfo>
    </bookinfo>
 
    <toc/>
