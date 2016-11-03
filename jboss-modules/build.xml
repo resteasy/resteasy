@@ -139,6 +139,13 @@
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-client"/>
         </module-def>
 
+        <module-def name="org.jboss.resteasy.resteasy-jaxrs-api">
+        </module-def>
+
+        <module-def name="org.jboss.resteasy.resteasy-jaxrs-services">
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-jaxrs-services"/>
+        </module-def>
+
         <module-def name="org.jboss.resteasy.jose-jwt">
             <maven-resource group="org.jboss.resteasy" artifact="jose-jwt"/>
         </module-def>
@@ -151,6 +158,10 @@
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-json-p-provider"/>
         </module-def>
         	
+        <module-def name="org.jboss.resteasy.resteasy-legacy">
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-legacy"/>
+        </module-def>
+
         <module-def name="org.jboss.resteasy.resteasy-multipart-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-multipart-provider"/>
         </module-def>

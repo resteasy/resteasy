@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-deployment-structure>
+    <deployment>
+        <exclusions>
+            <module name="org.jboss.resteasy.resteasy-jackson2-provider"/>
+            <module name="org.jboss.resteasy.resteasy-jackson-provider"/>
+        </exclusions>
+        <dependencies>
+            <module name="org.jboss.resteasy.resteasy-jettison-provider" services="import"/>
+        </dependencies>
+    </deployment>
+</jboss-deployment-structure>

@@ -1,32 +1,28 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext;
-import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
-import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistryListener;
-import org.jboss.resteasy.core.interception.ServerReaderInterceptorContext;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
-import org.jboss.resteasy.spi.BadRequestException;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.MarshalledEntity;
-import org.jboss.resteasy.spi.ReaderException;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.util.FindAnnotation;
-import org.jboss.resteasy.util.InputStreamToByteArray;
-import org.jboss.resteasy.util.ThreadLocalStack;
-import org.jboss.resteasy.util.Types;
-
-import javax.ws.rs.Encoded;
-import javax.ws.rs.NotSupportedException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.ReaderInterceptor;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.ReaderInterceptor;
+
+import org.jboss.resteasy.core.interception.jaxrs.AbstractReaderInterceptorContext;
+import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistryListener;
+import org.jboss.resteasy.core.interception.jaxrs.ServerReaderInterceptorContext;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.MarshalledEntity;
+import org.jboss.resteasy.spi.ReaderException;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.util.InputStreamToByteArray;
+import org.jboss.resteasy.util.ThreadLocalStack;
+import org.jboss.resteasy.util.Types;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>

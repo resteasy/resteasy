@@ -366,7 +366,7 @@ public class ResteasyClientBuilder extends ClientBuilder
       if (providerFactory == null)
       {
          // create a new one
-         providerFactory = new LocalResteasyProviderFactory(new ResteasyProviderFactory());
+         providerFactory = new LocalResteasyProviderFactory(ResteasyProviderFactory.newInstance());
          RegisterBuiltin.register(providerFactory);
       }
       return providerFactory;

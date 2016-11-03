@@ -1,7 +1,7 @@
 package org.jboss.resteasy.core.messagebody;
 
-import org.jboss.resteasy.core.interception.AbstractReaderInterceptorContext;
-import org.jboss.resteasy.core.interception.ClientReaderInterceptorContext;
+import org.jboss.resteasy.core.interception.jaxrs.AbstractReaderInterceptorContext;
+import org.jboss.resteasy.core.interception.jaxrs.ClientReaderInterceptorContext;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ReaderException;
@@ -9,7 +9,6 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.ReaderInterceptor;
 
 import java.io.ByteArrayInputStream;

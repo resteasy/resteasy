@@ -74,6 +74,28 @@ public class ServerCookie implements Serializable
       return true;
    }
 
+   /**
+    * @deprecated Not used: Deprecated in the orginal org.apache.tomcat.util.http.ServerCookie class.
+    */
+   public static boolean checkName(String name)
+   {
+      if (!isToken(name)
+              || name.equalsIgnoreCase("Comment")     // rfc2019
+              || name.equalsIgnoreCase("Discard")     // rfc2965
+              || name.equalsIgnoreCase("Domain")      // rfc2019
+              || name.equalsIgnoreCase("Expires")     // Netscape
+              || name.equalsIgnoreCase("Max-Age")     // rfc2019
+              || name.equalsIgnoreCase("Path")        // rfc2019
+              || name.equalsIgnoreCase("Secure")      // rfc2019
+              || name.equalsIgnoreCase("Version")     // rfc2019
+         // TODO remaining RFC2965 attributes
+              )
+      {
+         return false;
+      }
+      return true;
+   }
+
    // -------------------- Cookie parsing tools
 
 
@@ -220,6 +242,25 @@ public class ServerCookie implements Serializable
       }
 
       headerBuf.append(buf);
+   }
+
+   /**
+    * @deprecated Not used: Deprecated in the orginal org.apache.tomcat.util.http.ServerCookie class.
+    */
+   @Deprecated
+   public static void maybeQuote(int version, StringBuffer buf, String value)
+   {
+      // special case - a \n or \r  shouldn't happen in any case
+      if (isToken(value))
+      {
+         buf.append(value);
+      }
+      else
+      {
+         buf.append('"');
+         buf.append(escapeDoubleQuotes(value, 0, value.length()));
+         buf.append('"');
+      }
    }
 
    public static boolean alreadyQuoted(String value)

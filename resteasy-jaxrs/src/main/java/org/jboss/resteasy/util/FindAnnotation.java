@@ -62,6 +62,31 @@ public final class FindAnnotation
    }
 
 
+   /**
+    * FIXME Comment this
+    *
+    * @param <T>
+    * @param searchList
+    * @param annotation
+    * @return
+    */
+   public static <T> T findAnnotation(Annotation[] searchList, String... annotations)
+   {
+      if (searchList == null || annotations == null || annotations.length == 0) return null;
+      for (Annotation ann : searchList)
+      {
+         for (String a : annotations)
+         {
+            if (ann.annotationType().getName().equals(a))
+            {
+               return (T) ann;
+            }
+         }
+      }
+      return null;
+   }
+
+
    public static Class<? extends Annotation>[] findJaxRSAnnotations(Annotation[] searchList)
    {
 

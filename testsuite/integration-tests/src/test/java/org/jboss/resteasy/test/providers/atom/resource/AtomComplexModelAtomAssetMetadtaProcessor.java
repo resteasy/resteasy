@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.providers.atom.resource;
 
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.atom.Entry;
-import org.jboss.resteasy.spi.interception.DecoratorProcessor;
+import org.jboss.resteasy.spi.DecoratorProcessor;
 
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
