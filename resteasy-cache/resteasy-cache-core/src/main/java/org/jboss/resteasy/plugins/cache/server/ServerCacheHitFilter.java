@@ -50,11 +50,11 @@ public class ServerCacheHitFilter implements ContainerRequestFilter
       if (acceptableMediaTypes != null && acceptableMediaTypes.size() > 0)
       {
          // only see if most desired is cached.
-         entry = cache.get(key, acceptableMediaTypes.get(0), request.getHeaders());
+         entry = cache.get(key, acceptableMediaTypes.get(0));
       }
       else
       {
-         entry = cache.get(key, MediaType.WILDCARD_TYPE, request.getHeaders());
+         entry = cache.get(key, MediaType.WILDCARD_TYPE);
       }
       if (entry != null)
       {

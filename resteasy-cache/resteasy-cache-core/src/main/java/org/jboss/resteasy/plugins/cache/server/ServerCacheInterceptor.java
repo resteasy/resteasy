@@ -11,8 +11,6 @@ import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.WriterInterceptor;
@@ -139,15 +137,7 @@ public class ServerCacheInterceptor implements WriterInterceptor
          }
          
          if (!cc.isPrivate() && !cc.isNoStore()) {
-             MultivaluedMap<String, String> varyHeaders = new MultivaluedHashMap<>();
-             if (context.getHeaders().containsKey(HttpHeaders.VARY)) {
-                 for (Object varyHeader : context.getHeaders().get(HttpHeaders.VARY)) {
-                     if (request.getMutableHeaders().containsKey(varyHeader)) {
-                         varyHeaders.addAll((String) varyHeader, request.getMutableHeaders().get(varyHeader));
-                     }
-                 }
-             }
-             cache.add(request.getUri().getRequestUri().toString(), context.getMediaType(), cc, context.getHeaders(), entity, etag, varyHeaders);
+        	 cache.add(request.getUri().getRequestUri().toString(), context.getMediaType(), cc, context.getHeaders(), entity, etag);
          }
 
          // check to see if ETags are the same.  If they are, we don't need to send a response back.
