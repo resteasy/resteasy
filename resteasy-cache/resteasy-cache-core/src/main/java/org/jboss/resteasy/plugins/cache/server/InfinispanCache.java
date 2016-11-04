@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -42,16 +41,14 @@ public class InfinispanCache implements ServerCache
       private String etag;
       private transient MultivaluedMap<String, Object> headers;
       private transient MediaType mediaType;
-      private transient MultivaluedMap<String, String> varyHeaders;
       
-      private CacheEntry(MultivaluedMap<String, Object> headers, byte[] cached, int expires, String etag, MediaType mediaType, MultivaluedMap<String, String> varyHeaders)
+      private CacheEntry(MultivaluedMap<String, Object> headers, byte[] cached, int expires, String etag, MediaType mediaType)
       {
          this.cached = cached;
          this.expires = expires;
          this.headers = headers;
          this.etag = etag;
          this.mediaType = mediaType;
-         this.varyHeaders = varyHeaders;
       }
 
       public int getExpirationInSeconds()
@@ -74,11 +71,6 @@ public class InfinispanCache implements ServerCache
          return headers;
       }
 
-      public MultivaluedMap<String, String> getVaryHeaders()
-      {
-         return varyHeaders;
-      }
-
       public byte[] getCached()
       {
          return cached;
@@ -93,7 +85,6 @@ public class InfinispanCache implements ServerCache
       {
          stream.defaultWriteObject();
          stream.writeObject(stringifyHeaders(headers));
-         stream.writeObject(stringifyHeaders(varyHeaders));
          stream.writeUTF(mediaType.toString());
       }
 
@@ -102,7 +93,6 @@ public class InfinispanCache implements ServerCache
       {
          stream.defaultReadObject();
          headers = unstringifyHeaders(MultivaluedMap.class.cast(stream.readObject()));
-         varyHeaders = unstringifyHeaders(MultivaluedMap.class.cast(stream.readObject()));
          mediaType = MediaType.valueOf(stream.readUTF());
       }
    }
@@ -116,7 +106,7 @@ public class InfinispanCache implements ServerCache
       this.cache = cache;
    }
 
-   public Entry get(String uri, MediaType accept, MultivaluedMap<String, String> headers)
+   public Entry get(String uri, MediaType accept)
    {
       @SuppressWarnings("unchecked")
       Set<String> entries = (Set<String>)cache.get(uri);
@@ -126,7 +116,7 @@ public class InfinispanCache implements ServerCache
       {
          CacheEntry cacheEntry = (CacheEntry)cache.get(entry);
          if (cacheEntry == null) continue;
-         if (accept.isCompatible(cacheEntry.getMediaType()) && !mayVary(cacheEntry.getVaryHeaders(), headers))
+         if (accept.isCompatible(cacheEntry.getMediaType()))
          {
             return cacheEntry;
          }
@@ -135,14 +125,12 @@ public class InfinispanCache implements ServerCache
    }
 
    @SuppressWarnings("unchecked")
-   public Entry add(String uri, MediaType mediaType, CacheControl cc, MultivaluedMap<String, Object> headers, byte[] entity, String etag, MultivaluedMap<String, String> varyHeaders)
+   public Entry add(String uri, MediaType mediaType, CacheControl cc, MultivaluedMap<String, Object> headers, byte[] entity, String etag)
    {
       // there's a race condition here with a concurrent get() method above.  Too bad JBoss Cache doesn't have a way to create
       // a node before hand then insert it
-      CacheEntry cacheEntry = new CacheEntry(headers, entity, cc.getMaxAge(), etag, mediaType, varyHeaders);
-      StringBuffer varyHeadersString = new StringBuffer();
-      varyHeaders.forEach((name, values) -> values.forEach(value -> varyHeadersString.append(name).append(value)));
-      String entryName = uri + "    " + mediaType.toString() + "    " + varyHeadersString.toString();
+      CacheEntry cacheEntry = new CacheEntry(headers, entity, cc.getMaxAge(), etag, mediaType);
+      String entryName = uri + "    " + mediaType.toString();
       Set<String> entries = (Set<String>)cache.get(uri);
       Set<String> newEntries = new HashSet<String>();
       newEntries.add(entryName);
@@ -171,16 +159,7 @@ public class InfinispanCache implements ServerCache
       cache.clear();
    }
 
-   protected static boolean mayVary(MultivaluedMap<String, String> cached, MultivaluedMap<String, String> current) {
-       boolean hasVaried = false;
-       for (Map.Entry<String, List<String>> entry : cached.entrySet()) {
-           String headerName = entry.getKey();
-           hasVaried |= !(current.containsKey(headerName) && current.get(headerName).containsAll(entry.getValue()));
-       }
-       return hasVaried;
-   }
-
-   protected static MultivaluedMap<String, ?> stringifyHeaders(MultivaluedMap<String, ?> headers)
+   protected static MultivaluedMap<String, Object> stringifyHeaders(MultivaluedMap<String, Object> headers)
    {
       MultivaluedMap<String, Object> holders = new MultivaluedTreeMap<String, Object>();
       for (Iterator<String> it1 = headers.keySet().iterator(); it1.hasNext(); )
@@ -188,8 +167,8 @@ public class InfinispanCache implements ServerCache
          String key = it1.next();
          List<Object> outList = new ArrayList<Object>();
          holders.put(key, outList);
-         List<?> list = headers.get(key);
-         for (Iterator<?> it2 = list.iterator(); it2.hasNext(); )
+         List<Object> list = headers.get(key);
+         for (Iterator<Object> it2 = list.iterator(); it2.hasNext(); )
          {
             Object o = it2.next();
             if (o instanceof CacheControl)

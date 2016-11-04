@@ -6,9 +6,7 @@ import java.io.File;
 import java.util.Hashtable;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -99,16 +97,6 @@ public class PersistentServerCacheTest
       {
          count++;
          return "stuff";
-      }
-
-      @GET
-      @Produces("text/plain")
-      @Path("vary")
-      @Cache(maxAge = 2)
-      public Response getVary(@HeaderParam("X-Test-Vary") @DefaultValue("default") String testVary)
-      {
-         count++;
-         return Response.ok(testVary).header(HttpHeaders.VARY, "X-Test-Vary").header("X-Count", count).build();
       }
    }
 
@@ -410,28 +398,5 @@ public class PersistentServerCacheTest
          Assert.assertNotNull(etag);
          Assert.assertEquals(response.readEntity(String.class), "html" + 1);
       }
-   }
-
-   @Test
-   public void testVary() throws Exception {
-       int cachedCount;
-       {
-           Builder request = client.target(generateURL("/cache/vary")).request();
-           Response foo = request.accept("text/plain").header("X-Test-Vary", "foo").get();
-           Assert.assertEquals("foo", foo.readEntity(String.class));
-           cachedCount = Integer.parseInt(foo.getHeaderString("X-Count"));
-       }
-       {
-           Builder request = client.target(generateURL("/cache/vary")).request();
-           Response bar = request.accept("text/plain").header("X-Test-Vary", "bar").get();
-           Assert.assertEquals("bar", bar.readEntity(String.class));
-       }
-       {
-           Builder request = client.target(generateURL("/cache/vary")).request();
-           Response foo = request.accept("text/plain").header("X-Test-Vary", "foo").get();
-           Assert.assertEquals("foo", foo.readEntity(String.class));
-           int currentCount = Integer.parseInt(foo.getHeaderString("X-Count"));
-           Assert.assertEquals(cachedCount, currentCount);
-       }
    }
 }
