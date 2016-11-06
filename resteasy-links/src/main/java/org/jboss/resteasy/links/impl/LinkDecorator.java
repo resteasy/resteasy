@@ -4,7 +4,7 @@ import org.jboss.resteasy.core.ResourceMethodRegistry;
 import org.jboss.resteasy.links.AddLinks;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.interception.DecoratorProcessor;
+import org.jboss.resteasy.spi.DecoratorProcessor;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;

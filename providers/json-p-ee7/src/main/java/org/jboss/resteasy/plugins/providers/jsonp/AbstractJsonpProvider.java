@@ -28,7 +28,7 @@ public class AbstractJsonpProvider
          String charset = mediaType.getParameters().get("charset");
          if (charset != null) return Charset.forName(charset);
       }
-      return Charset.defaultCharset();
+      return null;
    }
 
    protected JsonReader findReader(MediaType mediaType, InputStream is)
@@ -44,7 +44,7 @@ public class AbstractJsonpProvider
          factory = Json.createReaderFactory(null);
       }
       Charset charset = getCharset(mediaType);
-      return factory.createReader(is, charset);
+      return charset == null ? factory.createReader(is) : factory.createReader(is, charset);
    }
 
    protected JsonWriter findWriter(MediaType mediaType, OutputStream os)
@@ -60,6 +60,6 @@ public class AbstractJsonpProvider
          factory = Json.createWriterFactory(null);
       }
       Charset charset = getCharset(mediaType);
-      return factory.createWriter(os, charset);
+      return charset == null ? factory.createWriter(os) : factory.createWriter(os, charset);
    }
 }

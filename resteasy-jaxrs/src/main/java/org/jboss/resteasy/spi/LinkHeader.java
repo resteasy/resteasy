@@ -2,7 +2,6 @@ package org.jboss.resteasy.spi;
 
 import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
 import org.jboss.resteasy.specimpl.LinkBuilderImpl;
-import org.jboss.resteasy.specimpl.LinkImpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.providers.jaxb.resource;
 
 import org.jboss.resteasy.annotations.DecorateTypes;
-import org.jboss.resteasy.spi.interception.DecoratorProcessor;
+import org.jboss.resteasy.spi.DecoratorProcessor;
 import org.junit.Assert;
 
 import javax.ws.rs.core.MediaType;
