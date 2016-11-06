@@ -1,5 +1,8 @@
 package org.jboss.resteasy.plugins.cache.server;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -10,6 +13,15 @@ import javax.ws.rs.core.MultivaluedMap;
  */
 public interface ServerCache
 {
+    public static boolean mayVary(Entry cached, MultivaluedMap<String, String> current) {
+        boolean mayVary = false;
+        for (Map.Entry<String, List<String>> entry : cached.getVaryHeaders().entrySet()) {
+            String headerName = entry.getKey();
+            mayVary |= !(current.containsKey(headerName) && current.get(headerName).containsAll(entry.getValue()));
+        }
+        return mayVary;
+    }
+
    public static interface Entry
    {
       int getExpirationInSeconds();
