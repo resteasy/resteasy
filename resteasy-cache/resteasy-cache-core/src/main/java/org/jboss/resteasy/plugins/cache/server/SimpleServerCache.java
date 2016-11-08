@@ -26,13 +26,15 @@ public class SimpleServerCache implements ServerCache
       private final long timestamp = System.currentTimeMillis();
       private final MultivaluedMap<String, Object> headers;
       private String etag;
+      private final MultivaluedMap<String, String> varyHeaders;
 
-      private CacheEntry(MultivaluedMap<String, Object> headers, byte[] cached, int expires, String etag)
+      private CacheEntry(MultivaluedMap<String, Object> headers, byte[] cached, int expires, String etag, MultivaluedMap<String, String> varyHeaders)
       {
          this.cached = cached;
          this.expires = expires;
          this.headers = headers;
          this.etag = etag;
+         this.varyHeaders = varyHeaders;
       }
 
       public int getExpirationInSeconds()
@@ -55,6 +57,11 @@ public class SimpleServerCache implements ServerCache
          return headers;
       }
 
+      public MultivaluedMap<String, String> getVaryHeaders()
+      {
+         return varyHeaders;
+      }
+
       public byte[] getCached()
       {
          return cached;
@@ -65,20 +72,20 @@ public class SimpleServerCache implements ServerCache
 
    private Map<String, Map<MediaType, CacheEntry>> cache = new ConcurrentHashMap<String, Map<MediaType, CacheEntry>>();
 
-   public Entry get(String uri, MediaType accept)
+   public Entry get(String uri, MediaType accept, MultivaluedMap<String, String> headers)
    {
       Map<MediaType, CacheEntry> entry = cache.get(uri);
       if (entry == null || entry.isEmpty()) return null;
       for (Map.Entry<MediaType, CacheEntry> produce : entry.entrySet())
       {
-         if (accept.isCompatible(produce.getKey())) return produce.getValue();
+         if (accept.isCompatible(produce.getKey()) && !ServerCache.mayVary(produce.getValue(), headers)) return produce.getValue();
       }
       return null;
    }
 
-   public Entry add(String uri, MediaType mediaType, CacheControl cc, MultivaluedMap<String, Object> headers, byte[] entity, String etag)
+   public Entry add(String uri, MediaType mediaType, CacheControl cc, MultivaluedMap<String, Object> headers, byte[] entity, String etag, MultivaluedMap<String, String> varyHeaders)
    {
-      CacheEntry cacheEntry = new CacheEntry(headers, entity, cc.getMaxAge(), etag);
+      CacheEntry cacheEntry = new CacheEntry(headers, entity, cc.getMaxAge(), etag, varyHeaders);
       Map<MediaType, CacheEntry> entry = cache.get(uri);
       if (entry == null)
       {
