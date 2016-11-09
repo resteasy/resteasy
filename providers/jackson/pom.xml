@@ -24,12 +24,6 @@
             <artifactId>resteasy-client</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-jackson2-provider</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <!-- keep jaxb provider in test scope as I'm making sure Jackson providers take precedence -->
         <dependency>
