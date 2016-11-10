@@ -14,6 +14,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Type;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -31,7 +32,7 @@ public class QueryParamInjector extends StringParameterInjector implements Value
       this.encode = encode;
       try
       {
-         this.encodedName = URLDecoder.decode(paramName, "UTF-8");
+         this.encodedName = URLDecoder.decode(paramName, StandardCharsets.UTF_8.name());
       }
       catch (UnsupportedEncodingException e)
       {

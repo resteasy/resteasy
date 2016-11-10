@@ -30,6 +30,7 @@ import javax.ws.rs.core.Response;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -185,10 +186,10 @@ public class FormResourceTest {
             for (String pair : keys) {
                 int index = pair.indexOf('=');
                 if (index < 0) {
-                    values.put(URLDecoder.decode(pair, "UTF-8"), null);
+                    values.put(URLDecoder.decode(pair, StandardCharsets.UTF_8.name()), null);
                 } else if (index > 0) {
-                    values.put(URLDecoder.decode(pair.substring(0, index), "UTF-8"), URLDecoder.decode(pair
-                            .substring(index + 1), "UTF-8"));
+                    values.put(URLDecoder.decode(pair.substring(0, index), StandardCharsets.UTF_8.name()), URLDecoder.decode(pair
+                            .substring(index + 1), StandardCharsets.UTF_8.name()));
                 }
             }
             Assert.assertEquals(values.get(BOOLEAN_VALUE_FIELD), "true");

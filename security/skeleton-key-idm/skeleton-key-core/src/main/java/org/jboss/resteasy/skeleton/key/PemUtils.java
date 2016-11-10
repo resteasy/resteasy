@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
@@ -112,6 +113,6 @@ public class PemUtils
       byte[] keyBytes = new byte[dis.available()];
       dis.readFully(keyBytes);
       dis.close();
-      return new String(keyBytes, "utf-8");
+      return new String(keyBytes, StandardCharsets.UTF_8);
    }
 }

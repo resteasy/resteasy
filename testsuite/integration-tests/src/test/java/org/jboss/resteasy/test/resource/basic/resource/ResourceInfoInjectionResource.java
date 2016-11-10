@@ -11,6 +11,7 @@ import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Path("")
 public class ResourceInfoInjectionResource {
@@ -45,7 +46,7 @@ public class ResourceInfoInjectionResource {
                 inputStream.close();
                 outputStream.flush();
                 outputStream.close();
-                async.resume(outputStream.toString("UTF-8"));
+                async.resume(outputStream.toString(StandardCharsets.UTF_8.name()));
             }
 
             @Override

@@ -2,6 +2,7 @@ package org.jboss.resteasy.test.spring.deployment;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -150,7 +151,7 @@ public class AddSpringResteasyAsResourceRootTest {
             CloseableHttpResponse response = client.execute(httpget, context);
             HttpEntity entity = response.getEntity();
             if (entity != null) {
-                responseString = EntityUtils.toString(entity, "UTF-8");
+                responseString = EntityUtils.toString(entity, StandardCharsets.UTF_8);
             }
             return (HttpStatus.SC_OK == response.getStatusLine().getStatusCode())
                     && (className.equals(responseString));
@@ -173,7 +174,7 @@ public class AddSpringResteasyAsResourceRootTest {
         CloseableHttpResponse response = client.execute(httpget, context);
         Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
         HttpEntity entity = response.getEntity();
-        String responseString = EntityUtils.toString(entity, "UTF-8");
+        String responseString = EntityUtils.toString(entity, StandardCharsets.UTF_8);
         Assert.assertEquals("The server resource didn't send correct response", TestResource.TEST_RESPONSE, responseString);
         httpget.releaseConnection();
     }

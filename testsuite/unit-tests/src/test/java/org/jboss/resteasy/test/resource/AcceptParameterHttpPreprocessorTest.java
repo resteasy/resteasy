@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -117,8 +118,8 @@ public class AcceptParameterHttpPreprocessorTest {
                 MediaType.valueOf("*/*;q=0.8")
         );
 
-        String param1 = URLEncoder.encode("application/xml;q=0.9,application/xhtml+xml,*/*;q=0.8", "UTF-8");
-        String param2 = URLEncoder.encode("text/html", "UTF-8");
+        String param1 = URLEncoder.encode("application/xml;q=0.9,application/xhtml+xml,*/*;q=0.8", StandardCharsets.UTF_8.name());
+        String param2 = URLEncoder.encode("text/html", StandardCharsets.UTF_8.name());
         HttpRequest request = MockHttpRequest.get(
                 "foo?" + acceptParamName + "=" + param1 + "&" +
                         acceptParamName + "=" + param2);

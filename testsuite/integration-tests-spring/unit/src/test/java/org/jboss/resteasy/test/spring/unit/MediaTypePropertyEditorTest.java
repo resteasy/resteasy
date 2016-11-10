@@ -7,6 +7,7 @@ import org.junit.Test;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MediaTypeEditor;
 import java.beans.PropertyEditor;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @tpSubChapter Spring
@@ -47,7 +48,7 @@ public class MediaTypePropertyEditorTest {
         MediaType type = (MediaType) propertyEditor.getValue();
         Assert.assertEquals(ERROR_MESSAGE_TYPE, "application", type.getType());
         Assert.assertEquals(ERROR_MESSAGE_TYPE, "xml", type.getSubtype());
-        Assert.assertEquals(ERROR_MESSAGE_ENCODING, "UTF-8", type.getParameters().get("charset"));
+        Assert.assertEquals(ERROR_MESSAGE_ENCODING, StandardCharsets.UTF_8.name(), type.getParameters().get("charset"));
     }
 
     /**

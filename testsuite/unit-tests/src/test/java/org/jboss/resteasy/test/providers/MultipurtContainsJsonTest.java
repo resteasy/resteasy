@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,7 +37,7 @@ public class MultipurtContainsJsonTest {
         MultipartFormDataOutput dataOutput = new MultipartFormDataOutput();
 
         dataOutput.addFormData("str-field", "Hello World", MediaType.TEXT_PLAIN_TYPE);
-        dataOutput.addFormData("bytes-field", "text file".getBytes(Charset.forName("utf-8")), MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        dataOutput.addFormData("bytes-field", "text file".getBytes(StandardCharsets.UTF_8), MediaType.APPLICATION_OCTET_STREAM_TYPE);
         return dataOutput;
     }
 
@@ -69,7 +70,7 @@ public class MultipurtContainsJsonTest {
         MultivaluedMapImpl<String, Object> headers = new MultivaluedMapImpl<String, Object>();
         writer.writeTo(data, data.getClass(), data.getClass(), EMPTY_ANNOTATION, MediaType.MULTIPART_FORM_DATA_TYPE, headers, delegatingOutputStream);
         byte[] buf = outputStream.toByteArray();
-        logger.info(new String(buf, "utf-8"));
+        logger.info(new String(buf, StandardCharsets.UTF_8));
     }
 
     @Test
@@ -94,6 +95,6 @@ public class MultipurtContainsJsonTest {
         MultivaluedMapImpl<String, Object> headers = new MultivaluedMapImpl<String, Object>();
         writer.writeTo(data, data.getClass(), data.getClass(), new Annotation[0], MediaType.MULTIPART_FORM_DATA_TYPE, headers, delegatingOutputStream);
         byte[] buf = outputStream.toByteArray();
-        logger.info(new String(buf, "utf-8"));
+        logger.info(new String(buf, StandardCharsets.UTF_8));
     }
 }

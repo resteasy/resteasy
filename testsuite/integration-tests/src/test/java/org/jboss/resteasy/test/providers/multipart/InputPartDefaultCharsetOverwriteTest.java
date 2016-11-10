@@ -26,6 +26,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 /**
@@ -58,7 +59,7 @@ public class InputPartDefaultCharsetOverwriteTest {
     public static final String abc_us_ascii = "abc";
     public static final byte[] abc_us_ascii_bytes = abc_us_ascii.getBytes(Charset.forName("us-ascii"));
     public static final String abc_utf8 = new String("abc\u20AC");
-    public static final byte[] abc_utf8_bytes = abc_utf8.getBytes(Charset.forName("utf-8"));
+    public static final byte[] abc_utf8_bytes = abc_utf8.getBytes(StandardCharsets.UTF_8);
     public static final String abc_utf16 = new String("abc\u20AC");
     public static final byte[] abc_utf16_bytes = abc_utf16.getBytes(Charset.forName("utf-16"));
     public static final String TEXT_PLAIN_WITH_CHARSET_UTF_8 = normalize("text/plain; charset=UTF-8");

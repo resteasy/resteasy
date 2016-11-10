@@ -8,6 +8,7 @@ import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 
 @Path("/charset")
 public class StringCharsetResource {
@@ -39,7 +40,7 @@ public class StringCharsetResource {
     public StreamingOutput getTestStream() {
         return new StreamingOutput() {
             public void write(OutputStream outputStream) throws IOException, WebApplicationException {
-                PrintStream writer = new PrintStream(outputStream, true, "UTF-8");
+                PrintStream writer = new PrintStream(outputStream, true, StandardCharsets.UTF_8.name());
                 writer.println("<html><body>Test " + (char) 353 + (char) 273 + (char) 382 + (char) 269 + "</body></html>");
             }
         };

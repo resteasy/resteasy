@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -61,7 +62,7 @@ public class OAuthUtils {
 	 */
 	public static String encodeForOAuth(String value){
 		try {
-			return URLUtils.encodePart(value, "UTF-8", URLUtils.UNRESERVED);
+			return URLUtils.encodePart(value, StandardCharsets.UTF_8.name(), URLUtils.UNRESERVED);
 		} catch (UnsupportedEncodingException e) {
 			// this encoding is specified in the JDK
 		   throw new RuntimeException(Messages.MESSAGES.utf8EncodingShouldBeSupported(), e);

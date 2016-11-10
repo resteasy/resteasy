@@ -10,6 +10,7 @@ import org.jboss.resteasy.jose.jwe.JWEHeader;
 import javax.crypto.SecretKey;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.interfaces.RSAPrivateKey;
 
 
@@ -75,7 +76,7 @@ public class RSADecrypter
 
       SecretKey cek = null;
       byte[] encryptedKey = Base64Url.decode(encodedEncryptedKey);
-      byte[] aad = encodedHeader.getBytes(Charset.forName("UTF-8"));
+      byte[] aad = encodedHeader.getBytes(StandardCharsets.UTF_8);
       byte[] iv = Base64Url.decode(encodedIv);
       byte[] cipherText = Base64Url.decode(encodedCipherText);
       byte[] authTag = Base64Url.decode(encodedAuthTag);

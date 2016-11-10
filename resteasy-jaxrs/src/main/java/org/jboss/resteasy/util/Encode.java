@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ import java.util.regex.Pattern;
  */
 public class Encode
 {
-   private static final String UTF_8 = "UTF-8";
+   private static final String UTF_8 = StandardCharsets.UTF_8.name();
 
    private static final Pattern PARAM_REPLACEMENT = Pattern.compile("_resteasy_uri_parameter");
 

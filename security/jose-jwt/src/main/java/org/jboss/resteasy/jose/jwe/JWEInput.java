@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.interfaces.RSAPrivateKey;
 
@@ -101,7 +102,7 @@ public class JWEInput
       EncryptionMethod enc = header.getEncryptionMethod();
       if (enc == null) throw new IllegalStateException(Messages.MESSAGES.encryptionMethodWasNull());
       MessageDigest digest = enc.createSecretDigester();
-      byte[] hash = digest.digest(secret.getBytes(Charset.forName("UTF-8")));
+      byte[] hash = digest.digest(secret.getBytes(StandardCharsets.UTF_8));
       return decrypt(hash);
 
    }

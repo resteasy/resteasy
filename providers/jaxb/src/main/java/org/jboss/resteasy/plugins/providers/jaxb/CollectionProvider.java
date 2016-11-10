@@ -43,6 +43,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -143,7 +144,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
             SAXSource source = null;
             if (getCharset(mediaType) == null)
             {
-               source = new SAXSource(new InputSource(new InputStreamReader(entityStream, "UTF-8")));
+               source = new SAXSource(new InputSource(new InputStreamReader(entityStream, StandardCharsets.UTF_8)));
             }
             else
             {
@@ -159,7 +160,7 @@ public class CollectionProvider implements MessageBodyReader<Object>, MessageBod
             StreamSource source = null;
             if (getCharset(mediaType) == null)
             {
-               source = new StreamSource(new InputStreamReader(entityStream, "UTF-8"));
+               source = new StreamSource(new InputStreamReader(entityStream, StandardCharsets.UTF_8));
             }
             else
             {

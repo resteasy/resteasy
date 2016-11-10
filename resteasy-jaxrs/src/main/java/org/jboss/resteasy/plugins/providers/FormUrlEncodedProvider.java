@@ -28,6 +28,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +64,7 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>
       String charset = mediaType.getParameters().get(MediaType.CHARSET_PARAMETER);
       if (charset == null)
       {
-         charset = "UTF-8";
+         charset = StandardCharsets.UTF_8.name();
       }
       if (encoded) return parseForm(entityStream, charset);
       else return Encode.decode(parseForm(entityStream, charset), charset);
@@ -76,7 +77,7 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>
       StringBuffer buf = new StringBuffer();
       if (charset == null)
       {
-         charset = "UTF-8";
+         charset = StandardCharsets.UTF_8.name();
       }
       BufferedReader reader = new BufferedReader(new InputStreamReader(entityStream, charset));
 
@@ -137,7 +138,7 @@ public class FormUrlEncodedProvider implements MessageBodyReader<MultivaluedMap>
       String charset = mediaType.getParameters().get(MediaType.CHARSET_PARAMETER);
       if (charset == null)
       {
-         charset = "UTF-8";
+         charset = StandardCharsets.UTF_8.name();
       }
       boolean encoded = FindAnnotation.findAnnotation(annotations, Encoded.class) != null;
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
