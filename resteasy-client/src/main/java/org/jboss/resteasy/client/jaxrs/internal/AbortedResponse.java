@@ -13,6 +13,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -78,8 +80,9 @@ public class AbortedResponse extends ClientResponse
             InputStream is = (InputStream)response.getEntity();
             setInputStream(is);
          }
-         setEntity(null); // clear all entity information
-         setAnnotations(null);
+//  The following lines commented for RESTEASY-1540
+//         setEntity(null); // clear all entity information
+//         setAnnotations(null);
       }
 
 
@@ -109,5 +112,16 @@ public class AbortedResponse extends ClientResponse
       catch (IOException e) {
 
       }
+   }
+   
+   /**
+    * Added for RESTEASY-1540.
+    */
+   @Override
+   public synchronized <T> T readEntity(Class<T> type, Type genericType, Annotation[] anns)
+   {
+      setEntity(null); // clear all entity information
+      setAnnotations(null);
+      return super.readEntity(type, genericType, anns);
    }
 }
