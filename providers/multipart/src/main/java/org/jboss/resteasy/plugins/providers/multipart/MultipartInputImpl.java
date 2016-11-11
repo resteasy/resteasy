@@ -73,9 +73,9 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
       private Method expectMethod;
       private java.lang.reflect.Field bodyFactoryField;
       private java.lang.reflect.Field stackField;
-      private String charset;
+      private Charset charset;
 
-      private void init()
+      private void init(String charset)
       {
          try
          {
@@ -90,19 +90,34 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          {
             throw new RuntimeException(e);
          }
+         try
+         {
+             if(charset != null){
+                  this.charset = Charset.forName(charset);
+              }
+         }
+         catch (Exception e)
+         {
+              // nothing to do
+         }
       }
 
       private BinaryOnlyMessageBuilder(Entity entity)
       {
          super(entity);
-         init();
+         init(null);
+      }
+
+      private BinaryOnlyMessageBuilder(Entity entity, StorageProvider storageProvider)
+      {
+         this(entity, storageProvider, null);
       }
 
       private BinaryOnlyMessageBuilder(Entity entity, StorageProvider storageProvider, String charset)
       {
          super(entity, storageProvider);
-         init();
-         this.charset = charset;
+         init(charset);
+
       }
 
       @Override
@@ -148,14 +163,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
       }
 
       private Charset getCharset(){
-         try {
-            if(charset != null){
-               return Charset.forName(charset);
-            }
-         } catch (Exception e){
-            throw new RuntimeException(e);
-         }
-         return null;
+         return charset;
       }
 
       private BodyFactory getBodyFactory(){
