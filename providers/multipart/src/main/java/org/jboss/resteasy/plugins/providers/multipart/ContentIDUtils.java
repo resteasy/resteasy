@@ -6,6 +6,7 @@ import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 /**
@@ -61,7 +62,7 @@ public class ContentIDUtils {
 	public static String generateCidFromAddrSpec(String addrSpec) {
 		String cid = CID_URL_SCHEME;
 		try {
-			cid += URLEncoder.encode(addrSpec, "UTF-8");
+			cid += URLEncoder.encode(addrSpec, StandardCharsets.UTF_8.name());
 		} catch (UnsupportedEncodingException e) {
 		   LogMessages.LOGGER.error(Messages.MESSAGES.urlEncoderDoesNotSupportUtf8(), e);
 		}
@@ -79,7 +80,7 @@ public class ContentIDUtils {
 			addrSpec = addrSpec.substring(CID_URL_SCHEME.length()).trim();
 
 		try {
-			addrSpec = URLDecoder.decode(addrSpec, "UTF-8");
+			addrSpec = URLDecoder.decode(addrSpec, StandardCharsets.UTF_8.name());
 		} catch (UnsupportedEncodingException e) {
 		   LogMessages.LOGGER.error(Messages.MESSAGES.urlDecoderDoesNotSupportUtf8(), e);
 		}

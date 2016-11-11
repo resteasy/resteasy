@@ -21,6 +21,7 @@ import java.io.SequenceInputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -69,7 +70,7 @@ public class EnvelopedReader implements MessageBodyReader<EnvelopedInput>
          headerString.append("Content-Transfer-Encoding: ").append(headers.getFirst("Content-Transfer-Encoding")).append("\r\n");
       }
       headerString.append("\r\n");
-      ByteArrayInputStream is = new ByteArrayInputStream(headerString.toString().getBytes("utf-8"));
+      ByteArrayInputStream is = new ByteArrayInputStream(headerString.toString().getBytes(StandardCharsets.UTF_8));
       MimeBodyPart body = null;
       try
       {

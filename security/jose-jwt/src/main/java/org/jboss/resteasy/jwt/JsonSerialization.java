@@ -13,6 +13,7 @@ import javax.ws.rs.ext.Providers;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -67,14 +68,14 @@ public class JsonSerialization
 
    public static <T> T fromString(Class<T> type, String json) throws Exception
    {
-      byte[] bytes = json.getBytes("UTF-8");
+      byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
       return fromBytes(type, bytes);
 
    }
 
    public static <T> T fromString(Class<T> type, String json, ResteasyProviderFactory factory) throws Exception
    {
-      byte[] bytes = json.getBytes("UTF-8");
+      byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
       return fromBytes(type, bytes, factory);
 
    }

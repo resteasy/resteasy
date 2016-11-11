@@ -9,7 +9,6 @@ import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 /**

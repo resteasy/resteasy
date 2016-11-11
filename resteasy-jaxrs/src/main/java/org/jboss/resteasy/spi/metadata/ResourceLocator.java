@@ -75,4 +75,9 @@ public class ResourceLocator
    {
       return path;
    }
+
+   @Override
+   public String toString() {
+      return method.toString();
+   }
 }

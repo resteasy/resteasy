@@ -12,6 +12,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.EntityTag;
+
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -52,7 +54,7 @@ public  class VariantLanguageResource {
     @GET
     @Path("/SelectVariantTestResponse")
     public Response selectVariantTestResponse(@Context Request req) {
-        List<Variant> list = Variant.encodings("CP1250", "UTF-8")
+        List<Variant> list = Variant.encodings("CP1250", StandardCharsets.UTF_8.name())
                 .languages(Locale.ENGLISH)
                 .mediaTypes(MediaType.APPLICATION_JSON_TYPE).add().build();
         Variant selectedVariant = req.selectVariant(list);

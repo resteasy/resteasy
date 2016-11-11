@@ -29,18 +29,6 @@
       </plugin>
     </plugins>
   </build>
-  
-  <dependencyManagement>
-    <dependencies>
-        <dependency>
-            <groupId>org.jboss.arquillian</groupId>
-            <artifactId>arquillian-bom</artifactId>
-            <version>${dep.arquillian-bom.version}</version>
-            <scope>import</scope>
-            <type>pom</type>
-        </dependency>
-    </dependencies>
-  </dependencyManagement>
        
   <dependencies>
     <dependency>
@@ -53,25 +41,21 @@
       <dependency>
           <groupId>org.eclipse.jetty</groupId>
           <artifactId>jetty-deploy</artifactId>
-          <version>${version.org.eclipse.jetty}</version>
           <scope>test</scope>
       </dependency>
       <dependency>
           <groupId>org.eclipse.jetty</groupId>
           <artifactId>jetty-annotations</artifactId>
-          <version>${version.org.eclipse.jetty}</version>
           <scope>test</scope>
       </dependency>
       <dependency>
           <groupId>org.eclipse.jetty</groupId>
           <artifactId>jetty-webapp</artifactId>
-          <version>${version.org.eclipse.jetty}</version>
           <scope>test</scope>
       </dependency>
       <dependency>
           <groupId>org.eclipse.jetty</groupId>
           <artifactId>jetty-plus</artifactId>
-          <version>${version.org.eclipse.jetty}</version>
           <scope>test</scope>
       </dependency>
     <dependency>

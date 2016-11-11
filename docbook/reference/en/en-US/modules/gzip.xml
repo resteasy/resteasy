@@ -54,19 +54,19 @@ public class MyService {
    </para>
    
    <orderedlist>
-      <listitem>org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor:
+      <listitem>org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor:
       If the Content-Encoding header is present and has the value "gzip",
       <classname>GZIPDecodingInterceptor</classname> will install an <classname>InputStream</classname>
       that decompresses the message body.
       </listitem>
       
-      <listitem>org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor:
+      <listitem>org.jboss.resteasy.plugins.interceptors.GZIPEncodingInterceptor:
       If the Content-Encoding header is present and has the value "gzip",
       <classname>GZIPEncodingInterceptor</classname> will install an <classname>OutputStream</classname>
       that compresses the message body.
       </listitem>
       
-      <listitem>org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPFilter: 
+      <listitem>org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter: 
       If the Accept-Encoding header does not exist, <classname>AcceptEncodingGZIPFilter</classname>
       will add Accept-Encoding with the value "gzip, deflate". If the Accept-Encoding header exists but
       does not contain "gzip", <classname>AcceptEncodingGZIPFilter</classname> will append ", gzip".

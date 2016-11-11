@@ -195,8 +195,8 @@ public interface Messages
    @Message(id = BASE + 225, value = "URITemplateAnnotationResolver could not introspect class %s")
    String couldNotIntrospectClass(String className);
 
-// @Message(id = BASE + 230, value = "Could not match up an implementation for LoggerType: %s")
-// String couldNotMatchUpLoggerTypeImplementation(LoggerType loggerType);
+   @Message(id = BASE + 230, value = "Could not match up an implementation for LoggerType: %s")
+   String couldNotMatchUpLoggerTypeImplementation(Class<?> loggerType);
    
    @Message(id = BASE + 235, value = "Could not process method %s")
    String couldNotProcessMethod(Method method);

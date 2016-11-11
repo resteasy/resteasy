@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -188,7 +189,7 @@ public class XopWithMultipartRelatedJAXBProvider extends
 		try {
                         LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
 			Map<String, String> mediaTypeParameters = new LinkedHashMap<String, String>();
-			mediaTypeParameters.put("charset", "UTF-8");
+			mediaTypeParameters.put("charset", StandardCharsets.UTF_8.name());
 			mediaTypeParameters.put("type", "text/xml");
 
 			MediaType xopRootMediaType = new MediaType("application",

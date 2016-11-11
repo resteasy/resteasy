@@ -2,7 +2,7 @@ package org.jboss.resteasy.plugins.providers.jaxb;
 
 import org.jboss.resteasy.annotations.DecorateTypes;
 import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
-import org.jboss.resteasy.spi.interception.DecoratorProcessor;
+import org.jboss.resteasy.spi.DecoratorProcessor;
 
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.Marshaller;

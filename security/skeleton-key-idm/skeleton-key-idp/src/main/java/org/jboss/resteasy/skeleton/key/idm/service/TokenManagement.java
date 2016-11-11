@@ -44,6 +44,7 @@ import javax.ws.rs.ext.Providers;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -224,14 +225,7 @@ public class TokenManagement
          accessCodeMap.put(code.getId(), code);
       }
       String accessCode = null;
-      try
-      {
-         accessCode = new JWSBuilder().content(code.getId().getBytes("UTF-8")).rsa256(realm.getPrivateKey());
-      }
-      catch (UnsupportedEncodingException e)
-      {
-         throw new RuntimeException(e);
-      }
+      accessCode = new JWSBuilder().content(code.getId().getBytes(StandardCharsets.UTF_8)).rsa256(realm.getPrivateKey());
       UriBuilder redirectUri = UriBuilder.fromUri(redirect).queryParam("code", accessCode);
       if (state != null) redirectUri.queryParam("state", state);
       return Response.status(302).location(redirectUri.build()).build();
@@ -571,7 +565,7 @@ public class TokenManagement
             try
             {
                String json = JsonSerialization.toString(scope, false);
-               scopeParam = Base64Url.encode(json.getBytes("UTF-8"));
+               scopeParam = Base64Url.encode(json.getBytes(StandardCharsets.UTF_8));
             }
             catch (Exception e)
             {

@@ -1,6 +1,7 @@
 package org.jboss.resteasy.auth.oauth;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.BitSet;
 
 /**
@@ -244,7 +245,7 @@ public class URLUtils {
 	 */
 	public static String encodePathParamName(final String pathParamName) {
 		try {
-			return encodePart(pathParamName, "UTF-8", PATH_PARAM_NAME);
+			return encodePart(pathParamName, StandardCharsets.UTF_8.name(), PATH_PARAM_NAME);
 		}
 		catch (final UnsupportedEncodingException e) {
 			// should not happen
@@ -257,7 +258,7 @@ public class URLUtils {
 	 */
 	public static String encodePathParamValue(final String pathParamValue) {
 		try {
-			return encodePart(pathParamValue, "UTF-8", PATH_PARAM_VALUE);
+			return encodePart(pathParamValue, StandardCharsets.UTF_8.name(), PATH_PARAM_VALUE);
 		}
 		catch (final UnsupportedEncodingException e) {
 			// should not happen
@@ -271,7 +272,7 @@ public class URLUtils {
 	 */
 	public static String encodeQueryNameOrValue(final String queryNameOrValue) {
 		try {
-			return encodePart(queryNameOrValue, "UTF-8", QUERY);
+			return encodePart(queryNameOrValue, StandardCharsets.UTF_8.name(), QUERY);
 		}
 		catch (final UnsupportedEncodingException e) {
 			// should not happen
@@ -285,7 +286,7 @@ public class URLUtils {
 	 */
 	public static String encodeQueryNameOrValueNoParen(final String queryNameOrValueNoParen) {
 		try {
-			String query = encodePart(queryNameOrValueNoParen, "UTF-8", QUERY);
+			String query = encodePart(queryNameOrValueNoParen, StandardCharsets.UTF_8.name(), QUERY);
 			query = query.replace("(", "");
 			return query.replace(")", "");
 		}
@@ -301,7 +302,7 @@ public class URLUtils {
 	 */
 	public static String encodePathSegment(final String pathSegment) {
 		try {
-			return encodePart(pathSegment, "UTF-8", PATH_SEGMENT);
+			return encodePart(pathSegment, StandardCharsets.UTF_8.name(), PATH_SEGMENT);
 		}
 		catch (final UnsupportedEncodingException e) {
 			// should not happen

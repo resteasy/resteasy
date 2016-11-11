@@ -16,10 +16,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -91,15 +91,9 @@ public class StringUtils {
 		return sequence.replaceAll("\\<.*?>", "");
 	}
 
-	public static String parseUTF8(String encodedString) {
+	public static String parseUTF8(String encodedString)  {
 
-		try {
-			return new String(encodedString.getBytes(), "UTF-8");
-
-		} catch (UnsupportedEncodingException e) {
-
-			throw new RuntimeException(e);
-		}
+		return new String(encodedString.getBytes(), StandardCharsets.UTF_8);
 	}
 
 	//TODO move

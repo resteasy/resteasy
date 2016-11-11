@@ -10,6 +10,7 @@ import org.jboss.resteasy.jose.jwe.EncryptionMethod;
 import javax.crypto.SecretKey;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
@@ -86,7 +87,7 @@ public class DirectEncrypter
 
 
       // Compose the AAD
-      byte[] aad = encodedJWEHeader.getBytes(Charset.forName("UTF-8"));
+      byte[] aad = encodedJWEHeader.getBytes(StandardCharsets.UTF_8);
 
 
       // Encrypt the plain text according to the JWE enc

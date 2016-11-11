@@ -1,0 +1,18 @@
+<beans xmlns="http://java.sun.com/xml/ns/javaee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
+
+    <interceptors>
+        <class>org.jboss.resteasy.test.cdi.basic.resource.DecoratorsResourceInterceptor</class>
+    </interceptors>
+
+    <decorators>
+        <class>org.jboss.resteasy.test.cdi.basic.resource.DecoratorsRequestFilterDecorator</class>
+        <class>org.jboss.resteasy.test.cdi.basic.resource.DecoratorsResponseFilterDecorator</class>
+        <class>org.jboss.resteasy.test.cdi.basic.resource.DecoratorsBookReaderInterceptorDecorator</class>
+        <class>org.jboss.resteasy.test.cdi.basic.resource.DecoratorsBookReaderDecorator</class>
+        <class>org.jboss.resteasy.test.cdi.basic.resource.DecoratorsBookWriterInterceptorDecorator</class>
+        <class>org.jboss.resteasy.test.cdi.basic.resource.DecoratorsBookWriterDecorator</class>
+        <class>org.jboss.resteasy.test.cdi.basic.resource.DecoratorsResourceDecorator</class>
+    </decorators>
+</beans>

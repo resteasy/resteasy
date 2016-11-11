@@ -27,6 +27,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -104,7 +105,7 @@ public class JsonMapProvider extends MapProvider
          String charset = mediaType.getParameters().get("charset");
          if (charset != null) return charset;
       }
-      return "UTF-8";
+      return StandardCharsets.UTF_8.name();
    }
 
    @SuppressWarnings("unchecked")

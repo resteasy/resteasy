@@ -3,6 +3,7 @@ package org.jboss.resteasy.spi.metadata;
 import org.jboss.resteasy.annotations.Body;
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.annotations.Query;
+import org.jboss.resteasy.annotations.Suspend;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.util.IsHttpMethod;
@@ -254,6 +255,7 @@ public class ResourceBuilder
          CookieParam cookie;
          FormParam formParam;
          Form form;
+         Suspend suspend;
          Suspended suspended;
 
 
@@ -300,6 +302,11 @@ public class ResourceBuilder
          {
             parameter.paramType = Parameter.ParamType.MATRIX_PARAM;
             parameter.paramName = matrix.value();
+         }
+         else if ((suspend = findAnnotation(annotations, Suspend.class)) != null)
+         {
+            parameter.paramType = Parameter.ParamType.SUSPEND;
+            parameter.suspendTimeout = suspend.value();
          }
          else if (findAnnotation(annotations, Context.class) != null)
          {
@@ -390,11 +397,19 @@ public class ResourceBuilder
          return this;
       }
 
+      public ResourceMethodParameterBuilder suspend(long timeout)
+      {
+         method.method.asynchronous = true;
+         parameter.paramType = Parameter.ParamType.SUSPEND;
+         parameter.suspendTimeout = timeout;
+         return this;
+      }
+
       @Override
       public ResourceMethodParameterBuilder fromAnnotations()
       {
          super.fromAnnotations();
-         if (param.paramType == Parameter.ParamType.SUSPENDED)
+         if (param.paramType == Parameter.ParamType.SUSPEND || param.paramType == Parameter.ParamType.SUSPENDED)
          {
             method.method.asynchronous = true;
          }

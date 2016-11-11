@@ -6,6 +6,7 @@ import javax.xml.bind.PropertyException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -14,7 +15,7 @@ import java.io.UnsupportedEncodingException;
 public abstract class BaseMarshaller implements Marshaller
 {
    protected Marshaller marshaller;
-   protected String charset = "UTF-8";
+   protected String charset = StandardCharsets.UTF_8.name();
 
    public void marshal(Object o, OutputStream outputStream)
            throws JAXBException

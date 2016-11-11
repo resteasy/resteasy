@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -190,7 +191,7 @@ public class MimeMultipartProviderResource {
 
         Assert.assertEquals(ERR_MULTIPART_PROPERTY, "application", rootPart.getMediaType().getType());
         Assert.assertEquals(ERR_MULTIPART_PROPERTY, "xop+xml", rootPart.getMediaType().getSubtype());
-        Assert.assertEquals(ERR_MULTIPART_PROPERTY, "UTF-8", rootPart.getMediaType().getParameters().get("charset"));
+        Assert.assertEquals(ERR_MULTIPART_PROPERTY, StandardCharsets.UTF_8.name(), rootPart.getMediaType().getParameters().get("charset"));
         Assert.assertEquals(ERR_MULTIPART_PROPERTY, "text/xml", rootPart.getMediaType().getParameters().get("type"));
         Assert.assertEquals(ERR_MULTIPART_PROPERTY, "<mymessage.xml@example.org>", rootPart.getHeaders().getFirst("Content-ID"));
         Assert.assertEquals(ERR_MULTIPART_PROPERTY, "8bit", rootPart.getHeaders().getFirst("Content-Transfer-Encoding"));
@@ -311,14 +312,14 @@ public class MimeMultipartProviderResource {
         Assert.assertNotNull(ERR_CUST_NULL, xop.getMyBinary());
         Assert.assertNotNull(ERR_CUST_NULL, xop.getMyDataHandler());
         Assert.assertEquals(ERR_VALUE, "Hello Xop World!", new String(xop.getMyBinary(),
-                "UTF-8"));
+        		StandardCharsets.UTF_8));
         // lets do it twice to test that we get different InputStream-s each
         // time.
         for (int fi = 0; fi < 2; fi++) {
             InputStream inputStream = xop.getMyDataHandler().getInputStream();
             InputStreamReader inputStreamReader = null;
             try {
-                inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
+                inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
                 StringWriter writer = new StringWriter();
                 char[] buffer = new char[4048];
                 int n = 0;

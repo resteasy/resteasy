@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @tpSubChapter DataSource provider
@@ -89,7 +90,7 @@ public class CleanFilesDataSourceProviderTest {
         HttpResponse response = httpClient.execute(httpPost);
         // check http request results
         int postStatus = response.getStatusLine().getStatusCode();
-        String postResponse = EntityUtils.toString(response.getEntity(), "UTF-8");
+        String postResponse = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
         Assert.assertEquals("Status of client request is not correct.", HttpStatus.SC_OK, postStatus);
         Assert.assertEquals("Client get wrong response.", CleanFilesDataSourceProviderResource.clientResponse, postResponse);
 
@@ -137,7 +138,7 @@ public class CleanFilesDataSourceProviderTest {
         HttpResponse response = httpClient.execute(httpPost);
         // check http request results
         int postStatus = response.getStatusLine().getStatusCode();
-        String postResponse = EntityUtils.toString(response.getEntity(), "UTF-8");
+        String postResponse = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
         Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-1904", "Status of client request is not correct."), HttpStatus.SC_OK, postStatus);
         Assert.assertEquals("Client get wrong response.", CleanFilesDataSourceProviderResource.clientResponse, postResponse);
 

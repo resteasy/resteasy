@@ -20,6 +20,8 @@ import org.junit.runners.MethodSorters;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.ws.rs.core.MediaType;
+
+import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 
@@ -68,7 +70,7 @@ public class JWSTest {
         KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
 
         String encoded = new JWSBuilder()
-                .content("Hello World".getBytes("UTF-8"))
+                .content("Hello World".getBytes(StandardCharsets.UTF_8))
                 .rsa256(keyPair.getPrivate());
 
         logger.info(encoded);

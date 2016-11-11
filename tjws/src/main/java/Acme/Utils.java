@@ -47,6 +47,7 @@ import java.io.Writer;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -123,7 +124,7 @@ public class Utils
    {
       Hashtable result = new Hashtable();
       if (encoding == null)
-         encoding = "UTF-8";
+         encoding = StandardCharsets.UTF_8.name();
       StringTokenizer st = new StringTokenizer(query, "&");
       while (st.hasMoreTokens())
       {

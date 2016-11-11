@@ -29,6 +29,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 
 /**
  * <p>
@@ -103,7 +104,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
             SAXSource source = null;
             if (getCharset(mediaType) == null)
             {
-               source = new SAXSource(new InputSource(new InputStreamReader(entityStream, "UTF-8")));
+               source = new SAXSource(new InputSource(new InputStreamReader(entityStream, StandardCharsets.UTF_8)));
             }
             else
             {
@@ -117,8 +118,8 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
             if (getCharset(mediaType) == null)
             {
                InputSource is = new InputSource(entityStream);
-               is.setEncoding("UTF-8");
-               StreamSource source = new StreamSource(new InputStreamReader(entityStream, "UTF-8"));
+               is.setEncoding(StandardCharsets.UTF_8.name());
+               StreamSource source = new StreamSource(new InputStreamReader(entityStream, StandardCharsets.UTF_8));
                source.setInputStream(entityStream);
                obj = unmarshaller.unmarshal(source);
             }

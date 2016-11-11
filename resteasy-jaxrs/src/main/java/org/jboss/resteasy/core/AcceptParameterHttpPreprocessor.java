@@ -15,6 +15,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +73,7 @@ public class AcceptParameterHttpPreprocessor implements ContainerRequestFilter
             {
                try
                {
-                  accept = URLDecoder.decode(accept, "UTF-8");
+                  accept = URLDecoder.decode(accept, StandardCharsets.UTF_8.name());
                   request.getHeaders().add(HttpHeaders.ACCEPT, accept);
                }
                catch (UnsupportedEncodingException e)
