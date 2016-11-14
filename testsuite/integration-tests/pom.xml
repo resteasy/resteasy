@@ -108,6 +108,14 @@
     </profiles>
 
     <dependencies>
+        <!-- TODO Workaround dependency for arquillian to work with container using Remoting 5. Remove when updated version of
+        wildfly-arquillian-container-managed is available -->
+        <dependency>
+            <groupId>org.wildfly.security</groupId>
+            <artifactId>wildfly-elytron</artifactId>
+            <version>1.1.0.Beta13</version>
+        </dependency>
+
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>arquillian-utils</artifactId>
