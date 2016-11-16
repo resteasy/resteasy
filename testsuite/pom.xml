@@ -24,6 +24,9 @@
     <properties>
         <version.resteasy.testsuite>${project.version}</version.resteasy.testsuite>
         <additional.surefire.excluded.groups></additional.surefire.excluded.groups>
+        <jboss.server.config.file.name>standalone-full.xml</jboss.server.config.file.name>
+        <standalone.full.resteasy.legacy.file.name>standalone-resteasy-legacy.xml</standalone.full.resteasy.legacy.file.name>
+        <version.org.codehaus.gmaven.gmaven-plugin>1.5</version.org.codehaus.gmaven.gmaven-plugin>
     </properties>
 
     <build>
@@ -147,6 +150,80 @@
                         <configuration combine.children="append">
                             <excludedGroups></excludedGroups>
                         </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- Specify custom name for jboss server config file. By enabling this profile, this property will be applied to
+        the arquillian.xml in all sub-modules running integration tests. As a result, tests using non deprecated api, will
+        run with resteasy-legacy module enabled. Sub-module legacy-integration-tests have resteasy-legacy module enabled
+        by default, no need enable this profile. -->
+        <profile>
+            <id>run.server.with.resteasy.legacy.enabled</id>
+            <activation>
+                <property>
+                    <name>run.server.with.resteasy.legacy.enabled</name>
+                </property>
+            </activation>
+            <properties>
+                <jboss.server.config.file.name>${standalone.full.resteasy.legacy.file.name}</jboss.server.config.file.name>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-legacy</artifactId>
+                    <version>${version.resteasy.testsuite}</version>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration combine.children="append">
+                            <!-- This test is meant to test  org.jboss.resteasy.spi.ResteasyProviderFactory on the classpath.
+                            With this profile enabled org.jboss.resteasy.spi.old.ResteasyProviderFactory is on the classpath
+                            and this test would fail. -->
+                            <excludes>
+                                <exclude>**/ResteasyJAXRSImplTest.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- Create custom resteasy standalone-full.xml file with global module resteasy-legacy added and place it into
+        jboss.home directory configuration -->
+        <profile>
+            <id>groovy</id>
+            <activation>
+                <property>
+                    <name>!no.groovy</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.gmaven</groupId>
+                        <artifactId>gmaven-plugin</artifactId>
+                        <version>${version.org.codehaus.gmaven.gmaven-plugin}</version>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <id>testsuite-default</id>
+                                <phase>process-test-resources</phase>
+                                <goals>
+                                    <goal>execute</goal>
+                                </goals>
+                                <configuration>
+                                    <providerSelection>2.0</providerSelection>
+                                    <source>${basedir}/scripts/legacy.groovy</source>
+                                    <properties>
+                                        <inputFile>${server.home}/standalone/configuration/standalone-full.xml</inputFile>
+                                        <outputFile>${server.home}/standalone/configuration/${standalone.full.resteasy.legacy.file.name}</outputFile>
+                                    </properties>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>

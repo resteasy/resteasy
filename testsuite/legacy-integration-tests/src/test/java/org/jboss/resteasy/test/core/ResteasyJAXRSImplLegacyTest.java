@@ -17,13 +17,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
-public class ResteasyJAXRSImplTest
+public class ResteasyJAXRSImplLegacyTest
 {
 
    @Deployment
    public static Archive<?> deploy()
    {
-      WebArchive war = TestUtil.prepareArchive(ResteasyJAXRSImplTest.class.getSimpleName());
+      WebArchive war = TestUtil.prepareArchive(ResteasyJAXRSImplLegacyTest.class.getSimpleName());
       return TestUtil.finishContainerPrepare(war, null, AcceptLanguagesResource.class);
    }
 
