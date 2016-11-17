@@ -2,7 +2,6 @@ package org.jboss.resteasy.plugins.server.netty;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
@@ -62,10 +61,10 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
    private int backlog = 128;
    // default no idle timeout.
    private int idleTimeout = -1;
-   private List<ChannelHandler> channelHandlers = Collections.emptyList();
+   private ChannelInitializer<SocketChannel> channelInitializer;
    private Map<ChannelOption, Object> channelOptions = Collections.emptyMap();
    private Map<ChannelOption, Object> childChannelOptions = Collections.emptyMap();
-   private List<ChannelHandler> httpChannelHandlers = Collections.emptyList();
+   private ChannelInitializer<SocketChannel> httpInitializer;
 
    public void setSSLContext(SSLContext sslContext)
    {
@@ -151,23 +150,35 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
     }
 
     /**
-     * Add additional {@link io.netty.channel.ChannelHandler}s to the {@link io.netty.bootstrap.ServerBootstrap}.
-     * <p>The additional channel handlers are being added <em>before</em> the HTTP handling.</p>
+     * The channel initializer used to add additional
+     * {@link io.netty.channel.ChannelHandler}s to the
+     * {@link io.netty.bootstrap.ServerBootstrap}.
+     * <p>
+     * The additional channel handlers are being added <em>before</em> the HTTP
+     * handling.
+     * </p>
      *
-     * @param channelHandlers the additional {@link io.netty.channel.ChannelHandler}s.
+     * @param handler the additional {@link io.netty.channel.ChannelHandler}s
+     *            initializer.
      */
-    public void setChannelHandlers(final List<ChannelHandler> channelHandlers) {
-        this.channelHandlers = channelHandlers == null ? Collections.<ChannelHandler>emptyList() : channelHandlers;
+    public void setChannelInitializer(final ChannelInitializer<SocketChannel> handler) {
+        this.channelInitializer = handler;
     }
 
     /**
-     * Add additional {@link io.netty.channel.ChannelHandler}s to the {@link io.netty.bootstrap.ServerBootstrap}.
-     * <p>The additional channel handlers are being added <em>after</em> the HTTP handling.</p>
+     * The channel initializer used add additional
+     * {@link io.netty.channel.ChannelHandler}s to the
+     * {@link io.netty.bootstrap.ServerBootstrap}.
+     * <p>
+     * The additional channel handlers are being added <em>after</em> the HTTP
+     * handling.
+     * </p>
      *
-     * @param httpChannelHandlers the additional {@link io.netty.channel.ChannelHandler}s.
+     * @param handler the additional {@link io.netty.channel.ChannelHandler}s
+     *            initializer.
      */
-    public void setHttpChannelHandlers(final List<ChannelHandler> httpChannelHandlers) {
-        this.httpChannelHandlers = httpChannelHandlers == null ? Collections.<ChannelHandler>emptyList() : httpChannelHandlers;
+    public void setHttpChannelInitializer(final ChannelInitializer<SocketChannel> handler) {
+        this.httpInitializer = handler;
     }
 
     /**
@@ -276,11 +287,15 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
 
     private void setupHandlers(SocketChannel ch, RequestDispatcher dispatcher, RestEasyHttpRequestDecoder.Protocol protocol) {
         ChannelPipeline channelPipeline = ch.pipeline();
-        channelPipeline.addLast(channelHandlers.toArray(new ChannelHandler[channelHandlers.size()]));
+        if (channelInitializer != null) {
+            channelPipeline.addLast(channelInitializer);
+        }
         channelPipeline.addLast(new HttpRequestDecoder(maxInitialLineLength, maxHeaderSize, maxChunkSize));
         channelPipeline.addLast(new HttpObjectAggregator(maxRequestSize));
         channelPipeline.addLast(new HttpResponseEncoder());
-        channelPipeline.addLast(httpChannelHandlers.toArray(new ChannelHandler[httpChannelHandlers.size()]));
+        if (httpInitializer != null) {
+            channelPipeline.addLast(httpInitializer);
+        }
         channelPipeline.addLast(new RestEasyHttpRequestDecoder(dispatcher.getDispatcher(), root, protocol));
         channelPipeline.addLast(new RestEasyHttpResponseEncoder());
         if (idleTimeout > 0) {
