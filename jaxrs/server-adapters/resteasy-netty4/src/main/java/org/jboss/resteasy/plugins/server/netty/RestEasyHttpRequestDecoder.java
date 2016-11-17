@@ -1,13 +1,15 @@
 package org.jboss.resteasy.plugins.server.netty;
 
 import static io.netty.handler.codec.http.HttpHeaders.is100ContinueExpected;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpHeaders;
 
-import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import org.jboss.resteasy.core.SynchronousDispatcher;
@@ -71,10 +73,18 @@ public class RestEasyHttpRequestDecoder extends MessageToMessageDecoder<io.netty
                
                // Does the request contain a body that will need to be retained
                if(content.content().readableBytes() > 0) {
-                   byte[] buf = new byte[content.content().readableBytes()];
-                   content.content().readBytes(buf);
-                   ByteArrayInputStream in = new ByteArrayInputStream(buf);
-                   nettyRequest.setInputStream(in);
+                    final ByteBuf buf = content.content().retain();
+                    ByteBufInputStream in = new ByteBufInputStream(buf) {
+
+                        public void close() throws java.io.IOException {
+                            try {
+                                buf.release();
+                            } finally {
+                                super.close();
+                            }
+                        };
+                    };
+                    nettyRequest.setInputStream(in);
                }
                
                out.add(nettyRequest); 

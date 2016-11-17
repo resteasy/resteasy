@@ -9,6 +9,7 @@ import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpResponse;
 
 import io.netty.handler.timeout.IdleStateEvent;
+import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.plugins.server.netty.i18n.LogMessages;
 import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.spi.Failure;
@@ -29,7 +30,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  * @version $Rev: 2368 $, $Date: 2010-10-18 17:19:03 +0900 (Mon, 18 Oct 2010) $
  */
 @Sharable
-public class RequestHandler extends SimpleChannelInboundHandler
+public class RequestHandler extends SimpleChannelInboundHandler<NettyHttpRequest>
 {
    protected final RequestDispatcher dispatcher;
 
@@ -39,11 +40,9 @@ public class RequestHandler extends SimpleChannelInboundHandler
    }
 
    @Override
-   protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception
+   protected void channelRead0(ChannelHandlerContext ctx, NettyHttpRequest request) throws Exception
    {
-      if (msg instanceof NettyHttpRequest) {
-          NettyHttpRequest request = (NettyHttpRequest) msg;
-
+      try {
           if (request.is100ContinueExpected())
           {
              send100Continue(ctx);
@@ -69,6 +68,8 @@ public class RequestHandler extends SimpleChannelInboundHandler
           if (!request.getAsyncContext().isSuspended()) {
              response.finish();
           }
+      } finally {
+         IOUtils.closeQuietly(request.getInputStream());
       }
    }
 
