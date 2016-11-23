@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import org.junit.Assert;
@@ -28,6 +29,24 @@ public class CookieInjectionResource {
     @GET
     public Response expire() {
         NewCookie cookie = new NewCookie("Name", "Value", "/", "*", 0, "comment", 3600, new Date(),
+                true, true);
+        return Response.ok().cookie(cookie).entity(cookie.toString()).build();
+    }
+
+    @Path("/expire1")
+    @GET
+    public Response expire1() {
+        NewCookie cookie = new NewCookie("Name", "Value", "/", "*", 1, "comment", 3600, new Date(),
+                true, true);
+        return Response.ok().cookie(cookie).entity(cookie.toString()).build();
+    }
+
+    @Path("/expired")
+    @GET
+    public Response expired() {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        NewCookie cookie = new NewCookie("Name", "Value", "/", "*", 1, "comment", 1800, cal.getTime(),
                 true, true);
         return Response.ok().cookie(cookie).entity(cookie.toString()).build();
     }
