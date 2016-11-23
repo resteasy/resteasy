@@ -48,6 +48,14 @@ public class CookieInjectionTest {
         @Path("/param")
         @GET
         int param(Cookie cookie);
+
+        @Path("/expire")
+        @GET
+        Response expire();
+
+        @Path("/expire1")
+        @GET
+        Response expire1();
     }
 
     @Deployment
@@ -98,9 +106,9 @@ public class CookieInjectionTest {
         _test("/param");
         _test("/default");
     }
-    @Test
-    public void testCookieExpire() {
-        WebTarget target = client.target(generateURL("/expire"));
+
+    private void _testExpire(String path) {
+        WebTarget target = client.target(generateURL(path));
         try {
             Response response = target.request().get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
@@ -111,6 +119,33 @@ public class CookieInjectionTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * @tpTestDetails Cookie in the response header contains correct "Expires" attribute. Tested for cookie version 0 and 1.
+     * See RESTEASY-1476 for details.
+     * @tpSince RESTEasy 3.1.0
+     */
+    @Test
+    public void testCookieExpire() {
+        _testExpire("/expire");
+        _testExpire("/expire1");
+        _testExpire("/expired");
+    }
+
+    /**
+     * @tpTestDetails Cookie in the response header contains correct "Expires" attribute. Tested for cookie version 0 and 1.
+     * Proxy is used. See RESTEASY-1476 for details.
+     * @tpSince RESTEasy 3.1.0
+     */
+    @Test
+    public void testProxyExpire() {
+        CookieProxy proxy = ProxyBuilder.builder(CookieProxy.class, client.target(generateURL("/"))).build();
+        Response response = proxy.expire();
+        String res = response.readEntity(String.class);
+        MultivaluedMap<String, String> headers = response.getStringHeaders();
+        Assert.assertTrue("Unexpected cookie expires:" + res, headers.get("Set-Cookie").contains(res));
+        response.close();
     }
     /**
      * @tpTestDetails Injection of the cookie into resource, request issued with proxy
