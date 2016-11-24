@@ -588,7 +588,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             }
             String delegateAsResource = delegate.getClass().getName().replace('.', '/') + ".class";
             URL delegateURL = loader.getResource(delegateAsResource);
-            throw new LinkageError("ClassCastException: attempting to cast " + delegateURL + " to " + targetTypeURL);
+            throw new LinkageError(Messages.MESSAGES.attemptingToCast(delegateURL, targetTypeURL));
          } 
          return (RuntimeDelegate) delegate;
      } catch (Exception ex) {
