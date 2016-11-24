@@ -46,6 +46,14 @@ To redirect to standard output (console) use ``-Dmaven.test.redirectTestOutputTo
 
 > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Dmaven.test.redirectTestOutputToFile=false
 
+# Guidance for writing new tests
+* Keep structure of the tests [example](integration-tests/src/test/java/org/jboss/resteasy/test/resource/param/CookieInjectionTest.java).
+* Document test class and all tests within test class see [Test Documentation](#Test Documentation). It will help others to understand.
+* Provide RESTEASY jira number if possible, it will help to track the issue in the future.
+* For integration tests avoid using concrete address like "http://localhost:8080". Tests don't need to be run always on the default hostname/port.
+See example above.
+* If you keep in mind above points, you will help us to keep Resteasy testsuite organized and stable. 
+
 # Test documentation
 With each new test write appropriate javadoc documentation.
 
@@ -56,7 +64,7 @@ We keep test documentation for test cases (test classes) as follows:
  * @tpChapter Main chapter name (see chapter structure below)
  * @tpSubChapter Sub-chapter name (see chapter structure below)
  * @tpTestCaseDetails Description of the test class, id of JIRA issue if applicable
- * @tpSince RESTEasy 3.x.x (in which version of resteasy was this test added) [optional]
+ * @tpSince RESTEasy 3.x.x (in which version of resteasy was this test added)
  */
 ```
 
@@ -65,7 +73,7 @@ The test methods itself are annotated as follows:
 ```
 /**
  * @tpTestDetails Description of what the test does
- * @tpSince RESTEasy 3.x.x (in which version of resteasy was this test added) [optional]
+ * @tpSince RESTEasy 3.x.x (in which version of resteasy was this test added)
  */
 ```
 
