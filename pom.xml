@@ -80,7 +80,6 @@
             <id>redhat-prod</id>
             <modules>
                 <module>tjws</module>
-                <module>resteasy-test-data</module>
                 <module>resteasy-jaxrs</module>
                 <module>resteasy-jaxrs-services</module>
                 <module>resteasy-client</module>
@@ -142,7 +141,6 @@
             </activation>
             <modules>
                 <module>tjws</module>
-                <module>resteasy-test-data</module>
                 <module>resteasy-jaxrs</module>
                 <module>resteasy-jaxrs-services</module>
                 <module>resteasy-client</module>
@@ -183,7 +181,6 @@
             <id>jsapi-testing</id>
             <modules>
                 <module>tjws</module>
-                <module>resteasy-test-data</module>
                 <module>resteasy-jaxrs</module>
                 <module>resteasy-jaxrs-services</module>
                 <module>resteasy-client</module>
@@ -230,7 +227,6 @@
             </activation>
             <modules>
                 <module>tjws</module>
-                <module>resteasy-test-data</module>
                 <module>resteasy-jaxrs</module>
                 <module>resteasy-client</module>
                 <module>providers</module>
