@@ -367,8 +367,8 @@ public class ValidationComplexTest {
         ViolationReport r = new ViolationReport(entity);
         TestUtil.countViolations(r, 0, 0, 1, 0, 0);
         ResteasyConstraintViolation cv = r.getClassViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and t must have length &gt; 5", cv.getMessage());
-        Assert.assertEquals(WRONG_ERROR_MSG, "ValidationComplexResourceWithClassConstraint(&quot;a&quot;, &quot;b&quot;)", cv.getValue());
+        Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and t must have length > 5", cv.getMessage());
+        Assert.assertEquals(WRONG_ERROR_MSG, "ValidationComplexResourceWithClassConstraint(\"a\", \"b\")", cv.getValue());
         logger.info(cv.getValue());
         response.close();
     }
@@ -542,7 +542,7 @@ public class ValidationComplexTest {
         ViolationReport r = new ViolationReport(entity);
         TestUtil.countViolations(r, 0, 0, 0, 1, 0);
         ResteasyConstraintViolation cv = r.getParameterViolations().iterator().next();
-        Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("s must have length: 1 &lt;= length &lt;= 3"));
+        Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("s must have length: 1 <= length <= 3"));
         Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[abcdef]", cv.getValue());
         response.close();
 
@@ -554,7 +554,7 @@ public class ValidationComplexTest {
         r = new ViolationReport(String.class.cast(entity));
         TestUtil.countViolations(r, 0, 0, 0, 1, 0);
         cv = r.getParameterViolations().iterator().next();
-        Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("s must have length: 3 &lt;= length &lt;= 5"));
+        Assert.assertTrue(WRONG_ERROR_MSG, cv.getMessage().equals("s must have length: 3 <= length <= 5"));
         Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[abcdef]", cv.getValue());
         response.close();
 
@@ -573,9 +573,9 @@ public class ValidationComplexTest {
             cv1 = cv2;
             cv2 = temp;
         }
-        Assert.assertTrue(WRONG_ERROR_MSG, cv1.getMessage().equals("s must have length: 1 &lt;= length &lt;= 3"));
+        Assert.assertTrue(WRONG_ERROR_MSG, cv1.getMessage().equals("s must have length: 1 <= length <= 3"));
         Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[abcdef]", cv1.getValue());
-        Assert.assertTrue(WRONG_ERROR_MSG, cv2.getMessage().equals("s must have length: 3 &lt;= length &lt;= 5"));
+        Assert.assertTrue(WRONG_ERROR_MSG, cv2.getMessage().equals("s must have length: 3 <= length <= 5"));
         Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[abcdef]", cv2.getValue());
         response.close();
 
@@ -714,10 +714,10 @@ public class ValidationComplexTest {
         Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 3 and 5", cv.getMessage());
         Assert.assertEquals(RESPONSE_ERROR_MSG, "z", cv.getValue());
         cv = r.getClassViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and t must have length &gt; 5", cv.getMessage());
+        Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and t must have length > 5", cv.getMessage());
         Assert.assertTrue(WRONG_ERROR_MSG, cv.getValue().startsWith("org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithAllFivePotentialViolations@"));
         cv = r.getParameterViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 3 &lt;= length &lt;= 5", cv.getMessage());
+        Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 3 <= length <= 5", cv.getMessage());
         Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[p]", cv.getValue());
         response.close();
     }
@@ -876,7 +876,7 @@ public class ValidationComplexTest {
         cv = r.getPropertyViolations().iterator().next();
         Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 3 and 5", cv.getMessage());
         cv = r.getClassViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and t must have length &gt; 5", cv.getMessage());
+        Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and t must have length > 5", cv.getMessage());
         Assert.assertTrue(RESPONSE_ERROR_MSG, cv.getValue().startsWith("org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithAllFivePotentialViolations@"));
         response.close();
 
@@ -936,10 +936,10 @@ public class ValidationComplexTest {
         Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 3 and 5", cv.getMessage());
         Assert.assertEquals(RESPONSE_ERROR_MSG, "z", cv.getValue());
         cv = r.getClassViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and t must have length &gt; 5", cv.getMessage());
+        Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and t must have length > 5", cv.getMessage());
         Assert.assertTrue(RESPONSE_ERROR_MSG, cv.getValue().startsWith("org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithAllFivePotentialViolations@"));
         cv = r.getParameterViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 3 &lt;= length &lt;= 5", cv.getMessage());
+        Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 3 <= length <= 5", cv.getMessage());
         Assert.assertEquals(RESPONSE_ERROR_MSG, "ValidationComplexFoo[p]", cv.getValue());
         response.close();
 
@@ -1008,7 +1008,7 @@ public class ValidationComplexTest {
         TestUtil.countViolations(r, 0, 0, 0, 1, 0);
         ResteasyConstraintViolation violation = r.getParameterViolations().iterator().next();
         logger.info("violation: " + violation);
-        Assert.assertEquals(WRONG_ERROR_MSG, "Parameters must total &lt;= 7", violation.getMessage());
+        Assert.assertEquals(WRONG_ERROR_MSG, "Parameters must total <= 7", violation.getMessage());
         logger.info("violation value: " + violation.getValue());
         Assert.assertEquals(RESPONSE_ERROR_MSG, "[5, 7]", violation.getValue());
         response.close();

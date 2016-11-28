@@ -575,17 +575,21 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
                  FactoryFinder.find(JAXRS_RUNTIME_DELEGATE_PROPERTY,
                          "org.jboss.resteasy.spi.ResteasyProviderFactory");
          if (!(delegate instanceof RuntimeDelegate)) {
-             Class pClass = RuntimeDelegate.class;
-             String classnameAsResource = pClass.getName().replace('.', '/') + ".class";
-             ClassLoader loader = pClass.getClassLoader();
-             if (loader == null) {
-                 loader = ClassLoader.getSystemClassLoader();
-             }
-             URL targetTypeURL = loader.getResource(classnameAsResource);
-             throw new LinkageError("ClassCastException: attempting to cast"
-                     + delegate.getClass().getClassLoader().getResource(classnameAsResource)
-                     + " to " + targetTypeURL);
-         }
+            Class<?> pClass = RuntimeDelegate.class;
+            String classnameAsResource = pClass.getName().replace('.', '/') + ".class";
+            ClassLoader loader = pClass.getClassLoader();
+            if (loader == null) {
+                loader = ClassLoader.getSystemClassLoader();
+            }
+            URL targetTypeURL = loader.getResource(classnameAsResource);
+            loader = delegate.getClass().getClassLoader();
+            if (loader == null) {
+               loader = ClassLoader.getSystemClassLoader();
+            }
+            String delegateAsResource = delegate.getClass().getName().replace('.', '/') + ".class";
+            URL delegateURL = loader.getResource(delegateAsResource);
+            throw new LinkageError(Messages.MESSAGES.attemptingToCast(delegateURL, targetTypeURL));
+         } 
          return (RuntimeDelegate) delegate;
      } catch (Exception ex) {
          throw new RuntimeException(ex);

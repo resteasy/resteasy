@@ -19,6 +19,8 @@
 
     <properties>
         <jboss.home/>
+        <!-- print logs to file by default -->
+        <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -292,7 +294,6 @@
                     <configuration>
                         <forkMode>once</forkMode>
                         <argLine>-Xms512m -Xmx512m</argLine>
-                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     </configuration>
                 </plugin>
                 <plugin>

@@ -15,27 +15,6 @@
     <name>RESTEasy Main testsuite: Legacy integration tests</name>
 
     <profiles>
-        <!-- Forward compatibility: use EAP 7.0.0.GA and newer Client from CP stream (e.g. client from RESTEasy delivered by EAP 7.0.2 -->
-        <profile>
-            <id>forward.compatibility</id>
-            <activation>
-                <property>
-                    <name>forward.compatibility</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <excludedGroups>org.jboss.resteasy.category.NotForForwardCompatibility</excludedGroups>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
         <!--
         Name:  download
         Descr: Download WildFly
@@ -146,7 +125,16 @@
         
     </profiles>
 
+
     <dependencies>
+        <!-- TODO Workaround dependency for arquillian to work with container using Remoting 5. Remove when updated version of
+        wildfly-arquillian-container-managed is available -->
+        <dependency>
+            <groupId>org.wildfly.security</groupId>
+            <artifactId>wildfly-elytron</artifactId>
+            <version>1.1.0.Beta13</version>
+        </dependency>
+
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-legacy</artifactId>

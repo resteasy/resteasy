@@ -4,6 +4,7 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.net.URL;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
@@ -68,6 +69,9 @@ public interface Messages
    
    @Message(id = BASE + 15, value = "application param was null")
    String applicationParamNull();
+   
+   @Message(id = BASE + 17, value = "ClassCastException: attempting to cast {0} to {1}", format=Format.MESSAGE_FORMAT)
+   String attemptingToCast(URL from, URL to);
    
    @Message(id = BASE + 20, value = "Bad arguments passed to %s")
    String badArguments(String methodName);
