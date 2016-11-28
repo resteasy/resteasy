@@ -59,6 +59,8 @@ import java.util.regex.Pattern;
  */
 public class MultipartInputImpl implements MultipartInput, ProvidersContextRetainer
 {
+    private static final org.jboss.logging.Logger logger = org.jboss.logging.Logger.getLogger(MultipartInputImpl.class);
+
    protected MediaType contentType;
    protected Providers workers;
    protected Message mimeMessage;
@@ -76,7 +78,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
       private java.lang.reflect.Field stackField;
       private Charset charset;
 
-      private void init(String charset)
+      private void init()
       {
          try
          {
@@ -91,47 +93,45 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          {
             throw new RuntimeException(e);
          }
-         try
-         {
-             if(charset != null){
-                  this.charset = Charset.forName(charset);
-              }
-         }
-         catch (Exception e)
-         {
-              // nothing to do
-         }
       }
+
+       public void initCharset(String charset)
+       {
+           try
+           {
+               logger.info("Set charset init " + charset);
+               if(charset != null){
+                   this.charset = Charset.forName(charset);
+               }
+           }
+           catch (Exception e)
+           {
+               // nothing to do
+           }
+       }
 
       private BinaryOnlyMessageBuilder(Entity entity)
       {
          super(entity);
-         init(null);
+         init();
       }
 
       private BinaryOnlyMessageBuilder(Entity entity, StorageProvider storageProvider)
       {
-         this(entity, storageProvider, null);
-      }
-
-      private BinaryOnlyMessageBuilder(Entity entity, StorageProvider storageProvider, String charset)
-      {
          super(entity, storageProvider);
-         init(charset);
-
+         init();
       }
 
       @Override
       public void field(Field field) throws MimeException {
-         this.expected(Header.class);
-         final ParsedField parsedField;
          Charset charsetField = getCharset();
          if(charsetField != null){
-            parsedField = BinaryAbstractField.parse(charsetField, field.getRaw());
+             this.expected(Header.class);
+             ParsedField parsedField = BinaryAbstractField.parse(charsetField, field.getRaw());
+             ((Header) getStack().peek()).addField(parsedField);
          } else {
-            parsedField = BinaryAbstractField.parse(field.getRaw());
+            super.field(field);
          }
-         ((Header) getStack().peek()).addField(parsedField);
       }
 
       @Override
@@ -197,14 +197,29 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
       private BinaryMessage(InputStream is, String charset) throws IOException, MimeIOException
       {
          try {
-            MimeStreamParser parser = new MimeStreamParser(null);
-            parser.setContentHandler(new BinaryOnlyMessageBuilder(this, DefaultStorageProvider.getInstance(), charset));
-            parser.parse(is);
+             BinaryOnlyMessageBuilder bomb = new BinaryOnlyMessageBuilder(this, DefaultStorageProvider.getInstance());
+             bomb.initCharset(charset);
+             MimeStreamParser parser = new MimeStreamParser(null);
+             parser.setContentHandler(bomb);
+             parser.parse(is);
          } catch (MimeException e) {
             throw new MimeIOException(e);
          }
 
       }
+
+       private BinaryMessage(InputStream is) throws IOException, MimeIOException
+       {
+           try {
+               BinaryOnlyMessageBuilder bomb = new BinaryOnlyMessageBuilder(this, DefaultStorageProvider.getInstance());
+               MimeStreamParser parser = new MimeStreamParser(null);
+               parser.setContentHandler(bomb);
+               parser.parse(is);
+           } catch (MimeException e) {
+               throw new MimeIOException(e);
+           }
+
+       }
    }
 
    private static class BinaryAbstractField {
@@ -281,7 +296,11 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
 
    public void parse(InputStream is) throws IOException
    {
-      mimeMessage = new BinaryMessage(addHeaderToHeadlessStream(is), defaultPartCharset);
+      if(defaultPartCharset != null){
+          mimeMessage = new BinaryMessage(addHeaderToHeadlessStream(is), defaultPartCharset);
+      } else {
+          mimeMessage = new BinaryMessage(addHeaderToHeadlessStream(is));
+      }
       extractParts();
    }
 
