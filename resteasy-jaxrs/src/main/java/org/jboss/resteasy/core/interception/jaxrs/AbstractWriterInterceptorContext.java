@@ -119,10 +119,13 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
       if (interceptors == null || index >= interceptors.length)
       {
          MessageBodyWriter writer = getWriter();
+         if (writer!=null)
+             LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
          writeTo(writer);
       }
       else
       {
+         LogMessages.LOGGER.debugf("Interceptor: %s", interceptors[index].getClass().getName());
          interceptors[index++].aroundWriteTo(this);
          // we used to pop the index, but the TCK doesn't like this
       }
