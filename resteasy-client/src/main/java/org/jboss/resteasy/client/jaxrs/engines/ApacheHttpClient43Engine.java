@@ -66,7 +66,7 @@ public class ApacheHttpClient43Engine extends ApacheHttpClient4Engine
     @Override
     protected void setRedirectRequired(final ClientInvocation request, final HttpRequestBase httpMethod)
     {
-        RequestConfig.Builder requestBuilder = RequestConfig.copy(getCurrentConfiguration(httpMethod));
+        RequestConfig.Builder requestBuilder = RequestConfig.copy(getCurrentConfiguration(request, httpMethod));
         requestBuilder.setRedirectsEnabled(true);
         httpMethod.setConfig(requestBuilder.build());
     }
@@ -74,12 +74,13 @@ public class ApacheHttpClient43Engine extends ApacheHttpClient4Engine
     @Override
     protected void setRedirectNotRequired(final ClientInvocation request, final HttpRequestBase httpMethod)
     {
-        RequestConfig.Builder requestBuilder = RequestConfig.copy(getCurrentConfiguration(httpMethod));
+        RequestConfig.Builder requestBuilder = RequestConfig.copy(getCurrentConfiguration(request, httpMethod));
         requestBuilder.setRedirectsEnabled(false);
         httpMethod.setConfig(requestBuilder.build());
     }
 
-    private RequestConfig getCurrentConfiguration(final HttpRequestBase httpMethod)
+    private RequestConfig getCurrentConfiguration(final ClientInvocation request,
+                                                  final HttpRequestBase httpMethod)
     {
         RequestConfig baseConfig;
         if (httpMethod != null && httpMethod.getConfig() != null)
@@ -88,8 +89,13 @@ public class ApacheHttpClient43Engine extends ApacheHttpClient4Engine
         }
         else
         {
-            Configurable clientConfiguration = (Configurable) httpClient;
-            baseConfig = clientConfiguration.getConfig();
+            ApacheHttpClient43Engine engine =
+                ((ApacheHttpClient43Engine)request.getClient().httpEngine());
+            baseConfig = ((Configurable)engine.getHttpClient()).getConfig();
+            if (baseConfig == null) {
+                Configurable clientConfiguration = (Configurable) httpClient;
+                baseConfig = clientConfiguration.getConfig();
+            }
         }
         return baseConfig;
     }
