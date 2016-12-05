@@ -14,5 +14,6 @@ import javax.ws.rs.core.Response;
 
         @Consumes("application/json")
         @POST
+        @GZIP
         public Response post(@GZIP Pair pair);
     }

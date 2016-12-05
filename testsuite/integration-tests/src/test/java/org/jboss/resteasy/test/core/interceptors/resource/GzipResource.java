@@ -104,7 +104,7 @@ public class GzipResource {
         Assert.assertEquals("first", pair.getP1());
         Assert.assertEquals("second", pair.getP2());
 
-        return Response.ok().build();
+        return Response.ok().type(MediaType.TEXT_PLAIN).encoding("gzip").build();
     }
     
     @POST
