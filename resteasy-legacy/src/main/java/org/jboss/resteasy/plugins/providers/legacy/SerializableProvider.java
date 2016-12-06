@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.providers;
+package org.jboss.resteasy.plugins.providers.legacy;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
