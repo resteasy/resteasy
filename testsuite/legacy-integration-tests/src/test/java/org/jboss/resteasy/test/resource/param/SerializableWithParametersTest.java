@@ -49,7 +49,7 @@ public class SerializableWithParametersTest {
     @SuppressWarnings("deprecation")
     @Test
     public void testSerialize() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().register(org.jboss.resteasy.plugins.providers.SerializableProvider.class).build();
+        ResteasyClient client = new ResteasyClientBuilder().register(org.jboss.resteasy.plugins.providers.legacy.SerializableProvider.class).build();
         Invocation.Builder request = client.target(generateURL("/test")).request();
         SerializableWithParametersObject foo = request.get(SerializableWithParametersObject.class);
         Assert.assertEquals("Wrong response", new SerializableWithParametersObject("abc"), foo);
