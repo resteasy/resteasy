@@ -119,9 +119,9 @@
         </warning>
     </section>
     <section>
-        <title>Configuration within Wildfly</title>
+        <title>Configuration within WildFly</title>
         <para>
-            CDI integration is provided with no additional configuration with Wildfly.
+            CDI integration is provided with no additional configuration with WildFly.
         </para>
     </section>
     <section>
