@@ -45,6 +45,7 @@ import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.PickConstructor;
 import org.jboss.resteasy.util.ThreadLocalStack;
 import org.jboss.resteasy.util.Types;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.annotation.Priority;
 import javax.ws.rs.ConstrainedTo;
@@ -1004,7 +1005,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       MediaTypeMap<SortedKey<MessageBodyReader>> availableReaders = getServerMessageBodyReaders();
-      return resolveMessageBodyReader(type, genericType, annotations, mediaType, availableReaders);
+      MessageBodyReader<T> reader = resolveMessageBodyReader(type, genericType, annotations, mediaType, availableReaders);
+      if (reader!=null)
+          LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
+      return reader;
    }
 
    public <T> MessageBodyReader<T> getClientMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
@@ -1023,6 +1027,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          //logger.info("     matching reader: " + reader.getClass().getName());
          if (reader.obj.isReadable(type, genericType, annotations, mediaType))
          {
+            LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
             return (MessageBodyReader<T>) reader.obj;
          }
       }
@@ -2170,7 +2175,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public <T> MessageBodyWriter<T> getClientMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       MediaTypeMap<SortedKey<MessageBodyWriter>> availableWriters = getClientMessageBodyWriters();
-      return resolveMessageBodyWriter(type, genericType, annotations, mediaType, availableWriters);
+      MessageBodyWriter<T> writer = resolveMessageBodyWriter(type, genericType, annotations, mediaType, availableWriters);
+      if (writer!=null)
+          LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
+      return writer;
    }
 
    protected <T> MessageBodyWriter<T> resolveMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType, MediaTypeMap<SortedKey<MessageBodyWriter>> availableWriters)
@@ -2188,6 +2196,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          if (writer.obj.isWriteable(type, genericType, annotations, mediaType))
          {
+            LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
             //logger.info("   picking: " + writer.obj.getClass().getName());
             return (MessageBodyWriter<T>) writer.obj;
          }

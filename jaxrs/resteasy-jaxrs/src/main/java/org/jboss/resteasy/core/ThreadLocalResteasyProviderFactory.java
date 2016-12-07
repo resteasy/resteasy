@@ -19,6 +19,7 @@ import org.jboss.resteasy.spi.StringConverter;
 import org.jboss.resteasy.spi.StringParameterUnmarshaller;
 import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.util.ThreadLocalStack;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.client.ClientRequestFilter;
@@ -269,7 +270,10 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    @Override
    public <T> MessageBodyReader<T> getMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return getDelegate().getMessageBodyReader(type, genericType, annotations, mediaType);
+      MessageBodyReader<T> reader = getDelegate().getMessageBodyReader(type, genericType, annotations, mediaType);
+      if (reader!=null)
+          LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
+      return reader;
    }
 
    @Override
@@ -605,7 +609,10 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    @Override
    public <T> MessageBodyWriter<T> getMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return getDelegate().getMessageBodyWriter(type, genericType, annotations, mediaType);
+      MessageBodyWriter<T> writer = getDelegate().getMessageBodyWriter(type, genericType, annotations, mediaType);
+      if (writer!=null)
+          LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
+      return writer;
    }
 
    @Override
@@ -629,24 +636,36 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    @Override
    public <T> MessageBodyWriter<T> getClientMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return getDelegate().getClientMessageBodyWriter(type, genericType, annotations, mediaType);
+      MessageBodyWriter<T> writer = getDelegate().getClientMessageBodyWriter(type, genericType, annotations, mediaType);
+      if (writer!=null)
+          LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
+      return writer;
    }
 
    @Override
    public <T> MessageBodyReader<T> getClientMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return getDelegate().getClientMessageBodyReader(type, genericType, annotations, mediaType);
+      MessageBodyReader<T> reader = getDelegate().getClientMessageBodyReader(type, genericType, annotations, mediaType);
+      if (reader!=null)
+          LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
+      return reader;
    }
 
    @Override
    public <T> MessageBodyReader<T> getServerMessageBodyReader(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return getDelegate().getServerMessageBodyReader(type, genericType, annotations, mediaType);
+      MessageBodyReader<T> reader = getDelegate().getServerMessageBodyReader(type, genericType, annotations, mediaType);
+      if (reader!=null)
+          LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
+      return reader;
    }
 
    @Override
    public <T> MessageBodyWriter<T> getServerMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return getDelegate().getServerMessageBodyWriter(type, genericType, annotations, mediaType);
+      MessageBodyWriter<T> writer = getDelegate().getServerMessageBodyWriter(type, genericType, annotations, mediaType);
+      if (writer!=null)
+          LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
+      return writer;
    }
 }

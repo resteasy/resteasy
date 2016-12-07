@@ -26,6 +26,7 @@ import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
@@ -309,6 +310,8 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
             {
                throw new RuntimeException(Messages.MESSAGES.unableToFindMessageBodyReader(contentType, type.getName()));
             }
+
+            LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
 
             return reader.readFrom(type, genericType, empty, contentType, headers, getBody());
          }
