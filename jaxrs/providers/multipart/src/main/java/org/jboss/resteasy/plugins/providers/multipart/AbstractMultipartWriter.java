@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.providers.multipart;
 
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -57,6 +58,7 @@ public class AbstractMultipartWriter
       Class<?> entityType = part.getType();
       Type entityGenericType = part.getGenericType();
       MessageBodyWriter writer = workers.getMessageBodyWriter(entityType, entityGenericType, null, part.getMediaType());
+      LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
       writer.writeTo(entity, entityType, entityGenericType, null, part.getMediaType(), headers, new HeaderFlushedOutputStream(headers, entityStream));
       entityStream.write("\r\n".getBytes());
    }
