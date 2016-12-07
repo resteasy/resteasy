@@ -122,63 +122,46 @@
          also implement
          a MessageBodyReader/Writer interface respectively. Here is an example:
       </para>
-      
+
       <programlisting>
-@Provider
-@Produces("application/x-java-serialized-object")
-@Consumes("application/x-java-serialized-object")
-public class SerializableProvider implements MessageBodyReader&lt;Serializable&gt;, MessageBodyWriter&lt;Serializable&gt;
-{
-   public static final MediaType APPLICATION_SERIALIZABLE_TYPE = new MediaType("application", "x-java-serialized-object");
-   public static final String APPLICATION_SERIALIZABLE = APPLICATION_SERIALIZABLE_TYPE.toString();
-   
-   public boolean isWriteable(Class&lt;?&gt; type, Type genericType, Annotation[] annotations, MediaType mediaType)
-   {
-      return Serializable.class.isAssignableFrom(type)
-            &amp;&amp; APPLICATION_SERIALIZABLE_TYPE.getType().equals(mediaType.getType())
-            &amp;&amp; APPLICATION_SERIALIZABLE_TYPE.getSubtype().equals(mediaType.getSubtype());
-   }
+         @Provider
+         @Produces("text/plain")
+         @Consumes("text/plain")
+         public class DefaultTextPlain implements MessageBodyReader, MessageBodyWriter {
 
-   public long getSize(Serializable t, Class&lt;?&gt; type, Type genericType, Annotation[] annotations, MediaType mediaType)
-   {
-      return -1;
-   }
+            public boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+               // StringTextStar should pick up strings
+               return !String.class.equals(type) &amp;&amp; TypeConverter.isConvertable(type);
+            }
 
-   public void writeTo(Serializable t, Class&lt;?&gt; type, Type genericType,
-         Annotation[] annotations, MediaType mediaType,
-         MultivaluedMap&lt;String, Object&gt; httpHeaders, OutputStream entityStream)
-         throws IOException, WebApplicationException
-   {
-      BufferedOutputStream bos = new BufferedOutputStream(entityStream);
-      ObjectOutputStream oos = new ObjectOutputStream(bos);
-      oos.writeObject(t);
-      oos.close();
-   }
+            public Object readFrom(Class type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+               InputStream delegate = NoContent.noContentCheck(httpHeaders, entityStream);
+               String value = ProviderHelper.readString(delegate, mediaType);
+               return TypeConverter.getType(type, value);
+            }
 
-   public boolean isReadable(Class&lt;?&gt; type, Type genericType, Annotation[] annotations, MediaType mediaType)
-   {
-      return Serializable.class.isAssignableFrom(type)
-            &amp;&amp; APPLICATION_SERIALIZABLE_TYPE.getType().equals(mediaType.getType())
-            &amp;&amp; APPLICATION_SERIALIZABLE_TYPE.getSubtype().equals(mediaType.getSubtype());
-   }
+            public boolean isWriteable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+               // StringTextStar should pick up strings
+               return !String.class.equals(type) &amp;&amp; !type.isArray();
+            }
 
-   public Serializable readFrom(Class&lt;Serializable&gt; type, Type genericType,
-         Annotation[] annotations, MediaType mediaType,
-         MultivaluedMap&lt;String, String&gt; httpHeaders, InputStream entityStream)
-         throws IOException, WebApplicationException
-   {
-      BufferedInputStream bis = new BufferedInputStream(entityStream);
-      ObjectInputStream ois = new ObjectInputStream(bis);
-      try
-      {
-         return Serializable.class.cast(ois.readObject());
-      }
-      catch (ClassNotFoundException e)
-      {
-         throw new WebApplicationException(e);
-      }
-   }
-}
+            public long getSize(Object o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+               String charset = mediaType.getParameters().get("charset");
+               if (charset != null)
+                  try {
+                     return o.toString().getBytes(charset).length;
+                  } catch (UnsupportedEncodingException e) {
+                     // Use default encoding.
+                  }
+               return o.toString().getBytes(StandardCharsets.UTF_8).length;
+            }
+
+            public void writeTo(Object o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+               String charset = mediaType.getParameters().get("charset");
+               if (charset == null) entityStream.write(o.toString().getBytes(StandardCharsets.UTF_8));
+               else entityStream.write(o.toString().getBytes(charset));
+            }
+         }
       </programlisting>
       <para>
 
