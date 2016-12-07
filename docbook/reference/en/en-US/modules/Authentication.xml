@@ -142,7 +142,7 @@
 			</table>
 			<para>
 				Once authenticated, the OAuth Servlet Filter will set your request's Principal and Roles, which can then be
-				accessed using the JAX-RS SecurityContext. You can also protect your resources using Roles as described in the section "Securing JAX-RS and RESTeasy".
+				accessed using the JAX-RS SecurityContext. You can also protect your resources using Roles as described in the section "Securing JAX-RS and RESTEasy".
 			</para>
 		</section>
 		<section>

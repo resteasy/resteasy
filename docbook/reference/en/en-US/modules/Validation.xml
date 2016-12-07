@@ -322,7 +322,7 @@ path fields.
    parameter and return value validation can be turned off or modified in the validation.xml
    configuration file. See the
    <ulink url="http://docs.jboss.org/hibernate/validator/5.0/reference/en-US/html/">Hibernate Validator</ulink>
-   documentation for the details.  Wildfly 8+ ships with Hibernate Validator 5.x.
+   documentation for the details.  WildFly 8+ ships with Hibernate Validator 5.x.
    </para>
    
          <para>
