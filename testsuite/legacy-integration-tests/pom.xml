@@ -132,7 +132,7 @@
         <dependency>
             <groupId>org.wildfly.security</groupId>
             <artifactId>wildfly-elytron</artifactId>
-            <version>1.1.0.Beta13</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -334,6 +334,11 @@
         <dependency>
             <groupId>org.wildfly.core</groupId>
             <artifactId>wildfly-cli</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.el</artifactId>
         </dependency>
 
     </dependencies>
