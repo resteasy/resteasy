@@ -193,9 +193,6 @@ URI uri = uriInfo.getBaseUriBuilder().path("test").build();
       <listitem><literallayout><classname>org.jboss.resteasy.annotations.ClientResponseType</classname> is now
 <classname>org.jboss.resteasy.annotations.legacy.ClientResponseType</classname></literallayout>
       </listitem>
-      <listitem><literallayout><classname>org.jboss.resteasy.plugins.providers.SerializableProvider</classname> is now
-<classname>org.jboss.resteasy.plugins.providers.legacy.SerializableProvider</classname></literallayout>
-      </listitem>
       <listitem><literallayout><classname>org.jboss.resteasy.spi.Link</classname> is now
 	    <classname>org.jboss.resteasy.client.Link</classname></literallayout>
       </listitem>
