@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.MessageInterpolator;
@@ -164,7 +165,10 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          throw new ResteasyViolationException(violationsContainer);
       }
       violationsContainer.addViolations(cvs);
-      if ((violationsContainer.isFieldsValidated() || !GetRestful.isRootResource(object.getClass())) && violationsContainer.size() > 0)
+      if ((violationsContainer.isFieldsValidated()
+            || !GetRestful.isRootResource(object.getClass())
+            || hasApplicationScope(object))
+          && violationsContainer.size() > 0)
       {
          throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }
@@ -627,5 +631,11 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
       String path = (suppressPath ? "*" : cv.getPropertyPath().toString());
       ResteasyConstraintViolation rcv = new ResteasyConstraintViolation(ct, path, cv.getMessage(), (cv.getInvalidValue() == null ? "null" :cv.getInvalidValue().toString()));
       return rcv;
+   }
+
+   private boolean hasApplicationScope(Object o)
+   {
+      Class<?> clazz = o.getClass();
+      return clazz.getAnnotation(ApplicationScoped.class) != null;
    }
 }
