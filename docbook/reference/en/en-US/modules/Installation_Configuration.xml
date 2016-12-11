@@ -669,6 +669,18 @@ public class MyApplication extends Application
                                 The number of times a SecureRandom can be used before reseeding.
                             </entry>
                         </row>
+                        <row>
+                            <entry>
+                                resteasy.buffer.exception.entity
+                            </entry>
+                            <entry>
+                                true
+                            </entry>
+                            <entry>
+                                Upon receiving an exception, the client side buffers any response
+                                entity before closing the connection.
+                            </entry>
+                        </row>
                     </tbody>
                 </tgroup>
             </table>
