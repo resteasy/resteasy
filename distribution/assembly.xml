@@ -26,20 +26,6 @@
             <outputDirectory>docs/javadocs</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>../examples/oreilly-jaxrs-2.0-workbook</directory>
-            <outputDirectory>examples/oreilly-jaxrs-2.0-workbook</outputDirectory>
-            <excludes>
-                <exclude>**/.classpath</exclude>
-                <exclude>**/.git*/**</exclude>
-                <exclude>**/.idea/**</exclude>
-                <exclude>**/.project</exclude>
-                <exclude>**/.settings/**</exclude>
-                <exclude>**/.svn/**</exclude>
-                <exclude>**/target/**</exclude>
-                <exclude>**/*.iml</exclude>
-            </excludes>
-        </fileSet>
-        <fileSet>
             <directory>../docbook/target/docbook/publish/en-US</directory>
             <outputDirectory>docs/userguide</outputDirectory>
         </fileSet>
@@ -67,11 +53,11 @@
                 <include>org.jboss.resteasy:resteasy-oauth</include>
                 <include>org.jboss.resteasy:resteasy-cdi</include>
                 <include>org.jboss.resteasy:resteasy-jsapi</include>
+                <include>org.jboss.resteasy:resteasy-legacy</include>
                 <include>org.jboss.resteasy:resteasy-links</include>
                 <include>org.jboss.resteasy:resteasy-crypto</include>
                 <include>org.jboss.resteasy:jose-jwt</include>
                 <include>org.jboss.resteasy:skeleton-key-core</include>
-                <include>org.jboss.resteasy:resteasy-hibernatevalidator-provider</include>
                 <include>org.jboss.resteasy:resteasy-validator-provider-11</include>
             </includes>
             <excludes>
@@ -81,7 +67,6 @@
                 <exclude>org.jboss.resteasy:resteasy-netty</exclude>
                 <exclude>org.jboss.resteasy:resteasy-netty4</exclude>
                 <exclude>org.jboss.resteasy:resteasy-vertx</exclude>
-                <!-- <include>tjws:webserver</include> -->
                 <exclude>javax.servlet:servlet-api</exclude>
             </excludes>
             <outputDirectory>lib</outputDirectory>
