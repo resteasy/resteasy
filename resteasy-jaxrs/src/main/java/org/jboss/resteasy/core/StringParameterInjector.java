@@ -65,7 +65,7 @@ public class StringParameterInjector
       initialize(type, genericType, paramName, paramType, defaultValue, target, annotations, factory);
    }
 
-   public boolean isCollectionOrArray()
+   public boolean isInjectableAsCollectionOrArray()
    {
       return isCollection || type.isArray();
    }
@@ -80,40 +80,39 @@ public class StringParameterInjector
       baseType = type;
       baseGenericType = genericType;
 
-      if (type.isArray()) baseType = type.getComponentType();
-      if (List.class.isAssignableFrom(type))
+      if (type.isArray())
       {
-         isCollection = true;
-         collectionType = ArrayList.class;
+    	  baseType = type.getComponentType();
       }
-      else if (SortedSet.class.isAssignableFrom(type))
-      {
-         isCollection = true;
-         collectionType = TreeSet.class;
-      }
-      else if (Set.class.isAssignableFrom(type))
-      {
-         isCollection = true;
-         collectionType = HashSet.class;
-      }
-      if (isCollection)
-      {
-         if (genericType != null && genericType instanceof ParameterizedType)
-         {
-            ParameterizedType zType = (ParameterizedType) genericType;
-            baseType = Types.getRawType(zType.getActualTypeArguments()[0]);
-            baseGenericType = zType.getActualTypeArguments()[0];
-         }
-         else
-         {
-            baseType = String.class;
-            baseGenericType = null;
-         }
-      }
+     
       if (!baseType.isPrimitive())
       {
          paramConverter = factory.getParamConverter(baseType, baseGenericType, annotations);
-         if (paramConverter != null) return;
+         if (paramConverter != null) 
+         {
+        	 return;
+         }
+         
+         collectionType = convertParameterTypeToCollectionType();
+         if(collectionType != null){
+        	 isCollection = true;
+	         if (genericType != null && genericType instanceof ParameterizedType)
+	         {
+	            ParameterizedType zType = (ParameterizedType) baseGenericType;
+	            baseType = Types.getRawType(zType.getActualTypeArguments()[0]);
+	            baseGenericType = zType.getActualTypeArguments()[0];
+	         }
+	         else
+	         {
+	            baseType = String.class;
+	            baseGenericType = null;
+	         }
+	         paramConverter = factory.getParamConverter(baseType, baseGenericType, annotations);
+	         if (paramConverter != null) 
+	         {
+	        	 return;
+	         }
+         }
 
          unmarshaller = factory.createStringParameterUnmarshaller(baseType);
          if (unmarshaller != null)
@@ -225,6 +224,17 @@ public class StringParameterInjector
          }
       }
    }
+   
+	private Class<? extends Collection> convertParameterTypeToCollectionType() {
+		if (List.class.isAssignableFrom(type)) {
+			return ArrayList.class;
+		} else if (SortedSet.class.isAssignableFrom(type)) {
+			return TreeSet.class;
+		} else if (Set.class.isAssignableFrom(type)) {
+			return HashSet.class;
+		}
+		return null;
+	}
 
    public String getParamSignature()
    {
