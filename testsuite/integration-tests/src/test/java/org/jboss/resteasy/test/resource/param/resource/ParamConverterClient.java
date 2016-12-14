@@ -1,5 +1,8 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
+import java.util.SortedSet;
+
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PUT;
@@ -13,4 +16,12 @@ public interface ParamConverterClient {
     @PUT
     void put(@QueryParam("pojo") String q, @PathParam("pojo") String pp, @MatrixParam("pojo") String mp,
              @HeaderParam("pojo") String hp);
+    
+	@GET
+	@Path("multiValuedQueryParam")
+	String multiValuedQueryParam(@QueryParam("dates") String dates) ;
+
+	@GET
+	@Path("singleValuedQueryParam")
+	String singleValuedQueryParam(@QueryParam("date") SortedSet<String> dates) ;
 }
