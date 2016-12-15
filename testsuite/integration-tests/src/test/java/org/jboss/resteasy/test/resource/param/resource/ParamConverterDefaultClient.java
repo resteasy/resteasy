@@ -11,10 +11,10 @@ public interface ParamConverterDefaultClient {
     void put();
     
 	@GET
-	@Path("multiValuedQueryParam")
+	@Path("default/multiValuedQueryParam")
 	String multiValuedQueryParam() ;
 
 	@GET
-	@Path("singleValuedQueryParam")
+	@Path("default/singleValuedQueryParam")
 	String singleValuedQueryParam() ;
 }

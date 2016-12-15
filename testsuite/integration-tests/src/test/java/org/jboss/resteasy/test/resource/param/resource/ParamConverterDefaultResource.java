@@ -28,14 +28,14 @@ public class ParamConverterDefaultResource {
     
 	// This method can only handle one 'dates' query parameter
 	@GET
-	@Path("multiValuedQueryParam")
+	@Path("default/multiValuedQueryParam")
 	public Response multiValuedQueryParam(@QueryParam("dates")@DefaultValue("20161214, 20161215, 20161216") List<Date> dates) {
 		return Response.ok(format(dates)).build();
 	}
 
 	// This method can handle multiple 'date' query parameters
 	@GET
-	@Path("singleValuedQueryParam")
+	@Path("default/singleValuedQueryParam")
 	public Response singleValuedQueryParam(@QueryParam("date")@DefaultValue("20161214") SortedSet<Date> dates) {
 		return Response.ok(format(dates)).build();
 	}
