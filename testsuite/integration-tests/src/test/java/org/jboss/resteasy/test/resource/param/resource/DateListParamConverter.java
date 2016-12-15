@@ -6,16 +6,14 @@ import java.util.List;
 
 import javax.ws.rs.ext.ParamConverter;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class DateListParamConverter implements ParamConverter<List<Date>> {
 
 	@Override
 	public List<Date> fromString(String param) {
-		if (StringUtils.isBlank(param)) {
+		if (param == null || param.trim().isEmpty()) {
 			return null;
 		}
-		return parse(StringUtils.split(param, ','), new DateParamConverter());
+		return parse(param.split(","), new DateParamConverter());
 	}
 
 	@Override
