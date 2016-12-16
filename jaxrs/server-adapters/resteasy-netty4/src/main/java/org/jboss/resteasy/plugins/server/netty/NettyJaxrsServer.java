@@ -22,9 +22,9 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
+
 import java.net.InetSocketAddress;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import static org.jboss.resteasy.plugins.server.netty.RestEasyHttpRequestDecoder.Protocol.HTTP;
@@ -273,11 +273,13 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
                 }
             };
         } else {
-            final SSLEngine engine = sslContext.createSSLEngine();
-            engine.setUseClientMode(false);
             return new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
+                    final InetSocketAddress addr = ch.remoteAddress();
+                    final SSLEngine engine = sslContext.createSSLEngine(
+                        addr.getAddress().getHostAddress(), addr.getPort());
+                    engine.setUseClientMode(false);
                     ch.pipeline().addFirst(new SslHandler(engine));
                     setupHandlers(ch, dispatcher, HTTPS);
                 }
