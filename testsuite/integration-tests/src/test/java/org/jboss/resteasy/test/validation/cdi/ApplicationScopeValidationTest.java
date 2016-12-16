@@ -11,6 +11,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.api.validation.ViolationReport;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.test.validation.cdi.resource.ApplicationScopeIRestServiceAppScoped;
 import org.jboss.resteasy.test.validation.cdi.resource.ApplicationScopeIRestServiceReqScoped;
 import org.jboss.resteasy.test.validation.cdi.resource.ApplicationScopeMyDto;
@@ -23,19 +24,20 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
  * @tpSubChapter Validation
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1459
- * @tpSince RESTEasy 3.1.0.Final
+ * @tpSince RESTEasy 3.0.20.Final
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ApplicationScopeValidationTest {
    
-   @Deployment
+   @Deployment(testable = false)
    public static Archive<?> createTestArchive() {
        WebArchive war = TestUtil.prepareArchive(ApplicationScopeValidationTest.class.getSimpleName())
                .addClasses(ApplicationScopeIRestServiceAppScoped.class, ApplicationScopeIRestServiceReqScoped.class)
@@ -49,6 +51,7 @@ public class ApplicationScopeValidationTest {
    }
    
    @Test
+   @Category({NotForForwardCompatibility.class})
    public void testValidationApplicationScope()
    {
       Client client = ClientBuilder.newClient();

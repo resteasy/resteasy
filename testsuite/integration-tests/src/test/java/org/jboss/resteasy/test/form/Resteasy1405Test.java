@@ -22,6 +22,7 @@ import javax.xml.bind.Marshaller;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.jboss.resteasy.test.form.resteasy1405.ByFieldForm;
 import org.jboss.resteasy.test.form.resteasy1405.BySetterForm;
@@ -35,10 +36,18 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
+/**
+ * @tpSubChapter Form tests
+ * @tpChapter Integration tests
+ * @tpTestCaseDetails Injection of @FormParam InputPart fields in @MultipartForm parameters, RESTEASY-1405
+ * @tpSince RESTEasy 3.0.20.Final
+ */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category({NotForForwardCompatibility.class})
 public class Resteasy1405Test
 {
 
@@ -71,6 +80,10 @@ public class Resteasy1405Test
       return PortProviderUtil.generateURL(path, Resteasy1405Test.class.getSimpleName());      
    }
 
+   /**
+    * @tpTestDetails Injection of Content-type into MultiPartForm with annotated form fields
+    * @tpSince RESTEasy 3.0.20.Final
+    */
    @Test
    public void testInputPartByField() throws Exception
    {
@@ -99,6 +112,10 @@ public class Resteasy1405Test
       }
    }
 
+   /**
+    * @tpTestDetails Injection of Content-type into MultiPartForm with annotated form setters
+    * @tpSince RESTEasy 3.0.20.Final
+    */
    @Test
    public void testInputPartBySetter() throws Exception
    {

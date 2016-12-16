@@ -7,15 +7,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "book")
 public class Book {
    private String author;
-   private String ISBN;
+   private String isbn;
    private String title;
 
    public Book() {
    }
 
-   public Book(String author, String ISBN, String title) {
+   public Book(String author, String isbn, String title) {
       this.author = author;
-      this.ISBN = ISBN;
+      this.isbn = isbn;
       this.title = title;
    }
 
@@ -29,12 +29,12 @@ public class Book {
    }
 
    @XmlElement
-   public String getISBN() {
-      return ISBN;
+   public String getIsbn() {
+      return isbn;
    }
 
-   public void setISBN(String ISBN) {
-      this.ISBN = ISBN;
+   public void setIsbn(String isbn) {
+      this.isbn = isbn;
    }
 
    @XmlAttribute

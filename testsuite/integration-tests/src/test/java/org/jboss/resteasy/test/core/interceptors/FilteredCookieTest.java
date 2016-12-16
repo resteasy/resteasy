@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.test.core.interceptors.resource.FilteredCookieContainerRequestFilter;
 import org.jboss.resteasy.test.core.interceptors.resource.FilteredCookieResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -19,16 +20,18 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
  * @tpSubChapter Cookies and filters
  * @tpChapter Integration tests
  * @tpTestCaseDetails Regression test for RESTEASY-1266
- * @tpSince RESTEasy 3.1.0.Final
+ * @tpSince RESTEasy 3.0.20.Final
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category({NotForForwardCompatibility.class})
 public class FilteredCookieTest {
    
    private static final String OLD_COOKIE_NAME = "old-cookie";
@@ -43,7 +46,11 @@ public class FilteredCookieTest {
    private String generateURL(String path) {
        return PortProviderUtil.generateURL(path, FilteredCookieTest.class.getSimpleName());
    }
-   
+
+   /**
+    * @tpTestDetails Tests if multiple cookies are returned by the server
+    * @tpSince RESTEasy 3.0.20.Final
+    */
    @Test
    public void testServerHeaders() {
       

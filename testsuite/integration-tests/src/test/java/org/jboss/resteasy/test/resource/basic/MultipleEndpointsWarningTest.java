@@ -8,6 +8,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.test.resource.basic.resource.LogHandler;
 import org.jboss.resteasy.test.resource.basic.resource.MultipleEndpointsWarningResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -18,13 +19,14 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
  * @tpSubChapter Resources
  * @tpChapter Integration tests
- * @tpTestCaseDetails Regression tests for RESTEASY-1398
- * @tpSince RESTEasy 3.0.20
+ * @tpTestCaseDetails Multiple regression tests for logged warnings for the endpoints
+ * @tpSince RESTEasy 3.0.18.Final
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -54,7 +56,11 @@ public class MultipleEndpointsWarningTest
       client.target(generateURL("/teardown")).request().get();
       client.close();
    }
-   
+
+   /**
+    * @tpTestDetails RESTEASY-1398
+    * @tpSince RESTEasy 3.0.18.Final
+    */
    @Test
    public void testUnique() throws Exception {
       Response response = client.target(generateURL("/unique/")).request().accept(MediaType.TEXT_PLAIN).get();
@@ -67,6 +73,10 @@ public class MultipleEndpointsWarningTest
       Assert.assertEquals("Incorrectly logged " + LogHandler.MESSAGE_CODE, new Long(0), response.readEntity(long.class));
    }
 
+   /**
+    * @tpTestDetails RESTEASY-1398
+    * @tpSince RESTEasy 3.0.18.Final
+    */
    @Test
    public void testDifferentVerbs() throws Exception {
       Response response = client.target(generateURL("/verbs")).request().accept(MediaType.TEXT_PLAIN).get();
@@ -79,7 +89,12 @@ public class MultipleEndpointsWarningTest
       Assert.assertEquals("Incorrectly logged " + LogHandler.MESSAGE_CODE, new Long(0), response.readEntity(long.class));
    }
 
+   /**
+    * @tpTestDetails RESTEASY-1454
+    * @tpSince RESTEasy 3.0.20.Final
+    */
    @Test
+   @Category({NotForForwardCompatibility.class})
    public void testDuplicate() throws Exception {
       Response response = client.target(generateURL("/duplicate")).request().get();
       Assert.assertEquals(LogHandler.MESSAGE_CODE + " should've been logged once", new Long(1), response.readEntity(long.class));
