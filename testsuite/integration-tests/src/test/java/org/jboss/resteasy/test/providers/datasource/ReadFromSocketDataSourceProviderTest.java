@@ -21,11 +21,12 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.resteasy.plugins.providers.DataSourceProvider;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.jboss.resteasy.plugins.providers.DataSourceProvider;
 import org.junit.runner.RunWith;
 
 /**
@@ -103,5 +104,17 @@ public class ReadFromSocketDataSourceProviderTest {
         }
         return totalBytesRead;
     }
+
+    @AfterClass
+    public static void afterClass() {
+        String tmpdir = System.getProperty("java.io.tmpdir");
+        File dir = new File(tmpdir);
+        for (File file : dir.listFiles()) {
+            if (file.getName().startsWith("resteasy-provider-datasource")) {
+                file.delete();
+            }
+        }
+    }
+
 
 }

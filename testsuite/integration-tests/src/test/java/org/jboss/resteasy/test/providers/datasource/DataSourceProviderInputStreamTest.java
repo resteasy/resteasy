@@ -17,6 +17,7 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +27,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -60,6 +62,7 @@ public class DataSourceProviderInputStreamTest {
     @Test
     public void testDataSourceProviderRestClient() throws Exception {
         Client client = new ResteasyClientBuilder().build();
+        client.register(DataSourceProvider.class);
         WebTarget target = client.target(generateURL("/"));
         int expectedLength = DataSourceProviderInputStreamResource.KBs * 1024;
 
@@ -115,6 +118,17 @@ public class DataSourceProviderInputStreamTest {
             totalBytesRead += bytesRead;
         }
         return totalBytesRead;
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        String tmpdir = System.getProperty("java.io.tmpdir");
+        File dir = new File(tmpdir);
+        for (File file : dir.listFiles()) {
+            if (file.getName().startsWith("resteasy-provider-datasource")) {
+                file.delete();
+            }
+        }
     }
 
 }
