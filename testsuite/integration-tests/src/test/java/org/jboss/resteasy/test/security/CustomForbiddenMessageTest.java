@@ -10,6 +10,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
@@ -25,6 +26,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.core.Response;
@@ -33,12 +35,13 @@ import java.util.Hashtable;
 /**
  * @tpSubChapter Security
  * @tpChapter Integration tests
- * @tpTestCaseDetails Custom ExceptionMapper is used when Forbidden is thrown from RoleBasedSecurityFilter
- * @tpSince RESTEasy 3.0.20
+ * @tpTestCaseDetails Custom ExceptionMapper is used when Forbidden is thrown from RoleBasedSecurityFilter, see RESTEASY-1342
+ * @tpSince RESTEasy 3.0.21.Final
  */
 @ServerSetup({UsersRolesSecurityDomainSetupCreaper.class})
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category({NotForForwardCompatibility.class})
 public class CustomForbiddenMessageTest {
 
     private static ResteasyClient authorizedClient;
@@ -84,7 +87,7 @@ public class CustomForbiddenMessageTest {
 
     /**
      * @tpTestDetails Tests custom message from custom ExceptionMapper
-     * @tpSince RESTEasy 3.0.20
+     * @tpSince RESTEasy 3.0.21.Final
      */
     @Test
     public void testCustomExceptionMapper() throws Exception {

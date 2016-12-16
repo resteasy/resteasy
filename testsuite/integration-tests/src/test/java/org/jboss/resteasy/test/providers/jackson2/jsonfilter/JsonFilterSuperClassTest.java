@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.providers.jackson2.jsonfilter;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.*;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -13,6 +14,7 @@ import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
@@ -24,10 +26,12 @@ import javax.ws.rs.core.Response;
  * @tpChapter Integration tests
  * @tpTestCaseDetails Filters fields from json object. Specifies the filter implementation class in web.xml.
  * JsonFilterParent defines the @JsonFilter annotation. JsonFilter applies to its subclass JsonFilterChild as well.
- * @tpSince RESTEasy 3.1.0
+ * @tpInfo RESTEASY-1442
+ * @tpSince RESTEasy 3.0.20.Final
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category({NotForForwardCompatibility.class})
 public class JsonFilterSuperClassTest {
 
     @Deployment

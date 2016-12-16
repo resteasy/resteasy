@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.xxe.resource.SecureProcessingBar;
@@ -21,6 +22,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Entity;
@@ -381,6 +383,24 @@ public class SecureProcessingTest {
         doTestSkipFailsFailsSkip("ttt");
     }
 
+    /**
+     * @tpTestDetails "resteasy.document.secure.processing.feature" is set to true
+     *                "resteasy.document.secure.disableDTDs" is set to true
+     *                "resteasy.document.expand.entity.references" is set to true
+     * @tpInfo RESTEASY-1485
+     * @tpSince RESTEasy 3.0.20.Final
+     */
+    @Test
+    @Category({NotForForwardCompatibility.class})
+    public void testSecurityTrueDTDsTrueExpansionTrueWithApacheLinkMessage() throws Exception {
+        doTestSkipFailsFailsSkipWithApacheLinkMessage("ttt");
+    }
+
+    void doTestSkipFailsFailsSkipWithApacheLinkMessage(String ext) throws Exception {
+        doMaxAttributesFails(ext);
+        doDTDFailsWithApacheLinkMessage(ext);
+    }
+
     void doTestSkipFailsFailsSkip(String ext) throws Exception {
         doMaxAttributesFails(ext);
         doDTDFails(ext);
@@ -536,6 +556,19 @@ public class SecureProcessingTest {
     }
 
     void doDTDFails(String ext) throws Exception {
+        logger.info("entering doDTDFails(" + ext + ")");
+        Response response = client.target(generateURL("/DTD/", URL_PREFIX + ext)).request()
+                .post(Entity.entity(bar, "application/xml"));
+        logger.info("status: " + response.getStatus());
+        String entity = response.readEntity(String.class);
+        logger.info("doDTDFails(): result: " + entity);
+        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assert.assertThat("Wrong exception in response", entity, startsWith("javax.xml.bind.UnmarshalException"));
+        Assert.assertThat("Wrong content of response", entity, containsString("DOCTYPE"));
+        Assert.assertThat("Wrong content of response", entity, containsString("true"));
+    }
+
+    void doDTDFailsWithApacheLinkMessage(String ext) throws Exception {
         logger.info("entering doDTDFails(" + ext + ")");
         Response response = client.target(generateURL("/DTD/", URL_PREFIX + ext)).request()
                 .post(Entity.entity(bar, "application/xml"));

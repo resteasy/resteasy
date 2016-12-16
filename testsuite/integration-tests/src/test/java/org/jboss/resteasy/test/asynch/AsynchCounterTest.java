@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.test.asynch.resource.AsynchCounterResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -21,16 +22,18 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
  * @tpSubChapter Asynchronous RESTEasy
  * @tpChapter Integration tests
- * @tpTestCaseDetails Tests use of SecureRandom to generate location job ids
- * @tpSince RESTEasy 3.1.0.Final
+ * @tpTestCaseDetails Tests use of SecureRandom to generate location job ids, RESTEASY-1483
+ * @tpSince RESTEasy 3.0.20.Final
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category({NotForForwardCompatibility.class})
 public class AsynchCounterTest {
 
     static Client client;
@@ -60,7 +63,8 @@ public class AsynchCounterTest {
 
     /**
      * @tpTestDetails Test that job ids are no longer consecutive
-     * @tpSince RESTEasy 3.1.0.Final
+     * @tpInfo RESTEASY-1483
+     * @tpSince RESTEasy 3.0.20.Final
      */
     @Test
     public void testAsynchCounter() throws Exception {

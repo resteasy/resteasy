@@ -17,10 +17,12 @@ import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Entity;
@@ -365,6 +367,25 @@ public class SecureProcessing2Test {
         doTestPassesPassesPassesFails("ffd");
     }
 
+    /**
+     * @tpTestDetails "resteasy.document.secure.processing.feature" is set to default value
+     *                "resteasy.document.secure.disableDTDs" is set to true
+     *                "resteasy.document.expand.entity.references" is set to true
+     * @tpInfo RESTEASY-1485
+     * @tpSince RESTEasy 3.0.20.Final
+     */
+    @Test
+    @Category({NotForForwardCompatibility.class})
+    public void testSecurityDefaultDTDsTrueExpansionTrueWithApacheLinkMessage() throws Exception {
+        doTestSkipFailsFailsSkipWithApacheLinkMessage("dtt");
+    }
+
+
+    void doTestSkipFailsFailsSkipWithApacheLinkMessage(String ext) throws Exception {
+        doMaxAttributesFails(ext);
+        doDTDFailsWithApacheLinkMessage(ext);
+    }
+
     void doTestSkipFailsFailsSkip(String ext) throws Exception {
         doMaxAttributesFails(ext);
         doDTDFails(ext);
@@ -520,6 +541,19 @@ public class SecureProcessing2Test {
     }
 
     void doDTDFails(String ext) throws Exception {
+        logger.info("entering doDTDFails(" + ext + ")");
+        Response response = client.target(generateURL("/DTD/", URL_PREFIX + ext)).request()
+                .post(Entity.entity(bar, "application/xml"));
+        logger.info("status: " + response.getStatus());
+        String entity = response.readEntity(String.class);
+        logger.info("doDTDFails(): result: " + entity);
+        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assert.assertThat("Wrong exception in response", entity, startsWith("javax.xml.bind.UnmarshalException"));
+        Assert.assertThat("Wrong content of response", entity, containsString("DOCTYPE"));
+        Assert.assertThat("Wrong content of response", entity, containsString("true"));
+    }
+
+    void doDTDFailsWithApacheLinkMessage(String ext) throws Exception {
         logger.info("entering doDTDFails(" + ext + ")");
         Response response = client.target(generateURL("/DTD/", URL_PREFIX + ext)).request()
                 .post(Entity.entity(bar, "application/xml"));

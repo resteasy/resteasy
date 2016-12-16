@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.cdi.validation;
 
-import java.util.Iterator;
-
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -12,9 +10,9 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.api.validation.ResteasyConstraintViolation;
 import org.jboss.resteasy.api.validation.Validation;
 import org.jboss.resteasy.api.validation.ViolationReport;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.test.cdi.validation.resource.AbstractAsyncRootResource;
 import org.jboss.resteasy.test.cdi.validation.resource.AsyncRootResource;
 import org.jboss.resteasy.test.cdi.validation.resource.AsyncRootResourceImpl;
@@ -36,6 +34,7 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -43,13 +42,13 @@ import org.junit.runner.RunWith;
  * @tpChapter Integration tests
  * @tpTestCaseDetails Tests RESTEASY-1186, which reports issues with validation in
  *                    the presence of CDI.
- * @tpSince RESTEasy 3.0.18.Final
+ * @tpSince RESTEasy 3.0.20.Final
  */
 @RunWith(Arquillian.class)
 @RunAsClient
 public class ValidationWithCDITest
 {
-   @Deployment
+   @Deployment(testable = false)
    public static Archive<?> createTestArchive()
    {
       WebArchive war = TestUtil.prepareArchive(ValidationWithCDITest.class.getSimpleName());
@@ -61,9 +60,8 @@ public class ValidationWithCDITest
          .addClasses(AsyncRootResource.class, AsyncRootResourceImpl.class)
          .addClasses(AsyncSubResource.class, AsyncSubResourceImpl.class)
          .addClasses(AsyncValidResource.class)
-         .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+              .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
          .addAsWebInfResource(ValidationWithCDITest.class.getPackage(), "web.xml", "/web.xml");
-         ;
       System.out.println(war.toString(true));
       return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
@@ -72,6 +70,10 @@ public class ValidationWithCDITest
       return PortProviderUtil.generateURL(path, ValidationWithCDITest.class.getSimpleName());
    }
 
+   /**
+    * @tpTestDetails Tests Bean Validation constraints on method parameters
+    * @tpSince RESTEasy 3.0.20.Final
+    */
    @Test
    public void testRoot() throws Exception
    {
@@ -88,7 +90,12 @@ public class ValidationWithCDITest
       countViolations(report, 0, 0, 0, 1, 0);
    }
 
+   /**
+    * @tpTestDetails Tests Bean Validation constraints on method parameters
+    * @tpSince RESTEasy 3.0.20.Final
+    */
    @Test
+   @Category({NotForForwardCompatibility.class})
    public void testAsynch() throws Exception
    {  
       Client client = ClientBuilder.newClient();

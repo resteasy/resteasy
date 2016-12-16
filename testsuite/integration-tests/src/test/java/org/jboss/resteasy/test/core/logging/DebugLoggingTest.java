@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.core.logging.resource.DebugLoggingEndPoint;
@@ -23,6 +24,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.wildfly.extras.creaper.core.online.OnlineManagementClient;
 
@@ -38,10 +40,11 @@ import static org.hamcrest.core.Is.is;
  * @tpChapter Integration tests
  * @tpTestCaseDetails Test debug messages for used Interceptors and Providers.
  *                    Regression test for RESTEASY-1415 and RESTEASY-1558.
- * @tpSince RESTEasy 3.1.0
+ * @tpSince RESTEasy 3.0.20.Final
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category({NotForForwardCompatibility.class})
 public class DebugLoggingTest {
 
     static ResteasyClient client;
@@ -101,7 +104,7 @@ public class DebugLoggingTest {
 
     /**
      * @tpTestDetails Check build-in providers and interceptors
-     * @tpSince RESTEasy 3.1.0
+     * @tpSince RESTEasy 3.0.20.Final
      */
     @Test
     public void  testBuildIn() throws Exception {
@@ -127,7 +130,7 @@ public class DebugLoggingTest {
 
     /**
      * @tpTestDetails Check user's custom providers and interceptors
-     * @tpSince RESTEasy 3.1.0
+     * @tpSince RESTEasy 3.0.20.Final
      */
     @Test
     public void  testCustom() throws Exception {

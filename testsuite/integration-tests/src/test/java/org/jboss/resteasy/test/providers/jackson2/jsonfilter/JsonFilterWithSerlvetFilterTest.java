@@ -7,6 +7,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.Jackson2Product;
 import org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource.Jackson2Resource;
@@ -19,16 +20,19 @@ import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
  * @author <a href="mailto:ema@redhat.com">Jim Ma</a>
  * @tpSubChapter Jackson2 provider
  * @tpChapter Integration tests
- * @tpSince RESTEasy 3.1.0
+ * @tpInfo RESTESY-1442
+ * @tpSince RESTEasy 3.0.20.Final
  */
 @RunWith(Arquillian.class)
 @RunAsClient
+@Category({NotForForwardCompatibility.class})
 public class JsonFilterWithSerlvetFilterTest {
 
     @Deployment(name = "default")
@@ -46,7 +50,7 @@ public class JsonFilterWithSerlvetFilterTest {
 
     /**
      * @tpTestDetails Filters fields from json response entity. Specifies the filter implementation class in web.xml.
-     * @tpSince RESTEasy 3.1.0
+     * @tpSince RESTEasy 3.0.20.Final
      */
     @Test
     public void testJacksonString() throws Exception {
