@@ -30,7 +30,7 @@ public class BookStoreResource {
    @Path("/books")
    @Consumes({"text/xml", "application/json"})
    public void addBook(Book book) {
-      availableBooks.put(book.getISBN(), book);
+      availableBooks.put(book.getIsbn(), book);
    }
 
    @GET

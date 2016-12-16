@@ -100,7 +100,7 @@ public class YamlPojoBindingTest {
         Client client = ClientBuilder.newClient();
         WebTarget post = client.target(generateURL("/yaml"));
         Response response = post.request().post(Entity.entity("---! bad", "text/x-yaml"));
-        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
+        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-7614", "Response code BAD_REQUEST (400) expected"), HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         response.close();
     }
 
