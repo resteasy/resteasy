@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.providers.atom;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.atom.Content;
@@ -32,6 +33,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.core.MediaType;
@@ -148,9 +150,11 @@ public class AtomComplexModelTest {
 
     /**
      * @tpTestDetails Check new client
+     * @tpInfo Not for forward compatibility due to 3.1.0.Final, see the migration notes
      * @tpSince RESTEasy 3.0.16
      */
     @Test
+    @Category({NotForForwardCompatibility.class})
     public void testNewClient() throws Exception {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                 "<entry xmlns=\"http://www.w3.org/2005/Atom\">" +

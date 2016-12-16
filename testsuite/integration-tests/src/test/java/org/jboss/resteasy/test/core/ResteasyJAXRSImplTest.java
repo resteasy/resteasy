@@ -6,17 +6,23 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.test.core.basic.resource.AcceptLanguagesResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
+/**
+ * @tpSubChapter Jaxrs implementation
+ * @tpChapter Integration tests
+ * @tpTestCaseDetails RESTEASY-1531
+ * @tpSince RESTEasy 3.1.0
+ */
 @RunWith(Arquillian.class)
 public class ResteasyJAXRSImplTest
 {
@@ -25,9 +31,14 @@ public class ResteasyJAXRSImplTest
    public static Archive<?> deploy()
    {
       WebArchive war = TestUtil.prepareArchive(ResteasyJAXRSImplTest.class.getSimpleName());
-      return TestUtil.finishContainerPrepare(war, null, AcceptLanguagesResource.class);
+      war.addClass(NotForForwardCompatibility.class);
+      return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
    }
 
+   /**
+    * @tpTestDetails Tests that ResteasyClientBuilder implementation corresponds to JAXRS spec ClientBuilder
+    * @tpSince RESTEasy 3.1.0
+    */
    @Test
    @RunAsClient
    public void testClientBuilder() throws Exception
@@ -35,12 +46,21 @@ public class ResteasyJAXRSImplTest
       testClientBuilderNewBuilder();
    }
 
+   /**
+    * @tpTestDetails Tests that ResteasyClientBuilder implementation corresponds to JAXRS spec ClientBuilder. Tested client
+    * is bundled in the server.
+    * @tpSince RESTEasy 3.1.0
+    */
    @Test
    public void testInContainerClientBuilder() throws Exception
    {
       testClientBuilderNewBuilder();
    }
 
+   /**
+    * @tpTestDetails Tests RuntimeDelegate instance implementation with ResteasyProviderFactory
+    * @tpSince RESTEasy 3.1.0
+    */
    @Test
    @RunAsClient
    public void testRuntimeDelegate() throws Exception
@@ -50,8 +70,13 @@ public class ResteasyJAXRSImplTest
       testResteasyProviderFactoryNewInstance();
    }
 
+   /**
+    * @tpTestDetails Tests RuntimeDelegate instance implementation with ResteasyProviderFactory in the container.
+    * @tpSince RESTEasy 3.1.0
+    */
    @Test
-   public void testInContainerRuntimeDegate() throws Exception
+   @Category({NotForForwardCompatibility.class})
+   public void testInContainerRuntimeDelegate() throws Exception
    {
       testRuntimeDelegateGetInstance();
       testResteasyProviderFactoryGetInstance();
