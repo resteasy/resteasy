@@ -6,10 +6,10 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.DefaultHttpResponse;
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpHeaderValues;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpHeaders.Names;
+import io.netty.handler.codec.http.HttpHeaders.Values;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
 
@@ -127,9 +127,9 @@ public class NettyHttpResponse implements HttpResponse
       if (keepAlive)
       {
          // Add keep alive and content length if needed
-         response.headers().add(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-         if (message == null) response.headers().add(HttpHeaderNames.CONTENT_LENGTH, 0);
-         else response.headers().add(HttpHeaderNames.CONTENT_LENGTH, message.getBytes().length);
+         response.headers().add(Names.CONNECTION, Values.KEEP_ALIVE);
+         if (message == null) response.headers().add(Names.CONTENT_LENGTH, 0);
+         else response.headers().add(Names.CONTENT_LENGTH, message.getBytes().length);
       }
       ctx.writeAndFlush(response);
       committed = true;
@@ -167,7 +167,7 @@ public class NettyHttpResponse implements HttpResponse
    public DefaultHttpResponse getEmptyHttpResponse()
    {
        DefaultFullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(getStatus()));
-       res.headers().add(HttpHeaderNames.CONTENT_LENGTH, EMPTY_CONTENT_LENGTH);
+       res.headers().add(Names.CONTENT_LENGTH, EMPTY_CONTENT_LENGTH);
        transformResponseHeaders(res);
        return res;
    }
@@ -179,7 +179,7 @@ public class NettyHttpResponse implements HttpResponse
    public void prepareChunkStream() {
       committed = true;
       DefaultHttpResponse response = getDefaultHttpResponse();
-      HttpUtil.setTransferEncodingChunked(response, true);
+      HttpHeaders.setTransferEncodingChunked(response);
       ctx.write(response);
    }
 
