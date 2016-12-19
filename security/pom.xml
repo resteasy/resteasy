@@ -15,13 +15,6 @@
 
     <profiles>
         <profile>
-            <id>redhat-prod</id>
-            <modules>
-                <module>jose-jwt</module>
-                <module>resteasy-crypto</module>
-            </modules>
-        </profile>
-        <profile>
             <id>travis-ci</id>
             <activation>
                 <activeByDefault>true</activeByDefault>

@@ -14,21 +14,6 @@
     <packaging>pom</packaging>
     <profiles>
         <profile>
-            <id>redhat-prod</id>
-            <modules>
-                <module>jaxb</module>
-                <module>jettison</module>
-                <module>fastinfoset</module>
-                <module>jackson</module>
-                <module>jackson2</module>
-                <module>json-p-ee7</module>
-                <module>resteasy-atom</module>
-                <module>multipart</module>
-                <module>yaml</module>
-                <module>resteasy-validator-provider-11</module>
-            </modules>
-        </profile>
-        <profile>
             <id>travis-ci</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
