@@ -55,7 +55,7 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
              LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
          return readFrom(reader);
       }
-      LogMessages.LOGGER.debugf("Interceptor: %s", interceptors[index].getClass().getName());
+      LogMessages.LOGGER.debugf("ReaderInterceptor: %s", interceptors[index].getClass().getName());
       return interceptors[index++].aroundReadFrom(this);
       // index--;  we used to pop the index, but the TCK does not like this
    }
