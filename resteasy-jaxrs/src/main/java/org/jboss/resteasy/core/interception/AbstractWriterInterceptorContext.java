@@ -125,7 +125,7 @@ public abstract class AbstractWriterInterceptorContext implements WriterIntercep
       }
       else
       {
-         LogMessages.LOGGER.debugf("Interceptor: %s", interceptors[index].getClass().getName());
+         LogMessages.LOGGER.debugf("WriterInterceptor: %s", interceptors[index].getClass().getName());
          interceptors[index++].aroundWriteTo(this);
          // we used to pop the index, but the TCK doesn't like this
       }
