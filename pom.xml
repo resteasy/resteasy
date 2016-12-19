@@ -77,64 +77,6 @@
 
     <profiles>
         <profile>
-            <id>redhat-prod</id>
-            <modules>
-                <module>tjws</module>
-                <module>resteasy-jaxrs</module>
-                <module>resteasy-jaxrs-services</module>
-                <module>resteasy-client</module>
-                <module>resteasy-legacy</module>
-                <module>providers</module>
-                <module>resteasy-bom</module>
-                <module>resteasy-cache</module>
-                <module>resteasy-dependencies-bom</module>
-                <module>resteasy-guice</module>
-                <module>eagledns</module>
-                <module>security</module>
-                <module>resteasy-links</module>
-                <module>resteasy-spring</module>
-                <module>resteasy-jsapi</module>
-                <module>resteasy-cdi</module>
-                <module>resteasy-servlet-initializer</module>
-                <module>server-adapters</module>
-                <module>jboss-modules</module>
-                <module>resteasy-wadl</module>
-                <module>resteasy-wadl-undertow-connector</module>
-                <module>arquillian</module>
-                <module>profiling-tests</module>
-                <module>testsuite</module>
-            </modules>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.jboss.jandex</groupId>
-                        <artifactId>jandex-maven-plugin</artifactId>
-                        <version>1.0.3</version>
-                        <executions>
-                            <execution>
-                                <id>make-index</id>
-                                <goals>
-                                    <goal>jandex</goal>
-                                </goals>
-                                <!-- phase is 'process-classes by default' -->
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-            <dependencyManagement>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.jboss.resteasy</groupId>
-                        <artifactId>resteasy-dependencies</artifactId>
-                        <version>${project.version}</version>
-                        <type>pom</type>
-                        <scope>import</scope>
-                    </dependency>
-                </dependencies>
-            </dependencyManagement>
-        </profile>
-        <profile>
             <id>travis-ci</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
