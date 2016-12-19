@@ -267,12 +267,14 @@ public class AsynchBasicTest {
         String jobUrl2 = response.getHeaderString(HttpHeaders.LOCATION);
         Assert.assertTrue("Request was not sent correctly", latch.await(3, TimeUnit.SECONDS));
         response.close();
+        Thread.sleep(50);
 
         // test its still there
         response = client.target(jobUrl2).request().post(Entity.text(new String()));
         Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         Assert.assertEquals("Wrong content of response", "content", response.readEntity(String.class));
         response.close();
+        Thread.sleep(50);
 
         response = client.target(jobUrl2).request().get();
         Thread.sleep(1000);
