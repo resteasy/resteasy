@@ -22,6 +22,8 @@ import org.junit.runner.RunWith;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import static org.hamcrest.core.StringStartsWith.startsWith;
+
 /**
  * @tpSubChapter Response
  * @tpChapter Integration tests
@@ -60,7 +62,7 @@ public class ValidationHibernateI18NTest {
      */
     @Test
     public void testI18NSetAcceptLanguage() throws Exception {
-        doTestI18NSetAcceptLanguage("fr", "la taille doit être entre");
+        doTestI18NSetAcceptLanguage("fr", "la taille doit être");
         doTestI18NSetAcceptLanguage("es", "el tama\u00F1o tiene que estar entre");
     }
 
@@ -71,7 +73,7 @@ public class ValidationHibernateI18NTest {
         ViolationReport report = response.readEntity(ViolationReport.class);
         String message = report.getReturnValueViolations().iterator().next().getMessage();
         TestUtil.countViolations(report, 0, 0, 0, 0, 1);
-        Assert.assertTrue(WRONG_ERROR_MSG, message.startsWith(expectedMessage));
+        Assert.assertThat(WRONG_ERROR_MSG, message, startsWith(expectedMessage));
         response.close();
     }
 }
