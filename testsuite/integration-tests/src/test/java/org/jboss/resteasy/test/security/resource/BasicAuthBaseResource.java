@@ -6,6 +6,7 @@ import javax.annotation.security.DenyAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
@@ -44,5 +45,13 @@ public class BasicAuthBaseResource {
     @DenyAll
     public String deny() {
         return "SHOULD NOT BE REACHED";
+    }
+
+    @GET
+    @Path("/denyWithContentType")
+    @Produces("application/xml")
+    @RolesAllowed("admin")
+    public String getWithContentType() {
+        return "string";
     }
 }
