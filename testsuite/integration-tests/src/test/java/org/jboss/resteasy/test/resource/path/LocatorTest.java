@@ -76,5 +76,17 @@ public class LocatorTest {
         response.close();
     }
 
+    @Test
+    public void testLocatorWithSubWithConCapturingGroupPattern() {
+        Response response = client.target(generateURL("/locator/resource2/responseok")).request().get();
+        Assert.assertEquals(200, response.getStatus());
+        response.close();
+    }
 
+    @Test
+    public void testLocatorWithCapturingGroupPattern() {
+        Response response = client.target(generateURL("/locator/resource3/responseok")).request().get();
+        Assert.assertEquals(200, response.getStatus());
+        response.close();
+    }
 }
