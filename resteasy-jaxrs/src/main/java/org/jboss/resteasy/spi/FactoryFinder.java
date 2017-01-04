@@ -3,6 +3,7 @@ package org.jboss.resteasy.spi;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.AccessController;
@@ -103,9 +104,10 @@ final class FactoryFinder {
        ClassLoader classLoader = getContextClassLoader();
 
        String serviceId = "META-INF/services/" + factoryId;
+       BufferedReader rd = null;
+       InputStream is = null;
        // try to find services in CLASSPATH
        try {
-           InputStream is;
            if (classLoader == null) {
                is = ClassLoader.getSystemResourceAsStream(serviceId);
            } else {
@@ -113,10 +115,9 @@ final class FactoryFinder {
            }
 
            if (is != null) {
-               BufferedReader rd = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+               rd = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 
                String factoryClassName = rd.readLine();
-               rd.close();
 
                if (factoryClassName != null && !"".equals(factoryClassName)) {
                    return newInstance(factoryClassName, classLoader);
@@ -124,9 +125,19 @@ final class FactoryFinder {
            }
        } catch (Exception ex) {
            LOGGER.log(Level.FINER, "Failed to load service " + factoryId + " from " + serviceId, ex);
-       }
+       } finally {
+           try {
+	       if (rd != null)
+		   rd.close();
 
+               if (is != null)
+                   is.close();
+	   } catch (IOException ex) {
+	       LOGGER.log(Level.FINER, "Failed to close  BufferedReader/InputStream.", ex);
+	   }
+	}
 
+       FileInputStream fis = null;
        // try to read from $java.home/lib/jaxrs.properties
        try {
            String javah = System.getProperty("java.home");
@@ -135,15 +146,22 @@ final class FactoryFinder {
            File f = new File(configFile);
            if (f.exists()) {
                Properties props = new Properties();
-               props.load(new FileInputStream(f));
+               fis = new FileInputStream(f);
+               props.load(fis);
                String factoryClassName = props.getProperty(factoryId);
                return newInstance(factoryClassName, classLoader);
            }
        } catch (Exception ex) {
            LOGGER.log(Level.FINER, "Failed to load service " + factoryId
                    + " from $java.home/lib/jaxrs.properties", ex);
-       }
-
+       } finally {
+           try {
+	       if (fis != null)
+		   fis.close();
+	   } catch (IOException ex) {
+	       LOGGER.log(Level.FINER, "Failed to close  FileInputStream.", ex);
+	   }
+	}
 
        // Use the system property
        try {
@@ -157,16 +175,16 @@ final class FactoryFinder {
        }
 
        ClassLoader moduleClassLoader = getModuleClassLoader();
+       rd = null;
+       is = null;
        if (moduleClassLoader != null) {
           try {
-             InputStream is = moduleClassLoader.getResourceAsStream(serviceId);
+             is = moduleClassLoader.getResourceAsStream(serviceId);
          
              if( is!=null ) {
-                 BufferedReader rd =
-                     new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                 rd = new BufferedReader(new InputStreamReader(is, "UTF-8"));
          
                  String factoryClassName = rd.readLine();
-                 rd.close();
 
                  if (factoryClassName != null &&
                      ! "".equals(factoryClassName)) {
@@ -174,7 +192,17 @@ final class FactoryFinder {
                  }
              }
          } catch( Exception ex ) {
-         }
+         } finally {
+           try {
+	       if (rd != null)
+		   rd.close();
+
+               if (is != null)
+                   is.close();
+	   } catch (IOException ex) {
+               LOGGER.log(Level.FINER, "Failed to close  BufferedReader/InputStream.", ex);
+	   }
+	 }
        }
 
        if (fallbackClassName == null) {
