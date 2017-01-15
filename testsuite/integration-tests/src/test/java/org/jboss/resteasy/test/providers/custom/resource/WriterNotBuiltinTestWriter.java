@@ -44,6 +44,7 @@ public class WriterNotBuiltinTestWriter implements MessageBodyWriter, MessageBod
         return true;
     }
 
+    @SuppressWarnings(value = "unchecked")
     public Object readFrom(Class type, Type genericType,
                            Annotation[] annotations, MediaType mediaType,
                            MultivaluedMap httpHeaders, InputStream entityStream)

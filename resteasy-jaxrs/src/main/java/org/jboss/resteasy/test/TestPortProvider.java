@@ -1,48 +1,22 @@
-/*
- * Copyright 2012 JBoss Inc
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.jboss.resteasy.test;
 
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientRequestFactory;
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.util.PortProvider;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 
 /**
- * Utility class that provides a port number for the Resteasy embedded container.
+ * Test utility class
  *
  * @author <a href="justin@justinedelson.com">Justin Edelson</a>
  * @version $Revision$
  */
 public class TestPortProvider
 {
-   private static final int DEFAULT_PORT = 8081;
-
-   private static final String ENV_VAR_NAME = "RESTEASY_PORT";
-
-   private static final String PROPERTY_NAME = "org.jboss.resteasy.port";
-
-   private static final String DEFAULT_HOST = "localhost";
-
-   private static final String ENV_VAR_HOSTNAME = "RESTEASY_HOST";
-
-   private static final String PROPERTY_HOSTNAME = "org.jboss.resteasy.host";
-   
    /**
     * Create a Resteasy ClientRequest object using the configured port.
     *
@@ -133,39 +107,7 @@ public class TestPortProvider
     */
    public static int getPort()
    {
-      int port = -1;
-      String property = System.getenv(ENV_VAR_NAME);
-      if (property != null)
-      {
-         try
-         {
-            port = Integer.parseInt(property);
-         }
-         catch (NumberFormatException e)
-         {
-         }
-      }
-
-      if (port == -1)
-      {
-         property = System.getProperty(PROPERTY_NAME);
-         if (property != null)
-         {
-            try
-            {
-               port = Integer.parseInt(property);
-            }
-            catch (NumberFormatException e)
-            {
-            }
-         }
-      }
-
-      if (port == -1)
-      {
-         port = DEFAULT_PORT;
-      }
-      return port;
+      return PortProvider.getPort();
    }
    
    /**
@@ -176,26 +118,6 @@ public class TestPortProvider
     */
    public static String getHost()
    {
-      String host = null;
-      String property = System.getenv(ENV_VAR_HOSTNAME);
-      if (property != null)
-      {
-         host = property;
-      }
-
-      if (host == null)
-      {
-         property = System.getProperty(PROPERTY_HOSTNAME);
-         if (property != null)
-         {
-            host = property;
-         }
-      }
-
-      if (host == null)
-      {
-         host = DEFAULT_HOST;
-      }
-      return host;
+      return PortProvider.getHost();
    }
 }

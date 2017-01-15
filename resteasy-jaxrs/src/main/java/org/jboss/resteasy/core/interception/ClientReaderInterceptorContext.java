@@ -42,6 +42,7 @@ public class ClientReaderInterceptorContext extends AbstractReaderInterceptorCon
       throw new ProcessingException(Messages.MESSAGES.clientResponseFailureMediaType(mediaType, type));
    }
 
+   @SuppressWarnings(value = "unchecked")
    @Override
    protected MessageBodyReader resolveReader(MediaType mediaType)
    {

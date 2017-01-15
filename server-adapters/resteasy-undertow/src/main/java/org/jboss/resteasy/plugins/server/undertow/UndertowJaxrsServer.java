@@ -6,9 +6,10 @@ import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.api.ServletContainer;
 import io.undertow.servlet.api.ServletInfo;
+
+import org.jboss.resteasy.util.PortProvider;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.test.TestPortProvider;
 
 import javax.servlet.ServletException;
 import javax.ws.rs.ApplicationPath;
@@ -248,7 +249,7 @@ public class UndertowJaxrsServer
    public UndertowJaxrsServer start()
    {
       server = Undertow.builder()
-              .addListener(TestPortProvider.getPort(), "localhost")
+              .addListener(PortProvider.getPort(), "localhost")
               .setHandler(root)
               .build();
       server.start();

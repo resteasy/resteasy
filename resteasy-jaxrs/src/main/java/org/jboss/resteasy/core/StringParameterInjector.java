@@ -36,6 +36,7 @@ import java.util.TreeSet;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings(value = "unchecked")
 public class StringParameterInjector
 {
    protected Class type;

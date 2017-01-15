@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.nextgen.wadl;
 
+import org.jboss.resteasy.plugins.server.netty.NettyContainer;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.spi.ResteasyDeployment;
-import org.jboss.resteasy.test.NettyContainer;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.test.nextgen.wadl.resources.BasicResource;
 import org.jboss.resteasy.test.nextgen.wadl.resources.issues.RESTEASY1246;

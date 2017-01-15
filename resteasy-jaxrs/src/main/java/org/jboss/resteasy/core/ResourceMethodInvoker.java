@@ -453,6 +453,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       return MediaType.WILDCARD_TYPE;
    }
 
+   @SuppressWarnings(value = "unchecked")
    protected MediaType resolveContentTypeByAccept(List<MediaType> accepts, Object entity)
    {
       if (accepts == null || accepts.size() == 0 || entity == null)

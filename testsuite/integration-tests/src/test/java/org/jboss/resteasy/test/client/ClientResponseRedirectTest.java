@@ -129,6 +129,7 @@ public class ClientResponseRedirectTest {
         Assert.assertEquals("The location header doesn't have the expected value", generateURL("/redirect/data"), headers.getFirst("location"));
     }
 
+    @SuppressWarnings(value = "unchecked")
     private void testRedirect(Response response) {
         MultivaluedMap headers = response.getHeaders();
         logger.info("size: " + headers.size());

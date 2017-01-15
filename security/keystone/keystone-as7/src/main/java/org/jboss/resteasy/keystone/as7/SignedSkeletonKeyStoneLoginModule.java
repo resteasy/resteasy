@@ -82,6 +82,7 @@ public class SignedSkeletonKeyStoneLoginModule extends JBossWebAuthLoginModule
       }
    }
 
+   @SuppressWarnings(value = "unchecked")
    @Override
    protected boolean login(Request request, HttpServletResponse response) throws LoginException
    {

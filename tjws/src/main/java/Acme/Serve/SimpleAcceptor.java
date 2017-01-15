@@ -51,6 +51,7 @@ public class SimpleAcceptor implements Serve.Acceptor
       socket.close();
    }
 
+   @SuppressWarnings(value = "unchecked")
    public void init(Map inProperties, Map outProperties) throws IOException
    {
       int port = inProperties.get(Serve.ARG_PORT) != null ? ((Integer) inProperties.get(Serve.ARG_PORT)).intValue()

@@ -14,6 +14,7 @@ import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.ReaderInterceptor;
 import javax.ws.rs.ext.ReaderInterceptorContext;
 
+import org.apache.http.protocol.HTTP;
 import org.jboss.resteasy.annotations.GZIP;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.core.Dispatcher;
@@ -85,14 +86,14 @@ public class GZIPAnnotationTest
       @Override
       public Object aroundReadFrom(ReaderInterceptorContext ctx) throws IOException
       {
-         log.info("client Content-Encoding: " + ctx.getHeaders().get(HttpHeaders.CONTENT_ENCODING));
-         if (ctx.getHeaders().get(HttpHeaders.CONTENT_ENCODING).get(0).contains("gzip"))
+         log.info("client transfer-encoding: " + ctx.getHeaders().get("transfer-encoding"));
+         if (ctx.getHeaders().get("transfer-encoding").get(0).contains(HTTP.CHUNK_CODING))
          {
             return ctx.proceed();
          }
          else
          {
-            throw new RuntimeException("no gzip in Content-Encoding");
+            throw new RuntimeException("no chunk transfer-encoding");
          }
       }
    }

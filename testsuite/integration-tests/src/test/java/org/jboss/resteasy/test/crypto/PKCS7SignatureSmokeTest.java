@@ -81,6 +81,7 @@ public class PKCS7SignatureSmokeTest {
         WebTarget target = client.target(generateURL());
         target = target.path("test/signed/pkcs7-signature");
         PKCS7SignatureInput signed = target.request().get(PKCS7SignatureInput.class);
+        @SuppressWarnings(value = "unchecked")
         String output = (String) signed.getEntity(String.class, MediaType.TEXT_PLAIN_TYPE);
         logger.info(output);
         Assert.assertEquals("Wrong content of response", "hello world", output);

@@ -30,6 +30,7 @@ public class DecoratorMatcher
     * @param <T>
     * @return
     */
+   @SuppressWarnings(value = "unchecked")
    public <T> T decorate(Class<T> targetClass, T target, Class type, Annotation[] annotations, MediaType mediaType)
    {
       HashMap<Class<?>, Annotation> meta = new HashMap<Class<?>, Annotation>();

@@ -41,6 +41,7 @@ public class ListenerBootstrap extends ConfigurationBootstrap
 
       synchronized (RD_LOCK)
       {
+         @SuppressWarnings(value = "unchecked")
          Map<String, ResteasyDeployment> deployments = (Map<String, ResteasyDeployment>) servletContext.getAttribute(ResteasyContextParameters.RESTEASY_DEPLOYMENTS);
          if (deployments == null)
          {

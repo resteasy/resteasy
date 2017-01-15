@@ -104,6 +104,7 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
          init();
       }
 
+      @SuppressWarnings(value = "unchecked")
       @Override
       public void body(BodyDescriptor bd, InputStream is) throws MimeException, IOException
       {

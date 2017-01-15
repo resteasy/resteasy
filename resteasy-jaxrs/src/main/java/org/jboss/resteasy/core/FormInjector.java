@@ -19,6 +19,7 @@ public class FormInjector implements ValueInjector
    private ConstructorInjector constructorInjector;
    private PropertyInjector propertyInjector;
 
+   @SuppressWarnings(value = "unchecked")
    public FormInjector(Class type, ResteasyProviderFactory factory)
    {
       this.type = type;
