@@ -25,6 +25,7 @@ import java.util.concurrent.CountDownLatch;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
+@Ignore("[RESTEASY-1490] RESTEASY1323Test intermittent failures")
 public class RESTEASY1323Test
 {
    static String BASE_URI = generateURL("");

@@ -10,6 +10,7 @@ import org.jboss.resteasy.wadl.ResteasyWadlDefaultResource;
 import org.jboss.resteasy.wadl.ResteasyWadlGenerator;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.ws.rs.client.Client;
@@ -18,6 +19,7 @@ import javax.ws.rs.client.ClientBuilder;
 /**
  * @author <a href="mailto:l.weinan@gmail.com">Weinan Li</a>
  */
+@Ignore
 public class WADLNettyContainerTests {
     private static NettyJaxrsServer netty;
     private static int port = TestPortProvider.getPort() + 2;
