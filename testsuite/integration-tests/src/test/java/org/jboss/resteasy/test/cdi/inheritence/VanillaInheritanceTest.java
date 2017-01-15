@@ -43,7 +43,7 @@ public class VanillaInheritanceTest {
         WebArchive war = TestUtil.prepareArchive(VanillaInheritanceTest.class.getSimpleName());
         war.addClasses(UtilityProducer.class, CDIInheritenceBook.class, CDIInheritenceSelectBook.class, CDIInheritenceInheritanceResource.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        return TestUtil.finishContainerPrepare(war, null, null);
+        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 
     /**

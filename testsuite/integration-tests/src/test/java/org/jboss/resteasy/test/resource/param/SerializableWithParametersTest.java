@@ -5,7 +5,6 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.plugins.providers.SerializableProvider;
 import org.jboss.resteasy.test.resource.param.resource.SerializableWithParametersObject;
 import org.jboss.resteasy.test.resource.param.resource.SerializableWithParametersResource;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -44,11 +43,13 @@ public class SerializableWithParametersTest {
      * @tpTestDetails Get serializable object.
      *                Test was updated by RESTEASY-1269 in this
      *                commit: https://github.com/resteasy/Resteasy/commit/bb8657c9808763d4c4b9227f6a2fcf47b9146636
+     *                Serializable provider was deprecated in RESTEASY-1461
      * @tpSince RESTEasy 3.0.16
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void testSerialize() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().register(SerializableProvider.class).build();
+        ResteasyClient client = new ResteasyClientBuilder().register(org.jboss.resteasy.plugins.providers.SerializableProvider.class).build();
         Invocation.Builder request = client.target(generateURL("/test")).request();
         SerializableWithParametersObject foo = request.get(SerializableWithParametersObject.class);
         Assert.assertEquals("Wrong response", new SerializableWithParametersObject("abc"), foo);

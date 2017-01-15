@@ -1,6 +1,9 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
+import java.util.Date;
+
 import org.junit.Assert;
+
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -19,6 +22,14 @@ public class CookieInjectionResource {
     @GET
     public Response set() {
         return Response.ok("content").cookie(new NewCookie("meaning", "42")).build();
+    }
+    
+    @Path("/expire")
+    @GET
+    public Response expire() {
+        NewCookie cookie = new NewCookie("Name", "Value", "/", "*", 0, "comment", 3600, new Date(),
+                true, true);
+        return Response.ok().cookie(cookie).entity(cookie.toString()).build();
     }
 
     @Context

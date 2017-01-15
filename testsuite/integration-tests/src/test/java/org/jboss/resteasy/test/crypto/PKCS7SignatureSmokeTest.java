@@ -51,7 +51,7 @@ public class PKCS7SignatureSmokeTest {
         WebArchive war = TestUtil.prepareArchive(PKCS7SignatureSmokeTest.class.getSimpleName());
         List<Class<?>> singletons = new ArrayList<>(1);
         singletons.add(PKCS7SignatureSmokeResource.class);
-        return TestUtil.finishContainerPrepare(war, null, singletons, null);
+        return TestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);
     }
 
     private String generateURL() {

@@ -40,6 +40,7 @@ import java.lang.reflect.Type;
 @Provider
 @Produces("application/x-java-serialized-object")
 @Consumes("application/x-java-serialized-object")
+@Deprecated
 public class SerializableProvider implements MessageBodyReader<Serializable>, MessageBodyWriter<Serializable>
 {
    public static final MediaType APPLICATION_SERIALIZABLE_TYPE = new MediaType("application", "x-java-serialized-object");

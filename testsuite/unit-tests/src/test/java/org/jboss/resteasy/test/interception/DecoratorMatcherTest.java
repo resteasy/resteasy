@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.interception;
 import org.jboss.resteasy.annotations.Decorator;
 import org.jboss.resteasy.core.interception.DecoratorMatcher;
 import org.jboss.resteasy.spi.interception.DecoratorProcessor;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,9 +17,6 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
 
 /**
  * @tpSubChapter Interception tests
@@ -45,7 +43,7 @@ public class DecoratorMatcherTest {
     @Test
     public void shouldNotThrowOnUnmarshaller() throws JAXBException {
         decoratorMatcher.decorate(Unmarshaller.class, jaxbContext.createUnmarshaller(), AnObject.class, new Annotation[0], MediaType.APPLICATION_XML_TYPE);
-        assertFalse("Decorate method was called", called.get());
+        Assert.assertFalse("Decorate method was called", called.get());
     }
 
     /**
@@ -55,7 +53,7 @@ public class DecoratorMatcherTest {
     @Test
     public void shouldCallOnMarshaller() throws JAXBException {
         decoratorMatcher.decorate(Marshaller.class, jaxbContext.createMarshaller(), AnObject.class, new Annotation[0], MediaType.APPLICATION_XML_TYPE);
-        assertTrue("Decorate method was not called", called.get());
+        Assert.assertTrue("Decorate method was not called", called.get());
     }
 
     @Retention(RetentionPolicy.RUNTIME)

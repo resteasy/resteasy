@@ -41,7 +41,7 @@ public class ValidationSessionBeanTest {
                 .addClasses(SessionResourceParent.class)
                 .addClasses(SessionResourceLocal.class, SessionResourceRemote.class, SessionResourceImpl.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        return TestUtil.finishContainerPrepare(war, null, null);
+        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 
     private String generateURL(String path) {

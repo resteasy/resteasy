@@ -64,7 +64,7 @@ public class ValidationJaxbTest {
                 .addClasses(ValidationCoreResourceWithAllViolationTypes.class, ValidationCoreResourceWithReturnValues.class)
                 .addAsResource("META-INF/services/javax.ws.rs.ext.Providers")
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        return TestUtil.finishContainerPrepare(war, null, null);
+        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 
     private static String generateURL(String path) {

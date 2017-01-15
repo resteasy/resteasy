@@ -83,7 +83,7 @@ public class UriInfoTest {
         war.addClass(PortProviderUtil.class);
         List<Class<?>> singletons = new ArrayList<>();
         singletons.add(UriInfoSimpleSingletonResource.class);
-        return TestUtil.finishContainerPrepare(war, null, singletons, null);
+        return TestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);
     }
 
     /**

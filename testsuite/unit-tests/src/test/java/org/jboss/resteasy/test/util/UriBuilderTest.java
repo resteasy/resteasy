@@ -66,7 +66,7 @@ public class UriBuilderTest {
         // testNullReplaceQuery
         {
             UriBuilder builder = UriBuilder.fromUri("/foo?a=b&bar=foo");
-            builder.replaceQueryParam("bar", null);
+            builder.replaceQueryParam("bar", (Object[]) null);
             URI uri = builder.build();
             logger.info(uri.toString());
         }
@@ -192,7 +192,7 @@ public class UriBuilderTest {
             // test removal
 
             bu = UriBuilder.fromUri("http://localhost:8080/a/b/c;a=x;b=y").
-                    replaceMatrixParam("a", null).build();
+                    replaceMatrixParam("a", (Object[]) null).build();
             Assert.assertEquals(ERROR_MSG, URI.create("http://localhost:8080/a/b/c;b=y"), bu);
         }
 
@@ -794,7 +794,7 @@ public class UriBuilderTest {
             URI uri;
 
             uri = UriBuilder.fromPath("http://localhost:8080").queryParam(name,
-                            "x=", "y?", "x y", "&").replaceQueryParam(name, null).build();
+                            "x=", "y?", "x y", "&").replaceQueryParam(name, (Object[]) null).build();
             if (uri.toString().compareToIgnoreCase(expected_value) != 0) {
                 pass = false;
                 sb.append("Incorrec URI returned: " + uri.toString() +

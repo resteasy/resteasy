@@ -51,7 +51,7 @@ public class ExecutableValidationDisabledTest {
                 .addClasses(ValidationCoreResourceWithAllViolationTypes.class, ValidationCoreResourceWithReturnValues.class)
                 .addAsResource("META-INF/services/javax.ws.rs.ext.Providers")
                 .addAsResource(ExecutableValidationDisabledTest.class.getPackage(), "ExecutableValidationDisabledValidationDisabled.xml", "META-INF/validation.xml");
-        return TestUtil.finishContainerPrepare(war, null, null);
+        return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 
     @Before

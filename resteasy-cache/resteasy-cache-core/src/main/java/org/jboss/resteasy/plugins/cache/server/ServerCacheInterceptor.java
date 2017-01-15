@@ -132,7 +132,10 @@ public class ServerCacheInterceptor implements WriterInterceptor
          {
             etag = etagObject.toString();
          }
-         cache.add(request.getUri().getRequestUri().toString(), context.getMediaType(), cc, context.getHeaders(), entity, etag);
+         
+         if (!cc.isPrivate() && !cc.isNoStore()) {
+        	 cache.add(request.getUri().getRequestUri().toString(), context.getMediaType(), cc, context.getHeaders(), entity, etag);
+         }
 
          // check to see if ETags are the same.  If they are, we don't need to send a response back.
          Response.ResponseBuilder validatedResponse = validation.evaluatePreconditions(new EntityTag(etag));
