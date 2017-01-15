@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test.client;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -160,4 +162,36 @@ public class ClientCacheTest {
         client.close();
     }
 
+   @Test
+   public void testMaxSizeNoProxy() throws Exception {
+      String url = PortProviderUtil.generateURL("/cache/cacheit/{id}", ClientCacheTest.class.getSimpleName());
+      ResteasyWebTarget target = (ResteasyWebTarget) ClientBuilder.newClient().target(url);
+      LightweightBrowserCache cache = new LightweightBrowserCache();
+      cache.setMaxBytes(20);
+      BrowserCacheFeature cacheFeature = new BrowserCacheFeature();
+      cacheFeature.setCache(cache);
+      target.register(cacheFeature);
+
+      count = 0;
+
+      String rtn = target.resolveTemplate("id", "1").request().get(String.class);
+      Assert.assertEquals("cachecache" + 1, rtn);
+      Assert.assertEquals(1, count);
+
+      rtn = target.resolveTemplate("id", "1").request().get(String.class);
+      Assert.assertEquals("cachecache" + 1, rtn);
+      Assert.assertEquals(1, count);
+
+      rtn = target.resolveTemplate("id", "2").request().get(String.class);
+      Assert.assertEquals("cachecache" + 2, rtn);
+      Assert.assertEquals(2, count);
+
+      rtn = target.resolveTemplate("id", "2").request().get(String.class);
+      Assert.assertEquals("cachecache" + 2, rtn);
+      Assert.assertEquals(2, count);
+
+      rtn = target.resolveTemplate("id", "1").request().get(String.class);
+      Assert.assertEquals("cachecache" + 3, rtn);
+      Assert.assertEquals(3, count);
+   }
 }

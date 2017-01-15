@@ -6,8 +6,10 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperAbstractExceptionMapper;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperMyCustomException;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperMyCustomExceptionMapper;
+import org.jboss.resteasy.test.exception.resource.ExceptionMapperMyCustomSubException;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperResource;
 import org.jboss.resteasy.test.exception.resource.ExceptionMapperWebAppExceptionMapper;
+import org.jboss.resteasy.test.exception.resource.NotFoundExceptionMapper;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.Types;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -42,7 +44,8 @@ public class ExceptionMapperTest {
         WebArchive war = TestUtil.prepareArchive(ExceptionMapperTest.class.getSimpleName());
         war.addClasses(ExceptionMapperAbstractExceptionMapper.class);
         return TestUtil.finishContainerPrepare(war, null, ExceptionMapperResource.class, ExceptionMapperWebAppExceptionMapper.class,
-                ExceptionMapperMyCustomExceptionMapper.class, ExceptionMapperMyCustomException.class);
+                ExceptionMapperMyCustomExceptionMapper.class, ExceptionMapperMyCustomException.class,
+                ExceptionMapperMyCustomSubException.class, NotFoundExceptionMapper.class);
     }
 
     private String generateURL(String path) {
@@ -90,4 +93,28 @@ public class ExceptionMapperTest {
         Assert.assertEquals("hello", response.readEntity(String.class));
     }
 
+    /**
+     * @tpTestDetails Client sends GET request to the server, which causes the subclass of an exception
+     * which has an ExceptionMapper to be thrown. This subclass exception is caught by application provided ExceptionMapper
+     * @tpPassCrit Application provided ExceptionMapper serves the exception and creates response with ACCEPTED status
+     * @tpSince RESTEasy 3.0.20
+     */
+    @Test
+    public void testCustomSubExceptionsUsed() {
+        Response response = client.target(generateURL("/resource/sub")).request().get();
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assert.assertEquals("custom", response.readEntity(String.class));
+    }
+    
+    /**
+     * @tpTestDetails Client sends GET request to a nonexistent resource, which causes a NotFoundException to be thrown.
+     * The NotFoundException is caught by the application provided NotFoundExceptionMapper, which sends a 410 status.
+     * @tpSince RESTEasy 3.0.20
+     */
+    @Test
+    public void testNotFoundExceptionMapping() {
+        Response response = client.target(generateURL("/bogus")).request().get();
+        Assert.assertEquals(410, response.getStatus());
+        response.close();
+    }
 }

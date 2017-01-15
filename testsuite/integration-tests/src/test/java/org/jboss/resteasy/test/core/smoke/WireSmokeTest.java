@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
@@ -118,6 +119,21 @@ public class WireSmokeTest {
             Response response = client.target(generateURLLocating("/locating/uriParam/1234")).queryParam("param", "hello world").request().get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             Assert.assertEquals(WRONG_RESPONSE, "1234", response.readEntity(String.class));
+        }
+        {
+           Response response = client.target(generateURLLocating("/locating/uriParam/x1234")).queryParam("param", "hello world").request().get();
+           Assert.assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
+           response.close();
+        }
+        {
+           Response response = client.target(generateURLLocating("/locating/notmatching")).request().get();
+           Assert.assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
+           response.close();
+        }
+        {
+           Response response = client.target(generateURLLocating("/subresource/subresource/subresource/basic")).request().get();
+           Assert.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+           Assert.assertEquals("basic", response.readEntity(String.class));
         }
     }
 }

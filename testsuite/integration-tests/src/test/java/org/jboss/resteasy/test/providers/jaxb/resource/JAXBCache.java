@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.providers.jaxb.resource;
 
 import org.jboss.resteasy.core.ExceptionAdapter;
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
