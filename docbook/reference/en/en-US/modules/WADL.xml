@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+                         "http://www.docbook.org/xml/4.4/docbookx.dtd">
+ -->
+<chapter id="WADL">
+    <title>RESTEasy WADL Support</title>
+    <para>RESTEasy has its own support to generate WADL for its resources, and it supports several different containers. The following text will show you how to use this feature in different containers.
+    </para>
+    <section>
+        <title>RESTEasy WADL Support for Servlet Container</title>
+        <para>
+            RESTEasy WADL uses ResteasyWadlServlet to support servlet container. It can be registered into web.xml to enable WADL feature. Here is an example to show the usages of ResteasyWadlServlet in web.xml:
+        </para>
+        <programlisting><![CDATA[<servlet>
+	<servlet-name>RESTEasy WADL</servlet-name>
+	<servlet-class>org.jboss.resteasy.wadl.ResteasyWadlServlet</servlet-class>
+</servlet>
+
+<servlet-mapping>
+	<servlet-name>RESTEasy WADL</servlet-name>
+	<url-pattern>/application.xml</url-pattern>
+</servlet-mapping>
+]]></programlisting>
+        <para>
+            The preceding configuration in web.xml shows how to enable ResteasyWadlServlet and mapped it to /application.xml. And then the WADL can be accessed from the configured URL:
+        </para>
+        <programlisting><![CDATA[/application.xml]]></programlisting>
+    </section>
+    <section>
+        <title>RESTEasy WADL support for Sun JDK HTTP Server</title>
+        <para>
+            RESTEasy has provided a ResteasyWadlDefaultResource to generate WADL info for its embedded containers. Here is and example to show how to use it with RESTEasy's Sun JDK HTTP Server container:
+        </para>
+        <programlisting><![CDATA[com.sun.net.httpserver.HttpServer httpServer =
+	com.sun.net.httpserver.HttpServer.create(new InetSocketAddress(port), 10);
+
+org.jboss.resteasy.plugins.server.sun.http.HttpContextBuilder contextBuilder = 
+	new org.jboss.resteasy.plugins.server.sun.http.HttpContextBuilder();
+
+contextBuilder.getDeployment().getActualResourceClasses()
+	.add(ResteasyWadlDefaultResource.class);
+contextBuilder.bind(httpServer);
+
+ResteasyWadlDefaultResource.getServices()
+	.put("/",
+		ResteasyWadlGenerator
+			.generateServiceRegistry(contextBuilder.getDeployment()));
+
+httpServer.start();]]></programlisting>
+        <para>
+            From the above code example, we can see how ResteasyWadlDefaultResource is registered into deployment:
+        </para>
+        <programlisting><![CDATA[contextBuilder.getDeployment().getActualResourceClasses()
+	.add(ResteasyWadlDefaultResource.class);]]></programlisting>
+        <para>
+            Another important thing is to use ResteasyWadlGenerator to generate the WADL info for the resources in deployment at last:
+        </para>
+        <programlisting><![CDATA[ResteasyWadlDefaultResource.getServices()
+	.put("/",
+		ResteasyWadlGenerator
+			.generateServiceRegistry(contextBuilder.getDeployment()));]]></programlisting>
+        <para>After the above configuration is set, then users can access "/application.xml" to fetch the WADL info, because ResteasyWadlDefaultResource has @PATH set to "/application.xml" as default:
+        </para>
+        <programlisting><![CDATA[@Path("/application.xml")
+public class ResteasyWadlDefaultResource]]></programlisting>
+    </section>
+    <section>
+        <title>RESTEasy WADL support for Netty Container</title>
+        <para>RESTEasy WADL support for Netty Container is simliar to the support for JDK HTTP Server. It also uses ResteasyWadlDefaultResource to serve '/application.xml' and ResteasyWadlGenerator to generate WADL info for resources. Here is the sample code:
+        </para>
+        <programlisting><![CDATA[ResteasyDeployment deployment = new ResteasyDeployment();
+
+netty = new NettyJaxrsServer();
+netty.setDeployment(deployment);
+netty.setPort(port);
+netty.setRootResourcePath("");
+netty.setSecurityDomain(null);
+netty.start();
+
+deployment.getRegistry()
+	.addPerRequestResource(ResteasyWadlDefaultResource.class);        
+ResteasyWadlDefaultResource.getServices()
+	.put("/", ResteasyWadlGenerator.generateServiceRegistry(deployment));]]></programlisting>
+        <para>
+            Please note for all the embedded containers like JDK HTTP Server and Netty Container, if the resources in the deployment changes at runtime, the ResteasyWadlGenerator.generateServiceRegistry() need to be re-run to refresh the WADL info.
+        </para>
+    </section>
+    <section>
+        <title>RESTEasy WADL Support for Undertow Container</title>
+        <para>
+            The RESTEasy Undertow Container is a embedded Servlet Container, and RESTEasy WADL provides a connector to it. To use RESTEasy Undertow Container together with WADL support, you need to add these three components into your maven dependencies:
+        </para>
+        <programlisting><![CDATA[
+<dependency>
+	<groupId>org.jboss.resteasy</groupId>
+	<artifactId>resteasy-wadl</artifactId>
+	<version>${project.version}</version>
+</dependency>
+<dependency>
+	<groupId>org.jboss.resteasy</groupId>
+	<artifactId>resteasy-wadl-undertow-connector</artifactId>
+	<version>${project.version}</version>
+</dependency>
+<dependency>
+	<groupId>org.jboss.resteasy</groupId>
+	<artifactId>resteasy-undertow</artifactId>
+	<version>${project.version}</version>
+</dependency>
+]]></programlisting>
+        <para>The resteasy-wadl-undertow-connector provides a WadlUndertowConnector to help you to use WADL in RESTEasy Undertow Container. Here is the code example:
+        </para>
+        <programlisting><![CDATA[
+UndertowJaxrsServer server = new UndertowJaxrsServer().start();
+WadlUndertowConnector connector = new WadlUndertowConnector();
+connector.deployToServer(server, MyApp.class);
+]]></programlisting>
+        <para>The MyApp class shown in above code is a standard JAX-RS 2.0 Application class in your project:</para>
+        <programlisting>
+            <![CDATA[
+@ApplicationPath("/base")
+public static class MyApp extends Application {
+    @Override
+    public Set<Class<?>> getClasses() {
+        HashSet<Class<?>> classes = new HashSet<Class<?>>();
+        classes.add(YourResource.class);
+        return classes;
+    }
+}
+]]></programlisting>
+        <para>After the Application is deployed to the UndertowJaxrsServer via WadlUndertowConnector, you can access the WADL info at "/application.xml" prefixed by the @ApplicationPath in your Application class. If you want to override the @ApplicationPath, you can use the other method in WadlUndertowConnector:</para>
+        <programlisting>
+            <![CDATA[
+public UndertowJaxrsServer deployToServer(UndertowJaxrsServer server, Class<? extends Application> application, String contextPath)
+            ]]>
+        </programlisting>
+        <para>The "deployToServer" method shown above accepts a "contextPath" parameter, which you can use to override the @ApplicationPath value in the Application class.</para>
+    </section>
+</chapter>

@@ -1,0 +1,283 @@
+<chapter id="Client_Framework">
+   <title>Client Framework</title>
+
+   <section>
+   <title>Fluent interface</title>
+   <para>
+   The two principal client side classes in Resteasy 2 are <classname>ClientRequest</classname>
+   and <classname>ClientResponse</classname>:
+   </para>
+   
+   <programlisting>
+ClientRequest request = new ClientRequest("http://localhost:8081/test");
+request.body("text/plain", "hello world");
+ClientResponse&lt;?&gt; response = request.post();
+String result = response.getEntity(String.class);
+   </programlisting>
+   
+   <para>
+   <classname>ClientRequest</classname> holds the target URL and entity, if any. 
+   <classname>ClientResponse</classname> holds the response entity, which can be
+   extracted by the getEntity() method.
+   </para>
+   
+   <para>
+   In JAX-RS 2.0, these classes are replaced by four classes that support a fluent
+   call pattern: <classname>Client</classname>, <classname>WebTarget</classname>,
+   <classname>Invocation.Builder</classname>, and <classname>Response</classname>:
+   </para>
+   
+   <programlisting>
+Client client = ClientBuilder.newClient();
+WebTarget target = client.target("http://localhost:8081/test");
+Invocation.Builder builder = target.request();
+Entity&lt;String&gt; entity = Entity.entity("hello world", "text/plain");
+Response response = builder.post(entity);
+String result = response.readEntity(String.class);
+   </programlisting>
+
+   <para>
+   The invocation process begins with <classname>Client</classname>, whose primary
+   responsibility is to create a <classname>WebTarget</classname>. <classname>Client</classname>s
+   are somewhat expensive to build, so it often makes sense to reuse a <classname>Client</classname>
+   to create multiple <classname>WebTarget</classname>s.
+   </para>
+   
+   <para>
+   Resteasy extends <classname>ClientBuilder</classname> and <classname>Client</classname>
+   with methods that allow the registration of providers:
+   </para>
+   
+   <programlisting>
+static class TestWriter implements MessageBodyWriter&lt;String&gt;
+{
+   @Override
+   public boolean isWriteable(Class&lt;?&gt; type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   {
+      return false;
+   }
+
+   @Override
+   public long getSize(String t, Class&lt;?&gt; type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   {
+      return 0;
+   }
+
+   @Override
+   public void writeTo(String t, Class&lt;?&gt; type, Type genericType, Annotation[] annotations, MediaType mediaType,
+         MultivaluedMap&lt;String, Object&gt; httpHeaders, OutputStream entityStream)
+         throws IOException, WebApplicationException
+   {
+      //
+   }
+}
+
+ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder();
+Client client = clientBuilder.register(TestWriter.class).build();
+   </programlisting>
+   
+   <para>
+   All <classname>Client</classname>s created by that <classname>ResteasyClientBuilder</classname>,
+   and all invocations on all <classname>WebTarget</classname>s created by those <classname>Client</classname>s,
+   will have <classname>TestWriter</classname> available.
+   </para>
+   
+   <para>
+   <classname>WebTarget</classname>, as its name implies, constructs and holds a URL which 
+   targets a server side resource. It has various options for extending and manipulating
+   URIs:
+   </para>
+   
+   <programlisting>
+WebTarget target = client.target("http://localhost:8081/test/{index}");
+WebTarget target1 = target.resolveTemplate("index", "1");
+WebTarget target2 = target.resolveTemplate("index", "2");
+   </programlisting>
+   
+   <para>
+   Here, two new <classname>WebTarget</classname>s are created from the original target, each
+   with a different ending path segment. Query and matrix parameters can also be appended:
+   </para>
+   
+   <programlisting>
+WebTarget target3 = target2.queryParam("x", "y");
+   </programlisting>
+   
+   <para>
+   Here, target3 targets "http://localhost:8081/test/2?x=y".
+   </para>
+   
+   <para>Resteasy also extends <classname>WebTarget</classname> with the ability to register providers:
+   </para>
+   
+   <programlisting>
+Client client = ClientBuilder.newClient();
+String url = "http://localhost:8081/test/{index}";
+WebTarget target = client.target(url).register(TestWriter.class);
+WebTarget target1 = target.resolveTemplate("index", "1");  
+WebTarget target2 = target.resolveTemplate("index", "2");  
+WebTarget target3 = target2.queryParam("x", "y");
+   </programlisting>
+
+   <para>
+   Here, <classname>TestWriter</classname> is available to all invocations on target1, target2, and target3.
+   </para>
+   
+   <para>
+   <classname>Invocation.Builder</classname> plays a role similar to the old <classname>ClientRequest</classname>:
+   </para>
+   
+   <programlisting>
+Response response = builder.header("User-Agent", "Mozilla/5.0").get();
+   </programlisting>
+   
+   <para>or</para>
+   
+   <programlisting> 
+String s = builder.header("User-Agent", "Mozilla/5.0").get(String.class);
+   </programlisting>
+   
+   <para>
+   Finally, note that <classname>Response</classname>, unlike the old <classname>ClientResponse&lt;T&gt;</classname>,
+   is not a generic type, so it is necessary to give a type when extracting a response entity:
+   </para>
+   
+   <programlisting>
+String result = response.readEntity(String.class);
+   </programlisting>
+   
+   <para>
+   <emphasis role="bold">Note.</emphasis> <methodname>Response.getEntity()</methodname> still exists, but it
+   plays a different role, which could easily lead to bugs. It is necessary to call
+   <methodname>readEntity()</methodname> to extract the response entity. If
+   <methodname>getEntity()</methodname> is called instead, it will return null.
+   </para>
+   
+   <para>
+   <emphasis role="bold">Note.</emphasis> Unlike the old <methodname>getEntity()</methodname>,
+   <methodname>readEntity()</methodname> is not idempotent. Once it is called, the response is
+   closed, and subsequent calls will throw an <classname>IllegalStateException</classname>. This
+   behavior can be circumvented by calling <methodname>Response.bufferEntity()</methodname> before
+   calling <methodname>readEntity()</methodname>. I.e., this will work:
+   </para>
+   
+   <programlisting>
+response.bufferEntity();
+System.out.println(response.readEntity(String.class));
+System.out.println(response.readEntity(String.class));
+   </programlisting>
+   </section>
+   
+   <section>
+   <title>Client proxies</title>
+   
+   <para>
+   The client framework in Resteasy 2 included a facility for interacting with JAX-RS resources
+   through client side POJOs, not unlike the Java RMI facility:
+   </para>
+   
+   <programlisting>
+@Path("/test")
+public static interface TestResource
+{
+   @GET
+   @Produces("text/plain")
+   public String test();
+}
+
+public void testProxy() throws Exception
+{
+   String url = "http://localhost:8081";
+   TestResource pojo = ProxyFactory.create(TestResource.class, url);
+   String result = pojo.test();
+   </programlisting>
+   
+   <para>
+   This technique avoids a lot of complications, but, perhaps because it is perceived as
+   not being in the RESTful spirit, it is not part of the JAX-RS 2.0 client framework. It
+   still exists in Resteasy 3, but in a re-worked form that fits into the official client
+   framework. Now, a proxy is created by a call to <methodname>ResteasyWebTarget.proxy()</methodname>: 
+   </para>
+   
+   <programlisting>
+Client client = ClientBuilder.newClient();
+String url = "http://localhost:8081";
+ResteasyWebTarget target = (ResteasyWebTarget) client.target(url);
+TestResource pojo = target.proxy(TestResource.class);
+String result = pojo.test();
+   </programlisting>
+   
+   </section>
+   
+   
+   <section>
+   <title>Client side error handling</title>
+   
+   <para>
+   Resteasy 2 had two facilities for handling errors on the client side.
+   </para>
+   
+   <para>
+   An instance of an <classname>org.jboss.resteasy.client.core.ClientErrorInterceptor</classname>
+   could be registered to handle exceptions thrown during a proxied call. Also, an instance of an
+   <classname>org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper</classname> could
+   be registered to map exceptions thrown during a proxied call. A default 
+   <classname>ClientExceptionMapper</classname> was installed that mapped exceptions thrown by
+   the HttpClient transport layer to Resteasy specific analogs. For example, an
+   <classname>org.apache.http.client.ClientProtocolException</classname> would be mapped to an
+   <classname>org.jboss.resteasy.client.exception.ResteasyClientProtocolException</classname>.
+   </para>
+   
+   <para>
+   These two facilities do not exist in Resteasy 3. Instead, the JAX-RS 2.0 specification mandates the
+   use of <classname>javax.ws.rs.ProcessingException</classname> and
+   <classname>javax.ws.rs.client.ResponseProcessingException</classname>. In particular, exceptions
+   thrown while processing a request should be mapped to a <classname>ProcessingException</classname>,
+   and exceptions thrown while processing a response should be mapped to a
+   <classname>ResponseProcessingException</classname>.
+   </para>
+
+   <para>
+   For example, the <classname>ProcessingException</classname> javadoc lists possible conditions
+   leading to a <classname>ProcessingException:</classname>
+   </para>
+   
+   <itemizedlist>
+      <listitem>failures in filter or interceptor chain execution</listitem>
+      <listitem>errors caused by missing message body readers or writers for the particular Java type
+                and media type combinations
+      </listitem>
+      <listitem>propagated <classname>java.io.IOException</classname>s thrown by
+                <classname>javax.ws.rs.ext.MessageBodyReader</classname>s and 
+                <classname>javax.ws.rs.ext.MessageBodyWriter</classname>s
+                during entity serialization and de-serialization
+      </listitem>
+   </itemizedlist>
+
+   <para>
+   Note that <classname>ProcessingException</classname> and <classname>ResponseProcessingException</classname>
+   represent internal problems. If the client side receives a response with status codes 3xx, 4xx or 5xx,
+   it will map the response to an instance of <classname>javax.ws.rs.WebApplicationException</classname>
+   or one of its subclasses.
+   </para>
+
+   </section>
+   
+   <section>
+   <title>Maven considerations</title>
+   
+   <para>
+   In Resteasy 2, the client framework lives in the resteasy-jaxrs module. In Resteasy 3, it has its own
+   module, resteasy-client:
+   </para>
+   
+   <programlisting>
+&lt;dependency&gt;
+   &lt;groupId&gt;org.jboss.resteasy&lt;/groupId&gt;
+   &lt;artifactId&gt;resteasy-client&lt;/artifactId&gt;
+   &lt;version&gt;${project.version}&lt;/version&gt;
+&lt;/dependency&gt;
+   </programlisting>
+   
+   </section>
+</chapter>

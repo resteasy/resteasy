@@ -28,6 +28,7 @@ import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
+import org.jboss.resteasy.util.GetRestful;
 
 import com.fasterxml.classmate.Filter;
 import com.fasterxml.classmate.MemberResolver;
@@ -163,7 +164,7 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
          throw new ResteasyViolationException(violationsContainer);
       }
       violationsContainer.addViolations(cvs);
-      if (violationsContainer.isFieldsValidated() && violationsContainer.size() > 0)
+      if ((violationsContainer.isFieldsValidated() || !GetRestful.isRootResource(object.getClass())) && violationsContainer.size() > 0)
       {
          throw new ResteasyViolationException(violationsContainer, request.getHttpHeaders().getAcceptableMediaTypes());
       }

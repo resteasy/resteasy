@@ -23,6 +23,8 @@ public abstract class WADLTestSetup {
     protected static HttpContextBuilder contextBuilder;
     protected static int port = TestPortProvider.getPort() + 1;
     protected static Client client = ClientBuilder.newClient();
+    private static String url = "http://127.0.0.1:${port}/application.xml".replaceAll("\\$\\{port\\}",
+            Integer.valueOf(port).toString());
 
     public static void setPort(int port) {
         WADLTestSetup.port = port;
@@ -32,9 +34,12 @@ public abstract class WADLTestSetup {
         WADLTestSetup.client = client;
     }
 
+    public static void setUrl(String url) {
+        WADLTestSetup.url = url;
+    }
+
     public static String getUrl() {
-        return "http://127.0.0.1:${port}/application.xml".replaceAll("\\$\\{port\\}",
-                Integer.valueOf(port).toString());
+        return url;
     }
 
     @BeforeClass

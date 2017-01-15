@@ -1,0 +1,105 @@
+<chapter id="Interceptors">
+   <title>Filters and Interceptors</title>
+   
+   <para>
+   Interceptors are another facility from Resteasy 2 that now appear in JAX-RS 2.0 but in a rather different
+   form. There were four kinds of interceptors in Resteasy 2:
+   </para>
+   
+   <orderedlist>
+      <listitem>reader/writer interceptors</listitem>
+      <listitem>server side <classname>PreProcessInterceptor</classname></listitem>
+      <listitem>server side <classname>PostProcessInterceptor</classname></listitem>
+      <listitem><classname>ClientExecutionInterceptor</classname></listitem>
+   </orderedlist>
+   
+   <para>
+   Of these, reader/writer interceptors, which wrap around the reading or writing of entities, carry over 
+   essentially unchanged, except for class and method names.
+   <classname>javax.ws.rs.ext.ReaderInterceptor</classname> and <classname>javax.ws.rs.ext.WriterInterceptor</classname>
+   replace the old <classname>MessageBodyReaderInterceptor</classname> and
+   <classname>MessageBodyWriterInterceptor</classname>.
+   </para>
+   
+   <para>
+   The two kinds of server side interceptors are replaced by <emphasis>filters</emphasis>, which behave similarly.
+   There are four kinds of filters:
+   </para>
+   
+   <orderedlist>
+      <listitem><classname>ContainerRequestFilter</classname></listitem>
+      <listitem><classname>ContainerResponseFilter</classname></listitem>
+      <listitem><classname>ClientRequestFilter</classname></listitem>
+      <listitem><classname>ClientResponseFilter</classname></listitem>
+   </orderedlist>
+   
+   <para>
+   Like the old <classname>PreProcessInterceptor</classname>s, <classname>ContainerRequestFilter</classname>s
+   can access requests. A 
+   </para>
+   
+   <programlisting>
+public interface PreProcessInterceptor
+{
+   ServerResponse preProcess(HttpRequest request, ResourceMethod method) throws Failure, WebApplicationException;
+}
+   </programlisting>
+   
+   <para>
+   can modify the <classname>HttpRequest</classname> and then return a response or null.
+   If it returns a response, then the execution process is interrupted and
+   that response is returned. Similarly, a new
+   </para>
+   
+   <programlisting>
+public interface ContainerRequestFilter
+{
+    public void filter(ContainerRequestContext requestContext) throws IOException;
+}
+   </programlisting>
+
+   <para>
+   can access and modify a JAX-RS <classname>Request</classname> by calling
+   <methodname>ContainerRequestContext.getRequest()</methodname>, and it can supply a response    
+   by calling <methodname>ContainerRequestContext.abortWith(Response)</methodname>.
+   </para>
+   
+   <para>
+   An old
+   </para>
+   
+   <programlisting>
+public interface PostProcessInterceptor
+{
+   void postProcess(ServerResponse response);
+}
+   </programlisting>
+   
+   <para>
+   can modify the response, as can a new
+   </para>
+   
+   <programlisting>
+public interface ContainerResponseFilter
+{
+   public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException;
+}
+   </programlisting>
+   
+   <para>
+   by calling, for example, <methodname>ContainerResponseContext.setStatus()</methodname> or
+   <methodname>ContainerResponseContext.setEntity()</methodname>.
+   </para>
+   
+   <para>
+   The situation is somewhat different with the old <classname>ClientExecutionInterceptor</classname>.
+   Unlike <classname>PreProcessInterceptor</classname> and <classname>PreProcessInterceptor</classname>,
+   this one really wraps the invocation process on the client side. That is, it can examine and/or modify
+   the request and return by calling <methodname>ClientRequestContext.abortWith(Response)</methodname>, or
+   proceed with the invocation and examine and/or modify the response.
+   Two client side filters, <classname>ClientRequestFilter</classname> and <classname>ClientResponseFilter</classname>,
+   are required to replace the functionality of <classname>ClientExecutionInterceptor</classname>. The former
+   can access the request, and the latter can access both the request and response. 
+   </para>
+   
+</chapter>

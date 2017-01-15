@@ -96,12 +96,11 @@ public class YamlPojoBindingTest {
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    @Category({ExpectedFailing.class}) //[RESTEASY-1361] FIXME
     public void testBadPost() throws Exception {
         Client client = ClientBuilder.newClient();
         WebTarget post = client.target(generateURL("/yaml"));
         Response response = post.request().post(Entity.entity("---! bad", "text/x-yaml"));
-        Assert.assertEquals(HttpResponseCodes.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+        Assert.assertEquals(HttpResponseCodes.SC_BAD_REQUEST, response.getStatus());
         response.close();
     }
 

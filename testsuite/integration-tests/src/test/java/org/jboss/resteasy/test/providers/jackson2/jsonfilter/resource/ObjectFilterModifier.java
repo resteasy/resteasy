@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.providers.jackson2.jsonfilter;
+package org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource;
 
 import java.io.IOException;
 

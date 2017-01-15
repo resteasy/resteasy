@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.providers.jackson2.jsonfilter;
+package org.jboss.resteasy.test.providers.jackson2.jsonfilter.resource;
 
 import java.io.IOException;
 
@@ -10,6 +10,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
+
 /**
  * @author <a href="mailto:ema@redhat.com">Jim Ma</a>
  *
