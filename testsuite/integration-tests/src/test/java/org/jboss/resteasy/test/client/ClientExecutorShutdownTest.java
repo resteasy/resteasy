@@ -13,7 +13,6 @@ import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.test.client.resource.ClientExecutorShutdownTestResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
-import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -35,7 +34,7 @@ import static org.junit.Assert.fail;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class ClientExecutorShutdownTest {
+public class ClientExecutorShutdownTest extends ClientTestBase{
     private static Logger log = Logger.getLogger(ClientExecutorShutdownTest.class);
 
     @Path("/test")
@@ -48,11 +47,8 @@ public class ClientExecutorShutdownTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(ClientExecutorShutdownTest.class.getSimpleName());
         war.addClass(ClientExecutorShutdownTest.class);
+        war.addClass(ClientTestBase.class);
         return TestUtil.finishContainerPrepare(war, null, ClientExecutorShutdownTestResource.class);
-    }
-
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ClientExecutorShutdownTest.class.getSimpleName());
     }
 
     /**

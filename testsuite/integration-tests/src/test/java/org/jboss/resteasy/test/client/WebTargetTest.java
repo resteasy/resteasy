@@ -4,7 +4,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.client.resource.WebTargetResource;
-import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -29,7 +28,7 @@ import java.util.Map;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class WebTargetTest {
+public class WebTargetTest extends ClientTestBase{
 
     static Client client;
 
@@ -42,10 +41,6 @@ public class WebTargetTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(WebTargetTest.class.getSimpleName());
         return TestUtil.finishContainerPrepare(war, null, WebTargetResource.class);
-    }
-
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, WebTargetTest.class.getSimpleName());
     }
 
     @AfterClass

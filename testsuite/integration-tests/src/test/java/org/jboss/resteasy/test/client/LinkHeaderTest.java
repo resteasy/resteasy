@@ -10,7 +10,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
 import org.jboss.resteasy.spi.LinkHeader;
 import org.jboss.resteasy.test.client.resource.LinkHeaderService;
-import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -31,17 +30,13 @@ import javax.ws.rs.core.Response;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class LinkHeaderTest {
+public class LinkHeaderTest extends ClientTestBase{
 
     protected static ResteasyClient client;
 
     @Before
     public void setup() throws Exception {
         client = new ResteasyClientBuilder().build();
-    }
-
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, LinkHeaderTest.class.getSimpleName());
     }
 
     @Deployment

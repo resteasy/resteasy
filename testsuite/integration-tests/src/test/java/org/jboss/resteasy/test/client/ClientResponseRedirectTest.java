@@ -36,7 +36,7 @@ import java.net.URL;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class ClientResponseRedirectTest {
+public class ClientResponseRedirectTest extends ClientTestBase{
 
 
     protected static final Logger logger = LogManager.getLogger(ClientResponseRedirectTest.class.getName());
@@ -45,6 +45,7 @@ public class ClientResponseRedirectTest {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(ClientResponseRedirectTest.class.getSimpleName());
+        war.addClass(ClientTestBase.class);
         return TestUtil.finishContainerPrepare(war, null, ClientResponseRedirectResource.class, PortProviderUtil.class);
     }
 
@@ -56,10 +57,6 @@ public class ClientResponseRedirectTest {
     @After
     public void after() throws Exception {
         client.close();
-    }
-
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ClientResponseRedirectTest.class.getSimpleName());
     }
 
     /**

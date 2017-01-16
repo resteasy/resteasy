@@ -23,7 +23,6 @@ import java.util.concurrent.TimeoutException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -42,7 +41,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class AsyncTimeoutExceptionsTest {
+public class AsyncTimeoutExceptionsTest extends ClientTestBase{
 
     protected static final Logger logger = LogManager.getLogger(AsyncTimeoutExceptionsTest.class.getName());
 
@@ -58,10 +57,6 @@ public class AsyncTimeoutExceptionsTest {
         WebArchive war = TestUtil.prepareArchive(AsyncTimeoutExceptionsTest.class.getSimpleName());
         return TestUtil.finishContainerPrepare(war, null, AsyncTimeoutExceptionsResource.class,
                 AsyncTimeoutExceptionsSticker.class, StickerCallback.class, ResponseCallback.class);
-    }
-
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, AsyncTimeoutExceptionsTest.class.getSimpleName());
     }
 
     @After

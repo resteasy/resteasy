@@ -12,7 +12,6 @@ import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.test.client.resource.EntityBufferingInFileResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
-import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -43,7 +42,7 @@ import org.wildfly.extras.creaper.core.online.operations.admin.Administration;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class EntityBufferingInFileTest {
+public class EntityBufferingInFileTest extends ClientTestBase{
 
     private static final Logger logger = Logger.getLogger(EntityBufferingInFileTest.class);
     private static final long MAX_POST_SIZE = 2147483647;
@@ -83,10 +82,6 @@ public class EntityBufferingInFileTest {
         WebArchive war = TestUtil.prepareArchive(EntityBufferingInFileTest.class.getSimpleName());
         war.addClass(EntityBufferingInFileTest.class);
         return TestUtil.finishContainerPrepare(war, null, EntityBufferingInFileResource.class);
-    }
-
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, EntityBufferingInFileTest.class.getSimpleName());
     }
 
     /**

@@ -345,6 +345,46 @@ public class MyApplication extends Application
                         </row>
                         <row>
                             <entry>
+                                resteasy.scan
+                            </entry>
+                            <entry>
+                                false
+                            </entry>
+                            <entry>
+                                Automatically scan WEB-INF/lib jars and WEB-INF/classes directory for both @Provider and
+                                JAX-RS resource classes (@Path, @GET, @POST etc..) and register them.
+                                This property is deprecated; please use a Servlet 3.0 container or higher and the
+                                ResteasyServletInitializer instead.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                resteasy.scan.providers
+                            </entry>
+                            <entry>
+                                false
+                            </entry>
+                            <entry>
+                                Scan for @Provider classes and register them.
+                                This property is deprecated; please use a Servlet 3.0 container or higher and the
+                                ResteasyServletInitializer instead.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                resteasy.scan.resources
+                            </entry>
+                            <entry>
+                                false
+                            </entry>
+                            <entry>
+                                Scan for JAX-RS resource classes.
+                                This property is deprecated; please use a Servlet 3.0 container or higher and the
+                                ResteasyServletInitializer instead.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
                                 resteasy.providers
                             </entry>
                             <entry>

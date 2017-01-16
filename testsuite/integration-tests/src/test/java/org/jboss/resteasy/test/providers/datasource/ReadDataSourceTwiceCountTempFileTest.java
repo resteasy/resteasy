@@ -2,12 +2,16 @@ package org.jboss.resteasy.test.providers.datasource;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-
-
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -20,11 +24,11 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Before;
 import org.junit.After;
-import org.junit.Test;
-import org.junit.Assert;
 import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
@@ -126,24 +130,20 @@ public class ReadDataSourceTwiceCountTempFileTest {
 
     static int countTempFiles() throws Exception {
         String tmpdir = System.getProperty("java.io.tmpdir");
-        File dir = new File(tmpdir);
-        int counter = 0;
-        for (File file : dir.listFiles()) {
-            if (file.getName().startsWith("resteasy-provider-datasource")) {
-                counter++;
-            }
+        Path dir = Paths.get(tmpdir);
+        final AtomicInteger counter = new AtomicInteger(0);
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "resteasy-provider-datasource*")){
+            stream.forEach(path -> counter.incrementAndGet());
         }
-        return counter;
+        return counter.intValue();
     }
 
     @AfterClass
     public static void afterclass() throws Exception {
         String tmpdir = System.getProperty("java.io.tmpdir");
-        File dir = new File(tmpdir);
-        for (File file : dir.listFiles()) {
-            if (file.getName().startsWith("resteasy-provider-datasource")) {
-                logger.info(file.getName());
-            }
+        Path dir = Paths.get(tmpdir);
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "resteasy-provider-datasource*")) {
+            stream.forEach(path -> logger.info(path.toString()));
         }
     }
 }

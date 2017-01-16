@@ -37,7 +37,7 @@ import java.util.TreeSet;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class ParameterListTest {
+public class ParameterListTest extends ClientTestBase{
 
     protected static final Logger logger = LogManager.getLogger(ParameterListTest.class.getName());
 
@@ -59,10 +59,6 @@ public class ParameterListTest {
         WebArchive war = TestUtil.prepareArchive(ParameterListTest.class.getSimpleName());
         war.addClass(ParameterListInterface.class);
         return TestUtil.finishContainerPrepare(war, null, ParameterListResource.class);
-    }
-
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ParameterListTest.class.getSimpleName());
     }
 
     private String generateBaseUrl() {

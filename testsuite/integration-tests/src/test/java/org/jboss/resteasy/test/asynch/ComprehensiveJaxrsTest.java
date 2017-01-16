@@ -454,6 +454,7 @@ public class ComprehensiveJaxrsTest
    }
 
    @Test
+   @Category({ExpectedFailing.class}) // [RESTEASY-1446] FIXME
    public void updateTimeoutTest() throws Exception
    {
       invokeClear();

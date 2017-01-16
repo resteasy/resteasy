@@ -9,7 +9,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.client.resource.GenericReturnTypeInterface;
 import org.jboss.resteasy.test.client.resource.GenericReturnTypeReader;
 import org.jboss.resteasy.test.client.resource.GenericReturnTypeResource;
-import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -27,17 +26,13 @@ import javax.ws.rs.client.Client;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class GenericReturnTypeTest {
+public class GenericReturnTypeTest extends ClientTestBase{
 
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(GenericReturnTypeTest.class.getSimpleName());
         war.addClasses(GenericReturnTypeInterface.class);
         return TestUtil.finishContainerPrepare(war, null, GenericReturnTypeResource.class, GenericReturnTypeReader.class);
-    }
-
-    private static String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, GenericReturnTypeTest.class.getSimpleName());
     }
 
     /**

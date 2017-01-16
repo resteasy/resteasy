@@ -112,9 +112,9 @@ public interface LogMessages extends BasicLogger
    @Message(id = BASE + 145, value = "NoClassDefFoundError: Unable to load builtin provider {0} from {1}", format=Format.MESSAGE_FORMAT)
    void noClassDefFoundErrorError(String line, URL url, @Cause Throwable cause);
    
-//   @LogMessage(level = Level.WARN)
-//   @Message(id = BASE + 150, value = "%s is no longer supported.  Use a servlet 3.0 container and the ResteasyServletInitializer")
-//   void noLongerSupported(String param);
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 150, value = "%s is no longer supported.  Use a servlet 3.0 container and the ResteasyServletInitializer")
+   void noLongerSupported(String param);
    
    @LogMessage(level = Level.WARN)
    @Message(id = BASE + 155, value = "Provider class {0} is already registered.  2nd registration is being ignored.", format=Format.MESSAGE_FORMAT)

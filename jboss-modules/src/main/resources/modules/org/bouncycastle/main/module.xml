@@ -22,11 +22,13 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<module xmlns="urn:jboss:module:1.1" name="org.bouncycastle">
+<module xmlns="urn:jboss:module:1.3" name="org.bouncycastle">
+
+    <properties>
+        <property name="jboss.api" value="private"/>
+    </properties>
+    
     <resources>
-        <resource-root path="bcprov-jdk15on-1.52.jar"/>
-        <resource-root path="bcmail-jdk15on-1.52.jar"/>
-        <resource-root path="bcpkix-jdk15on-1.52.jar"/>
         <!-- Insert resources here -->
     </resources>
     <dependencies>

@@ -8,7 +8,6 @@ import org.jboss.resteasy.test.client.resource.ClientExceptionsData;
 import org.jboss.resteasy.test.client.resource.ClientExceptionsIOExceptionReaderInterceptor;
 import org.jboss.resteasy.test.client.resource.ClientExceptionsResource;
 import org.jboss.resteasy.test.client.resource.ClientExceptionsCustomClientResponseFilter;
-import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -39,7 +38,7 @@ import javax.ws.rs.core.Response;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class ClientExceptionsTest {
+public class ClientExceptionsTest extends ClientTestBase{
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -61,10 +60,6 @@ public class ClientExceptionsTest {
     @After
     public void close() {
         client.close();
-    }
-
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ClientExceptionsTest.class.getSimpleName());
     }
 
     /**

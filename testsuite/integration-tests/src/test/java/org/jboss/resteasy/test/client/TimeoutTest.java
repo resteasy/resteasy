@@ -8,7 +8,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.client.resource.TimeoutResource;
-import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -32,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class TimeoutTest {
+public class TimeoutTest extends ClientTestBase{
     @Path("/timeout")
     public interface TimeoutResourceInterface {
         @GET
@@ -44,11 +43,8 @@ public class TimeoutTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(TimeoutTest.class.getSimpleName());
         war.addClass(TimeoutTest.class);
+        war.addClass(ClientTestBase.class);
         return TestUtil.finishContainerPrepare(war, null, TimeoutResource.class);
-    }
-
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, TimeoutTest.class.getSimpleName());
     }
 
     /**

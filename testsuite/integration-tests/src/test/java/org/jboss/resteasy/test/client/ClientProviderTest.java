@@ -5,7 +5,6 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.client.resource.ClientProviderStringEntityProviderReader;
 import org.jboss.resteasy.test.client.resource.ClientProviderStringEntityProviderWriter;
-import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -42,7 +41,7 @@ import java.io.Reader;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class ClientProviderTest  {
+public class ClientProviderTest extends ClientTestBase{
 
     static Client client;
 
@@ -54,16 +53,13 @@ public class ClientProviderTest  {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(ClientProviderTest.class.getSimpleName());
+        war.addClass(ClientTestBase.class);
         return TestUtil.finishContainerPrepare(war, null, ClientProviderResource.class);
     }
 
     @After
     public void close() {
         client.close();
-    }
-
-    private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ClientProviderTest.class.getSimpleName());
     }
 
     @Path("/")
