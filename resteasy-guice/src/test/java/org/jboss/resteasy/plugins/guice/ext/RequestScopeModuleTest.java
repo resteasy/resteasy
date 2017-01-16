@@ -10,6 +10,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.guice.ModuleProcessor;
+import org.jboss.resteasy.plugins.guice.RequestScoped;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.AfterClass;
@@ -19,7 +20,10 @@ import org.junit.Test;
 
 import com.google.inject.Binder;
 import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.google.inject.Module;
+import com.google.inject.Provider;
 
 @org.junit.Ignore
 public class RequestScopeModuleTest
@@ -96,6 +100,19 @@ public class RequestScopeModuleTest
          Assert.assertNotNull(securityContext);
          return "ok";
       }
+   }
+   
+   /**
+    * Tests fix for RESTEASY-1428. Thanks to Antti Lampinen for this test.
+    */
+   @Test
+   public void testToString()
+   {
+      Key<Injector> key = Key.get(Injector.class);
+      Injector injector = Guice.createInjector(new RequestScopeModule());
+      Provider<Injector> unscoped = injector.getProvider(key);
+      Provider<Injector> scoped = injector.getScopeBindings().get(RequestScoped.class).scope(key, unscoped);
+      scoped.toString(); // Fails on this line without fix.
    }
 }
 

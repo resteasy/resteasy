@@ -147,6 +147,10 @@
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jsapi"/>
         </module-def>
 
+        <module-def name="org.jboss.resteasy.resteasy-json-p-provider">
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-json-p-provider"/>
+        </module-def>
+        	
         <module-def name="org.jboss.resteasy.resteasy-multipart-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-multipart-provider"/>
         </module-def>
@@ -168,9 +172,12 @@
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-yaml-provider"/>
         </module-def>
 
-        <zip destfile="${output.dir}/resteasy-jboss-modules-${project.version}.zip">
+        <!-- no need to create zip file as maven-assembly-plugin running after antrun plugin takes care of that -->
+        <!--
+        <zip destfile="${output.dir}/zz-resteasy-jboss-modules-${project.version}.zip">
             <zipfileset dir="${output.dir}/modules"/>
         </zip>
+        -->
 
     </target>
 
