@@ -55,6 +55,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.Principal;
 import java.security.PrivateKey;
@@ -1013,14 +1014,7 @@ public class OAuthAuthenticationServerValve extends FormAuthenticator implements
       accessCodeMap.put(code.getId(), code);
       LogMessages.LOGGER.debug(Messages.MESSAGES.signAccessCode());
       String accessCode = null;
-      try
-      {
-         accessCode = new JWSBuilder().content(code.getId().getBytes("UTF-8")).rsa256(realmPrivateKey);
-      }
-      catch (UnsupportedEncodingException e)
-      {
-         throw new RuntimeException(e);
-      }
+      accessCode = new JWSBuilder().content(code.getId().getBytes(StandardCharsets.UTF_8)).rsa256(realmPrivateKey);
       LogMessages.LOGGER.debug(Messages.MESSAGES.buildRedirect());
       UriBuilder redirectUri = UriBuilder.fromUri(redirect_uri).queryParam("code", accessCode);
       if (state != null) redirectUri.queryParam("state", state);

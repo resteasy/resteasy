@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,7 +75,7 @@ public final class ProviderHelper
 
       String charset = mediaType.getParameters().get("charset");
       if (charset != null) return new String(bytes, charset);
-      else return new String(bytes, "UTF-8");
+      else return new String(bytes, StandardCharsets.UTF_8);
    }
 
    /**

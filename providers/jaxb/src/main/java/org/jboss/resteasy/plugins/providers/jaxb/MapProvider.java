@@ -41,6 +41,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -142,7 +143,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
             SAXSource source = null;
             if (getCharset(mediaType) == null)
             {
-               source = new SAXSource(new InputSource(new InputStreamReader(entityStream, "UTF-8")));
+               source = new SAXSource(new InputSource(new InputStreamReader(entityStream, StandardCharsets.UTF_8)));
             }
             else
             {
@@ -157,7 +158,7 @@ public class MapProvider implements MessageBodyReader<Object>, MessageBodyWriter
             StreamSource source = null;
             if (getCharset(mediaType) == null)
             {
-               source = new StreamSource(new InputStreamReader(entityStream, "UTF-8"));
+               source = new StreamSource(new InputStreamReader(entityStream, StandardCharsets.UTF_8));
             }
             else
             {

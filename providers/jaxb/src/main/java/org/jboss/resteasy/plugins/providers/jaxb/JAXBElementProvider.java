@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 
 /**
  * <p>
@@ -90,7 +91,7 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
             SAXSource source = null;
             if (getCharset(mediaType) == null)
             {
-               source = new SAXSource(new InputSource(new InputStreamReader(entityStream, "UTF-8")));
+               source = new SAXSource(new InputSource(new InputStreamReader(entityStream, StandardCharsets.UTF_8)));
             }
             else
             {
@@ -103,8 +104,8 @@ public class JAXBElementProvider extends AbstractJAXBProvider<JAXBElement<?>>
             if (getCharset(mediaType) == null)
             {
                InputSource is = new InputSource(entityStream);
-               is.setEncoding("UTF-8");
-               StreamSource source = new StreamSource(new InputStreamReader(entityStream, "UTF-8"));
+               is.setEncoding(StandardCharsets.UTF_8.name());
+               StreamSource source = new StreamSource(new InputStreamReader(entityStream, StandardCharsets.UTF_8));
                source.setInputStream(entityStream);
                result = unmarshaller.unmarshal(source, (Class<?>) typeArg);
             }

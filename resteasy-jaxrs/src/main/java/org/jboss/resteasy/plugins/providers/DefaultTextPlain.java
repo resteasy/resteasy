@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -59,20 +60,13 @@ public class DefaultTextPlain implements MessageBodyReader, MessageBodyWriter
          {
             // Use default encoding.
          }
-      try
-      {
-         return o.toString().getBytes("UTF-8").length;
-      } catch (UnsupportedEncodingException e)
-      {
-         // Use default charset.
-         return o.toString().getBytes().length;
-      }
+      return o.toString().getBytes(StandardCharsets.UTF_8).length;
    }
 
    public void writeTo(Object o, Class type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
       String charset = mediaType.getParameters().get("charset");
-      if (charset == null) entityStream.write(o.toString().getBytes("UTF-8"));
+      if (charset == null) entityStream.write(o.toString().getBytes(StandardCharsets.UTF_8));
       else entityStream.write(o.toString().getBytes(charset));
    }
 }

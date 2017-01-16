@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -96,18 +97,12 @@ public class EncryptionUtils {
 		}
 	}
 
-	public static String mysqlPasswordHash(String string){
+	public static String mysqlPasswordHash(String string) {
 
 		try {
 			MessageDigest digest = MessageDigest.getInstance(HashAlgorithms.SHA1);
 
-			try {
-				digest.update(string.getBytes("UTF-8"));
-
-			} catch (UnsupportedEncodingException e) {
-
-				throw new RuntimeException(e);
-			}
+			digest.update(string.getBytes(StandardCharsets.UTF_8));
 
 			byte[] encodedPassword = digest.digest();
 

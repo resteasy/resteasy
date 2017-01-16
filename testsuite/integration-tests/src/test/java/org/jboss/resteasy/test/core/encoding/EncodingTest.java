@@ -28,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.nio.charset.CharacterCodingException;
+import java.nio.charset.StandardCharsets;
 
 
 /**
@@ -169,7 +170,7 @@ public class EncodingTest {
         connection.setRequestMethod("GET");
         connection.setRequestProperty("accept", "text/plain");
         InputStream is = connection.getInputStream();
-        Reader r = new InputStreamReader(is, "UTF-8");
+        Reader r = new InputStreamReader(is, StandardCharsets.UTF_8);
         StringBuffer buf = new StringBuffer();
         char[] chars = new char[1024];
         int charsRead;

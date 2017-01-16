@@ -81,7 +81,6 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
-            <version>${version.org.eclipse.jetty}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

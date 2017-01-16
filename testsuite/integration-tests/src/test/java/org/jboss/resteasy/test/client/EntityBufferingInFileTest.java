@@ -27,6 +27,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 
 import org.jboss.logging.Logger;
 import org.junit.runner.RunWith;
@@ -188,7 +189,7 @@ public class EntityBufferingInFileTest extends ClientTestBase{
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             InputStream in = response.readEntity(InputStream.class);
             StringWriter writer = new StringWriter();
-            IOUtils.copy(in, writer, "UTF-8");
+            IOUtils.copy(in, writer, StandardCharsets.UTF_8);
             String responseString = writer.toString();
             Assert.assertEquals(body, responseString);
             response.close();

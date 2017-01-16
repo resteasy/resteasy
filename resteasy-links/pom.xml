@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-client</artifactId>
+            <artifactId>resteasy-jaxrs</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -45,6 +45,12 @@
            <groupId>org.glassfish</groupId>
            <artifactId>javax.el</artifactId>
        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-client</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-netty4</artifactId>

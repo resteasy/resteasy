@@ -20,6 +20,8 @@ import org.junit.runner.RunWith;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 
+import java.nio.charset.StandardCharsets;
+
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -87,7 +89,7 @@ public class CharSetTest {
         CharSetCustomer cust = new CharSetCustomer();
         String name = "bill\u00E9";
         logger.info("client name: " + name);
-        logger.info("bytes string: " + new String(name.getBytes("UTF-8"), "UTF-8"));
+        logger.info("bytes string: " + new String(name.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
         cust.setName(name);
         Response response = target.request().accept("application/xml").post(Entity.entity(cust, MediaType.APPLICATION_XML_TYPE));
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());

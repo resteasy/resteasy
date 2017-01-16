@@ -87,6 +87,7 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -248,7 +249,7 @@ public class Serve implements ServletContext, Serializable
     */
    protected static final int DEF_MAX_CONN_USE = 100;
 
-   public static final String UTF8 = "UTF-8"; // default encoding
+   public static final String UTF8 = StandardCharsets.UTF_8.name(); // default encoding
 
    protected String hostName;
 
