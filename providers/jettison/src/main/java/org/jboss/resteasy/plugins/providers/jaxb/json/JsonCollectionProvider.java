@@ -6,6 +6,8 @@ import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBMarshalException;
 import org.jboss.resteasy.plugins.providers.jaxb.JAXBUnmarshalException;
 import org.jboss.resteasy.plugins.providers.jaxb.json.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+
 import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.Consumes;
@@ -50,6 +52,7 @@ public class JsonCollectionProvider extends CollectionProvider
    @SuppressWarnings("unchecked")
    public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
       Class baseType = Types.getCollectionBaseType(type, genericType);
       Reader reader = null;
       String charset = mediaType.getParameters().get("charset");
@@ -128,6 +131,7 @@ public class JsonCollectionProvider extends CollectionProvider
 
    public void writeTo(Object entry, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
       JAXBContextFinder finder = getFinder(mediaType);
       if (finder == null)
       {

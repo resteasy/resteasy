@@ -102,7 +102,8 @@ public class UndertowTest
    @Test
    public void testAddResourcePrefixPath() throws Exception 
    {
-      File staticFile = new File( "index.html" );
+      File staticFile = File.createTempFile("tmp", "index.html");
+      staticFile.deleteOnExit();
       BufferedWriter writer = new BufferedWriter( new FileWriter( staticFile ) );
       final String staticFileContent = "Hello static world!";
       writer.write( staticFileContent );

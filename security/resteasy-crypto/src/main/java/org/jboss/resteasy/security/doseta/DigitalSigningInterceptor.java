@@ -2,7 +2,7 @@ package org.jboss.resteasy.security.doseta;
 
 import org.jboss.resteasy.annotations.interception.DecoderPrecedence;
 import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.security.doseta.i18n.Messages;
+import org.jboss.resteasy.security.doseta.i18n.*;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.ClientExecutionContext;
 import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
@@ -136,6 +136,7 @@ public class DigitalSigningInterceptor implements WriterInterceptor, ClientExecu
    @Override
    public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Interceptor : %s,  Method : aroundWriteTo", getClass().getName());
       MultivaluedMap<String, Object> headers = context.getHeaders();
 
       List<DKIMSignature> list = getHeaders(headers);

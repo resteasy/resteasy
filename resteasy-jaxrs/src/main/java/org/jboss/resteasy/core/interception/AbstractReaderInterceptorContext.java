@@ -1,6 +1,6 @@
 package org.jboss.resteasy.core.interception;
 
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.NotSupportedException;
@@ -47,6 +47,7 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
    @Override
    public Object proceed() throws IOException
    {
+      LogMessages.LOGGER.debugf("Interceptor Context: %s,  Method : proceed", getClass().getName());
       if (interceptors == null || index >= interceptors.length)
       {
          MessageBodyReader reader = getReader();

@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.multipart;
 
+import java.util.HashMap;
 import org.jboss.resteasy.plugins.providers.multipart.i18n.Messages;
 import org.jboss.resteasy.util.Types;
 
@@ -17,7 +18,7 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +56,7 @@ public class MapMultipartFormDataReader implements MessageBodyReader<Map<?, ?>> 
 				mediaType, workers);
 		input.parse(entityStream);
 
-		Map<Object, Object> map = new HashMap<Object, Object>();
+		Map<Object, Object> map = new LinkedHashMap<Object, Object>();
 
 		for (Map.Entry<String, List<InputPart>> entry : input.getFormDataMap()
 				.entrySet())

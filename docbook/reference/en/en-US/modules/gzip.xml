@@ -1,16 +1,20 @@
 <chapter id="gzip">
    <title>GZIP Compression/Decompression</title>
    <para>
-    Resteasy has automatic GZIP decompression support.  If the client framework or a JAX-RS
-    service receives a message body with a Content-Encoding of "gzip", it
-    will automatically decompress it.  The client framework automatically
-    sets the Accept-Encoding header to be "gzip, deflate".  So you do not
+    Resteasy supports (though not by default - see below)
+    GZIP decompression.  If properly configured,
+    the client framework or a JAX-RS service, upon receiving
+    a message body with a Content-Encoding of "gzip",
+    will automatically decompress it.  The client framework can
+    (though not by default - see below) automatically
+    set the Accept-Encoding header to be "gzip, deflate" so you do not
     have to set this header yourself.
     </para>
-    <para>Resteasy also supports automatic
+    <para>Resteasy also supports (though not by default - see below) automatic
     compression.  If the client framework is sending a request
     or the server is sending a response with the Content-Encoding header
-    set to "gzip", Resteasy will do the compression. So that you do not
+    set to "gzip", Resteasy will (if properly configured)
+    do the compression. So that you do not
     have to set the Content-Encoding header directly, you can use the
     @org.jboss.resteasy.annotation.GZIP annotation.
    </para>
@@ -36,4 +40,95 @@ public class MyService {
    public String getData() {...}
 }
 </programlisting>
+
+<sect1 id="configuring">
+   <title>Configuring GZIP compression / decompression</title>
+   
+   <para><emphasis role="bold">Note.</emphasis> Decompression carries a risk of attack
+   from a bad actor that can package an entity that will expand greatly. Consequently,
+   Resteasy disables GZIP compression / decompression by default.
+   </para>
+   
+   <para>
+   There are three interceptors that are relevant to GZIP compression / decompression:
+   </para>
+   
+   <orderedlist>
+      <listitem>org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor:
+      If the Content-Encoding header is present and has the value "gzip",
+      <classname>GZIPDecodingInterceptor</classname> will install an <classname>InputStream</classname>
+      that decompresses the message body.
+      </listitem>
+      
+      <listitem>org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor:
+      If the Content-Encoding header is present and has the value "gzip",
+      <classname>GZIPEncodingInterceptor</classname> will install an <classname>OutputStream</classname>
+      that compresses the message body.
+      </listitem>
+      
+      <listitem>org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPFilter: 
+      If the Accept-Encoding header does not exist, <classname>AcceptEncodingGZIPFilter</classname>
+      will add Accept-Encoding with the value "gzip, deflate". If the Accept-Encoding header exists but
+      does not contain "gzip", <classname>AcceptEncodingGZIPFilter</classname> will append ", gzip".
+      Note that enabling GZIP compression / decompression does not depend on the presence of this
+      interceptor.
+      </listitem>
+   </orderedlist>
+   
+   <para>
+   If GZIP decompression is enabled, an upper limit is imposed on the number of bytes
+   <classname>GZIPDecodingInterceptor</classname> will extract from a compressed message body.
+   The default limit is 10,000,000, but a different value can be configured. See below.
+   </para>
+   
+   <sect2>
+   <title>Server side configuration</title>
+   
+   <para>
+   The interceptors may be enabled by including their classnames in a
+   javax.ws.rs.ext.Providers file on the classpath. The upper limit on deflated files may
+   be configured by setting the web application context parameter "resteasy.gzip.max.input".
+   If the limit is exceeded on the server side, GZIPDecodingInterceptor will return a 
+   <classname>Response</classname> with status 413 ("Request Entity Too Large") and
+   a message specifying the upper limit.
+   </para>
+
+   </sect2>
+   
+   <sect2>
+   <title>Client side configuration</title>
+   
+   <para>
+   The interceptors may be enabled by registering them with, for example, a
+   <classname>Client</classname> or <classname>WebTarget</classname>. For example,
+   </para>
+   
+<programlisting>
+Client client = new ResteasyClientBuilder() // Activate gzip compression on client:
+                    .register(AcceptEncodingGZIPFilter.class)
+                    .register(GZIPDecodingInterceptor.class)
+                    .register(GZIPEncodingInterceptor.class)
+                    .build();
+</programlisting>
+
+   <para>
+   The upper limit on deflated files may configured by creating an instance of
+   <classname>GZIPDecodingInterceptor</classname> with a specific value:
+   </para>
+   
+<programlisting>
+Client client = new ResteasyClientBuilder() // Activate gzip compression on client:
+                    .register(AcceptEncodingGZIPFilter.class)
+                    .register(new GZIPDecodingInterceptor(256))
+                    .register(GZIPEncodingInterceptor.class)
+                    .build();
+</programlisting>
+   <para>
+   If the limit is exceeded on the client side, GZIPDecodingInterceptor will throw a
+   <classname>ProcessingException</classname> with a message specifying the upper limit.
+   </para>
+   
+   </sect2>
+</sect1>
+   
 </chapter>

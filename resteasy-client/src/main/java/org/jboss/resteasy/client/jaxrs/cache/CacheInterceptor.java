@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -28,6 +29,7 @@ public class CacheInterceptor implements ClientRequestFilter, ClientResponseFilt
 
    public CacheInterceptor(BrowserCache cache)
    {
+      LogMessages.LOGGER.debugf("Interceptor : %s,  Method : CacheInterceptor", getClass().getName());
       this.cache = cache;
    }
 

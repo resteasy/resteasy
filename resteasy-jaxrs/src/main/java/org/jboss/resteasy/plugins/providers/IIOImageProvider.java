@@ -5,6 +5,7 @@ package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.annotations.providers.img.ImageWriterParams;
 import org.jboss.resteasy.util.FindAnnotation;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -71,7 +72,7 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
                             MultivaluedMap<String, String> httpHeaders,
                             InputStream entityStream) throws IOException
    {
-
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
       ImageReader reader = IIOImageProviderHelper.getImageReaderByMediaType(mediaType);
       try
       {
@@ -121,6 +122,7 @@ public class IIOImageProvider extends AbstractEntityProvider<IIOImage>
                        MultivaluedMap<String, Object> httpHeaders,
                        OutputStream entityStream) throws IOException
    {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
       ImageWriter writer = IIOImageProviderHelper.getImageWriterByMediaType(mediaType);
       ImageWriteParam param;
       if (mediaType.equals(MediaType.valueOf("image/jpeg")))

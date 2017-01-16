@@ -22,6 +22,7 @@ import org.jboss.resteasy.core.MediaTypeMap;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 /**
  * <p>
@@ -109,6 +110,7 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
         ResteasyConfiguration context = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
         if (context != null) {
             wrapInTryCatch = Boolean.parseBoolean(context.getParameter("resteasy.jsonp.silent"));
+            enabled = Boolean.parseBoolean(context.getParameter("resteasy.jsonp.enable"));
         }
     }
 
@@ -121,6 +123,11 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
      * The {@link Providers} used to retrieve the {@link #objectMapper} from. 
      */
     protected Providers providers;
+    
+    /**
+     * Is this interceptor enabled.
+     */
+    private boolean enabled = false;
 
     /**
      * This subclass of {@link CommitHeaderOutputStream} overrides the {@link #close()} method so it would commit
@@ -143,8 +150,10 @@ public class Jackson2JsonpInterceptor implements WriterInterceptor{
      */
     @Override
     public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException {
+        LogMessages.LOGGER.debugf("Interceptor : %s,  Method : aroundWriteTo", getClass().getName());
+
         String function = uri.getQueryParameters().getFirst(callbackQueryParameter);
-        if (function != null && !function.trim().isEmpty() && !jsonpCompatibleMediaTypes.getPossible(context.getMediaType()).isEmpty()){
+        if (enabled && function != null && !function.trim().isEmpty() && !jsonpCompatibleMediaTypes.getPossible(context.getMediaType()).isEmpty()){
 
             OutputStreamWriter writer = new OutputStreamWriter(context.getOutputStream());
 

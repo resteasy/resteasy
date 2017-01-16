@@ -1664,7 +1664,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          try
          {
-            addContextResolver(provider, true);
+            addContextResolver(provider, isBuiltin);
             int priority = getPriority(priorityOverride, contracts, ContextResolver.class, provider);
             newContracts.put(ContextResolver.class, priority);
          }

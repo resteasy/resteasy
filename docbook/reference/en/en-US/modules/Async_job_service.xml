@@ -42,6 +42,10 @@ POST http://example.com/asynch/jobs/122?wait=3000
    </para>
    <para> Security NOTE!  Resteasy role-based security (annotations) does not work with the Asynchronous Job Service.  You must use
    XML declarative security within your web.xml file. Why? It is impossible to implement role-based security portably.  In the future, we may have specific JBoss integration, but will not support other environments.</para>
+   <para>NOTE. A <classname>SecureRandom</classname> object is used to generate unique job ids. For security purposes, the
+   <classname>SecureRandom</classname> is periodically reseeded. By default, it is reseeded after 100 uses. This value
+   may be configured with the servlet init parameter "resteasy.secure.random.max.use".
+   </para>
    </sect1>
    <sect1 id="oneway">
       <title>Oneway: Fire and Forget</title>

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.plugins.providers;
 
 import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import org.jboss.resteasy.spi.ReaderException;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.WriterException;
@@ -46,6 +46,7 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
 
    public DocumentProvider(@Context ResteasyConfiguration config)
    {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : DocumentProvider", getClass().getName());
       this.documentBuilder = DocumentBuilderFactory.newInstance();
       this.transformerFactory = TransformerFactory.newInstance();
       try
@@ -88,6 +89,7 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
                             MultivaluedMap<String, String> headers, InputStream input)
            throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
       try
       {
          documentBuilder.setExpandEntityReferences(expandEntityReferences);
@@ -125,6 +127,7 @@ public class DocumentProvider extends AbstractEntityProvider<Document>
                        MultivaluedMap<String, Object> headers, OutputStream output)
            throws IOException, WebApplicationException
    {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
       try
       {
          DOMSource source = new DOMSource(document);

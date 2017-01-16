@@ -184,10 +184,10 @@ public class ValidationCoreTest {
         Assert.assertEquals(WRONG_ERROR_MSG, "size must be between 3 and 5", violation.getMessage());
         Assert.assertEquals(WRONG_ERROR_MSG, "z", violation.getValue());
         violation = r.getClassViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and t must have length > 5", violation.getMessage());
+        Assert.assertEquals(WRONG_ERROR_MSG, "Concatenation of s and t must have length &gt; 5", violation.getMessage());
         Assert.assertTrue(WRONG_ERROR_MSG, violation.getValue().startsWith("org.jboss.resteasy.test.validation.resource.ValidationCoreResourceWithAllViolationTypes@"));
         violation = r.getParameterViolations().iterator().next();
-        Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 3 <= length <= 5", violation.getMessage());
+        Assert.assertEquals(WRONG_ERROR_MSG, "s must have length: 3 &lt;= length &lt;= 5", violation.getMessage());
         Assert.assertEquals(WRONG_ERROR_MSG, "ValidationCoreFoo[p]", violation.getValue());
         response.close();
     }

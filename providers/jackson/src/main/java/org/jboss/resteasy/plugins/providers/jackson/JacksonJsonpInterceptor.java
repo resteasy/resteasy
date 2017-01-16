@@ -17,6 +17,7 @@ import javax.ws.rs.ext.WriterInterceptorContext;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 /**
  * <p>
@@ -100,6 +101,7 @@ public class JacksonJsonpInterceptor implements WriterInterceptor{
      */
     @Override
     public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException {
+        LogMessages.LOGGER.debugf("Interceptor : %s,  Method : aroundWriteTo", getClass().getName());
         String function = uri.getQueryParameters().getFirst(callbackQueryParameter);
         if (function != null && !function.trim().isEmpty() && !jsonpCompatibleMediaTypes.getPossible(context.getMediaType()).isEmpty()){
             OutputStreamWriter writer = new OutputStreamWriter(context.getOutputStream());

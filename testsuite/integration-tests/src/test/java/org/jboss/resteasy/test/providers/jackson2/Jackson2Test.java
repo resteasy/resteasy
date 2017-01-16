@@ -25,6 +25,9 @@ import org.junit.After;
 
 import org.junit.runner.RunWith;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -47,7 +50,9 @@ public class Jackson2Test {
 
     protected static final Logger logger = Logger.getLogger(Jackson2Test.class.getName());
     private static final String JETTISON_DEPLOYMENT = "jettison";
-
+    private static final String JSONP_ENABLED = "JSONP_enabled";
+    private static final String JSONP_DISABLED = "JSONP_disabled";
+    
     @Path("/products")
     public interface Jackson2Proxy {
         @GET
@@ -68,14 +73,39 @@ public class Jackson2Test {
 
     static ResteasyClient client;
 
+
     @Deployment(name = "default")
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(Jackson2Test.class.getSimpleName());
         war.addClass(Jackson2Test.class);
+        war.addAsResource(Jackson2Test.class.getPackage(), "javax.ws.rs.ext.Providers", "META-INF/services/javax.ws.rs.ext.Providers");
         return TestUtil.finishContainerPrepare(war, null, Jackson2Resource.class, Jackson2Product.class,
                 Jackson2XmlResource.class, Jackson2XmlProduct.class, Jackson2JAXBResource.class,
-                Jackson2XmlResourceWithJacksonAnnotation.class, Jackson2XmlResourceWithJAXB.class,
-                org.jboss.resteasy.plugins.providers.jackson.Jackson2JsonpInterceptor.class);
+                Jackson2XmlResourceWithJacksonAnnotation.class, Jackson2XmlResourceWithJAXB.class);
+    }
+    
+    @Deployment(name = "JSONPenabled")
+    public static Archive<?> deployJSONPenabled() {
+        WebArchive war = TestUtil.prepareArchive(JSONP_ENABLED);
+        war.addClass(Jackson2Test.class);
+        war.addAsResource(Jackson2Test.class.getPackage(), "javax.ws.rs.ext.Providers", "META-INF/services/javax.ws.rs.ext.Providers");
+        Map<String, String> contextParam = new HashMap<>();
+        contextParam.put("resteasy.jsonp.enable", "true");
+        return TestUtil.finishContainerPrepare(war, contextParam, Jackson2Resource.class, Jackson2Product.class,
+                Jackson2XmlResource.class, Jackson2XmlProduct.class, Jackson2JAXBResource.class,
+                Jackson2XmlResourceWithJacksonAnnotation.class, Jackson2XmlResourceWithJAXB.class);
+    }
+    
+    @Deployment(name = "JSONPdisabled")
+    public static Archive<?> deployJSONPdisabled() {
+        WebArchive war = TestUtil.prepareArchive(JSONP_DISABLED);
+        war.addClass(Jackson2Test.class);
+        war.addAsResource(Jackson2Test.class.getPackage(), "javax.ws.rs.ext.Providers", "META-INF/services/javax.ws.rs.ext.Providers");
+        Map<String, String> contextParam = new HashMap<>();
+        contextParam.put("resteasy.jsonp.enable", "false");
+        return TestUtil.finishContainerPrepare(war, contextParam, Jackson2Resource.class, Jackson2Product.class,
+                Jackson2XmlResource.class, Jackson2XmlProduct.class, Jackson2JAXBResource.class,
+                Jackson2XmlResourceWithJacksonAnnotation.class, Jackson2XmlResourceWithJAXB.class);
     }
 
     /**
@@ -137,18 +167,53 @@ public class Jackson2Test {
     /**
      * @tpTestDetails Client sends GET request for Json resource. The request url contains 'callback' keyword which should
      * trigger processing of the response in the format callbackvalue("key":"value")
-     * @tpPassCrit The resource returns json entities in correct format
+     * @tpPassCrit The resource returns json entities in correct format (with callback function wrapping)
      * @tpInfo This test fails, see RESTEASY-1168. This should be fixed in 3.0.12 release.
-     * @tpSince RESTEasy 3.0.16
+     * @tpSince RESTEasy 3.0.16 as testJacksonJsonp() (but Jackson2JsonpInterceptor didn't need to be enabled)
      */
     @Test
-    public void testJacksonJsonp() throws Exception {
+    public void testJacksonJsonpEnabled() throws Exception {
+        WebTarget target = client.target(PortProviderUtil.generateURL("/products/333?callback=foo", JSONP_ENABLED));
+        Response response = target.request().get();
+        String entity = response.readEntity(String.class);
+        logger.info(entity);
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assert.assertEquals("The response entity content doesn't match the expected", "foo({\"name\":\"Iphone\",\"id\":333})", entity);
+        response.close();
+    }
+    
+    /**
+     * @tpTestDetails Client sends GET request for Json resource. The request url contains 'callback' keyword which should
+     * trigger processing of the response in the format callbackvalue("key":"value"). However, Jackson2JsonpInterceptor is disabled.
+     * @tpPassCrit The resource returns json entities in correct format (without callback function wrapping)
+     * @tpSince RESTEasy 3.1.0.Final
+     */
+    @Test
+    public void testJacksonJsonpDisabled() throws Exception {
+        WebTarget target = client.target(PortProviderUtil.generateURL("/products/333?callback=foo", JSONP_DISABLED));
+        Response response = target.request().get();
+        String entity = response.readEntity(String.class);
+        logger.info(entity);
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assert.assertEquals("Jackson2JsonpInterceptor should be disabled", "{\"name\":\"Iphone\",\"id\":333}", entity);
+        response.close();
+    }
+    
+    /**
+     * @tpTestDetails Client sends GET request for Json resource. The request url contains 'callback' keyword which should
+     * trigger processing of the response in the format callbackvalue("key":"value")
+     * @tpPassCrit The resource returns json entities in correct format (without callback function wrapping)
+     * @tpInfo This test fails, see RESTEASY-1168. This should be fixed in 3.0.12 release.
+     * @tpSince RESTEasy 3.0.16 (as testJacksonJsonp() but Jackson2JsonpInterceptor would have been enabled)
+     */
+    @Test
+    public void testJacksonJsonpDefault() throws Exception {
         WebTarget target = client.target(generateURL("/products/333?callback=foo"));
         Response response = target.request().get();
         String entity = response.readEntity(String.class);
         logger.info(entity);
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-1168"), "foo({\"name\":\"Iphone\",\"id\":333})", entity);
+        Assert.assertEquals("Jackson2JsonpInterceptor should be disabled", "{\"name\":\"Iphone\",\"id\":333}", entity);
         response.close();
     }
 

@@ -17,11 +17,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Locale;
 
 @Path("/")
 public class GzipResource {
@@ -103,5 +105,20 @@ public class GzipResource {
         Assert.assertEquals("second", pair.getP2());
 
         return Response.ok().build();
+    }
+    
+    @POST
+    @Path("big/send")
+    public Response sendBig(byte[] b)
+    {
+       return Response.ok().build();
+    }
+    
+    @POST
+    @Path("big/receive")
+    public Response receiveBig(int n)
+    {
+       Variant variant = new Variant(MediaType.APPLICATION_OCTET_STREAM_TYPE, Locale.ENGLISH, "gzip");
+       return Response.ok(new byte[n]).variant(variant).header("xyz", "abc").build();
     }
 }

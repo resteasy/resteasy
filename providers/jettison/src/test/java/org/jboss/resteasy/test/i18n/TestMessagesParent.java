@@ -1,11 +1,11 @@
 package org.jboss.resteasy.test.i18n;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.Properties;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 
 /**
  * 

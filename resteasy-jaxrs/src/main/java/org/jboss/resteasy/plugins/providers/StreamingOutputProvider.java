@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -29,6 +30,7 @@ public class StreamingOutputProvider implements MessageBodyWriter<StreamingOutpu
 
    public void writeTo(StreamingOutput streamingOutput, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException
    {
+      LogMessages.LOGGER.debugf("Provider : %s,  Method : writeTo", getClass().getName());
       streamingOutput.write(entityStream);
    }
 }

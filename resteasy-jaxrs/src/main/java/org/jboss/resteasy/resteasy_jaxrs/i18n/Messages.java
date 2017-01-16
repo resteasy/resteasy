@@ -26,6 +26,37 @@ public interface Messages
 {
    Messages MESSAGES = org.jboss.logging.Messages.getBundle(Messages.class);
    int BASE = 3000;
+   int BASE_ASYNC = 9500;
+   
+   @Message(id = BASE_ASYNC + 0, value = "-- already canceled")
+   String alreadyCanceled();
+   
+   @Message(id = BASE_ASYNC + 5, value = "-- already done")
+   String alreadyDone();
+   
+   @Message(id = BASE_ASYNC + 10, value = "Already suspended")
+   String alreadySuspended();
+   
+   @Message(id = BASE_ASYNC + 15, value = "cancel()")
+   String cancel();
+   
+   @Message(id = BASE_ASYNC + 20, value = "-- cancelling with 503")
+   String cancellingWith503();
+   
+   @Message(id = BASE_ASYNC + 25, value = "onComplete")
+   String onComplete();
+   
+   @Message(id = BASE_ASYNC + 30, value = "onTimeout")
+   String onTimeout();
+   
+   @Message(id = BASE_ASYNC + 35, value = "Request not suspended")
+   String requestNotSuspended();
+   
+   @Message(id = BASE_ASYNC + 40, value = "scheduled timeout")
+   String scheduledTimeout();
+   
+   @Message(id = BASE_ASYNC + 45, value = "scheduling timeout")
+   String schedulingTimeout();
    
    @Message(id = BASE + 00, value = "SelfExpandingBufferredInputStream is always marked at index 0.")
    String alwaysMarkedAtIndex0();
@@ -243,6 +274,9 @@ public interface Messages
    @Message(id = BASE + 355, value = "A GET request cannot have a body.")
    String getRequestCannotHaveBody();
 
+   @Message(id = BASE + 357, value = "GZIP input exceeds max size: %s")
+   String gzipExceedsMaxSize(int size);
+   
    @Message(id = BASE + 360, value = "%s has no String constructor")
    String hasNoStringConstructor(String className);
    
