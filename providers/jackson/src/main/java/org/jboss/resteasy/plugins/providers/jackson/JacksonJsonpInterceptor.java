@@ -34,9 +34,11 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
  *
  * @author <a href="mailto:holger.morch@nokia.com">Holger Morch</a>
  * @version $Revision: 1 $
+ * @deprecated Use resteasy-jackson2-provider
  */
 @Provider
 @ConstrainedTo(RuntimeType.SERVER)
+@Deprecated
 public class JacksonJsonpInterceptor implements WriterInterceptor{
 
     /**

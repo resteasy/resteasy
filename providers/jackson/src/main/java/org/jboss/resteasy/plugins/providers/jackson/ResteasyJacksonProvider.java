@@ -17,10 +17,12 @@ import java.lang.reflect.Type;
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * @deprecated Use resteasy-jackson2-provider
  */
 @Provider
 @Consumes({"application/*+json", "text/json"})
 @Produces({"application/*+json", "text/json"})
+@Deprecated
 public class ResteasyJacksonProvider extends JacksonJsonProvider
 {
     public ResteasyJacksonProvider() {
