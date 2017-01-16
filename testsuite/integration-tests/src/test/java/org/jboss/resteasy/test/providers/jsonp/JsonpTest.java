@@ -23,6 +23,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 
 /**
  * @tpSubChapter Json-p provider
@@ -68,8 +69,17 @@ public class JsonpTest {
      */
     @Test
     public void testObject() throws Exception {
+       doTestObject("UTF-8");
+       doTestObject("UTF-16");
+       doTestObject("UTF-32");
+       doTestObject(null);
+    }
+    
+    private void doTestObject(String charset) throws Exception {
         WebTarget target = client.target(generateURL("/test/json/object"));
-        String json = target.request().post(Entity.json("{ \"name\" : \"Bill\" }"), String.class);
+        MediaType mediaType = MediaType.APPLICATION_JSON_TYPE.withCharset(charset);
+        Entity<String> entity = Entity.entity("{ \"name\" : \"Bill\" }", mediaType);
+        String json = target.request().post(entity, String.class);
         logger.info("Request entity: " + json);
 
         JsonObject obj = Json.createObjectBuilder().add("name", "Bill").build();
@@ -88,8 +98,17 @@ public class JsonpTest {
      */
     @Test
     public void testArray() throws Exception {
+       doTestArray("UTF-8");
+       doTestArray("UTF-16");
+       doTestArray("UTF-32");
+       doTestArray(null);
+    }
+    
+    private void doTestArray(String charset) {
         WebTarget target = client.target(generateURL("/test/json/array"));
-        String json = target.request().post(Entity.json("[{ \"name\" : \"Bill\" },{ \"name\" : \"Monica\" }]"), String.class);
+        MediaType mediaType = MediaType.APPLICATION_JSON_TYPE.withCharset(charset);
+        Entity<String> entity = Entity.entity("[{ \"name\" : \"Bill\" },{ \"name\" : \"Monica\" }]", mediaType);
+        String json = target.request().post(entity, String.class);//        String json = target.request().post(Entity.json("[{ \"name\" : \"Bill\" },{ \"name\" : \"Monica\" }]"), String.class);
         logger.info("Request entity: " + json);
 
         JsonArray array = Json.createArrayBuilder().add(Json.createObjectBuilder().add("name", "Bill").build())
@@ -116,8 +135,17 @@ public class JsonpTest {
      */
     @Test
     public void testStructure() throws Exception {
+       doTestStructure("UTF-8");
+       doTestStructure("UTF-16");
+       doTestStructure("UTF-32");
+       doTestStructure(null);
+    }
+    
+    private void doTestStructure(String charset) {
         WebTarget target = client.target(generateURL("/test/json/structure"));
-        String json = target.request().post(Entity.json("{ \"name\" : \"Bill\" }"), String.class);
+        MediaType mediaType = MediaType.APPLICATION_JSON_TYPE.withCharset(charset);
+        Entity<String> entity = Entity.entity("{ \"name\" : \"Bill\" }", mediaType);
+        String json = target.request().post(entity, String.class);
         logger.info("Request entity: " + json);
 
         JsonStructure str = (JsonStructure) Json.createObjectBuilder().add("name", "Bill").build();
