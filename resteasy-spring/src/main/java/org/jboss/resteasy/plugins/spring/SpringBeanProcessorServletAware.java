@@ -28,7 +28,11 @@ public class SpringBeanProcessorServletAware extends SpringBeanProcessor impleme
    public Registry getRegistry()
    {
       if (registry != null) return registry;
-      registry = (Registry) servletContext.getAttribute(Registry.class.getName());
+      ResteasyDeployment deployment = (ResteasyDeployment) servletContext.getAttribute(ResteasyDeployment.class.getName());
+      if (deployment != null)
+      {
+         registry = deployment.getRegistry();
+      }
       return registry;
    }
 
