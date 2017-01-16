@@ -1,0 +1,205 @@
+<chapter id="doc">
+    <title>Documentation Support</title>
+    <para>There's a great javadoc engine that allows you to generate javadocs for JAX-RS and JAXB called <ulink
+            url="http://www.lunatech-labs.com/open-source/jax-doclets">JAX-Doclet</ulink>. Follow the link for more
+        details.
+    </para>
+</chapter>
+
+<chapter id="Migration_to_3_1">
+<title>Migration to Resteasy 3.1</title>
+
+    <para>
+    In a minor release like 3.1.0.Final, as opposed to a point release like 3.0.19.Final, the scope of 
+    permissible changes is broadened. User discernible changes in Resteasy 3.1.0.Final include
+    </para>
+    
+    <itemizedlist>
+      <listitem>module reorganization</listitem>
+      <listitem>package reorganization</listitem>
+      <listitem>new features</listitem>
+      <listitem>minor behavioral changes</listitem>
+      <listitem>miscellaneous changes</listitem>
+    </itemizedlist>
+    
+    <para>
+    In this chapter we focus on changes that might cause existing code to fail or behave in new ways.
+    The audience for this discussion may be partitioned into three subsets, depending on the version
+    of Resteasy currently in use, the API currently in use, and the API to be used after an upgrade
+    to Resteasy 3.1. The following APIs are available:
+    </para>
+    
+    <orderedlist>
+      <listitem>
+      <para><emphasis role="bold">Resteasy 2</emphasis>: Resteasy 2 conforms to the JAX-RS 1 specification, and adds a
+      variety of additional facilities, such as a client API, a caching system, an interceptor framework, etc. 
+      All of these user facing classes and interfaces comprise the Resteasy 2 API.</para>
+      </listitem>
+      <listitem>
+      <para><emphasis role="bold">Resteasy 3</emphasis>: Resteasy 3 conforms to the JAX-RS 2 specification, and adds some additional
+      facilities. Many of the non-spec facilities from the Resteasy 2 API are formalized, in altered form,
+      in JAX-RS 2, in which case the older facilites are deprecated. The non-deprecated user facing classes and interfaces in
+      Resteasy 3 comprise the Resteasy 3 API.</para>
+      </listitem>
+    </orderedlist>
+    
+    <para>
+    These definitions are rather informal and imprecise, since the user facing classes / interfaces in Resteasy
+    3.0.19.Final, for example, are a proper superset of the user facing classes / interfaces in Resteasy 3.0.1.Final.
+    For this discussion, we identify the API with the version currently in use in a given project.
+    </para>
+    
+    <para>
+    Now, there are three potential target audiences of users planning to upgrade to Resteasy 3.1.0.Final:
+    </para>
+    
+    <orderedlist>
+      <listitem>
+      <para>Those currently using Resteasy API 3 with some Resteasy 3.0.x release</para>
+      </listitem>
+      <listitem>
+      <para>Those currently using Resteasy API 2 with some Resteasy 2.x or 3.0.x release and planning
+      to upgrade to Resteasy API 3</para>
+      </listitem>
+      <listitem>
+      <para>Those currently using Resteasy API 2 with some Resteasy 2.x or 3.0.x release and planning
+      to continue to use Resteasy API 2</para>
+      </listitem>
+    </orderedlist>
+    
+    <para>
+    Of these, users in Group 2 have the most work to do in upgrading from Resteasy API 2 to Resteasy API 3.
+    They should consult the separate guide
+    <ulink url="http://docs.jboss.org/resteasy/docs/resteasy-upgrade-guide-en-US.pdf">Upgrading from Resteasy 2 to Resteasy 3</ulink>.
+    </para>
+
+    <para>
+    Ideally, users in Groups 1 and 3 might make some changes to take advantage of new features but would have
+    no changes forced on them by reorganization or altered behavior. Indeed, that is almost the case, but there
+    are a few changes that they should be aware of.
+    </para>
+    
+    <sect1>
+    <title>Upgrading with Resteasy 3 API</title>
+    
+    <para>
+    All Resteasy changes are documented in JIRA issues. Issues that describe detectable changes in
+    release 3.1.0.Final that might impact existing applications include
+    </para>
+    
+    <itemizedlist>
+      <listitem>
+      <ulink url="https://issues.jboss.org/browse/RESTEASY-1341">RESTEASY-1341: Build method of org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder always return the same instance.</ulink>
+      <para>
+      When a <methodname>build()</methodname> method from
+      </para>
+      <itemizedlist>
+         <listitem><classname>org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder</classname> in resteasy-client,</listitem>
+         <listitem><classname>org.jboss.resteasy.specimpl.LinkBuilderImpl</classname> in resteasy-jaxrs,</listitem>
+         <listitem><classname>org.jboss.resteasy.specimpl.ResteasyUriBuilder</classname> in resteasy-jaxrs</listitem>
+      </itemizedlist>
+      <para>
+      is called, it will return a new object. This behavior might be seen indirectly. For example,
+      </para>
+      <programlisting>
+Builder builder = client.target(generateURL(path)).request();
+...
+Link link = new LinkBuilderImpl().uri(href).build();
+...
+URI uri = uriInfo.getBaseUriBuilder().path("test").build();
+      </programlisting>
+      </listitem>
+      
+      <listitem>
+      <ulink url="https://issues.jboss.org/browse/RESTEASY-1433">RESTEASY-1433: Compile with JDK 1.8 source/target version</ulink>
+      <para>
+      As it says. Depending on the application, it might be necessary to recompile with a target of JDK 1.8 so that calls to Resteasy code
+      can work.
+      </para>
+      </listitem>
+      
+      <listitem>
+      <ulink url="https://issues.jboss.org/browse/RESTEASY-1484">RESTEASY-1484: CVE-2016-6346: Abuse of GZIPInterceptor in can lead to denial of service attack</ulink>
+      <para>
+      Prior to release 3.1.0.Final, the default behavior of Resteasy was to use GZIP to compress and decompress messages
+      whenever "gzip" appeared in the Content-Encoding header.
+      However, decompressing messages can lead to security issues, so, as of release 3.1.0.Final, GZIP compression has to
+      be enabled explicitly. For details, see Chapter <link linkend='gzip'>GZIP Compression/Decompression</link>.
+      </para>
+      <para><emphasis role="bold">Note.</emphasis> Because of some package reorganization due to RESTEASY-1531 (see below),
+      the GZIP interceptors, which used to be in package <classname>org.jboss.resteasy.plugins.interceptors.encoding</classname> are
+      now in <classname>org.jboss.resteasy.plugins.interceptors</classname>.</para>
+      </listitem>
+      
+      <listitem>
+      <ulink url="https://issues.jboss.org/browse/RESTEASY-1531">RESTEASY-1531: Restore removed Resteasy internal classes into a deprecated/disabled module</ulink>
+      <para>
+      This issue is related to refactoring deprecated elements of the Resteasy 2 API into a separate module, and, ideally,
+      would have no bearing at all on Resteasy 3. However, a reorganization of packages has led to moving some
+      non-deprecated API elements in the resteasy-jaxrs module:
+      </para>
+      
+      <itemizedlist>
+        <listitem>
+          <literallayout><classname>org.jboss.resteasy.client.ClientURI</classname> is now
+          <classname>org.jboss.resteasy.annotations.ClientURI</classname></literallayout>
+        </listitem>
+        <listitem>
+          <literallayout><classname>org.jboss.resteasy.core.interception.JaxrsInterceptorRegistryListener</classname> is now
+<classname>org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistryListener</classname></literallayout>
+        </listitem> 
+	    <listitem>
+	      <literallayout><classname>org.jboss.resteasy.spi.interception.DecoratorProcessor</classname> is now
+<classname>org.jboss.resteasy.spi.DecoratorProcessor</classname></literallayout>
+	    </listitem>
+        <listitem>
+          <literallayout>All of the dynamic features and interceptors in the package
+<classname>org.jboss.resteasy.plugins.interceptors.encoding</classname> are now in
+<classname>org.jboss.resteasy.plugins.interceptors</classname></literallayout>
+        </listitem>
+	  </itemizedlist>
+	  </listitem>
+    </itemizedlist>
+</sect1>
+
+<sect1>
+    <title>Upgrading with Resteasy 2 API</title>
+    
+    <para>
+    Most of the deprecated classes and interfaces
+    from Resteasy 2 have been segregated in a separate module, resteasy-legacy, as of release 3.1.0.Final.
+    A few remain in module resteasy-jaxrs for technical reasons. Eventually, all such classes and interfaces will be
+    removed from Resteasy. Most of the relocated elements are internal, so ensuring that resteasy-legacy is on the
+    classpath will make most changes undetectable. One way to do that, of course, is to include it in an application's
+    WAR. In the context of WildFly, it is also possible to use a jboss-deployment-structure.xml file in the 
+    WEB-INF directory of your WAR file. For example:
+    </para>
+    
+        <programlisting><![CDATA[
+<jboss-deployment-structure>
+    <deployment>
+        <dependencies>
+            <module name="org.jboss.resteasy.resteasy-legacy"/>
+        </dependencies>
+    </deployment>
+</jboss-deployment-structure>]]></programlisting>
+
+    <para>
+    There are a few API classes and interfaces from resteasy-jaxrs that have moved to a new package
+    in resteasy-legacy. These are
+    </para>
+    
+    <itemizedlist>
+      <listitem><literallayout><classname>org.jboss.resteasy.annotations.ClientResponseType</classname> is now
+<classname>org.jboss.resteasy.annotations.legacy.ClientResponseType</classname></literallayout>
+      </listitem>
+      <listitem><literallayout><classname>org.jboss.resteasy.spi.Link</classname> is now
+	    <classname>org.jboss.resteasy.client.Link</classname></literallayout>
+      </listitem>
+      <listitem><literallayout><classname>org.jboss.resteasy.spi.LinkHeader</classname> is now
+	    <classname>org.jboss.resteasy.client.LinkHeader</classname></literallayout>
+      </listitem>
+    </itemizedlist>
+</sect1>
+
+</chapter>

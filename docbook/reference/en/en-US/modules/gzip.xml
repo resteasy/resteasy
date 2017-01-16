@@ -92,6 +92,18 @@ public class MyService {
    <classname>Response</classname> with status 413 ("Request Entity Too Large") and
    a message specifying the upper limit.
    </para>
+   
+   <para>
+   <emphasis role="bold">Note.</emphasis>
+   As of release 3.1.0.Final, the GZIP interceptors have moved from package 
+   <classname>org.jboss.resteasy.plugins.interceptors.encoding</classname> to
+   <classname>org.jboss.resteasy.plugins.interceptors</classname>. and they should be
+   named accordingly in javax.ws.rs.ext.Providers. However, they continue to exist in
+   <classname>org.jboss.resteasy.plugins.interceptors.encoding</classname> in module
+   resteasy-legacy, so, if resteasy-legacy is available, the original names can be used.
+   See Chapter <link linkend='Migration_to_3_1'>Migration to Resteasy 3.1</link> for more
+   information.
+   </para>
 
    </sect2>
    

@@ -3,15 +3,15 @@
 
     <para>
         Resteasy is installed and configured in different ways depending on which environment you are running in.
-        If you are running in Wildfly, Resteasy is already bundled and integrated completely
+        If you are running in WildFly, Resteasy is already bundled and integrated completely
         so there is very little you have to do. If you are running in a different environment, there is some manual
         installation and configuration you will have to do.
     </para>
 
     <section id="resteasy_modules_in_wildfly">
-        <title>Resteasy modules in Wildfly</title>
+        <title>Resteasy modules in WildFly</title>
         <para>
-            In Wildfly, Resteasy and the JAX-RS 2.0 API are automatically loaded into your deployment's classpath
+            In WildFly, Resteasy and the JAX-RS 2.0 API are automatically loaded into your deployment's classpath
             if and only if you are deploying a JAX-RS application (as determined by the presence
             of JAX-RS annotations). However, only some Resteasy features are automatically loaded. See Table 3.1. 
             If you need any of those libraries which are not loaded automatically, you'll have bring them in
@@ -29,7 +29,7 @@
             in a META-INF/services/javax.ws.rs.ext.Providers file. 
         </para>
         <para>
-            The following table specifies which of the Resteasy modules currently shipped with Wildfly are loaded by default
+            The following table specifies which of the Resteasy modules currently shipped with WildFly are loaded by default
             when JAX-RS services are deployed and which aren't.
         </para>
         <para>
@@ -235,29 +235,29 @@
         <section id="other_resteasy_modules">
         <title>Other Resteasy modules</title>
             <para>
-                Not all Resteasy modules are bundled with Wildfly. For example,
+                Not all Resteasy modules are bundled with WildFly. For example,
                 resteasy-fastinfoset-provider and resteasy-wadl are not included among the
                 modules listed in <xref linkend="resteasy_modules_in_wildfly"/>. If you want
                 to use them in your application, you can include them in your WAR as you would if you were
-                deploying outside of Wildfly. See <xref linkend="standalone_resteasy"/> for more information.
+                deploying outside of WildFly. See <xref linkend="standalone_resteasy"/> for more information.
         </para>
         </section>
 	    <section id="upgrading-wildfly">
-	        <title>Upgrading Resteasy within Wildfly</title>
+	        <title>Upgrading Resteasy within WildFly</title>
 	        <para>
-	            Resteasy is bundled with Wildfly, but you may want to upgrade Resteasy in Wildfly to the latest version.  The Resteasy
+	            Resteasy is bundled with WildFly, but you may want to upgrade Resteasy in WildFly to the latest version.  The Resteasy
 	            distribution comes with a zip file called resteasy-jboss-modules-&lt;version&gt;.zip.  Unzip this file
-	            within the modules/system/layers/base/ directory of the Wildfly distribution.  This will configure Wildfly
+	            within the modules/system/layers/base/ directory of the WildFly distribution.  This will configure WildFly
 	            to use new versions of the modules listed in <xref linkend="resteasy_modules_in_wildfly"/>.
 	        </para>
 	    </section>
     </section>
         
     <section>
-        <title>Deploying a Resteasy application to Wildfly</title>
+        <title>Deploying a Resteasy application to WildFly</title>
         <para>
-            Resteasy is bundled with Wildfly and completely integrated as per the requirements of Java EE 6.
-            You can use it with EJB and CDI and you can rely completely on Wildfly to scan for and deploy your JAX-RS services and providers.
+            Resteasy is bundled with WildFly and completely integrated as per the requirements of Java EE 7.
+            You can use it with EJB and CDI and you can rely completely on WildFly to scan for and deploy your JAX-RS services and providers.
             All you have to provide is your JAX-RS service and provider classes packaged
             within a WAR either as POJOs, CDI beans, or EJBs.
             The simplest way to configure an application is by simply providing an empty web.xml file.
@@ -294,18 +294,18 @@ public class MyApplication extends Application
 
         <para>
             <emphasis role="bold">Note.</emphasis> As mentioned in <xref linkend="other_resteasy_modules"/>,
-            not all Resteasy modules are bundled with Wildfly. For example,
+            not all Resteasy modules are bundled with WildFly. For example,
             resteasy-fastinfoset-provider and resteasy-wadl are not included among the
             modules listed in <xref linkend="resteasy_modules_in_wildfly"/>. If you want
             to use them in your application, you can include them in your WAR as you would if you were
-            deploying outside of Wildfly. See <xref linkend="standalone_resteasy"/> for more information.
+            deploying outside of WildFly. See <xref linkend="standalone_resteasy"/> for more information.
         </para>
 
 </section>
     <section id="standalone_resteasy">
         <title>Deploying to other servlet containers</title>
         <para>
-            If you are using Resteasy outside of Wildfly, in a standalone servlet container like Tomcat or Jetty, for example,
+            If you are using Resteasy outside of WildFly, in a standalone servlet container like Tomcat or Jetty, for example,
             you will need to include the appropriate Resteasy jars in your WAR file.  You will need the core classes
             in the resteasy-jaxrs module, and you may need additional facilities like the resteasy-jaxb-provider module.
             We strongly suggest that you use Maven to build your WAR files as Resteasy is split into
@@ -667,6 +667,18 @@ public class MyApplication extends Application
                             </entry>
                             <entry>
                                 The number of times a SecureRandom can be used before reseeding.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                resteasy.buffer.exception.entity
+                            </entry>
+                            <entry>
+                                true
+                            </entry>
+                            <entry>
+                                Upon receiving an exception, the client side buffers any response
+                                entity before closing the connection.
                             </entry>
                         </row>
                     </tbody>

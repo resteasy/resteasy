@@ -6,7 +6,7 @@
     <section>
         <title>Undertow</title>
         <para>
-            Undertow is a new Servlet Container that is used by Wildfly (JBoss Community Server).  You can embed
+            Undertow is a new Servlet Container that is used by WildFly (JBoss Community Server).  You can embed
             Undertow as you wish.  Here's a a test that shows it in action.
 <programlisting><![CDATA[
 import io.undertow.servlet.api.DeploymentInfo;
@@ -149,7 +149,7 @@ public class UndertowTest
         <title>TJWS Embeddable Servlet Container</title>
 <para>
 
-RESTeasy integrates with the TJWS Embeddable Servlet container.  It comes with this distribution, or you can reference the Maven artifact.  You must also provide
+RESTEasy integrates with the TJWS Embeddable Servlet container.  It comes with this distribution, or you can reference the Maven artifact.  You must also provide
     a servlet API dependency as well.
 </para>
 

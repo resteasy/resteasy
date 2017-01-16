@@ -1,11 +1,3 @@
-<chapter id="doc">
-    <title>Documentation Support</title>
-    <para>There's a great javadoc engine that allows you to generate javadocs for JAX-RS and JAXB called<ulink
-            url="http://www.lunatech-labs.com/open-source/jax-doclets">JAX-Doclet</ulink>. Follow the link for more
-        details.
-    </para>
-</chapter>
-
 <chapter id="Migration_from_older_versions">
 <title>Migration from older versions</title>
 <sect1>
@@ -19,6 +11,97 @@
         from various deprecated facilities in Resteasy 2, see
         <ulink url="http://docs.jboss.org/resteasy/docs/resteasy-upgrade-guide-en-US.pdf">http://docs.jboss.org/resteasy/docs/resteasy-upgrade-guide-en-US.pdf</ulink>
     </para>
+</sect1>
+<sect1>
+    <title>Migrating to 3.0.17</title>
+    <itemizedlist>
+        <listitem>
+        Module resteasy-spring is now included in the Resteasy distribution zip file. For more information see 
+        <ulink url="https://issues.jboss.org/browse/RESTEASY-1354">https://issues.jboss.org/browse/RESTEASY-1354</ulink>.
+        </listitem>
+        <listitem>
+        Resteasy client proxies now support an <methodname>as()</methodname> method for casting to subinterfaces.
+        For more information see 
+        <ulink url="https://issues.jboss.org/browse/RESTEASY-1332">https://issues.jboss.org/browse/RESTEASY-1332</ulink>.
+        </listitem>
+        <listitem>
+        <classname>org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer</classname> in module resteasy-netty4
+        can now be configured to close idle connections.  For more information see 
+        <ulink url="https://issues.jboss.org/browse/RESTEASY-1325">https://issues.jboss.org/browse/RESTEASY-1325</ulink>.
+        </listitem>
+        <listitem>
+        Resteasy Spring integration now includes a Spring Boot Starter. For more information see
+        <ulink url="https://issues.jboss.org/browse/RESTEASY-1305">https://issues.jboss.org/browse/RESTEASY-1305</ulink>.
+        </listitem>
+        <listitem>
+        resteasy-wadl now supports subresource locators. For more information see
+        <ulink url="https://issues.jboss.org/browse/RESTEASY-1297">https://issues.jboss.org/browse/RESTEASY-1297</ulink>.
+        </listitem>
+        <listitem>
+        Resteasy has a new builtin producer that implements <classname>MessageBodyWriter&lt;Number&gt;</classname>. For more information see
+        <ulink url="https://issues.jboss.org/browse/RESTEASY-1282">https://issues.jboss.org/browse/RESTEASY-1282</ulink>.
+        </listitem>
+        <listitem>
+        Links can be added manually to <classname>org.jboss.resteasy.Links.RESTServiceDiscovery</classname> in resteasy-links module.
+        See <ulink url="https://issues.jboss.org/browse/RESTEASY-833">https://issues.jboss.org/browse/RESTEASY-833</ulink> for more information. 
+        </listitem>
+    </itemizedlist>
+</sect1>
+<sect1>
+    <title>Migrating from 3.0.13 to 3.0.14</title>
+    <itemizedlist>
+        <listitem>
+        Resteasy introduces a <classname>@QueryParam</classname> annotation which allows capturing the name of
+        a query parameter. See <ulink url="https://issues.jboss.org/browse/RESTEASY-715">https://issues.jboss.org/browse/RESTEASY-715</ulink>
+        for more information.
+        </listitem>
+        <listitem>Resteasy now supports WADL. See <xref linkend="WADL"/> for more information. Also see
+        <ulink url="https://issues.jboss.org/browse/RESTEASY-166">https://issues.jboss.org/browse/RESTEASY-166</ulink>. 
+        </listitem>
+    </itemizedlist>
+</sect1>
+<sect1>
+    <title>Migrating from 3.0.12 to 3.0.13</title>
+    <itemizedlist>
+        <listitem>Resteasy 3 log messages and exceptions are now internationalized. See
+<xref linkend="I18N"/> for more information. Also see 
+<ulink url="https://issues.jboss.org/browse/RESTEASY-1224">https://issues.jboss.org/browse/RESTEASY-1224</ulink>. 
+        </listitem>
+        <listitem><literallayout><classname>org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder</classname> has a new method,
+<methodname>asyncExecutor(ExecutorService asyncExecutor, boolean cleanupExecutor)</methodname>, with a new
+second parameter which tells the <classname>Client</classname> to shut down the Executor upon closing. See
+<ulink url="https://issues.jboss.org/browse/RESTEASY-1181">https://issues.jboss.org/browse/RESTEASY-1181</ulink> for more information. 
+</literallayout>
+        </listitem>
+    </itemizedlist>
+</sect1>
+<sect1>
+    <title>Migrating to 3.0.12</title>
+    <itemizedlist>
+        <listitem>
+<methodname>org.jboss.resteasy.client.jaxrs.ResteasyClient.property()</methodname> will now
+remove a property when the value is set to null. See
+<ulink url="https://issues.jboss.org/browse/RESTEASY-1184">https://issues.jboss.org/browse/RESTEASY-1184</ulink> for more information.
+</listitem>
+        <listitem>
+<literallayout><classname>org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer</classname> in module resteasy-netty4
+has a new method, <methodname>setHttpChannelHandlers()</methodname>, that allows adding channel handlers that are 
+processed after the HTTP handlers. See
+<ulink url="https://issues.jboss.org/browse/RESTEASY-1171">https://issues.jboss.org/browse/RESTEASY-1171</ulink> for more information. 
+</literallayout>       
+        </listitem>
+        <listitem><literallayout><classname>org.jboss.resteasy.api.validation.ResteasyViolationException</classname> is now a subclass of 
+<classname>javax.validation.ConstraintViolationException</classname> instead of
+<classname>javax.validation.ValidationException</classname>. Now, an <classname>ExceptionMapper</classname> for
+<classname>ConstraintViolationException</classname> will catch <classname>ResteasyViolationException</classname>s.
+See <ulink url="https://issues.jboss.org/browse/RESTEASY-1137">https://issues.jboss.org/browse/RESTEASY-1137</ulink> for more information.</literallayout>
+        </listitem>
+        <listitem><literallayout>There is a new context parameter, "resteasy.buffer.exception.entity". See
+<xref linkend="configuration_switches"/> for more information. Also, see
+<ulink url="https://issues.jboss.org/browse/RESTEASY-981">https://issues.jboss.org/browse/RESTEASY-981</ulink>.
+</literallayout>
+        </listitem>
+    </itemizedlist>
 </sect1>
 <sect1>
     <title>Migrating from 3.0.7 to 3.0.9</title>
@@ -43,6 +126,7 @@
         </listitem>
     </itemizedlist>
 </sect1>
+
 <sect1>
     <title>Migrating from 3.0.6 to 3.0.7</title>
     <itemizedlist>
@@ -57,7 +141,7 @@
     <itemizedlist>
         <listitem>
             Servlet 3.0 deployments within standalone Tomcat or Jetty can now use the Resteasy <literal>ServletContainerInitializer</literal>.
-            This allows tighter integration with Resteasy much like you have within JBoss/Wildfly.  Check out 
+            This allows tighter integration with Resteasy much like you have within JBoss/WildFly.  Check out 
             <xref linkend="Installation_Configuration"/> for more information.
         </listitem>
     </itemizedlist>

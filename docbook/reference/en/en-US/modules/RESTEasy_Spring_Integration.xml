@@ -19,7 +19,7 @@ RESTEasy integrates with Spring 3.0.x.  We are interested in other forms of Spri
 ]]>
 </programlisting>
 <para>
-RESTeasy comes with its own Spring ContextLoaderListener that registers a RESTeasy specific BeanPostProcessor that processes JAX-RS annotations when a bean is created by a BeanFactory.  What does this mean?  RESTeasy will automatically scan for @Provider and JAX-RS resource annotations on your bean class and register them as JAX-RS resources.
+RESTEasy comes with its own Spring ContextLoaderListener that registers a RESTEasy specific BeanPostProcessor that processes JAX-RS annotations when a bean is created by a BeanFactory.  What does this mean?  RESTEasy will automatically scan for @Provider and JAX-RS resource annotations on your bean class and register them as JAX-RS resources.
 </para>
 <para> Here is what you have to do with your web.xml file</para>
 <programlisting>
@@ -53,7 +53,7 @@ The SpringContextLoaderListener must be declared after ResteasyBootstrap as it u
 </para>
 <para>
 
-If you do not use a Spring ContextLoaderListener to create your bean factories, then you can manually register the RESTeasy BeanFactoryPostProcessor by allocating an instance of org.jboss.resteasy.plugins.spring.SpringBeanProcessor.  You can obtain instances of a ResteasyProviderFactory and Registry from the ServletContext attributes org.jboss.resteasy.spi.ResteasyProviderFactory and org.jboss.resteasy.spi.Registry.  (Really the string FQN of these classes).  There is also a org.jboss.resteasy.plugins.spring.SpringBeanProcessorServletAware, that will automatically inject references to the Registry and ResteasyProviderFactory from the Servlet Context.  (that is, if you have used RestasyBootstrap to bootstrap Resteasy).
+If you do not use a Spring ContextLoaderListener to create your bean factories, then you can manually register the RESTEasy BeanFactoryPostProcessor by allocating an instance of org.jboss.resteasy.plugins.spring.SpringBeanProcessor.  You can obtain instances of a ResteasyProviderFactory and Registry from the ServletContext attributes org.jboss.resteasy.spi.ResteasyProviderFactory and org.jboss.resteasy.spi.Registry.  (Really the string FQN of these classes).  There is also a org.jboss.resteasy.plugins.spring.SpringBeanProcessorServletAware, that will automatically inject references to the Registry and ResteasyProviderFactory from the Servlet Context.  (that is, if you have used RestasyBootstrap to bootstrap Resteasy).
 </para>
 <para>
    Our Spring integration supports both singletons and the "prototype" scope.  RESTEasy handles injecting @Context references.  Constructor injection is not supported though.  Also, with the "prototype" scope, RESTEasy will inject any @*Param annotated fields or setters before the request is dispatched.
@@ -143,7 +143,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 <para>
 <emphasis role="bold">Note.</emphasis>
 As noted in <xref linkend="upgrading-wildfly"/>, the The Resteasy distribution comes with a zip file called resteasy-jboss-modules-&lt;version&gt;.zip,
-which can be unzipped into the modules/system/layers/base/ directory of Wildfly to upgrade to a new version of Resteasy.
+which can be unzipped into the modules/system/layers/base/ directory of WildFly to upgrade to a new version of Resteasy.
 Because of the way resteasy-spring is used in WildFly, after unzipping the zip file, it is also necessary to remove the
 old resteasy-spring jar from modules/system/layers/base/org/jboss/resteasy/resteasy-spring/main/bundled/resteasy-spring-jar.
 </para>

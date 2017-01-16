@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.server.netty;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
 import io.netty.channel.ChannelHandlerContext;
 
 import org.jboss.resteasy.core.AbstractAsynchronousResponse;
@@ -56,6 +58,7 @@ public class NettyHttpRequest extends BaseHttpRequest
    private NettyExecutionContext executionContext;
    private final ChannelHandlerContext ctx;
    private volatile boolean flushed;
+   private ByteBuf content;
 
    public NettyHttpRequest(ChannelHandlerContext ctx, ResteasyHttpHeaders httpHeaders, ResteasyUriInfo uri, String httpMethod, SynchronousDispatcher dispatcher, NettyHttpResponse response, boolean is100ContinueExpected)
    {
@@ -182,7 +185,18 @@ public class NettyHttpRequest extends BaseHttpRequest
       return false;
    }
 
-    class NettyExecutionContext extends AbstractExecutionContext {
+   public void setContentBuffer(ByteBuf content) {
+      this.content = content;
+      this.inputStream = new ByteBufInputStream(content);
+   }
+
+    public void releaseContentBuffer() {
+      if (content != null) {
+        this.content.release();
+      }
+    }
+
+   class NettyExecutionContext extends AbstractExecutionContext {
         protected final NettyHttpRequest request;
         protected final NettyHttpResponse response;
         protected volatile boolean done;

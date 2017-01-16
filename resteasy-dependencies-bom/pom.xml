@@ -64,6 +64,7 @@
         <version.org.wildfly.extras.creaper>1.5.0</version.org.wildfly.extras.creaper>
         <version.org.wildfly.wildfly-arquillian-container-managed>2.0.0.Final</version.org.wildfly.wildfly-arquillian-container-managed>
         <version.org.wildfly-security>10.0.0.Final</version.org.wildfly-security>
+        <version.org.wildfly.security.wildfly-elytron>1.1.0.Beta16</version.org.wildfly.security.wildfly-elytron>
         <version.org.yaml.snakeyaml>1.17</version.org.yaml.snakeyaml>
         <version.javax.validation-api>1.1.0.Final</version.javax.validation-api>
         <version.weld>2.4.0.Final</version.weld>
@@ -608,6 +609,11 @@
                 <groupId>org.wildfly.core</groupId>
                 <artifactId>wildfly-cli</artifactId>
                 <version>${version.org.wildfly.core.wildfly-cli}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly.security</groupId>
+                <artifactId>wildfly-elytron</artifactId>
+                <version>${version.org.wildfly.security.wildfly-elytron}</version>
             </dependency>
             <dependency>
                 <groupId>org.wildfly.arquillian</groupId>
