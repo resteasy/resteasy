@@ -35,6 +35,7 @@ import org.junit.runner.RunWith;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
 
@@ -263,7 +264,8 @@ public class GzipTest {
 
     /**
      * @tpTestDetails Send POST request with gzip encoded data using @GZIP annotation and client proxy framework
-     * @tpSince RESTEasy 3.0.16
+     * @tpInfo RESTEASY-1499
+     * @tpSince RESTEasy 3.1.0
      */
     @Test
     public void testGzipPost() {
@@ -273,6 +275,7 @@ public class GzipTest {
         data.setP2("second");
 
         Response response = gzipProxy.post(data);
+        Assert.assertEquals("gzip", response.getHeaderString("Content-Encoding"));
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
     }
     

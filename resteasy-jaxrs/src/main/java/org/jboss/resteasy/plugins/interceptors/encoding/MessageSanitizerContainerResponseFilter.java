@@ -1,12 +1,14 @@
 package org.jboss.resteasy.plugins.interceptors.encoding;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
@@ -27,8 +29,11 @@ public class MessageSanitizerContainerResponseFilter implements ContainerRespons
         if (HttpResponseCodes.SC_BAD_REQUEST == responseContext.getStatus()) {
             Object entity = responseContext.getEntity();
             if (entity != null && entity instanceof String) {
-                String escapedMsg = escapeXml((String) entity);
-                responseContext.setEntity(escapedMsg);
+                ArrayList contentTypes = (ArrayList)responseContext.getHeaders().get("Content-Type");
+                if (contentTypes != null  && contentTypes.contains(MediaType.TEXT_HTML)) {
+                    String escapedMsg = escapeXml((String) entity);
+                    responseContext.setEntity(escapedMsg);
+                }
             }
         }
     }

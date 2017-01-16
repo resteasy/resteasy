@@ -66,6 +66,7 @@ public class JsonMapProvider extends MapProvider
       if (c != '}')
       {
          MessageBodyReader messageReader = providers.getMessageBodyReader(baseType, null, annotations, mediaType);
+         LogMessages.LOGGER.debugf("MessageBodyReader: %s", messageReader.getClass().getName());
 
          do
          {
@@ -120,6 +121,7 @@ public class JsonMapProvider extends MapProvider
       Class valueType = Types.getMapValueType(genericType);
       OutputStreamWriter writer = new OutputStreamWriter(entityStream, getCharset(mediaType));
       MessageBodyWriter messageWriter = providers.getMessageBodyWriter(valueType, null, annotations, mediaType);
+      LogMessages.LOGGER.debugf("MessageBodyWriter: %s", messageWriter.getClass().getName());
 
       writer.write('{');
       Map<Object, Object> targetMap = (Map) target;

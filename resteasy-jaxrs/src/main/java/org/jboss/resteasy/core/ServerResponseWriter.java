@@ -5,7 +5,7 @@ import org.jboss.resteasy.core.interception.ContainerResponseContextImpl;
 import org.jboss.resteasy.core.interception.ResponseContainerRequestContext;
 import org.jboss.resteasy.core.interception.ServerWriterInterceptorContext;
 import org.jboss.resteasy.core.registry.SegmentNode;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -61,6 +61,8 @@ public class ServerResponseWriter
       @SuppressWarnings(value = "unchecked")
       MessageBodyWriter writer = providerFactory.getMessageBodyWriter(
               type, generic, annotations, jaxrsResponse.getMediaType());
+      if (writer!=null)
+          LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
 
       if (writer == null)
       {

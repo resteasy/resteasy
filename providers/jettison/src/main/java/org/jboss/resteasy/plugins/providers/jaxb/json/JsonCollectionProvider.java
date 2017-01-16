@@ -73,6 +73,7 @@ public class JsonCollectionProvider extends CollectionProvider
       if (c != ']')
       {
          MessageBodyReader messageReader = providers.getMessageBodyReader(baseType, null, annotations, mediaType);
+         LogMessages.LOGGER.debugf("MessageBodyReader: %s", messageReader.getClass().getName());
 
          do
          {

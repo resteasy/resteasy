@@ -205,11 +205,11 @@ public class ResteasyViolationExceptionRepresentationTest {
         Assert.assertEquals("Exception has wrong message", "size must be between 3 and 5", cv.getMessage());
         Assert.assertEquals("Exception has wrong value", "z", cv.getValue());
         cv = e.getClassViolations().iterator().next();
-        Assert.assertEquals("Exception has wrong message", "Concatenation of s and t must have length &gt; 5", cv.getMessage());
+        Assert.assertEquals("Exception has wrong message", "Concatenation of s and t must have length > 5", cv.getMessage());
         logger.info("value: " + cv.getValue());
         Assert.assertTrue("Exception has wrong value", cv.getValue().startsWith("org.jboss.resteasy.test.validation.resource.ViolationExceptionResourceWithFiveViolations@"));
         cv = e.getParameterViolations().iterator().next();
-        Assert.assertEquals("Exception has wrong message", "s must have length: 3 &lt;= length &lt;= 5", cv.getMessage());
+        Assert.assertEquals("Exception has wrong message", "s must have length: 3 <= length <= 5", cv.getMessage());
         Assert.assertEquals("Exception has wrong value", "Foo[p]", cv.getValue());
     }
 }

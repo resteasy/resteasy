@@ -51,8 +51,11 @@ public abstract class AbstractReaderInterceptorContext implements ReaderIntercep
       if (interceptors == null || index >= interceptors.length)
       {
          MessageBodyReader reader = getReader();
+         if (reader!=null)
+             LogMessages.LOGGER.debugf("MessageBodyReader: %s", reader.getClass().getName());
          return readFrom(reader);
       }
+      LogMessages.LOGGER.debugf("Interceptor: %s", interceptors[index].getClass().getName());
       return interceptors[index++].aroundReadFrom(this);
       // index--;  we used to pop the index, but the TCK does not like this
    }
