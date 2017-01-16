@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationContext;
 * @version $Revision: 1 $
 * 
 */
+@Deprecated
 public class TJWSEmbeddedSpringMVCServer extends TJWSServletServer {
 	protected TJWSSpringMVCDispatcher servlet = new TJWSSpringMVCDispatcher();
 //	Class<>[] defaultResourceMethodInterceptors = DefaultInterceptors.defaultInterceptors;

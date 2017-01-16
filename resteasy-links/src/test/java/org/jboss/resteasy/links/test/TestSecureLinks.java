@@ -1,5 +1,11 @@
 package org.jboss.resteasy.links.test;
 
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -16,8 +22,9 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
 import org.jboss.resteasy.plugins.server.embedded.SimplePrincipal;
+import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
-import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -28,41 +35,44 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.security.Principal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
-
 @RunWith(Parameterized.class)
 public class TestSecureLinks
 {
+   private static NettyJaxrsServer server;
+   private static Dispatcher dispatcher;
 
-	private static Dispatcher dispatcher;
+   @BeforeClass
+   public static void beforeClass() throws Exception
+   {
+      server = new NettyJaxrsServer();
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("/");
+      server.setSecurityDomain(new SecurityDomain()
+      {
 
-	@BeforeClass
-	public static void beforeClass() throws Exception
-	{
-		dispatcher = EmbeddedContainer.start("/", new SecurityDomain(){
+         public Principal authenticate(String username, String password) throws SecurityException
+         {
+            return new SimplePrincipal(username);
+         }
 
-			public Principal authenticate(String username, String password)
-					throws SecurityException {
-				return new SimplePrincipal(username);
-			}
+         public boolean isUserInRole(Principal username, String role)
+         {
+            return username.getName().equals(role);
+         }
 
-			public boolean isUserInRole(Principal username, String role) {
-				return username.getName().equals(role);
-			}
-			
-		}).getDispatcher();
-	}
+      });
 
-	@AfterClass
-	public static void afterClass() throws Exception
-	{
-		EmbeddedContainer.stop();
-	}
+      server.start();
+      dispatcher = server.getDeployment().getDispatcher();
+   }
+
+   @AfterClass
+   public static void afterClass() throws Exception
+   {
+      server.stop();
+      server = null;
+      dispatcher = null;
+   }
 
 	@Parameters
 	public static List<Class<?>[]> getParameters(){
@@ -101,9 +111,6 @@ public class TestSecureLinks
 
 	@After
 	public void after(){
-		// TJWS does not support chunk encodings well so I need to kill kept
-		// alive connections
-		httpClient.getConnectionManager().closeIdleConnections(0, TimeUnit.MILLISECONDS);
 		dispatcher.getRegistry().removeRegistrations(resourceType);
 	}
 	

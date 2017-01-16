@@ -1,5 +1,11 @@
 package org.jboss.resteasy.links.test;
 
+import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.jboss.resteasy.client.ProxyFactory;
@@ -7,8 +13,9 @@ import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.links.RESTServiceDiscovery.AtomLink;
+import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
 import org.jboss.resteasy.plugins.server.resourcefactory.POJOResourceFactory;
-import org.jboss.resteasy.test.EmbeddedContainer;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -19,29 +26,29 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
-
 @RunWith(Parameterized.class)
 public class TestLinks
 {
+   private static NettyJaxrsServer server;
+   private static Dispatcher dispatcher;
 
-	private static Dispatcher dispatcher;
+   @BeforeClass
+   public static void beforeClass() throws Exception
+   {
+      server = new NettyJaxrsServer();
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("/");
+      server.start();
+      dispatcher = server.getDeployment().getDispatcher();
+   }
 
-	@BeforeClass
-	public static void beforeClass() throws Exception
-	{
-		dispatcher = EmbeddedContainer.start().getDispatcher();
-	}
-
-	@AfterClass
-	public static void afterClass() throws Exception
-	{
-		EmbeddedContainer.stop();
-	}
+   @AfterClass
+   public static void afterClass() throws Exception
+   {
+      server.stop();
+      server = null;
+      dispatcher = null;
+   }
 
 	@Parameters
 	public static List<Class<?>[]> getParameters(){

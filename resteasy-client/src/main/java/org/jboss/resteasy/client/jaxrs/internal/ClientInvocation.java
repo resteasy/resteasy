@@ -322,6 +322,7 @@ public class ClientInvocation implements Invocation
          Variant v = entity.getVariant();
          headers.setMediaType(v.getMediaType());
          headers.setLanguage(v.getLanguage());
+         headers.header("Content-Encoding", null);
          headers.header("Content-Encoding", v.getEncoding());
       }
 

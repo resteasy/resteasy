@@ -148,7 +148,6 @@
                 <module>resteasy-test-data</module>
                 <module>resteasy-jaxrs</module>
                 <module>resteasy-client</module>
-                <module>resteasy-jaxrs-testsuite</module>
                 <module>providers</module>
                 <module>resteasy-bom</module>
                 <module>resteasy-cache</module>
@@ -166,7 +165,7 @@
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
                 <module>arquillian</module>
-                <module>integration-tests</module>
+                <module>profiling-tests</module>
                 <module>testsuite</module>
             </modules>
             <build>
@@ -198,7 +197,6 @@
                 <module>resteasy-test-data</module>
                 <module>resteasy-jaxrs</module>
                 <module>resteasy-client</module>
-                <module>resteasy-jaxrs-testsuite</module>
                 <module>providers</module>
                 <module>resteasy-bom</module>
                 <module>resteasy-cache</module>
@@ -216,7 +214,7 @@
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
                 <module>arquillian</module>
-                <module>integration-tests</module>
+                <module>profiling-tests</module>
                 <module>testsuite</module>
             </modules>
         </profile>
@@ -227,7 +225,6 @@
                 <module>resteasy-test-data</module>
                 <module>resteasy-jaxrs</module>
                 <module>resteasy-client</module>
-                <module>resteasy-jaxrs-testsuite</module>
                 <module>providers</module>
                 <module>resteasy-bom</module>
                 <module>resteasy-cache</module>
@@ -246,7 +243,7 @@
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
                 <module>arquillian</module>
-                <module>integration-tests</module>
+                <module>profiling-tests</module>
                 <module>testsuite</module>
             </modules>
         </profile>
@@ -836,16 +833,26 @@
             </plugin>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>src/main/resources</directory>
-                            <includes>
-                                <include>org/**</include>
-                            </includes>
-                        </fileset>
-                    </filesets>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>i18n cleanup</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>src/main/resources</directory>
+                                    <includes>
+                                        <include>org/**</include>
+                                    </includes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

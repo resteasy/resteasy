@@ -1,38 +1,43 @@
 package org.jboss.resteasy.plugins.guice;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
+import org.jboss.resteasy.test.TestPortProvider;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Module;
 
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.test.EmbeddedContainer;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
+@org.junit.Ignore
 public class ResourceTest
 {
+   private static NettyJaxrsServer server;
    private static Dispatcher dispatcher;
 
    @BeforeClass
    public static void beforeClass() throws Exception
    {
-      dispatcher = EmbeddedContainer.start().getDispatcher();
+      server = new NettyJaxrsServer();
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("/");
+      server.start();
+      dispatcher = server.getDeployment().getDispatcher();
    }
 
    @AfterClass
    public static void afterClass() throws Exception
    {
-      EmbeddedContainer.stop();
+      server.stop();
+      server = null;
+      dispatcher = null;
    }
 
    @Test
@@ -48,7 +53,7 @@ public class ResourceTest
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
       processor.processInjector(Guice.createInjector(module));
-      final TestResource resource = ProxyFactory.create(TestResource.class, generateBaseUrl());
+      final TestResource resource = TestPortProvider.createProxy(TestResource.class, TestPortProvider.generateBaseUrl());
       Assert.assertEquals("name", resource.getName());
       dispatcher.getRegistry().removeRegistrations(TestResource.class);
    }
@@ -67,7 +72,7 @@ public class ResourceTest
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
       processor.processInjector(Guice.createInjector(module));
-      final TestResource resource = ProxyFactory.create(TestResource.class, generateBaseUrl());
+      final TestResource resource = TestPortProvider.createProxy(TestResource.class, TestPortProvider.generateBaseUrl());
       Assert.assertEquals("injected-name", resource.getName());
       dispatcher.getRegistry().removeRegistrations(TestResource.class);
    }
@@ -105,3 +110,4 @@ public class ResourceTest
       }
    }
 }
+

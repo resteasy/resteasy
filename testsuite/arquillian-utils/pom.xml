@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>arquillian-utils</artifactId>
-    <name>RESTEasy testsuite: Arquillian utils</name>
+    <name>RESTEasy Main testsuite: Arquillian utils</name>
 
     <profiles>
         <profile>

@@ -139,13 +139,6 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!--
-        <dependency>
-           <groupId>tjws</groupId>
-           <artifactId>webserver</artifactId>
-           <scope>test</scope>
-        </dependency>
-        -->
         
         <dependency>
             <groupId>org.jboss.logging</groupId>
@@ -159,24 +152,7 @@
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-processor</artifactId>
         </dependency> 
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs-testsuite</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
-    <build>
-        <finalName>resteasy-spring</finalName>
-        <plugins>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <forkMode>always</forkMode>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     
     <profiles>
         <profile>
@@ -217,9 +193,22 @@
                     <plugin>
                        <groupId>org.apache.maven.plugins</groupId>
                        <artifactId>maven-surefire-plugin</artifactId>
-                       <configuration>
-                           <reuseForks>false</reuseForks>
-                        </configuration>
+                       <executions>
+                           <execution>
+                               <id>i18</id>
+                               <phase>test</phase>
+                               <goals>
+                                   <goal>test</goal>
+                               </goals>
+                               <configuration>
+                                   <skip>false</skip>
+                                   <reuseForks>false</reuseForks>
+                                   <includes>
+                                       <include>**/I18nTestMessages_*.java</include>
+                                   </includes>
+                               </configuration>
+                           </execution>
+                       </executions>
                     </plugin>
                 </plugins>
             </build>

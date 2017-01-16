@@ -1,19 +1,6 @@
 package org.jboss.resteasy.plugins.guice.ext;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
-
-import com.google.inject.Binder;
-import com.google.inject.Guice;
-import com.google.inject.Module;
-
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.plugins.guice.ModuleProcessor;
-import org.jboss.resteasy.test.EmbeddedContainer;
-
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.HttpHeaders;
@@ -21,25 +8,41 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.plugins.guice.ModuleProcessor;
+import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
+import org.jboss.resteasy.test.TestPortProvider;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.google.inject.Binder;
+import com.google.inject.Guice;
+import com.google.inject.Module;
+
+@org.junit.Ignore
 public class RequestScopeModuleTest
 {
+   private static NettyJaxrsServer server;
    private static Dispatcher dispatcher;
 
    @BeforeClass
    public static void beforeClass() throws Exception
    {
-      dispatcher = EmbeddedContainer.start().getDispatcher();
+      server = new NettyJaxrsServer();
+      server.setPort(TestPortProvider.getPort());
+      server.setRootResourcePath("/");
+      server.start();
+      dispatcher = server.getDeployment().getDispatcher();
    }
 
    @AfterClass
    public static void afterClass() throws Exception
    {
-      EmbeddedContainer.stop();
+      server.stop();
+      server = null;
+      dispatcher = null;
    }
 
    @Test
@@ -55,7 +58,7 @@ public class RequestScopeModuleTest
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
       processor.processInjector(Guice.createInjector(module, new RequestScopeModule()));
-      final TestResource resource = ProxyFactory.create(TestResource.class, generateBaseUrl());
+      final TestResource resource = TestPortProvider.createProxy(TestResource.class, TestPortProvider.generateBaseUrl());
       Assert.assertEquals("ok", resource.getName());
       dispatcher.getRegistry().removeRegistrations(TestResource.class);
    }
@@ -69,20 +72,15 @@ public class RequestScopeModuleTest
 
    public static class RequestScopeTestResource implements TestResource
    {
-      private final HttpServletRequest httpServletRequest;
-      private final HttpServletResponse httpServletResponse;
       private final Request request;
       private final HttpHeaders httpHeaders;
       private final UriInfo uriInfo;
       private final SecurityContext securityContext;
 
       @Inject
-      public RequestScopeTestResource(HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse, Request request,
+      public RequestScopeTestResource(Request request,
             HttpHeaders httpHeaders, UriInfo uriInfo, SecurityContext securityContext)
       {
-         this.httpServletRequest = httpServletRequest;
-         this.httpServletResponse = httpServletResponse;
          this.request = request;
          this.httpHeaders = httpHeaders;
          this.uriInfo = uriInfo;
@@ -92,8 +90,6 @@ public class RequestScopeModuleTest
       @Override
       public String getName()
       {
-         Assert.assertNotNull(httpServletRequest);
-         Assert.assertNotNull(httpServletResponse);
          Assert.assertNotNull(request);
          Assert.assertNotNull(httpHeaders);
          Assert.assertNotNull(uriInfo);
@@ -102,3 +98,4 @@ public class RequestScopeModuleTest
       }
    }
 }
+

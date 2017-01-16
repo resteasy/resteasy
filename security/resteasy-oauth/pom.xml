@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>resteasy-oauth</artifactId>
-    <name>RESTEasy JAX-RS OAuth</name>
+    <name>RESTEasy Security: JAX-RS OAuth</name>
     <description/>
 
     <dependencies>
@@ -35,26 +35,14 @@
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-annotations</artifactId>
-            <version>1.2.0.Final</version>
-            <!-- This is a compile-time dependency of this project, but is not needed at compile or runtime by other
-                  projects that depend on this project.-->
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-processor</artifactId>
-            <version>1.2.0.Final</version>
-            <!-- This is a compile-time dependency of this project, but is not needed at compile or runtime by other
-                  projects that depend on this project.-->
             <scope>provided</scope>
             <optional>true</optional>
-        </dependency> 
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs-testsuite</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -97,9 +85,22 @@
                     <plugin>
                        <groupId>org.apache.maven.plugins</groupId>
                        <artifactId>maven-surefire-plugin</artifactId>
-                       <configuration>
-                           <reuseForks>false</reuseForks>
-                        </configuration>
+                       <executions>
+                           <execution>
+                               <id>i18</id>
+                               <phase>test</phase>
+                               <goals>
+                                   <goal>test</goal>
+                               </goals>
+                               <configuration>
+                                   <skip>false</skip>
+                                   <reuseForks>false</reuseForks>
+                                   <includes>
+                                       <include>**/I18nTestMessages_*.java</include>
+                                   </includes>
+                               </configuration>
+                           </execution>
+                       </executions>
                     </plugin>
                 </plugins>
             </build>

@@ -95,7 +95,7 @@ public interface SimpleClient
     <para>
 
         <programlisting>
-            Client client = ClientFactory.newClient();
+            Client client = ClientBuilder.newClient();
             WebTarget target = client.target("http://example.com/base/uri");
             ResteasyWebTarget rtarget = (ResteasyWebTarget)target;
 

@@ -7,7 +7,6 @@ import org.junit.Assert;
 import org.jboss.resteasy.jose.i18n.Messages;
 import org.jboss.resteasy.jose.jwe.CompressionAlgorithm;
 import org.jboss.resteasy.jose.jwe.EncryptionMethod;
-import org.jboss.resteasy.test.resteasy_jaxrs.i18n.TestMessagesParent;
 import org.junit.Test;
 
 /**

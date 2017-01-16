@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>resteasy-integration-tests-spring-inmodule</artifactId>
-    <name>RESTEasy testsuite: Integration tests - Spring - In module</name>
+    <name>RESTEasy Main testsuite: Spring integration tests - In module</name>
 
     <properties>
         <module.spring.version>3.2.x</module.spring.version>

@@ -7,7 +7,6 @@ import javax.ws.rs.core.MediaType;
 import org.junit.Assert;
 
 import org.jboss.resteasy.plugins.spring.i18n.Messages;
-import org.jboss.resteasy.test.resteasy_jaxrs.i18n.TestMessagesParent;
 import org.junit.Test;
 
 /**
