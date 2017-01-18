@@ -18,7 +18,6 @@ import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Module;
 
-@org.junit.Ignore
 public class GuiceProviderTest
 {
    private static NettyJaxrsServer server;
@@ -56,7 +55,7 @@ public class GuiceProviderTest
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
       processor.processInjector(Guice.createInjector(module));
-      final TestResource resource = TestPortProvider.createProxy(TestResource.class, TestPortProvider.generateBaseUrl());
+      final TestResource resource = TestPortProvider.createProxy(TestResource.class);
       Assert.assertEquals("exception", resource.getName());
       dispatcher.getRegistry().removeRegistrations(TestResource.class);
    }

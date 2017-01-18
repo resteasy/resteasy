@@ -25,7 +25,6 @@ import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.Provider;
 
-@org.junit.Ignore
 public class RequestScopeModuleTest
 {
    private static NettyJaxrsServer server;
@@ -62,7 +61,7 @@ public class RequestScopeModuleTest
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
       processor.processInjector(Guice.createInjector(module, new RequestScopeModule()));
-      final TestResource resource = TestPortProvider.createProxy(TestResource.class, TestPortProvider.generateBaseUrl());
+      final TestResource resource = TestPortProvider.createProxy(TestResource.class);
       Assert.assertEquals("ok", resource.getName());
       dispatcher.getRegistry().removeRegistrations(TestResource.class);
    }

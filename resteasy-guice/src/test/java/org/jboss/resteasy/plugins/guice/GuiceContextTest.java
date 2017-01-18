@@ -25,7 +25,6 @@ import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Module;
 
-@org.junit.Ignore
 public class GuiceContextTest
 {
    private NettyJaxrsServer server;
@@ -62,7 +61,7 @@ public class GuiceContextTest
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
       processor.processInjector(Guice.createInjector(module));
-      final TestResource resource = TestPortProvider.createProxy(TestResource.class, TestPortProvider.generateBaseUrl());
+      final TestResource resource = TestPortProvider.createProxy(TestResource.class);
       Assert.assertEquals("method", resource.getName());
       dispatcher.getRegistry().removeRegistrations(MethodTestResource.class);
    }
@@ -80,7 +79,7 @@ public class GuiceContextTest
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
       processor.processInjector(Guice.createInjector(module));
-      final TestResource resource = TestPortProvider.createProxy(TestResource.class, TestPortProvider.generateBaseUrl());
+      final TestResource resource = TestPortProvider.createProxy(TestResource.class);
       Assert.assertEquals("field", resource.getName());
       dispatcher.getRegistry().removeRegistrations(FieldTestResource.class);
    }
@@ -115,7 +114,7 @@ public class GuiceContextTest
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
       processor.processInjector(Guice.createInjector(module));
-      final TestResource resource = TestPortProvider.createProxy(TestResource.class, TestPortProvider.generateBaseUrl());
+      final TestResource resource = TestPortProvider.createProxy(TestResource.class);
       Assert.assertEquals("constructor", resource.getName());
       dispatcher.getRegistry().removeRegistrations(ConstructorTestResource.class);
    }

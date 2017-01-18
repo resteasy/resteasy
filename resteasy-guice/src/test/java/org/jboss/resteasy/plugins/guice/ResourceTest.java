@@ -16,7 +16,6 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Module;
 
-@org.junit.Ignore
 public class ResourceTest
 {
    private static NettyJaxrsServer server;
@@ -53,7 +52,7 @@ public class ResourceTest
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
       processor.processInjector(Guice.createInjector(module));
-      final TestResource resource = TestPortProvider.createProxy(TestResource.class, TestPortProvider.generateBaseUrl());
+      final TestResource resource = TestPortProvider.createProxy(TestResource.class);
       Assert.assertEquals("name", resource.getName());
       dispatcher.getRegistry().removeRegistrations(TestResource.class);
    }
@@ -72,7 +71,7 @@ public class ResourceTest
       };
       final ModuleProcessor processor = new ModuleProcessor(dispatcher.getRegistry(), dispatcher.getProviderFactory());
       processor.processInjector(Guice.createInjector(module));
-      final TestResource resource = TestPortProvider.createProxy(TestResource.class, TestPortProvider.generateBaseUrl());
+      final TestResource resource = TestPortProvider.createProxy(TestResource.class);
       Assert.assertEquals("injected-name", resource.getName());
       dispatcher.getRegistry().removeRegistrations(TestResource.class);
    }
