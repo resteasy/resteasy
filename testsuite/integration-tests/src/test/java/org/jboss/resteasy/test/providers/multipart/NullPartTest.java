@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.providers.multipart;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.multipart.resource.MyServiceProxy;
 import org.jboss.resteasy.test.providers.multipart.resource.NullPartBean;
@@ -11,7 +12,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -31,8 +34,22 @@ public class NullPartTest {
         return TestUtil.finishContainerPrepare(war, null, NullPartService.class);
     }
 
+    private static ResteasyClient client;
+
     private static String generateBaseUrl() {
         return PortProviderUtil.generateBaseUrl(NullPartTest.class.getSimpleName());
+    }
+
+    @BeforeClass
+    public static void before() throws Exception
+    {
+        client = new ResteasyClientBuilder().build();
+    }
+
+    @AfterClass
+    public static void after() throws Exception
+    {
+        client.close();
     }
 
     /**
@@ -41,7 +58,7 @@ public class NullPartTest {
      */
     @Test
     public void testNewClient() throws Exception {
-        MyServiceProxy proxy = new ResteasyClientBuilder().build().target(generateBaseUrl()).proxy(MyServiceProxy.class);
+        MyServiceProxy proxy = client.target(generateBaseUrl()).proxy(MyServiceProxy.class);
 
         NullPartBean bean = proxy.createMyBean(); // should just be ok
         Assert.assertNotNull(bean);

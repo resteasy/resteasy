@@ -10,7 +10,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -31,6 +33,7 @@ import javax.ws.rs.core.Response;
 @RunAsClient
 public class InputPartDefaultContentTypeEncodingOverwriteTest {
     public static final String TEXT_PLAIN_WITH_CHARSET_UTF_8 = "text/plain; charset=utf-8";
+    private static Client client;
 
     @Deployment
     public static Archive<?> createTestArchive() {
@@ -43,6 +46,18 @@ public class InputPartDefaultContentTypeEncodingOverwriteTest {
 
     private static String generateURL(String path) {
         return PortProviderUtil.generateURL(path, InputPartDefaultContentTypeEncodingOverwriteTest.class.getSimpleName());
+    }
+
+    @BeforeClass
+    public static void before() throws Exception
+    {
+        client = ClientBuilder.newClient();
+    }
+
+    @AfterClass
+    public static void after() throws Exception
+    {
+        client.close();
     }
 
 
@@ -59,7 +74,6 @@ public class InputPartDefaultContentTypeEncodingOverwriteTest {
                 + "Content-Transfer-Encoding: 8bit\r\n\r\n" + "bar\r\n"
                 + "--boo--\r\n";
 
-        Client client = ClientBuilder.newClient();
         WebTarget target = client.target(generateURL("/mime"));
         Entity entity = Entity.entity(message, "multipart/form-data; boundary=boo");
         Response response = target.request().post(entity);
