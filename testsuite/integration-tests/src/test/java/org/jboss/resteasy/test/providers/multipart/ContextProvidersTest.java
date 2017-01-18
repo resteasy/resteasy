@@ -476,6 +476,7 @@ public class ContextProvidersTest {
           Response response = target.request().get();
           Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
           T entity = response.readEntity(clazz, annotations);
+           client.close();
           return entity;
         } catch (Exception e) {
             throw new RuntimeException(TestUtil.getErrorMessageForKnownIssue("RESTEASY-1119"), e);
@@ -495,6 +496,7 @@ public class ContextProvidersTest {
        } else {
           result = response.readEntity(returnType);
        }
+       client.close();
        return result;
     }
 

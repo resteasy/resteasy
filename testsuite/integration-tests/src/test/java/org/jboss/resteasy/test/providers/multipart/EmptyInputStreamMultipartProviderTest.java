@@ -55,6 +55,7 @@ public class EmptyInputStreamMultipartProviderTest {
         String string = response.readEntity(String.class);
         logger.info(string);
         Assert.assertTrue("The response doesn't contain the expected header", string.indexOf("Content-Length") > -1);
+        client.close();
     }
 
 }

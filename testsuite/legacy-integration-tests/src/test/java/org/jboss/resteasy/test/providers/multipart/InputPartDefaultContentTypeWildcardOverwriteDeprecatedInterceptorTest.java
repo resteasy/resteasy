@@ -12,9 +12,10 @@ import org.jboss.resteasy.test.providers.multipart.resource.InputPartDefaultCont
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -36,6 +37,7 @@ import javax.ws.rs.core.Response;
 public class InputPartDefaultContentTypeWildcardOverwriteDeprecatedInterceptorTest {
 
     public static final String WILDCARD_WITH_CHARSET_UTF_8 = MediaType.APPLICATION_XML + "; charset=UTF-8"; // this mediatype works correctly
+    private static Client client;
 
     @Deployment
     public static Archive<?> createTestArchive() {
@@ -44,6 +46,18 @@ public class InputPartDefaultContentTypeWildcardOverwriteDeprecatedInterceptorTe
         war.addClasses(InputPartDefaultContentTypeWildcardOverwriteXmlBean.class, InputPartDefaultContentTypeWildcardOverwriteDeprecatedInterceptorTest.class);
         return TestUtil.finishContainerPrepare(war, null, InputPartDefaultContentTypeWildcardOverwriteOldInterceptor.class,
                 InputPartDefaultContentTypeWildcardOverwriteService.class);
+    }
+
+    @BeforeClass
+    public static void before() throws Exception
+    {
+        client = ClientBuilder.newClient();
+    }
+
+    @AfterClass
+    public static void after() throws Exception
+    {
+        client.close();
     }
 
     /**
@@ -82,8 +96,6 @@ public class InputPartDefaultContentTypeWildcardOverwriteDeprecatedInterceptorTe
                 + "--boo--\r\n";
 
 
-
-        Client client = ClientBuilder.newClient();
         WebTarget target = client.target(PortProviderUtil.generateURL("/mime", InputPartDefaultContentTypeWildcardOverwriteDeprecatedInterceptorTest.class.getSimpleName()));
         Entity entity = Entity.entity(message, "multipart/form-data; boundary=boo");
         Response response = target.request().post(entity);
