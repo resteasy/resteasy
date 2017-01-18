@@ -13,7 +13,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -36,6 +38,7 @@ import javax.ws.rs.core.Response;
 public class InputPartDefaultContentTypeWildcardOverwriteNewInterceptorTest {
 
     public static final String WILDCARD_WITH_CHARSET_UTF_8 = MediaType.APPLICATION_XML + "; charset=UTF-8";  // this mediatype works correctly
+    private static Client client;
 
     @Deployment
     public static Archive<?> createTestArchive() {
@@ -44,6 +47,18 @@ public class InputPartDefaultContentTypeWildcardOverwriteNewInterceptorTest {
         war.addClasses(InputPartDefaultContentTypeWildcardOverwriteXmlBean.class, InputPartDefaultContentTypeWildcardOverwriteNewInterceptorTest.class);
         return TestUtil.finishContainerPrepare(war, null, InputPartDefaultContentTypeWildcardOverwriteNewInterceptor.class,
                 InputPartDefaultContentTypeWildcardOverwriteService.class);
+    }
+
+    @BeforeClass
+    public static void before() throws Exception
+    {
+        client = ClientBuilder.newClient();
+    }
+
+    @AfterClass
+    public static void after() throws Exception
+    {
+        client.close();
     }
 
     /**
@@ -81,9 +96,6 @@ public class InputPartDefaultContentTypeWildcardOverwriteNewInterceptorTest {
                 + "<inputPartDefaultContentTypeWildcardOverwriteXmlBean><myInt>27</myInt><myString>Lorem Ipsum</myString></inputPartDefaultContentTypeWildcardOverwriteXmlBean>\r\n"
                 + "--boo--\r\n";
 
-
-
-        Client client = ClientBuilder.newClient();
         WebTarget target = client.target(PortProviderUtil.generateURL("/mime", InputPartDefaultContentTypeWildcardOverwriteNewInterceptorTest.class.getSimpleName()));
         Entity entity = Entity.entity(message, "multipart/form-data; boundary=boo");
         Response response = target.request().post(entity);

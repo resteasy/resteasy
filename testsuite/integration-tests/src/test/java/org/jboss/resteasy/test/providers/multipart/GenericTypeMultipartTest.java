@@ -62,6 +62,7 @@ public class GenericTypeMultipartTest {
         Entity<MultipartFormDataOutput> entity = Entity.entity(output, MediaType.MULTIPART_FORM_DATA_TYPE);
         String response = target.request().post(entity, String.class);
         Assert.assertEquals("Wrong response content", "darth sidious ", response);
+        client.close();
     }
 
 }
