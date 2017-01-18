@@ -29,7 +29,7 @@ public class ApacheHttpClient4EngineFactory
             //We have to check that the HttpClient to be used has the configurable interface
             if(isUsingOldStyleConfiguration(engine.getHttpClient()))
             {
-                LogMessages.LOGGER.warn("Please consider updating the version of Apache HttpClient being used.  Version 4.3.6+ is recommended.");
+                LogMessages.LOGGER.updateOfApacheHttpClientNeeded();
                 engine.close();
                 return new ApacheHttpClient4Engine(defaultProxy);
             }
@@ -102,7 +102,7 @@ public class ApacheHttpClient4EngineFactory
         boolean isOld = true;
         try {
             client.getParams();
-            LogMessages.LOGGER.warn("Please consider updating the version of Apache HttpClient being used.  Version 4.3.6+ is recommended.");
+            LogMessages.LOGGER.updateOfApacheHttpClientNeeded();
 
         } catch (UnsupportedOperationException e) {
             isOld = false;
