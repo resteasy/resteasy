@@ -1,6 +1,7 @@
 package org.jboss.resteasy.plugins.server.netty;
 
 import static io.netty.handler.codec.http.HttpHeaders.is100ContinueExpected;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -72,9 +73,18 @@ public class RestEasyHttpRequestDecoder extends MessageToMessageDecoder<io.netty
                
                // Does the request contain a body that will need to be retained
                if(content.content().readableBytes() > 0) {
-                 ByteBuf buf = content.content().retain();
-                 ByteBufInputStream in = new ByteBufInputStream(buf);
-                 nettyRequest.setInputStream(in);
+                    final ByteBuf buf = content.content().retain();
+                    ByteBufInputStream in = new ByteBufInputStream(buf) {
+
+                        public void close() throws java.io.IOException {
+                            try {
+                                buf.release();
+                            } finally {
+                                super.close();
+                            }
+                        };
+                    };
+                    nettyRequest.setInputStream(in);
                }
                
                out.add(nettyRequest); 
