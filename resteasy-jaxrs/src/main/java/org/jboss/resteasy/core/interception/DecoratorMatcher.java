@@ -18,7 +18,9 @@ import java.util.List;
  * @see org.jboss.resteasy.spi.interception.DecoratorProcessor
  * @see org.jboss.resteasy.annotations.DecorateTypes
  * @see org.jboss.resteasy.annotations.Decorator
+ * @deprecated Use org.jboss.resteasy.core.interception.jaxrs.DecoratorMatcher instead.
  */
+@Deprecated
 public class DecoratorMatcher
 {
    /**

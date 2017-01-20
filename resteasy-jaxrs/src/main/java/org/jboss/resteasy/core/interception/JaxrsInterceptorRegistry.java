@@ -23,8 +23,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * @deprecated Use org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistry<T> instead.
  */
 @SuppressWarnings("unchecked")
+@Deprecated
 public class JaxrsInterceptorRegistry<T>
 {
    public static class Match

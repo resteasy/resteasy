@@ -24,7 +24,9 @@ import java.util.Map;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * @deprecated Use org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext instead.
  */
+@Deprecated
 public class PreMatchContainerRequestContext implements ContainerRequestContext
 {
    protected final HttpRequest httpRequest;

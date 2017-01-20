@@ -20,6 +20,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @ClientInterceptor
 @HeaderDecoratorPrecedence
+@Deprecated
 public class AcceptEncodingGZIPInterceptor implements ClientExecutionInterceptor
 {
    public ClientResponse execute(ClientExecutionContext ctx) throws Exception

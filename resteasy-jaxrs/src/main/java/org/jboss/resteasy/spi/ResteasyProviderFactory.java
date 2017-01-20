@@ -461,6 +461,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     *
     * @param precedence
     */
+   @Deprecated
    public void appendInterceptorPrecedence(String precedence)
    {
       if (this.precedence == null)
@@ -479,6 +480,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * @param after         put newPrecedence after this
     * @param newPrecedence
     */
+   @Deprecated
    public void insertInterceptorPrecedenceAfter(String after, String newPrecedence)
    {
       if (this.precedence == null)
@@ -498,6 +500,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * @param before        put newPrecedence before this
     * @param newPrecedence
     */
+   @Deprecated
    public void insertInterceptorPrecedenceBefore(String before, String newPrecedence)
    {
       if (this.precedence == null)

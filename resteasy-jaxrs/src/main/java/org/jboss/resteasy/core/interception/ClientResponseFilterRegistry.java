@@ -9,7 +9,9 @@ import java.util.List;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
+ * @deprecated Use org.jboss.resteasy.core.interception.jaxrs.ClientResponseFilterRegistry instead.
  */
+@Deprecated
 public class ClientResponseFilterRegistry extends JaxrsInterceptorRegistry<ClientResponseFilter>
 {
    public ClientResponseFilterRegistry(ResteasyProviderFactory providerFactory)
