@@ -31,8 +31,6 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 @Sharable
 public class RequestHandler extends SimpleChannelInboundHandler
 {
-   private static final Logger LOG = Logger.getLogger(RequestHandler.class);
-
    protected final RequestDispatcher dispatcher;
 
    public RequestHandler(RequestDispatcher dispatcher)
@@ -90,7 +88,7 @@ public class RequestHandler extends SimpleChannelInboundHandler
       }
       else
       {
-          LOG.info("Exception caught by handler", e);
+          LogMessages.LOGGER.info(Messages.MESSAGES.exceptionCaught(), e);
           ctx.close();
       }
    }

@@ -74,8 +74,7 @@ public class FileProvider implements MessageBodyReader<File>,
          {
             // could make this configurable, so we fail on fault rather than
             // default.
-
-            LOG.warn("Could not bind to specified download directory " + _downloadDirectory +" so will use temp dir.");
+            LogMessages.LOGGER.couldNotBindToDirectory(_downloadDirectory);
          }
       }
 
