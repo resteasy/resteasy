@@ -32,6 +32,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @SuppressWarnings("unchecked")
+@Deprecated
 public @interface ClientResponseType
 {
    Class entityType() default Void.class;

@@ -16,6 +16,7 @@ import java.util.Map;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Deprecated
 public class LegacyPrecedence
 {
    private static final int DEFAULTS_ORDER = 100000;
