@@ -30,7 +30,6 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 @Sharable
 public class RequestHandler extends SimpleChannelInboundHandler
 {
-   
    protected final RequestDispatcher dispatcher;
 
    public RequestHandler(RequestDispatcher dispatcher)

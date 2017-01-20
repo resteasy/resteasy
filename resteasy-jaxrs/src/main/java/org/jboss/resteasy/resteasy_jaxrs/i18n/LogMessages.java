@@ -86,7 +86,7 @@ public interface LogMessages extends BasicLogger
 
    @LogMessage(level = Level.WARN)
    @Message(id = BASE + 123, value = "Could not bind to specified download directory %s so will use temp dir.")
-   void couldNotBind(String downloadDirectory);
+   void couldNotBindToDirectory(String directory);
    
    @LogMessage(level = Level.WARN)
    @Message(id = BASE + 125, value = "Could not delete file '%s' for request: ")

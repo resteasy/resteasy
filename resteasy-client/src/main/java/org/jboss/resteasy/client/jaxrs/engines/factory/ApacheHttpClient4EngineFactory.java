@@ -9,6 +9,7 @@ import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 
 /**
  * This factory determines what Engine should be used with the supplied httpClient
@@ -29,7 +30,7 @@ public class ApacheHttpClient4EngineFactory
             //We have to check that the HttpClient to be used has the configurable interface
             if(isUsingOldStyleConfiguration(engine.getHttpClient()))
             {
-                LogMessages.LOGGER.warn("Please consider updating the version of Apache HttpClient being used.  Version 4.3.6+ is recommended.");
+                LogMessages.LOGGER.warn(Messages.MESSAGES.pleaseConsiderUnpdating());
                 engine.close();
                 return new ApacheHttpClient4Engine(defaultProxy);
             }
@@ -102,7 +103,7 @@ public class ApacheHttpClient4EngineFactory
         boolean isOld = true;
         try {
             client.getParams();
-            LogMessages.LOGGER.warn("Please consider updating the version of Apache HttpClient being used.  Version 4.3.6+ is recommended.");
+            LogMessages.LOGGER.warn(Messages.MESSAGES.pleaseConsiderUnpdating());
 
         } catch (UnsupportedOperationException e) {
             isOld = false;

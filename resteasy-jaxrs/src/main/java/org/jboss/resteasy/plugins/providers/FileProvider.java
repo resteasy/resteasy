@@ -71,8 +71,7 @@ public class FileProvider implements MessageBodyReader<File>,
          {
             // could make this configurable, so we fail on fault rather than
             // default.
-
-            LogMessages.LOGGER.couldNotBind(_downloadDirectory);
+            LogMessages.LOGGER.couldNotBindToDirectory(_downloadDirectory);
          }
       }
 
