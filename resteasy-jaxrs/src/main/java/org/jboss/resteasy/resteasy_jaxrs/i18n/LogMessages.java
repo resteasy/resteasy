@@ -85,6 +85,10 @@ public interface LogMessages extends BasicLogger
    void classNotFoundException(String line, URL url, @Cause Throwable cause);
    
    @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 123, value = "Could not bind to specified download directory %s so will use temp dir.")
+   void couldNotBindToDirectory(String directory);
+   
+   @LogMessage(level = Level.WARN)
    @Message(id = BASE + 125, value = "Could not delete file '%s' for request: ")
    void couldNotDeleteFile(String path, @Cause Throwable cause);
    

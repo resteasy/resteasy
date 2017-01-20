@@ -33,8 +33,6 @@ import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 @Sharable
 public class RequestHandler extends SimpleChannelUpstreamHandler
 {
-   private static final Logger LOG = Logger.getLogger(RequestHandler.class);
-
    protected final RequestDispatcher dispatcher;
 
    public RequestHandler(RequestDispatcher dispatcher)
@@ -103,7 +101,7 @@ public class RequestHandler extends SimpleChannelUpstreamHandler
       }
       else
       {
-          LOG.info("Exception caught by handler", e);
+          LogMessages.LOGGER.info(Messages.MESSAGES.exceptionCaught(), e.getCause());
           e.getChannel().close();
       }
 
