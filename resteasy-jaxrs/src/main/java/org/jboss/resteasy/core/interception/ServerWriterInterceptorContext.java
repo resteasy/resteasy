@@ -19,9 +19,7 @@ import java.util.Enumeration;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * @deprecated Use org.jboss.resteasy.core.interception.jaxrs.ServerWriterInterceptorContext instead.
  */
-@Deprecated
 public class ServerWriterInterceptorContext extends AbstractWriterInterceptorContext
 {
    private HttpRequest request;

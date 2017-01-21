@@ -5,9 +5,7 @@ package org.jboss.resteasy.core.interception;
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * @deprecated Use org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistryListener instead.
  */
-@Deprecated
 public interface JaxrsInterceptorRegistryListener
 {
    void registryUpdated(JaxrsInterceptorRegistry registry);

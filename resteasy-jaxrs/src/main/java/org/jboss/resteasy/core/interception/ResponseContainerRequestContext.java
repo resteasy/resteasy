@@ -12,9 +12,7 @@ import java.net.URI;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * @deprecated Use org.jboss.resteasy.core.interception.jaxrs.ResponseContainerRequestContext instead
  */
-@Deprecated
 public class ResponseContainerRequestContext extends PreMatchContainerRequestContext
 {
    public ResponseContainerRequestContext(HttpRequest request)

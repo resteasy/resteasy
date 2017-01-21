@@ -25,9 +25,7 @@ import java.util.Set;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * @deprecated Use org.jboss.resteasy.core.interception.jaxrs.ContainerResponseContextImpl instead.
  */
-@Deprecated
 public class ContainerResponseContextImpl implements ContainerResponseContext
 {
    protected final HttpRequest request;
