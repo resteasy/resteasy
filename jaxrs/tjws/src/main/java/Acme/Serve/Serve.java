@@ -2759,6 +2759,10 @@ public class Serve implements ServletContext, Serializable
 
       private void addCookie(String name, String value, String path, String domain)
       {
+         if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"')
+         {
+          	value = value.substring(1, value.length() - 1);
+         }
          if (SESSION_COOKIE_NAME.equals(name) && sessionCookieValue == null)
          {
             sessionCookieValue = value;
