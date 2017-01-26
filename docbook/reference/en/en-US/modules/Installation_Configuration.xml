@@ -224,6 +224,17 @@
                                 Expand external entities in org.w3c.dom.Document files
                             </entry>
                         </row>
+                        <row>
+                            <entry>
+                                resteasy.gzip.max.input
+                            </entry>
+                            <entry>
+                                10000000
+                            </entry>
+                            <entry>
+                                Imposes maximum size on decompressed gzipped .
+                            </entry>
+                        </row>
                     </tbody>
                 </tgroup>
             </table>

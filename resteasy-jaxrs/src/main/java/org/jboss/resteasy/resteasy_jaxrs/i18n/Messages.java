@@ -242,6 +242,9 @@ public interface Messages
    
    @Message(id = BASE + 355, value = "It is illegal to inject a @PathParam into a singleton")
    String illegalToInjectPathParam();
+
+   @Message(id = BASE + 357, value = "GZIP input exceeds max size: %s")
+   String gzipExceedsMaxSize(int size);
    
    @Message(id = BASE + 360, value = "It is illegal to inject a @QueryParam into a singleton")
    String illegalToInjectQueryParam();
