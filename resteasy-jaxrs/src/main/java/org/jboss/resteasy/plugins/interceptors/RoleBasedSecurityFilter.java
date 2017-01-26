@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.interceptors;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.annotation.Priority;
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -33,8 +34,7 @@ public class RoleBasedSecurityFilter implements ContainerRequestFilter
    {
       if (denyAll) 
       {
-         requestContext.abortWith(Response.status(403).entity("Access forbidden: role not allowed").build());
-         return;
+         throw new ForbiddenException(Response.status(403).entity("Access forbidden: role not allowed").type("text/html").build());
       }
       if (permitAll) return;
       if (rolesAllowed != null)
@@ -46,8 +46,7 @@ public class RoleBasedSecurityFilter implements ContainerRequestFilter
             {
                if (context.isUserInRole(role)) return;
             }
-            requestContext.abortWith(Response.status(403).entity("Access forbidden: role not allowed").build());
-            return;
+            throw new ForbiddenException(Response.status(403).entity("Access forbidden: role not allowed").type("text/html").build());
          }
       }
       return;
