@@ -60,6 +60,10 @@ public interface LogMessages extends BasicLogger
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
    //                                                  WARN                                                 //
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 137, value =  "Invalid format for {0}, using default value {1}", format=Format.MESSAGE_FORMAT)
+   void invalidFormat(String parameterName, String defaultValue);
    
    @LogMessage(level = Level.WARN)
    @Message(id = BASE + 200, value = "Accept extensions not supported.")
