@@ -6,6 +6,10 @@ import org.jboss.resteasy.logging.Logger;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+/**
+ * @deprecated See RESTEASY-1578.
+ */
+@Deprecated
 public class JULLogger extends Logger
 {
    private transient java.util.logging.Logger delegate;

@@ -8,6 +8,10 @@ import java.text.MessageFormat;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+/**
+ * @deprecated See RESTEASY-1578.
+ */
+@Deprecated
 public class Log4jLogger extends org.jboss.resteasy.logging.Logger
 {
    private transient Logger delegate;
