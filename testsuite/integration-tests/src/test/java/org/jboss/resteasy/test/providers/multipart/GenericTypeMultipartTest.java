@@ -52,7 +52,7 @@ public class GenericTypeMultipartTest {
      */
     @Test
     public void testGenericType() throws Exception {
-        ResteasyClient client = new ResteasyClientBuilder().providerFactory(ResteasyProviderFactory.getInstance()).build();
+        ResteasyClient client = new ResteasyClientBuilder().register(GenericTypeStringListReaderWriter.class).build();
         ResteasyWebTarget target = client.target(generateURL("/test"));
         MultipartFormDataOutput output = new MultipartFormDataOutput();
         List<String> list = new ArrayList<>();
