@@ -275,11 +275,11 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
                 }
             };
         } else if (sniConfiguration == null) {
-            final SSLEngine engine = sslContext.createSSLEngine();
-            engine.setUseClientMode(false);
             return new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
+                    SSLEngine engine = sslContext.createSSLEngine();
+                    engine.setUseClientMode(false);
                     ch.pipeline().addFirst(new SslHandler(engine));
                     setupHandlers(ch, dispatcher, HTTPS);
                 }
