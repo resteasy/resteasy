@@ -52,8 +52,15 @@ public class ServletContainerDispatcher
    {
       this.requestFactory = requestFactory;
       this.responseFactory = responseFactory;
+      ResteasyDeployment ctxDeployment = (ResteasyDeployment) servletContext.getAttribute(ResteasyDeployment.class.getName());
       ResteasyProviderFactory globalFactory = (ResteasyProviderFactory) servletContext.getAttribute(ResteasyProviderFactory.class.getName());
+      if (globalFactory == null && ctxDeployment != null) {
+         globalFactory = ctxDeployment.getProviderFactory();
+      }
       Dispatcher globalDispatcher = (Dispatcher) servletContext.getAttribute(Dispatcher.class.getName());
+      if (globalDispatcher == null && ctxDeployment != null) {
+         globalDispatcher = ctxDeployment.getDispatcher();
+      }
 
       String application = bootstrap.getInitParameter("javax.ws.rs.Application");
       String useGlobalStr = bootstrap.getInitParameter("resteasy.servlet.context.deployment");
