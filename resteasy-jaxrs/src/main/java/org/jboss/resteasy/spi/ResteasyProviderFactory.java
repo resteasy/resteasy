@@ -1214,6 +1214,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    @Override
    public String toHeaderString(Object object)
    {
+      if (object == null) return "";
       if (object instanceof String) return (String) object;
       Class<?> aClass = object.getClass();
       ParamConverter paramConverter = getParamConverter(aClass, null, null);
