@@ -127,7 +127,7 @@ public class SpringBeanProcessor implements BeanFactoryPostProcessor, SmartAppli
             resourceFactories.put(registeredBeanName, resourceFactory);
          }
 
-         else if (bean instanceof ResteasyDeployment) {
+         else if (bean instanceof ResteasyDeployment && deployment != null) {
             ResteasyDeployment beanDeployment = (ResteasyDeployment) bean;
             deployment.merge(beanDeployment);
             deployment.start();
