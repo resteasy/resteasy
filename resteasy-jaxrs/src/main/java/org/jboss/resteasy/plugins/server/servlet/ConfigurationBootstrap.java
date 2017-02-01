@@ -239,7 +239,12 @@ abstract public class ConfigurationBootstrap implements ResteasyConfiguration
          deployment.setWiderRequestMatching(wider);
       }
 
-
+      String addCharset = getParameter(ResteasyContextParameters.RESTEASY_ADD_CHARSET);
+      if (addCharset != null)
+      {
+         boolean add = parseBooleanParam(ResteasyContextParameters.RESTEASY_ADD_CHARSET, addCharset);
+         deployment.setAddCharset(add);
+      }
 
       String injectorFactoryClass = getParameter("resteasy.injector.factory");
       if (injectorFactoryClass != null)
