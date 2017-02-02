@@ -120,7 +120,7 @@ public class RequestFilterTest {
      * The request is processed by registered filter before it is send to the server. Filter aborts processing
      * by throwing a custom exception, which should not be wrapped in a ProcessingException. [RESTEASY-1591]
      * @tpPassCrit Expected Exception is thrown from the Client
-     * @tpSince RESTEasy 3.0.20
+     * @tpSince RESTEasy 3.0.21
      */
     @Test(expected = ClientCustomException.class)
     public void ThrowCustomExceptionFilterTest() {
