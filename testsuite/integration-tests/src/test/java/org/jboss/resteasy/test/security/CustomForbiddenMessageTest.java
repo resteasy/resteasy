@@ -91,5 +91,7 @@ public class CustomForbiddenMessageTest {
         Response response = authorizedClient.target(generateURL("/secured/deny")).request().get();
         Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
         Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class));
+        String ct = response.getHeaderString("Content-Type");
+        Assert.assertEquals("text/plain", ct);
     }
 }
