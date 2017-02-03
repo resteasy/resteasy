@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
  * @tpSubChapter Resources
  * @tpChapter Integration tests
  * @tpTestCaseDetails Add charset "UTF-8" to response mediatype if context parameter "resteasy.add.charset" is true
- * @tpSince RESTEasy 3.1.1.Final
+ * @tpSince RESTEasy 3.0.20.Final
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -75,17 +75,29 @@ public class DefaultCharsetTest {
     
     @Test
     public void testCharset() throws Exception {
-       doTest("_true",    "/true",    "/nocharset",   "UTF-8");   // "resteasy.add.charset" set to true, no charset set in response
-       doTest("_true",    "/true",    "/nomediatype", null);      // "resteasy.add.charset" set to true, no mediatype set in response
-       doTest("_true",    "/true",    "/charset",     "UTF-16");  // "resteasy.add.charset" set to true, charset already set
-       
-       doTest("_false",   "/false",   "/nocharset",   null);      // "resteasy.add.charset" set to false
-       doTest("_false",   "/false",   "/nomediatype", null);      // "resteasy.add.charset" set to false
-       doTest("_false",   "/false",   "/charset",     "UTF-16");  // "resteasy.add.charset" set to false
-       
-       doTest("_default", "/default", "/nocharset",   null);      // "resteasy.add.charset" not set
-       doTest("_default", "/default", "/nomediatype", null);      // "resteasy.add.charset" not set  
-       doTest("_default", "/default", "/charset",    "UTF-16");   // "resteasy.add.charset" not set
+       doTest("_true",    "/true",    "/nocharset",     "UTF-8");  // "resteasy.add.charset" set to true, text media type, charset not set
+       doTest("_true",    "/true",    "/charset",       "UTF-16"); // "resteasy.add.charset" set to true, text media type, charset already set
+       doTest("_true",    "/true",    "/nomediatype",   null);     // "resteasy.add.charset" set to true, no mediatype set in response
+       doTest("_true",    "/true",    "/xml_nocharset", "UTF-8");  // "resteasy.add.charset" set to true, application/xml media type, charset not set
+       doTest("_true",    "/true",    "/xml_charset",   "UTF-16"); // "resteasy.add.charset" set to true, application/xml media type, charset already set
+       doTest("_true",    "/true",    "/external",      "UTF-8");  // "resteasy.add.charset" set to true, application/xml-... media type, charset not set
+       doTest("_true",    "/true",    "/json",          null);     // "resteasy.add.charset" set to true, application/json media type, charset not set
+
+       doTest("_false",   "/false",   "/nocharset",     null);     // "resteasy.add.charset" set to false, text media type, charset not set
+       doTest("_false",   "/false",   "/charset",       "UTF-16"); // "resteasy.add.charset" set to false, text media type, charset already set
+       doTest("_false",   "/false",   "/nomediatype",   null);     // "resteasy.add.charset" set to false, no media type set in response
+       doTest("_false",   "/false",   "/xml_nocharset", null);     // "resteasy.add.charset" set to false, application/xml media type, charset not set
+       doTest("_false",   "/false",   "/xml_charset",   "UTF-16"); // "resteasy.add.charset" set to false, application/xml media type, charset already set
+       doTest("_false",   "/false",   "/external",      null);     // "resteasy.add.charset" set to false, application/xml-... media type, charset not set
+       doTest("_false",   "/false",   "/json",          null);     // "resteasy.add.charset" set to false, application/json media type, charset not set
+
+       doTest("_default", "/default",  "/nocharset",     null);     // "resteasy.add.charset" not set, text media type, charset not set
+       doTest("_default", "/default",  "/charset",       "UTF-16"); // "resteasy.add.charset" not set, text media type, charset already set
+       doTest("_default", "/default",  "/nomediatype",   null);     // "resteasy.add.charset" not set, no mediatype set in response
+       doTest("_default", "/default", "/xml_nocharset",  null);     // "resteasy.add.charset" not set, application/xml media type, charset not set
+       doTest("_default", "/default", "/xml_charset",    "UTF-16"); // "resteasy.add.charset" not set, application/xml media type, charset already set
+       doTest("_default", "/default", "/external",       null);     // "resteasy.add.charset" not set, application/xml-... media type, charset not set
+       doTest("_default", "/default", "/json",           null);     // "resteasy.add.charset" not set, application/json media type, charset not set
     }
 
     void doTest(String suffix, String mapping, String path, String expectedMediaType) throws Exception {

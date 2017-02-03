@@ -65,9 +65,12 @@ public class ServerResponseWriter
               {
                  mt = MediaType.valueOf(o.toString());
               }
-              if ("text".equalsIgnoreCase(mt.getType()) && !mt.getParameters().containsKey(MediaType.CHARSET_PARAMETER))
+              if (!mt.getParameters().containsKey(MediaType.CHARSET_PARAMETER))
               {
-                 jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mt.withCharset(StandardCharsets.UTF_8.toString()));
+                 if ("text".equalsIgnoreCase(mt.getType()) || ("application".equalsIgnoreCase(mt.getType()) && mt.getSubtype().toLowerCase().startsWith("xml")))
+                 {
+                    jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mt.withCharset(StandardCharsets.UTF_8.toString()));
+                 }
               }
            }
         }
