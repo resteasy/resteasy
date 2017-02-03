@@ -34,7 +34,7 @@ public class RoleBasedSecurityFilter implements ContainerRequestFilter
    {
       if (denyAll) 
       {
-         throw new ForbiddenException(Response.status(403).entity("Access forbidden: role not allowed").type("text/html").build());
+         throw new ForbiddenException(Response.status(403).entity("Access forbidden: role not allowed").type("text/html;charset=UTF-8").build());
       }
       if (permitAll) return;
       if (rolesAllowed != null)
@@ -46,7 +46,7 @@ public class RoleBasedSecurityFilter implements ContainerRequestFilter
             {
                if (context.isUserInRole(role)) return;
             }
-            throw new ForbiddenException(Response.status(403).entity("Access forbidden: role not allowed").type("text/html").build());
+            throw new ForbiddenException(Response.status(403).entity("Access forbidden: role not allowed").type("text/html;charset=UTF-8").build());
          }
       }
       return;

@@ -235,7 +235,7 @@ public class BasicAuthTest {
      * @tpSince RESTEasy 3.1.1
      */
     @Test
-    @Category({ExpectedFailing.class, NotForForwardCompatibility.class})
+    @Category(NotForForwardCompatibility.class)
     public void testContentTypeWithForbiddenMessage() {
         Response response = unauthorizedClient.target(generateURL("/secured/denyWithContentType")).request().get();
         Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
