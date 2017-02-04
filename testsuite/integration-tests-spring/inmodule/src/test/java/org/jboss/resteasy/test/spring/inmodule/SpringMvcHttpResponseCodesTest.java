@@ -10,7 +10,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
-import org.jboss.resteasy.category.ExpectedFailing;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -61,7 +60,7 @@ public class SpringMvcHttpResponseCodesTest {
         war.addAsWebInfResource(SpringMvcHttpResponseCodesTest.class.getPackage(), "springMvcHttpResponseCodes/applicationContext.xml", "applicationContext.xml");
         war.addAsManifestResource(new StringAsset("Dependencies: org.springframework.spring meta-inf\n"), "MANIFEST.MF");
         war.addClass(SpringMvcHttpResponseCodesPerson.class);
-        return TestUtil.finishContainerPrepare(war, null, SpringMvcHttpResponseCodesResource.class);
+        return TestUtil.finishContainerPrepare(war, null, SpringMvcHttpResponseCodesResource.class, TestResource.class);
     }
 
     @Before
@@ -103,10 +102,11 @@ public class SpringMvcHttpResponseCodesTest {
 
     /**
      * @tpTestDetails Test server http response code for NotAcceptableException
+     * (The resource produces text/plain responses, while the client accepts application/json only)
      * @tpSince RESTEasy 3.1.0
      */
     @Test
-    @Category({NotForForwardCompatibility.class, ExpectedFailing.class}) // RESTEASY-1507
+    @Category(NotForForwardCompatibility.class)
     public void testNotAcceptableException() {
         Response response = authorizedClient.target(generateURL("/" + TestResource.TEST_PATH)).request()
                 .accept(MediaType.APPLICATION_JSON_TYPE).get();
@@ -115,6 +115,7 @@ public class SpringMvcHttpResponseCodesTest {
 
     /**
      * @tpTestDetails Test server http response code for NotFoundException
+     * (The client sends a GET to a URL that does not exist)
      * @tpSince RESTEasy 3.1.0
      */
     @Test
@@ -125,17 +126,19 @@ public class SpringMvcHttpResponseCodesTest {
 
     /**
      * @tpTestDetails Test server http response code for NotFoundException
+     * (The client sends a POST request to a resource path accepting GET only)
      * @tpSince RESTEasy 3.1.0
      */
     @Test
-    @Category({NotForForwardCompatibility.class, ExpectedFailing.class}) // RESTEASY-1507
-    public void testNotAllowedException() {
+    @Category(NotForForwardCompatibility.class)
+    public void testMethodNotAllowedException() {
         Response response = authorizedClient.target(generateURL("/" + TestResource.TEST_PATH)).request().post(null);
         Assert.assertEquals(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, response.getStatus());
     }
 
     /**
      * @tpTestDetails Test server http response code for BadRequestException
+     * (The client sends a bad request, not matching expected data format)
      * @tpSince RESTEasy 3.1.0
      */
     @Test
@@ -147,10 +150,11 @@ public class SpringMvcHttpResponseCodesTest {
 
     /**
      * @tpTestDetails Test server http response code for NotSupportedException
+     * (The client posts an application/xml request, while the server only accepts application/json 
      * @tpSince RESTEasy 3.1.0
      */
     @Test
-    @Category({NotForForwardCompatibility.class, ExpectedFailing.class}) // RESTEASY-1507
+    @Category(NotForForwardCompatibility.class)
     public void testNotSupportedException() {
         Response response = authorizedClient.target(generateURL("/" + TestResource.TEST_PATH + "/json")).request()
                 .post(Entity.entity("[{name:\"Zack\"}]", MediaType.APPLICATION_XML_TYPE));
@@ -164,7 +168,7 @@ public class SpringMvcHttpResponseCodesTest {
     @Test
     public void testNotAuthorizedException() {
         Response response = nonAutorizedClient.target(generateURL("/secured/json")).request()
-                .post(Entity.entity("[{name:\"Zack\"}]", MediaType.APPLICATION_XML_TYPE));
+                .post(Entity.entity("{\"name\":\"Zack\"}", MediaType.APPLICATION_JSON_TYPE));
         Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
     }
 
@@ -174,11 +178,18 @@ public class SpringMvcHttpResponseCodesTest {
      * @tpSince RESTEasy 3.1.0
      */
     @Test
-    @Category({NotForForwardCompatibility.class, ExpectedFailing.class}) // RESTEASY-1507
+    @Category(NotForForwardCompatibility.class)
     public void testForbiddenException() {
         Response response = userAuthorizedClient.target(generateURL("/secured/json")).request()
-                .post(Entity.entity("[{name:\"Zack\"}]", MediaType.APPLICATION_XML_TYPE));
-        // It is allowed by RFC7231 to return NOT FOUND instead
-        Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+                .post(Entity.entity("{\"name\":\"Zack\"}", MediaType.APPLICATION_JSON_TYPE));
+        Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
+    }
+
+    @Test
+    @Category(NotForForwardCompatibility.class)
+    public void testOK() {
+        Response response = authorizedClient.target(generateURL("/secured/json")).request()
+                .post(Entity.entity("{\"name\":\"Zack\"}", MediaType.APPLICATION_JSON_TYPE));
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
     }
 }
