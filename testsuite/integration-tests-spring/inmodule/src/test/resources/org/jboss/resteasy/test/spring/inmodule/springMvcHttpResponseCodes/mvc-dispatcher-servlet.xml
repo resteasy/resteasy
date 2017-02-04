@@ -6,4 +6,5 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <import resource="classpath:springmvc-resteasy.xml"/>
 
     <bean id="springMvcHttpResponseCodesResource" class="org.jboss.resteasy.test.spring.inmodule.resource.SpringMvcHttpResponseCodesResource"/>
+    <bean id="testResource" class="org.jboss.resteasy.test.spring.inmodule.resource.TestResource"/>
 </beans>
