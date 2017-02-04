@@ -24,7 +24,7 @@
         <realm-name>jaxrsSecDomain</realm-name>
     </login-config>
 
-    <context-param>
+    <context-param> <!-- this is useless -->
         <param-name>resteasy.role.based.security</param-name>
         <param-value>true</param-value>
     </context-param>

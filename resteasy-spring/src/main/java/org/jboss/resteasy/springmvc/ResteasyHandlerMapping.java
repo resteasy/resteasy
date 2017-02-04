@@ -7,6 +7,7 @@ import org.jboss.resteasy.plugins.spring.i18n.Messages;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.util.HttpResponseCodes;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.Ordered;
 import org.springframework.web.servlet.HandlerExecutionChain;
@@ -14,7 +15,10 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.NotAcceptableException;
+import javax.ws.rs.NotAllowedException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.core.Response;
 
 /**
@@ -93,6 +97,18 @@ public class ResteasyHandlerMapping implements HandlerMapping, Ordered, Initiali
             throw e;
          }
          LogMessages.LOGGER.error(Messages.MESSAGES.resourceNotFound(e.getMessage()), e);
+      }
+      catch (NotAcceptableException na) {
+         requestWrapper.setError(HttpResponseCodes.SC_NOT_ACCEPTABLE, "The requested media type is not acceptable.");
+         return new HandlerExecutionChain(requestWrapper, interceptors);
+      }
+      catch (NotAllowedException na) {
+         requestWrapper.setError(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, "Not allowed");
+         return new HandlerExecutionChain(requestWrapper, interceptors);
+      }
+      catch (NotSupportedException nse) {
+         requestWrapper.setError(HttpResponseCodes.SC_UNSUPPORTED_MEDIA_TYPE, "Not supported");
+         return new HandlerExecutionChain(requestWrapper, interceptors);
       }
       catch (Failure e)
       {
