@@ -428,7 +428,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       finally
       {
-         clearContextData();
+         ResteasyProviderFactory.popContextDataMap();
       }
    }
 
@@ -457,7 +457,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       finally
       {
-         clearContextData();
+         ResteasyProviderFactory.popContextDataMap();
       }
    }
 
