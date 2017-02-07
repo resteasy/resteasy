@@ -432,7 +432,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       finally
       {
-         clearContextData();
+         ResteasyProviderFactory.removeContextDataLevel();
       }
    }
 
@@ -461,7 +461,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       finally
       {
-         clearContextData();
+         ResteasyProviderFactory.removeContextDataLevel();
       }
    }
 

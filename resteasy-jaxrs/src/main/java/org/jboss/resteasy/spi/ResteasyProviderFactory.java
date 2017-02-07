@@ -524,7 +524,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public static void pushContextDataMap(Map<Class<?>, Object> map)
    {
-      contextualData.setLast(map);
+      contextualData.push(map);
    }
 
    public static Map<Class<?>, Object> getContextDataMap()
