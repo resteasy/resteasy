@@ -18,6 +18,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +58,7 @@ public class PropertyInjectorImpl implements PropertyInjector
 
    protected void populateMap(Class<?> clazz, ResteasyProviderFactory factory)
    {
-      for (Field field : clazz.getDeclaredFields())
+      for (Field field : getDeclaredFields(clazz))
       {
          Annotation[] annotations = field.getAnnotations();
          if (annotations == null || annotations.length == 0) continue;
@@ -66,11 +68,14 @@ public class PropertyInjectorImpl implements PropertyInjector
          ValueInjector extractor = getParameterExtractor(clazz, factory, field, annotations, type, genericType);
          if (extractor != null)
          {
-            if (!Modifier.isPublic(field.getModifiers())) field.setAccessible(true);
+            if (!Modifier.isPublic(field.getModifiers()))
+            {
+               setAccessible(field);
+            }
             fieldMap.put(field, extractor);
          }
       }
-      for (Method method : clazz.getDeclaredMethods())
+      for (Method method : getDeclaredMethods(clazz))
       {
          if (!method.getName().startsWith("set")) continue;
          if (method.getParameterTypes().length != 1) continue;
@@ -99,7 +104,10 @@ public class PropertyInjectorImpl implements PropertyInjector
                if (older != null) continue;
             }
 
-            if (!Modifier.isPublic(method.getModifiers())) method.setAccessible(true);
+            if (!Modifier.isPublic(method.getModifiers()))
+            {
+               setAccessible(method);
+            }
             setters.add(new SetterMethod(method, extractor));
             setterhashes.put(hash, method);
          }
@@ -177,6 +185,61 @@ public class PropertyInjectorImpl implements PropertyInjector
          {
             throw new RuntimeException(e);
          }
+      }
+   }
+
+   private Field[] getDeclaredFields(final Class<?> clazz)
+   {
+       final SecurityManager sm = System.getSecurityManager();
+       if (sm != null)
+       {
+          return AccessController.doPrivileged(new PrivilegedAction<Field[]>()
+          {
+             @Override
+             public Field[] run()
+             {
+                return clazz.getDeclaredFields();
+             }
+          });
+       }
+       return clazz.getDeclaredFields();
+   }
+
+   private Method[] getDeclaredMethods(final Class<?> clazz)
+   {
+      final SecurityManager sm = System.getSecurityManager();
+      if (sm != null)
+      {
+         return AccessController.doPrivileged(new PrivilegedAction<Method[]>()
+         {
+            @Override
+            public Method[] run()
+            {
+               return clazz.getDeclaredMethods();
+            }
+         });
+      }
+      return clazz.getDeclaredMethods();
+   }
+
+   private void setAccessible(final AccessibleObject member)
+   {
+      final SecurityManager sm = System.getSecurityManager();
+      if (sm != null)
+      {
+         AccessController.doPrivileged(new PrivilegedAction<Void>()
+         {
+            @Override
+            public Void run()
+            {
+               member.setAccessible(true);
+               return null;
+            }
+         });
+      }
+      else
+      {
+         member.setAccessible(true);
       }
    }
 }
