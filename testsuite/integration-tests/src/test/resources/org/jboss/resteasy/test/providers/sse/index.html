@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>HTML5 SSE Examples</title>
+        <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+
+    </head>
+    
+    <body>
+		<div id="content">
+			<div id="chart">
+			</div>
+		</div>
+	</body>
+</html>
+
+<script type="text/javascript">
+	var chart = new Highcharts.Chart({
+	    chart: {
+	        renderTo: 'chart',
+	        defaultSeriesType: 'spline'
+	    },
+	    title: {
+                text: 'GreenHouse Status'
+        },           
+	    xAxis: {
+	        type: 'datetime'
+	    },   
+	    series: [{
+	        name: "Temperature",
+	        data: []
+	       }, 
+	       {
+	        name: "Humidity",
+	        data: [],
+	        color: '#00ff00'
+	       }
+	    ]
+	}); 
+
+	if( !!window.EventSource ) {
+	    var event = new EventSource("http://localhost:8080/resteasy-sse/service/server-sent-events/sse/1");
+	
+	    event.addEventListener('message', function( event ) {	
+	    	var datapoint = jQuery.parseJSON( event.data );
+	    	 
+	    	chart.series[ 0 ].addPoint({
+	            x: datapoint.timestamp,
+	            y: datapoint.tempe
+	        }, true, chart.series[ 0 ].data.length >= 50 );
+	        chart.series[ 1 ].addPoint({
+	            x: datapoint.timestamp,
+	            y: datapoint.humid
+	        }, true, chart.series[ 0 ].data.length >= 50 )
+	    } );
+
+	    $('#content').bind('unload',function() {
+	    	event.close();
+		}); 	                       
+	} 	
+</script>

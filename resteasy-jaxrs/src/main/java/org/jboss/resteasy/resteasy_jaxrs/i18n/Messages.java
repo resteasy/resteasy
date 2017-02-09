@@ -711,4 +711,25 @@ public interface Messages
    
    @Message(id = BASE + 1070, value = "Wrong password for: %s")
    String wrongPassword(String user);
+   
+   @Message(id = BASE + 1080, value = "WebTarget is not set for creating SseEventSource")
+   String webTargetIsNotSetForEventSource();
+   @Message(id = BASE + 1081, value = "EventSource is not ready to open")
+   String eventSourceIsNotReadyForOpen();
+   @Message(id = BASE + 1082, value = "No suitable message body writer for class : %s")
+   String notFoundMBW(String className);
+   @Message(id = BASE + 1083, value = "Sever sent event feature requries HttpServlet30Dispatcher")
+   String asyncServletIsRequired();
+   @Message(id = BASE + 1084, value = "Failed to read SseEvent")
+   String readEventException();
+   @Message(id = BASE + 1085, value = "%s is not set for OutboundSseEvent builder")
+   String nullValueSetToCreateOutboundSseEvent(String field);
+   @Message(id = BASE + 1086, value = "Failed to write data to InBoundSseEvent")
+   String failedToWriteDataToInboudEvent();
+   @Message(id = BASE + 1087, value = "No suitable message body reader for class : %s")
+   String notFoundMBR(String className);
+   @Message(id = BASE + 1088, value = "Failed to read data from InboundSseEvent")
+   String failedToReadData();
+   @Message(id = BASE + 1089, value = "Failed to create SseEventOutput")
+   String failedToCreateSseEventOutput();
 }

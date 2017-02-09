@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -57,6 +58,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    protected HostnameVerificationPolicy policy = HostnameVerificationPolicy.WILDCARD;
    protected ResteasyProviderFactory providerFactory;
    protected ExecutorService asyncExecutor;
+   protected ScheduledExecutorService scheduledExecutorService;
    protected boolean cleanupExecutor;
    protected SSLContext sslContext;
    protected Map<String, Object> properties = new HashMap<String, Object>();
@@ -92,7 +94,9 @@ public class ResteasyClientBuilder extends ClientBuilder
     *
     * @param asyncExecutor
     * @return
+    * @deprecated use {@link ResteasyClientBuilder#executorService(ExecutorService)} instead
     */
+   @Deprecated
    public ResteasyClientBuilder asyncExecutor(ExecutorService asyncExecutor)
    {
       return asyncExecutor(asyncExecutor, false);
@@ -105,6 +109,7 @@ public class ResteasyClientBuilder extends ClientBuilder
     * @param cleanupExecutor true if the Client should close the executor when it is closed
     * @return
     */
+   @Deprecated
    public ResteasyClientBuilder asyncExecutor(ExecutorService asyncExecutor, boolean cleanupExecutor)
    {
       this.asyncExecutor = asyncExecutor;
@@ -126,6 +131,14 @@ public class ResteasyClientBuilder extends ClientBuilder
       return this;
    }
 
+   @Override
+   public ResteasyClientBuilder readTimeout(long timeout, TimeUnit unit)
+   {
+      this.socketTimeout = timeout;
+      this.socketTimeoutUnits = unit;
+      return this;
+   }
+
    /**
     * The timeout for waiting for data. A timeout value of zero is interpreted as an infinite timeout
     *
@@ -133,10 +146,17 @@ public class ResteasyClientBuilder extends ClientBuilder
     * @param unit
     * @return
     */
+   @Deprecated
    public ResteasyClientBuilder socketTimeout(long timeout, TimeUnit unit)
    {
-      this.socketTimeout = timeout;
-      this.socketTimeoutUnits = unit;
+      return readTimeout(timeout, unit);
+   }
+
+   @Override
+   public ResteasyClientBuilder connectTimeout(long timeout, TimeUnit unit)
+   {
+      this.establishConnectionTimeout = timeout;
+      this.establishConnectionTimeoutUnits = unit;
       return this;
    }
 
@@ -147,11 +167,10 @@ public class ResteasyClientBuilder extends ClientBuilder
     * @param unit
     * @return
     */
+   @Deprecated
    public ResteasyClientBuilder establishConnectionTimeout(long timeout, TimeUnit unit)
    {
-      this.establishConnectionTimeout = timeout;
-      this.establishConnectionTimeoutUnits = unit;
-      return this;
+      return connectTimeout(timeout, unit);
    }
 
 
@@ -354,7 +373,7 @@ public class ResteasyClientBuilder extends ClientBuilder
       }
 
       ClientHttpEngine engine = httpEngine != null ? httpEngine : new ClientHttpEngineBuilder4().resteasyClientBuilder(this).build();
-      return new ResteasyClient(engine, executor, cleanupExecutor, config);
+      return new ResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
 
    }
 
@@ -379,7 +398,7 @@ public class ResteasyClientBuilder extends ClientBuilder
       }
 
       ClientHttpEngine engine = httpEngine != null ? httpEngine : new ClientHttpEngineBuilder43().resteasyClientBuilder(this).build();
-      return new ResteasyClient(engine, executor, cleanupExecutor, config);
+      return new ResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
 
    }
 
@@ -486,6 +505,19 @@ public class ResteasyClientBuilder extends ClientBuilder
          Map<Class<?>, Integer> contracts = config.getContracts(obj.getClass());
          register(obj, contracts);
       }
+      return this;
+   }
+
+   @Override
+   public ClientBuilder executorService(ExecutorService executorService)
+   {
+      return asyncExecutor(executorService, false);
+   }
+
+   @Override
+   public ClientBuilder scheduledExecutorService(ScheduledExecutorService scheduledExecutorService)
+   {
+      this.scheduledExecutorService = scheduledExecutorService;
       return this;
    }
 }
