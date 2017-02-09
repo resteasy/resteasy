@@ -8,6 +8,8 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
+import javax.ws.rs.client.RxInvoker;
+import javax.ws.rs.client.RxInvokerProvider;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Configuration;
@@ -19,7 +21,6 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.ReaderInterceptor;
-import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.WriterInterceptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
@@ -278,5 +279,10 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
    public Map<Class<?>, Integer> getContracts(Class<?> componentClass)
    {
       return providerFactory.getContracts(componentClass);
+   }
+   
+   public <I extends RxInvoker<?>> RxInvokerProvider<I> getRxInvokerProvider(Class<I> clazz)
+   {
+      return providerFactory.getRxInvokerProvider(clazz);
    }
 }

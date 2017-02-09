@@ -57,6 +57,10 @@
             <artifactId>jboss-servlet-api_3.1_spec</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.github.fge</groupId>
+            <artifactId>json-patch</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>tjws</artifactId>
             <version>${project.version}</version>

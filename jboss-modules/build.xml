@@ -103,7 +103,7 @@
 
         <!-- already present in wildfly -->
         <module-def name="javax.ws.rs.api">
-            <maven-resource group="org.jboss.spec.javax.ws.rs" artifact="jboss-jaxrs-api_2.0_spec"/>
+            <maven-resource group="org.jboss.spec.javax.ws.rs" artifact="jboss-jaxrs-api_2.1_spec"/>
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-atom-provider">
@@ -126,6 +126,14 @@
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jackson2-provider"/>
         </module-def>
 
+        <module-def name="com.github.fge.jackson-coreutils">
+            <maven-resource group="com.github.fge" artifact="jackson-coreutils"/>
+        </module-def>
+
+        <module-def name="com.github.fge.json-patch">
+            <maven-resource group="com.github.fge" artifact="json-patch"/>
+        </module-def>
+
         <module-def name="org.jboss.resteasy.resteasy-jaxb-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-jaxb-provider"/>
         </module-def>
@@ -135,7 +143,7 @@
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-jaxrs">
-            <maven-resource group="org.jboss.resteasy" artifact="resteasy-jaxrs"/>
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-jaxrs"/>  
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-client"/>
         </module-def>
 

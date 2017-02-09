@@ -4,6 +4,7 @@ import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.core.ProvidersContextRetainer;
 import org.jboss.resteasy.core.interception.jaxrs.ClientReaderInterceptorContext;
+import org.jboss.resteasy.plugins.providers.sse.EventInput;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HeaderValueProcessor;
 import org.jboss.resteasy.spi.MarshalledEntity;
@@ -201,7 +202,10 @@ public abstract class ClientResponse extends BuiltResponse
             {
                try
                {
-            	   close();
+                  if (!EventInput.class.isInstance(entity))
+                  {
+                     close();
+                  }
                }
                catch (Exception ignored)
                {

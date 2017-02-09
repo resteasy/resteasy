@@ -38,6 +38,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
+import javax.ws.rs.client.RxInvoker;
+import javax.ws.rs.client.RxInvokerProvider;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.DynamicFeature;
@@ -72,6 +74,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -1580,6 +1583,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          newContracts.put(Feature.class, priority);
 
       }
+      if (isA(provider, RxInvokerProvider.class, contracts))
+      {
+         int priority = getPriority(priorityOverride, contracts, RxInvokerProvider.class, provider);
+         newContracts.put(RxInvokerProvider.class, priority);
+      }
    }
 
    /**
@@ -2405,5 +2413,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public Link.Builder createLinkBuilder()
    {
       return new LinkBuilderImpl();
+   }
+   
+   public <I extends RxInvoker> RxInvokerProvider<I> getRxInvokerProvider(Class<I> clazz) {
+      for (Entry<Class<?>, Map<Class<?>, Integer>> entry : classContracts.entrySet()) {
+         if (entry.getValue().containsKey(RxInvokerProvider.class)) {
+            RxInvokerProvider<?> rip = (RxInvokerProvider<?>)createProviderInstance(entry.getKey());
+            if (rip.isProviderFor(clazz)) {
+               return (RxInvokerProvider<I>)rip;
+            }
+         }
+      }
+      return null;
    }
 }

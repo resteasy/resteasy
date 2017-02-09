@@ -20,6 +20,7 @@ import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.DynamicFeature;
@@ -227,6 +228,10 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       return method.getMethod();
    }
 
+   public Object invokeDryRun(HttpRequest request, HttpResponse response) {
+      Object target = resource.createResource(request, response, resourceMethodProviderFactory);
+      return invokeDryRun(request, response, target);
+   }
 
 
    public BuiltResponse invoke(HttpRequest request, HttpResponse response)
@@ -235,6 +240,20 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       return invoke(request, response, target);
    }
 
+   public Object invokeDryRun(HttpRequest request, HttpResponse response, Object target)
+   {
+      request.setAttribute(ResourceMethodInvoker.class.getName(), this);
+      incrementMethodCount(request.getHttpMethod());
+      ResteasyUriInfo uriInfo = (ResteasyUriInfo) request.getUri();
+      if (method.getPath() != null)
+      {
+         uriInfo.pushMatchedURI(uriInfo.getMatchingPath());
+      }
+      uriInfo.pushCurrentResource(target);
+      Object rtn = invokeOnTargetDryRun(request, response, target);
+      return rtn;
+   }
+   
    public BuiltResponse invoke(HttpRequest request, HttpResponse response, Object target)
    {
       request.setAttribute(ResourceMethodInvoker.class.getName(), this);
@@ -248,6 +267,25 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       BuiltResponse rtn = invokeOnTarget(request, response, target);
       return rtn;
    }
+   
+   protected Object invokeOnTargetDryRun(HttpRequest request, HttpResponse response, Object target)
+   {
+      ResteasyProviderFactory.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
+
+      Object rtn = null;
+      try
+      {
+         rtn = methodInjector.invoke(request, response, target);
+      }
+      catch (RuntimeException ex)
+      {
+        throw new ProcessingException(ex);
+
+      }
+      return rtn;
+   }
+
+   
 
    protected BuiltResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
    {
@@ -332,7 +370,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
             Response r = (Response)rtn;
             Headers<Object> metadata = new Headers<Object>();
             metadata.putAll(r.getMetadata());
-            rtn = new BuiltResponse(r.getStatus(), metadata, r.getEntity(), null);
+            rtn = new BuiltResponse(r.getStatus(), r.getStatusInfo().getReasonPhrase(), metadata, r.getEntity(), null);
          }
          BuiltResponse rtn1 = (BuiltResponse) rtn;
          rtn1.addMethodAnnotations(getMethodAnnotations());
@@ -476,6 +514,9 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       return MediaType.WILDCARD_TYPE;
    }
+   
+   
+   
 
    public Set<String> getHttpMethods()
    {
