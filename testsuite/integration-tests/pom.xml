@@ -118,6 +118,13 @@
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-sse-provider</artifactId>
+            <version>${version.resteasy.testsuite}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
             <version>${version.resteasy.testsuite}</version>
             <scope>provided</scope>
