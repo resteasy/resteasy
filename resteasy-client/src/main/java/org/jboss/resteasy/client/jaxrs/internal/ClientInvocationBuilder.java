@@ -1,19 +1,27 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.NotImplementedYetException;
 
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.client.AsyncInvoker;
+import javax.ws.rs.client.CompletionStageRxInvoker;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.NioInvoker;
+import javax.ws.rs.client.RxInvoker;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -306,5 +314,51 @@ public class ClientInvocationBuilder implements Invocation.Builder
    {
       invocation.property(name, value);
       return this;
+   }
+
+   @Override
+   public NioInvoker nio()
+   {
+      throw new NotImplementedYetException();
+   }
+
+   @Override
+   public CompletionStageRxInvoker rx()
+   {
+      return new CompletionStageRxInvokerImpl(this);
+   }
+
+   @Override
+   public CompletionStageRxInvoker rx(ExecutorService executorService)
+   {
+      return new CompletionStageRxInvokerImpl(this, executorService);
+   }
+
+   @Override
+   public <T extends RxInvoker> T rx(Class<T> clazz)
+   {
+      try
+      {
+         return clazz.getConstructor().newInstance();
+      }
+      catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+            | NoSuchMethodException | SecurityException e)
+      {
+         throw new RuntimeException(Messages.MESSAGES.unableToInstantiate(clazz), e);
+      }
+   }
+
+   @Override
+   public <T extends RxInvoker> T rx(Class<T> clazz, ExecutorService executorService)
+   {
+      try
+      {
+         return clazz.getConstructor(ExecutorService.class).newInstance(executorService);
+      }
+      catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+            | NoSuchMethodException | SecurityException e)
+      {
+         throw new RuntimeException(Messages.MESSAGES.unableToInstantiate(clazz), e);
+      }
    }
 }
