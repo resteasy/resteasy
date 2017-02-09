@@ -158,6 +158,10 @@
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-json-p-provider"/>
         </module-def>
         	
+        <module-def name="org.jboss.resteasy.resteasy-sse-provider">
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-sse-provider"/>
+        </module-def>
+        	
         <module-def name="org.jboss.resteasy.resteasy-legacy">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-legacy"/>
         </module-def>
