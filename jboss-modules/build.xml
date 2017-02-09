@@ -103,7 +103,7 @@
 
         <!-- already present in wildfly -->
         <module-def name="javax.ws.rs.api">
-            <maven-resource group="org.jboss.spec.javax.ws.rs" artifact="jboss-jaxrs-api_2.0_spec"/>
+            <maven-resource group="javax.ws.rs" artifact="javax.ws.rs-api"/>
         </module-def>
 
         <module-def name="org.jboss.resteasy.resteasy-atom-provider">
