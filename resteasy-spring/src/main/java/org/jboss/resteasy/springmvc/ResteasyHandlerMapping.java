@@ -99,15 +99,15 @@ public class ResteasyHandlerMapping implements HandlerMapping, Ordered, Initiali
          LogMessages.LOGGER.error(Messages.MESSAGES.resourceNotFound(e.getMessage()), e);
       }
       catch (NotAcceptableException na) {
-         requestWrapper.setError(HttpResponseCodes.SC_NOT_ACCEPTABLE, "The requested media type is not acceptable.");
+         requestWrapper.setError(HttpResponseCodes.SC_NOT_ACCEPTABLE, Messages.MESSAGES.requestedMediaNotAcceptable());
          return new HandlerExecutionChain(requestWrapper, interceptors);
       }
       catch (NotAllowedException na) {
-         requestWrapper.setError(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, "Not allowed");
+         requestWrapper.setError(HttpResponseCodes.SC_METHOD_NOT_ALLOWED, Messages.MESSAGES.notAllowed());
          return new HandlerExecutionChain(requestWrapper, interceptors);
       }
       catch (NotSupportedException nse) {
-         requestWrapper.setError(HttpResponseCodes.SC_UNSUPPORTED_MEDIA_TYPE, "Not supported");
+         requestWrapper.setError(HttpResponseCodes.SC_UNSUPPORTED_MEDIA_TYPE, Messages.MESSAGES.notSupported());
          return new HandlerExecutionChain(requestWrapper, interceptors);
       }
       catch (Failure e)
