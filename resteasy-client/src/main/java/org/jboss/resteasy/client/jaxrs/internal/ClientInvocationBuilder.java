@@ -1,22 +1,28 @@
 package org.jboss.resteasy.client.jaxrs.internal;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.client.AsyncInvoker;
+import javax.ws.rs.client.CompletionStageRxInvoker;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.RxInvoker;
+import javax.ws.rs.client.RxInvokerProvider;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+
 import java.net.URI;
 import java.util.Locale;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
+ * @author <a href="mailto:alessio.soldano@jboss.com">Alessio Soldano</a>
  * @version $Revision: 1 $
  */
 public class ClientInvocationBuilder implements Invocation.Builder
@@ -323,4 +329,37 @@ public class ClientInvocationBuilder implements Invocation.Builder
    {
       invocation.setChunked(chunked);
    }
+
+
+   @Override
+   public CompletionStageRxInvoker rx()
+   {
+      return new CompletionStageRxInvokerImpl(this, invocation.getClient().asyncInvocationExecutor());
+   }
+
+   @Override
+   public <T extends RxInvoker> T rx(Class<T> clazz)
+   {
+      RxInvokerProvider<T> provider = invocation.getClientConfiguration().getRxInvokerProvider(clazz);
+      if (provider == null) {
+         throw new RuntimeException(Messages.MESSAGES.unableToInstantiate(clazz));
+      }
+      return provider.getRxInvoker(this, invocation.getClient().asyncInvocationExecutor());
+   }
+
+   public Response patch(Entity<?> entity)
+   {
+      return build(HttpMethod.PATCH, entity).invoke();
+   }
+
+   public <T> T patch(Entity<?> entity, Class<T> responseType)
+   {
+      return build(HttpMethod.PATCH, entity).invoke(responseType);
+   }
+
+   public <T> T patch(Entity<?> entity, GenericType<T> responseType)
+   {
+      return build(HttpMethod.PATCH, entity).invoke(responseType);
+   }
+
 }

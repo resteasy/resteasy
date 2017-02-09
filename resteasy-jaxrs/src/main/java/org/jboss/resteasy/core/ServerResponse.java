@@ -27,5 +27,6 @@ public class ServerResponse extends BuiltResponse
       this.setMetadata(response.getMetadata());
       this.setEntityClass(response.getEntityClass());
       this.setGenericType(response.getGenericType());
+      this.setReasonPhrase(response.getReasonPhrase());
    }
 }

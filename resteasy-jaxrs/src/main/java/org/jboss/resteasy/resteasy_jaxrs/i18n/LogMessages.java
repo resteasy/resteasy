@@ -145,6 +145,14 @@ public interface LogMessages extends BasicLogger
    @Message(id = BASE + 175, value = "The use of %s is deprecated, please use javax.ws.rs.Application as a context-param instead")
    void useOfApplicationClass(String className);
    
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 180, value = "Skip illegal field [%s] in value: [%s]")
+   void skipIllegalField(String filed, String value);
+   
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 185, value = "Skip unkown field [%s]")
+   void skipUnkownFiled(String filed);
+   
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
    //                                                  INFO                                                 //
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////

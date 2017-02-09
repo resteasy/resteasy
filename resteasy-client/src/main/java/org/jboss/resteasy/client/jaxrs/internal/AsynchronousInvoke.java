@@ -6,6 +6,9 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
+
+import org.jboss.resteasy.spi.NotImplementedYetException;
+
 import java.util.concurrent.Future;
 
 /**
@@ -271,4 +274,25 @@ public class AsynchronousInvoke implements AsyncInvoker
       invocation.setEntity(entity);
       return invocation.submit(callback);
    }
+
+   public Future<Response> patch(Entity<?> entity) {
+      throw new NotImplementedYetException();
+   }
+
+   public <T> Future<T> patch(Entity<?> entity, Class<T> responseType)
+   {
+      return method(HttpMethod.PATCH, entity, responseType);
+   }
+
+   public <T> Future<T> patch(Entity<?> entity, GenericType<T> responseType)
+   {
+      return method(HttpMethod.PATCH, entity, responseType);
+   }
+
+   public <T> Future<T> patch(Entity<?> entity, InvocationCallback<T> callback)
+   {
+      return method(HttpMethod.PATCH, entity, callback);
+   }
+
+
 }
