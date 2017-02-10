@@ -24,7 +24,7 @@ public class SseResource
    private final Object outputLock = new Object();
 
    private SseEventOutput sseEventOutput;
-
+   
    //TODO: @Inject
    private SseContext sseContext = new SseContextImpl();
 
@@ -43,7 +43,7 @@ public class SseResource
          builder.name("Add");
          builder.comment("single event is added");
          builder.data("single");
-         sseEventOutput.write(builder.build());
+         sseEventOutput.onNext(builder.build());
       } catch (Exception e) {
          System.out.println(e);
       }
@@ -71,7 +71,7 @@ public class SseResource
       if(sseEventOutput == null) {
          return;
       }
-      sseEventOutput.write(sseContext.newEvent().name("custom-message").data(String.class, message).build());
+      sseEventOutput.onNext(sseContext.newEvent().name("custom-message").data(String.class, message).build());
    }
 
    @DELETE
@@ -106,25 +106,25 @@ public class SseResource
          {
             try
             {
-               output.write(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 1));
+               output.onNext(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 1));
                Thread.sleep(1000);
-               output.write(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 2));
+               output.onNext(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 2));
                Thread.sleep(1000);
-               output.write(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 3));
+               output.onNext(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 3));
                Thread.sleep(1000);
-               output.write(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 4));
+               output.onNext(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 4));
                Thread.sleep(1000);
-               output.write(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 5));
+               output.onNext(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 5));
                Thread.sleep(1000);
-               output.write(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 6));
+               output.onNext(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 6));
                Thread.sleep(1000);
-               output.write(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 7));
+               output.onNext(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 7));
                Thread.sleep(1000);
-               output.write(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 8));
+               output.onNext(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 8));
                Thread.sleep(1000);
-               output.write(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 9));
+               output.onNext(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 9));
                Thread.sleep(1000);
-               output.write(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 10));
+               output.onNext(createStatsEvent(sseContext.newEvent().comment("greenhouse"), 10));
 
                output.close();
             }
@@ -141,42 +141,33 @@ public class SseResource
    @GET
    @Path("domains/{id}")
    @Produces(MediaType.SERVER_SENT_EVENTS)
-   public SseEventOutput startDomain(@PathParam("id") final String id)
-   {
-      final SseEventOutput output = sseContext.newOutput();
+   public SseEventOutput startDomain(@PathParam("id") final String id) {
+       final SseEventOutput output = sseContext.newOutput();
 
-      new Thread()
-      {
-         public void run()
-         {
-            try
-            {
-               output.write(sseContext.newEvent().name("domain-progress")
-                     .data(String.class, "starting domain " + id + " ...").build());
+       new Thread()
+       {
+          public void run()
+          {
+           try {
+               output.onNext(sseContext.newEvent().name("domain-progress")
+                                      .data(String.class, "starting domain " + id + " ...").build());
                Thread.sleep(200);
-               output.write(sseContext.newEvent().name("domain-progress").data("50%").build());
+               output.onNext(sseContext.newEvent().name("domain-progress").data("50%").build());
                Thread.sleep(200);
-               output.write(sseContext.newEvent().name("domain-progress").data("60%").build());
+               output.onNext(sseContext.newEvent().name("domain-progress").data("60%").build());
                Thread.sleep(200);
-               output.write(sseContext.newEvent().name("domain-progress").data("70%").build());
+               output.onNext(sseContext.newEvent().name("domain-progress").data("70%").build());
                Thread.sleep(200);
-               output.write(sseContext.newEvent().name("domain-progress").data("99%").build());
+               output.onNext(sseContext.newEvent().name("domain-progress").data("99%").build());
                Thread.sleep(200);
-               output.write(sseContext.newEvent().name("domain-progress").data("Done.").build());
+               output.onNext(sseContext.newEvent().name("domain-progress").data("Done.").build());
                output.close();
-
-            }
-            catch (final InterruptedException e)
-            {
+           } catch (final InterruptedException | IOException e) {
                e.printStackTrace();
-            }
-            catch (IOException e)
-            {
-               e.printStackTrace();
-            }
-         }
-      }.start();
+           }
+          }
+       }.start();
 
-      return output;
+       return output;
    }
 }

@@ -9,8 +9,8 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.sse.InboundSseEvent;
+import javax.ws.rs.sse.SseClientSubscriber;
 import javax.ws.rs.sse.SseEventInput;
-import javax.ws.rs.sse.SseEventSource;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -79,16 +79,11 @@ public class SseTest {
        SseEventSourceImpl.SourceBuilder builder = new SseEventSourceImpl.SourceBuilder(target);
 
        SseEventSourceImpl eventSource = (SseEventSourceImpl) builder.build();
-       eventSource.register(new SseEventSource.Listener()
-       {
-          @Override
-          public void onEvent(InboundSseEvent event)
-          {
-             results.add(event.toString());
-             latch.countDown();
-          }
-       });
-
+       
+       eventSource.subscribe(SseClientSubscriber.builder().onNext(event -> {
+            results.add(event.toString());
+            latch.countDown();
+          }).build());
        eventSource.open();
 
        WebTarget targetPost = new ResteasyClientBuilder().build()
@@ -113,18 +108,14 @@ public class SseTest {
        SseEventSourceImpl.SourceBuilder builder = new SseEventSourceImpl.SourceBuilder(target);
 
        SseEventSourceImpl eventSource = (SseEventSourceImpl) builder.build();
-       eventSource.register(new SseEventSource.Listener()
-       {
-          @Override
-          public void onEvent(InboundSseEvent event)
-          {
+       eventSource.subscribe(SseClientSubscriber.builder().onNext(event -> {
              results.add(event.readData());
              latch.countDown();
-          }
-       });
+          }).build());
        eventSource.open();
+       
        target.request().buildPost(null);
-       Assert.assertTrue("Waiting for evet to be delivered has timed out.", latch.await(10, TimeUnit.SECONDS));
+       Assert.assertTrue("Waiting for event to be delivered has timed out.", latch.await(10, TimeUnit.SECONDS));
        eventSource.close();
        Assert.assertTrue("6 SseInboundEvent expected", results.size() == 6);
        Assert.assertTrue("Expect the last event is Done event, but it is :" + results.toArray(new String[]

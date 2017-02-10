@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.ws.rs.Flow.Subscriber;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -38,8 +39,8 @@ public class SseEventSourceImpl implements SseEventSource
    private final boolean disableKeepAlive;
    private final ScheduledExecutorService executor;
    private final AtomicReference<State> state = new AtomicReference<>(State.READY);
-   private final List<Listener> unboundListeners = new CopyOnWriteArrayList<>();
-   private final ConcurrentMap<String, List<Listener>> boundListeners = new ConcurrentHashMap<>();
+   private final List<Subscriber<InboundSseEvent>> unboundListeners = new CopyOnWriteArrayList<>();
+   private final ConcurrentMap<String, List<Subscriber<InboundSseEvent>>> boundListeners = new ConcurrentHashMap<>();
 
    public static class SourceBuilder extends Builder
    {
@@ -76,20 +77,6 @@ public class SseEventSourceImpl implements SseEventSource
       public Builder target(WebTarget endpoint)
       {
          return new SourceBuilder(endpoint);
-      }
-
-      @Override
-      public Builder register(Listener listener)
-      {
-         //TODO: this api should be revised
-         return this;
-      }
-
-      @Override
-      public Builder register(Listener listener, String eventName, String... eventNames)
-      {
-         //TODO: this api should be revised
-         return this;
       }
 
       @Override
@@ -178,38 +165,41 @@ public class SseEventSourceImpl implements SseEventSource
       this.close(5, TimeUnit.SECONDS);
    }
 
-   public void register(final Listener listener)
+   @Override
+   public void subscribe(Subscriber<? super InboundSseEvent> subscriber)
    {
-      register(listener, null);
+      subscribe((Subscriber<InboundSseEvent>)subscriber, null); //TODO is this OK?
    }
 
-   public void register(final Listener listener, final String eventName, final String... eventNames)
+   @Override
+   public void subscribe(Subscriber<InboundSseEvent> subscriber, String eventName, String... eventNames)
    {
       if (eventName == null)
       {
-         unboundListeners.add(listener);
+         unboundListeners.add(subscriber);
       }
       else
       {
-         addBoundListener(eventName, listener);
+         addBoundListener(eventName, subscriber);
 
          if (eventNames != null)
          {
             for (String name : eventNames)
             {
-               addBoundListener(name, listener);
+               addBoundListener(name, subscriber);
             }
          }
       }
+      
    }
-
-   private void addBoundListener(final String name, final Listener listener)
+   
+   private void addBoundListener(final String name, final Subscriber<InboundSseEvent> subscriber)
    {
-      List<Listener> listeners = boundListeners.putIfAbsent(name,
-            new CopyOnWriteArrayList<>(Collections.singleton(listener)));
-      if (listeners != null)
+      List<Subscriber<InboundSseEvent>> subscribers = boundListeners.putIfAbsent(name,
+            new CopyOnWriteArrayList<>(Collections.singleton(subscriber)));
+      if (subscribers != null)
       {
-         listeners.add(listener);
+         subscribers.add(subscriber);
       }
    }
 
@@ -235,7 +225,7 @@ public class SseEventSourceImpl implements SseEventSource
       return true;
    }
 
-   private class EventHandler implements Runnable, Listener
+   private class EventHandler implements Runnable
    {
 
       private final CountDownLatch connectedLatch;
@@ -301,8 +291,7 @@ public class SseEventSourceImpl implements SseEventSource
 
       }
 
-      @Override
-      public void onEvent(final InboundSseEvent event)
+      private void onEvent(final InboundSseEvent event)
       {
          if (event == null)
          {
@@ -319,10 +308,10 @@ public class SseEventSourceImpl implements SseEventSource
          final String eventName = event.getName();
          if (eventName != null)
          {
-            final List<Listener> eventListeners = boundListeners.get(eventName);
-            if (eventListeners != null)
+            final List<Subscriber<InboundSseEvent>> eventSubscribers = boundListeners.get(eventName);
+            if (eventSubscribers != null)
             {
-               notify(eventListeners, event);
+               notify(eventSubscribers, event);
             }
          }
          notify(unboundListeners, event);
@@ -342,13 +331,13 @@ public class SseEventSourceImpl implements SseEventSource
          return request;
       }
 
-      private void notify(final Collection<Listener> listeners, final InboundSseEvent event)
+      private void notify(final Collection<Subscriber<InboundSseEvent>> subscribers, final InboundSseEvent event)
       {
-         if (listeners != null)
+         if (subscribers != null)
          {
-            for (Listener listener : listeners)
+            for (Subscriber<InboundSseEvent> subscriber : subscribers)
             {
-               listener.onEvent(event);
+               subscriber.onNext(event);
             }
          }
       }

@@ -6,6 +6,7 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Flow.Subscription;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.core.GenericType;
@@ -74,23 +75,50 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    }
 
    @Override
-   public void write(OutboundSseEvent event) throws IOException
-   {
-      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
-      if (event != null)
-      {
-         ByteArrayOutputStream bout = new ByteArrayOutputStream();
-         writer.writeTo(event, event.getClass(), null, new Annotation[]
-         {}, event.getMediaType(), null, bout);
-         response.getOutputStream().write(bout.toByteArray());
-      }
-      response.getOutputStream().write(END);
-      response.flushBuffer();
-   }
-   
-   @Override
    public boolean isClosed()
    {
       return closed;
+   }
+
+   @Override
+   public void onSubscribe(Subscription subscription)
+   {
+      // TODO Auto-generated method stub
+      
+   }
+
+   @Override
+   public void onNext(OutboundSseEvent event)
+   {
+      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+      try {
+         if (event != null)
+         {
+            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            writer.writeTo(event, event.getClass(), null, new Annotation[]{}, event.getMediaType(), null, bout);
+            response.getOutputStream().write(bout.toByteArray());
+         }
+         response.getOutputStream().write(END);
+         response.flushBuffer();
+      } catch (Exception e) {
+         throw new ProcessingException(e);
+      }
+   }
+
+   @Override
+   public void onError(Throwable throwable)
+   {
+      // TODO Auto-generated method stub
+   }
+
+   @Override
+   public void onComplete()
+   {
+      //TODO is this OK??
+      try {
+         close();
+      } catch (IOException e) {
+         throw new ProcessingException(e);
+      }
    }
 }

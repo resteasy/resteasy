@@ -1,45 +1,37 @@
 package org.jboss.resteasy.plugins.providers.sse;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
+import javax.ws.rs.Flow.Subscriber;
 import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventOutput;
 
 public class SseBroadcasterImpl implements SseBroadcaster
 {
-   private final Set<SseEventOutput> outputs = Collections.newSetFromMap(new ConcurrentHashMap<SseEventOutput, Boolean>());
-   private final Set<Listener> listeners = Collections.newSetFromMap(new ConcurrentHashMap<Listener, Boolean>());
-
-   @Override
-   public boolean register(Listener listener)
-   {
-      return listeners.add(listener);
-   }
-
-   @Override
-   public boolean register(SseEventOutput output)
-   {
-      return outputs.add(output);
-   }
+   private final Set<Subscriber<? super OutboundSseEvent>> outputs = Collections.newSetFromMap(new ConcurrentHashMap<Subscriber<? super OutboundSseEvent>, Boolean>());
+   private final Set<Consumer<SseEventOutput>> onCloseConsumers = Collections.newSetFromMap(new ConcurrentHashMap<Consumer<SseEventOutput>, Boolean>());
+   private final Set<BiConsumer<SseEventOutput, Exception>> onExceptionConsumers = Collections.newSetFromMap(new ConcurrentHashMap<BiConsumer<SseEventOutput, Exception>, Boolean>());
 
    @Override
    public void broadcast(OutboundSseEvent event)
    {
-      for (final SseEventOutput output : outputs)
+      for (final Subscriber<? super OutboundSseEvent> output : outputs)
       {
          try
          {
-            output.write(event);
+            output.onNext(event);
          }
-         catch (final IOException ex)
+         catch (final Exception ex)
          {
-            for (Listener listener : listeners)
+            output.onError(ex);
+            for (BiConsumer<SseEventOutput, Exception> oec : onExceptionConsumers)
             {
-               listener.onException(output, ex);
+               oec.accept((SseEventOutput)output, ex);
             }
          }
       }
@@ -48,23 +40,42 @@ public class SseBroadcasterImpl implements SseBroadcaster
    @Override
    public void close()
    {
-      for (final SseEventOutput output : outputs)
+      for (final Subscriber<? super OutboundSseEvent> output : outputs)
       {
          try
          {
-            output.close();
-            for (Listener listener : listeners)
+            output.onComplete();
+            for (Consumer<SseEventOutput> consumer : onCloseConsumers)
             {
-               listener.onClose(output);
+               consumer.accept((SseEventOutput)output);
             }
          }
-         catch (final IOException ex)
+         catch (final Exception ex)
          {
-            for (Listener listener : listeners)
+            output.onError(ex);
+            for (BiConsumer<SseEventOutput, Exception> oec : onExceptionConsumers)
             {
-               listener.onException(output, ex);
+               oec.accept((SseEventOutput)output, ex);
             }
          }
       }
+   }
+
+   @Override
+   public void onException(BiConsumer<SseEventOutput, Exception> onException)
+   {
+      onExceptionConsumers.add(onException);
+   }
+
+   @Override
+   public void onClose(Consumer<SseEventOutput> onClose)
+   {
+      onCloseConsumers.add(onClose);
+   }
+
+   @Override
+   public void subscribe(Subscriber<? super OutboundSseEvent> subscriber)
+   {
+      outputs.add(subscriber);
    }
 }
