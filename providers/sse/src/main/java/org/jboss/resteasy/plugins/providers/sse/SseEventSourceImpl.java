@@ -250,11 +250,16 @@ public class SseEventSourceImpl implements SseEventSource
       public void run()
       {
          SseEventInput eventInput = null;
-         final Invocation.Builder request = buildRequest();
-         if (state.get() == State.OPEN)
-         {
-            eventInput = request.get(SseEventInput.class);
-
+         try {
+            final Invocation.Builder request = buildRequest();
+            if (state.get() == State.OPEN)
+            {
+               eventInput = request.get(SseEventInput.class);
+            }
+         } finally {
+            if (connectedLatch != null) {
+               connectedLatch.countDown();
+            }
          }
          while (state.get() == State.OPEN)
          {
