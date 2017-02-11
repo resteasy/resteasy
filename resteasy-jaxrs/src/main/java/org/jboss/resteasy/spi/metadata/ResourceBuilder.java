@@ -4,6 +4,7 @@ import org.jboss.resteasy.annotations.Body;
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.annotations.Query;
 import org.jboss.resteasy.annotations.Suspend;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
 import org.jboss.resteasy.util.IsHttpMethod;
@@ -571,6 +572,16 @@ public class ResourceBuilder
       {
          MediaType[] types = parseMediaTypes(produces);
          method.produces = types;
+         for (MediaType mt : types)
+         {
+            if (!mt.getParameters().containsKey(MediaType.CHARSET_PARAMETER))
+            {
+               if ("text".equalsIgnoreCase(mt.getType()) || ("application".equalsIgnoreCase(mt.getType()) && mt.getSubtype().toLowerCase().startsWith("xml")))
+               {
+                  LogMessages.LOGGER.mediaTypeLacksCharset(mt, method.getMethod().getName());
+               }
+            }
+         }
          return this;
       }
 
