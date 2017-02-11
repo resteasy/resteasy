@@ -80,7 +80,6 @@ public class SseResource
       synchronized (outputLock)
       {
          sseEventOutput.close();
-         sseEventOutput = sseContext.newOutput();
       }
    }
 

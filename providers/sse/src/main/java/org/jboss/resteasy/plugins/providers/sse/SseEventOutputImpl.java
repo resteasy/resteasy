@@ -102,6 +102,8 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
          response.flushBuffer();
       } catch (Exception e) {
          throw new ProcessingException(e);
+      } finally {
+         ResteasyProviderFactory.removeContextDataLevel();
       }
    }
 

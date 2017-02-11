@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -50,31 +51,32 @@ public class SseTest {
     
     @Test
     public void testSingleSseEventInput() throws Exception {
-       WebTarget target = new ResteasyClientBuilder().build()
-          .target(generateURL("/service/server-sent-events"))
-          .path("single");
+       Client client = new ResteasyClientBuilder().build();
+       WebTarget target = client.target(generateURL("/service/server-sent-events")).path("single");
        SseEventInput eventInput = target.request().get(SseEventInput.class);
        Assert.assertNotNull("SseEventInput is null", eventInput);
        if (!eventInput.isClosed()) {
           InboundSseEvent inboundEvent = eventInput.read();
           Assert.assertTrue(inboundEvent.getComment().indexOf("single event is added") > -1);
       }
+       client.close();
     }
 
     @Test
     public void testEmptySseEventInput() throws Exception {
-       WebTarget target = new ResteasyClientBuilder().build()
-          .target(generateURL("/service/server-sent-events"));
+       Client client = new ResteasyClientBuilder().build();
+       WebTarget target = client.target(generateURL("/service/server-sent-events"));
        SseEventInput eventInput = target.request().get(SseEventInput.class);
-       Assert.assertNotNull("SseEventInput is null", eventInput);   
+       Assert.assertNotNull("SseEventInput is null", eventInput);
+       client.close();
     }
     @Test
     public void testAddMessage() throws Exception
     {
        final CountDownLatch latch = new CountDownLatch(5);
        final List<String> results = new ArrayList<String>();
-       WebTarget target = ClientBuilder.newBuilder().build()
-             .target(generateURL("/service/server-sent-events"));
+       Client client = ClientBuilder.newBuilder().build();
+       WebTarget target = client.target(generateURL("/service/server-sent-events"));
 
        SseEventSourceImpl.SourceBuilder builder = new SseEventSourceImpl.SourceBuilder(target);
 
@@ -86,15 +88,19 @@ public class SseTest {
           }).build());
        eventSource.open();
 
-       WebTarget targetPost = new ResteasyClientBuilder().build()
-             .target(generateURL("/service/server-sent-events"));
+       Client messageClient = new ResteasyClientBuilder().build();
+       WebTarget messageTarget = messageClient.target(generateURL("/service/server-sent-events"));
        for (int counter = 0; counter < 5; counter++)
        {
-          targetPost.request().post(Entity.text("message " + counter));
+          messageTarget.request().post(Entity.text("message " + counter));
        }
         
+       messageTarget.request().delete();
+       messageClient.close();
+
        Assert.assertTrue("Waiting for evet to be delivered has timed out.", latch.await(10, TimeUnit.SECONDS));
        eventSource.close();
+       client.close();
        Assert.assertTrue("5 messages are expected", results.size() == 5);
     }
     @Test
@@ -102,9 +108,8 @@ public class SseTest {
     {
        final List<String> results = new ArrayList<String>();
        final CountDownLatch latch = new CountDownLatch(6);
-       WebTarget target = new ResteasyClientBuilder().build()
-             .target(generateURL("/service/server-sent-events")).path("domains")
-             .path("1");
+       Client client = new ResteasyClientBuilder().build();
+       WebTarget target = client.target(generateURL("/service/server-sent-events")).path("domains").path("1");
        SseEventSourceImpl.SourceBuilder builder = new SseEventSourceImpl.SourceBuilder(target);
 
        SseEventSourceImpl eventSource = (SseEventSourceImpl) builder.build();
@@ -113,10 +118,11 @@ public class SseTest {
              latch.countDown();
           }).build());
        eventSource.open();
-       
+
        target.request().buildPost(null);
        Assert.assertTrue("Waiting for event to be delivered has timed out.", latch.await(10, TimeUnit.SECONDS));
        eventSource.close();
+       client.close();
        Assert.assertTrue("6 SseInboundEvent expected", results.size() == 6);
        Assert.assertTrue("Expect the last event is Done event, but it is :" + results.toArray(new String[]
              {})[5], results.toArray(new String[]
