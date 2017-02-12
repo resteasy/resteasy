@@ -8,6 +8,7 @@ The integration tests run with specified Wildfly server.
 categories for tests, server setup task etc.
 - integration-tests - contains tests to run in container (Wildfly)
 - integration-tests-spring - tests for resteasy integration with spring
+- legacy-integration-tests - tests using legacy api to run in container (Wildfly) with resteasy-legacy module enabled
 - unit-tests - standalone tests not running in container
 
 # Run testsuite module
@@ -33,6 +34,12 @@ To run the testsuite with failing tests included for testing purposes:
 Resteasy version for unit-tests and for client side of integration tests can be specified with ``-Dversion.resteasy.testsuite=RESTEASY_VERSION``
 
 > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Dversion.resteasy.testsuite=RESTEASY_VERSION
+
+## Legacy api enabled
+Tests using non deprecated api, will run with resteasy-legacy module enabled. Sub-module legacy-integration-tests have
+resteasy-legacy module enabled by default, no need enable this profile.
+
+> mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Drun.server.with.resteasy.legacy.enabled -fn 
 
 ## IPv6 testing
 Use ``ipv6`` property and specify IP address for EAP binding for IPv6 testing. Example:
