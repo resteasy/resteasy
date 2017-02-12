@@ -89,6 +89,7 @@ public class SpringBeanProcessorDependenciesInDeploymentTest {
         archive.addClass(SpringBeanProcessorCustomerParamConverterProvider.class);
         archive.addClass(SpringBeanProcessorScannedResource.class);
         TestUtilSpring.addSpringLibraries(archive);
+        TestUtilSpring.addOtherLibrary(archive, "aopalliance:aopalliance:" + System.getProperty("version.aopalliance", "1.0"));
         return archive;
     }
 
