@@ -41,7 +41,7 @@ public class TestUtilSpring {
      * Get Spring dependencies for specified spring version
      *
      * @param springVersion
-     * @return Spring libraries and their dependencies.
+     * @return Spring libraries
      */
     private static File[] resolveSpringDependencies(String springVersion) {
         MavenUtil mavenUtil;
@@ -49,9 +49,13 @@ public class TestUtilSpring {
         List<File> runtimeDependencies = new ArrayList<>();
 
         try {
-            runtimeDependencies.addAll(mavenUtil.createMavenGavRecursiveFiles("org.springframework:spring-core:" + springVersion));
-            runtimeDependencies.addAll(mavenUtil.createMavenGavRecursiveFiles("org.springframework:spring-web:" + springVersion));
-            runtimeDependencies.addAll(mavenUtil.createMavenGavRecursiveFiles("org.springframework:spring-webmvc:" + springVersion));
+            runtimeDependencies.add(mavenUtil.createMavenGavFile("org.springframework:spring-core:" + springVersion));
+            runtimeDependencies.add(mavenUtil.createMavenGavFile("org.springframework:spring-web:" + springVersion));
+            runtimeDependencies.add(mavenUtil.createMavenGavFile("org.springframework:spring-webmvc:" + springVersion));
+            runtimeDependencies.add(mavenUtil.createMavenGavFile("org.springframework:spring-context:" + springVersion));
+            runtimeDependencies.add(mavenUtil.createMavenGavFile("org.springframework:spring-expression:" + springVersion));
+            runtimeDependencies.add(mavenUtil.createMavenGavFile("org.springframework:spring-beans:" + springVersion));
+            runtimeDependencies.add(mavenUtil.createMavenGavFile("org.springframework:spring-aop:" + springVersion));
         } catch (Exception e) {
             throw new RuntimeException("Unable to get artifacts from maven via Aether library", e);
         }
@@ -61,11 +65,41 @@ public class TestUtilSpring {
     }
 
     /**
-     * Adds Spring libraries and its dependencied into webarchove
+     * Get specified single dependency
+     *
+     * @param dependency
+     * @return Dependency gav
+     */
+    private static File resolveDependency(String dependency) {
+        MavenUtil mavenUtil;
+        mavenUtil = MavenUtil.create(true);
+        File mavenGav;
+
+        try {
+            mavenGav = mavenUtil.createMavenGavFile(dependency);
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to get artifacts from maven via Aether library", e);
+        }
+
+        return mavenGav;
+    }
+
+    /**
+     * Adds Spring libraries and its dependencies into webarchove
      *
      * @param archive
      */
     public static void addSpringLibraries(WebArchive archive) {
         archive.addAsLibraries(resolveSpringDependencies(getSpringVersion()));
+    }
+
+    /**
+     * Adds additional dependency needed for Spring tests. Specified by parameter in the format 'groupId:artifactId:version'
+     *
+     * @param archive
+     * @param dependency
+     */
+    public static void addOtherLibrary(WebArchive archive, String dependency) {
+        archive.addAsLibrary(resolveDependency(dependency));
     }
 }
