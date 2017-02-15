@@ -10,26 +10,26 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.sse.SseEventOutput;
+import javax.ws.rs.sse.SseEventSink;
 
 @Provider
-public class SseEventOutputProvider implements MessageBodyWriter<SseEventOutput>
+public class SseEventOutputProvider implements MessageBodyWriter<SseEventSink>
 {
    @Override
    public boolean isWriteable(Class<?> cls, Type type, Annotation[] anns, MediaType mt)
    {
-      return SseEventOutput.class.isAssignableFrom(cls);
+      return SseEventSink.class.isAssignableFrom(cls);
    }
 
    @Override
-   public long getSize(final SseEventOutput output, final Class<?> type, final Type genericType,
+   public long getSize(final SseEventSink output, final Class<?> type, final Type genericType,
          final Annotation[] annotations, final MediaType mediaType)
    {
       return -1;
    }
 
    @Override
-   public void writeTo(final SseEventOutput output, final Class<?> type, final Type genericType,
+   public void writeTo(final SseEventSink output, final Class<?> type, final Type genericType,
          final Annotation[] annotations, final MediaType mediaType, final MultivaluedMap<String, Object> httpHeaders,
          final OutputStream entityStream) throws IOException, WebApplicationException
    {

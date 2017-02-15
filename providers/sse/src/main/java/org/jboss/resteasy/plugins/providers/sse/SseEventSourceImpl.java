@@ -1,10 +1,6 @@
 package org.jboss.resteasy.plugins.providers.sse;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -13,14 +9,14 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
-import javax.ws.rs.Flow.Subscriber;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.InboundSseEvent;
-import javax.ws.rs.sse.SseEventInput;
 import javax.ws.rs.sse.SseEventSource;
+import javax.ws.rs.sse.SseSubscription;
 
 import org.apache.http.HttpHeaders;
 import org.jboss.resteasy.plugins.providers.sse.i18n.Messages;
@@ -39,8 +35,11 @@ public class SseEventSourceImpl implements SseEventSource
    private final boolean disableKeepAlive;
    private final ScheduledExecutorService executor;
    private final AtomicReference<State> state = new AtomicReference<>(State.READY);
-   private final List<Subscriber<InboundSseEvent>> unboundListeners = new CopyOnWriteArrayList<>();
-   private final ConcurrentMap<String, List<Subscriber<InboundSseEvent>>> boundListeners = new ConcurrentHashMap<>();
+   
+   private final List<Consumer<SseSubscription>> onSubscribeConsumers = new CopyOnWriteArrayList<>(); //TODO how to use this?
+   private final List<Consumer<InboundSseEvent>> onEventConsumers = new CopyOnWriteArrayList<>();
+   private final List<Consumer<Throwable>> onErrorConsumers = new CopyOnWriteArrayList<>();
+   private final List<Runnable> onCompleteConsumers = new CopyOnWriteArrayList<>();
 
    public static class SourceBuilder extends Builder
    {
@@ -165,47 +164,68 @@ public class SseEventSourceImpl implements SseEventSource
       this.close(5, TimeUnit.SECONDS);
    }
 
-   @Override
-   public void subscribe(Subscriber<? super InboundSseEvent> subscriber)
-   {
-      subscribe((Subscriber<InboundSseEvent>)subscriber, null); //TODO is this OK?
+   public void subscribe(Consumer<InboundSseEvent> onEvent) {
+      if (onEvent == null) {
+         throw new IllegalArgumentException();
+      }
+      onEventConsumers.add(onEvent);
    }
 
-   @Override
-   public void subscribe(Subscriber<InboundSseEvent> subscriber, String eventName, String... eventNames)
-   {
-      if (eventName == null)
-      {
-         unboundListeners.add(subscriber);
+   public void subscribe(Consumer<InboundSseEvent> onEvent,
+                  Consumer<Throwable> onError) {
+      if (onEvent == null) {
+         throw new IllegalArgumentException();
       }
-      else
-      {
-         addBoundListener(eventName, subscriber);
+      if (onError == null) {
+         throw new IllegalArgumentException();
+      }
+      onEventConsumers.add(onEvent);
+      onErrorConsumers.add(onError);
+   }
 
-         if (eventNames != null)
-         {
-            for (String name : eventNames)
-            {
-               addBoundListener(name, subscriber);
-            }
-         }
+   public void subscribe(Consumer<InboundSseEvent> onEvent,
+                  Consumer<Throwable> onError,
+                  Runnable onComplete) {
+      if (onEvent == null) {
+         throw new IllegalArgumentException();
       }
-      
+      if (onError == null) {
+         throw new IllegalArgumentException();
+      }
+      if (onComplete == null) {
+         throw new IllegalArgumentException();
+      }
+      onEventConsumers.add(onEvent);
+      onErrorConsumers.add(onError);
+      onCompleteConsumers.add(onComplete);
+   }
+
+   public void subscribe(Consumer<SseSubscription> onSubscribe,
+                  Consumer<InboundSseEvent> onEvent,
+                  Consumer<Throwable> onError,
+                  Runnable onComplete) {
+      if (onSubscribe == null) {
+         throw new IllegalArgumentException();
+      }
+      if (onEvent == null) {
+         throw new IllegalArgumentException();
+      }
+      if (onError == null) {
+         throw new IllegalArgumentException();
+      }
+      if (onComplete == null) {
+         throw new IllegalArgumentException();
+      }
+      onSubscribeConsumers.add(onSubscribe);
+      onEventConsumers.add(onEvent);
+      onErrorConsumers.add(onError);
+      onCompleteConsumers.add(onComplete);
    }
    
-   private void addBoundListener(final String name, final Subscriber<InboundSseEvent> subscriber)
-   {
-      List<Subscriber<InboundSseEvent>> subscribers = boundListeners.putIfAbsent(name,
-            new CopyOnWriteArrayList<>(Collections.singleton(subscriber)));
-      if (subscribers != null)
-      {
-         subscribers.add(subscriber);
-      }
-   }
-
    @Override
    public boolean close(final long timeout, final TimeUnit unit)
    {
+      onCompleteConsumers.forEach(occ -> occ.run());
       if (state.getAndSet(State.CLOSED) != State.CLOSED)
       {
          executor.shutdownNow();
@@ -249,13 +269,15 @@ public class SseEventSourceImpl implements SseEventSource
       @Override
       public void run()
       {
-         SseEventInput eventInput = null;
+         SseEventInputImpl eventInput = null;
          try {
             final Invocation.Builder request = buildRequest();
             if (state.get() == State.OPEN)
             {
-               eventInput = request.get(SseEventInput.class);
+               eventInput = request.get(SseEventInputImpl.class);
             }
+         } catch (Throwable e) {
+            e.printStackTrace();
          } finally {
             if (connectedLatch != null) {
                connectedLatch.countDown();
@@ -310,16 +332,7 @@ public class SseEventSourceImpl implements SseEventSource
          {
             reconnectDelay = event.getReconnectDelay();
          }
-         final String eventName = event.getName();
-         if (eventName != null)
-         {
-            final List<Subscriber<InboundSseEvent>> eventSubscribers = boundListeners.get(eventName);
-            if (eventSubscribers != null)
-            {
-               notify(eventSubscribers, event);
-            }
-         }
-         notify(unboundListeners, event);
+         onEventConsumers.forEach(oec -> oec.accept(event));
       }
 
       private Invocation.Builder buildRequest()
@@ -334,17 +347,6 @@ public class SseEventSourceImpl implements SseEventSource
             request.header(HttpHeaders.CONNECTION, "close");
          }
          return request;
-      }
-
-      private void notify(final Collection<Subscriber<InboundSseEvent>> subscribers, final InboundSseEvent event)
-      {
-         if (subscribers != null)
-         {
-            for (Subscriber<InboundSseEvent> subscriber : subscribers)
-            {
-               subscriber.onNext(event);
-            }
-         }
       }
 
       private void reconnect(final long delay)

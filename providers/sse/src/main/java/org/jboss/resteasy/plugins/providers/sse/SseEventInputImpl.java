@@ -2,6 +2,7 @@ package org.jboss.resteasy.plugins.providers.sse;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,12 +12,12 @@ import java.nio.charset.Charset;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.sse.InboundSseEvent;
-import javax.ws.rs.sse.SseEventInput;
 
+import org.jboss.resteasy.client.jaxrs.internal.EventInput;
 import org.jboss.resteasy.plugins.providers.sse.i18n.LogMessages;
 import org.jboss.resteasy.plugins.providers.sse.i18n.Messages;
 
-public class SseEventInputImpl implements SseEventInput
+public class SseEventInputImpl implements EventInput, Closeable
 {
    private Annotation[] annotations;
    private MediaType mediaType;
@@ -41,13 +42,11 @@ public class SseEventInputImpl implements SseEventInput
       isClosed = true;
    }
 
-   @Override
    public boolean isClosed()
    {
       return isClosed;
    }
 
-   @Override
    public InboundSseEvent read() throws IllegalStateException
    {
       byte[] chunk = null;

@@ -8,8 +8,8 @@ import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.Produces;
+import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -18,7 +18,6 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.sse.OutboundSseEvent;
-import javax.ws.rs.sse.SseEventInput;
 
 import org.jboss.resteasy.plugins.providers.sse.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -26,12 +25,12 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 @Provider
 @Produces({"text/event-stream"})
 @Consumes({"text/event-stream"})
-public class SseEventProvider implements MessageBodyReader<SseEventInput>, MessageBodyWriter<OutboundSseEvent>
+public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, MessageBodyReader<SseEventInputImpl>
 {
    @Override
    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
-      return type.equals(OutboundSseEvent.class) && MediaType.SERVER_SENT_EVENTS_TYPE.isCompatible(mediaType);
+      return OutboundSseEvent.class.isAssignableFrom(type) && MediaType.SERVER_SENT_EVENTS_TYPE.isCompatible(mediaType);
    }
 
    @Override
@@ -113,17 +112,17 @@ public class SseEventProvider implements MessageBodyReader<SseEventInput>, Messa
          }
 
       }
-
    }
-
+   
+   
    @Override
-   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
+   public boolean isReadable(Class<?> cls, Type type, Annotation[] annotations, MediaType mediaType)
    {
-      return MediaType.SERVER_SENT_EVENTS_TYPE.isCompatible(mediaType);
+      return SseEventInputImpl.class.isAssignableFrom(cls) && MediaType.SERVER_SENT_EVENTS_TYPE.isCompatible(mediaType);
    }
 
    @Override
-   public SseEventInput readFrom(Class<SseEventInput> type, Type genericType, Annotation[] annotations,
+   public SseEventInputImpl readFrom(Class<SseEventInputImpl> cls, Type type, Annotation[] annotations,
          MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
          throws IOException, WebApplicationException
    {

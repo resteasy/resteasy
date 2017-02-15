@@ -9,9 +9,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.sse.InboundSseEvent;
-import javax.ws.rs.sse.SseClientSubscriber;
-import javax.ws.rs.sse.SseEventInput;
+import javax.ws.rs.sse.SseEventSource;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -22,7 +20,6 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
@@ -36,8 +33,6 @@ public class SseTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(SseTest.class.getSimpleName());
         war.addClass(SseTest.class);
-        war.setManifest(new StringAsset("Manifest-Version: 1.0\n"
-                + "Dependencies: org.jboss.resteasy.resteasy-sse-provider\n"));
         war.addAsWebInfResource("org/jboss/resteasy/test/providers/sse/web.xml","web.xml");
         war.addAsWebResource("org/jboss/resteasy/test/providers/sse/index.html","index.html");
         war.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
@@ -48,28 +43,6 @@ public class SseTest {
         return PortProviderUtil.generateURL(path, SseTest.class.getSimpleName());
     }
     
-    
-    @Test
-    public void testSingleSseEventInput() throws Exception {
-       Client client = new ResteasyClientBuilder().build();
-       WebTarget target = client.target(generateURL("/service/server-sent-events")).path("single");
-       SseEventInput eventInput = target.request().get(SseEventInput.class);
-       Assert.assertNotNull("SseEventInput is null", eventInput);
-       if (!eventInput.isClosed()) {
-          InboundSseEvent inboundEvent = eventInput.read();
-          Assert.assertTrue(inboundEvent.getComment().indexOf("single event is added") > -1);
-      }
-       client.close();
-    }
-
-    @Test
-    public void testEmptySseEventInput() throws Exception {
-       Client client = new ResteasyClientBuilder().build();
-       WebTarget target = client.target(generateURL("/service/server-sent-events"));
-       SseEventInput eventInput = target.request().get(SseEventInput.class);
-       Assert.assertNotNull("SseEventInput is null", eventInput);
-       client.close();
-    }
     @Test
     public void testAddMessage() throws Exception
     {
@@ -78,14 +51,11 @@ public class SseTest {
        Client client = ClientBuilder.newBuilder().build();
        WebTarget target = client.target(generateURL("/service/server-sent-events"));
 
-       SseEventSourceImpl.SourceBuilder builder = new SseEventSourceImpl.SourceBuilder(target);
-
-       SseEventSourceImpl eventSource = (SseEventSourceImpl) builder.build();
-       
-       eventSource.subscribe(SseClientSubscriber.builder().onNext(event -> {
+       SseEventSource eventSource = new SseEventSourceImpl.SourceBuilder(target).build();
+       eventSource.subscribe(event -> {
             results.add(event.toString());
             latch.countDown();
-          }).build());
+          });
        eventSource.open();
 
        Client messageClient = new ResteasyClientBuilder().build();
@@ -94,11 +64,11 @@ public class SseTest {
        {
           messageTarget.request().post(Entity.text("message " + counter));
        }
-        
+
        messageTarget.request().delete();
        messageClient.close();
 
-       Assert.assertTrue("Waiting for evet to be delivered has timed out.", latch.await(10, TimeUnit.SECONDS));
+       Assert.assertTrue("Waiting for event to be delivered has timed out.", latch.await(10, TimeUnit.SECONDS));
        eventSource.close();
        client.close();
        Assert.assertTrue("5 messages are expected", results.size() == 5);
@@ -110,16 +80,14 @@ public class SseTest {
        final CountDownLatch latch = new CountDownLatch(6);
        Client client = new ResteasyClientBuilder().build();
        WebTarget target = client.target(generateURL("/service/server-sent-events")).path("domains").path("1");
-       SseEventSourceImpl.SourceBuilder builder = new SseEventSourceImpl.SourceBuilder(target);
 
-       SseEventSourceImpl eventSource = (SseEventSourceImpl) builder.build();
-       eventSource.subscribe(SseClientSubscriber.builder().onNext(event -> {
-             results.add(event.readData());
-             latch.countDown();
-          }).build());
+       SseEventSource eventSource = new SseEventSourceImpl.SourceBuilder(target).build();
+       eventSource.subscribe(event -> {
+          results.add(event.readData());
+          latch.countDown();
+       });
        eventSource.open();
 
-       target.request().buildPost(null);
        Assert.assertTrue("Waiting for event to be delivered has timed out.", latch.await(10, TimeUnit.SECONDS));
        eventSource.close();
        client.close();

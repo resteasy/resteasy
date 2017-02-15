@@ -15,7 +15,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.sse.OutboundSseEvent;
-import javax.ws.rs.sse.SseEventOutput;
+import javax.ws.rs.sse.SseEventSink;
 
 import org.jboss.resteasy.plugins.providers.sse.i18n.Messages;
 import org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest;
@@ -23,7 +23,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
 
 
-public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements SseEventOutput 
+public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements SseEventSink
 {
    private MessageBodyWriter<OutboundSseEvent> writer = null;
    private Servlet3AsyncHttpRequest request;
@@ -83,8 +83,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    @Override
    public void onSubscribe(Subscription subscription)
    {
-      // TODO Auto-generated method stub
-      
+      subscription.request(Long.MAX_VALUE);
    }
 
    @Override
