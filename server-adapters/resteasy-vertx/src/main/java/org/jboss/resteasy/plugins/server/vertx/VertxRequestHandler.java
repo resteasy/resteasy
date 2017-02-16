@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBufInputStream;
 import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import org.jboss.resteasy.core.SynchronousDispatcher;
@@ -45,42 +46,48 @@ public class VertxRequestHandler implements Handler<HttpServerRequest>
    }
 
    @Override
-   public void handle(HttpServerRequest request)
+   public void handle(final HttpServerRequest request)
    {
-      request.bodyHandler(buff -> {
-         Context ctx = vertx.getOrCreateContext();
-         ResteasyUriInfo uriInfo = VertxUtil.extractUriInfo(request, servletMappingPrefix);
-         ResteasyHttpHeaders headers = VertxUtil.extractHttpHeaders(request);
-         HttpServerResponse response = request.response();
-         VertxHttpResponse vertxResponse = new VertxHttpResponse(response, dispatcher.getProviderFactory());
-         VertxHttpRequest vertxRequest = new VertxHttpRequest(ctx, headers, uriInfo, request.rawMethod(), dispatcher.getDispatcher(), vertxResponse, false);
-         if (buff.length() > 0)
+      request.bodyHandler(new Handler<Buffer>()
+      {
+         @Override
+         public void handle(Buffer buff)
          {
-            ByteBufInputStream in = new ByteBufInputStream(buff.getByteBuf());
-            vertxRequest.setInputStream(in);
-         }
+            Context ctx = vertx.getOrCreateContext();
+            ResteasyUriInfo uriInfo = VertxUtil.extractUriInfo(request, servletMappingPrefix);
+            ResteasyHttpHeaders headers = VertxUtil.extractHttpHeaders(request);
+            HttpServerResponse response = request.response();
+            VertxHttpResponse vertxResponse = new VertxHttpResponse(response, dispatcher.getProviderFactory());
+            VertxHttpRequest vertxRequest = new VertxHttpRequest(ctx, headers, uriInfo, request.rawMethod(), dispatcher.getDispatcher(), vertxResponse, false);
+            if (buff.length() > 0)
+            {
+               ByteBufInputStream in = new ByteBufInputStream(buff.getByteBuf());
+               vertxRequest.setInputStream(in);
+            }
 
-         try
-         {
-            dispatcher.service(ctx, request, response, vertxRequest, vertxResponse, true);
-         } catch (Failure e1)
-         {
-            vertxResponse.setStatus(e1.getErrorCode());
-         } catch (Exception ex)
-         {
-            vertxResponse.setStatus(500);
-            LogMessages.LOGGER.error(Messages.MESSAGES.unexpected(), ex);
-         }
-
-         if (!vertxRequest.getAsyncContext().isSuspended())
-         {
             try
             {
-               vertxResponse.finish();
-            } catch (IOException e)
+               dispatcher.service(ctx, request, response, vertxRequest, vertxResponse, true);
+            } catch (Failure e1)
             {
-               e.printStackTrace();
+               vertxResponse.setStatus(e1.getErrorCode());
+            } catch (Exception ex)
+            {
+               vertxResponse.setStatus(500);
+               LogMessages.LOGGER.error(Messages.MESSAGES.unexpected(), ex);
             }
+
+            if (!vertxRequest.getAsyncContext().isSuspended())
+            {
+               try
+               {
+                  vertxResponse.finish();
+               } catch (IOException e)
+               {
+                  e.printStackTrace();
+               }
+            }
+            
          }
       });
    }

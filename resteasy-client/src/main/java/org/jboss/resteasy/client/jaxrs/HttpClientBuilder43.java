@@ -42,7 +42,7 @@ public class HttpClientBuilder43 {
      * Create ClientHttpEngine using Apache 4.3.x+ apis.
      * @return
      */
-    protected static ClientHttpEngine initDefaultEngine43(ResteasyClientBuilder that)
+    protected static ClientHttpEngine initDefaultEngine43(final ResteasyClientBuilder that)
     {
         HttpClient httpClient = null;
 

@@ -1,12 +1,12 @@
 package org.jboss.resteasy.test.providers.datasource;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -133,7 +133,9 @@ public class ReadDataSourceTwiceCountTempFileTest {
         Path dir = Paths.get(tmpdir);
         final AtomicInteger counter = new AtomicInteger(0);
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "resteasy-provider-datasource*")){
-            stream.forEach(path -> counter.incrementAndGet());
+            for (Path path : stream) {
+                counter.incrementAndGet();
+            }
         }
         return counter.intValue();
     }
@@ -143,7 +145,9 @@ public class ReadDataSourceTwiceCountTempFileTest {
         String tmpdir = System.getProperty("java.io.tmpdir");
         Path dir = Paths.get(tmpdir);
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "resteasy-provider-datasource*")) {
-            stream.forEach(path -> logger.info(path.toString()));
+            for (Path path : stream) {
+                logger.info(path.toString());
+            }
         }
     }
 }
