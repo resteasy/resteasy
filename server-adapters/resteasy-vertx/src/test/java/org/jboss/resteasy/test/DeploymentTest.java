@@ -1,6 +1,9 @@
 package org.jboss.resteasy.test;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
@@ -92,20 +95,25 @@ public class DeploymentTest
       VertxResteasyDeployment deployment = new VertxResteasyDeployment();
       deployment.start();
       deployment.getRegistry().addPerInstanceResource(Resource.class);
-      Vertx vertx = Vertx.vertx();
+      Vertx vertx = Vertx.factory.vertx();
       Client client = ClientBuilder.newClient();
       try
       {
          HttpServer server = vertx.createHttpServer();
          server.requestHandler(new VertxRequestHandler(vertx, deployment));
-         CompletableFuture<Void> listenLatch = new CompletableFuture<>();
-         server.listen(TestPortProvider.getPort(), ar -> {
-            if (ar.succeeded())
+         final CompletableFuture<Void> listenLatch = new CompletableFuture<>();
+         server.listen(TestPortProvider.getPort(), new Handler<AsyncResult<HttpServer>>()
+         {
+            @Override
+            public void handle(AsyncResult<HttpServer> ar)
             {
-               listenLatch.complete(null);
-            } else
-            {
-               listenLatch.completeExceptionally(ar.cause());
+               if (ar.succeeded())
+               {
+                  listenLatch.complete(null);
+               } else
+               {
+                  listenLatch.completeExceptionally(ar.cause());
+               }
             }
          });
          listenLatch.get(10, TimeUnit.SECONDS);

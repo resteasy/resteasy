@@ -237,7 +237,7 @@ public class InjectionTest extends AbstractInjectionTestBase {
         invocationCounter++;
         log.info("Status: " + response.getStatus());
         @SuppressWarnings("unchecked")
-        Collection<CDIInjectionBook> books = response.readEntity(new GenericType<>(BookCollectionType));
+        Collection<CDIInjectionBook> books = (Collection<CDIInjectionBook>)response.readEntity(new GenericType<>(BookCollectionType));
         log.info("Collection from response: " + books);
         Assert.assertEquals(2, books.size());
         Iterator<CDIInjectionBook> it = books.iterator();
@@ -299,7 +299,7 @@ public class InjectionTest extends AbstractInjectionTestBase {
         log.info("status: " + response.getStatus());
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         @SuppressWarnings("unchecked")
-        Collection<CDIInjectionBook> books = response.readEntity(new GenericType<>(BookCollectionType));
+        Collection<CDIInjectionBook> books = (Collection<CDIInjectionBook>)response.readEntity(new GenericType<>(BookCollectionType));
         log.info("Collection from response: " + books);
         Assert.assertEquals(2, books.size());
         Iterator<CDIInjectionBook> it = books.iterator();

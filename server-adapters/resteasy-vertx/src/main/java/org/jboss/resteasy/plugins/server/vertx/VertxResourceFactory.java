@@ -38,7 +38,7 @@ public class VertxResourceFactory implements ResourceFactory
    @Override
    public Object createResource(HttpRequest request, HttpResponse response, ResteasyProviderFactory factory)
    {
-      Context ctx = Vertx.currentContext();
+      Context ctx = Vertx.factory.context();
       if (ctx != null)
       {
          Object resource = ctx.get(id);

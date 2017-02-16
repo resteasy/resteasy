@@ -37,9 +37,7 @@ public class InputStreamTest extends ClientTestBase{
         @Path("test")
         @Produces("text/plain")
         @GET
-        default InputStream get() {
-            return null;
-        }
+        InputStream get();
 
     }
 

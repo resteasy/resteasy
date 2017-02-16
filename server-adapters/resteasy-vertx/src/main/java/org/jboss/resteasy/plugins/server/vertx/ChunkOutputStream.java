@@ -39,7 +39,7 @@ public class ChunkOutputStream extends OutputStream
          throw new IllegalArgumentException(Messages.MESSAGES.chunkSizeMustBeAtLeastOne());
       }
       this.chunkSize = chunksize;
-      this.buffer = Buffer.buffer(chunksize);
+      this.buffer = Buffer.factory.buffer(chunksize);
    }
 
    @Override
@@ -55,7 +55,7 @@ public class ChunkOutputStream extends OutputStream
    public void reset()
    {
       if (response.isCommitted()) throw new IllegalStateException(Messages.MESSAGES.responseIsCommitted());
-      buffer = Buffer.buffer(chunkSize);
+      buffer = Buffer.factory.buffer(chunkSize);
    }
 
    @Override
@@ -92,7 +92,7 @@ public class ChunkOutputStream extends OutputStream
       if (readable == 0) return;
       if (!response.isCommitted()) response.prepareChunkStream();
       response.response.write(buffer);
-      buffer = Buffer.buffer();
+      buffer = Buffer.factory.buffer();
       super.flush();
    }
 

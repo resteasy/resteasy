@@ -294,7 +294,7 @@ public class ReverseInjectionTest extends AbstractInjectionTestBase {
             log.info("status: " + response.getStatus());
             assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
             @SuppressWarnings("unchecked")
-            Collection<CDIInjectionBook> books = response.readEntity(new GenericType<>(BookCollectionType));
+            Collection<CDIInjectionBook> books = (Collection<CDIInjectionBook>)response.readEntity(new GenericType<>(BookCollectionType));
             log.info("Collection: " + books);
             assertEquals("Wrong count of received items", 2, books.size());
             Iterator<CDIInjectionBook> it = books.iterator();

@@ -1,6 +1,8 @@
 package org.jboss.resteasy.plugins.server.vertx;
 
 import io.vertx.core.Context;
+import io.vertx.core.Handler;
+
 import org.jboss.resteasy.core.AbstractAsynchronousResponse;
 import org.jboss.resteasy.core.AbstractExecutionContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
@@ -390,7 +392,14 @@ public class VertxHttpRequest extends BaseHttpRequest
                {
                   return false;
                }
-               timerID = context.owner().setTimer(unit.toMillis(time), v -> handleTimeout());
+               timerID = context.owner().setTimer(unit.toMillis(time), new Handler<Long>()
+               {
+                  @Override
+                  public void handle(Long v)
+                  {
+                     handleTimeout();
+                  }
+               });
             }
             return true;
          }

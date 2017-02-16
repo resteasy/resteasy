@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -125,23 +126,31 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer
    @Override
    public void start()
    {
-      vertx = Vertx.vertx(vertxOptions);
+      vertx = Vertx.factory.vertx(vertxOptions);
       deployment.start();
-      String key = UUID.randomUUID().toString();
+      final String key = UUID.randomUUID().toString();
       deploymentMap.put(key, new Helper(root, serverOptions, deployment, domain));
       // Configure the server.
-      CompletableFuture<String> fut = new CompletableFuture<>();
+      final CompletableFuture<String> fut = new CompletableFuture<>();
       DeploymentOptions deploymentOptions = new DeploymentOptions()
             .setInstances(vertxOptions.getEventLoopPoolSize())
             .setConfig(new JsonObject().put("helper", key));
-      vertx.deployVerticle(Verticle.class.getName(), deploymentOptions, ar -> {
-         deploymentMap.remove(key);
-         if (ar.succeeded())
+      
+      vertx.deployVerticle(Verticle.class.getName(), deploymentOptions, new Handler<AsyncResult<String>>()
+      {
+         @Override
+         public void handle(AsyncResult<String> ar)
          {
-            fut.complete(ar.result());
-         } else
-         {
-            fut.completeExceptionally(ar.cause());
+            deploymentMap.remove(key);
+            if (ar.succeeded())
+            {
+               fut.complete(ar.result());
+            }
+            else
+            {
+               fut.completeExceptionally(ar.cause());
+            }
+
          }
       });
       try
@@ -164,10 +173,14 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer
    {
       if (deploymentID != null)
       {
-         CompletableFuture<Void> fut = new CompletableFuture<>();
-         vertx.close(ar ->
+         final CompletableFuture<Void> fut = new CompletableFuture<>();
+         vertx.close(new Handler<AsyncResult<Void>>()
          {
-            fut.complete(null);
+            @Override
+            public void handle(AsyncResult<Void> ar)
+            {
+               fut.complete(null);
+            }
          });
          deploymentID = null;
          try
@@ -209,18 +222,23 @@ public class VertxJaxrsServer implements EmbeddedJaxrsServer
       protected HttpServer server;
 
       @Override
-      public void start(Future<Void> startFuture) throws Exception
+      public void start(final Future<Void> startFuture) throws Exception
       {
          Helper helper = deploymentMap.get(config().getString("helper"));
          server = vertx.createHttpServer(helper.serverOptions);
          server.requestHandler(new VertxRequestHandler(vertx, helper.deployment, helper.root, helper.domain));
-         server.listen(ar -> {
-            if (ar.succeeded())
+         server.listen(new Handler<AsyncResult<HttpServer>>()
+         {
+            @Override
+            public void handle(AsyncResult<HttpServer> ar)
             {
-               startFuture.complete();
-            } else
-            {
-               startFuture.fail(ar.cause());
+               if (ar.succeeded())
+               {
+                  startFuture.complete();
+               } else
+               {
+                  startFuture.fail(ar.cause());
+               }
             }
          });
       }
