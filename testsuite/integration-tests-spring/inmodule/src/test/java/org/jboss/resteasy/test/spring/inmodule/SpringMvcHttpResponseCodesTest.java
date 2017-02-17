@@ -15,7 +15,7 @@ import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
-import org.jboss.resteasy.setup.UsersRolesSecurityDomainSetupCreaper;
+import org.jboss.resteasy.setup.AbstractUsersRolesSecurityDomainSetup;
 import org.jboss.resteasy.test.spring.inmodule.resource.SpringMvcHttpResponseCodesPerson;
 import org.jboss.resteasy.test.spring.inmodule.resource.SpringMvcHttpResponseCodesResource;
 import org.jboss.resteasy.test.spring.inmodule.resource.TestResource;
@@ -35,6 +35,10 @@ import org.junit.runner.RunWith;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.File;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * @tpSubChapter Spring
@@ -42,7 +46,7 @@ import javax.ws.rs.core.Response;
  * @tpTestCaseDetails Tests various http response codes returned from the server
  * @tpSince RESTEasy 3.1.0
  */
-@ServerSetup({UsersRolesSecurityDomainSetupCreaper.class})
+@ServerSetup({SpringMvcHttpResponseCodesTest.SecurityDomainSetup.class})
 @RunWith(Arquillian.class)
 @RunAsClient
 public class SpringMvcHttpResponseCodesTest {
@@ -55,8 +59,6 @@ public class SpringMvcHttpResponseCodesTest {
         WebArchive war = TestUtil.prepareArchive(SpringMvcHttpResponseCodesTest.class.getSimpleName());
         war.addAsWebInfResource(SpringMvcHttpResponseCodesTest.class.getPackage(), "springMvcHttpResponseCodes/web-secure.xml", "web.xml");
         war.addAsWebInfResource(SpringMvcHttpResponseCodesTest.class.getPackage(), "springMvcHttpResponseCodes/jboss-web.xml", "jboss-web.xml");
-        war.addAsResource(SpringMvcHttpResponseCodesTest.class.getPackage(), "springMvcHttpResponseCodes/roles.properties", "roles.properties");
-        war.addAsResource(SpringMvcHttpResponseCodesTest.class.getPackage(), "springMvcHttpResponseCodes/users.properties", "users.properties");
         war.addAsWebInfResource(SpringMvcHttpResponseCodesTest.class.getPackage(), "springMvcHttpResponseCodes/mvc-dispatcher-servlet.xml", "mvc-dispatcher-servlet.xml");
         war.addAsWebInfResource(SpringMvcHttpResponseCodesTest.class.getPackage(), "springMvcHttpResponseCodes/applicationContext.xml", "applicationContext.xml");
         war.addAsManifestResource(new StringAsset("Dependencies: org.springframework.spring meta-inf\n"), "MANIFEST.MF");
@@ -180,5 +182,15 @@ public class SpringMvcHttpResponseCodesTest {
                 .post(Entity.entity("[{name:\"Zack\"}]", MediaType.APPLICATION_XML_TYPE));
         // It is allowed by RFC7231 to return NOT FOUND instead
         Assert.assertEquals(HttpResponseCodes.SC_NOT_FOUND, response.getStatus());
+    }
+
+    static class SecurityDomainSetup extends AbstractUsersRolesSecurityDomainSetup {
+
+        @Override
+        public void setConfigurationPath() throws URISyntaxException {
+            Path filepath= Paths.get(SpringMvcHttpResponseCodesTest.class.getResource("users.properties").toURI());
+            Path parent = filepath.getParent();
+            createPropertiesFiles(new File(parent.toUri()));
+        }
     }
 }
