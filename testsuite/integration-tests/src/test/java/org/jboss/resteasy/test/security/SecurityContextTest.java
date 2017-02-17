@@ -6,7 +6,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.resteasy.client.jaxrs.BasicAuthentication;
-import org.jboss.resteasy.setup.UsersRolesSecurityDomainSetupCreaper;
+import org.jboss.resteasy.setup.AbstractUsersRolesSecurityDomainSetup;
 import org.jboss.resteasy.test.security.resource.SecurityContextResource;
 import org.jboss.resteasy.test.security.resource.SecurityContextContainerRequestFilter;
 import org.jboss.resteasy.util.HttpResponseCodes;
@@ -23,7 +23,11 @@ import org.wildfly.extras.creaper.core.CommandFailedException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * @tpSubChapter Security
@@ -31,7 +35,7 @@ import java.io.IOException;
  * @tpTestCaseDetails Basic test for RESTEasy authentication using programmatic security with javax.ws.rs.core.SecurityContext
  * @tpSince RESTEasy 3.0.16
  */
-@ServerSetup({UsersRolesSecurityDomainSetupCreaper.class})
+@ServerSetup({SecurityContextTest.SecurityDomainSetup.class})
 @RunWith(Arquillian.class)
 @RunAsClient
 public class SecurityContextTest {
@@ -68,9 +72,7 @@ public class SecurityContextTest {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(SecurityContextTest.class.getSimpleName());
-        war.addAsResource(SecurityContextTest.class.getPackage(), "roles.properties", "roles.properties")
-                .addAsResource(SecurityContextTest.class.getPackage(), "users.properties", "users.properties")
-                .addAsWebInfResource(SecurityContextTest.class.getPackage(), "jboss-web.xml", "jboss-web.xml")
+        war.addAsWebInfResource(SecurityContextTest.class.getPackage(), "jboss-web.xml", "jboss-web.xml")
                 .addAsWebInfResource(SecurityContextTest.class.getPackage(), "securityContext/web.xml", "web.xml");
         return TestUtil.finishContainerPrepare(war, null, SecurityContextResource.class);
     }
@@ -78,9 +80,7 @@ public class SecurityContextTest {
     @Deployment(name="containerRequestFilter")
     public static Archive<?> deploy2() {
         WebArchive war = TestUtil.prepareArchive(SecurityContextTest.class.getSimpleName() + "Filter");
-        war.addAsResource(SecurityContextTest.class.getPackage(), "roles.properties", "roles.properties")
-                .addAsResource(SecurityContextTest.class.getPackage(), "users.properties", "users.properties")
-                .addAsWebInfResource(SecurityContextTest.class.getPackage(), "jboss-web.xml", "jboss-web.xml")
+        war.addAsWebInfResource(SecurityContextTest.class.getPackage(), "jboss-web.xml", "jboss-web.xml")
                 .addAsWebInfResource(SecurityContextTest.class.getPackage(), "securityContext/web.xml", "web.xml");
         return TestUtil.finishContainerPrepare(war, null, SecurityContextResource.class,
                 SecurityContextContainerRequestFilter.class);
@@ -134,5 +134,15 @@ public class SecurityContextTest {
                 .target(PortProviderUtil.generateURL("/test", SecurityContextTest.class.getSimpleName() + "Filter")).request().get();
         Assert.assertEquals("User ordinaryUser is not authorized, coming from filter", response.readEntity(String.class));
         Assert.assertEquals(HttpResponseCodes.SC_UNAUTHORIZED, response.getStatus());
+    }
+
+    static class SecurityDomainSetup extends AbstractUsersRolesSecurityDomainSetup {
+
+        @Override
+        public void setConfigurationPath() throws URISyntaxException {
+            Path filepath= Paths.get(SecurityContextTest.class.getResource("users.properties").toURI());
+            Path parent = filepath.getParent();
+            createPropertiesFiles(new File(parent.toUri()));
+        }
     }
 }
