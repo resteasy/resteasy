@@ -38,7 +38,6 @@ public class DefaultCharsetTest {
     public static Archive<?> deploy_charset() {
         WebArchive war = TestUtil.prepareArchive(DefaultCharsetTest.class.getSimpleName() + "_true");
         war.addAsWebInfResource(DefaultCharsetTest.class.getPackage(), "DefaultCharsetTestWeb_true.xml", "web.xml");
-        System.out.println(war.toString(true));
         return TestUtil.finishContainerPrepare(war, null, DefaultCharsetResource.class);
     }
     
@@ -46,7 +45,6 @@ public class DefaultCharsetTest {
     public static Archive<?> deploy_nocharset() {
         WebArchive war = TestUtil.prepareArchive(DefaultCharsetTest.class.getSimpleName() + "_false");
         war.addAsWebInfResource(DefaultCharsetTest.class.getPackage(), "DefaultCharsetTestWeb_false.xml", "web.xml");
-        System.out.println(war.toString(true));
         return TestUtil.finishContainerPrepare(war, null, DefaultCharsetResource.class);
     }
     
@@ -54,7 +52,6 @@ public class DefaultCharsetTest {
     public static Archive<?> deploy_default() {
         WebArchive war = TestUtil.prepareArchive(DefaultCharsetTest.class.getSimpleName() + "_default");
         war.addAsWebInfResource(DefaultCharsetTest.class.getPackage(), "DefaultCharsetTestWeb_default.xml", "web.xml");
-        System.out.println(war.toString(true));
         return TestUtil.finishContainerPrepare(war, null, DefaultCharsetResource.class);
     }
 
