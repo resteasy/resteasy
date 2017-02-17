@@ -1,0 +1,25 @@
+embed-server --server-config=standalone-full-elytron.xml
+/subsystem=undertow/application-security-domain=other:add(http-authentication-factory=application-http-authentication)
+/subsystem=ejb3/application-security-domain=other:add(security-domain=ApplicationDomain)
+/subsystem=batch-jberet:write-attribute(name=security-domain, value=ApplicationDomain)
+/subsystem=remoting/http-connector=http-remoting-connector:write-attribute(name=sasl-authentication-factory, value=application-sasl-authentication)
+/subsystem=remoting/http-connector=http-remoting-connector:undefine-attribute(name=security-realm)
+/subsystem=messaging-activemq/server=default:undefine-attribute(name=security-domain)
+/subsystem=messaging-activemq/server=default:write-attribute(name=elytron-domain, value=ApplicationDomain)
+/core-service=management/access=identity:add(security-domain=ManagementDomain)
+/core-service=management/management-interface=http-interface:write-attribute(name=http-upgrade,value={enabled=true, sasl-authentication-factory=management-sasl-authentication})
+/core-service=management/management-interface=http-interface:write-attribute(name=http-authentication-factory,value=management-http-authentication)
+/core-service=management/management-interface=http-interface:undefine-attribute(name=security-realm)
+
+# fix Elytron configuration (workaround for JBEAP-8576)
+/subsystem=elytron/security-domain=ApplicationDomain:list-add(name=realms, value={realm => "local"})
+/subsystem=elytron/sasl-authentication-factory=application-sasl-authentication:write-attribute(name=mechanism-configurations, value=[{mechanism-name="JBOSS-LOCAL-USER", realm-mapper=local}, {mechanism-name="DIGEST-MD5",mechanism-realm-configurations=[{realm-name=ApplicationRealm}]}])
+
+reload
+
+/core-service=management/security-realm=ManagementRealm:remove
+/core-service=management/security-realm=ApplicationRealm/authentication=local:remove
+/core-service=management/security-realm=ApplicationRealm/authentication=properties:remove
+/core-service=management/security-realm=ApplicationRealm/authorization=properties:remove
+reload
+stop-embedded-server
