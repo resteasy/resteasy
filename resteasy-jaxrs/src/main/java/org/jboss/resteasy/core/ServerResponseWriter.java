@@ -5,10 +5,12 @@ import org.jboss.resteasy.core.interception.ContainerResponseContextImpl;
 import org.jboss.resteasy.core.interception.ResponseContainerRequestContext;
 import org.jboss.resteasy.core.interception.ServerWriterInterceptorContext;
 import org.jboss.resteasy.core.registry.SegmentNode;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyConfiguration;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -27,6 +29,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,9 +43,37 @@ public class ServerResponseWriter
    {
       ResourceMethodInvoker method =(ResourceMethodInvoker) request.getAttribute(ResourceMethodInvoker.class.getName());
 
-      if (jaxrsResponse.getEntity() != null && jaxrsResponse.getMediaType() == null)
+      if (jaxrsResponse.getEntity() != null)
       {
-         setDefaultContentType(request, jaxrsResponse, providerFactory, method);
+        if (jaxrsResponse.getMediaType() == null)
+        {
+           setDefaultContentType(request, jaxrsResponse, providerFactory, method);
+        }
+        ResteasyConfiguration config = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
+        if (config != null)
+        {
+           String b = config.getParameter(ResteasyContextParameters.RESTEASY_ADD_CHARSET);
+           if (Boolean.valueOf(b))
+           {
+              MediaType mt = null;
+              Object o = jaxrsResponse.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
+              if (o instanceof MediaType)
+              {
+                 mt = (MediaType) o;
+              }
+              else
+              {
+                 mt = MediaType.valueOf(o.toString());
+              }
+              if (!mt.getParameters().containsKey(MediaType.CHARSET_PARAMETER))
+              {
+                 if ("text".equalsIgnoreCase(mt.getType()) || ("application".equalsIgnoreCase(mt.getType()) && mt.getSubtype().toLowerCase().startsWith("xml")))
+                 {
+                    jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mt.withCharset(StandardCharsets.UTF_8.toString()));
+                 }
+              }
+           }
+        }
       }
 
       executeFilters(jaxrsResponse, request, response, providerFactory, method);

@@ -12,6 +12,7 @@ import org.jboss.logging.annotations.LogMessage;
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.Message.Format;
 import org.jboss.logging.annotations.MessageLogger;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters;
 
 /**
  * 
@@ -108,6 +109,10 @@ public interface LogMessages extends BasicLogger
    @Message(id = BASE + 140, value =  "JAX-RS annotations found at non-public method: {0}.{1}(); Only public methods may be exposed as resource methods.", format=Format.MESSAGE_FORMAT)
    void JAXRSAnnotationsFoundAtNonPublicMethod(String className, String method);  
 
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 141, value = "MediaType {0} on {1}() lacks charset. Consider setting charset or turning on context parameter " + ResteasyContextParameters.RESTEASY_ADD_CHARSET, format=Format.MESSAGE_FORMAT)
+   void mediaTypeLacksCharset(MediaType mediaType, String method);
+   
    @LogMessage(level = Level.WARN)
    @Message(id = BASE + 142, value = "Multiple resource methods match request {0}. Selecting one. Matching methods: {1}", format=Format.MESSAGE_FORMAT)
    void multipleMethodsMatch(String request, String[] methods);

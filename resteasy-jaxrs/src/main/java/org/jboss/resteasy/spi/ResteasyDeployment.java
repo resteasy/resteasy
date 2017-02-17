@@ -42,6 +42,7 @@ public class ResteasyDeployment
    protected boolean useContainerFormParams = false;
    protected boolean deploymentSensitiveFactoryEnabled = false;
    protected boolean asyncJobServiceEnabled = false;
+   protected boolean addCharset = false;
    protected int asyncJobServiceMaxJobResults = 100;
    protected long asyncJobServiceMaxWait = 300000;
    protected int asyncJobServiceThreadPoolSize = 100;
@@ -963,5 +964,15 @@ public class ResteasyDeployment
    public void setWiderRequestMatching(boolean widerRequestMatching)
    {
       this.widerRequestMatching = widerRequestMatching;
+   }
+   
+   public boolean isAddCharset()
+   {
+      return addCharset;
+   }
+
+   public void setAddCharset(boolean addCharset)
+   {
+      this.addCharset = addCharset;
    }
 }
