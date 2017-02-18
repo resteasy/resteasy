@@ -101,7 +101,23 @@ public class SegmentNode
                }
                else
                {
-                  String substring = path.substring(0, length);
+                  // must find the end of the matched pattern
+                  // and get the substring from 1st char thru end
+                  // of matched chars
+                  Pattern p = expression.getPattern();
+                  Matcher m = p.matcher(path);
+                  m.region(start, path.length());
+                  String substring = path;
+                  while(m.find()) {
+                     String endText = m.group(m.groupCount());
+                     if (endText != null && !endText.isEmpty()) {
+                        int indx = path.indexOf(endText, length);
+                        if (indx > -1) {
+                           substring = path.substring(0, indx);
+                        }
+                     }
+                  }
+
                   uriInfo.pushMatchedPath(substring);
                   uriInfo.pushMatchedURI(substring);
                }
