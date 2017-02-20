@@ -11,10 +11,6 @@ embed-server --server-config=standalone-full-elytron.xml
 /core-service=management/management-interface=http-interface:write-attribute(name=http-authentication-factory,value=management-http-authentication)
 /core-service=management/management-interface=http-interface:undefine-attribute(name=security-realm)
 
-# fix Elytron configuration (workaround for JBEAP-8576)
-/subsystem=elytron/security-domain=ApplicationDomain:list-add(name=realms, value={realm => "local"})
-/subsystem=elytron/sasl-authentication-factory=application-sasl-authentication:write-attribute(name=mechanism-configurations, value=[{mechanism-name="JBOSS-LOCAL-USER", realm-mapper=local}, {mechanism-name="DIGEST-MD5",mechanism-realm-configurations=[{realm-name=ApplicationRealm}]}])
-
 reload
 
 /core-service=management/security-realm=ManagementRealm:remove
