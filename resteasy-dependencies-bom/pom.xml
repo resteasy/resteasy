@@ -28,7 +28,7 @@
         <version.commons-io.commons-io>2.5</version.commons-io.commons-io>
         <version.hamcrest>1.3</version.hamcrest>
         <version.io.netty.netty>3.10.6.Final</version.io.netty.netty>
-        <version.io.netty.netty4>4.1.5.Final</version.io.netty.netty4>
+        <version.io.netty.netty4>4.1.8.Final</version.io.netty.netty4>
         <version.io.vertx>3.3.3</version.io.vertx>
         <version.io.undertow>1.3.25.Final</version.io.undertow>
         <version.javax.activation>1.1.1</version.javax.activation>
