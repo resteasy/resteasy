@@ -35,19 +35,19 @@ public abstract class AbstractUsersRolesSecurityDomainSetup implements ServerSet
     private File ROLES_FILE;
 
     // This property decides under which security subsystem will be used for the tests
-    private static final String SUBSYSTEM = System.getProperty("security.domain", "picketbox");
-    // Security domain name shared by elytron and picketBox configuration
-    private static final String SECURITY_DOMAIN_NAME = "jaxrsSecDomain";
+    private String subsystem = System.getProperty("security.domain", "picketbox");
 
+    // Security domain name shared by elytron and picketBox configuration
+    private String securityDomainName = "jaxrsSecDomain";
 
     // PicketBox related settings
-    private static final Address TEST_SECURITY_DOMAIN_ADDRESS
-            = Address.subsystem("security").and("security-domain", SECURITY_DOMAIN_NAME);
-    private static final Address TEST_AUTHN_CLASSIC_ADDRESS = TEST_SECURITY_DOMAIN_ADDRESS
+    private Address PICKETBOX_SECURITY_DOMAIN_ADDRESS
+            = Address.subsystem("security").and("security-domain", securityDomainName);
+    private Address PICKETBOX_AUTHN_CLASSIC_ADDRESS = PICKETBOX_SECURITY_DOMAIN_ADDRESS
             .and("authentication", "classic");
-    private static final String TEST_LOGIN_MODULE_NAME = "UsersRoles";
-    private static final Address TEST_LOGIN_MODULE_ADDRESS = TEST_AUTHN_CLASSIC_ADDRESS
-            .and("login-module", TEST_LOGIN_MODULE_NAME);
+    private static final String PICKETBOX_LOGIN_MODULE_NAME = "UsersRoles";
+    private Address PICKETBOX_LOGIN_MODULE_ADDRESS = PICKETBOX_AUTHN_CLASSIC_ADDRESS
+            .and("login-module", PICKETBOX_LOGIN_MODULE_NAME);
 
     // Elytron related settings
     private static final String ELYTRON_PROPERTIES_REALM_NAME = "propRealm";
@@ -59,9 +59,29 @@ public abstract class AbstractUsersRolesSecurityDomainSetup implements ServerSet
     private static final String ELYTRON_PROP_HTTP_AUTHENTICATION_FACTORY_NAME = "prop-http-authentication-factory";
     private static final Address ELYTRON_PROP_HTTP_AUTHENTICATION_FACTORY_ADDRESS
             = Address.subsystem("elytron").and("http-authentication-factory", ELYTRON_PROP_HTTP_AUTHENTICATION_FACTORY_NAME);
-    private static final String UNDERTOW_APPLICATION_SECURITY_DOMAIN_NAME = SECURITY_DOMAIN_NAME;
-    private static final Address UNDERTOW_APPLICATION_SECURITY_DOMAIN_ADDRESS
+    private String UNDERTOW_APPLICATION_SECURITY_DOMAIN_NAME = securityDomainName;
+    private Address UNDERTOW_APPLICATION_SECURITY_DOMAIN_ADDRESS
             = Address.subsystem("undertow").and("application-security-domain", UNDERTOW_APPLICATION_SECURITY_DOMAIN_NAME);
+
+    /**
+     * Set security subsystem
+     * @param subsystem
+     */
+    public void setSubsystem(String subsystem) {
+        this.subsystem = subsystem;
+    }
+
+    /**
+     * Set security domain name related configuration
+     * @param securityDomainName
+     */
+    public void setSecurityDomainName(String securityDomainName) {
+        this.securityDomainName = securityDomainName;
+        this.PICKETBOX_SECURITY_DOMAIN_ADDRESS=Address.subsystem("security").and("security-domain", securityDomainName);
+        this.UNDERTOW_APPLICATION_SECURITY_DOMAIN_NAME=securityDomainName;
+        this.UNDERTOW_APPLICATION_SECURITY_DOMAIN_ADDRESS
+                = Address.subsystem("undertow").and("application-security-domain", UNDERTOW_APPLICATION_SECURITY_DOMAIN_NAME);
+    }
 
     /**
      * Creates Files pointing to users.properties and roles.properties for the current test.
@@ -83,7 +103,7 @@ public abstract class AbstractUsersRolesSecurityDomainSetup implements ServerSet
         administration = new Administration(managementClient);
         ops = new Operations(managementClient);
 
-        if (SUBSYSTEM.equals("elytron")) {
+        if (subsystem.equals("elytron")) {
             configureElytron();
         } else {
             configurePicketBox();
@@ -93,7 +113,7 @@ public abstract class AbstractUsersRolesSecurityDomainSetup implements ServerSet
     @Override
     public void tearDown(ManagementClient fakemanagementClient, String s) throws Exception {
 
-        if (SUBSYSTEM.equals("elytron")) {
+        if (subsystem.equals("elytron")) {
             cleanUpElytron();
         } else {
             cleanUpPicketBox();
@@ -137,7 +157,7 @@ public abstract class AbstractUsersRolesSecurityDomainSetup implements ServerSet
 
         // Set undertow application-security-domain to the custom http-authentication-factory
         managementClient.executeCli("/subsystem=undertow/application-security-domain="
-                + SECURITY_DOMAIN_NAME + ":add(http-authentication-factory="
+                + securityDomainName + ":add(http-authentication-factory="
                 +  ELYTRON_PROP_HTTP_AUTHENTICATION_FACTORY_NAME + ")");
 
         administration.reloadIfRequired();
@@ -155,13 +175,13 @@ public abstract class AbstractUsersRolesSecurityDomainSetup implements ServerSet
     private void configurePicketBox() throws Exception {
 
         // Create security domain
-        AddSecurityDomain addSecurityDomain = new AddSecurityDomain.Builder(SECURITY_DOMAIN_NAME).build();
+        AddSecurityDomain addSecurityDomain = new AddSecurityDomain.Builder(securityDomainName).build();
         managementClient.apply(addSecurityDomain);
 
         // Create login module
         AddLoginModule addLoginModule = new AddLoginModule.Builder("org.jboss.security.auth.spi.UsersRolesLoginModule",
-                TEST_LOGIN_MODULE_NAME)
-                .securityDomainName(SECURITY_DOMAIN_NAME)
+                PICKETBOX_LOGIN_MODULE_NAME)
+                .securityDomainName(securityDomainName)
                 .flag("required")
                 .module("org.picketbox")
                 .addModuleOption("usersProperties", USERS_FILE.getAbsolutePath())
@@ -172,7 +192,7 @@ public abstract class AbstractUsersRolesSecurityDomainSetup implements ServerSet
 
         administration.reloadIfRequired();
 
-        assertTrue("The login module should be created", ops.exists(TEST_LOGIN_MODULE_ADDRESS));
+        assertTrue("The login module should be created", ops.exists(PICKETBOX_LOGIN_MODULE_ADDRESS));
     }
 
     /**
@@ -195,9 +215,9 @@ public abstract class AbstractUsersRolesSecurityDomainSetup implements ServerSet
      * Reverts all configuration done for PicketBox
      * @throws Exception
      */
-    private void cleanUpPicketBox() throws Exception{
+    private void cleanUpPicketBox() throws Exception {
         try {
-            ops.removeIfExists(TEST_SECURITY_DOMAIN_ADDRESS);
+            ops.removeIfExists(PICKETBOX_SECURITY_DOMAIN_ADDRESS);
             administration.reloadIfRequired();
         } finally {
             managementClient.close();
