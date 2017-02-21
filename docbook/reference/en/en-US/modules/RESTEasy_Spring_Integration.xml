@@ -75,7 +75,7 @@ NOTE: You can only use auto-proxied beans with our base Spring integration.   Yo
 
    &lt;servlet&gt;
       &lt;servlet-name&gt;Spring&lt;/servlet-name&gt;
-      &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet;&lt;/servlet-class&gt;
+      &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
    &lt;/servlet&gt;
 
    &lt;servlet-mapping&gt;
@@ -134,6 +134,114 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 ...
 
 ]]>
+</programlisting>
+</sect2>
+
+<sect2 id="JaxrsWithSpringMVC">
+    <title>JAX-RS with Spring MVC</title>
+    <para>
+         A JAX-RS Application subclass can be combined with a Spring DispatcherServlet
+         and used in the same web application.  An application combined in this way
+         allows you to dispatch to either the Spring controller or the JAX-RS resource
+         using the same base URL.  In addition you can use the Spring ModelAndView
+         objects as return arguments from @GET resource methods.
+    </para>
+    <para>
+         Configuring a web application of this type requires a web.xml and spring-servlet.xml
+         file and a reference to springmvc-resteasy.xml.  A servlet definition is required
+         for both the Spring DispatcherServlet and the Application subclass in the web.xml,
+         as well as RESTEasy Configuration Switch, resteasy.scan.resources.  Here is an example
+         of the minimum configuration information needed in the web.xml.
+    </para>
+<programlisting>
+         <![CDATA[
+<web-app>
+    <servlet>
+        <servlet-name>mySpring</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>mySpring</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>myAppSubclass</servlet-name>
+        <servlet-class>org.my.app.EntryApplicationSubclass</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>myAppSubclass</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- required Resteasy Configuration Switch directs auto scanning
+         of the archive for JAX-RS resource files
+    -->
+    <context-param>
+        <param-name>resteasy.scan.resources</param-name>
+        <param-value>true</param-value>
+    </context-param>
+</web-app>
+         ]]>
+</programlisting>
+    <para>
+         If your web application contains JAX-RS provider classes the RESTEasy Configuration
+         Switch, resteasy.scan.providers, will also be needed.  And if the url-pattern for the
+         JAX-RS Application subclass is other than /* you will need to declare the RESTEasy
+         Configuration Switch, resteasy.servlet.mapping.prefix.  This switch can be declare
+         either as a context-param or as a servlet init-param.  It's value must be the text
+         that preceeds the /*.  Here is an example of such a web.xml.
+    </para>
+<programlisting>
+         <![CDATA[
+<web-app>
+    <servlet>
+        <servlet-name>spring</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>spring</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>myAppSubclass</servlet-name>
+        <servlet-class>org.my.app.EntryApplicationSubclass</servlet-class>
+
+        <init-param>
+            <param-name>resteasy.servlet.mapping.prefix</param-name>
+            <param-value>/resources</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>myAppSubclass</servlet-name>
+        <url-pattern>/resources/*</url-pattern>
+    </servlet-mapping>
+
+    <context-param>
+        <param-name>resteasy.scan.resources</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>resteasy.scan.providers</param-name>
+        <param-value>true</param-value>
+    </context-param>
+</web-app>
+         ]]>
+</programlisting>
+    <para>
+         The spring-servlet.xml file must import springmvc-resteasy.xml, however this file does
+         not need to be present in the archive.  In addition a component-scan, declaration of the packages
+         that contain you application classes is needed.  At minimum your spring-servlet.xml should contain
+         these statements.
+    </para>
+<programlisting>
+         <![CDATA[
+  <beans>
+    <import resource="classpath:springmvc-resteasy.xml"/>
+    <context:component-scan base-package="org.my.app"/>
+  </beans>
+         ]]>
 </programlisting>
 </sect2>
 
