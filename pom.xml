@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>21</version>
+        <version>22</version>
         <relativePath/>
     </parent>
 
@@ -21,6 +21,16 @@
         <jboss.home/>
         <!-- print logs to file by default -->
         <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
+        <!-- Modularized JDK support (various workarounds) - activated via profile -->
+        <modular.jdk.args/>
+        <modular.jdk.props/>
+        <!-- maven-enforcer-plugin -->
+        <maven.min.version>3.2.5</maven.min.version>
+        <jdk.min.version>${maven.compiler.source}</jdk.min.version>
+        <!-- maven-javadoc-plugin -->
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <!-- maven-surefire-plugin -->
+        <surefire.system.args>${modular.jdk.args} ${modular.jdk.props}</surefire.system.args>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -170,6 +180,38 @@
                 </dependencies>
             </dependencyManagement>
         </profile>
+        <profile>
+          <id>jdk9</id>
+          <activation>
+            <jdk>9</jdk>
+          </activation>
+          <properties>
+            <!--<maven.compiler.verbose>true</maven.compiler.verbose>-->
+            <modular.jdk.args>--add-modules java.se.ee</modular.jdk.args>
+            <modular.jdk.props>-Dsun.util.logging.disableCallerCheck=true -Dsun.reflect.debugModuleAccessChecks=true</modular.jdk.props>
+          </properties>
+          <build>
+            <plugins>
+              <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                  <!-- fork is needed so compiler args can be used -->
+                  <fork>true</fork>
+                  <compilerArgs>
+                    <arg>-J--add-modules</arg>
+                    <arg>-Jjava.xml.ws.annotation</arg>
+                  </compilerArgs>
+                </configuration>
+              </plugin>
+              <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                  <additionalparam>--add-modules java.se.ee</additionalparam>
+                </configuration>
+              </plugin>
+            </plugins>
+          </build>
+        </profile>
     </profiles>
 
     <contributors>
@@ -194,11 +236,20 @@
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <compilerArgument>
+                            -AgeneratedTranslationFilesPath=${project.basedir}/target/generated-translation-files
+                        </compilerArgument>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${version.surefire.plugin}</version>
                     <configuration>
                         <forkMode>once</forkMode>
-                        <argLine>-Xms512m -Xmx512m</argLine>
+                        <argLine>-Xms512m -Xmx512m ${surefire.system.args}</argLine>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -214,6 +265,14 @@
                             com.restfully.*:org.jboss.resteasy.examples.*:se.unlogic.*:org.jboss.resteasy.tests.*
                         </excludePackageNames>
                     </configuration>
+                      <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.eclipse.jetty</groupId>
