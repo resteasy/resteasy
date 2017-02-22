@@ -4,21 +4,21 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
- * @version $Revision: 1 $
+ * @version $Revision: 2 $
  */
 @XmlRootElement(name = "registry")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RegistryData
 {
    @XmlElementRef
-   private List<RegistryEntry> entries = new ArrayList<RegistryEntry>();
+   private Set<RegistryEntry> entries = new TreeSet<RegistryEntry>();
 
-   public List<RegistryEntry> getEntries()
+   public Set<RegistryEntry> getEntries()
    {
       return entries;
    }

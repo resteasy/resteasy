@@ -10,19 +10,20 @@ import java.util.List;
 
 /**
  * <resource uriTemplate="/foo/bar{fff:.*}/x/a">
- * <get method="org.blah.MyResource.method()" invocations="5555">
- * <produces>application/xml</produces>
- * <produces>application/json</produces>
- * </get>
- * <post method="org.blah.MyResource.post()">
- * <produces>application/xml</produces>
+ *     <get method="org.blah.MyResource.method()" invocations="5555">
+ *         <produces>application/xml</produces>
+ *         <produces>application/json</produces>
+ *     </get>
+ *     <post method="org.blah.MyResource.post()">
+ *         <produces>application/xml</produces>
+ *     </post>
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
- * @version $Revision: 1 $
+ * @version $Revision: 2 $
  */
 @XmlRootElement(name = "resource")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class RegistryEntry
+public class RegistryEntry implements Comparable<RegistryEntry>
 {
    @XmlAttribute
    private String uriTemplate;
@@ -57,4 +58,13 @@ public class RegistryEntry
    {
       return methods;
    }
+
+    @Override
+    public int compareTo(RegistryEntry o)
+    {
+        if (this.getUriTemplate() == null)
+            return o.getUriTemplate() == null ? 0 : 1;
+
+        return this.getUriTemplate().compareTo(o.getUriTemplate());
+    }
 }
