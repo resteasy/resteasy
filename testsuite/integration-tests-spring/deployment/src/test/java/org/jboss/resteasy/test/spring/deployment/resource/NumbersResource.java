@@ -1,6 +1,5 @@
 package org.jboss.resteasy.test.spring.deployment.resource;
 
-import java.util.stream.Stream;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -19,17 +18,18 @@ import org.springframework.stereotype.Controller;
 @Path("numbers")
 public class NumbersResource {
 
-    @GET
-    @Produces("application/json")
-    public JsonArray numbers() {
-        JsonArrayBuilder array = Json.createArrayBuilder();
-        Stream<String> numberStream = Stream.generate(System::currentTimeMillis)
-            .map(String::valueOf)
-            .limit(10);
-        numberStream.forEach(array::add);
-        return array.build();
+   @GET
+   @Produces("application/json")
+   public JsonArray numbers()
+   {
+      JsonArrayBuilder array = Json.createArrayBuilder();
+      for (int i = 0; i < 10; i++)
+      {
+         array.add(String.valueOf(System.currentTimeMillis()));
+      }
+      return array.build();
 
-    }
+   }
 
 }
 
