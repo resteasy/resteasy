@@ -1147,9 +1147,29 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          // do it upside down if it is a wildcard type:  Note: this is to pass the stupid TCK which prefers that
          // a wildcard type match up with other wildcard types
+//         for (int i = list.size() - 1; i >= 0; i--)
+//         {
+//            rtn.add(list.get(i).obj);
+//         }
+         
+         // Fix for RESTEASY-1609.
+         // This is related to the fix in RESTEASY-1471, prior to which user ContextResolvers appeared
+         // to be built-in. The original loop may have been in response to that bug, so the reversal
+         // may not be necessary. In any case, this code will do the reversal but put user ContextResolvers
+         // at the beginning of the list.
          for (int i = list.size() - 1; i >= 0; i--)
          {
-            rtn.add(list.get(i).obj);
+            if (!list.get(i).isBuiltin)
+            {
+               rtn.add(list.get(i).obj);
+            }
+         }
+         for (int i = list.size() - 1; i >= 0; i--)
+         {
+            if (list.get(i).isBuiltin)
+            {
+               rtn.add(list.get(i).obj);
+            }
          }
       }
       else
