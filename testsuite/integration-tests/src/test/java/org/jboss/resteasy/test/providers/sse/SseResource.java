@@ -13,8 +13,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
 
-import org.jboss.resteasy.plugins.providers.sse.SseEventOutputImpl;
-import org.jboss.resteasy.plugins.providers.sse.SseEventProvider;
 import org.jboss.resteasy.plugins.providers.sse.SseImpl;
 
 @Path("/server-sent-events")
@@ -32,8 +30,7 @@ public class SseResource
            if (this.eventSink != null) {
                throw new IllegalStateException("Server sink already served.");
            }
-//           this.eventSink = eventSink;
-           this.eventSink = new SseEventOutputImpl(new SseEventProvider()); //TODO replace this with @Context injected value
+           this.eventSink = eventSink;
        }
    }
 
@@ -59,27 +56,26 @@ public class SseResource
    @Path("domains/{id}")
    @Produces(MediaType.SERVER_SENT_EVENTS)
    public void startDomain(@PathParam("id") final String id,
-                           @Context SseEventSink eventSink) {
-      final SseEventSink eventSink2 = new SseEventOutputImpl(new SseEventProvider()); //TODO replace this with @Context injected value
+                           @Context SseEventSink sink) {
       new Thread()
       {
          public void run()
          {
             try
             {
-               eventSink2.onNext(sse.newEventBuilder().name("domain-progress")
+               sink.onNext(sse.newEventBuilder().name("domain-progress")
                      .data(String.class, "starting domain " + id + " ...").build());
                Thread.sleep(200);
-               eventSink2.onNext(sse.newEvent("domain-progress", "50%"));
+               sink.onNext(sse.newEvent("domain-progress", "50%"));
                Thread.sleep(200);
-               eventSink2.onNext(sse.newEvent("domain-progress", "60%"));
+               sink.onNext(sse.newEvent("domain-progress", "60%"));
                Thread.sleep(200);
-               eventSink2.onNext(sse.newEvent("domain-progress", "70%"));
+               sink.onNext(sse.newEvent("domain-progress", "70%"));
                Thread.sleep(200);
-               eventSink2.onNext(sse.newEvent("domain-progress", "99%"));
+               sink.onNext(sse.newEvent("domain-progress", "99%"));
                Thread.sleep(200);
-               eventSink2.onNext(sse.newEvent("domain-progress", "Done."));
-               eventSink2.close();
+               sink.onNext(sse.newEvent("domain-progress", "Done."));
+               sink.close();
             }
             catch (final InterruptedException | IOException e)
             {

@@ -9,6 +9,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.Providers;
+import javax.ws.rs.sse.SseEventSink;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -38,7 +39,7 @@ public class ContextParameterInjector implements ValueInjector
       // we always inject a proxy for interface types just in case the per-request target is a pooled object
       // i.e. in the case of an SLSB
       if (type.equals(Providers.class)) return factory;
-      if (!type.isInterface())
+      if (!type.isInterface() || type.equals(SseEventSink.class))
       {
          return ResteasyProviderFactory.getContextData(type);
       }
@@ -81,9 +82,9 @@ public class ContextParameterInjector implements ValueInjector
    public Object inject()
    {
       //if (type.equals(Providers.class)) return factory;
-      if (type.equals(Application.class))
+      if (type.equals(Application.class) || type.equals(SseEventSink.class))
       {
-         return ResteasyProviderFactory.getContextData(Application.class);
+         return ResteasyProviderFactory.getContextData(type);
       }
       else if (!type.isInterface())
       {

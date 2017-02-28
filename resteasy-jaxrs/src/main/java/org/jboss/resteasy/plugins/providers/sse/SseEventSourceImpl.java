@@ -19,7 +19,7 @@ import javax.ws.rs.sse.SseEventSource;
 import javax.ws.rs.sse.SseSubscription;
 
 import org.apache.http.HttpHeaders;
-import org.jboss.resteasy.plugins.providers.sse.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 
 public class SseEventSourceImpl implements SseEventSource

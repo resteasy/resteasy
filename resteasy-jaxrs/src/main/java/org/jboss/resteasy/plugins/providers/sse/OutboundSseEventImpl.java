@@ -7,7 +7,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.OutboundSseEvent;
 
-import org.jboss.resteasy.plugins.providers.sse.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 public class OutboundSseEventImpl implements OutboundSseEvent
 {

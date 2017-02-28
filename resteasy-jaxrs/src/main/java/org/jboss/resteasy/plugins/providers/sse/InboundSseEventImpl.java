@@ -13,7 +13,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.sse.InboundSseEvent;
 
-import org.jboss.resteasy.plugins.providers.sse.i18n.Messages;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 public class InboundSseEventImpl implements InboundSseEvent

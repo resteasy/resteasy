@@ -58,7 +58,7 @@ public class SseTest {
           });
        eventSource.open();
 
-       Client messageClient = new ResteasyClientBuilder().build();
+       Client messageClient = new ResteasyClientBuilder().connectionPoolSize(10).build();
        WebTarget messageTarget = messageClient.target(generateURL("/service/server-sent-events"));
        for (int counter = 0; counter < 5; counter++)
        {
@@ -73,6 +73,7 @@ public class SseTest {
        client.close();
        Assert.assertTrue("5 messages are expected", results.size() == 5);
     }
+    
     @Test
     public void testSseEvent() throws Exception
     {

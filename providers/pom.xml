@@ -27,7 +27,6 @@
                 <module>json-p-ee7</module>
                 <module>resteasy-atom</module>
                 <module>multipart</module>
-                <module>sse</module>
                 <module>yaml</module>
                 <module>resteasy-html</module>
                 <module>resteasy-validator-provider-11</module>
