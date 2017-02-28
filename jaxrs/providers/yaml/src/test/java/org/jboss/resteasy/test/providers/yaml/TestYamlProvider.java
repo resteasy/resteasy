@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.providers.yaml;
 import junit.framework.Assert;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.plugins.providers.YamlProvider;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,9 +20,8 @@ public class TestYamlProvider extends BaseResourceTest {
 
     @Before
     public void setUp() {
-
         addPerRequestResource(YamlResource.class);
-
+        getProviderFactory().registerProvider(YamlProvider.class);
     }
 
     @Test
