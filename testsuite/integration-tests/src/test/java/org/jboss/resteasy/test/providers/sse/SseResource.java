@@ -13,14 +13,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseEventSink;
 
-import org.jboss.resteasy.plugins.providers.sse.SseImpl;
-
 @Path("/server-sent-events")
 public class SseResource
 {
 
    private final Object outputLock = new Object();
-   private final Sse sse = new SseImpl(); //TODO inject this
+   @Context
+   private Sse sse;
    private volatile SseEventSink eventSink;
 
    @GET
