@@ -31,7 +31,8 @@ public class TestResteasy1223 {
     public static Archive<?> createTestArchive() {
         WebArchive war = ShrinkWrap.create(WebArchive.class, "resteasy1223.war")
                 .addClasses(TestApplication.class, YamlResource.class, MyNestedObject.class, MyObject.class)
-                .addAsWebInfResource("web.xml").addAsManifestResource("MANIFEST.MF");
+                .addAsWebInfResource("web.xml").addAsManifestResource("MANIFEST.MF")
+                .addAsResource("META-INF/services/javax.ws.rs.ext.Providers");
         return war;
     }
 
