@@ -30,7 +30,7 @@
         <!-- maven-javadoc-plugin -->
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <!-- maven-surefire-plugin -->
-        <surefire.system.args>${modular.jdk.args} ${modular.jdk.props}</surefire.system.args>
+        <surefire.system.args>${modular.jdk.props}</surefire.system.args>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -188,7 +188,7 @@
           <properties>
             <!--<maven.compiler.verbose>true</maven.compiler.verbose>-->
             <modular.jdk.args>--add-modules java.se.ee</modular.jdk.args>
-            <modular.jdk.props>-Dsun.util.logging.disableCallerCheck=true -Dsun.reflect.debugModuleAccessChecks=true</modular.jdk.props>
+            <modular.jdk.props>-Dsun.util.logging.disableCallerCheck=true -Dsun.reflect.debugModuleAccessChecks=true --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/sun.util.calendar=ALL-UNNAMED --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED</modular.jdk.props>
           </properties>
           <build>
             <plugins>
