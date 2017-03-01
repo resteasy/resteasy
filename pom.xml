@@ -25,7 +25,7 @@
         <modular.jdk.args/>
         <modular.jdk.props/>
         <!-- maven-enforcer-plugin -->
-        <maven.min.version>3.2.5</maven.min.version>
+        <maven.min.version>3.3.1</maven.min.version>
         <jdk.min.version>${maven.compiler.source}</jdk.min.version>
         <!-- maven-javadoc-plugin -->
         <maven.javadoc.skip>true</maven.javadoc.skip>
