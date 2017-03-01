@@ -45,7 +45,7 @@ public class YamlProviderTest {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(YamlProviderTest.class.getSimpleName());
-        war.addClass(YamlProviderTest.class);
+        war.addClass(YamlProviderTest.class).addAsResource("META-INF/services/javax.ws.rs.ext.Providers");
         return TestUtil.finishContainerPrepare(war, null, YamlProviderResource.class, YamlProviderObject.class,
                 YamlProviderNestedObject.class);
     }
