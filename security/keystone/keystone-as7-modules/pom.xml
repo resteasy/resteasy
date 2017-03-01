@@ -80,6 +80,21 @@
                 </executions>
                 <dependencies>
                     <dependency>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant</artifactId>
+                        <version>1.10.1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant-apache-bsf</artifactId>
+                        <version>1.10.1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.mozilla</groupId>
+                        <artifactId>rhino</artifactId>
+                        <version>1.7.7.1</version>
+                    </dependency>
+                    <dependency>
                         <groupId>org.jboss</groupId>
                         <artifactId>jandex</artifactId>
                         <version>1.0.3.Final</version>
