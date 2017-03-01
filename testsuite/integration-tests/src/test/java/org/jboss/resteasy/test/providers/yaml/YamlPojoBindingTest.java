@@ -43,7 +43,8 @@ public class YamlPojoBindingTest {
     @Deployment
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive(YamlPojoBindingTest.class.getSimpleName());
-        war.addClasses(YamlPojoBindingNestedObject.class, YamlPojoBindingObject.class);
+        war.addClasses(YamlPojoBindingNestedObject.class, YamlPojoBindingObject.class)
+        .addAsResource("META-INF/services/javax.ws.rs.ext.Providers");
         return TestUtil.finishContainerPrepare(war, null, YamlResource.class);
     }
 
