@@ -25,7 +25,7 @@
                 <configuration>
                     <failIfNoTests>false</failIfNoTests>
                     <systemPropertyVariables>
-                        <additionalJvmArgs></additionalJvmArgs>
+                        <additionalJvmArgs>${modular.jdk.props}</additionalJvmArgs>
                         <ipv6>false</ipv6>
                         <ipv6ArquillianSettings></ipv6ArquillianSettings>
                         <node>127.0.0.1</node>
@@ -240,7 +240,7 @@
                         <configuration combine.children="append">
                             <systemPropertyVariables>
                                 <jboss.server.config.file.name>standalone-full-elytron.xml</jboss.server.config.file.name>
-                                <additionalJvmArgs></additionalJvmArgs>
+                                <additionalJvmArgs>${modular.jdk.props}</additionalJvmArgs>
                                 <ipv6>false</ipv6>
                                 <ipv6ArquillianSettings></ipv6ArquillianSettings>
                                 <node>127.0.0.1</node>
