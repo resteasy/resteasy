@@ -34,6 +34,14 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <additionalJvmArgs>${modular.jdk.props}</additionalJvmArgs>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
