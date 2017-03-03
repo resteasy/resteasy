@@ -21,7 +21,6 @@ public class SseEventSinkInterceptor implements ContainerRequestFilter//, Contai
       if (requestContext.getAcceptableMediaTypes().contains(MediaType.SERVER_SENT_EVENTS_TYPE)) {
          SseEventOutputImpl sink = new SseEventOutputImpl(new SseEventProvider());
          ResteasyProviderFactory.getContextDataMap().put(SseEventSink.class, sink);
-         sink.init();
       }
    }
 

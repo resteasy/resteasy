@@ -31,45 +31,33 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    private boolean closed;
    private static final byte[] END = "\r\n\r\n".getBytes();
    private final Map<Class<?>, Object> contextDataMap;
-   private volatile boolean initialized = false;
    
    public SseEventOutputImpl(final MessageBodyWriter<OutboundSseEvent> writer)
    {
       this.writer = writer; 
       contextDataMap = ResteasyProviderFactory.getContextDataMap();
-   }
-   
-   protected void init()
-   {
-      if (!initialized) {
-         synchronized (writer)
-         {
-            if (!initialized) {
-               Object req = ResteasyProviderFactory.getContextData(org.jboss.resteasy.spi.HttpRequest.class);
-               if (!(req instanceof Servlet3AsyncHttpRequest)) {
-                   throw new ServerErrorException(Messages.MESSAGES.asyncServletIsRequired(), Status.INTERNAL_SERVER_ERROR);
-               }
-               request = (Servlet3AsyncHttpRequest)req;
-               
-               if (!request.getAsyncContext().isSuspended()) {
-                  request.getAsyncContext().suspend();
-               }
 
-               response =  ResteasyProviderFactory.getContextData(HttpServletResponse.class); 
-               response.setHeader(HttpHeaderNames.CONTENT_TYPE, MediaType.SERVER_SENT_EVENTS);
-               //set back to client 200 OK to implies the SseEventOutput is ready
-               try
-               {
-                  response.getOutputStream().write(END);
-                  response.flushBuffer();
-                  initialized = true;
-               }
-               catch (IOException e)
-               {
-                  throw new ProcessingException(Messages.MESSAGES.failedToCreateSseEventOutput(), e);
-               }
-            }
-         }
+      Object req = ResteasyProviderFactory.getContextData(org.jboss.resteasy.spi.HttpRequest.class);
+      if (!(req instanceof Servlet3AsyncHttpRequest)) {
+          throw new ServerErrorException(Messages.MESSAGES.asyncServletIsRequired(), Status.INTERNAL_SERVER_ERROR);
+      }
+      request = (Servlet3AsyncHttpRequest)req;
+
+      if (!request.getAsyncContext().isSuspended()) {
+         request.getAsyncContext().suspend();
+      }
+
+      response =  ResteasyProviderFactory.getContextData(HttpServletResponse.class);
+      response.setHeader(HttpHeaderNames.CONTENT_TYPE, MediaType.SERVER_SENT_EVENTS);
+      //set back to client 200 OK to implies the SseEventOutput is ready
+      try
+      {
+         response.getOutputStream().write(END);
+         response.flushBuffer();
+      }
+      catch (IOException e)
+      {
+         throw new ProcessingException(Messages.MESSAGES.failedToCreateSseEventOutput(), e);
       }
    }
    
