@@ -87,142 +87,168 @@ public class StringParameterInjector
      
       if (!baseType.isPrimitive())
       {
-         paramConverter = factory.getParamConverter(baseType, baseGenericType, annotations);
-         if (paramConverter != null) 
-         {
-        	 return;
-         }
-         
-         collectionType = convertParameterTypeToCollectionType();
-         if(collectionType != null){
-        	 isCollection = true;
-	         if (genericType != null && genericType instanceof ParameterizedType)
+    	  boolean initialized = initialize(annotations, factory);
+    	  if(!initialized)
+    	  {
+	         collectionType = convertParameterTypeToCollectionType();
+	         if (collectionType != null)
 	         {
-	            ParameterizedType zType = (ParameterizedType) baseGenericType;
-	            baseType = Types.getRawType(zType.getActualTypeArguments()[0]);
-	            baseGenericType = zType.getActualTypeArguments()[0];
-	         }
-	         else
-	         {
-	            baseType = String.class;
-	            baseGenericType = null;
-	         }
-	         paramConverter = factory.getParamConverter(baseType, baseGenericType, annotations);
-	         if (paramConverter != null) 
-	         {
-	        	 return;
-	         }
-         }
+	        	 isCollection = true;
+		         if (genericType != null && genericType instanceof ParameterizedType)
+		         {
+		            ParameterizedType zType = (ParameterizedType) baseGenericType;
+		            baseType = Types.getRawType(zType.getActualTypeArguments()[0]);
+		            baseGenericType = zType.getActualTypeArguments()[0];
+		         }
+		         else
+		         {
+		            baseType = String.class;
+		            baseGenericType = null;
+		         }
+		         if(baseType.isPrimitive())
+		         {
+		        	 return;
+		         }
+		         initialized = initialize(annotations, factory);
+	        }
+	        if(!initialized)
+	    	{  
+	        	throw new RuntimeException(Messages.MESSAGES.unableToFindConstructor(getParamSignature(), target, baseType.getName()));
+	    	}
+    	}
+     }
+      
+  }
+   
+   
+   private boolean initialize(Annotation[] annotations, ResteasyProviderFactory factory){
+	   
+	   // First try to find a ParamConverter if any
+	   paramConverter = factory.getParamConverter(baseType, baseGenericType, annotations);
+       if (paramConverter != null) 
+       {
+      	 return true;
+       }
+       
+       // Else try to find a StringParameterUnmarshaller if any
+       unmarshaller = factory.createStringParameterUnmarshaller(baseType);
+       if (unmarshaller != null)
+       {
+          unmarshaller.setAnnotations(annotations);
+          return true;
+       }
+       for (Annotation annotation : annotations)
+       {
+          StringParameterUnmarshallerBinder binder = annotation.annotationType().getAnnotation(StringParameterUnmarshallerBinder.class);
+          if (binder != null)
+          {
+             try
+             {
+                unmarshaller = binder.value().newInstance();
+             }
+             catch (InstantiationException e)
+             {
+                throw new RuntimeException(e.getCause());
+             }
+             catch (IllegalAccessException e)
+             {
+                throw new RuntimeException(e);
+             }
+             factory.injectProperties(unmarshaller);
+             unmarshaller.setAnnotations(annotations);
+             return true;
+          }
+       }
+       
+       // Else try to find a StringConverter if any
+       converter = factory.getStringConverter(baseType);
+       if (converter != null)
+       {
+    	   return true;
+       }
+       
+       // Else try to find a RuntimeDelegate.HeaderDelegate if any
+       if (paramType.equals(HeaderParam.class))
+       {
+          delegate = factory.getHeaderDelegate(baseType);
+          if (delegate != null)
+          {
+        	  return true;
+          }
+       }
+       
+       // Else try to find a public Constructor that accepts a single String argument if any
+       try
+       {
+          constructor = baseType.getConstructor(String.class);
+          if (!Modifier.isPublic(constructor.getModifiers())) 
+          {
+        	  constructor = null;
+          }
+          else
+          {
+        	  return true;
+          }
+       }
+       catch (NoSuchMethodException ignored)
+       {
 
-         unmarshaller = factory.createStringParameterUnmarshaller(baseType);
-         if (unmarshaller != null)
+       }
+       
+	  // Else try to find a public fromValue (JAXB enum) or valueOf or fromString method that accepts a single String argument if any.
+      try
+      {
+         // this is for JAXB generated enums.
+         Method fromValue = baseType.getDeclaredMethod("fromValue", String.class);
+         if (Modifier.isPublic(fromValue.getModifiers()))
          {
-            unmarshaller.setAnnotations(annotations);
-            return;
-         }
-
-         for (Annotation annotation : annotations)
-         {
-            StringParameterUnmarshallerBinder binder = annotation.annotationType().getAnnotation(StringParameterUnmarshallerBinder.class);
-            if (binder != null)
+            for (Annotation ann : baseType.getAnnotations())
             {
-               try
+               if (ann.annotationType().getName().equals("javax.xml.bind.annotation.XmlEnum"))
                {
-                  unmarshaller = binder.value().newInstance();
+                  valueOf = fromValue;
                }
-               catch (InstantiationException e)
-               {
-                  throw new RuntimeException(e.getCause());
-               }
-               catch (IllegalAccessException e)
-               {
-                  throw new RuntimeException(e);
-               }
-               factory.injectProperties(unmarshaller);
-               unmarshaller.setAnnotations(annotations);
-               return;
             }
          }
-
-         converter = factory.getStringConverter(baseType);
-         if (converter != null) return;
-
-         if (paramType.equals(HeaderParam.class))
-         {
-            delegate = factory.getHeaderDelegate(baseType);
-            if (delegate != null) return;
-         }
-
+      }
+      catch (NoSuchMethodException e)
+      {
+      }
+      if (valueOf == null)
+      {
+         Method fromString = null;
 
          try
          {
-            constructor = baseType.getConstructor(String.class);
-            if (!Modifier.isPublic(constructor.getModifiers())) constructor = null;
+            fromString = baseType.getDeclaredMethod("fromString", String.class);
+            if (Modifier.isStatic(fromString.getModifiers()) == false) fromString = null;
          }
          catch (NoSuchMethodException ignored)
          {
-
          }
-         if (constructor == null)
+         try
          {
-            try
+            valueOf = baseType.getDeclaredMethod("valueOf", String.class);
+            if (Modifier.isStatic(valueOf.getModifiers()) == false) valueOf = null;
+         }
+         catch (NoSuchMethodException ignored)
+         {
+         }
+         // If enum use fromString if it exists: as defined in JAX-RS spec
+         if (baseType.isEnum())
+         {
+            if (fromString != null)
             {
-               // this is for JAXB generated enums.
-               Method fromValue = baseType.getDeclaredMethod("fromValue", String.class);
-               if (Modifier.isPublic(fromValue.getModifiers()))
-               {
-                  for (Annotation ann : baseType.getAnnotations())
-                  {
-                     if (ann.annotationType().getName().equals("javax.xml.bind.annotation.XmlEnum"))
-                     {
-                        valueOf = fromValue;
-                     }
-                  }
-               }
+               valueOf = fromString;
             }
-            catch (NoSuchMethodException e)
-            {
-            }
-            if (valueOf == null)
-            {
-               Method fromString = null;
-
-               try
-               {
-                  fromString = baseType.getDeclaredMethod("fromString", String.class);
-                  if (Modifier.isStatic(fromString.getModifiers()) == false) fromString = null;
-               }
-               catch (NoSuchMethodException ignored)
-               {
-               }
-               try
-               {
-                  valueOf = baseType.getDeclaredMethod("valueOf", String.class);
-                  if (Modifier.isStatic(valueOf.getModifiers()) == false) valueOf = null;
-               }
-               catch (NoSuchMethodException ignored)
-               {
-               }
-               // If enum use fromString if it exists: as defined in JAX-RS spec
-               if (baseType.isEnum())
-               {
-                  if (fromString != null)
-                  {
-                     valueOf = fromString;
-                  }
-               }
-               else if (valueOf == null)
-               {
-                  valueOf = fromString;
-               }
-               if (valueOf == null)
-               {
-                  throw new RuntimeException(Messages.MESSAGES.unableToFindConstructor(getParamSignature(), target, baseType.getName()));
-               }
-            }
-
+         }
+         else if (valueOf == null)
+         {
+            valueOf = fromString;
          }
       }
+      
+      return valueOf != null;
    }
    
 	private Class<? extends Collection> convertParameterTypeToCollectionType() {
