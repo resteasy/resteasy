@@ -109,21 +109,30 @@ public class PathParamInjector implements ValueInjector
             return segments[segments.length - 1];
          }
       }
-      List<String> list = request.getUri().getPathParameters(!encode).get(paramName);
-      if (list == null)
+      else
       {
-	    if (extractor.defaultValue == null) throw new InternalServerErrorException(Messages.MESSAGES.unknownPathParam(paramName, request.getUri().getPath()));
-	    if (extractor.isInjectableAsCollectionOrArray())
-	    {
-	       return extractor.extractValues(null);
-	    }
-		return extractor.extractValue(null);
-	 }
-	 if (extractor.isInjectableAsCollectionOrArray())
-	 {
-	    return extractor.extractValues(list);
-	 }
-	 return extractor.extractValue(list.get(list.size() - 1));
+         List<String> list = request.getUri().getPathParameters(!encode).get(paramName);
+         if (list == null)
+         {
+            if (extractor.defaultValue == null) throw new InternalServerErrorException(Messages.MESSAGES.unknownPathParam(paramName, request.getUri().getPath()));
+            if (extractor.isCollectionOrArray())
+            {
+               return extractor.extractValues(null);
+            }
+            else
+            {
+               return extractor.extractValue(null);
+            }
+         }
+         if (extractor.isCollectionOrArray())
+         {
+            return extractor.extractValues(list);
+         }
+         else
+         {
+            return extractor.extractValue(list.get(list.size() - 1));
+         }
+      }
    }
 
    public Object inject()
