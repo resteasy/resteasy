@@ -65,7 +65,7 @@ public class StringParameterInjector
       initialize(type, genericType, paramName, paramType, defaultValue, target, annotations, factory);
    }
 
-   public boolean isInjectableAsCollectionOrArray()
+   public boolean isCollectionOrArray()
    {
       return isCollection || type.isArray();
    }
