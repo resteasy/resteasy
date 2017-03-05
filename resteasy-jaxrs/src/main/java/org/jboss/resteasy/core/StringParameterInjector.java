@@ -301,7 +301,7 @@ public class StringParameterInjector
          {
             collection.add(extractValue(str));
          }
-         return Collections.unmodifiableCollection(collection);
+         return collection;
       }
       else
       {
