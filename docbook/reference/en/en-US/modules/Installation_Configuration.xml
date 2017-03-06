@@ -681,6 +681,20 @@ public class MyApplication extends Application
                                 entity before closing the connection.
                             </entry>
                         </row>
+                        <row>
+                            <entry>
+                                resteasy.add.charset
+                            </entry>
+                            <entry>
+                                false
+                            </entry>
+                            <entry>
+                                If a resource method returns a text/* or application/xml* media type without
+                                an explicit charset, Resteasy will add "charset=UTF-8" to the returned
+                                Content-Type header. Note that the charset defaults to UTF-8 in this case,
+                                independent of the setting of this parameter.
+                            </entry>
+                        </row>
                     </tbody>
                 </tgroup>
             </table>
