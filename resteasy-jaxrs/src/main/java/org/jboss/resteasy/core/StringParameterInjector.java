@@ -252,11 +252,11 @@ public class StringParameterInjector
    }
    
 	private Class<? extends Collection> convertParameterTypeToCollectionType() {
-		if (List.class.isAssignableFrom(type)) {
+		if (List.class.equals(type)) {
 			return ArrayList.class;
-		} else if (SortedSet.class.isAssignableFrom(type)) {
+		} else if (SortedSet.class.equals(type)) {
 			return TreeSet.class;
-		} else if (Set.class.isAssignableFrom(type)) {
+		} else if (Set.class.equals(type)) {
 			return HashSet.class;
 		}
 		return null;
@@ -301,7 +301,14 @@ public class StringParameterInjector
          {
             collection.add(extractValue(str));
          }
-         return collection;
+     	if (ArrayList.class.equals(collectionType)) {
+			return Collections.unmodifiableList((List<?>) collection);
+		} else if (TreeSet.class.equals(collectionType)) {
+			return Collections.unmodifiableSortedSet((SortedSet<?>) collection);
+		} else if (HashSet.class.equals(collectionType)) {
+			return Collections.unmodifiableSet((Set<?>) collection);
+		}
+         throw new RuntimeException("Unable to handle "+collectionType);
       }
       else
       {
