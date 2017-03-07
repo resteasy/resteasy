@@ -123,7 +123,7 @@ public class ClientResponseRedirectTest extends ClientTestBase{
         for (Object name : headers.keySet()) {
             logger.info(name + ":" + headers.getFirst(name.toString()));
         }
-        Assert.assertEquals("The location header doesn't have the expected value", generateURL("/redirect/data"), headers.getFirst("location"));
+        Assert.assertTrue(headers.getFirst("location").toString().equalsIgnoreCase(generateURL("/redirect/data")));
     }
 
     @SuppressWarnings(value = "unchecked")
@@ -133,7 +133,7 @@ public class ClientResponseRedirectTest extends ClientTestBase{
         for (Object name : headers.keySet()) {
             logger.info(name + ":" + headers.getFirst(name.toString()));
         }
-        Assert.assertEquals("The location header doesn't have the expected value", generateURL("/redirect/data"), headers.getFirst("location"));
+        Assert.assertTrue(headers.getFirst("location").toString().equalsIgnoreCase(generateURL("/redirect/data")));
     }
 
 }
