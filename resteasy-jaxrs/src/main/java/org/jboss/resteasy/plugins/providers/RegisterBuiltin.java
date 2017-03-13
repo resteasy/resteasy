@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
@@ -24,9 +25,13 @@ public class RegisterBuiltin
 
    public static void register(ResteasyProviderFactory factory)
    {
-      synchronized (factory)
+      final ResteasyProviderFactory monitor = (factory instanceof ThreadLocalResteasyProviderFactory)
+            ? ((ThreadLocalResteasyProviderFactory) factory).getDelegate()
+            : factory;
+      synchronized (monitor)
       {
-         if (factory.isBuiltinsRegistered() || !factory.isRegisterBuiltins()) return;
+         if (factory.isBuiltinsRegistered() || !factory.isRegisterBuiltins())
+            return;
          try
          {
             registerProviders(factory);
@@ -41,7 +46,8 @@ public class RegisterBuiltin
 
    public static void registerProviders(ResteasyProviderFactory factory) throws Exception
    {
-      Enumeration<URL> en = Thread.currentThread().getContextClassLoader().getResources("META-INF/services/" + Providers.class.getName());
+      Enumeration<URL> en = Thread.currentThread().getContextClassLoader()
+            .getResources("META-INF/services/" + Providers.class.getName());
       Map<String, URL> origins = new HashMap<String, URL>();
       while (en.hasMoreElements())
       {
@@ -54,7 +60,8 @@ public class RegisterBuiltin
             while ((line = reader.readLine()) != null)
             {
                line = line.trim();
-               if (line.equals("")) continue;
+               if (line.equals(""))
+                  continue;
                origins.put(line, url);
             }
          }
