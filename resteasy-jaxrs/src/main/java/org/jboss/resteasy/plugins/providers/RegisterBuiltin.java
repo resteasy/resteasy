@@ -46,8 +46,7 @@ public class RegisterBuiltin
 
    public static void registerProviders(ResteasyProviderFactory factory) throws Exception
    {
-      Enumeration<URL> en = Thread.currentThread().getContextClassLoader()
-            .getResources("META-INF/services/" + Providers.class.getName());
+      Enumeration<URL> en = Thread.currentThread().getContextClassLoader().getResources("META-INF/services/" + Providers.class.getName());
       Map<String, URL> origins = new HashMap<String, URL>();
       while (en.hasMoreElements())
       {
@@ -60,8 +59,7 @@ public class RegisterBuiltin
             while ((line = reader.readLine()) != null)
             {
                line = line.trim();
-               if (line.equals(""))
-                  continue;
+               if (line.equals("")) continue;
                origins.put(line, url);
             }
          }
