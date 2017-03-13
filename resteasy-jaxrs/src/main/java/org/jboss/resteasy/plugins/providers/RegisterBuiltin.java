@@ -25,11 +25,13 @@ public class RegisterBuiltin
 
    public static void register(ResteasyProviderFactory factory)
    {
-      final ResteasyProviderFactory monitor = (factory instanceof ThreadLocalResteasyProviderFactory) ? 
-              ((ThreadLocalResteasyProviderFactory) factory).getDelegate() : factory;
+      final ResteasyProviderFactory monitor = (factory instanceof ThreadLocalResteasyProviderFactory)
+            ? ((ThreadLocalResteasyProviderFactory) factory).getDelegate()
+            : factory;
       synchronized (monitor)
       {
-         if (factory.isBuiltinsRegistered() || !factory.isRegisterBuiltins()) return;
+         if (factory.isBuiltinsRegistered() || !factory.isRegisterBuiltins())
+            return;
          try
          {
             registerProviders(factory);
