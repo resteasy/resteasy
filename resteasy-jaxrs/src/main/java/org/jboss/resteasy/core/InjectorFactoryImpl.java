@@ -29,11 +29,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.jboss.resteasy.util.FindAnnotation.findAnnotation;
 
@@ -44,9 +42,6 @@ import static org.jboss.resteasy.util.FindAnnotation.findAnnotation;
 @SuppressWarnings("unchecked")
 public class InjectorFactoryImpl implements InjectorFactory
 {
-   private ConcurrentHashMap<Class<?>, Class<?>> contextProxyCache = new ConcurrentHashMap<Class<?>, Class<?>>();
-
-
    @Override
    public ConstructorInjector createConstructor(Constructor constructor, ResteasyProviderFactory providerFactory)
    {
@@ -122,7 +117,7 @@ public class InjectorFactoryImpl implements InjectorFactory
          case SUSPEND:
             return new SuspendInjector(parameter.getSuspendTimeout(), parameter.getType());
          case CONTEXT:
-            return createContextProxy(parameter.getType(), providerFactory);
+            return new ContextParameterInjector(null, parameter.getType(), providerFactory);
          case SUSPENDED:
             return new AsynchronousResponseInjector();
          case MESSAGE_BODY:
@@ -218,7 +213,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       }
       else if (findAnnotation(annotations, Context.class) != null)
       {
-         return createContextProxy(type, providerFactory);
+         return new ContextParameterInjector(null, type, providerFactory);
       }
       else if ((suspended = findAnnotation(annotations, Suspended.class)) != null)
       {
@@ -237,20 +232,4 @@ public class InjectorFactoryImpl implements InjectorFactory
          return null;
       }
    }
-
-   private ValueInjector createContextProxy(Class type, ResteasyProviderFactory providerFactory)
-   {
-      Class proxy = null;
-      if (type.isInterface())
-      {
-         proxy = contextProxyCache.get(type);
-         if (proxy == null)
-         {
-            proxy = Proxy.getProxyClass(type.getClassLoader(), type);
-            contextProxyCache.putIfAbsent(type, proxy);
-         }
-      }
-      return new ContextParameterInjector(proxy, type, providerFactory);
-   }
-
 }
