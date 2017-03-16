@@ -23,10 +23,10 @@ import java.lang.reflect.Proxy;
 public class ContextParameterInjector implements ValueInjector
 {
    private Class type;
-   private Class proxy;
+   private Object proxy;
    private ResteasyProviderFactory factory;
 
-   public ContextParameterInjector(Class proxy, Class type, ResteasyProviderFactory factory)
+   public ContextParameterInjector(Object proxy, Class type, ResteasyProviderFactory factory)
    {
       this.type = type;
       this.proxy = proxy;
@@ -45,8 +45,14 @@ public class ContextParameterInjector implements ValueInjector
       return createProxy();
    }
 
-   private class GenericDelegatingProxy implements InvocationHandler
+   static class GenericDelegatingProxy implements InvocationHandler
    {
+      private Class type;
+      
+      public GenericDelegatingProxy(Class type) {
+         this.type = type;
+      }
+      
       public Object invoke(Object o, Method method, Object[] objects) throws Throwable
       {
          try
@@ -101,7 +107,7 @@ public class ContextParameterInjector implements ValueInjector
         {
             try
             {
-                return proxy.getConstructors()[0].newInstance(new GenericDelegatingProxy());
+                return proxy;
             }
             catch (Exception e)
             {
@@ -111,7 +117,7 @@ public class ContextParameterInjector implements ValueInjector
         else
         {
             Class[] intfs = {type};
-            return Proxy.newProxyInstance(type.getClassLoader(), intfs, new GenericDelegatingProxy());
+            return Proxy.newProxyInstance(type.getClassLoader(), intfs, new GenericDelegatingProxy(type));
         }
     }
 }

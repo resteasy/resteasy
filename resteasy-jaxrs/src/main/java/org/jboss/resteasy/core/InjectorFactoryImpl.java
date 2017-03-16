@@ -44,7 +44,7 @@ import static org.jboss.resteasy.util.FindAnnotation.findAnnotation;
 @SuppressWarnings("unchecked")
 public class InjectorFactoryImpl implements InjectorFactory
 {
-   private ConcurrentHashMap<Class<?>, Class<?>> contextProxyCache = new ConcurrentHashMap<Class<?>, Class<?>>();
+   private ConcurrentHashMap<Class<?>, Object> contextProxyCache = new ConcurrentHashMap<Class<?>, Object>();
 
 
    @Override
@@ -240,13 +240,14 @@ public class InjectorFactoryImpl implements InjectorFactory
 
    private ValueInjector createContextProxy(Class type, ResteasyProviderFactory providerFactory)
    {
-      Class proxy = null;
+      Object proxy = null;
       if (type.isInterface())
       {
          proxy = contextProxyCache.get(type);
          if (proxy == null)
          {
-            proxy = Proxy.getProxyClass(type.getClassLoader(), type);
+            Class<?>[] itfs = {type};
+            proxy = Proxy.newProxyInstance(type.getClassLoader(), itfs, new ContextParameterInjector.GenericDelegatingProxy(type));
             contextProxyCache.putIfAbsent(type, proxy);
          }
       }
