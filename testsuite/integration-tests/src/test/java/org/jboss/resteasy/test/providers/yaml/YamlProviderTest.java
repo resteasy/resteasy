@@ -77,7 +77,7 @@ public class YamlProviderTest {
         String stringResponse = response.readEntity(String.class);
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         Assert.assertEquals("The response doesn't contain correct yaml header",
-                "text/x-yaml", response.getHeaders().getFirst("Content-Type"));
+                "text/x-yaml;charset=UTF-8", response.getHeaders().getFirst("Content-Type"));
         YamlProviderObject o1 = YamlProviderResource.createMyObject();
         String s1 = new Yaml().dump(o1);
         Assert.assertEquals("The entity response doesn't match the original request", s1, stringResponse);
@@ -98,7 +98,7 @@ public class YamlProviderTest {
         String stringResponse = response.readEntity(String.class);
         Assert.assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-1047"), HttpResponseCodes.SC_OK, response.getStatus());
         Assert.assertEquals("The response doesn't contain correct yaml header",
-                "text/x-yaml", response.getHeaders().getFirst("Content-Type"));
+                "text/x-yaml;charset=UTF-8", response.getHeaders().getFirst("Content-Type"));
         Assert.assertEquals("The entity response doesn't match the original request", s1, stringResponse);
     }
 
@@ -128,7 +128,7 @@ public class YamlProviderTest {
         WebTarget target = client.target(generateURL("/yaml/list"));
         Response response = target.request().post(Entity.entity(s1, "text/x-yaml"));
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("text/plain", response.getHeaderString("Content-Type"));
+        Assert.assertEquals("text/plain;charset=UTF-8", response.getHeaderString("Content-Type"));
         Assert.assertEquals(s1, response.readEntity(String.class).trim());
     }
 

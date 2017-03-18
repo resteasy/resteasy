@@ -144,7 +144,7 @@ public class ResourceLocatorTest
          Assert.assertEquals("got", response.readEntity(String.class));
          Assert.assertNotNull(response.getHeaderString("Content-Type"));
          Assert.assertNotNull(response.getHeaderString("Content-Type"));
-         Assert.assertEquals(MediaType.TEXT_PLAIN, response.getHeaderString("Content-Type"));
+         Assert.assertEquals(MediaType.TEXT_PLAIN_TYPE.withCharset("UTF-8").toString(), response.getHeaderString("Content-Type"));
       }
 
       {

@@ -399,4 +399,51 @@ public class MultipartProvider implements MessageBodyReader {
    <para>to "false".</para>
    </sect1>
    
+   <sect1 id="Text_media_types">
+      <title>Text media types and character sets</title>
+   
+   <para>
+   The JAX-RS specification says
+   </para>
+
+<programlisting>
+When writing responses, implementations SHOULD respect application-supplied character
+set metadata and SHOULD use UTF-8 if a character set is not specified by the application
+or if the application specifies a character set that is unsupported.
+</programlisting>
+
+   <para>
+   On the other hand, the HTTP specification says
+   </para>
+   
+<programlisting>
+When no explicit charset parameter is provided by the sender, media subtypes of the
+"text" type are defined to have a default charset value of "ISO-8859-1" when received
+via HTTP. Data in character sets other than "ISO-8859-1" or its subsets MUST be labeled
+with an appropriate charset value.
+</programlisting>
+
+   <para>
+   It follows that, in the absence of a character set specified by a resource or resource method,
+   Resteasy SHOULD use UTF-8 as the character set for text media types, and, if it does, it MUST add an explicit 
+   charset parameter to the Content-Type response header. Resteasy started adding the explicit charset
+   parameter in releases 3.1.2.Final and 3.0.22.Final, and that new behavior could cause some compatibility problems. To
+   specify the previous behavior, in which UTF-8 was used for text media types, but the explicit charset
+   was not appended, the context parameter "resteasy.add.charset" may be set to "false". It defaults to "true".
+   </para>
+   
+   <para>
+   <emphasis role="bold">Note.</emphasis> By "text" media types, we mean
+   </para>
+   
+   <itemizedlist>
+      <listitem>a media type with type "text" and any subtype;</listitem>
+      <listitem>a media type with type ""application" and subtype beginning with "xml".</listitem>
+   </itemizedlist>
+   
+   <para>
+   The latter set includes "application/xml-external-parsed-entity" and "application/xml-dtd".
+   </para>
+   </sect1>
+   
 </chapter>
