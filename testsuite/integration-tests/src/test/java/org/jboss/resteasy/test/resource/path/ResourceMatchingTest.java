@@ -198,7 +198,7 @@ public class ResourceMatchingTest {
         MediaType mediaType = response.getMediaType();
         String actual = response.readEntity(String.class);
         Assert.assertEquals("application/xml", actual);
-        Assert.assertEquals("MediaType of the response doesn't match the expected type", "application/xml",
+        Assert.assertEquals("MediaType of the response doesn't match the expected type", "application/xml;charset=UTF-8",
                 mediaType.toString());
         response.close();
     }

@@ -3,6 +3,8 @@ package org.jboss.resteasy.plugins.interceptors;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -29,8 +31,8 @@ public class MessageSanitizerContainerResponseFilter implements ContainerRespons
         if (HttpResponseCodes.SC_BAD_REQUEST == responseContext.getStatus()) {
             Object entity = responseContext.getEntity();
             if (entity != null && entity instanceof String) {
-                ArrayList contentTypes = (ArrayList)responseContext.getHeaders().get("Content-Type");
-                if (contentTypes != null  && contentTypes.contains(MediaType.TEXT_HTML)) {
+                ArrayList<Object> contentTypes = (ArrayList<Object>)responseContext.getHeaders().get("Content-Type");
+                if (contentTypes != null  && containsHtmlText(contentTypes)) {
                     String escapedMsg = escapeXml((String) entity);
                     responseContext.setEntity(escapedMsg);
                 }
@@ -74,5 +76,18 @@ public class MessageSanitizerContainerResponseFilter implements ContainerRespons
         return sb.toString();
     }
 
+    private boolean containsHtmlText(ArrayList<Object> list) {
+       for (Iterator<Object> it = list.iterator(); it.hasNext();  ) {
+          Object o = it.next();
+          if (o instanceof String) {
+             String mediaType = (String) o;
+             String[] parts = mediaType.split("/");
+             if (parts.length >= 2 && parts[0].trim().equals("text") && parts[1].trim().startsWith("html")) {
+                return true;
+             }
+          }
+       }
+       return false;
+    }
 }
 

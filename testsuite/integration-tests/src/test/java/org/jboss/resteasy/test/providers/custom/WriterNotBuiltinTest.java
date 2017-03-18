@@ -55,7 +55,7 @@ public class WriterNotBuiltinTest {
         Response response = client.target(PortProviderUtil.generateURL("/string", WriterNotBuiltinTest.class.getSimpleName()))
                 .request().get();
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals("text/plain", response.getStringHeaders().getFirst("content-type"));
+        Assert.assertEquals("text/plain;charset=UTF-8", response.getStringHeaders().getFirst("content-type"));
         Assert.assertEquals("Response contains wrong content", "hello world", response.readEntity(String.class));
         Assert.assertTrue("Wrong MessageBodyWriter was used", WriterNotBuiltinTestWriter.used);
         client.close();
