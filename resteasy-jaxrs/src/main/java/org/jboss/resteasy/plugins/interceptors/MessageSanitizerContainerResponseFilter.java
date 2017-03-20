@@ -81,9 +81,13 @@ public class MessageSanitizerContainerResponseFilter implements ContainerRespons
           Object o = it.next();
           if (o instanceof String) {
              String mediaType = (String) o;
-             String[] parts = mediaType.split("/");
-             if (parts.length >= 2 && parts[0].trim().equals("text") && parts[1].trim().startsWith("html")) {
-                return true;
+             String[] partsType = mediaType.split("/");
+             if (partsType.length >= 2) {
+                String[] partsSubtype = partsType[1].split(";");
+                if (partsType[0].trim().equalsIgnoreCase("text") && 
+                      partsSubtype[0].trim().toLowerCase().equals("html")) {
+                   return true;
+                }
              }
           }
        }
