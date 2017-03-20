@@ -129,8 +129,8 @@ public class ResponseObjectTest
         org.junit.Assert.assertEquals(HttpResponseCodes.SC_OK, obj.status());
         org.junit.Assert.assertEquals("The response object doesn't contain the expected string", "ABC", obj.body());
         org.junit.Assert.assertEquals("The response object doesn't contain the expected header",
-                "text/plain", obj.response().getHeaders().getFirst("Content-Type"));
-        org.junit.Assert.assertEquals("The response object doesn't contain the expected header", "text/plain", obj.contentType());
+                "text/plain;charset=UTF-8", obj.response().getHeaders().getFirst("Content-Type"));
+        org.junit.Assert.assertEquals("The response object doesn't contain the expected header", "text/plain;charset=UTF-8", obj.contentType());
     }
 
     @Test

@@ -252,4 +252,11 @@ public class MediaTypeHelper
       }
       return true;
    }
+   
+   public static boolean isTextLike(MediaType mediaType)
+   {
+      return "text".equalsIgnoreCase(mediaType.getType())
+            || ("application".equalsIgnoreCase(mediaType.getType())
+                  && mediaType.getSubtype().toLowerCase().startsWith("xml"));
+   }
 }

@@ -97,7 +97,7 @@ public class CustomForbiddenMessageTest {
         Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
         Assert.assertEquals(ACCESS_FORBIDDEN_MESSAGE, response.readEntity(String.class));
         String ct = response.getHeaderString("Content-Type");
-        Assert.assertEquals("text/plain", ct);
+        Assert.assertEquals("text/plain;charset=UTF-8", ct);
     }
 
     static class SecurityDomainSetup extends AbstractUsersRolesSecurityDomainSetup {

@@ -177,7 +177,7 @@ public class VariantsTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("GET", response.getEntity());
-      Assert.assertEquals("application/xml", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
+      Assert.assertEquals("application/xml;charset=UTF-8", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
       Assert.assertEquals("en-us", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
@@ -196,7 +196,7 @@ public class VariantsTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("GET", response.getEntity());
-      Assert.assertEquals("application/xml", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
+      Assert.assertEquals("application/xml;charset=UTF-8", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
       Assert.assertEquals("en-us", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
@@ -215,7 +215,7 @@ public class VariantsTest
       ClientResponse<String> response = request.get(String.class);
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("GET", response.getEntity());
-      Assert.assertEquals("application/xml", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
+      Assert.assertEquals("application/xml;charset=UTF-8", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
       Assert.assertEquals("en-us", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
    }
 
@@ -235,7 +235,7 @@ public class VariantsTest
       Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
       Assert.assertEquals("GET", response.getEntity());
       Assert.assertEquals("en", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
-      Assert.assertEquals("text/xml", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
+      Assert.assertEquals("text/xml;charset=UTF-8", response.getResponseHeaders().getFirst(HttpHeaderNames.CONTENT_TYPE));
    }
 
 

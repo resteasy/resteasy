@@ -83,9 +83,9 @@ public class ResponseObjectTest {
         ResponseObjectBasicObjectIntf obj = clientProxyFactory.get();
         Assert.assertEquals(HttpResponseCodes.SC_OK, obj.status());
         Assert.assertEquals("The response object doesn't contain the expected string", "ABC", obj.body());
-        Assert.assertEquals("The response object doesn't contain the expected header" , "text/plain",
+        Assert.assertEquals("The response object doesn't contain the expected header" , "text/plain;charset=UTF-8",
                 obj.responseDeprecated().getHeaders().getFirst("Content-Type"));
-        Assert.assertEquals("The response object doesn't contain the expected header", "text/plain", obj.contentType());
+        Assert.assertEquals("The response object doesn't contain the expected header", "text/plain;charset=UTF-8", obj.contentType());
     }
 
     /**
@@ -114,11 +114,11 @@ public class ResponseObjectTest {
         Assert.assertEquals("The response object doesn't contain the expected string", "ABC", obj.body());
         try {
             Assert.assertEquals("The response object doesn't contain the expected header",
-                    "text/plain", obj.response().getHeaders().getFirst("Content-Type"));
+                    "text/plain;charset=UTF-8", obj.response().getHeaders().getFirst("Content-Type"));
         } catch (ClassCastException ex) {
             Assert.fail(TestUtil.getErrorMessageForKnownIssue("JBEAP-2446"));
         }
-        Assert.assertEquals("The response object doesn't contain the expected header", "text/plain", obj.contentType());
+        Assert.assertEquals("The response object doesn't contain the expected header", "text/plain;charset=UTF-8", obj.contentType());
     }
 
     /**
