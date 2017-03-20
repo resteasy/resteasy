@@ -85,7 +85,7 @@ public class TypeMappingJettisonTest {
     @Test
     public void extensionTest() throws Exception {
         // acceptXMLOnlyRequestNoProducesNoExtension() throws Exception {
-        requestAndAssert("noproduces", null, "application/xml", "application/xml");
+        requestAndAssert("noproduces", null, "application/xml", "application/xml;charset=UTF-8");
 
         // acceptJSONOnlyRequestNoProducesNoExtension() throws Exception {
         requestAndAssert("noproduces", null, "application/json", "application/json");
@@ -94,14 +94,14 @@ public class TypeMappingJettisonTest {
         requestAndAssert("noproduces", "json", null, "application/json");
 
         // acceptNullRequestNoProducesXMLExtension() throws Exception {
-        requestAndAssert("noproduces", "xml", null, "application/xml");
+        requestAndAssert("noproduces", "xml", null, "application/xml;charset=UTF-8");
 
 
         // acceptJSONOnlyRequestNoProducesJSONExtension() throws Exception {
         requestAndAssert("noproduces", "json", "application/json", "application/json");
 
         // acceptJSONOnlyRequestNoProducesXMLExtension() throws Exception {
-        requestAndAssert("noproduces", "xml", "application/json", "application/xml");
+        requestAndAssert("noproduces", "xml", "application/json", "application/xml;charset=UTF-8");
 
         // acceptJSONAndXMLRequestNoProducesJSONExtension() throws Exception {
         requestAndAssert("noproduces", "json", "application/json, application/xml",
@@ -112,18 +112,18 @@ public class TypeMappingJettisonTest {
                 "application/json");
 
         // acceptXMLOnlyRequestNoProducesXMLExtension() throws Exception {
-        requestAndAssert("noproduces", "xml", "application/xml", "application/xml");
+        requestAndAssert("noproduces", "xml", "application/xml", "application/xml;charset=UTF-8");
 
         // acceptXMLOnlyRequestNoProducesJSONExtension() throws Exception {
         requestAndAssert("noproduces", "json", "application/xml", "application/json");
 
         // acceptJSONAndXMLRequestNoProducesXMLExtension() throws Exception {
         requestAndAssert("noproduces", "xml", "application/json, application/xml",
-                "application/xml");
+                "application/xml;charset=UTF-8");
 
         // acceptXMLAndJSONRequestNoProducesXMLExtension() throws Exception {
         requestAndAssert("noproduces", "xml", "application/xml, application/json",
-                "application/xml");
+                "application/xml;charset=UTF-8");
     }
 
 }

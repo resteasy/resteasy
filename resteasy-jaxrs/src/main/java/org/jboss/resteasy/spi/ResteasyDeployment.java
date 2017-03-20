@@ -43,7 +43,7 @@ public class ResteasyDeployment
    protected boolean useContainerFormParams = false;
    protected boolean deploymentSensitiveFactoryEnabled = false;
    protected boolean asyncJobServiceEnabled = false;
-   protected boolean addCharset = false;
+   protected boolean addCharset = true;
    protected int asyncJobServiceMaxJobResults = 100;
    protected long asyncJobServiceMaxWait = 300000;
    protected int asyncJobServiceThreadPoolSize = 100;

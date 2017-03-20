@@ -71,7 +71,7 @@ public class ContentTypeMatchingTest {
         Response response = target.request().get();
         Assert.assertEquals("Unexpected http response code was returned", 412, response.getStatus());
         Assert.assertEquals("Wrong response content-type returned",
-                "application/xml", response.getStringHeaders().getFirst("Content-Type"));
+                "application/xml;charset=UTF-8", response.getStringHeaders().getFirst("Content-Type"));
         String error = response.readEntity(String.class);
         logger.info(error);
         Assert.assertTrue("Incorrect exception mapper was used",
@@ -99,7 +99,7 @@ public class ContentTypeMatchingTest {
         {
             Response response = target.request().accept("application/xml").get();
             Assert.assertEquals(412, response.getStatus());
-            Assert.assertEquals("application/xml", response.getStringHeaders().getFirst("Content-Type"));
+            Assert.assertEquals("application/xml;charset=UTF-8", response.getStringHeaders().getFirst("Content-Type"));
             String error = response.readEntity(String.class);
             logger.info(error);
             Assert.assertTrue("Incorrect exception mapper was used",
@@ -128,7 +128,7 @@ public class ContentTypeMatchingTest {
         {
             Response response = target.request().accept("application/xml").get();
             Assert.assertEquals(412, response.getStatus());
-            Assert.assertEquals("application/xml", response.getStringHeaders().getFirst("Content-Type"));
+            Assert.assertEquals("application/xml;charset=UTF-8", response.getStringHeaders().getFirst("Content-Type"));
             String error = response.readEntity(String.class);
             logger.info(error);
             Assert.assertTrue("Incorrect exception mapper was used",
@@ -156,7 +156,7 @@ public class ContentTypeMatchingTest {
         {
             Response response = target.request().accept("application/xml").get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-            Assert.assertEquals("application/xml", response.getStringHeaders().getFirst("Content-Type"));
+            Assert.assertEquals("application/xml;charset=UTF-8", response.getStringHeaders().getFirst("Content-Type"));
             String error = response.readEntity(String.class);
             logger.info(error);
             Assert.assertTrue("Incorrect exception mapper was used",
