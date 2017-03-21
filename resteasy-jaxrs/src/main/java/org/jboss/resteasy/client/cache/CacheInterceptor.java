@@ -8,6 +8,7 @@ import org.jboss.resteasy.spi.interception.AcceptedByMethod;
 import org.jboss.resteasy.spi.interception.ClientExecutionContext;
 import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.util.DateUtil;
+import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.util.WeightedMediaType;
 
@@ -242,6 +243,11 @@ public class CacheInterceptor implements ClientExecutionInterceptor, AcceptedByM
          {
             entry = cache.get(uri, accept);
             if (entry != null) return entry;
+            if (MediaTypeHelper.isTextLike(accept))
+            {
+               entry = cache.get(uri, accept.withCharset("UTF-8"));
+               if (entry != null) return entry;
+            }
          }
       }
       else
