@@ -1,6 +1,7 @@
 package org.jboss.resteasy.client.jaxrs.cache;
 
 import org.jboss.resteasy.util.DateUtil;
+import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.ReadFromStream;
 
 import javax.ws.rs.client.ClientRequestContext;
@@ -223,6 +224,11 @@ public class CacheInterceptor implements ClientRequestFilter, ClientResponseFilt
          {
             entry = cache.get(uri, accept);
             if (entry != null) return entry;
+            if (MediaTypeHelper.isTextLike(accept))
+            {
+               entry = cache.get(uri, accept.withCharset("UTF-8"));
+               if (entry != null) return entry;
+            }
          }
 
       }

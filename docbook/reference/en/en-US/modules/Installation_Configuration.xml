@@ -686,7 +686,7 @@ public class MyApplication extends Application
                                 resteasy.add.charset
                             </entry>
                             <entry>
-                                false
+                                true
                             </entry>
                             <entry>
                                 If a resource method returns a text/* or application/xml* media type without

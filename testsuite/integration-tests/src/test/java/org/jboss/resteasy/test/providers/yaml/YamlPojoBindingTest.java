@@ -63,7 +63,7 @@ public class YamlPojoBindingTest {
         Response response = get.request().get();
 
         assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        assertEquals(HEADER_ERROR_MSG, "text/x-yaml", response.getHeaders().getFirst("Content-Type"));
+        assertEquals(HEADER_ERROR_MSG, "text/x-yaml;charset=UTF-8", response.getHeaders().getFirst("Content-Type"));
 
         String s = response.readEntity(String.class);
         YamlPojoBindingObject o1 = YamlResource.createMyObject();
@@ -87,7 +87,7 @@ public class YamlPojoBindingTest {
         Response response = post.request().post(Entity.entity(s1, "text/x-yaml"));
 
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
-        Assert.assertEquals(HEADER_ERROR_MSG, "text/x-yaml", response.getHeaders().getFirst("Content-Type"));
+        Assert.assertEquals(HEADER_ERROR_MSG, "text/x-yaml;charset=UTF-8", response.getHeaders().getFirst("Content-Type"));
         Assert.assertEquals(RESPONSE_ERROR_MSG, s1, response.readEntity(String.class));
         response.close();
     }
@@ -120,7 +120,7 @@ public class YamlPojoBindingTest {
         Response response = post.request().post(Entity.entity(s1, "text/x-yaml"));
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
 
-        Assert.assertEquals(HEADER_ERROR_MSG, "text/plain", response.getHeaders().getFirst("Content-Type"));
+        Assert.assertEquals(HEADER_ERROR_MSG, "text/plain;charset=UTF-8", response.getHeaders().getFirst("Content-Type"));
         Assert.assertEquals(RESPONSE_ERROR_MSG, s1, response.readEntity(String.class).trim());
     }
 

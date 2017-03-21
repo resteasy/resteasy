@@ -11,9 +11,11 @@ import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyConfiguration;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.CommitHeaderOutputStream;
 import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.util.MediaTypeHelper;
 
 import javax.ws.rs.NotAcceptableException;
 import javax.ws.rs.container.ContainerResponseFilter;
@@ -49,28 +51,29 @@ public class ServerResponseWriter
         {
            setDefaultContentType(request, jaxrsResponse, providerFactory, method);
         }
-        ResteasyConfiguration config = ResteasyProviderFactory.getContextData(ResteasyConfiguration.class);
-        if (config != null)
+        boolean addCharset = true;
+        ResteasyDeployment deployment = ResteasyProviderFactory.getContextData(ResteasyDeployment.class);
+        if (deployment != null)
         {
-           String b = config.getParameter(ResteasyContextParameters.RESTEASY_ADD_CHARSET);
-           if (Boolean.valueOf(b))
+           addCharset = deployment.isAddCharset();
+        }
+        if (addCharset)
+        {
+           MediaType mt = null;
+           Object o = jaxrsResponse.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
+           if (o instanceof MediaType)
            {
-              MediaType mt = null;
-              Object o = jaxrsResponse.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
-              if (o instanceof MediaType)
+              mt = (MediaType) o;
+           }
+           else
+           {
+              mt = MediaType.valueOf(o.toString());
+           }
+           if (!mt.getParameters().containsKey(MediaType.CHARSET_PARAMETER))
+           {
+              if (MediaTypeHelper.isTextLike(mt))
               {
-                 mt = (MediaType) o;
-              }
-              else
-              {
-                 mt = MediaType.valueOf(o.toString());
-              }
-              if (!mt.getParameters().containsKey(MediaType.CHARSET_PARAMETER))
-              {
-                 if ("text".equalsIgnoreCase(mt.getType()) || ("application".equalsIgnoreCase(mt.getType()) && mt.getSubtype().toLowerCase().startsWith("xml")))
-                 {
-                    jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mt.withCharset(StandardCharsets.UTF_8.toString()));
-                 }
+                 jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, mt.withCharset(StandardCharsets.UTF_8.toString()).toString());
               }
            }
         }
