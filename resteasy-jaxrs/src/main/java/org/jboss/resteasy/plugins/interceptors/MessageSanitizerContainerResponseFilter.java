@@ -3,12 +3,12 @@ package org.jboss.resteasy.plugins.interceptors;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import org.jboss.resteasy.util.HttpResponseCodes;
 
@@ -29,8 +29,8 @@ public class MessageSanitizerContainerResponseFilter implements ContainerRespons
         if (HttpResponseCodes.SC_BAD_REQUEST == responseContext.getStatus()) {
             Object entity = responseContext.getEntity();
             if (entity != null && entity instanceof String) {
-                ArrayList contentTypes = (ArrayList)responseContext.getHeaders().get("Content-Type");
-                if (contentTypes != null  && contentTypes.contains(MediaType.TEXT_HTML)) {
+                ArrayList<Object> contentTypes = (ArrayList<Object>)responseContext.getHeaders().get("Content-Type");
+                if (contentTypes != null  && containsHtmlText(contentTypes)) {
                     String escapedMsg = escapeXml((String) entity);
                     responseContext.setEntity(escapedMsg);
                 }
@@ -74,5 +74,21 @@ public class MessageSanitizerContainerResponseFilter implements ContainerRespons
         return sb.toString();
     }
 
+    private boolean containsHtmlText(ArrayList<Object> list) {
+       for (Object o :list) {
+          if (o instanceof String) {
+             String mediaType = (String) o;
+             String[] partsType = mediaType.split("/");
+             if (partsType.length >= 2) {
+                String[] partsSubtype = partsType[1].split(";");
+                if (partsType[0].trim().equalsIgnoreCase("text") && 
+                      partsSubtype[0].trim().toLowerCase().equals("html")) {
+                   return true;
+                }
+             }
+          }
+       }
+       return false;
+    }
 }
 
