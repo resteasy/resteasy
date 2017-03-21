@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jboss.resteasy</groupId>
-    <version>3.0.19.SP2-SNAPSHOT</version>
+    <version>3.0.19.SP2</version>
     <artifactId>ejb-integration-example</artifactId>
     <packaging>pom</packaging>
     <description/>
