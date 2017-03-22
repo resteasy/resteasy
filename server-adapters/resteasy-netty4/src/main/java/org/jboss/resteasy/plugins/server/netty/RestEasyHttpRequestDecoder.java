@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpMethod;
 
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class RestEasyHttpRequestDecoder extends MessageToMessageDecoder<io.netty
     protected void decode(ChannelHandlerContext ctx, io.netty.handler.codec.http.HttpRequest request, List<Object> out) throws Exception
     {
         boolean keepAlive = HttpHeaders.isKeepAlive(request);
-        final NettyHttpResponse response = new NettyHttpResponse(ctx, keepAlive, dispatcher.getProviderFactory());
+        final NettyHttpResponse response = new NettyHttpResponse(ctx, keepAlive, dispatcher.getProviderFactory(), request.method());
         final ResteasyHttpHeaders headers;
         final ResteasyUriInfo uriInfo;
         try

@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultHttpContent;
+import io.netty.handler.codec.http.HttpMethod;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -52,7 +53,7 @@ public class ChunkOutputStream extends OutputStream {
 
    public void reset()
    {
-      if (response.isCommitted()) throw new IllegalStateException(Messages.MESSAGES.responseIsCommitted());
+      if (!isHeadMethod() && response.isCommitted()) throw new IllegalStateException(Messages.MESSAGES.responseIsCommitted());
       buffer.clear();
    }
 
@@ -84,9 +85,13 @@ public class ChunkOutputStream extends OutputStream {
       int readable = buffer.readableBytes();
       if (readable == 0) return;
       if (!response.isCommitted()) response.prepareChunkStream();
-      ctx.writeAndFlush(new DefaultHttpContent(buffer.copy()));
+      if (!isHeadMethod()) ctx.writeAndFlush(new DefaultHttpContent(buffer.copy()));
       buffer.clear();
       super.flush();
+   }
+   
+   private boolean isHeadMethod() {
+	   return response.getHttpMethod() != null && response.getHttpMethod().equals(HttpMethod.HEAD);
    }
 
 }
