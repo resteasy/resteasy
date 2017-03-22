@@ -78,7 +78,8 @@ public class ServerResponseWriter
       
       executeFilters(jaxrsResponse, request, response, providerFactory, method);
 
-      if (jaxrsResponse.getEntity() == null)
+      //[RESTEASY-1627] check on response.getOutputStream() to avoid resteasy-netty4 trying building a chunked response body for HEAD requests 
+      if (jaxrsResponse.getEntity() == null || response.getOutputStream() == null)
       {
          response.setStatus(jaxrsResponse.getStatus());
          commitHeaders(jaxrsResponse, response);
