@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpHeaders.Names;
 import io.netty.handler.codec.http.HttpHeaders.Values;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -40,16 +41,27 @@ public class NettyHttpResponse implements HttpResponse
    private boolean committed;
    private boolean keepAlive;
    private ResteasyProviderFactory providerFactory;
+   private final HttpMethod method;
 
    public NettyHttpResponse(ChannelHandlerContext ctx, boolean keepAlive, ResteasyProviderFactory providerFactory)
+   {
+	   this(ctx, keepAlive, providerFactory, null);
+   }
+
+   public NettyHttpResponse(ChannelHandlerContext ctx, boolean keepAlive, ResteasyProviderFactory providerFactory, HttpMethod method)
    {
       outputHeaders = new MultivaluedMapImpl<String, Object>();
       os = new ChunkOutputStream(this, ctx, 1000);
       this.ctx = ctx;
       this.keepAlive = keepAlive;
       this.providerFactory = providerFactory;
+      this.method = method;
    }
 
+   public HttpMethod getHttpMethod() {
+	   return method;
+   }
+   
    @Override
    public void setOutputStream(OutputStream os)
    {
@@ -178,7 +190,12 @@ public class NettyHttpResponse implements HttpResponse
 
    public void prepareChunkStream() {
       committed = true;
-      DefaultHttpResponse response = getDefaultHttpResponse();
+      DefaultHttpResponse response;
+      if (method == null || !method.equals(HttpMethod.HEAD)) {
+    	  response = getDefaultHttpResponse();
+      } else {
+    	  response = getEmptyHttpResponse();
+      }
       HttpHeaders.setTransferEncodingChunked(response);
       ctx.write(response);
    }
