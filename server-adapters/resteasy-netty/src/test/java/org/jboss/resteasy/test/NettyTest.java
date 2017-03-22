@@ -84,6 +84,7 @@ public class NettyTest
       Assert.assertEquals("hello world", val);
       Response headResponse = target.request().build(HttpMethod.HEAD).invoke();
       Assert.assertEquals("HEAD method should return the same Content-Length as the GET method", getResponse.getLength(), headResponse.getLength());
+      Assert.assertTrue(getResponse.getLength() > 0);
    }
 
    @Test
