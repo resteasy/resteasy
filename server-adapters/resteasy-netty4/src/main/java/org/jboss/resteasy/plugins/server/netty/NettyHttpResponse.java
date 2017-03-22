@@ -9,6 +9,7 @@ import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpHeaders.Names;
 import io.netty.handler.codec.http.HttpHeaders.Values;
+import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
@@ -40,11 +41,18 @@ public class NettyHttpResponse implements HttpResponse
    private boolean committed;
    private boolean keepAlive;
    private ResteasyProviderFactory providerFactory;
+   private HttpMethod method;
 
    public NettyHttpResponse(ChannelHandlerContext ctx, boolean keepAlive, ResteasyProviderFactory providerFactory)
    {
+	   this(ctx, keepAlive, providerFactory, null);
+   }
+
+   public NettyHttpResponse(ChannelHandlerContext ctx, boolean keepAlive, ResteasyProviderFactory providerFactory, HttpMethod method)
+   {
       outputHeaders = new MultivaluedMapImpl<String, Object>();
-      os = new ChunkOutputStream(this, ctx, 1000);
+      this.method = method;
+      os = (method == null || !method.equals(HttpMethod.HEAD)) ? new ChunkOutputStream(this, ctx, 1000) : null; //[RESTEASY-1627]
       this.ctx = ctx;
       this.keepAlive = keepAlive;
       this.providerFactory = providerFactory;
@@ -167,7 +175,10 @@ public class NettyHttpResponse implements HttpResponse
    public DefaultHttpResponse getEmptyHttpResponse()
    {
        DefaultFullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(getStatus()));
-       res.headers().add(Names.CONTENT_LENGTH, EMPTY_CONTENT_LENGTH);
+       if (method == null || !method.equals(HttpMethod.HEAD)) //[RESTEASY-1627]
+       {
+          res.headers().add(Names.CONTENT_LENGTH, EMPTY_CONTENT_LENGTH);
+       }
        transformResponseHeaders(res);
        return res;
    }
@@ -184,7 +195,8 @@ public class NettyHttpResponse implements HttpResponse
    }
 
    public void finish() throws IOException {
-      os.flush();
+      if (os != null)
+         os.flush();
       ChannelFuture future;
       if (isCommitted()) {
          // if committed this means the output stream was used.
