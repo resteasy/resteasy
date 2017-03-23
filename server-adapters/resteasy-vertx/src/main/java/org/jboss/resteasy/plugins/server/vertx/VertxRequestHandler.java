@@ -57,7 +57,7 @@ public class VertxRequestHandler implements Handler<HttpServerRequest>
             ResteasyUriInfo uriInfo = VertxUtil.extractUriInfo(request, servletMappingPrefix);
             ResteasyHttpHeaders headers = VertxUtil.extractHttpHeaders(request);
             HttpServerResponse response = request.response();
-            VertxHttpResponse vertxResponse = new VertxHttpResponse(response, dispatcher.getProviderFactory());
+            VertxHttpResponse vertxResponse = new VertxHttpResponse(response, dispatcher.getProviderFactory(), request.method());
             VertxHttpRequest vertxRequest = new VertxHttpRequest(ctx, headers, uriInfo, request.rawMethod(), dispatcher.getDispatcher(), vertxResponse, false);
             if (buff.length() > 0)
             {
