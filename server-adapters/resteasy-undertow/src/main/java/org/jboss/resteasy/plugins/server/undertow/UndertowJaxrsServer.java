@@ -18,6 +18,10 @@ import javax.ws.rs.core.Application;
 
 import static io.undertow.servlet.Servlets.servlet;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
 
 /**
  * Wrapper around Undertow to make resteasy deployments easier
@@ -151,11 +155,32 @@ public class UndertowJaxrsServer
     */
    public UndertowJaxrsServer deploy(ResteasyDeployment deployment, String contextPath)
    {
+      return deploy(deployment, contextPath, null, null);
+   }
+   
+   public UndertowJaxrsServer deploy(ResteasyDeployment deployment, String contextPath, Map<String, String> contextParams, Map<String, String> initParams)
+   {
       if (contextPath == null) contextPath = "/";
       if (!contextPath.startsWith("/")) contextPath = "/" + contextPath;
       DeploymentInfo builder = undertowDeployment(deployment);
       builder.setContextPath(contextPath);
       builder.setDeploymentName("Resteasy" + contextPath);
+      builder.setClassLoader(deployment.getApplication().getClass().getClassLoader());
+      if (contextParams != null)
+      {
+         for (Entry<String, String> e : contextParams.entrySet())
+         {
+            builder.addInitParameter(e.getKey(), e.getValue());
+         }
+      }  
+      if (initParams != null)
+      {
+         ServletInfo servletInfo = builder.getServlets().get("ResteasyServlet");
+         for (Entry<String, String> e : initParams.entrySet())
+         {
+            servletInfo.addInitParam(e.getKey(), e.getValue());
+         }
+      }
       return deploy(builder);
    }
 
