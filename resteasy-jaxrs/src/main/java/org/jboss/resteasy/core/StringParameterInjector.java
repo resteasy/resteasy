@@ -1,19 +1,5 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.StringConverter;
-import org.jboss.resteasy.spi.StringParameterUnmarshaller;
-import org.jboss.resteasy.util.StringToPrimitive;
-import org.jboss.resteasy.util.Types;
-
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.ext.ParamConverter;
-import javax.ws.rs.ext.RuntimeDelegate;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
@@ -26,11 +12,32 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.NavigableSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
+
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.ext.ParamConverter;
+import javax.ws.rs.ext.RuntimeDelegate;
+
+import org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.StringConverter;
+import org.jboss.resteasy.spi.StringParameterUnmarshaller;
+import org.jboss.resteasy.util.StringToPrimitive;
+import org.jboss.resteasy.util.Types;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -39,6 +46,310 @@ import java.util.TreeSet;
 @SuppressWarnings(value = "unchecked")
 public class StringParameterInjector
 {
+	
+	private static final class UnmodifiableArrayList<E> extends ArrayList<E>{
+		
+		private UnmodifiableArrayList(Collection<E>collection) {
+			super(collection);
+		}
+		
+		@Override
+		public boolean add(E e) {throw new UnsupportedOperationException();}
+		@Override
+		public void add(int index, E element) {throw new UnsupportedOperationException();}
+		@Override
+		public boolean addAll(Collection<? extends E> c) {throw new UnsupportedOperationException();}
+		@Override
+		public void clear() {throw new UnsupportedOperationException();}
+		@Override
+		public boolean remove(Object o) {throw new UnsupportedOperationException();}
+		@Override
+		public boolean addAll(int index, Collection<? extends E> c) {throw new UnsupportedOperationException();}
+		@Override
+		public E remove(int index) {throw new UnsupportedOperationException();}
+		@Override
+		public boolean removeAll(Collection<?> c) {throw new UnsupportedOperationException();}
+		@Override
+		public boolean removeIf(Predicate<? super E> filter) {throw new UnsupportedOperationException();}
+		@Override
+		public void replaceAll(UnaryOperator<E> operator) {throw new UnsupportedOperationException();}
+		@Override
+		public boolean retainAll(Collection<?> c) {throw new UnsupportedOperationException();}
+		@Override
+		public E set(int index, E element) {throw new UnsupportedOperationException();}
+		@Override
+		public void sort(Comparator<? super E> c) {throw new UnsupportedOperationException();}
+
+		@Override
+		public List<E> subList(int fromIndex, int toIndex) {
+			return new UnmodifiableArrayList<>(super.subList(fromIndex, toIndex));
+		}
+		
+		@Override
+		public Iterator<E> iterator() {
+            return new Iterator<E>() {
+                private final Iterator<? extends E> iterator = UnmodifiableArrayList.super.iterator();
+
+                @Override
+                public boolean hasNext() {
+                	return iterator.hasNext();
+                }
+                @Override
+                public E next() {
+                	return iterator.next();
+                }
+                @Override
+                public void remove() {throw new UnsupportedOperationException();}
+                @Override
+                public void forEachRemaining(Consumer<? super E> action) {
+                	iterator.forEachRemaining(action);
+                }
+            };
+		}
+		
+		@Override
+		public ListIterator<E> listIterator() {
+			return listIterator(0);
+		}
+		
+		@Override
+		public ListIterator<E> listIterator(int index) {
+            return new ListIterator<E>() {
+                private final ListIterator<? extends E> iterator = UnmodifiableArrayList.super.listIterator(index);
+
+                @Override
+                public boolean hasNext() {
+                	return iterator.hasNext();
+                }
+                @Override
+                public E next() {
+                	return iterator.next();
+                }
+                @Override
+                public boolean hasPrevious() {
+                	return iterator.hasPrevious();
+                }
+                @Override
+                public E previous() {
+                	return iterator.previous();
+                }
+                @Override
+                public int nextIndex() {
+                	return iterator.nextIndex();
+                }
+                @Override
+                public int previousIndex() {
+                	return iterator.previousIndex();
+                }
+                @Override
+                public void remove() {throw new UnsupportedOperationException();}
+                @Override
+                public void set(E e) {throw new UnsupportedOperationException();}
+                @Override
+                public void add(E e) {throw new UnsupportedOperationException();}
+                @Override
+                public void forEachRemaining(Consumer<? super E> action) {
+                	iterator.forEachRemaining(action);
+                }
+            };
+        
+		}
+		
+	}
+	
+	private static final class UnmodifiableHashSet<E> extends HashSet<E>{
+		
+	    private final boolean initialized;
+		
+		private UnmodifiableHashSet(Collection<E>collection) {
+			super(collection);
+			this.initialized=true;
+		}
+		
+		@Override
+		public boolean remove(Object o) {throw new UnsupportedOperationException();}
+		@Override
+		public void clear() {throw new UnsupportedOperationException();}
+		@Override
+		public boolean removeAll(Collection<?> c) {throw new UnsupportedOperationException();}
+		@Override
+		public boolean retainAll(Collection<?> c) {throw new UnsupportedOperationException();}
+		@Override
+		public boolean removeIf(Predicate<? super E> filter) {throw new UnsupportedOperationException();}
+		
+		@Override
+		public boolean add(E e) {
+			//Called by constructor
+			if(initialized){
+				throw new UnsupportedOperationException();
+			}
+			return super.add(e);			
+		}
+		
+		@Override
+		public boolean addAll(Collection<? extends E> c) {
+			//Called by constructor
+			if(initialized){
+				throw new UnsupportedOperationException();
+			}
+			return super.addAll(c);			
+		}
+		
+		@Override
+		public Iterator<E> iterator() {
+            return new Iterator<E>() {
+                private final Iterator<? extends E> iterator = UnmodifiableHashSet.super.iterator();
+
+                @Override
+                public boolean hasNext() {
+                	return iterator.hasNext();
+                }
+                @Override
+                public E next() {
+                	return iterator.next();
+                }
+                @Override
+                public void remove() {throw new UnsupportedOperationException();}
+                @Override
+                public void forEachRemaining(Consumer<? super E> action) {
+                	iterator.forEachRemaining(action);
+                }
+            };
+		}
+		
+	}
+	
+	private static final class UnmodifiableTreeSet<E> extends TreeSet<E>{
+		
+		private final boolean initialized;
+		
+		private UnmodifiableTreeSet(Collection<E>collection) {
+			super(collection);
+			this.initialized=true;
+		}
+		
+		private UnmodifiableTreeSet(Comparator<? super E> comparator,Collection<E>collection) {
+			super(comparator);
+			addAll(collection);
+			this.initialized=true;
+		}
+		
+		@Override
+		public boolean remove(Object o) {throw new UnsupportedOperationException();}
+		@Override
+		public void clear() {throw new UnsupportedOperationException();}
+		@Override
+		public boolean removeAll(Collection<?> c) {throw new UnsupportedOperationException();}
+		@Override
+		public boolean retainAll(Collection<?> c) {throw new UnsupportedOperationException();}
+		@Override
+		public boolean removeIf(Predicate<? super E> filter) {throw new UnsupportedOperationException();}
+		@Override
+		public E pollFirst() {throw new UnsupportedOperationException();}
+		@Override
+		public E pollLast() {throw new UnsupportedOperationException();}
+		
+		@Override
+		public NavigableSet<E> subSet(E fromElement, boolean fromInclusive, E toElement, boolean toInclusive) {
+			return  new UnmodifiableTreeSet<>(super.subSet(fromElement, fromInclusive, toElement, toInclusive));
+		}
+		
+		@Override
+		public SortedSet<E> subSet(E fromElement, E toElement) {
+			return  new UnmodifiableTreeSet<>(super.subSet(fromElement, toElement));
+		}
+		
+		@Override
+		public NavigableSet<E> descendingSet() {
+			NavigableSet<E> descendingSet = super.descendingSet();
+			return  new UnmodifiableTreeSet<>(descendingSet.comparator(), descendingSet);
+		}
+		
+		@Override
+		public SortedSet<E> headSet(E toElement) {
+			return new UnmodifiableTreeSet<>(super.headSet(toElement));
+		}
+		
+		@Override
+		public NavigableSet<E> headSet(E toElement, boolean inclusive) {
+			return new UnmodifiableTreeSet<>(super.headSet(toElement, inclusive));
+		}
+		
+		@Override
+		public SortedSet<E> tailSet(E fromElement) {
+			return  new UnmodifiableTreeSet<>(super.tailSet(fromElement));
+		}
+		
+		@Override
+		public NavigableSet<E> tailSet(E fromElement, boolean inclusive) {
+			return  new UnmodifiableTreeSet<>(super.tailSet(fromElement, inclusive));
+		}
+		
+		@Override
+		public boolean add(E e) {
+			//Called by constructor
+			if(initialized){
+				throw new UnsupportedOperationException();
+			}
+			return super.add(e);			
+		}
+		
+		@Override
+		public boolean addAll(Collection<? extends E> c) {
+			//Called by constructor
+			if(initialized){
+				throw new UnsupportedOperationException();
+			}
+			return super.addAll(c);			
+		}
+		
+		@Override
+		public Iterator<E> iterator() {
+            return new Iterator<E>() {
+                private final Iterator<? extends E> iterator = UnmodifiableTreeSet.super.iterator();
+
+                @Override
+                public boolean hasNext() {
+                	return iterator.hasNext();
+                }
+                @Override
+                public E next() {
+                	return iterator.next();
+                }
+                @Override
+                public void remove() {throw new UnsupportedOperationException();}
+                @Override
+                public void forEachRemaining(Consumer<? super E> action) {
+                	iterator.forEachRemaining(action);
+                }
+            };
+		}
+		
+		@Override
+		public Iterator<E> descendingIterator() {
+            return new Iterator<E>() {
+                private final Iterator<? extends E> iterator = UnmodifiableTreeSet.super.descendingIterator();
+
+                @Override
+                public boolean hasNext() {
+                	return iterator.hasNext();
+                }
+                @Override
+                public E next() {
+                	return iterator.next();
+                }
+                @Override
+                public void remove() {throw new UnsupportedOperationException();}
+                @Override
+                public void forEachRemaining(Consumer<? super E> action) {
+                	iterator.forEachRemaining(action);
+                }
+            };
+		}
+		
+		
+	}
+	
    protected Class type;
    protected Class baseType;
    protected Type baseGenericType;
@@ -252,11 +563,11 @@ public class StringParameterInjector
    }
    
 	private Class<? extends Collection> convertParameterTypeToCollectionType() {
-		if (List.class.equals(type)) {
+		if (List.class.equals(type) || ArrayList.class.equals(type)) {
 			return ArrayList.class;
-		} else if (SortedSet.class.equals(type)) {
+		} else if (SortedSet.class.equals(type) || TreeSet.class.equals(type)) {
 			return TreeSet.class;
-		} else if (Set.class.equals(type)) {
+		} else if (Set.class.equals(type) || HashSet.class.equals(type)) {
 			return HashSet.class;
 		}
 		return null;
@@ -302,11 +613,11 @@ public class StringParameterInjector
             collection.add(extractValue(str));
          }
      	if (ArrayList.class.equals(collectionType)) {
-			return Collections.unmodifiableList((List<?>) collection);
+     		return new UnmodifiableArrayList<>(collection);
 		} else if (TreeSet.class.equals(collectionType)) {
-			return Collections.unmodifiableSortedSet((SortedSet<?>) collection);
+			return new UnmodifiableTreeSet<>(collection);
 		} else if (HashSet.class.equals(collectionType)) {
-			return Collections.unmodifiableSet((Set<?>) collection);
+			return new UnmodifiableHashSet<>(collection);
 		}
          throw new RuntimeException("Unable to handle "+collectionType);
       }

@@ -1,6 +1,11 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -22,6 +27,26 @@ public interface ParamConverterClient {
 	String multiValuedQueryParam(@QueryParam("dates") String dates) ;
 
 	@GET
-	@Path("singleValuedQueryParam")
-	String singleValuedQueryParam(@QueryParam("date") SortedSet<String> dates) ;
+	@Path("singleValuedQueryParam_list")
+	String singleValuedQueryParam_list(@QueryParam("date") List<String> dates);
+	
+	@GET
+	@Path("singleValuedQueryParam_arrayList")
+	String singleValuedQueryParam_arrayList(@QueryParam("date") ArrayList<String> dates) ;
+
+	@GET
+	@Path("singleValuedQueryParam_set")
+	String singleValuedQueryParam_set(@QueryParam("date")  Set<String> dates) ;
+	
+	@GET
+	@Path("singleValuedQueryParam_hashSet")
+	String singleValuedQueryParam_hashSet(@QueryParam("date")  HashSet<String> dates) ;
+	
+	@GET
+	@Path("singleValuedQueryParam_sortedSet")
+	String singleValuedQueryParam_sortedSet(@QueryParam("date")  SortedSet<String> dates) ;
+	
+	@GET
+	@Path("singleValuedQueryParam_treeSet")
+	String singleValuedQueryParam_treeSet(@QueryParam("date")TreeSet<String> dates) ;
 }

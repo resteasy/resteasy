@@ -1,15 +1,15 @@
 package org.jboss.resteasy.test.resource.param.resource;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ws.rs.ext.ParamConverter;
 
-public class DateListParamConverter implements ParamConverter<List<Date>> {
+public class DateListParamConverter implements ParamConverter<LinkedList<Date>> {
 
 	@Override
-	public List<Date> fromString(String param) {
+	public LinkedList<Date> fromString(String param) {
 		if (param == null || param.trim().isEmpty()) {
 			return null;
 		}
@@ -17,15 +17,15 @@ public class DateListParamConverter implements ParamConverter<List<Date>> {
 	}
 
 	@Override
-	public String toString(List<Date> list) {
+	public String toString(LinkedList<Date> list) {
 		if (list == null || list.isEmpty()) {
 			return null;
 		}
 		return format(list, new DateParamConverter());
 	}
 
-	private static <T> List<T> parse(String[] params, ParamConverter<T> paramConverter) {
-		List<T> list = new ArrayList<>(params.length);
+	private static <T> LinkedList<T> parse(String[] params, ParamConverter<T> paramConverter) {
+		LinkedList<T> list = new LinkedList<>();
 		for (String param : params) {
 			list.add(paramConverter.fromString(param));
 		}
