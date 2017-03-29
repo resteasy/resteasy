@@ -136,7 +136,7 @@ public static void main(String[] args) throws Exception
 <dependency>
    <groupId>org.jboss.resteasy</groupId>
    <artifactId>resteasy-cache-core</artifactId>
-   <version>3.0.22.Final-SNAPSHOT</version>
+   <version>3.0.23.Final-SNAPSHOT</version>
 </dependency>
 ]]>
 </programlisting>
