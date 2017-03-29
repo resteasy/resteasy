@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-dist</artifactId>
-        <version>3.0.22.Final</version>
+        <version>3.0.23.Final-SNAPSHOT</version>
     </parent>
 
     <artifactId>resteasy-jaxrs-src-dist</artifactId>
