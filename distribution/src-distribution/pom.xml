@@ -21,7 +21,7 @@
                         <id>assemble</id>
                         <phase>install</phase>
                         <goals>
-                            <goal>attached</goal>
+                            <goal>single</goal>
                         </goals>
                         <configuration>
                             <descriptors>
