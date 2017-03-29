@@ -427,7 +427,7 @@ with an appropriate charset value.
    It follows that, in the absence of a character set specified by a resource or resource method,
    Resteasy SHOULD use UTF-8 as the character set for text media types, and, if it does, it MUST add an explicit 
    charset parameter to the Content-Type response header. Resteasy started adding the explicit charset
-   parameter in releases 3.1.2.Final and 3.0.22.Final, and that new behavior could cause some compatibility problems. To
+   parameter in releases 3.1.3-SNAPSHOT and 3.0.22.Final, and that new behavior could cause some compatibility problems. To
    specify the previous behavior, in which UTF-8 was used for text media types, but the explicit charset
    was not appended, the context parameter "resteasy.add.charset" may be set to "false". It defaults to "true".
    </para>
