@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0.22.Final-SNAPSHOT</version>
+        <version>3.0.22.Final</version>
     </parent>
     <artifactId>resteasy-spring</artifactId>
     <packaging>jar</packaging>
