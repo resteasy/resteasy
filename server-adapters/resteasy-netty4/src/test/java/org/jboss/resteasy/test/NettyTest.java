@@ -2,6 +2,10 @@ package org.jboss.resteasy.test;
 
 import io.netty.channel.ChannelHandlerContext;
 
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.plugins.server.netty.NettyContainer;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -9,6 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -19,6 +24,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.BufferedReader;
@@ -129,6 +135,20 @@ public class NettyTest
 
       }
       NettyContainer.stop();
+   }
+   
+   @Test
+   public void testHeadContentLength() throws Exception
+   {
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyWebTarget target = client.target(generateURL("/test"));
+      Response getResponse = target.request().buildGet().invoke();
+      String val = ClientInvocation.extractResult(new GenericType<String>(String.class), getResponse, null);
+      Assert.assertEquals("hello world", val);
+      Assert.assertEquals("chunked", getResponse.getHeaderString("transfer-encoding"));
+      Response headResponse = target.request().build(HttpMethod.HEAD).invoke();
+      Assert.assertNull(headResponse.getHeaderString("Content-Length"));
+      Assert.assertNull(headResponse.getHeaderString("transfer-encoding"));
    }
 
    @Test

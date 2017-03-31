@@ -1,5 +1,9 @@
 package org.jboss.resteasy.test;
 
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.plugins.server.vertx.VertxContainer;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -7,6 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -16,6 +21,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.BufferedReader;
@@ -146,6 +152,20 @@ public class VertxTest
       WebTarget target = client.target(generateURL("/test"));
       String val = target.request().get(String.class);
       Assert.assertEquals("hello world", val);
+   }
+
+   @Test
+   public void testHeadContentLength() throws Exception
+   {
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyWebTarget target = client.target(generateURL("/test"));
+      Response getResponse = target.request().buildGet().invoke();
+      String val = ClientInvocation.extractResult(new GenericType<String>(String.class), getResponse, null);
+      Assert.assertEquals("hello world", val);
+      Assert.assertEquals("chunked", getResponse.getHeaderString("transfer-encoding"));
+      Response headResponse = target.request().build(HttpMethod.HEAD).invoke();
+      Assert.assertNull(headResponse.getHeaderString("Content-Length"));
+      Assert.assertNull(headResponse.getHeaderString("transfer-encoding"));
    }
 
    @Test

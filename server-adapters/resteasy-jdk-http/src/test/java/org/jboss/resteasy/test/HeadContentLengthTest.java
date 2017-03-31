@@ -1,31 +1,29 @@
 package org.jboss.resteasy.test;
 
-import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
-import org.jboss.resteasy.plugins.server.netty.NettyContainer;
+import org.jboss.resteasy.plugins.server.sun.http.HttpContextBuilder;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.sun.net.httpserver.HttpServer;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
-/**
- * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
- * @version $Revision: 1 $
- */
-public class NettyTest
+import java.net.InetSocketAddress;
+
+public class HeadContentLengthTest
 {
    @Path("/")
    public static class Resource
@@ -37,32 +35,28 @@ public class NettyTest
       {
          return "hello world";
       }
-
-      @GET
-      @Path("/exception")
-      @Produces("text/plain")
-      public String exception() {
-         throw new RuntimeException();
-      }
-
-      @GET
-      @Path("/context")
-      @Produces("text/plain")
-      public String context(@Context ChannelHandlerContext context) {
-          return context.getChannel().toString();
-      }
    }
+   
+   private static HttpServer httpServer;
+   private static HttpContextBuilder contextBuilder;
 
    @BeforeClass
-   public static void setup() throws Exception
+   public static void before() throws Exception
    {
-      NettyContainer.start().getRegistry().addPerRequestResource(Resource.class);
+      int port = TestPortProvider.getPort();
+      httpServer = HttpServer.create(new InetSocketAddress(port), 10);
+      contextBuilder = new HttpContextBuilder();
+      contextBuilder.getDeployment().getActualResourceClasses().add(Resource.class);
+      contextBuilder.bind(httpServer);
+      httpServer.start();
+
    }
 
    @AfterClass
-   public static void end() throws Exception
+   public static void after() throws Exception
    {
-      NettyContainer.stop();
+      contextBuilder.cleanup();
+      httpServer.stop(0);
    }
 
    @Test
@@ -83,25 +77,6 @@ public class NettyTest
       String val = ClientInvocation.extractResult(new GenericType<String>(String.class), getResponse, null);
       Assert.assertEquals("hello world", val);
       Response headResponse = target.request().build(HttpMethod.HEAD).invoke();
-      Assert.assertEquals("HEAD method should return the same Content-Length as the GET method", getResponse.getLength(), headResponse.getLength());
-      Assert.assertTrue(getResponse.getLength() > 0);
+      Assert.assertNull(headResponse.getHeaderString("Content-Length"));
    }
-
-   @Test
-   public void testUnhandledException() throws Exception
-   {
-      ResteasyClient client = new ResteasyClientBuilder().build();
-      ResteasyWebTarget target = client.target(generateURL("/exception"));
-      Response resp = target.request().get();
-      Assert.assertEquals(500, resp.getStatus());
-   }
-
-    @Test
-    public void testChannelContext() throws Exception {
-      ResteasyClient client = new ResteasyClientBuilder().build();
-      ResteasyWebTarget target = client.target(generateURL("/context"));
-      String val = target.request().get(String.class);
-      Assert.assertNotNull(val);
-      Assert.assertFalse(val.isEmpty());
-    }
 }

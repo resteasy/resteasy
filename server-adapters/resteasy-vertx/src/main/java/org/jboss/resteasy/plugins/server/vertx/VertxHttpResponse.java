@@ -1,5 +1,8 @@
 package org.jboss.resteasy.plugins.server.vertx;
 
+import io.vertx.core.Handler;
+import io.vertx.core.http.HttpHeaders;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerResponse;
 import org.jboss.resteasy.plugins.server.vertx.i18n.Messages;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
@@ -15,24 +18,26 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
- * @version $Revision: 1 $
- */
 public class VertxHttpResponse implements HttpResponse
 {
-   private static final int EMPTY_CONTENT_LENGTH = 0;
    private int status = 200;
    private OutputStream os;
    private MultivaluedMap<String, Object> outputHeaders;
    final HttpServerResponse response;
    private boolean committed;
    private ResteasyProviderFactory providerFactory;
+   private final HttpMethod method;
 
    public VertxHttpResponse(HttpServerResponse response, ResteasyProviderFactory providerFactory)
    {
+      this(response, providerFactory, null);
+   }
+
+   public VertxHttpResponse(HttpServerResponse response, ResteasyProviderFactory providerFactory, HttpMethod method)
+   {
       outputHeaders = new MultivaluedMapImpl<String, Object>();
-      os = new ChunkOutputStream(this, 1000);
+      this.method = method;
+      os = (method == null || !method.equals(HttpMethod.HEAD)) ? new ChunkOutputStream(this, 1000) : null;
       this.response = response;
       this.providerFactory = providerFactory;
    }
@@ -140,13 +145,33 @@ public class VertxHttpResponse implements HttpResponse
       response.setChunked(true);
       transformHeaders(this, response, providerFactory);
    }
+   
+   private void prepareEmptyResponse()
+   {
+      committed = true;
+      response.setStatusCode(getStatus());
+      transformHeaders(this, response, providerFactory);
+      response.headersEndHandler(new Handler<Void>()
+      {
+         @Override
+         public void handle(Void event)
+         {
+            response.headers().remove(HttpHeaders.CONTENT_LENGTH);
+            response.headers().set(HttpHeaders.CONNECTION, HttpHeaders.KEEP_ALIVE);
+         }
+      });
+   }
 
    public void finish() throws IOException
    {
-      os.flush();
-      if (!isCommitted())
-      {
-         prepareChunkStream();
+      if (os != null) {
+         os.flush();
+         if (!isCommitted())
+         {
+            prepareChunkStream();
+         }
+      } else {
+         prepareEmptyResponse();
       }
       response.end();
    }
