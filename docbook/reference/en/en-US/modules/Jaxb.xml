@@ -723,6 +723,55 @@ public List<Customer> getCustomerSet()
     return list;
 }]]>
 </programlisting>
+
+  <sect2 id="collections_on_client">
+  <title>Retrieving Collections on the client side</title>
+  <para>
+  If you try to retrieve a <classname>List</classname>
+  or <classname>Set</classname> of JAXB objects in the obvious way on the client side:
+  </para>
+  
+<programlisting>
+      Response response = request.get();
+      List&lt;Customer&gt; list = response.readEntity(List.class);
+</programlisting>
+
+  <para>
+  the call to <methodname>readEntity()</methodname> will fail because it has no way of knowing the
+  element type <classname>Customer</classname>. The trick is to use an instance of 
+  <classname>javax.ws.rs.core.GenericType</classname>:
+  </para>
+  
+<programlisting>
+      Response response = request.get();
+      GenericType&lt;List&lt;Customer&gt;&gt; genericType = new GenericType&lt;List&lt;Customer&gt;&gt;() {};
+      List&lt;Customer&gt; list = response.readEntity(genericType);
+</programlisting>
+
+  <para>
+  For more information about <classname>GenericType</classname>, please see its javadoc.
+  </para>
+  
+  <para>
+  The same trick applies to retrieving a <classname>Set</classname>:
+  </para>
+  
+<programlisting>
+      Response response = request.get();
+      GenericType&lt;Set&lt;Customer&gt;&gt; genericType = new GenericType&lt;Set&lt;Customer&gt;&gt;() {};
+      Set&lt;Customer&gt; set = response.readEntity(genericType);
+</programlisting>
+
+  <para>
+  On the other hand, <classname>GenericType</classname> is not necessary to retrieve an array of JAXB objects:
+  </para>
+  
+<programlisting>
+      Response response = request.get();
+      Customer[] array = response.readEntity(Customer[].class);
+</programlisting>
+  </sect2>
+
   <sect2 id="json_list">
     <title>JSON and JAXB Collections/arrays</title>
     <para>Resteasy supports using collections with JSON.  It encloses lists, sets, or arrays of returned JAXB objects within a simple
@@ -871,6 +920,36 @@ public static class MyResource
     }
 }]]>
 </programlisting>
+
+  <sect2 id="maps_client_side">
+  <title>Retrieving Maps on the client side</title>
+  <para>
+  If you try to retrieve a <classname>Map</classname>
+  of JAXB objects in the obvious way on the client side:
+  </para>
+  
+<programlisting>
+      Response response = request.get();
+      Map&lt;String, Customer&gt; map = response.readEntity(Map.class);
+</programlisting>
+
+  <para>
+  the call to <methodname>readEntity()</methodname> will fail because it has no way of knowing the
+  element type <classname>Customer</classname>. The trick is to use an instance of 
+  <classname>javax.ws.rs.core.GenericType</classname>:
+  </para>
+  
+<programlisting>
+      Response response = request.get();
+      GenericType&lt;Map&lt;String, Customer&gt; genericType = new GenericType&lt;Map&lt;String, Customer&gt;&gt;() {};
+      Map&lt;String, Customer&gt; map = response.readEntity(genericType);
+</programlisting>
+
+  <para>
+  For more information about <classname>GenericType</classname>, please see its javadoc.
+  </para>
+  </sect2>
+
   <sect2 id="json_map">
     <title>JSON and JAXB maps</title>
     <para>Resteasy supports using maps with JSON.  It encloses maps returned JAXB objects within a simple
