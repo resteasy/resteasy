@@ -1,96 +1,66 @@
 package org.jboss.resteasy.plugins.providers.sse;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import javax.ws.rs.Flow.Subscriber;
-import javax.ws.rs.Flow.Subscription;
 import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.SseBroadcaster;
+import javax.ws.rs.sse.SseEventSink;
 
 public class SseBroadcasterImpl implements SseBroadcaster
 {
-   private final Map<Subscriber<? super OutboundSseEvent>, Subscription> subscribers = new ConcurrentHashMap<>();
-   private final Set<Consumer<Subscriber<? super OutboundSseEvent>>> onCloseConsumers = new CopyOnWriteArraySet<>();
-   private final Set<BiConsumer<Subscriber<? super OutboundSseEvent>, Exception>> onExceptionConsumers = new CopyOnWriteArraySet<>();
+   private ConcurrentLinkedQueue<SseEventSink> outputQueue = new ConcurrentLinkedQueue<SseEventSink>();
+   private final List<BiConsumer<SseEventSink, Throwable>> onErrorConsumers = new CopyOnWriteArrayList<>();
+   private final List<Consumer<SseEventSink>> closeConsumers = new CopyOnWriteArrayList<>();
    
-   @Override
-   public void broadcast(OutboundSseEvent event)
-   {
-      for (final Subscriber<? super OutboundSseEvent> subscriber : subscribers.keySet())
-      {
-         try
-         {
-            subscriber.onNext(event);
-         }
-         catch (final Exception ex)
-         {
-            subscriber.onError(ex); //TODO is this required?
-            onExceptionConsumers.forEach(exceptioner -> exceptioner.accept(subscriber, ex));
-         }
-      }
+   public SseBroadcasterImpl () {
+     
    }
 
    @Override
    public void close()
    {
-      for (final Subscriber<? super OutboundSseEvent> output : subscribers.keySet())
-      {
-         try
-         {
-            output.onComplete();
-            for (Consumer<Subscriber<? super OutboundSseEvent>> consumer : onCloseConsumers)
-            {
-               consumer.accept(output);
-            }
-         }
-         catch (final Exception ex)
-         {
-            output.onError(ex); //TODO is this required?
-            onCloseConsumers.forEach(occ -> occ.accept(output));
-         }
-      }
+      outputQueue.forEach(evenSink -> {closeConsumers.forEach(consumer-> {consumer.accept(evenSink);});});
+      outputQueue.clear();
    }
 
    @Override
-   public void onException(BiConsumer<Subscriber<? super OutboundSseEvent>, Exception> onException)
+   public void onError(BiConsumer<SseEventSink, Throwable> onError)
    {
-      onExceptionConsumers.add(onException);
+      onErrorConsumers.add(onError); 
    }
 
    @Override
-   public void onClose(Consumer<Subscriber<? super OutboundSseEvent>> onClose)
+   public void onClose(Consumer<SseEventSink> onClose)
+   {      
+      closeConsumers.add(onClose);
+   }
+   
+   @Override
+   public void register(SseEventSink sseEventSink)
    {
-      onCloseConsumers.add(onClose);
+      outputQueue.add(sseEventSink);
+      
    }
 
-   @Override
-   public void subscribe(Subscriber<? super OutboundSseEvent> subscriber)
-   {
-      final Subscription subscription = new Subscription()
-      {
-         public void request(long n)
-         {
-         }
-
-         @Override
-         public void cancel()
-         {
-         }
+   @Override  
+   public CompletionStage<?> broadcast(OutboundSseEvent event)
+   {  
+      outputQueue.forEach(eventSink -> {SseEventOutputImpl outputImpl=(SseEventOutputImpl)eventSink; outputImpl.send(event, callAllErrConsumers());});
+      //return event immediately and doesn't block anything
+      return CompletableFuture.supplyAsync(() -> { return event;});
+   }
+   
+   BiConsumer<SseEventSink, Throwable> callAllErrConsumers() {
+      return (eventSink, err) -> {
+         onErrorConsumers.forEach(consumer -> {consumer.accept(eventSink, err);});
       };
-
-      try
-      {
-         subscriber.onSubscribe(subscription);
-         subscribers.put(subscriber, subscription);
-      }
-      catch (final Exception ex)
-      {
-         subscriber.onError(ex);
-      }
+      
    }
+
 }

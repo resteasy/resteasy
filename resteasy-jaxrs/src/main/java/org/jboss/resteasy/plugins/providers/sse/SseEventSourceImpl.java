@@ -16,7 +16,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
-import javax.ws.rs.sse.SseSubscription;
 
 import org.apache.http.HttpHeaders;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
@@ -35,12 +34,10 @@ public class SseEventSourceImpl implements SseEventSource
    private final boolean disableKeepAlive;
    private final ScheduledExecutorService executor;
    private final AtomicReference<State> state = new AtomicReference<>(State.READY);
-   
-   private final List<Consumer<SseSubscription>> onSubscribeConsumers = new CopyOnWriteArrayList<>(); //TODO how to use this?
    private final List<Consumer<InboundSseEvent>> onEventConsumers = new CopyOnWriteArrayList<>();
    private final List<Consumer<Throwable>> onErrorConsumers = new CopyOnWriteArrayList<>();
    private final List<Runnable> onCompleteConsumers = new CopyOnWriteArrayList<>();
-
+   
    public static class SourceBuilder extends Builder
    {
       private WebTarget endpoint = null;
@@ -111,8 +108,7 @@ public class SseEventSourceImpl implements SseEventSource
       {
          name = String.format("sse-event-source(%s)", target.getUri());
       }
-      this.executor = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory());
-
+      this.executor = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory());    
       if (open)
       {
          open();
@@ -200,32 +196,10 @@ public class SseEventSourceImpl implements SseEventSource
       onCompleteConsumers.add(onComplete);
    }
 
-   public void subscribe(Consumer<SseSubscription> onSubscribe,
-                  Consumer<InboundSseEvent> onEvent,
-                  Consumer<Throwable> onError,
-                  Runnable onComplete) {
-      if (onSubscribe == null) {
-         throw new IllegalArgumentException();
-      }
-      if (onEvent == null) {
-         throw new IllegalArgumentException();
-      }
-      if (onError == null) {
-         throw new IllegalArgumentException();
-      }
-      if (onComplete == null) {
-         throw new IllegalArgumentException();
-      }
-      onSubscribeConsumers.add(onSubscribe);
-      onEventConsumers.add(onEvent);
-      onErrorConsumers.add(onError);
-      onCompleteConsumers.add(onComplete);
-   }
    
    @Override
    public boolean close(final long timeout, final TimeUnit unit)
    {
-      onCompleteConsumers.forEach(occ -> occ.run());
       if (state.getAndSet(State.CLOSED) != State.CLOSED)
       {
          executor.shutdownNow();
@@ -239,9 +213,11 @@ public class SseEventSourceImpl implements SseEventSource
       }
       catch (InterruptedException e)
       {
+         onErrorConsumers.forEach(consumer -> {consumer.accept(e);});
          Thread.currentThread().interrupt();
          return false;
       }
+      
       return true;
    }
 
@@ -277,6 +253,7 @@ public class SseEventSourceImpl implements SseEventSource
                eventInput = request.get(SseEventInputImpl.class);
             }
          } catch (Throwable e) {
+            onErrorConsumers.forEach(consumer -> {consumer.accept(e);});
             e.printStackTrace();
          } finally {
             if (connectedLatch != null) {
@@ -296,6 +273,7 @@ public class SseEventSourceImpl implements SseEventSource
                if (event != null)
                {
                   onEvent(event);
+                  onEventConsumers.forEach(consumer -> {consumer.accept(event);});
                }
             }
          }
@@ -332,7 +310,6 @@ public class SseEventSourceImpl implements SseEventSource
          {
             reconnectDelay = event.getReconnectDelay();
          }
-         onEventConsumers.forEach(oec -> oec.accept(event));
       }
 
       private Invocation.Builder buildRequest()
@@ -367,4 +344,5 @@ public class SseEventSourceImpl implements SseEventSource
          }
       }
    }
+
 }

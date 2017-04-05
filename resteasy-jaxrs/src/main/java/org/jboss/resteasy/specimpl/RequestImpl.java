@@ -223,32 +223,5 @@ public class RequestImpl implements Request
       return Response.status(SC_PRECONDITION_FAILED);
    }
 
-   @Override
-   public void entity(NioReaderHandler arg0)
-   {
-      // TODO Auto-generated method stub
-      
-   }
-
-   @Override
-   public void entity(NioReaderHandler arg0, NioCompletionHandler arg1)
-   {
-      // TODO Auto-generated method stub
-      
-   }
-
-   @Override
-   public void entity(NioReaderHandler arg0, NioErrorHandler arg1)
-   {
-      // TODO Auto-generated method stub
-      
-   }
-
-   @Override
-   public void entity(NioReaderHandler arg0, NioCompletionHandler arg1, NioErrorHandler arg2)
-   {
-      // TODO Auto-generated method stub
-      
-   }
 
 }

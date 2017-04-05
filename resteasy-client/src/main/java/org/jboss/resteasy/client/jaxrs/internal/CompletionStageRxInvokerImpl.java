@@ -386,4 +386,22 @@ public class CompletionStageRxInvokerImpl implements CompletionStageRxInvoker
       this.executor = executor;
       return this;
    }
+
+@Override
+public CompletionStage<Response> patch() {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public <T> CompletionStage<T> patch(Class<T> responseType) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public <T> CompletionStage<T> patch(GenericType<T> responseType) {
+	// TODO Auto-generated method stub
+	return null;
+}
 }

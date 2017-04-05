@@ -9,7 +9,6 @@ import javax.ws.rs.client.AsyncInvoker;
 import javax.ws.rs.client.CompletionStageRxInvoker;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.NioInvoker;
 import javax.ws.rs.client.RxInvoker;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
@@ -316,11 +315,6 @@ public class ClientInvocationBuilder implements Invocation.Builder
       return this;
    }
 
-   @Override
-   public NioInvoker nio()
-   {
-      throw new NotImplementedYetException();
-   }
 
    @Override
    public CompletionStageRxInvoker rx()
@@ -361,4 +355,22 @@ public class ClientInvocationBuilder implements Invocation.Builder
          throw new RuntimeException(Messages.MESSAGES.unableToInstantiate(clazz), e);
       }
    }
+
+@Override
+public Response patch() {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public <T> T patch(Class<T> responseType) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public <T> T patch(GenericType<T> responseType) {
+	// TODO Auto-generated method stub
+	return null;
+}
 }

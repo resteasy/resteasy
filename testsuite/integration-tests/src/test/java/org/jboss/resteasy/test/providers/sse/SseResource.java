@@ -11,6 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.sse.Sse;
+import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
 
 @Path("/server-sent-events")
@@ -21,6 +22,7 @@ public class SseResource
    @Context
    private Sse sse;
    private volatile SseEventSink eventSink;
+   private SseBroadcaster sseBroadcaster;
 
    @GET
    @Produces(MediaType.SERVER_SENT_EVENTS)
@@ -29,8 +31,8 @@ public class SseResource
            if (this.eventSink != null) {
                throw new IllegalStateException("Server sink already served.");
            }
-           this.eventSink = eventSink;
        }
+       this.eventSink = eventSink;
    }
 
    @POST
@@ -38,8 +40,33 @@ public class SseResource
        if (eventSink == null) {
            throw new IllegalStateException("No client connected.");
        }
-       eventSink.onNext(sse.newEvent("custom-message"));
+       eventSink.send(sse.newEvent(message));
    }
+   
+   @GET
+   @Path("/subscribe")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void subscribe(@Context SseEventSink sink) throws IOException {
+	   if (sink == null) {
+           throw new IllegalStateException("No client connected.");
+       }
+       //subscribe
+	   if (sseBroadcaster == null) {
+		   sseBroadcaster = sse.newBroadcaster();
+	   }
+	   sseBroadcaster.register(sink);	  
+   }
+   
+   @POST
+   @Path("/broadcast")
+   public void broadcast(String message) throws IOException {
+	   if (sseBroadcaster == null) {
+		   sseBroadcaster = sse.newBroadcaster();
+	   }
+	   sseBroadcaster.broadcast(sse.newEvent(message));
+   }
+   
+   
 
    @DELETE
    public void close() throws IOException {
@@ -62,21 +89,21 @@ public class SseResource
          {
             try
             {
-               sink.onNext(sse.newEventBuilder().name("domain-progress")
+               sink.send(sse.newEventBuilder().name("domain-progress")
                      .data(String.class, "starting domain " + id + " ...").build());
                Thread.sleep(200);
-               sink.onNext(sse.newEvent("domain-progress", "50%"));
+               sink.send(sse.newEvent("domain-progress", "50%"));
                Thread.sleep(200);
-               sink.onNext(sse.newEvent("domain-progress", "60%"));
+               sink.send(sse.newEvent("domain-progress", "60%"));
                Thread.sleep(200);
-               sink.onNext(sse.newEvent("domain-progress", "70%"));
+               sink.send(sse.newEvent("domain-progress", "70%"));
                Thread.sleep(200);
-               sink.onNext(sse.newEvent("domain-progress", "99%"));
+               sink.send(sse.newEvent("domain-progress", "99%"));
                Thread.sleep(200);
-               sink.onNext(sse.newEvent("domain-progress", "Done."));
+               sink.send(sse.newEvent("domain-progress", "Done."));
                sink.close();
             }
-            catch (final InterruptedException | IOException e)
+            catch (final InterruptedException e)
             {
                e.printStackTrace();
             }

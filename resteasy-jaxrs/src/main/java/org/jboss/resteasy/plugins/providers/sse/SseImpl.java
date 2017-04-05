@@ -6,6 +6,9 @@ import javax.ws.rs.sse.SseBroadcaster;
 
 public class SseImpl implements Sse
 {
+   //spec leader said there will be a request scope broadcaster and a static broadcaster
+   //implement a static boradcaster first
+   public static SseBroadcaster  broadCaster= new SseBroadcasterImpl();
    @Override
    public OutboundSseEvent.Builder newEventBuilder()
    {
@@ -15,6 +18,6 @@ public class SseImpl implements Sse
    @Override
    public SseBroadcaster newBroadcaster()
    {
-      return new SseBroadcasterImpl();
+      return broadCaster;
    }
 }

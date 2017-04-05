@@ -13,10 +13,8 @@ import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.NioErrorHandler;
-import javax.ws.rs.core.NioWriterHandler;
+
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Variant;
 import java.lang.annotation.Annotation;
 import java.net.URI;
@@ -396,17 +394,4 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
       return this;
    }
 
-   @Override
-   public ResponseBuilder entity(NioWriterHandler arg0)
-   {
-      // TODO Auto-generated method stub
-      return null;
-   }
-
-   @Override
-   public ResponseBuilder entity(NioWriterHandler arg0, NioErrorHandler arg1)
-   {
-      // TODO Auto-generated method stub
-      return null;
-   }
 }
