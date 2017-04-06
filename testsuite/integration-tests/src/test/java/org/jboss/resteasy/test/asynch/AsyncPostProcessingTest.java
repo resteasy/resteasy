@@ -8,6 +8,7 @@ import org.jboss.resteasy.test.asynch.resource.AsyncPostProcessingMsgBodyWriterI
 import org.jboss.resteasy.test.asynch.resource.AsyncPostProcessingInterceptor;
 import org.jboss.resteasy.test.asynch.resource.AsyncPostProcessingResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -21,6 +22,8 @@ import org.junit.runner.RunWith;
 import org.jboss.logging.Logger;
 
 import javax.ws.rs.core.Response;
+import java.lang.reflect.ReflectPermission;
+import java.util.PropertyPermission;
 
 /**
  * @tpSubChapter Asynchronous RESTEasy
@@ -39,6 +42,10 @@ public class AsyncPostProcessingTest {
         WebArchive war =  TestUtil.prepareArchive(AsyncPostProcessingTest.class.getSimpleName());
         war.addClasses(TestUtil.class, PortProviderUtil.class);
         war.addAsWebInfResource(AsyncPostProcessingTest.class.getPackage(), "AsyncPostProcessingTestWeb.xml", "web.xml");
+        // Arquillian in the deployment
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new PropertyPermission("arquillian.*", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, AsyncPostProcessingResource.class,
                 AsyncPostProcessingMsgBodyWriterInterceptor.class, AsyncPostProcessingInterceptor.class);
     }

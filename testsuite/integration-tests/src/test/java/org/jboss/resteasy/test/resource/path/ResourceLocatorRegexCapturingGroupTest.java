@@ -22,8 +22,11 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
 /**
- * @Path annotation paths can consist of Regex Capturing groups used with
+ * @tpSubChapter Resources
+ * @tpChapter Integration tests
+ * @tpTestCaseDetails @Path annotation paths can consist of Regex Capturing groups used with
  * Resource Locator scenarios.
+ * @tpSince RESTEasy 3.0.22
  *
  * User: rsearls
  * Date: 2/17/17

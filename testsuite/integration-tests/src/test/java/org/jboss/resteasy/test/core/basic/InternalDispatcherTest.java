@@ -7,6 +7,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.core.basic.resource.InternalDispatcherForwardingResource;
 import org.jboss.resteasy.test.core.basic.resource.InternalDispatcherClient;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestApplication;
 import org.jboss.resteasy.utils.TestUtil;
@@ -20,9 +21,11 @@ import org.junit.runner.RunWith;
 
 import javax.ws.rs.core.Response;
 
+import java.lang.reflect.ReflectPermission;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.PropertyPermission;
 
 /**
  * @tpSubChapter Core
@@ -47,7 +50,10 @@ public class InternalDispatcherTest {
 
         List<Class<?>> singletons = new ArrayList<>();
         singletons.add(InternalDispatcherForwardingResource.class);
-
+        // Arquillian in the deployment
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new PropertyPermission("arquillian.*", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);
     }
 

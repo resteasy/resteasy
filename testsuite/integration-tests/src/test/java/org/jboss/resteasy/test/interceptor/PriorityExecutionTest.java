@@ -26,6 +26,7 @@ import org.jboss.resteasy.test.interceptor.resource.PriorityExecutionContainerRe
 import org.jboss.resteasy.test.interceptor.resource.PriorityExecutionContainerResponseFilterMin;
 import org.jboss.resteasy.test.interceptor.resource.PriorityExecutionResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -39,8 +40,10 @@ import org.junit.runner.RunWith;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
+import java.lang.reflect.ReflectPermission;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PropertyPermission;
 
 /**
  * @tpSubChapter Interceptors
@@ -78,6 +81,10 @@ public class PriorityExecutionTest {
                 PriorityExecutionContainerResponseFilter1.class,
                 PriorityExecutionContainerResponseFilterMin.class,
                 PriorityExecutionClientRequestFilterMin.class);
+        // Arquillian in the deployment
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new PropertyPermission("arquillian.*", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, PriorityExecutionResource.class);
     }
 
