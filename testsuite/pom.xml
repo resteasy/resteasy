@@ -16,6 +16,7 @@
     <properties>
         <version.resteasy.testsuite>${project.version}</version.resteasy.testsuite>
         <additional.surefire.excluded.groups></additional.surefire.excluded.groups>
+        <securityManagerArg></securityManagerArg>
     </properties>
 
     <build>
@@ -25,7 +26,7 @@
                 <configuration>
                     <failIfNoTests>false</failIfNoTests>
                     <systemPropertyVariables>
-                        <additionalJvmArgs></additionalJvmArgs>
+                        <additionalJvmArgs>${securityManagerArg}</additionalJvmArgs>
                         <ipv6>false</ipv6>
                         <ipv6ArquillianSettings></ipv6ArquillianSettings>
                         <node>127.0.0.1</node>
@@ -147,6 +148,7 @@
                             <argLine>${surefireArgLine}</argLine>
                             <testFailureIgnore>true</testFailureIgnore>
                             <systemPropertyVariables>
+                                <additionalJvmArgs>${securityManagerArg}</additionalJvmArgs>
                                 <ipv6>true</ipv6>
                                 <ipv6ArquillianSettings>-Djava.net.preferIPv4Stack=false -Djava.net.preferIPv6Addresses=true</ipv6ArquillianSettings>
                                 <node>::1</node>
@@ -177,6 +179,18 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <!-- This profile starts server with security manager -->
+        <profile>
+            <id>security.manager</id>
+            <activation>
+                <property>
+                    <name>security.manager</name>
+                </property>
+            </activation>
+            <properties>
+                <securityManagerArg>-Djava.security.manager</securityManagerArg>
+            </properties>
         </profile>
         <!-- This profile creates custom server configuration file with configured Elytron subsystem -->
         <profile>
@@ -239,8 +253,8 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration combine.children="append">
                             <systemPropertyVariables>
+                                <additionalJvmArgs>${securityManagerArg}</additionalJvmArgs>
                                 <jboss.server.config.file.name>standalone-full-elytron.xml</jboss.server.config.file.name>
-                                <additionalJvmArgs></additionalJvmArgs>
                                 <ipv6>false</ipv6>
                                 <ipv6ArquillianSettings></ipv6ArquillianSettings>
                                 <node>127.0.0.1</node>

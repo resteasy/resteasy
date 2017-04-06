@@ -2,10 +2,10 @@ package org.jboss.resteasy.test.resource.param;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.plugins.delegates.DateDelegate;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.resource.param.resource.HeaderDelegateDate;
@@ -18,6 +18,7 @@ import org.jboss.resteasy.test.resource.param.resource.HeaderDelegateResource;
 import org.jboss.resteasy.test.resource.param.resource.HeaderDelegateSubDelegate;
 import org.jboss.resteasy.util.DateUtil;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -28,7 +29,9 @@ import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
+import java.lang.reflect.ReflectPermission;
 import java.util.Date;
+import java.util.PropertyPermission;
 
 /**
  * @tpSubChapter Parameters
@@ -55,6 +58,10 @@ public class HeaderDelegateTest {
         war.addClass(HeaderDelegateSubDelegate.class);
         war.addClass(PortProviderUtil.class);
         war.addClass(HeaderDelegateTest.class);
+        // Arquillian in the deployment
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new PropertyPermission("arquillian.*", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, HeaderDelegateResource.class);
     }
 

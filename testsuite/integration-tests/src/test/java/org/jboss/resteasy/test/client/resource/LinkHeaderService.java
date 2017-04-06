@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.client.resource;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.delegates.LinkHeaderDelegate;
 import org.jboss.resteasy.spi.LinkHeader;
 

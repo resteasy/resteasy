@@ -26,6 +26,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.GenericSuperInterfaceTop;
 import org.jboss.resteasy.test.providers.jaxb.resource.GenericSuperInterfaceUpdatableResource;
 import org.jboss.resteasy.test.providers.jaxb.resource.GenericSuperInterfaceStoragePool;
 import org.jboss.resteasy.util.Types;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -35,6 +36,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ReflectPermission;
+import java.util.PropertyPermission;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -44,7 +47,6 @@ import java.lang.reflect.Method;
  */
 @RunWith(Arquillian.class)
 public class GenericSuperInterfaceTest {
-    static ResteasyClient client;
 
     @Deployment
     public static Archive<?> deploy() {
@@ -65,7 +67,11 @@ public class GenericSuperInterfaceTest {
                 GenericSuperInterfaceINotifyPropertyChanged.class, GenericSuperInterfaceIVdcQueryable.class,
                 GenericSuperInterfaceStoragePool.class, GenericSuperInterfaceUpdatableResource.class,
                 GenericSuperInterfaceBaseBackendResource.class,
-                TestUtil.class, PortProviderUtil.class);
+                TestUtil.class);
+        // Arquillian in the deployment
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new PropertyPermission("arquillian.*", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, GenericSuperInterfaceTop.class);
     }
 

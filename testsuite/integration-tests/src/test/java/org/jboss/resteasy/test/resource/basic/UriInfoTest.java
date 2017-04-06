@@ -14,6 +14,7 @@ import org.jboss.resteasy.test.resource.basic.resource.UriInfoRelativizeResource
 import org.jboss.resteasy.test.resource.basic.resource.UriInfoSimpleResource;
 import org.jboss.resteasy.test.resource.basic.resource.UriInfoSimpleSingletonResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -33,6 +34,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PropertyPermission;
 
 /**
  * @tpSubChapter Resources
@@ -64,6 +66,11 @@ public class UriInfoTest {
     public static Archive<?> deployUriInfoSimpleResource() {
         WebArchive war = TestUtil.prepareArchive(UriInfoSimpleResource.class.getSimpleName());
         war.addClass(PortProviderUtil.class);
+        // Use of PortProviderUtil in the deployment
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new PropertyPermission("node", "read"),
+                new PropertyPermission("ipv6", "read"),
+                new RuntimePermission("getenv.RESTEASY_PORT"),
+                new PropertyPermission("org.jboss.resteasy.port", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, UriInfoSimpleResource.class);
     }
 
@@ -81,6 +88,10 @@ public class UriInfoTest {
     public static Archive<?> deployUriInfoSimpleResourceAsSingleton() {
         WebArchive war = TestUtil.prepareArchive(UriInfoSimpleSingletonResource.class.getSimpleName());
         war.addClass(PortProviderUtil.class);
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new PropertyPermission("node", "read"),
+                new PropertyPermission("ipv6", "read"),
+                new RuntimePermission("getenv.RESTEASY_PORT"),
+                new PropertyPermission("org.jboss.resteasy.port", "read")), "permissions.xml");
         List<Class<?>> singletons = new ArrayList<>();
         singletons.add(UriInfoSimpleSingletonResource.class);
         return TestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);

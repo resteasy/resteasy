@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.cdi.injection;
 
+import java.net.SocketPermission;
 import java.net.URI;
 import javax.annotation.Resource;
 import javax.ws.rs.client.Client;
@@ -37,6 +38,8 @@ import org.jboss.resteasy.test.cdi.util.Counter;
 import org.jboss.resteasy.test.cdi.util.PersistenceUnitProducer;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
+import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -80,6 +83,8 @@ public class MDBInjectionTest extends AbstractInjectionTestBase {
                 .addClasses(Resource.class, CDIInjectionResourceProducer.class, PersistenceUnitProducer.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsResource(InjectionTest.class.getPackage(), "persistence.xml", "META-INF/persistence.xml");
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new SocketPermission(PortProviderUtil.getHost(), "resolve")),
+                "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 

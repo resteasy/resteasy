@@ -17,6 +17,7 @@ import org.jboss.resteasy.test.cdi.util.Counter;
 import org.jboss.resteasy.test.cdi.util.Utilities;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -35,7 +36,9 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import java.lang.reflect.ReflectPermission;
 import java.util.Hashtable;
+import java.util.PropertyPermission;
 
 import static org.junit.Assert.assertEquals;
 
@@ -72,6 +75,10 @@ public class EJBTest {
             .addClasses(EJBResourceParent.class, EJBLocalResource.class, EJBRemoteResource.class, EJBBookResource.class)
             .setWebXML(EJBTest.class.getPackage(), "ejbtest_web.xml")
             .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+        // Arquillian in the deployment
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new PropertyPermission("arquillian.*", "read")), "permissions.xml");
         return war;
     }
 

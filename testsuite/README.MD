@@ -39,6 +39,16 @@ Use ``ipv6`` property and specify IP address for EAP binding for IPv6 testing. E
  
 > mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Dnode=2620:52:0:2804:56ee:75ff:fe1d:44c3 -Dipv6
 
+## Security manager
+Run testsuite or test with the Wildfly with security manager enabled:
+
+> mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Dsecurity.manager
+
+## Remote server
+Run testsuite or test connecting to a running server:
+
+> mvn clean verify -Dserver.home=PATH_TO_WIDLFLY_HOME -Darquillian.remote
+
 ## Test logs
 Test logs are stored in ``/MODULE_NAME/target/surefire-reports/TEST_NAME-output.txt``
 

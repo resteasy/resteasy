@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.exception;
 
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.exception.resource.AbstractMapper;
 import org.jboss.resteasy.test.exception.resource.AbstractMapperDefault;
@@ -32,6 +33,7 @@ import java.lang.reflect.Type;
  * @tpTestCaseDetails Regression test for RESTEASY-666
  */
 @RunWith(Arquillian.class)
+@RunAsClient
 public class AbstractExceptionMapperTest {
 
     private Client client;

@@ -7,6 +7,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.response.resource.RangeResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -21,6 +22,8 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
+import java.io.File;
+import java.io.FilePermission;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -48,6 +51,9 @@ public class RangeTest {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(RangeTest.class.getSimpleName());
+        // Deployment creates file in the filesystem
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new FilePermission(File.separator + "tmp" + File.separator + "-", "read,write,delete")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, RangeResource.class);
     }
 
