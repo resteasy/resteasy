@@ -3,9 +3,6 @@ package org.jboss.resteasy.client.jaxrs;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientWebTarget;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
-import org.jboss.resteasy.spi.NotImplementedYetException;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -17,9 +14,10 @@ import javax.ws.rs.core.Link;
 import javax.ws.rs.core.UriBuilder;
 
 import java.net.URI;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -73,7 +71,22 @@ public class ResteasyClient implements Client
          httpEngine.close();
          if (cleanupExecutor)
          {
-            asyncInvocationExecutor.shutdown();
+            if (System.getSecurityManager() == null)
+            {
+               asyncInvocationExecutor.shutdown();
+            }
+            else
+            {
+               AccessController.doPrivileged(new PrivilegedAction<Void>()
+               {
+                  @Override
+                  public Void run()
+                  {
+                     asyncInvocationExecutor.shutdown();
+                     return null;
+                  }
+               });
+            }
          }
       }
       catch (Exception e)

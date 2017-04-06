@@ -7,10 +7,15 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import javax.ws.rs.ext.Providers;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,12 +51,44 @@ public class RegisterBuiltin
 
    public static void registerProviders(ResteasyProviderFactory factory) throws Exception
    {
-      Enumeration<URL> en = Thread.currentThread().getContextClassLoader().getResources("META-INF/services/" + Providers.class.getName());
+      Enumeration<URL> en;
+      if (System.getSecurityManager() == null)
+      {
+         en = Thread.currentThread().getContextClassLoader().getResources("META-INF/services/" + Providers.class.getName());
+      }
+      else
+      {
+         en = AccessController.doPrivileged(new PrivilegedExceptionAction<Enumeration<URL>>()
+         {
+            @Override
+            public Enumeration<URL> run() throws IOException
+            {
+               return Thread.currentThread().getContextClassLoader().getResources("META-INF/services/" + Providers.class.getName());
+            }
+         });
+      }
+
       Map<String, URL> origins = new HashMap<String, URL>();
       while (en.hasMoreElements())
       {
-         URL url = en.nextElement();
-         InputStream is = url.openStream();
+         final URL url = en.nextElement();
+         InputStream is;
+         if (System.getSecurityManager() == null)
+         {
+            is = url.openStream();
+         }
+         else
+         {
+            is = AccessController.doPrivileged(new PrivilegedExceptionAction<InputStream>()
+            {
+               @Override
+               public InputStream run() throws IOException
+               {
+                  return url.openStream();
+               }
+            });
+         }
+
          try
          {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
@@ -68,21 +105,37 @@ public class RegisterBuiltin
             is.close();
          }
       }
-      for (Entry<String, URL> entry : origins.entrySet())
+      for (final Entry<String, URL> entry : origins.entrySet())
       {
-         String line = entry.getKey();
+         final String line = entry.getKey();
          try
          {
-            Class clazz = Thread.currentThread().getContextClassLoader().loadClass(line);
+            Class clazz;
+            if (System.getSecurityManager() == null)
+            {
+               clazz = Thread.currentThread().getContextClassLoader().loadClass(line);
+            }
+            else
+            {
+               clazz = AccessController.doPrivileged(new PrivilegedExceptionAction<Class>()
+               {
+                  @Override
+                  public Class run() throws ClassNotFoundException
+                  {
+                     return Thread.currentThread().getContextClassLoader().loadClass(line);
+                  }
+               });
+            }
+
             factory.registerProvider(clazz, true);
          }
          catch (NoClassDefFoundError e)
          {
             LogMessages.LOGGER.noClassDefFoundErrorError(line, entry.getValue(), e);
          }
-         catch (ClassNotFoundException e)
+         catch (ClassNotFoundException | PrivilegedActionException ex)
          {
-            LogMessages.LOGGER.classNotFoundException(line, entry.getValue(), e);
+            LogMessages.LOGGER.classNotFoundException(line, entry.getValue(), ex);
          }
       }
    }

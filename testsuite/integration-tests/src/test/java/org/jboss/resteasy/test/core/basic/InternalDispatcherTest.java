@@ -22,10 +22,12 @@ import org.junit.runner.RunWith;
 import javax.ws.rs.core.Response;
 
 import java.lang.reflect.ReflectPermission;
+import java.net.SocketPermission;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.PropertyPermission;
+import java.util.logging.LoggingPermission;
 
 /**
  * @tpSubChapter Core
@@ -52,8 +54,15 @@ public class InternalDispatcherTest {
         singletons.add(InternalDispatcherForwardingResource.class);
         // Arquillian in the deployment
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+                new LoggingPermission("control", ""),
+                new PropertyPermission("arquillian.*", "read"),
+                new PropertyPermission("ipv6", "read"),
+                new PropertyPermission("node", "read"),
+                new PropertyPermission("org.jboss.resteasy.port", "read"),
                 new RuntimePermission("accessDeclaredMembers"),
-                new PropertyPermission("arquillian.*", "read")), "permissions.xml");
+                new RuntimePermission("getenv.RESTEASY_PORT"),
+                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, singletons, (Class<?>[]) null);
     }
 

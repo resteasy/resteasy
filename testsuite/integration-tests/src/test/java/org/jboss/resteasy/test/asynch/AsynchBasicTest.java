@@ -20,12 +20,14 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.lang.reflect.ReflectPermission;
+import java.net.SocketPermission;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PropertyPermission;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.LoggingPermission;
 
 import static org.jboss.resteasy.utils.PortProviderUtil.generateURL;
 
@@ -57,8 +59,15 @@ public class AsynchBasicTest {
         }
         // Arquillian in the deployment
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+                new LoggingPermission("control", ""),
+                new PropertyPermission("arquillian.*", "read"),
+                new PropertyPermission("ipv6", "read"),
+                new PropertyPermission("node", "read"),
+                new PropertyPermission("org.jboss.resteasy.port", "read"),
                 new RuntimePermission("accessDeclaredMembers"),
-                new PropertyPermission("arquillian.*", "read")), "permissions.xml");
+                new RuntimePermission("getenv.RESTEASY_PORT"),
+                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, contextParam, AsynchBasicResource.class);
     }
 
