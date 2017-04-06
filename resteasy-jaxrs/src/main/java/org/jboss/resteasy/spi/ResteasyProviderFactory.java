@@ -1361,7 +1361,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return getStringConverters().get(clazz);
    }
 
-   public List<ContextResolver> getContextResolvers(Class<?> clazz, MediaType type)
+   public List<ContextResolver> getContextResolvers(final Class<?> clazz, MediaType type)
    {
       MediaTypeMap<SortedKey<ContextResolver>> resolvers = getContextResolvers().get(clazz);
       if (resolvers == null) return null;

@@ -14,6 +14,8 @@ import javax.ws.rs.core.MediaType;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
@@ -24,7 +26,7 @@ public class ProxyBuilder<T>
    
 	private final Class<T> iface;
 	private final ResteasyWebTarget webTarget;
-	private ClassLoader loader = Thread.currentThread().getContextClassLoader();
+	private ClassLoader loader;
 	private MediaType serverConsumes;
 	private MediaType serverProduces;
 
@@ -93,6 +95,21 @@ public class ProxyBuilder<T>
 
    private ProxyBuilder(Class<T> iface, ResteasyWebTarget webTarget)
    {
+      if (System.getSecurityManager() == null)
+      {
+          this.loader = Thread.currentThread().getContextClassLoader();
+      }
+      else
+      {
+          this.loader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
+          {
+              @Override
+              public ClassLoader run()
+              {
+                  return Thread.currentThread().getContextClassLoader();
+              }
+          });
+      }
       this.iface = iface;
       this.webTarget = webTarget;
    }

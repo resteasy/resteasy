@@ -1,7 +1,9 @@
 package org.jboss.resteasy.test.providers.jaxb;
 
 import java.lang.reflect.ReflectPermission;
+import java.net.SocketPermission;
 import java.util.*;
+import java.util.logging.LoggingPermission;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericEntity;
@@ -48,12 +50,15 @@ public class XmlJavaTypeAdapterTest {
         war.addClass(XmlJavaTypeAdapterTest.class);
         // Arquillian in the deployment and use of PortProviderUtil in the deployment
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new PropertyPermission("node", "read"),
+                new LoggingPermission("control", ""),
+                new PropertyPermission("arquillian.*", "read"),
                 new PropertyPermission("ipv6", "read"),
-                new RuntimePermission("getenv.RESTEASY_PORT"),
                 new PropertyPermission("org.jboss.resteasy.port", "read"),
                 new ReflectPermission("suppressAccessChecks"),
                 new RuntimePermission("accessDeclaredMembers"),
-                new PropertyPermission("arquillian.*", "read")), "permissions.xml");
+                new RuntimePermission("getenv.RESTEASY_PORT"),
+                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, XmlJavaTypeAdapterAlien.class, XmlJavaTypeAdapterAlienAdapter.class,
                 XmlJavaTypeAdapterFoo.class, XmlJavaTypeAdapterHuman.class, XmlJavaTypeAdapterResource.class, PortProviderUtil.class);
     }

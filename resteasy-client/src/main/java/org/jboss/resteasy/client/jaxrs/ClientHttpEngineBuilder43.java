@@ -1,6 +1,8 @@
 package org.jboss.resteasy.client.jaxrs;
 
 import java.io.IOException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -165,15 +167,35 @@ public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
         }
     }
 
-   protected ClientHttpEngine createEngine(HttpClientConnectionManager cm, RequestConfig.Builder rcBuilder,
-         HttpHost defaultProxy, int responseBufferSize, HostnameVerifier verifier, SSLContext theContext)
+   protected ClientHttpEngine createEngine(final HttpClientConnectionManager cm, final RequestConfig.Builder rcBuilder,
+         final HttpHost defaultProxy, final int responseBufferSize, final HostnameVerifier verifier, final SSLContext theContext)
    {
-      HttpClient httpClient = HttpClientBuilder.create()
-            .setConnectionManager(cm)
-            .setDefaultRequestConfig(rcBuilder.build())
-            .setProxy(defaultProxy)
-            .disableContentCompression().build();
-      ApacheHttpClient43Engine engine = (ApacheHttpClient43Engine) ApacheHttpClient4EngineFactory.create(httpClient,
+       final HttpClient httpClient;
+       if (System.getSecurityManager() == null)
+       {
+           httpClient = HttpClientBuilder.create()
+                 .setConnectionManager(cm)
+                 .setDefaultRequestConfig(rcBuilder.build())
+                 .setProxy(defaultProxy)
+                 .disableContentCompression().build();
+       }
+       else
+       {
+           httpClient = AccessController.doPrivileged(new PrivilegedAction<HttpClient>()
+           {
+               @Override
+               public HttpClient run()
+               {
+                   return HttpClientBuilder.create()
+                           .setConnectionManager(cm)
+                           .setDefaultRequestConfig(rcBuilder.build())
+                           .setProxy(defaultProxy)
+                           .disableContentCompression().build();
+               }
+           });
+       }
+
+       ApacheHttpClient43Engine engine = (ApacheHttpClient43Engine) ApacheHttpClient4EngineFactory.create(httpClient,
             true);
       engine.setResponseBufferSize(responseBufferSize);
       engine.setHostnameVerifier(verifier);
