@@ -39,6 +39,7 @@ import org.jboss.resteasy.test.cdi.util.PersistenceUnitProducer;
 import org.jboss.resteasy.test.cdi.util.Utilities;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -68,10 +69,12 @@ import javax.ws.rs.core.Response;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.ReflectPermission;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.PropertyPermission;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -146,6 +149,10 @@ public class ReverseInjectionTest extends AbstractInjectionTestBase {
                 .addClass(NotForWildFly9.class) //required as this test is not @RunAsClient annotated
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsResource(ReverseInjectionTest.class.getPackage(), "persistence.xml", "META-INF/persistence.xml");
+        // Arquillian in the deployment
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new PropertyPermission("arquillian.*", "read")), "permissions.xml");
         return war;
     }
 

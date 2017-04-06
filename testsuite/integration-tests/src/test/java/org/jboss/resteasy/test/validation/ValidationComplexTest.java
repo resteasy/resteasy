@@ -55,6 +55,7 @@ import org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWith
 import org.jboss.resteasy.test.validation.resource.ValidationComplexResourceWithValidField;
 import org.jboss.resteasy.test.validation.resource.ValidationComplexSubResourceWithCrossParameterConstraint;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TimeoutUtil;
@@ -74,11 +75,8 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.ReflectPermission;
+import java.util.*;
 
 /**
  * @tpSubChapter Response
@@ -128,6 +126,10 @@ public class ValidationComplexTest {
                 ValidationComplexInterfaceSub.class, ValidationComplexClassInheritanceSuperConstraint.class,
                 ValidationComplexClassValidatorSuperInheritance.class,
                 ValidationComplexClassConstraint2.class, ValidationComplexClassValidator2.class);
+        // Arquillian in the deployment
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new PropertyPermission("arquillian.*", "read")), "permissions.xml");
         war.addClasses(TestUtil.class, PortProviderUtil.class);
         return war;
     }

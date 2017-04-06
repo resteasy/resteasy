@@ -5,6 +5,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.test.resource.basic.resource.ReponseInfoResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -19,6 +20,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import java.util.PropertyPermission;
 
 /**
  * @tpSubChapter Resource
@@ -45,6 +47,11 @@ public class ReponseInfoTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(ReponseInfoTest.class.getSimpleName());
         war.addClasses(PortProviderUtil.class, ReponseInfoTest.class);
+        // Use of PortProviderUtil in the deployment
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new PropertyPermission("node", "read"),
+                new PropertyPermission("ipv6", "read"),
+                new RuntimePermission("getenv.RESTEASY_PORT"),
+                new PropertyPermission("org.jboss.resteasy.port", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, ReponseInfoResource.class);
     }
 

@@ -11,6 +11,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.test.resource.basic.resource.LogHandler;
 import org.jboss.resteasy.test.resource.basic.resource.MultipleEndpointsWarningResource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -21,6 +22,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+
+import java.util.logging.LoggingPermission;
 
 /**
  * @tpSubChapter Resources
@@ -38,6 +41,8 @@ public class MultipleEndpointsWarningTest
    public static Archive<?> deploy() {
        WebArchive war = TestUtil.prepareArchive(MultipleEndpointsWarningTest.class.getSimpleName());
        war.addClass(LogHandler.class);
+      // Test registers it's own LogHandler
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new LoggingPermission("control", "")), "permissions.xml");
        return TestUtil.finishContainerPrepare(war, null, MultipleEndpointsWarningResource.class);
    }
 

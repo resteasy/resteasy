@@ -12,6 +12,7 @@ import org.jboss.resteasy.test.providers.multipart.resource.MimeMultipartProvide
 import org.jboss.resteasy.test.providers.multipart.resource.MimeMultipartProviderCustomer;
 import org.jboss.resteasy.test.providers.multipart.resource.MimeMultipartProviderResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -41,6 +42,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.PropertyPermission;
 
 /**
  * @tpSubChapter Multipart provider
@@ -72,6 +74,9 @@ public class MimeMultipartProviderTest {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(MimeMultipartProviderTest.class.getSimpleName());
+        // Required by javax.mail
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+                new PropertyPermission("*", "read,write")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, MimeMultipartProviderResource.class, MimeMultipartProviderCustomer.class);
     }
 

@@ -62,6 +62,11 @@
         <!-- END OF arquillian general -->
 
         <dependency>
+            <groupId>com.io7m.xom</groupId>
+            <artifactId>xom</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
             <version>${version.resteasy.testsuite}</version>

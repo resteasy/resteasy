@@ -14,6 +14,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.datasource.resource.CleanFilesDataSourceProviderResource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -24,8 +25,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import java.io.File;
+import java.io.FilePermission;
 import java.io.FilenameFilter;
 import java.nio.charset.StandardCharsets;
+import java.util.PropertyPermission;
 
 /**
  * @tpSubChapter DataSource provider
@@ -42,6 +45,10 @@ public class CleanFilesDataSourceProviderTest {
     @Deployment()
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(CleanFilesDataSourceProviderTest.class.getSimpleName());
+        // DataSource provider creates tmp file in the filesystem
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new FilePermission("/tmp/-", "read"),
+                new PropertyPermission("java.io.tmpdir", "read"),
+                new FilePermission("/tmp", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, CleanFilesDataSourceProviderResource.class);
     }
 
