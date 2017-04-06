@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.client.exception;
 
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -26,6 +27,7 @@ import javax.ws.rs.core.Response;
  * @tpTestCaseDetails Test client error caused by bad media type
  */
 @RunWith(Arquillian.class)
+@RunAsClient
 public class ClientErrorBadMediaTypeTest {
 
     private static Logger logger = Logger.getLogger(ClientErrorBadMediaTypeTest.class);

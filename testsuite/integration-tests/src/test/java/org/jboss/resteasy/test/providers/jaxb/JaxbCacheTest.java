@@ -8,6 +8,7 @@ import org.jboss.resteasy.plugins.providers.jaxb.JAXBContextFinder;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbCacheChild;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbCacheParent;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -19,6 +20,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Providers;
 import javax.xml.bind.JAXBContext;
+import java.lang.reflect.ReflectPermission;
+import java.util.PropertyPermission;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -35,6 +38,10 @@ public class JaxbCacheTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(JaxbCacheTest.class.getSimpleName());
         war.addClass(JaxbCacheTest.class);
+        // Arquillian in the deployment
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new PropertyPermission("*", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, JaxbCacheParent.class, JaxbCacheChild.class);
     }
 

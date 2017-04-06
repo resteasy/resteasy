@@ -1,10 +1,12 @@
 package org.jboss.resteasy.test.providers.datasource;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FilePermission;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.PropertyPermission;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.ws.rs.client.Entity;
@@ -20,6 +22,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.datasource.resource.ReadDataSourceTwiceCountTempFileResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -47,6 +50,10 @@ public class ReadDataSourceTwiceCountTempFileTest {
     @Deployment
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(ReadDataSourceTwiceCountTempFileResource.class.getSimpleName());
+        // DataSource provider creates tmp file in the filesystem
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new FilePermission("/tmp/-", "read"),
+                new PropertyPermission("java.io.tmpdir", "read"),
+                new FilePermission("/tmp", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, ReadDataSourceTwiceCountTempFileResource.class);
     }
 

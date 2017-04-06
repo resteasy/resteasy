@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.asynch.resource;
 
-import org.jboss.resteasy.logging.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.asynch.AsynchBasicTest;
 import org.junit.Assert;
 

@@ -8,6 +8,7 @@ import org.jboss.resteasy.test.providers.custom.resource.WriterNotBuiltinTestWri
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterCustomer;
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -17,8 +18,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.core.Response;
+import java.lang.reflect.ReflectPermission;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.PropertyPermission;
 
 /**
  * @tpSubChapter Providers
@@ -38,6 +41,10 @@ public class WriterNotBuiltinTest {
         war.addClass(PortProviderUtil.class);
         Map<String, String> contextParams = new HashMap<>();
         contextParams.put("resteasy.use.builtin.providers", "false");
+        // Arquillian in the deployment
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new PropertyPermission("arquillian.*", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, contextParams, WriterNotBuiltinTestWriter.class, ReaderWriterResource.class);
     }
 

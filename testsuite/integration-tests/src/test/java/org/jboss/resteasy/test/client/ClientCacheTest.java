@@ -12,6 +12,7 @@ import org.jboss.resteasy.client.jaxrs.cache.BrowserCacheFeature;
 import org.jboss.resteasy.client.jaxrs.cache.LightweightBrowserCache;
 import org.jboss.resteasy.test.client.resource.ClientCacheProxy;
 import org.jboss.resteasy.test.client.resource.ClientCacheService;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -20,6 +21,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.lang.reflect.ReflectPermission;
+import java.util.PropertyPermission;
 
 
 /**
@@ -42,6 +46,14 @@ public class ClientCacheTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(ClientCacheTest.class.getSimpleName());
         war.addClasses(ClientCacheProxy.class, ClientCacheTest.class, TestUtil.class, PortProviderUtil.class);
+        // Arquillian in the deployment and use of PortProviderUtil and Test util in the deployment
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new PropertyPermission("arquillian.*", "read"),
+                new PropertyPermission("node", "read"),
+                new PropertyPermission("ipv6", "read"),
+                new RuntimePermission("getenv.RESTEASY_PORT"),
+                new PropertyPermission("org.jboss.resteasy.port", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, ClientCacheService.class);
     }
 

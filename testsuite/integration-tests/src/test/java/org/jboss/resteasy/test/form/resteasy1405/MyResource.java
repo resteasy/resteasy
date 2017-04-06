@@ -15,15 +15,15 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
+import org.jboss.resteasy.test.client.resource.LinkHeaderService;
 
 @Path("/")
 public class MyResource
 {
-   private static final Log LOG = LogFactory.getLog(MyResource.class);
+   private static Logger log = org.jboss.logging.Logger.getLogger(MyResource.class);
 
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.TEXT_PLAIN)
@@ -31,14 +31,14 @@ public class MyResource
    @POST
    public Response byField(@MultipartForm ByFieldForm form)
    {
-      LOG.info("Entered byField");
+      log.info("Entered byField");
 
       try
       {
-         LOG.info("Name: " + form.getName());
+         log.info("Name: " + form.getName());
 
          InputData input = parse(form.getData());
-         LOG.info("Items: " + input.getItems() + " (" + form.getData().getMediaType() + ')');
+         log.info("Items: " + input.getItems() + " (" + form.getData().getMediaType() + ')');
 
          OutputData output = new OutputData().withName(form.getName()).withContentType(form.getData().getMediaType())
                .withItems(input.getItems());
@@ -57,14 +57,14 @@ public class MyResource
    @POST
    public Response bySetter(@MultipartForm BySetterForm form)
    {
-      LOG.info("Entered bySetter");
+      log.info("Entered bySetter");
 
       try
       {
-         LOG.info("Name: " + form.getName());
+         log.info("Name: " + form.getName());
 
          InputData input = parse(form.getData());
-         LOG.info("Items: " + input.getItems() + " (" + form.getData().getMediaType() + ')');
+         log.info("Items: " + input.getItems() + " (" + form.getData().getMediaType() + ')');
 
          OutputData output = new OutputData().withName(form.getName()).withContentType(form.getData().getMediaType())
                .withItems(input.getItems());

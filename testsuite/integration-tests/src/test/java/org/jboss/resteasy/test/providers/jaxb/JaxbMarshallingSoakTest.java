@@ -9,6 +9,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbMarshallingSoakAsyncService;
 import org.jboss.resteasy.test.providers.jaxb.resource.JaxbMarshallingSoakItem;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TimeoutUtil;
@@ -25,8 +26,10 @@ import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
+import java.lang.reflect.ReflectPermission;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.PropertyPermission;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -72,6 +75,11 @@ public class JaxbMarshallingSoakTest {
         war.addClasses(JaxbMarshallingSoakItem.class, TestUtil.class, PortProviderUtil.class, TimeoutUtil.class);
         Map<String, String> contextParam = new HashMap<>();
         contextParam.put("resteasy.async.job.service.enabled", "true");
+        // Arquillian in the deployment use if TimeoutUtil in the deployment
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new PropertyPermission("arquillian.*", "read"),
+                new PropertyPermission("ts.timeout.factor", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, contextParam, JaxbMarshallingSoakAsyncService.class);
     }
 

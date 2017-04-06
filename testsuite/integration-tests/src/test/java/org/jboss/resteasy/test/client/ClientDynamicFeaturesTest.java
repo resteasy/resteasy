@@ -9,6 +9,7 @@ import org.jboss.resteasy.test.client.resource.ClientDynamicFeaturesDualFeature1
 import org.jboss.resteasy.test.client.resource.ClientDynamicFeaturesDualFeature2;
 import org.jboss.resteasy.test.client.resource.ClientDynamicFeaturesServerFeature1;
 import org.jboss.resteasy.test.client.resource.ClientDynamicFeaturesServerFeature2;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -17,7 +18,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ws.rs.container.DynamicFeature;
+import java.lang.reflect.ReflectPermission;
 import java.util.Iterator;
+import java.util.PropertyPermission;
 import java.util.Set;
 
 /**
@@ -44,6 +47,10 @@ public class ClientDynamicFeaturesTest {
                 ClientDynamicFeaturesDualFeature1.class,
                 ClientDynamicFeaturesServerFeature2.class,
                 ClientDynamicFeaturesServerFeature1.class);
+        // Arquillian in the deployment
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+                new RuntimePermission("accessDeclaredMembers"),
+                new PropertyPermission("arquillian.*", "read")), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 

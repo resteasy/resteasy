@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.asynch.resource;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.Suspend;
-import org.jboss.resteasy.logging.Logger;
 import org.jboss.resteasy.spi.AsynchronousResponse;
 
 import javax.ws.rs.GET;
