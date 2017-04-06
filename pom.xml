@@ -107,6 +107,7 @@
                 <module>resteasy-guice</module>
                 <module>eagledns</module>
                 <module>security</module>
+				<module>security-legacy</module>
                 <module>resteasy-links</module>
                 <module>resteasy-spring</module>
                 <module>resteasy-jsapi</module>
@@ -159,6 +160,7 @@
                 <module>resteasy-guice</module>
                 <module>eagledns</module>
                 <module>security</module>
+				<module>security-legacy</module>
                 <module>resteasy-links</module>
                 <module>resteasy-spring</module>
                 <module>resteasy-jsapi</module>
