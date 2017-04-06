@@ -94,8 +94,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
          JAXBContextFinder finder = resolver.getContext(type);
          if (finder == null)
          {
-            if (true) throw new JAXBUnmarshalException(Messages.MESSAGES.couldNotFindJAXBContextFinder(mediaType));
-            else throw new JAXBMarshalException(Messages.MESSAGES.couldNotFindJAXBContextFinder(mediaType));
+            throw new JAXBUnmarshalException(Messages.MESSAGES.couldNotFindJAXBContextFinder(mediaType));
          }
          JAXBContext jaxb = finder.findCacheXmlTypeContext(mediaType, annotations, type);
          Unmarshaller unmarshaller = jaxb.createUnmarshaller();
@@ -176,25 +175,16 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
          Class<?> factoryClass = AbstractJAXBContextFinder.findDefaultObjectFactoryClass(type);
          if (factoryClass != null && factoryClass.isAnnotationPresent(XmlRegistry.class))
          {
-            Object factory = factoryClass.newInstance();
-            return factory;
+            return factoryClass.newInstance();
          }
          else
          {
             throw new JAXBMarshalException(Messages.MESSAGES.validXmlRegistryCouldNotBeLocated());
          }
       }
-      catch (InstantiationException e)
+      catch (InstantiationException | IllegalAccessException e)
       {
          throw new JAXBMarshalException(e);
-      }
-      catch (IllegalAccessException e)
-      {
-         throw new JAXBMarshalException(e);
-      }
-      catch (PrivilegedActionException pae)
-      {
-         throw new JAXBMarshalException(pae);
       }
 
    }
@@ -212,7 +202,7 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
       try
       {
          final Object factory = findObjectFactory(type);
-         Method[] method = new Method[0];
+         Method[] method;
          if (System.getSecurityManager() == null)
          {
             method = factory.getClass().getDeclaredMethods();
@@ -229,34 +219,24 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
             });
          }
 
-         for (int i = 0; i < method.length; i++)
+         for (Method current : method)
          {
-            Method current = method[i];
             if (current.getParameterTypes().length == 1 && current.getParameterTypes()[0].equals(type)
                     && current.getName().startsWith("create"))
             {
-               Object result = current.invoke(factory, new Object[]
-                       {t});
+               Object result = current.invoke(factory, t);
                return JAXBElement.class.cast(result);
             }
          }
          throw new JAXBMarshalException(Messages.MESSAGES.createMethodNotFound(type));
       }
-      catch (IllegalArgumentException e)
-      {
-         throw new JAXBMarshalException(e);
-      }
-      catch (IllegalAccessException e)
+      catch (IllegalArgumentException | IllegalAccessException | PrivilegedActionException e)
       {
          throw new JAXBMarshalException(e);
       }
       catch (InvocationTargetException e)
       {
          throw new JAXBMarshalException(e.getCause());
-      }
-      catch (PrivilegedActionException pae)
-      {
-         throw new JAXBMarshalException(pae);
       }
    }
 }

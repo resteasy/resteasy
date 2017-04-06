@@ -77,6 +77,8 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -1240,7 +1242,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
    }
 
-   public List<ContextResolver> getContextResolvers(Class<?> clazz, MediaType type)
+   public List<ContextResolver> getContextResolvers(final Class<?> clazz, MediaType type)
    {
       MediaTypeMap<SortedKey<ContextResolver>> resolvers = getContextResolvers().get(clazz);
       if (resolvers == null) return null;

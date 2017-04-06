@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
@@ -69,11 +70,8 @@ public class JAXBContextWrapper extends JAXBContext
 
          mapperConstructor = mapper[0].getConstructors()[0];
       }
-      catch (ClassNotFoundException e)
+      catch (ClassNotFoundException | PrivilegedActionException e)
       {
-
-      }
-      catch (PrivilegedActionException pae) {
 
       }
 
@@ -105,8 +103,7 @@ public class JAXBContextWrapper extends JAXBContext
     * @param config
     * @throws JAXBException
     */
-   public JAXBContextWrapper(final Class<?>[] classes, final Map<String, Object> properties, JAXBConfig config)
-           throws JAXBException
+   public JAXBContextWrapper(final Class<?>[] classes, final Map<String, Object> properties, JAXBConfig config) throws JAXBException
    {
       processConfig(config);
       try
@@ -122,7 +119,7 @@ public class JAXBContextWrapper extends JAXBContext
                @Override
                public JAXBContext run() throws JAXBException
                {
-                  return JAXBContext.newInstance(classes, properties);
+                     return JAXBContext.newInstance(classes, properties);
                }
             });
          }
@@ -140,10 +137,31 @@ public class JAXBContextWrapper extends JAXBContext
     * @param config
     * @throws JAXBException
     */
-   public JAXBContextWrapper(String contextPath, JAXBConfig config) throws JAXBException
+   public JAXBContextWrapper(final String contextPath, JAXBConfig config) throws JAXBException
    {
       processConfig(config);
-      wrappedContext = JAXBContext.newInstance(contextPath);
+      try
+      {
+         if (System.getSecurityManager() == null)
+         {
+            wrappedContext = JAXBContext.newInstance(contextPath);
+         }
+         else
+         {
+            wrappedContext = AccessController.doPrivileged(new PrivilegedExceptionAction<JAXBContext>()
+            {
+               @Override
+               public JAXBContext run() throws JAXBException
+               {
+                  return JAXBContext.newInstance(contextPath);
+               }
+            });
+         }
+      }
+      catch (PrivilegedActionException paex)
+      {
+         throw new JAXBException(paex.getMessage());
+      }
    }
 
    /**
