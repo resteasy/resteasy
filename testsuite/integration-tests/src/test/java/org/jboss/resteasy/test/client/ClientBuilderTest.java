@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FilePermission;
 import java.lang.reflect.ReflectPermission;
 import java.util.PropertyPermission;
+import java.util.logging.LoggingPermission;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -37,11 +38,13 @@ public class ClientBuilderTest {
         war.addClass(NotForForwardCompatibility.class);
         // Arquillian in the deployment and use of TestUtil
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("accessDeclaredMembers"),
+                new FilePermission(TestUtil.getJbossHome() + File.separator + "standalone" + File.separator + "log" +
+                        File.separator + "server.log", "read"),
+                new LoggingPermission("control", ""),
                 new PropertyPermission("arquillian.*", "read"),
                 new PropertyPermission("jboss.home.dir", "read"),
-                new FilePermission(TestUtil.getJbossHome() + File.separator + "standalone" + File.separator + "log" +
-                        File.separator + "server.log", "read")), "permissions.xml");
+                new RuntimePermission("accessDeclaredMembers")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 

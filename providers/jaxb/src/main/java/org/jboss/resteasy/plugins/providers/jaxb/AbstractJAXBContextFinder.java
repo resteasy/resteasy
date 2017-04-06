@@ -59,7 +59,7 @@ public abstract class AbstractJAXBContextFinder implements JAXBContextFinder
                   break;
                }
             }
-            if (found == false) return false;
+            if (!found) return false;
          }
          return true;
       }
@@ -99,14 +99,14 @@ public abstract class AbstractJAXBContextFinder implements JAXBContextFinder
       return packageName;
    }
 
-   public static Class<?> findDefaultObjectFactoryClass(Class<?> type) throws PrivilegedActionException
+   public static Class<?> findDefaultObjectFactoryClass(Class<?> type)
    {
       XmlType typeAnnotation = type.getAnnotation(XmlType.class);
       if (typeAnnotation == null) return null;
       if (!typeAnnotation.factoryClass().equals(XmlType.DEFAULT.class)) return null;
-      StringBuilder b = new StringBuilder(getPackageName(type));
+      final StringBuilder b = new StringBuilder(getPackageName(type));
       b.append(OBJECT_FACTORY_NAME);
-      Class<?> factoryClass = null;
+      Class<?> factoryClass;
       try
       {
          if (System.getSecurityManager() == null)
@@ -115,25 +115,17 @@ public abstract class AbstractJAXBContextFinder implements JAXBContextFinder
          }
          else
          {
-            final String  smB = b.toString();
             factoryClass = AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>()
             {
                @Override
-               public Class<?> run() throws Exception
+               public Class<?> run() throws ClassNotFoundException
                {
-                  return Thread.currentThread().getContextClassLoader().loadClass(smB);
+                  return Thread.currentThread().getContextClassLoader().loadClass(b.toString());
                }
             });
          }
       }
-      catch (PrivilegedActionException pae) {
-         if (pae.getException() instanceof ClassNotFoundException) {
-            return null;
-         } else {
-            throw pae;
-         }
-      }
-      catch (ClassNotFoundException e)
+      catch (PrivilegedActionException | ClassNotFoundException e)
       {
          return null;
       }
@@ -173,15 +165,10 @@ public abstract class AbstractJAXBContextFinder implements JAXBContextFinder
 				if (type == null)
 					continue;
 				classes1.add(type);
-               try {
-                  Class<?> factory = findDefaultObjectFactoryClass(type);
-                  if (factory != null)
-                     classes1.add(factory);
-               } catch (PrivilegedActionException pae)
-               {
-                  throw new JAXBException(pae);
-               }
-			}
+               Class<?> factory = findDefaultObjectFactoryClass(type);
+               if (factory != null)
+                  classes1.add(factory);
+            }
 		}
 		Class<?>[] classArray = classes1.toArray(new Class[classes1.size()]);
 		return createContextObject(parameterAnnotations, classArray);
