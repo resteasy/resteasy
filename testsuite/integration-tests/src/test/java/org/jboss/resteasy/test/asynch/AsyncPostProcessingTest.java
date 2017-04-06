@@ -23,7 +23,10 @@ import org.jboss.logging.Logger;
 
 import javax.ws.rs.core.Response;
 import java.lang.reflect.ReflectPermission;
+import java.net.SocketPermission;
+import java.security.SecurityPermission;
 import java.util.PropertyPermission;
+import java.util.logging.LoggingPermission;
 
 /**
  * @tpSubChapter Asynchronous RESTEasy
@@ -44,8 +47,16 @@ public class AsyncPostProcessingTest {
         war.addAsWebInfResource(AsyncPostProcessingTest.class.getPackage(), "AsyncPostProcessingTestWeb.xml", "web.xml");
         // Arquillian in the deployment
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
+                new LoggingPermission("control", ""),
+                new PropertyPermission("arquillian.*", "read"),
+                new PropertyPermission("ipv6", "read"),
+                new PropertyPermission("node", "read"),
+                new PropertyPermission("org.jboss.resteasy.port", "read"),
                 new RuntimePermission("accessDeclaredMembers"),
-                new PropertyPermission("arquillian.*", "read")), "permissions.xml");
+                new RuntimePermission("getenv.RESTEASY_PORT"),
+                new SecurityPermission("insertProvider"),
+                new SocketPermission(PortProviderUtil.getHost(), "connect,resolve")
+        ), "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, AsyncPostProcessingResource.class,
                 AsyncPostProcessingMsgBodyWriterInterceptor.class, AsyncPostProcessingInterceptor.class);
     }
