@@ -22,7 +22,6 @@
             <modules>
                 <module>resteasy-crypto</module>
                 <module>jose-jwt</module>
-                <module>login-module-authenticator</module>
             </modules>
         </profile>
         <profile>
@@ -30,7 +29,6 @@
             <modules>
                 <module>resteasy-crypto</module>
                 <module>jose-jwt</module>
-                <module>login-module-authenticator</module>
             </modules>
         </profile>
     </profiles>
