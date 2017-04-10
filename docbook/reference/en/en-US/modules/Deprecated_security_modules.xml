@@ -2,7 +2,7 @@
     <title>Deprecated Security Modules</title>
 
     <para>
-        These security modules are deprecated since 3.1.3.Final and users should use Keycloak provided by JBoss community instead:
+        The following security related modules are deprecated and meant to be removed in the future:
     </para>
 
     <itemizedlist>
@@ -13,6 +13,6 @@
     </itemizedlist>
 
     <para>
-        The above modules are moved from 'security' directory to 'security-legacy' directory.
+        Please refer to http://www.keycloak.org/ for a modern solution for the usecases previously covered by the deprecated modules.
     </para>
 </chapter>
