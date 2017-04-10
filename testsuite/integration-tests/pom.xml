@@ -228,6 +228,12 @@
             <artifactId>resteasy-wadl-undertow-connector</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-html</artifactId>
+            <version>${project.version}</version>
+        </dependency>
                          
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
