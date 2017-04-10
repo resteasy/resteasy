@@ -1,0 +1,18 @@
+<chapter id="Deprecated_security_modules">
+    <title>Deprecated Security Modules</title>
+
+    <para>
+        The following security related modules are deprecated and meant to be removed in the future:
+    </para>
+
+    <itemizedlist>
+        <listitem>keystone</listitem>
+        <listitem>login-module-authenticator</listitem>
+        <listitem>resteasy-oauth</listitem>
+        <listitem>skeleton-key-idm</listitem>
+    </itemizedlist>
+
+    <para>
+        Please refer to http://www.keycloak.org/ for a modern solution for the usecases previously covered by the deprecated modules.
+    </para>
+</chapter>

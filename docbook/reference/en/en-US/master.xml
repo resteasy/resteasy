@@ -49,8 +49,6 @@
                 <!ENTITY Guice SYSTEM "modules/Guice.xml">
                 <!ENTITY Interceptors SYSTEM "modules/Interceptors.xml">
                 <!ENTITY Books SYSTEM "modules/Books.xml">
-                <!ENTITY OAuth2 SYSTEM "modules/OAuth2.xml">
-                <!ENTITY Authentication SYSTEM "modules/Authentication.xml">
                 <!ENTITY CDI SYSTEM "modules/CDI.xml">
                 <!ENTITY Signature SYSTEM "modules/signature.xml">
                 <!ENTITY JOSEJWT SYSTEM "modules/jwt.xml">
@@ -58,6 +56,7 @@
                 <!ENTITY Validation SYSTEM "modules/Validation.xml">
                 <!ENTITY CORS SYSTEM "modules/cors.xml">
                 <!ENTITY I18N SYSTEM "modules/I18N.xml">
+                <!ENTITY Deprecated_security_modules SYSTEM "modules/Deprecated_security_modules.xml">
                 ]>
 
 <book>
@@ -136,8 +135,6 @@ This one is short
    &RESTEasy_Embedded_Container;
    &RESTEasy_Server-side_Mock_Framework;
    &Securing_JAX-RS_and_RESTeasy;
-   &OAuth2;
-   &Authentication;
     &JOSEJWT;
    &Signature;
     &SMIME;
@@ -152,10 +149,9 @@ This one is short
    &Validation;
    &I18N;
    &Maven_and_RESTEasy;
-   &JBoss;
+   &Deprecated_security_modules;
    &Migration_to_3_1;
    &Migration_from_older_versions;
    &Books;
-
 </book>
 
