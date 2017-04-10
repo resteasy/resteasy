@@ -118,7 +118,7 @@ public interface Messages
    @Message(id = BASE + 150, value = "templateValues was null")
    String templateValuesWasNull();
 
-   @Message(id = BASE + 152, value = "Unable to instantation: %s")
+   @Message(id = BASE + 152, value = "Unable to create new instance of %s")
    String unableToInstantiate(Class<?> clazz);
    
    @Message(id = BASE + 155, value = "Unable to invoke request")

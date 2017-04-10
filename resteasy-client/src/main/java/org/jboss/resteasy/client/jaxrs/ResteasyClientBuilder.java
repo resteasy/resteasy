@@ -24,6 +24,7 @@ import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.net.ssl.HostnameVerifier;
@@ -48,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -128,7 +130,9 @@ public class ResteasyClientBuilder extends ClientBuilder
     *
     * @param asyncExecutor
     * @return
+    * @deprecated use {@link ResteasyClientBuilder#executorService(ExecutorService)} instead
     */
+   @Deprecated
    public ResteasyClientBuilder asyncExecutor(ExecutorService asyncExecutor)
    {
       return asyncExecutor(asyncExecutor, false);
@@ -673,5 +677,17 @@ public class ResteasyClientBuilder extends ClientBuilder
          register(obj, contracts);
       }
       return this;
+   }
+
+   @Override
+   public ClientBuilder executorService(ExecutorService executorService)
+   {
+      return asyncExecutor(executorService, false);
+   }
+
+   @Override
+   public ClientBuilder scheduledExecutorService(ScheduledExecutorService scheduledExecutorService)
+   {
+      throw new NotImplementedYetException();
    }
 }

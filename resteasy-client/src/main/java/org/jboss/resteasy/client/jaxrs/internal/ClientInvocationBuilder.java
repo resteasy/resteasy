@@ -10,6 +10,7 @@ import javax.ws.rs.client.CompletionStageRxInvoker;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.RxInvoker;
+import javax.ws.rs.client.RxInvokerProvider;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.GenericType;
@@ -17,13 +18,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.Locale;
-import java.util.concurrent.ExecutorService;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
+ * @author <a href="mailto:alessio.soldano@jboss.com">Alessio Soldano</a>
  * @version $Revision: 1 $
  */
 public class ClientInvocationBuilder implements Invocation.Builder
@@ -319,58 +319,34 @@ public class ClientInvocationBuilder implements Invocation.Builder
    @Override
    public CompletionStageRxInvoker rx()
    {
-      return new CompletionStageRxInvokerImpl(this);
-   }
-
-   @Override
-   public CompletionStageRxInvoker rx(ExecutorService executorService)
-   {
-      return new CompletionStageRxInvokerImpl(this, executorService);
+      return new CompletionStageRxInvokerImpl(this, invocation.getClient().asyncInvocationExecutor());
    }
 
    @Override
    public <T extends RxInvoker> T rx(Class<T> clazz)
    {
-      try
-      {
-         return clazz.getConstructor().newInstance();
+      RxInvokerProvider<T> provider = invocation.getClientConfiguration().getRxInvokerProvider(clazz);
+      if (provider == null) {
+         throw new RuntimeException(Messages.MESSAGES.unableToInstantiate(clazz));
       }
-      catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-            | NoSuchMethodException | SecurityException e)
-      {
-         throw new RuntimeException(Messages.MESSAGES.unableToInstantiate(clazz), e);
-      }
+      return provider.getRxInvoker(this, invocation.getClient().asyncInvocationExecutor());
    }
 
    @Override
-   public <T extends RxInvoker> T rx(Class<T> clazz, ExecutorService executorService)
+   public Response patch()
    {
-      try
-      {
-         return clazz.getConstructor(ExecutorService.class).newInstance(executorService);
-      }
-      catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-            | NoSuchMethodException | SecurityException e)
-      {
-         throw new RuntimeException(Messages.MESSAGES.unableToInstantiate(clazz), e);
-      }
+      throw new NotImplementedYetException();
    }
 
-@Override
-public Response patch() {
-	// TODO Auto-generated method stub
-	return null;
-}
+   @Override
+   public <T> T patch(Class<T> responseType)
+   {
+      throw new NotImplementedYetException();
+   }
 
-@Override
-public <T> T patch(Class<T> responseType) {
-	// TODO Auto-generated method stub
-	return null;
-}
-
-@Override
-public <T> T patch(GenericType<T> responseType) {
-	// TODO Auto-generated method stub
-	return null;
-}
+   @Override
+   public <T> T patch(GenericType<T> responseType)
+   {
+      throw new NotImplementedYetException();
+   }
 }
