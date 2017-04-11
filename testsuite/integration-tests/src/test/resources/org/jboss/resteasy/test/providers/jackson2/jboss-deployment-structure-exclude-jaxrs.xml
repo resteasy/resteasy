@@ -1,0 +1,9 @@
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
+
+    <deployment>
+        <exclude-subsystems>
+            <subsystem name="jaxrs" />
+        </exclude-subsystems>
+    </deployment>
+
+</jboss-deployment-structure>
