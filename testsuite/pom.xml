@@ -30,6 +30,7 @@
                         <ipv6ArquillianSettings></ipv6ArquillianSettings>
                         <node>127.0.0.1</node>
                         <jboss.home>${jboss.home}</jboss.home>
+                        <project.version>${project.version}</project.version>
                     </systemPropertyVariables>
                     <excludedGroups>org.jboss.resteasy.category.ExpectedFailing,${additional.surefire.excluded.groups}</excludedGroups>
                 </configuration>
@@ -149,6 +150,7 @@
                                 <ipv6>true</ipv6>
                                 <ipv6ArquillianSettings>-Djava.net.preferIPv4Stack=false -Djava.net.preferIPv6Addresses=true</ipv6ArquillianSettings>
                                 <node>::1</node>
+                                <project.version>${project.version}</project.version>
                             </systemPropertyVariables>
                             <excludedGroups>org.jboss.resteasy.category.ExpectedFailing</excludedGroups>
                         </configuration>
@@ -243,6 +245,7 @@
                                 <ipv6ArquillianSettings></ipv6ArquillianSettings>
                                 <node>127.0.0.1</node>
                                 <jboss.home>${jboss.home}</jboss.home>
+                                <project.version>${project.version}</project.version>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
