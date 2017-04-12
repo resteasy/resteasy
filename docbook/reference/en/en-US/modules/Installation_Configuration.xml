@@ -260,10 +260,9 @@
             You can use it with EJB and CDI and you can rely completely on WildFly to scan for and deploy your JAX-RS services and providers.
             All you have to provide is your JAX-RS service and provider classes packaged
             within a WAR either as POJOs, CDI beans, or EJBs.
-            The simplest way to configure an application is by simply providing an empty web.xml file.
+            A simple way to configure an application is by simply providing an empty web.xml file.
             You can of course deploy any custom servlet, filter
-            or security constraint you want to within your web.xml, but the least amount of work is to create an empty
-            web.xml file:
+            or security constraint you want to within your web.xml, but none of them are required:
         </para>
         <para>
             <programlisting><![CDATA[
@@ -277,9 +276,9 @@
             are available if you want to tweak or turn on/off any specific Resteasy feature.
         </para>
         <para>
-            Since we're not using a &lt;servlet-mapping&gt; element, we must define an
-            <classname>Application</classname> class (see <xref linkend="javax.ws.rs.core.Application"/>) that is annotated with
-            the <classname>@ApplicationPath</classname> annotation.  If you return any empty set for classes and singletons,
+            Since we're not using a &lt;servlet-mapping&gt; element, we must define a
+            <classname>javax.ws.rs.core.Application</classname> class (see <xref linkend="javax.ws.rs.core.Application"/>) that is annotated with
+            the <classname>javax.ws.rs.ApplicationPath</classname> annotation.  If you return any empty set for classes and singletons,
             which is the behavior inherited from <classname>Application</classname>, your WAR will
             be scanned for resource and provider classes as indicated by the presence of JAX-RS annotations.
         </para>
@@ -292,6 +291,16 @@ public class MyApplication extends Application
 {
 }       </programlisting>
 
+        <para>
+            <emphasis role="bold">Note.</emphasis> Actually, if the application jar contains an
+            <classname>Application</classname> class (or a subclass thereof)
+            which is annotated with an <classname>ApplicationPath</classname> annotation, a web.xml file isn't even needed.
+            Of course, even in this case it can be used to specify additional information such as context parameters.
+            If there is an <classname>Application</classname> class but it doesn't have an 
+            <classname>@ApplicationPath</classname> annotation, then a web.xml file with at least a
+            &lt;servlet-mapping&gt; element is required.
+        </para>
+        
         <para>
             <emphasis role="bold">Note.</emphasis> As mentioned in <xref linkend="other_resteasy_modules"/>,
             not all Resteasy modules are bundled with WildFly. For example,

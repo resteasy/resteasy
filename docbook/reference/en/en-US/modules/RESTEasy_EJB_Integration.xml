@@ -54,20 +54,7 @@ Next, in RESTEasy's web.xml file you must manually register the EJB with RESTEas
       &lt;param-value&gt;LibraryBean/local&lt;/param-value&gt;
    &lt;/context-param&gt;
 
-   &lt;listener&gt;
-      &lt;listener-class&gt;org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap&lt;/listener-class&gt;
-   &lt;/listener&gt;
-
-   &lt;servlet&gt;
-      &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
-      &lt;servlet-class&gt;org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher&lt;/servlet-class&gt;
-   &lt;/servlet&gt;
-
-   &lt;servlet-mapping&gt;
-      &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
-      &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
-   &lt;/servlet-mapping&gt;
-
+   ...
 &lt;/web-app&gt;
 </programlisting>
 </para>
