@@ -106,30 +106,29 @@ public class SseTest {
        final CountDownLatch latch = new CountDownLatch(2);
        Client client = new ResteasyClientBuilder().connectionPoolSize(10).build();
        WebTarget target = client.target(generateURL("/service/server-sent-events/subscribe"));
+       final String textMessage = "This is broadcast message";
 
        SseEventSource eventSource = new SseEventSourceImpl.SourceBuilder(target).build();
        eventSource.subscribe(event -> {
-          System.out.println("Client one : " + event.readData());
           latch.countDown();
        });
        eventSource.open();
-         
+       eventSource.subscribe(insse -> {Assert.assertTrue("", textMessage.equals(insse.readData()));});
             
        Client client2 = new ResteasyClientBuilder().build();
        WebTarget target2 = client2.target(generateURL("/service/sse/subscribe"));
 
        SseEventSource eventSource2 = new SseEventSourceImpl.SourceBuilder(target2).build();
        eventSource2.subscribe(event -> {
-          System.out.println("Client two : " + event.readData());
           latch.countDown();
        });
        eventSource2.open();
        
        //Test for eventSource subscriber
-       eventSource2.subscribe(insse -> {Assert.assertTrue("", "This is broadcast message".equals(insse.readData()));});
+       eventSource2.subscribe(insse -> {Assert.assertTrue("", textMessage.equals(insse.readData()));});
        //To give some time to subscribe, otherwise the broadcast will execute before subscribe
        Thread.sleep(3000);
-       client.target(generateURL("/service/server-sent-events/broadcast")).request().post(Entity.entity("This is broadcast message", MediaType.SERVER_SENT_EVENTS)); 
+       client.target(generateURL("/service/server-sent-events/broadcast")).request().post(Entity.entity(textMessage, MediaType.SERVER_SENT_EVENTS)); 
        Assert.assertTrue("Waiting for broadcast event to be delivered has timed out.", latch.await(10, TimeUnit.SECONDS));
        eventSource.close();
        eventSource2.close();
