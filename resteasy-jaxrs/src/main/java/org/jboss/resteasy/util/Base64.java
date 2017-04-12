@@ -1,5 +1,6 @@
 package org.jboss.resteasy.util;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 /**
@@ -1388,7 +1389,7 @@ public class Base64
             }   // end try
             catch (java.io.IOException e)
             {
-               e.printStackTrace();
+               LogMessages.LOGGER.unableToDecodeGZIPBase64(e);
                // Just return originally-decoded bytes
             }   // end catch
             finally
