@@ -68,20 +68,6 @@ So, here's an example of a modified RESTEasy WAR file.  You'll notice that every
       &lt;param-value>true&lt;/param-value&gt;
    &lt;/context-param&gt;
 
-   &lt;listener&gt;
-      &lt;listener-class&gt;org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap&lt;/listener-class&gt;
-   &lt;/listener&gt;
-
-   &lt;servlet&gt;
-      &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
-      &lt;servlet-class&gt;org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher&lt;/servlet-class&gt;
-   &lt;/servlet&gt;
-
-   &lt;servlet-mapping&gt;
-      &lt;servlet-name&gt;Resteasy&lt;/servlet-name&gt;
-      &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
-   &lt;/servlet-mapping&gt;
-
    &lt;security-constraint&gt;
       &lt;web-resource-collection&gt;
          &lt;web-resource-name&gt;Resteasy&lt;/web-resource-name&gt;
@@ -105,7 +91,7 @@ So, here's an example of a modified RESTEasy WAR file.  You'll notice that every
       &lt;role-name&gt;user&lt;/role-name&gt;
    &lt;/security-role&gt;
 
-
+   ...
 &lt;/web-app&gt;
 
 
