@@ -143,6 +143,7 @@ public class ResteasyDeployment
       dispatcher.getDefaultContextObjects().put(Registry.class, registry);
       dispatcher.getDefaultContextObjects().put(Dispatcher.class, dispatcher);
       dispatcher.getDefaultContextObjects().put(InternalDispatcher.class, InternalDispatcher.getInstance());
+      dispatcher.getDefaultContextObjects().put(ResteasyDeployment.class, this);
 
       // push context data so we can inject it
       Map contextDataMap = ResteasyProviderFactory.getContextDataMap();
