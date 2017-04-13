@@ -335,19 +335,19 @@ public class ClientInvocationBuilder implements Invocation.Builder
    @Override
    public Response patch(Entity<?> entity)
    {
-      throw new NotImplementedYetException();
+      return build(HttpMethod.PATCH, entity).invoke();
    }
 
    @Override
    public <T> T patch(Entity<?> entity, Class<T> responseType)
    {
-      throw new NotImplementedYetException();
+      return build(HttpMethod.PATCH, entity).invoke(responseType);
    }
 
    @Override
    public <T> T patch(Entity<?> entity, GenericType<T> responseType)
    {
-      throw new NotImplementedYetException();
+      return build(HttpMethod.PATCH, entity).invoke(responseType);
    }
 
 }
