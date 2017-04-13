@@ -7,7 +7,10 @@ import org.jboss.resteasy.annotations.Suspend;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.ResteasyUriBuilder;
+import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.IsHttpMethod;
+import org.jboss.resteasy.util.MediaTypeHelper;
 import org.jboss.resteasy.util.MethodHashing;
 import org.jboss.resteasy.util.PickConstructor;
 import org.jboss.resteasy.util.Types;
@@ -576,11 +579,15 @@ public class ResourceBuilder
          {
             if (!mt.getParameters().containsKey(MediaType.CHARSET_PARAMETER))
             {
-               if ("text".equalsIgnoreCase(mt.getType()) || ("application".equalsIgnoreCase(mt.getType()) && mt.getSubtype().toLowerCase().startsWith("xml")))
+               if (MediaTypeHelper.isTextLike(mt))
                {
-                  LogMessages.LOGGER.mediaTypeLacksCharset(mt, method.getMethod().getName());
+                  ResteasyDeployment deployment = ResteasyProviderFactory.getContextData(ResteasyDeployment.class);
+                  if (deployment != null && !deployment.isAddCharset())
+                  {
+                     LogMessages.LOGGER.mediaTypeLacksCharset(mt, method.getMethod().getName());
+                  }
                }
-            }
+}
          }
          return this;
       }
