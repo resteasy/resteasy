@@ -333,20 +333,21 @@ public class ClientInvocationBuilder implements Invocation.Builder
    }
 
    @Override
-   public Response patch()
+   public Response patch(Entity<?> entity)
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public <T> T patch(Class<T> responseType)
+   public <T> T patch(Entity<?> entity, Class<T> responseType)
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public <T> T patch(GenericType<T> responseType)
+   public <T> T patch(Entity<?> entity, GenericType<T> responseType)
    {
       throw new NotImplementedYetException();
    }
+
 }

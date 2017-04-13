@@ -365,20 +365,21 @@ public class CompletionStageRxInvokerImpl implements CompletionStageRxInvoker
    }
 
    @Override
-   public CompletionStage<Response> patch()
+   public CompletionStage<Response> patch(Entity<?> entity)
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public <T> CompletionStage<T> patch(Class<T> responseType)
+   public <T> CompletionStage<T> patch(Entity<?> entity, Class<T> responseType)
    {
       throw new NotImplementedYetException();
    }
 
    @Override
-   public <T> CompletionStage<T> patch(GenericType<T> responseType)
+   public <T> CompletionStage<T> patch(Entity<?> entity, GenericType<T> responseType)
    {
       throw new NotImplementedYetException();
    }
+
 }

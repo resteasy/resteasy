@@ -7,6 +7,8 @@ import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
+import org.jboss.resteasy.spi.NotImplementedYetException;
+
 import java.util.concurrent.Future;
 
 /**
@@ -243,27 +245,28 @@ public class AsynchronousInvoke implements AsyncInvoker
       return invocation.submit(callback);
    }
 
-@Override
-public Future<Response> patch() {
-	// TODO Auto-generated method stub
-	return null;
-}
+   @Override
+   public Future<Response> patch(Entity<?> entity) {
+      throw new NotImplementedYetException();
+   }
 
-@Override
-public <T> Future<T> patch(Class<T> responseType) {
-	// TODO Auto-generated method stub
-	return null;
-}
+   @Override
+   public <T> Future<T> patch(Entity<?> entity, Class<T> responseType)
+   {
+      throw new NotImplementedYetException();
+   }
 
-@Override
-public <T> Future<T> patch(GenericType<T> responseType) {
-	// TODO Auto-generated method stub
-	return null;
-}
+   @Override
+   public <T> Future<T> patch(Entity<?> entity, GenericType<T> responseType)
+   {
+      throw new NotImplementedYetException();
+   }
 
-@Override
-public <T> Future<T> patch(InvocationCallback<T> callback) {
-	// TODO Auto-generated method stub
-	return null;
-}
+   @Override
+   public <T> Future<T> patch(Entity<?> entity, InvocationCallback<T> callback)
+   {
+      throw new NotImplementedYetException();
+   }
+
+
 }
