@@ -99,8 +99,29 @@
             </tgroup>
          </table>
 
-      </para>
       <para>
+          <emphasis role="bold">Note. </emphasis> When a <classname>java.io.File</classname> is created, as in
+      </para>
+      
+      <programlisting>
+@Path("/test")
+public class TempFileDeletionResource
+{
+   @POST
+   @Path("post")
+   public Response post(File file) throws Exception
+   {
+      return Response.ok(file.getPath()).build();
+   }
+}
+      </programlisting>
+
+      <para>
+          a temporary file is created in the file system. On the server side, that temporary file will be deleted
+          at the end of the invocation. On the client side, however, it is the responsibility of the user to 
+          delete the temporary file.
+      </para>
+ 
 
       </para>
       <para>
