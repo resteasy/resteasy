@@ -211,6 +211,10 @@ public interface LogMessages extends BasicLogger
    void runningJob();
    
    @LogMessage(level = Level.DEBUG)
+   @Message(id = BASE + 322, value = "Temporary file %s has been created. Consider deleting after it has been used.")
+   void temporaryFileCreated(String fileName);
+   
+   @LogMessage(level = Level.DEBUG)
    @Message(id = BASE + 325, value = "Unable to retrieve config: disableDTDs defaults to true")
    void unableToRetrieveConfigDTDs();
    

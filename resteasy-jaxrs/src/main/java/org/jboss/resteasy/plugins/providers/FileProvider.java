@@ -1,5 +1,7 @@
 package org.jboss.resteasy.plugins.providers;
 
+import org.jboss.resteasy.plugins.server.servlet.Cleanable;
+import org.jboss.resteasy.plugins.server.servlet.Cleanables;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -81,6 +83,16 @@ public class FileProvider implements MessageBodyReader<File>,
       if (downloadedFile == null)
          downloadedFile = File.createTempFile(PREFIX, SUFFIX);
 
+      Cleanables cleanables = ResteasyProviderFactory.getContextData(Cleanables.class);
+      if (cleanables != null)
+      {
+         cleanables.addCleanable(new FileHolder(downloadedFile));
+      }
+      else
+      {
+         LogMessages.LOGGER.temporaryFileCreated(downloadedFile.getPath());
+      }
+      
       if (NoContent.isContentLengthZero(httpHeaders)) return downloadedFile;
       OutputStream output = new BufferedOutputStream(new FileOutputStream(
               downloadedFile));
@@ -206,6 +218,22 @@ public class FileProvider implements MessageBodyReader<File>,
       finally
       {
          inputStream.close();
+      }
+   }
+   
+   private static class FileHolder implements Cleanable
+   {
+      File file;
+      
+      public FileHolder(File file)
+      {
+         this.file = file;
+      }
+
+      @Override
+      public void clean() throws Exception
+      {
+         file.delete();
       }
    }
 }
