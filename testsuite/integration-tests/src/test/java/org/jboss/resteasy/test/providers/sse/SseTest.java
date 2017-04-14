@@ -52,7 +52,8 @@ public class SseTest {
        Client client = ClientBuilder.newBuilder().build();
        WebTarget target = client.target(generateURL("/service/server-sent-events"));
 
-       SseEventSource eventSource = new SseEventSourceImpl.SourceBuilder(target).build();
+       SseEventSource eventSource = SseEventSource.target(target).build();
+       Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
        eventSource.subscribe(event -> {
             results.add(event.toString());
             latch.countDown();
@@ -82,7 +83,8 @@ public class SseTest {
        Client client = new ResteasyClientBuilder().connectionPoolSize(10).build();
        WebTarget target = client.target(generateURL("/service/server-sent-events")).path("domains").path("1");
 
-       SseEventSource eventSource = new SseEventSourceImpl.SourceBuilder(target).build();
+       SseEventSource eventSource = SseEventSource.target(target).build();
+       Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
        eventSource.subscribe(event -> {
           results.add(event.readData());
           latch.countDown();
@@ -108,7 +110,8 @@ public class SseTest {
        WebTarget target = client.target(generateURL("/service/server-sent-events/subscribe"));
        final String textMessage = "This is broadcast message";
 
-       SseEventSource eventSource = new SseEventSourceImpl.SourceBuilder(target).build();
+       SseEventSource eventSource = SseEventSource.target(target).build();
+       Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
        eventSource.subscribe(event -> {
           latch.countDown();
        });
@@ -118,7 +121,7 @@ public class SseTest {
        Client client2 = new ResteasyClientBuilder().build();
        WebTarget target2 = client2.target(generateURL("/service/sse/subscribe"));
 
-       SseEventSource eventSource2 = new SseEventSourceImpl.SourceBuilder(target2).build();
+       SseEventSource eventSource2 = SseEventSource.target(target2).build();
        eventSource2.subscribe(event -> {
           latch.countDown();
        });

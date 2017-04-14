@@ -29,7 +29,7 @@ public class SseEventSourceImpl implements SseEventSource
       READY, OPEN, CLOSED
    }
 
-   private WebTarget target = null;
+   private final WebTarget target;
    private final long reconnectDelay;
    private final boolean disableKeepAlive;
    private final ScheduledExecutorService executor;
@@ -38,16 +38,16 @@ public class SseEventSourceImpl implements SseEventSource
    private final List<Consumer<Throwable>> onErrorConsumers = new CopyOnWriteArrayList<>();
    private final List<Runnable> onCompleteConsumers = new CopyOnWriteArrayList<>();
    
-   public static class SourceBuilder extends Builder
+   protected static class SourceBuilder extends Builder
    {
       private WebTarget endpoint = null;
       private long reconnect = RECONNECT_DEFAULT;
       private String name = null;
       private boolean disableKeepAlive = false;
 
-      public SourceBuilder(final WebTarget endpoint)
+      public SourceBuilder()
       {
-         this.endpoint = endpoint;
+         //NOOP
       }
 
       public Builder named(String name)
@@ -61,18 +61,14 @@ public class SseEventSourceImpl implements SseEventSource
          return new SseEventSourceImpl(endpoint, name, reconnect, disableKeepAlive, false);
       }
 
-      public SseEventSource open()
-      {
-         // why this api is required ? build can create SseEventSource and this can be invoked against SseEventSource
-         final SseEventSource source = new SseEventSourceImpl(endpoint, name, reconnect, disableKeepAlive, false);
-         source.open();
-         return source;
-      }
-
       @Override
       public Builder target(WebTarget endpoint)
       {
-         return new SourceBuilder(endpoint);
+         if (endpoint == null) {
+            throw new NullPointerException();
+         }
+         this.endpoint = endpoint;
+         return this;
       }
 
       @Override
@@ -90,7 +86,7 @@ public class SseEventSourceImpl implements SseEventSource
 
    public SseEventSourceImpl(final WebTarget endpoint, final boolean open)
    {
-      this(endpoint, null, RECONNECT_DEFAULT, true, open);
+      this(endpoint, null, RECONNECT_DEFAULT, false, open);
    }
 
    private SseEventSourceImpl(final WebTarget target, String name, long reconnectDelay, final boolean disableKeepAlive,
