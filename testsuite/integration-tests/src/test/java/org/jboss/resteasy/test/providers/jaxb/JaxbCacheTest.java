@@ -39,9 +39,12 @@ public class JaxbCacheTest {
         WebArchive war = TestUtil.prepareArchive(JaxbCacheTest.class.getSimpleName());
         war.addClass(JaxbCacheTest.class);
         // Arquillian in the deployment
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new ReflectPermission("suppressAccessChecks"),
-                new RuntimePermission("accessDeclaredMembers"),
-                new PropertyPermission("*", "read")), "permissions.xml");
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new ReflectPermission("suppressAccessChecks"),
+            new RuntimePermission("accessDeclaredMembers"),
+            new PropertyPermission("*", "read")),
+            "permissions.xml");
+
         return TestUtil.finishContainerPrepare(war, null, JaxbCacheParent.class, JaxbCacheChild.class);
     }
 

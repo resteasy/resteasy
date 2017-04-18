@@ -68,7 +68,6 @@ public class DecoratorsTest {
             .addClasses(DecoratorsFilterBinding.class, DecoratorsTestRequestFilter.class, DecoratorsRequestFilterDecorator.class)
             .addClasses(DecoratorsResponseFilter.class, DecoratorsResponseFilterDecorator.class)
             .addAsWebInfResource(DecoratorsTest.class.getPackage(), "decoratorBeans.xml", "beans.xml");
-
         return war;
     }
 
