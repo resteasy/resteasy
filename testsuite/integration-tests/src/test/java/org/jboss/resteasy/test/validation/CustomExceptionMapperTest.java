@@ -64,6 +64,7 @@ public class CustomExceptionMapperTest {
                         CustomExceptionMapperReport.class)
                 .addAsLibrary(file, "validation-versioning.jar")
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+
         return war;
     }
 
