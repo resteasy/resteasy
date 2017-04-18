@@ -24,6 +24,7 @@ import org.jboss.resteasy.test.providers.atom.resource.AtomComplexModelState;
 import org.jboss.resteasy.test.providers.atom.resource.AtomComplexModelUuid;
 import org.jboss.resteasy.test.providers.atom.resource.AtomComplexModelVersionNumber;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -42,10 +43,8 @@ import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.io.DataOutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
+import java.lang.reflect.ReflectPermission;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -83,6 +82,14 @@ public class AtomComplexModelTest {
                 AtomComplexModelState.class,
                 AtomComplexModelUuid.class,
                 AtomComplexModelVersionNumber.class);
+
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new RuntimePermission("getClassLoader"),
+            new FilePermission("<<ALL FILES>>", "read"),
+            new ReflectPermission("suppressAccessChecks"),
+            new RuntimePermission("accessDeclaredMembers")),
+            "permissions.xml");
+
         return TestUtil.finishContainerPrepare(war, null, AtomComplexModelEntryResource.class);
     }
 

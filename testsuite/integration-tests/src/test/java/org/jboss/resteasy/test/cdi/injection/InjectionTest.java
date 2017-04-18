@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.SocketPermission;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -43,6 +44,7 @@ import org.jboss.resteasy.test.cdi.util.Counter;
 import org.jboss.resteasy.test.cdi.util.PersistenceUnitProducer;
 import org.jboss.resteasy.test.cdi.util.UtilityProducer;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -53,7 +55,6 @@ import org.junit.Test;
 import org.junit.BeforeClass;
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -121,6 +122,11 @@ public class InjectionTest extends AbstractInjectionTestBase {
                 .addClasses(Resource.class, CDIInjectionResourceProducer.class, PersistenceUnitProducer.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsResource(InjectionTest.class.getPackage(), "persistence.xml", "META-INF/persistence.xml");
+
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new SocketPermission(PortProviderUtil.getHost(), "resolve")),
+            "permissions.xml");
+
         return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
 

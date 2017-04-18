@@ -18,6 +18,7 @@ import org.jboss.resteasy.test.providers.jaxb.resource.JAXBCache;
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlJaxbProvidersHelper;
 import org.jboss.resteasy.test.providers.jaxb.resource.XmlStreamFactory;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -33,7 +34,9 @@ import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
+import java.io.FilePermission;
 import java.io.InputStream;
+import java.lang.reflect.ReflectPermission;
 
 /**
  * @tpSubChapter Jaxb provider
@@ -56,6 +59,14 @@ public class XmlJaxbProvidersTest {
         war.addClass(XmlJaxbProvidersTest.class);
         war.addAsResource(XmlJaxbProvidersTest.class.getPackage(), "orders/order_123.xml");
         war.as(ZipExporter.class).exportTo(new File("target", XmlJaxbProvidersTest.class.getSimpleName() + ".war"), true);
+
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new FilePermission("<<ALL FILES>>", "read"),
+            new RuntimePermission("accessDeclaredMembers"),
+            new ReflectPermission("suppressAccessChecks"),
+            new RuntimePermission("getClassLoader")),
+            "permissions.xml");
+
         return TestUtil.finishContainerPrepare(war, null, XmlJaxbProvidersOrderResource.class, Order.class, Ordertype.class,
                 ShipTo.class, Shiptotype.class, Item.class, Itemtype.class, JAXBCache.class, XmlJaxbProvidersHelper.class, XmlStreamFactory.class);
     }
