@@ -41,6 +41,7 @@ public class JsonFilterSuperClassTest {
                 ObjectWriterModifierFilter.class);
         war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
         war.addAsWebInfResource(JsonFilterWithSerlvetFilterTest.class.getPackage(), "web.xml", "web.xml");
+
         return TestUtil.finishContainerPrepare(war, null, JsonFilterChildResource.class);
     }
 
