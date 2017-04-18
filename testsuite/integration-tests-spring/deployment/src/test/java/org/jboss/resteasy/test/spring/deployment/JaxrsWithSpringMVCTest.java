@@ -1,7 +1,9 @@
 package org.jboss.resteasy.test.spring.deployment;
 
+import java.security.AllPermission;
 import javax.json.JsonArray;
 
+import javax.xml.ws.WebServicePermission;
 import org.apache.http.HttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -11,6 +13,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.spring.deployment.resource.*;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtilSpring;
 import org.jboss.shrinkwrap.api.Archive;
@@ -21,12 +24,20 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import javax.management.MBeanPermission;
+import javax.management.MBeanServerPermission;
+import javax.management.MBeanTrustPermission;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import java.io.FilePermission;
+import java.lang.reflect.ReflectPermission;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.PropertyPermission;
+import java.util.logging.LoggingPermission;
 
 /**
  * Test that springframework MVC works in conjuction with jaxrs Application subclass.
@@ -50,6 +61,25 @@ public class JaxrsWithSpringMVCTest {
         archive.addClass(Greeting.class);
         archive.addClass(NumbersResource.class);
         archive.addClass(JaxrsApplication.class);
+
+        // spring specific permissions needed.
+        // Permission  accessClassInPackage.sun.reflect.annotation is required in order
+        // for spring to introspect annotations.  Security exception is eaten by spring
+        // and not posted via the server.
+        archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new MBeanServerPermission("createMBeanServer"),
+            new MBeanPermission("org.springframework.context.support.LiveBeansView#-[liveBeansView:application=/JaxrsWithSpringMVCTest]", "registerMBean,unregisterMBean"),
+            new MBeanTrustPermission("register"),
+            new PropertyPermission("spring.liveBeansView.mbeanDomain", "read"),
+            new RuntimePermission("getenv.spring.liveBeansView.mbeanDomain"),
+            new ReflectPermission("suppressAccessChecks"),
+            new RuntimePermission("accessDeclaredMembers"),
+            new RuntimePermission("getClassLoader"),
+            new RuntimePermission("accessClassInPackage.sun.reflect.annotation"),
+            new FilePermission("<<ALL FILES>>", "read"),
+            new LoggingPermission("control", "")
+        ), "permissions.xml");
+
         TestUtilSpring.addSpringLibraries(archive);
         return archive;
     }
