@@ -17,6 +17,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import java.net.URI;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -256,7 +259,27 @@ public class Content extends CommonAttributes
          ctx = JAXBContext.newInstance(classes);
       }
       if (getElement() == null) return null;
-      Object obj = ctx.createUnmarshaller().unmarshal(getElement());
+      Object obj = null;
+
+      if (System.getSecurityManager() == null) {
+         obj = ctx.createUnmarshaller().unmarshal(getElement());
+      }
+      else
+      {
+         final JAXBContext smCtx = ctx;
+         try {
+            obj = AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
+               @Override
+               public Object run() throws Exception {
+                  return smCtx.createUnmarshaller().unmarshal(getElement());
+               }
+            });
+         } catch (PrivilegedActionException pae)
+         {
+            throw new JAXBException(pae);
+         }
+      }
+
       if (obj instanceof JAXBElement)
       {
          jaxbObject = ((JAXBElement) obj).getValue();

@@ -1,5 +1,8 @@
 package org.jboss.resteasy.spi.metadata;
 
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import org.jboss.resteasy.annotations.Body;
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.annotations.Query;
@@ -889,9 +892,25 @@ public class ResourceBuilder
       } while (root != null && !root.equals(Object.class));
    }
 
-   protected static void processDeclaredFields(ResourceClassBuilder resourceClassBuilder, Class<?> root)
+   protected static void processDeclaredFields(ResourceClassBuilder resourceClassBuilder, final Class<?> root)
    {
-      for (Field field : root.getDeclaredFields())
+      Field[] fieldList = new Field[0];
+      try {
+         if (System.getSecurityManager() == null) {
+            fieldList = root.getDeclaredFields();
+         } else {
+            fieldList = AccessController.doPrivileged(new PrivilegedExceptionAction<Field[]>() {
+               @Override
+               public Field[] run() throws Exception {
+                  return root.getDeclaredFields();
+               }
+            });
+         }
+      } catch (PrivilegedActionException pae) {
+
+      }
+
+      for (Field field : fieldList)
       {
          FieldParameterBuilder builder = resourceClassBuilder.field(field).fromAnnotations();
          if (builder.field.paramType == Parameter.ParamType.MESSAGE_BODY && !field.isAnnotationPresent(Body.class)) continue;
@@ -899,9 +918,25 @@ public class ResourceBuilder
          builder.buildField();
       }
    }
-   protected static void processDeclaredSetters(ResourceClassBuilder resourceClassBuilder, Class<?> root, Set<Long> visitedHashes)
+   protected static void processDeclaredSetters(ResourceClassBuilder resourceClassBuilder, final Class<?> root, Set<Long> visitedHashes)
    {
-      for (Method method : root.getDeclaredMethods())
+      Method[] methodList = new Method[0];
+      try {
+         if (System.getSecurityManager() == null) {
+            methodList = root.getDeclaredMethods();
+         } else {
+            methodList = AccessController.doPrivileged(new PrivilegedExceptionAction<Method[]>() {
+               @Override
+               public Method[] run() throws Exception {
+                  return root.getDeclaredMethods();
+               }
+            });
+         }
+      } catch (PrivilegedActionException pae) {
+
+      }
+
+      for (Method method : methodList)
       {
          if (!method.getName().startsWith("set")) continue;
          if (method.getParameterTypes().length != 1) continue;
@@ -970,9 +1005,5 @@ public class ResourceBuilder
          resourceLocatorBuilder.buildMethod();
       }
    }
-
-
-
-
 
 }
