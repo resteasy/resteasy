@@ -6,7 +6,9 @@ import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA_TYPE;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static org.junit.Assert.assertEquals;
 
+import java.io.FilePermission;
 import java.io.StringWriter;
+import java.lang.reflect.ReflectPermission;
 import java.nio.charset.StandardCharsets;
 
 import javax.ws.rs.client.Client;
@@ -29,6 +31,7 @@ import org.jboss.resteasy.test.form.resteasy1405.BySetterForm;
 import org.jboss.resteasy.test.form.resteasy1405.InputData;
 import org.jboss.resteasy.test.form.resteasy1405.MyResource;
 import org.jboss.resteasy.test.form.resteasy1405.OutputData;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -56,6 +59,13 @@ public class Resteasy1405Test
    {
       WebArchive war = TestUtil.prepareArchive(Resteasy1405Test.class.getSimpleName());
       war.addClasses(ByFieldForm.class, BySetterForm.class, InputData.class, OutputData.class);
+
+      war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+          new FilePermission("<<ALL FILES>>", "read"),
+          new RuntimePermission("accessDeclaredMembers"),
+          new RuntimePermission("getClassLoader")),
+          "permissions.xml");
+
       return TestUtil.finishContainerPrepare(war, null, MyResource.class);
    }
 

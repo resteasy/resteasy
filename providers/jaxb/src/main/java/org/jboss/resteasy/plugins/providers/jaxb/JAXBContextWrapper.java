@@ -47,25 +47,27 @@ public class JAXBContextWrapper extends JAXBContext
       try
       {
          // check to see if NamespacePrefixMapper is in classpath
-         Class mapper = null;
+         final Class[] namespace = new Class[1];
+         final Class[] mapper = new Class[1];
 
          if (System.getSecurityManager() == null)
          {
-            Class namespace =  JAXBContextWrapper.class.getClassLoader().loadClass("com.sun.xml.bind.marshaller.NamespacePrefixMapper");
-            mapper =  JAXBContextWrapper.class.getClassLoader().loadClass("org.jboss.resteasy.plugins.providers.jaxb.XmlNamespacePrefixMapper");
+            namespace[0] =  JAXBContextWrapper.class.getClassLoader().loadClass("com.sun.xml.bind.marshaller.NamespacePrefixMapper");
+            mapper[0] =  JAXBContextWrapper.class.getClassLoader().loadClass("org.jboss.resteasy.plugins.providers.jaxb.XmlNamespacePrefixMapper");
          }
          else
          {
-            mapper = AccessController.doPrivileged(new PrivilegedExceptionAction<Class>() {
-               @Override public Class run() throws Exception {
-                  Class namespace =  JAXBContextWrapper.class.getClassLoader().loadClass("com.sun.xml.bind.marshaller.NamespacePrefixMapper");
-                   return JAXBContextWrapper.class.getClassLoader().loadClass("org.jboss.resteasy.plugins.providers.jaxb.XmlNamespacePrefixMapper");
+            AccessController.doPrivileged(new PrivilegedExceptionAction<Void>() {
+               @Override public Void run() throws Exception {
+                  namespace[0] =  JAXBContextWrapper.class.getClassLoader().loadClass("com.sun.xml.bind.marshaller.NamespacePrefixMapper");
+                  mapper[0] =  JAXBContextWrapper.class.getClassLoader().loadClass("org.jboss.resteasy.plugins.providers.jaxb.XmlNamespacePrefixMapper");
 
+                  return null;
                }
             });
          }
 
-         mapperConstructor = mapper.getConstructors()[0];
+         mapperConstructor = mapper[0].getConstructors()[0];
       }
       catch (ClassNotFoundException e)
       {
