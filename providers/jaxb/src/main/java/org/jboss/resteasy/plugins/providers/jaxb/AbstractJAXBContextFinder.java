@@ -1,5 +1,8 @@
 package org.jboss.resteasy.plugins.providers.jaxb;
 
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -96,7 +99,7 @@ public abstract class AbstractJAXBContextFinder implements JAXBContextFinder
       return packageName;
    }
 
-   public static Class<?> findDefaultObjectFactoryClass(Class<?> type)
+   public static Class<?> findDefaultObjectFactoryClass(Class<?> type) throws PrivilegedActionException
    {
       XmlType typeAnnotation = type.getAnnotation(XmlType.class);
       if (typeAnnotation == null) return null;
@@ -106,7 +109,29 @@ public abstract class AbstractJAXBContextFinder implements JAXBContextFinder
       Class<?> factoryClass = null;
       try
       {
-         factoryClass = Thread.currentThread().getContextClassLoader().loadClass(b.toString());
+         if (System.getSecurityManager() == null)
+         {
+            factoryClass = Thread.currentThread().getContextClassLoader().loadClass(b.toString());
+         }
+         else
+         {
+            final String  smB = b.toString();
+            factoryClass = AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>()
+            {
+               @Override
+               public Class<?> run() throws Exception
+               {
+                  return Thread.currentThread().getContextClassLoader().loadClass(smB);
+               }
+            });
+         }
+      }
+      catch (PrivilegedActionException pae) {
+         if (pae.getException() instanceof ClassNotFoundException) {
+            return null;
+         } else {
+            throw pae;
+         }
       }
       catch (ClassNotFoundException e)
       {
@@ -148,9 +173,14 @@ public abstract class AbstractJAXBContextFinder implements JAXBContextFinder
 				if (type == null)
 					continue;
 				classes1.add(type);
-				Class<?> factory = findDefaultObjectFactoryClass(type);
-				if (factory != null)
-					classes1.add(factory);
+               try {
+                  Class<?> factory = findDefaultObjectFactoryClass(type);
+                  if (factory != null)
+                     classes1.add(factory);
+               } catch (PrivilegedActionException pae)
+               {
+                  throw new JAXBException(pae);
+               }
 			}
 		}
 		Class<?>[] classArray = classes1.toArray(new Class[classes1.size()]);

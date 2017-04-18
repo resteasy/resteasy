@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBElement;
@@ -160,8 +163,21 @@ public class SecureUnmarshaller implements Unmarshaller {
           SAXParser sp = spf.newSAXParser();
           configParser(sp);
           XMLReader xmlReader = sp.getXMLReader();
-          SAXSource saxSource = new SAXSource(xmlReader, source);
-          return delegate.unmarshal(saxSource);
+          final SAXSource saxSource = new SAXSource(xmlReader, source);
+          if (System.getSecurityManager() == null) {
+             return delegate.unmarshal(saxSource);
+          }
+          else
+          {
+            return AccessController.doPrivileged(new PrivilegedExceptionAction<Object>()
+            {
+               @Override
+               public Object run() throws JAXBException
+               {
+                  return delegate.unmarshal(saxSource);
+               }
+            });
+          }
       }
       catch (SAXException e)
       {
@@ -170,6 +186,10 @@ public class SecureUnmarshaller implements Unmarshaller {
       catch (ParserConfigurationException e)
       {
          throw new JAXBException(e);
+      }
+      catch (PrivilegedActionException pae)
+      {
+         throw new JAXBException(pae);
       }
    }
 

@@ -22,6 +22,9 @@ import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
 import java.util.Map;
 
@@ -44,12 +47,31 @@ public class JAXBContextWrapper extends JAXBContext
       try
       {
          // check to see if NamespacePrefixMapper is in classpath
-         Class namespace =  JAXBContextWrapper.class.getClassLoader().loadClass("com.sun.xml.bind.marshaller.NamespacePrefixMapper");
-         Class mapper =  JAXBContextWrapper.class.getClassLoader().loadClass("org.jboss.resteasy.plugins.providers.jaxb.XmlNamespacePrefixMapper");
+         Class mapper = null;
+
+         if (System.getSecurityManager() == null)
+         {
+            Class namespace =  JAXBContextWrapper.class.getClassLoader().loadClass("com.sun.xml.bind.marshaller.NamespacePrefixMapper");
+            mapper =  JAXBContextWrapper.class.getClassLoader().loadClass("org.jboss.resteasy.plugins.providers.jaxb.XmlNamespacePrefixMapper");
+         }
+         else
+         {
+            mapper = AccessController.doPrivileged(new PrivilegedExceptionAction<Class>() {
+               @Override public Class run() throws Exception {
+                  Class namespace =  JAXBContextWrapper.class.getClassLoader().loadClass("com.sun.xml.bind.marshaller.NamespacePrefixMapper");
+                   return JAXBContextWrapper.class.getClassLoader().loadClass("org.jboss.resteasy.plugins.providers.jaxb.XmlNamespacePrefixMapper");
+
+               }
+            });
+         }
+
          mapperConstructor = mapper.getConstructors()[0];
       }
       catch (ClassNotFoundException e)
       {
+
+      }
+      catch (PrivilegedActionException pae) {
 
       }
 
@@ -81,11 +103,32 @@ public class JAXBContextWrapper extends JAXBContext
     * @param config
     * @throws JAXBException
     */
-   public JAXBContextWrapper(Class<?>[] classes, Map<String, Object> properties, JAXBConfig config)
+   public JAXBContextWrapper(final Class<?>[] classes, final Map<String, Object> properties, JAXBConfig config)
            throws JAXBException
    {
       processConfig(config);
-      wrappedContext = JAXBContext.newInstance(classes, properties);
+      try
+      {
+         if (System.getSecurityManager() == null)
+         {
+            wrappedContext = JAXBContext.newInstance(classes, properties);
+         }
+         else
+         {
+            wrappedContext = AccessController.doPrivileged(new PrivilegedExceptionAction<JAXBContext>()
+            {
+               @Override
+               public JAXBContext run() throws JAXBException
+               {
+                  return JAXBContext.newInstance(classes, properties);
+               }
+            });
+         }
+      }
+      catch (PrivilegedActionException paex)
+      {
+         throw new JAXBException(paex.getMessage());
+      }
    }
 
    /**
