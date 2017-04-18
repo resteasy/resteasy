@@ -4,6 +4,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.spring.deployment.resource.SpringWebappContextResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtilSpring;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.Assert;
@@ -18,8 +19,12 @@ import org.junit.runner.RunWith;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import java.io.FilePermission;
+import java.lang.reflect.ReflectPermission;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.PropertyPermission;
+import java.util.logging.LoggingPermission;
 
 /**
  * @tpSubChapter Spring
@@ -43,6 +48,19 @@ public class SpringWebappContextDependenciesInDeploymentTest {
                 .addClass(SpringWebappContextResource.class)
                 .addAsWebInfResource(SpringWebappContextDependenciesInDeploymentTest.class.getPackage(), "web.xml", "web.xml")
                 .addAsWebInfResource(SpringWebappContextDependenciesInDeploymentTest.class.getPackage(), "springWebAppContext/applicationContext.xml", "applicationContext.xml");
+
+        // Permission needed for "arquillian.debug" to run
+        // "suppressAccessChecks" required for access to arquillian-core.jar
+        // remaining permissions needed to run springframework
+        archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new PropertyPermission("arquillian.*", "read"),
+            new ReflectPermission("suppressAccessChecks"),
+            new RuntimePermission("accessDeclaredMembers"),
+            new RuntimePermission("getClassLoader"),
+            new FilePermission("<<ALL FILES>>", "read"),
+            new LoggingPermission("control", "")
+        ), "permissions.xml");
+
         TestUtilSpring.addSpringLibraries(archive);
         return archive;
     }

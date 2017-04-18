@@ -12,6 +12,7 @@ import org.jboss.resteasy.test.spring.deployment.resource.ContactService;
 import org.jboss.resteasy.test.spring.deployment.resource.Contacts;
 import org.jboss.resteasy.test.spring.deployment.resource.ContactsResource;
 import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtilSpring;
 import org.jboss.shrinkwrap.api.Archive;
@@ -21,6 +22,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.management.MBeanPermission;
+import javax.management.MBeanServerPermission;
+import javax.management.MBeanTrustPermission;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -28,6 +32,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.FilePermission;
+import java.lang.reflect.ReflectPermission;
+import java.util.PropertyPermission;
+import java.util.logging.LoggingPermission;
 
 /**
  * @tpSubChapter Spring
@@ -68,6 +76,25 @@ public class ContactsDependenciesInDeploymentTest {
                 .addClass(ContactsDependenciesInDeploymentTest.class)
                 .addAsWebInfResource(ContactsDependenciesInDeploymentTest.class.getPackage(), "contacts/web.xml", "web.xml")
                 .addAsWebInfResource(ContactsDependenciesInDeploymentTest.class.getPackage(), "contacts/springmvc-servlet.xml", "springmvc-servlet.xml");
+
+        // spring specific permissions needed.
+        // Permission  accessClassInPackage.sun.reflect.annotation is required in order
+        // for spring to introspect annotations.  Security exception is eaten by spring
+        // and not posted via the server.
+        archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new MBeanServerPermission("createMBeanServer"),
+            new MBeanPermission("org.springframework.context.support.LiveBeansView#-[liveBeansView:application=/ContactsDependenciesInDeploymentTest]", "registerMBean,unregisterMBean"),
+            new MBeanTrustPermission("register"),
+            new PropertyPermission("spring.liveBeansView.mbeanDomain", "read"),
+            new RuntimePermission("getenv.spring.liveBeansView.mbeanDomain"),
+            new ReflectPermission("suppressAccessChecks"),
+            new RuntimePermission("accessDeclaredMembers"),
+            new RuntimePermission("getClassLoader"),
+            new RuntimePermission("accessClassInPackage.sun.reflect.annotation"),
+            new FilePermission("<<ALL FILES>>", "read"),
+            new LoggingPermission("control", "")
+        ), "permissions.xml");
+
         TestUtilSpring.addSpringLibraries(archive);
         return archive;
     }
