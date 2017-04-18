@@ -31,6 +31,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -238,7 +240,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       }
    }
 
-   private ValueInjector createContextProxy(Class type, ResteasyProviderFactory providerFactory)
+   private ValueInjector createContextProxy(final Class type, ResteasyProviderFactory providerFactory)
    {
       Class proxy = null;
       if (type.isInterface())
@@ -246,7 +248,23 @@ public class InjectorFactoryImpl implements InjectorFactory
          proxy = contextProxyCache.get(type);
          if (proxy == null)
          {
-            proxy = Proxy.getProxyClass(type.getClassLoader(), type);
+            ClassLoader typeClassLoader;
+            if (System.getSecurityManager() == null)
+            {
+               typeClassLoader = type.getClassLoader();
+            }
+            else
+            {
+               typeClassLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
+               {
+                  @Override
+                  public ClassLoader run()
+                  {
+                     return type.getClassLoader();
+                  }
+               });
+            }
+            proxy = Proxy.getProxyClass(typeClassLoader, type);
             contextProxyCache.putIfAbsent(type, proxy);
          }
       }

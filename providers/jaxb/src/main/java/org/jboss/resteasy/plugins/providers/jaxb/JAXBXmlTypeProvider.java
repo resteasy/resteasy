@@ -30,6 +30,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 
 /**
  * <p>
@@ -189,6 +192,10 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
       {
          throw new JAXBMarshalException(e);
       }
+      catch (PrivilegedActionException pae)
+      {
+         throw new JAXBMarshalException(pae);
+      }
 
    }
 
@@ -204,8 +211,24 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
    {
       try
       {
-         Object factory = findObjectFactory(type);
-         Method[] method = factory.getClass().getDeclaredMethods();
+         final Object factory = findObjectFactory(type);
+         Method[] method = new Method[0];
+         if (System.getSecurityManager() == null)
+         {
+            method = factory.getClass().getDeclaredMethods();
+         }
+         else
+         {
+            method =  AccessController.doPrivileged(new PrivilegedExceptionAction<Method[]>()
+            {
+               @Override
+               public Method[] run() throws Exception
+               {
+                  return factory.getClass().getDeclaredMethods();
+               }
+            });
+         }
+
          for (int i = 0; i < method.length; i++)
          {
             Method current = method[i];
@@ -230,6 +253,10 @@ public class JAXBXmlTypeProvider extends AbstractJAXBProvider<Object>
       catch (InvocationTargetException e)
       {
          throw new JAXBMarshalException(e.getCause());
+      }
+      catch (PrivilegedActionException pae)
+      {
+         throw new JAXBMarshalException(pae);
       }
    }
 }

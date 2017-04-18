@@ -39,6 +39,7 @@ public class EmbeddedMultipartTest {
     public static Archive<?> deploy() {
         WebArchive war = TestUtil.prepareArchive(EmbeddedMultipartTest.class.getSimpleName());
         war.addClass(EmbeddedMultipartCustomer.class);
+
         return TestUtil.finishContainerPrepare(war, null, EmbeddedMultipartResource.class);
     }
 

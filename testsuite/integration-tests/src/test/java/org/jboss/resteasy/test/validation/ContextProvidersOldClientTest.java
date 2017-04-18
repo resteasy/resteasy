@@ -38,6 +38,7 @@ public class ContextProvidersOldClientTest extends ContextProvidersTestBase {
                 .addClasses(ContextProvidersCustomer.class, ContextProvidersCustomerForm.class, ContextProvidersName.class, ContextProvidersXop.class)
                 .addClass(ContextProvidersTestBase.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+
         return TestUtil.finishContainerPrepare(war, null, ContextProvidersResource.class);
     }
 

@@ -15,6 +15,9 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.fasterxml.jackson.jaxrs.json.JsonEndpointConfig;
 import com.fasterxml.jackson.jaxrs.util.ClassKey;
 
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import org.jboss.resteasy.annotations.providers.jackson.Formatted;
 import org.jboss.resteasy.annotations.providers.NoJackson;
 import org.jboss.resteasy.util.DelegatingOutputStream;
@@ -101,7 +104,7 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
            = new ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig>();
 
    @Override
-   public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String,String> httpHeaders, InputStream entityStream)
+   public Object readFrom(Class<Object> type, final Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String,String> httpHeaders, InputStream entityStream)
            throws IOException
    {
       LogMessages.LOGGER.debugf("Provider : %s,  Method : readFrom", getClass().getName());
@@ -114,8 +117,8 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
          endpoint = _configForReading(mapper, annotations, null);
          _readers.put(key, endpoint);
       }
-      ObjectReader reader = endpoint.getReader();
-      JsonParser jp = _createParser(reader, entityStream);
+      final ObjectReader reader = endpoint.getReader();
+      final JsonParser jp = _createParser(reader, entityStream);
       // If null is returned, considered to be empty stream
       if (jp == null || jp.nextToken() == null) {
          return null;
@@ -124,7 +127,23 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       if (((Class<?>) type) == JsonParser.class) {
          return jp;
       }
-      return reader.withType(genericType).readValue(jp);
+
+      Object result = null;
+      try {
+         if (System.getSecurityManager() == null) {
+            result = reader.withType(genericType).readValue(jp);
+         } else {
+            result = AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
+               @Override
+               public Object run() throws Exception {
+                  return reader.withType(genericType).readValue(jp);
+               }
+            });
+         }
+      } catch (PrivilegedActionException pae) {
+         throw new IOException(pae);
+      }
+      return result;
    }
 
    protected final ConcurrentHashMap<ClassAnnotationKey, JsonEndpointConfig> _writers
@@ -173,7 +192,7 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       *   HTTP headers?
       */
       JsonEncoding enc = findEncoding(mediaType, httpHeaders);
-      JsonGenerator jg = writer.getFactory().createGenerator(entityStream, enc);
+      final JsonGenerator jg = writer.getFactory().createGenerator(entityStream, enc);
       jg.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
 
       try {
@@ -214,9 +233,25 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
          value = endpoint.modifyBeforeWrite(value);
          ObjectWriterModifier mod = ObjectWriterInjector.getAndClear();
          if (mod != null) {
-             writer = mod.modify(endpoint, httpHeaders, value, writer, jg);
+            writer = mod.modify(endpoint, httpHeaders, value, writer, jg);
          }
-         writer.writeValue(jg, value);
+
+         if (System.getSecurityManager() == null) {
+            writer.writeValue(jg, value);
+         } else {
+            final ObjectWriter smWriter = writer;
+            final Object smValue = value;
+            AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
+               @Override
+               public Object run() throws Exception {
+
+                  smWriter.writeValue(jg, smValue);
+                  return null;
+               }
+            });
+         }
+      } catch(PrivilegedActionException pae) {
+         throw new IOException(pae);
       } finally {
          jg.close();
       }

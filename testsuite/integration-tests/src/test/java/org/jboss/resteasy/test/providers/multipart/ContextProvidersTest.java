@@ -99,6 +99,7 @@ public class ContextProvidersTest {
         WebArchive war = TestUtil.prepareArchive(ContextProvidersTest.class.getSimpleName());
         war.addClasses(ContextProvidersCustomer.class, ContextProvidersCustomerForm.class, ContextProvidersName.class, ContextProvidersXop.class, PortProviderUtil.class);
         war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+
         return TestUtil.finishContainerPrepare(war, null, ContextProvidersResource.class);
     }
 
