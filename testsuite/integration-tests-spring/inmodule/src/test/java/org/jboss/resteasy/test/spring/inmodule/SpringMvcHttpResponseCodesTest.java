@@ -19,6 +19,7 @@ import org.jboss.resteasy.test.spring.inmodule.resource.SpringMvcHttpResponseCod
 import org.jboss.resteasy.test.spring.inmodule.resource.SpringMvcHttpResponseCodesResource;
 import org.jboss.resteasy.test.spring.inmodule.resource.TestResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -35,9 +36,11 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.File;
+import java.lang.reflect.ReflectPermission;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.logging.LoggingPermission;
 
 /**
  * @tpSubChapter Spring
@@ -62,6 +65,13 @@ public class SpringMvcHttpResponseCodesTest {
         war.addAsWebInfResource(SpringMvcHttpResponseCodesTest.class.getPackage(), "springMvcHttpResponseCodes/applicationContext.xml", "applicationContext.xml");
         war.addAsManifestResource(new StringAsset("Dependencies: org.springframework.spring meta-inf\n"), "MANIFEST.MF");
         war.addClass(SpringMvcHttpResponseCodesPerson.class);
+
+        // Logging control is required in order for springframework to run
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new LoggingPermission("control", ""),
+            new ReflectPermission("suppressAccessChecks")
+        ), "permissions.xml");
+
         return TestUtil.finishContainerPrepare(war, null, SpringMvcHttpResponseCodesResource.class, TestResource.class);
     }
 

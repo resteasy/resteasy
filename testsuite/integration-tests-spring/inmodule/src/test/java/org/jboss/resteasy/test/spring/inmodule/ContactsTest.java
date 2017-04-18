@@ -12,6 +12,7 @@ import org.jboss.resteasy.test.spring.inmodule.resource.ContactService;
 import org.jboss.resteasy.test.spring.inmodule.resource.Contacts;
 import org.jboss.resteasy.test.spring.inmodule.resource.ContactsResource;
 import org.jboss.resteasy.util.HttpHeaderNames;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -28,6 +29,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.FilePermission;
+import java.lang.reflect.ReflectPermission;
+import java.util.logging.LoggingPermission;
 
 /**
  * @tpSubChapter Spring
@@ -68,6 +72,12 @@ public class ContactsTest {
                 .addAsWebInfResource(ContactsTest.class.getPackage(), "contacts/web.xml", "web.xml")
                 .addAsWebInfResource(ContactsTest.class.getPackage(), "contacts/springmvc-servlet.xml", "springmvc-servlet.xml");
         archive.addAsManifestResource(new StringAsset("Dependencies: org.springframework.spring meta-inf\n"), "MANIFEST.MF");
+
+        // Logging control is required in order for springframework to run
+        archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new LoggingPermission("control", "")
+        ), "permissions.xml");
+
         return archive;
     }
 

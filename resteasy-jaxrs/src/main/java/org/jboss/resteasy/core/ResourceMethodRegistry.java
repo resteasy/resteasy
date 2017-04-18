@@ -1,5 +1,9 @@
 package org.jboss.resteasy.core;
 
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.core.registry.RootClassNode;
 import org.jboss.resteasy.core.registry.RootNode;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiResourceFactory;
@@ -226,7 +230,7 @@ public class ResourceMethodRegistry implements Registry
       // https://issues.jboss.org/browse/JBPAPP-7871
       for (Class<?> clazz : classes)
       {
-         for (Method method : clazz.getDeclaredMethods())
+         for (Method method : getDeclaredMethods(clazz))
          {
             Method _method = findAnnotatedMethod(clazz, method);
             if (_method != null && !java.lang.reflect.Modifier.isPublic(_method.getModifiers()))
@@ -236,6 +240,25 @@ public class ResourceMethodRegistry implements Registry
          }
       }
 
+   }
+
+   private Method[] getDeclaredMethods(final Class<?> clazz) {
+      Method[] methodList = new Method[0];
+      try {
+         if (System.getSecurityManager() == null) {
+            methodList = clazz.getDeclaredMethods();
+         } else {
+            methodList = AccessController.doPrivileged(new PrivilegedExceptionAction<Method[]>() {
+               @Override
+               public Method[] run() throws Exception {
+                  return clazz.getDeclaredMethods();
+               }
+            });
+         }
+      } catch (PrivilegedActionException pae) {
+         LogMessages.LOGGER.error(pae);
+      }
+      return methodList;
    }
 
    @Override
