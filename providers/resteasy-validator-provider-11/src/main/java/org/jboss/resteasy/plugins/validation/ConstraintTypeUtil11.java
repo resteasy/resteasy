@@ -10,6 +10,9 @@ import javax.validation.Path.Node;
 import org.jboss.resteasy.api.validation.ConstraintType;
 import org.jboss.resteasy.plugins.providers.validation.ConstraintTypeUtil;
 import org.jboss.resteasy.plugins.validation.i18n.Messages;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 
 /**
  * @author <a href="ron.sigal@jboss.com">Ron Sigal</a>
@@ -90,14 +93,8 @@ public class ConstraintTypeUtil11 implements ConstraintTypeUtil
    private static Method getMethod(Class<?> clazz, String methodName) throws NoSuchMethodException
    {
       Method method = null;
-      try
-      {
-         method = clazz.getDeclaredMethod(methodName);
-      }
-      catch (NoSuchMethodException e)
-      {
-         // Ignore.
-      }
+      method = checkMethodAccess(clazz, methodName);
+
       while (method == null)
       {
          clazz = clazz.getSuperclass();
@@ -105,19 +102,41 @@ public class ConstraintTypeUtil11 implements ConstraintTypeUtil
          {
             break;
          }
-         try
-         {
-            method = clazz.getDeclaredMethod(methodName);
-         }
-         catch (NoSuchMethodException e)
-         {
-            // Ignore.
-         }
+
+         method = checkMethodAccess(clazz, methodName);
       }
       if (method == null)
       {
          throw new NoSuchMethodException(methodName);
       }
+      return method;
+   }
+
+   private static Method checkMethodAccess(final Class<?> clazz, final String methodName) {
+      Method method = null;
+      try
+      {
+         if (System.getSecurityManager() == null)
+         {
+            method = clazz.getDeclaredMethod(methodName);
+         }
+         else
+         {
+            method = AccessController.doPrivileged(new PrivilegedExceptionAction<Method>() {
+               @Override
+               public Method run() throws Exception {
+                  return clazz.getDeclaredMethod(methodName);
+               }
+            });
+         }
+      }
+      catch(PrivilegedActionException pae) {
+      }
+      catch (NoSuchMethodException e)
+      {
+         // Ignore.
+      }
+
       return method;
    }
 }
