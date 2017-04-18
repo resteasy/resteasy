@@ -18,4 +18,19 @@
 		<url-pattern>/contacts/*</url-pattern>
 	</servlet-mapping>
 
+	<!-- These 3 params appear to be needed in conjunction with permission setting -->
+	<context-param>
+		<param-name>spring.profiles.active</param-name>
+		<param-value>dev</param-value>
+	</context-param>
+	<context-param>
+		<param-name>spring.profiles.default</param-name>
+		<param-value>dev</param-value>
+	</context-param>
+
+	<context-param>
+		<param-name>spring.liveBeansView.mbeanDomain</param-name>
+		<param-value>liveBeansView</param-value>
+	</context-param>
+
 </web-app>
