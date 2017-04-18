@@ -1,8 +1,13 @@
 package org.jboss.resteasy.test.spring.deployment;
 
 import java.io.File;
+import java.io.FilePermission;
 import java.io.IOException;
+import java.lang.reflect.ReflectPermission;
 import java.nio.charset.StandardCharsets;
+import java.security.SecurityPermission;
+import java.util.PropertyPermission;
+import java.util.logging.LoggingPermission;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -19,6 +24,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.plugins.spring.SpringContextLoaderListener;
 import org.jboss.resteasy.test.spring.deployment.resource.TestResource;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TestUtilSpring;
@@ -77,6 +83,18 @@ public class AddSpringResteasyAsResourceRootTest {
                 .addAsWebInfResource(AddSpringResteasyAsResourceRootTest.class.getPackage(), "mvc-dispatcher-servlet/web.xml", "web.xml")
                 .addAsWebInfResource(AddSpringResteasyAsResourceRootTest.class.getPackage(), "mvc-dispatcher-servlet/mvc-dispatcher-servlet.xml", "mvc-dispatcher-servlet.xml")
                 .addAsWebInfResource(AddSpringResteasyAsResourceRootTest.class.getPackage(), "mvc-dispatcher-servlet/applicationContext.xml", "applicationContext.xml");
+
+        // PropertyPermission needed for "arquillian.debug" to run
+        // remaining permissions needed to run springframework
+        archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            //new PropertyPermission("arquillian.*", "read"),
+            new ReflectPermission("suppressAccessChecks"),
+            new RuntimePermission("accessDeclaredMembers"),
+            new RuntimePermission("getClassLoader"),
+            new FilePermission("<<ALL FILES>>", "read"),
+            new LoggingPermission("control", "")
+        ), "permissions.xml");
+
         TestUtilSpring.addSpringLibraries(archive);
         archive.as(ZipExporter.class).exportTo(new File("target", deploymentWithSpringMvcDispatcherSpringIncluded + ".war"), true);
         return archive;
@@ -103,6 +121,14 @@ public class AddSpringResteasyAsResourceRootTest {
                 .addClass(TestResource.class)
                 .addAsWebInfResource(AddSpringResteasyAsResourceRootTest.class.getPackage(), "web.xml", "web.xml")
                 .addAsWebInfResource(AddSpringResteasyAsResourceRootTest.class.getPackage(), "applicationContext.xml", "applicationContext.xml");
+
+        // remaining permissions needed to run springframework
+        archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new RuntimePermission("accessDeclaredMembers"),
+            new FilePermission("<<ALL FILES>>", "read"),
+            new LoggingPermission("control", "")
+        ), "permissions.xml");
+
         TestUtilSpring.addSpringLibraries(archive);
         archive.as(ZipExporter.class).exportTo(new File("target", deploymentWithSpringContextLoaderListenerSpringIncluded + ".war"), true);
         return archive;
@@ -130,6 +156,7 @@ public class AddSpringResteasyAsResourceRootTest {
         WebArchive archive = TestUtil.prepareArchive(deploymentWithoutSpringMvcDispatcherOrListenerSpringIncluded);
         archive.addAsWebInfResource(AddSpringResteasyAsResourceRootTest.class.getPackage(), "web-no-mvc-no-listener.xml", "web.xml")
                 .addAsWebInfResource(AddSpringResteasyAsResourceRootTest.class.getPackage(), "applicationContext.xml", "applicationContext.xml");
+
         TestUtilSpring.addSpringLibraries(archive);
         archive.as(ZipExporter.class).exportTo(new File("target", deploymentWithoutSpringMvcDispatcherOrListenerSpringIncluded + ".war"), true);
         return TestUtil.finishContainerPrepare(archive, null, TestResource.class);
@@ -178,53 +205,4 @@ public class AddSpringResteasyAsResourceRootTest {
         Assert.assertEquals("The server resource didn't send correct response", TestResource.TEST_RESPONSE, responseString);
         httpget.releaseConnection();
     }
-
-   /* private static void addSpringLibraries(WebArchive archive, String springVersion) {
-        if (springDependenciesInDeployment()) {
-            archive.addAsLibraries(resolveSpringDependencies(springVersion));
-        } else {
-            // you need to use the 'meta-inf' attribute to import the contents of meta-inf so spring can find the correct namespace handlers
-            if (isDefinedSystemProperty("use-jboss-deployment-structure")) {
-                archive.addAsManifestResource("jboss-deployment-structure.xml");
-            } else {
-                archive.addAsManifestResource(new StringAsset("Dependencies: org.springframework.spring meta-inf\n"), "MANIFEST.MF");
-            }
-        }
-    }
-
-    private static File[] resolveSpringDependencies(String springVersion) {
-        MavenUtil mavenUtil;
-        mavenUtil = MavenUtil.create(true);
-        List<File> runtimeDependencies = new ArrayList<>();
-
-        try {
-            runtimeDependencies.addAll(mavenUtil.createMavenGavRecursiveFiles("org.springframework:spring-core:" + springVersion));
-            runtimeDependencies.addAll(mavenUtil.createMavenGavRecursiveFiles("org.springframework:spring-web:" + springVersion));
-            runtimeDependencies.addAll(mavenUtil.createMavenGavRecursiveFiles("org.springframework:spring-webmvc:" + springVersion));
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to get artifacts from maven via Aether library", e);
-        }
-
-        File[] dependencies = runtimeDependencies.toArray(new File []{});
-        return dependencies;
-    }
-
-    private static boolean springDependenciesInDeployment() {
-        return true;
-    }
-
-    private static String getSpringVersion() {
-        return readSystemProperty("version.org.springframework", defaultSpringVersion);
-    }
-
-    private static String readSystemProperty(String name, String defaultValue) {
-        String value = System.getProperty(name);
-        return (value == null) ? defaultValue : value;
-    }
-
-    private static boolean isDefinedSystemProperty(String name) {
-        String value = System.getProperty(name);
-        return (value != null);
-    }*/
-
 }

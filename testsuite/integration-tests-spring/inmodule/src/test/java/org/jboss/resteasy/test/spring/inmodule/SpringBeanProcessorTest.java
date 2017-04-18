@@ -23,6 +23,7 @@ import org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorCusto
 import org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorCustomerParamConverterProvider;
 import org.jboss.resteasy.test.spring.inmodule.resource.SpringBeanProcessorScannedResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -36,6 +37,10 @@ import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import java.io.FilePermission;
+import java.lang.reflect.ReflectPermission;
+import java.util.PropertyPermission;
+import java.util.logging.LoggingPermission;
 
 /**
  * @tpSubChapter Spring
@@ -89,6 +94,19 @@ public class SpringBeanProcessorTest {
         archive.addClass(SpringBeanProcessorCustomerParamConverter.class);
         archive.addClass(SpringBeanProcessorCustomerParamConverterProvider.class);
         archive.addClass(SpringBeanProcessorScannedResource.class);
+
+        // Permission needed for "arquillian.debug" to run
+        // "suppressAccessChecks" required for access to arquillian-core.jar
+        // remaining permissions needed to run springframework
+        archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new PropertyPermission("arquillian.*", "read"),
+            new ReflectPermission("suppressAccessChecks"),
+            new RuntimePermission("accessDeclaredMembers"),
+            new RuntimePermission("getClassLoader"),
+            new FilePermission("<<ALL FILES>>", "read"),
+            new LoggingPermission("control", "")
+        ), "permissions.xml");
+
         return archive;
     }
 

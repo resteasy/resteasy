@@ -6,6 +6,7 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.category.NotForWildFly9;
 import org.jboss.resteasy.test.spring.deployment.resource.ContextRefreshResource;
 import org.jboss.resteasy.test.spring.deployment.resource.ContextRefreshTrigger;
+import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.TestUtilSpring;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -15,7 +16,12 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.io.FilePermission;
+import java.lang.reflect.ReflectPermission;
 import java.util.Enumeration;
+import java.util.PropertyPermission;
+import java.util.logging.LoggingPermission;
 
 
 /**
@@ -40,6 +46,18 @@ public class ContextRefreshDependenciesInDeploymentTest {
                 .addClass(NotForWildFly9.class) //required as this test is not @RunAsClient annotated
                 .addAsWebInfResource(ContextRefreshDependenciesInDeploymentTest.class.getPackage(), "web.xml", "web.xml")
                 .addAsWebInfResource(ContextRefreshDependenciesInDeploymentTest.class.getPackage(), "contextRefresh/applicationContext.xml", "applicationContext.xml");
+
+        // PropertyPermission for test to run in arquillian
+        // remaining permissions needed to run springframework
+        archive.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
+            new PropertyPermission("arquillian.*", "read"),
+            new ReflectPermission("suppressAccessChecks"),
+            new RuntimePermission("accessDeclaredMembers"),
+            new RuntimePermission("getClassLoader"),
+            new FilePermission("<<ALL FILES>>", "read"),
+            new LoggingPermission("control", "")
+        ), "permissions.xml");
+
         TestUtilSpring.addSpringLibraries(archive);
         return archive;
     }
