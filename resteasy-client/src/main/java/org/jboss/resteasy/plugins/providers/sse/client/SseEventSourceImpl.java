@@ -1,4 +1,4 @@
-package org.jboss.resteasy.plugins.providers.sse;
+package org.jboss.resteasy.plugins.providers.sse.client;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -18,6 +18,9 @@ import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
 
 import org.apache.http.HttpHeaders;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.plugins.providers.sse.SseConstants;
+import org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 
@@ -25,22 +28,21 @@ public class SseEventSourceImpl implements SseEventSource
 {
    public static final long RECONNECT_DEFAULT = 500;
 
-   private enum State {
-      READY, OPEN, CLOSED
-   }
-
    private final WebTarget target;
    private final long reconnectDelay;
    private final boolean disableKeepAlive;
    private final ScheduledExecutorService executor;
-   private final AtomicReference<State> state = new AtomicReference<>(State.READY);
+   private enum State {
+      PENDING, OPEN, CLOSED
+   }
+   private final AtomicReference<State> state = new AtomicReference<>(State.PENDING);
    private final List<Consumer<InboundSseEvent>> onEventConsumers = new CopyOnWriteArrayList<>();
    private final List<Consumer<Throwable>> onErrorConsumers = new CopyOnWriteArrayList<>();
    private final List<Runnable> onCompleteConsumers = new CopyOnWriteArrayList<>();
    
    protected static class SourceBuilder extends Builder
    {
-      private WebTarget endpoint = null;
+      private WebTarget target = null;
       private long reconnect = RECONNECT_DEFAULT;
       private String name = null;
       private boolean disableKeepAlive = false;
@@ -58,16 +60,16 @@ public class SseEventSourceImpl implements SseEventSource
 
       public SseEventSource build()
       {
-         return new SseEventSourceImpl(endpoint, name, reconnect, disableKeepAlive, false);
+         return new SseEventSourceImpl(target, name, reconnect, disableKeepAlive, false);
       }
 
       @Override
-      public Builder target(WebTarget endpoint)
+      public Builder target(WebTarget target)
       {
-         if (endpoint == null) {
+         if (target == null) {
             throw new NullPointerException();
          }
-         this.endpoint = endpoint;
+         this.target = target;
          return this;
       }
 
@@ -79,14 +81,14 @@ public class SseEventSourceImpl implements SseEventSource
       }
    }
 
-   public SseEventSourceImpl(final WebTarget endpoint)
+   public SseEventSourceImpl(final WebTarget target)
    {
-      this(endpoint, true);
+      this(target, true);
    }
 
-   public SseEventSourceImpl(final WebTarget endpoint, final boolean open)
+   public SseEventSourceImpl(final WebTarget target, final boolean open)
    {
-      this(endpoint, null, RECONNECT_DEFAULT, false, open);
+      this(target, null, RECONNECT_DEFAULT, false, open);
    }
 
    private SseEventSourceImpl(final WebTarget target, String name, long reconnectDelay, final boolean disableKeepAlive,
@@ -104,7 +106,11 @@ public class SseEventSourceImpl implements SseEventSource
       {
          name = String.format("sse-event-source(%s)", target.getUri());
       }
-      this.executor = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory());    
+      ScheduledExecutorService scheduledExecutor = null;
+      if (target instanceof ResteasyWebTarget) {
+         scheduledExecutor = ((ResteasyWebTarget)target).getResteasyClient().getScheduledExecutor();
+      }
+      this.executor =  scheduledExecutor != null ? scheduledExecutor : Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory());
       if (open)
       {
          open();
@@ -136,7 +142,7 @@ public class SseEventSourceImpl implements SseEventSource
    @Override
    public void open()
    {
-      if (!state.compareAndSet(State.READY, State.OPEN))
+      if (!state.compareAndSet(State.PENDING, State.OPEN))
       {
          throw new IllegalStateException(Messages.MESSAGES.eventSourceIsNotReadyForOpen());
       }
@@ -144,7 +150,7 @@ public class SseEventSourceImpl implements SseEventSource
       executor.submit(handler);
       handler.awaitConnected();
    }
-
+   @Override
    public boolean isOpen()
    {
       return state.get() == State.OPEN;

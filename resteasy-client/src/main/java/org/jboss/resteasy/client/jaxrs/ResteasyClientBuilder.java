@@ -24,7 +24,6 @@ import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.net.ssl.HostnameVerifier;
@@ -95,6 +94,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    protected HostnameVerificationPolicy policy = HostnameVerificationPolicy.WILDCARD;
    protected ResteasyProviderFactory providerFactory;
    protected ExecutorService asyncExecutor;
+   protected ScheduledExecutorService scheduledExecutorService;
    protected boolean cleanupExecutor;
    protected SSLContext sslContext;
    protected Map<String, Object> properties = new HashMap<String, Object>();
@@ -145,6 +145,7 @@ public class ResteasyClientBuilder extends ClientBuilder
     * @param cleanupExecutor true if the Client should close the executor when it is closed
     * @return
     */
+   @Deprecated
    public ResteasyClientBuilder asyncExecutor(ExecutorService asyncExecutor, boolean cleanupExecutor)
    {
       this.asyncExecutor = asyncExecutor;
@@ -397,7 +398,7 @@ public class ResteasyClientBuilder extends ClientBuilder
       if (engine == null) {
          engine = initDefaultEngine();
       }
-      return new ResteasyClient(engine, executor, cleanupExecutor, config);
+      return new ResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
 
    }
 
@@ -425,7 +426,7 @@ public class ResteasyClientBuilder extends ClientBuilder
       if (engine == null) {
          engine = HttpClientBuilder43.initDefaultEngine43(this);
       }
-      return new ResteasyClient(engine, executor, cleanupExecutor, config);
+      return new ResteasyClient(engine, executor, cleanupExecutor, scheduledExecutorService, config);
 
    }
 
@@ -688,6 +689,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    @Override
    public ClientBuilder scheduledExecutorService(ScheduledExecutorService scheduledExecutorService)
    {
-      throw new NotImplementedYetException();
+      this.scheduledExecutorService = scheduledExecutorService;
+      return this;
    }
 }

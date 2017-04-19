@@ -3,9 +3,6 @@ package org.jboss.resteasy.client.jaxrs;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientWebTarget;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
-import org.jboss.resteasy.spi.NotImplementedYetException;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -19,7 +16,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -29,10 +26,21 @@ public class ResteasyClient implements Client
 {
    protected volatile ClientHttpEngine httpEngine;
    protected volatile ExecutorService asyncInvocationExecutor;
+   protected volatile ScheduledExecutorService scheduledExecutorService;
    protected ClientConfiguration configuration;
    protected boolean closed;
    protected boolean cleanupExecutor;
 
+
+   ResteasyClient(ClientHttpEngine httpEngine, ExecutorService asyncInvocationExecutor, boolean cleanupExecutor,
+         ScheduledExecutorService scheduledExecutorService, ClientConfiguration configuration)
+   {
+      this.cleanupExecutor = cleanupExecutor;
+      this.httpEngine = httpEngine;
+      this.asyncInvocationExecutor = asyncInvocationExecutor;
+      this.configuration = configuration;
+      this.scheduledExecutorService = scheduledExecutorService;
+   }
 
    ResteasyClient(ClientHttpEngine httpEngine, ExecutorService asyncInvocationExecutor, boolean cleanupExecutor, ClientConfiguration configuration)
    {
@@ -52,6 +60,11 @@ public class ResteasyClient implements Client
    public ExecutorService asyncInvocationExecutor()
    {
       return asyncInvocationExecutor;
+   }
+
+   public ScheduledExecutorService getScheduledExecutor()
+   {
+      return this.scheduledExecutorService;
    }
 
    public void abortIfClosed()
