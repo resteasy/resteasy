@@ -58,7 +58,7 @@ public class ParamConverterTest {
 
     /**
      * @tpTestDetails Set specific values
-     * @tpSince RESTEasy 3.0.16
+     * @tpSince RESTEasy 3.1.3.Final
      */
     @Test
     public void testIt() throws Exception {
@@ -91,7 +91,7 @@ public class ParamConverterTest {
 
     /**
      * @tpTestDetails Check default values
-     * @tpSince RESTEasy 3.0.16
+     * @tpSince RESTEasy 3.1.3.Final
      */
     @Test
 	public void testDefault() throws Exception {
