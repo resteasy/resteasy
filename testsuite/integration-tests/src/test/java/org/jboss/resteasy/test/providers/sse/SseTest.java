@@ -54,7 +54,7 @@ public class SseTest {
 
        SseEventSource eventSource = SseEventSource.target(target).build();
        Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
-       eventSource.subscribe(event -> {
+       eventSource.register(event -> {
             results.add(event.toString());
             latch.countDown();
           });
@@ -85,7 +85,7 @@ public class SseTest {
 
        SseEventSource eventSource = SseEventSource.target(target).build();
        Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
-       eventSource.subscribe(event -> {
+       eventSource.register(event -> {
           results.add(event.readData());
           latch.countDown();
        });
@@ -112,23 +112,23 @@ public class SseTest {
 
        SseEventSource eventSource = SseEventSource.target(target).build();
        Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
-       eventSource.subscribe(event -> {
+       eventSource.register(event -> {
           latch.countDown();
        });
        eventSource.open();
-       eventSource.subscribe(insse -> {Assert.assertTrue("", textMessage.equals(insse.readData()));});
+       eventSource.register(insse -> {Assert.assertTrue("", textMessage.equals(insse.readData()));});
             
        Client client2 = new ResteasyClientBuilder().build();
        WebTarget target2 = client2.target(generateURL("/service/sse/subscribe"));
 
        SseEventSource eventSource2 = SseEventSource.target(target2).build();
-       eventSource2.subscribe(event -> {
+       eventSource2.register(event -> {
           latch.countDown();
        });
        eventSource2.open();
        
        //Test for eventSource subscriber
-       eventSource2.subscribe(insse -> {Assert.assertTrue("", textMessage.equals(insse.readData()));});
+       eventSource2.register(insse -> {Assert.assertTrue("", textMessage.equals(insse.readData()));});
        //To give some time to subscribe, otherwise the broadcast will execute before subscribe
        Thread.sleep(3000);
        client.target(generateURL("/service/server-sent-events/broadcast")).request().post(Entity.entity(textMessage, MediaType.SERVER_SENT_EVENTS)); 
