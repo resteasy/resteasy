@@ -332,7 +332,7 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
             Response r = (Response)rtn;
             Headers<Object> metadata = new Headers<Object>();
             metadata.putAll(r.getMetadata());
-            rtn = new BuiltResponse(r.getStatus(), metadata, r.getEntity(), null);
+            rtn = new BuiltResponse(r.getStatus(), r.getStatusInfo().getReasonPhrase(), metadata, r.getEntity(), null);
          }
          BuiltResponse rtn1 = (BuiltResponse) rtn;
          rtn1.addMethodAnnotations(getMethodAnnotations());

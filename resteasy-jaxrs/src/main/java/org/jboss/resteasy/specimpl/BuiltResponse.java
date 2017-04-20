@@ -42,6 +42,7 @@ public class BuiltResponse extends Response
 {
    protected Object entity;
    protected int status = HttpResponseCodes.SC_OK;
+   protected String reason = "Unknown Code";
    protected Headers<Object> metadata = new Headers<Object>();
    protected Annotation[] annotations;
    protected Class entityClass;
@@ -55,10 +56,18 @@ public class BuiltResponse extends Response
 
    public BuiltResponse(int status, Headers<Object> metadata, Object entity, Annotation[] entityAnnotations)
    {
+      this(status, null, metadata, entity, entityAnnotations);
+   }
+
+   public BuiltResponse(int status, String reason, Headers<Object> metadata, Object entity, Annotation[] entityAnnotations)
+   {
       setEntity(entity);
       this.status = status;
       this.metadata = metadata;
       this.annotations = entityAnnotations;
+      if (reason != null) {
+         this.reason = reason;
+      }
    }
 
    public Class getEntityClass()
@@ -90,6 +99,11 @@ public class BuiltResponse extends Response
       return status;
    }
 
+   public String getReasonPhrase()
+   {
+      return reason;
+   }
+
    @Override
    public StatusType getStatusInfo()
    {
@@ -113,7 +127,7 @@ public class BuiltResponse extends Response
             @Override
             public String getReasonPhrase()
             {
-               return "Unknown Code";
+               return reason;
             }
          };
       }
@@ -153,6 +167,11 @@ public class BuiltResponse extends Response
    public void setStatus(int status)
    {
       this.status = status;
+   }
+
+   public void setReasonPhrase(String reason)
+   {
+      this.reason = reason;
    }
 
    public void setMetadata(MultivaluedMap<String, Object> metadata)

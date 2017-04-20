@@ -36,6 +36,7 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    protected Object entity;
    protected Annotation[] entityAnnotations;
    protected int status = -1;
+   protected String reasonPhrase;
    protected Headers<Object> metadata = new Headers<Object>();
 
    @Override
@@ -43,7 +44,7 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    {
       if (status == -1 && entity == null) status = 204;
       else if (status == -1) status = 200;
-      return new BuiltResponse(status, metadata, entity, entityAnnotations);
+      return new BuiltResponse(status, reasonPhrase, metadata, entity, entityAnnotations);
    }
 
    @Override
@@ -58,10 +59,17 @@ public class ResponseBuilderImpl extends Response.ResponseBuilder
    }
 
    @Override
-   public Response.ResponseBuilder status(int status)
+   public Response.ResponseBuilder status(int status, String reasonPhrase)
    {
       this.status = status;
+      this.reasonPhrase = reasonPhrase;
       return this;
+   }
+
+   @Override
+   public Response.ResponseBuilder status(int status)
+   {
+      return status(status, null);
    }
 
    @Override
