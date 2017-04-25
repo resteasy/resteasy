@@ -9,7 +9,7 @@ import javax.ws.rs.ext.ParamConverter;
 
 public class DateParamConverter implements ParamConverter<Date> {
 
-	private static final String DATE_PATTERN = "yyyyMMdd";
+	public static final String DATE_PATTERN = "yyyyMMdd";
 
 	@Override
 	public Date fromString(String param) {
