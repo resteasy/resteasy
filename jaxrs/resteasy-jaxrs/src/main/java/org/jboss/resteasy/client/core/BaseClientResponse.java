@@ -48,9 +48,9 @@ import static java.lang.String.format;
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
- * 
+ *
  * @deprecated The Resteasy client framework in resteasy-jaxrs is replaced by the JAX-RS 2.0 compliant resteasy-client module.
- * 
+ *
  * @see javax.ws.rs.core.Response
  * @see jaxrs-api (https://jcp.org/en/jsr/detail?id=339)
  */
@@ -337,7 +337,10 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    {
       try
       {
-         this.streamFactory.getInputStream().reset();
+          if (this.streamFactory.getInputStream().markSupported())
+          {
+             this.streamFactory.getInputStream().reset();
+          }
       }
       catch (IOException e)
       {
@@ -387,7 +390,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
       if (unmarshaledEntity != null && !type.isInstance(this.unmarshaledEntity))
          throw new RuntimeException(Messages.MESSAGES.entityAlreadyRead(unmarshaledEntity.getClass()));
-         
+
       if (unmarshaledEntity == null)
       {
          if (status == HttpResponseCodes.SC_NO_CONTENT)
