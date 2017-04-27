@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
  * @tpSubChapter Spring
  * @tpChapter Integration tests - dependencies included in deployment
  * @tpTestCaseDetails Test extension mapping by ResteasyDeployment property mediaTypeMappings.
- * Logic of this test is in spring-typemapping-test-server.xml
+ * Logic of this test is in spring-typemapping-test-server.xml.
  * @tpSince RESTEasy 3.0.16
  */
 @RunWith(Arquillian.class)
@@ -68,7 +68,7 @@ public class TypeMappingDependenciesInDeploymentTest {
         Response response = builder.get();
         int status = response.getStatus();
         String contentType = response.getHeaderString("Content-type");
-        assertEquals(TestUtil.getErrorMessageForKnownIssue("JBEAP-2963", "Request for " + url + " returned a non-200 status"), HttpResponseCodes.SC_OK, status);
+        assertEquals("Request for " + url + " returned a non-200 status", HttpResponseCodes.SC_OK, status);
         assertEquals("Request for " + url + " returned an unexpected content type", expectedContentType, contentType);
 
         // close
@@ -77,17 +77,17 @@ public class TypeMappingDependenciesInDeploymentTest {
     }
 
     /**
-     * @tpTestDetails Test various option of type mapping.
+     * @tpTestDetails Test various option of type mapping. Reproducer for RESTEASY-1287.
      * @tpSince RESTEasy 3.0.16
      */
     @Test
-    @Category({ ExpectedFailing.class, NotForForwardCompatibility.class})
+    @Category({NotForForwardCompatibility.class})
     public void test() throws Exception {
         // acceptJSONAndXMLRequestNoProducesJSONExtension() throws Exception {
         requestAndAssert("noproduces", "json", "application/json, application/xml", "application/json");
 
         // acceptJSONAndXMLRequestNoProducesXMLExtension() throws Exception {
-        requestAndAssert("noproduces", "xml", "application/json, application/xml", "application/xml");
+        requestAndAssert("noproduces", "xml", "application/json, application/xml", "application/xml;charset=UTF-8");
 
         // acceptJSONOnlyRequestNoProducesJSONExtension() throws Exception {
         requestAndAssert("noproduces", "json", "application/json", "application/json");
@@ -96,27 +96,27 @@ public class TypeMappingDependenciesInDeploymentTest {
         requestAndAssert("noproduces", null, "application/json", "application/json");
 
         // acceptJSONOnlyRequestNoProducesXMLExtension() throws Exception {
-        requestAndAssert("noproduces", "xml", "application/json", "application/xml");
+        requestAndAssert("noproduces", "xml", "application/json", "application/xml;charset=UTF-8");
 
         // acceptNullRequestNoProducesJSONExtension() throws Exception {
         requestAndAssert("noproduces", "json", null, "application/json");
 
         // acceptNullRequestNoProducesXMLExtension() throws Exception {
-        requestAndAssert("noproduces", "xml", null, "application/xml");
+        requestAndAssert("noproduces", "xml", null, "application/xml;charset=UTF-8");
 
         // acceptXMLAndJSONRequestNoProducesJSONExtension() throws Exception {
         requestAndAssert("noproduces", "json", "application/xml, application/json", "application/json");
 
         // acceptXMLAndJSONRequestNoProducesXMLExtension() throws Exception {
-        requestAndAssert("noproduces", "xml", "application/xml, application/json", "application/xml");
+        requestAndAssert("noproduces", "xml", "application/xml, application/json", "application/xml;charset=UTF-8");
 
         // acceptXMLOnlyRequestNoProducesJSONExtension() throws Exception {
         requestAndAssert("noproduces", "json", "application/xml", "application/json");
 
         // acceptXMLOnlyRequestNoProducesNoExtension() throws Exception {
-        requestAndAssert("noproduces", null, "application/xml", "application/xml");
+        requestAndAssert("noproduces", null, "application/xml", "application/xml;charset=UTF-8");
 
         // acceptXMLOnlyRequestNoProducesXMLExtension() throws Exception {
-        requestAndAssert("noproduces", "xml", "application/xml", "application/xml");
+        requestAndAssert("noproduces", "xml", "application/xml", "application/xml;charset=UTF-8");
     }
 }
