@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.ViolationReport;
+import org.jboss.resteasy.utils.maven.MavenUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -338,5 +339,35 @@ public class TestUtil {
         Assert.assertEquals("Different count of class violations expected", classCount, e.getClassViolations().size());
         Assert.assertEquals(parameterCount, e.getParameterViolations().size());
         Assert.assertEquals(returnValueCount, e.getReturnValueViolations().size());
+    }
+
+    /**
+     * Get specified single dependency
+     *
+     * @param dependency
+     * @return Dependency gav
+     */
+    public static File resolveDependency(String dependency) {
+        MavenUtil mavenUtil;
+        mavenUtil = MavenUtil.create(true);
+        File mavenGav;
+
+        try {
+            mavenGav = mavenUtil.createMavenGavFile(dependency);
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to get artifacts from maven via Aether library", e);
+        }
+
+        return mavenGav;
+    }
+
+    /**
+     * Adds additional dependency needed for the deployment tests. Specified by parameter in the format 'groupId:artifactId:version'
+     *
+     * @param archive
+     * @param dependency
+     */
+    public static void addOtherLibrary(WebArchive archive, String dependency) {
+        archive.addAsLibrary(resolveDependency(dependency));
     }
 }
