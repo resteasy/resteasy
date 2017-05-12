@@ -175,49 +175,53 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       JsonEncoding enc = findEncoding(mediaType, httpHeaders);
       JsonGenerator jg = writer.getFactory().createGenerator(entityStream, enc);
 
-      try {
-         // Want indentation?
-         if (writer.isEnabled(SerializationFeature.INDENT_OUTPUT) || withIndentOutput) {
-            jg.useDefaultPrettyPrinter();
-         }
-         // 04-Mar-2010, tatu: How about type we were given? (if any)
-         JavaType rootType = null;
+      // Want indentation?
+      if (writer.isEnabled(SerializationFeature.INDENT_OUTPUT) || withIndentOutput) {
+         jg.useDefaultPrettyPrinter();
+      }
+      // 04-Mar-2010, tatu: How about type we were given? (if any)
+      JavaType rootType = null;
 
-         if (genericType != null && value != null) {
+      if (genericType != null && value != null) {
             /* 10-Jan-2011, tatu: as per [JACKSON-456], it's not safe to just force root
             *    type since it prevents polymorphic type serialization. Since we really
             *    just need this for generics, let's only use generic type if it's truly
             *    generic.
             */
-            if (genericType.getClass() != Class.class) { // generic types are other impls of 'java.lang.reflect.Type'
+         if (genericType.getClass() != Class.class) { // generic types are other impls of 'java.lang.reflect.Type'
                /* This is still not exactly right; should root type be further
                * specialized with 'value.getClass()'? Let's see how well this works before
                * trying to come up with more complete solution.
                */
-               rootType = writer.getTypeFactory().constructType(genericType);
+            rootType = writer.getTypeFactory().constructType(genericType);
                /* 26-Feb-2011, tatu: To help with [JACKSON-518], we better recognize cases where
                *    type degenerates back into "Object.class" (as is the case with plain TypeVariable,
                *    for example), and not use that.
                */
-               if (rootType.getRawClass() == Object.class) {
-                  rootType = null;
-               }
+            if (rootType.getRawClass() == Object.class) {
+               rootType = null;
             }
          }
+      }
 
-         // Most of the configuration now handled through EndpointConfig, ObjectWriter
-         // but we may need to force root type:
-         if (rootType != null) {
-            writer = writer.withType(rootType);
-         }
-         value = endpoint.modifyBeforeWrite(value);
-         ObjectWriterModifier mod = ObjectWriterInjector.getAndClear();
-         if (mod != null) {
-             writer = mod.modify(endpoint, httpHeaders, value, writer, jg);
-         }
+      // Most of the configuration now handled through EndpointConfig, ObjectWriter
+      // but we may need to force root type:
+      if (rootType != null) {
+         writer = writer.withType(rootType);
+      }
+      value = endpoint.modifyBeforeWrite(value);
+      ObjectWriterModifier mod = ObjectWriterInjector.getAndClear();
+      if (mod != null) {
+         writer = mod.modify(endpoint, httpHeaders, value, writer, jg);
+      }
+
+      try {
          writer.writeValue(jg, value);
-      } finally {
          jg.close();
+      } catch (Exception e) {
+         // 2-Nov-2016 [RESTEASY-1532] allow calling class to check for ExceptionMapper
+         // for this failure.
+         throw e;
       }
    }
 
