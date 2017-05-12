@@ -174,6 +174,7 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       */
       JsonEncoding enc = findEncoding(mediaType, httpHeaders);
       JsonGenerator jg = writer.getFactory().createGenerator(entityStream, enc);
+      jg.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
 
       try {
          // Want indentation?
