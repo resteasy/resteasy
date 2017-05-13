@@ -1886,6 +1886,31 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       return null;
    }
+   
+   public List<MessageBodyWriter<?>> getPossibleMessageBodyWriters(Class type, Type genericType, Annotation[] annotations)
+   {
+      List<MessageBodyWriter<?>> list = new ArrayList<MessageBodyWriter<?>>();
+      MediaType mediaType = MediaType.WILDCARD_TYPE;
+      List<SortedKey<MessageBodyWriter>> writers = getServerMessageBodyWriters().getPossible(mediaType, type);
+      for (SortedKey<MessageBodyWriter> writer : writers)
+      {
+         if (writer.obj.isWriteable(type, genericType, annotations, mediaType))
+         {
+            MessageBodyWriter mbw = writer.obj;
+            Class writerType = Types.getTemplateParameterOfInterface(mbw.getClass(), MessageBodyWriter.class);
+            if (writerType == null || writerType.equals(Object.class) || !writerType.isAssignableFrom(type)) continue;
+            Produces produces = mbw.getClass().getAnnotation(Produces.class);
+            if (produces == null) continue;
+            for (String produce : produces.value())
+            {
+               MediaType mt = MediaType.valueOf(produce);
+               if (mt.isWildcardType() || mt.isWildcardSubtype()) continue;
+               list.add(mbw);
+            }
+         }
+      }
+      return list;
+   }
 
    public <T> MessageBodyWriter<T> getServerMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {

@@ -16,9 +16,11 @@ import javax.ws.rs.NotAcceptableException;
 import javax.ws.rs.NotAllowedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.NotSupportedException;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +41,7 @@ import java.util.regex.Pattern;
 public class SegmentNode
 {
    public static final String RESTEASY_CHOSEN_ACCEPT = "RESTEASY_CHOSEN_ACCEPT";
+   public static final String RESTEASY_SERVER_HAS_PRODUCES = "RESTEASY-SERVER-HAS-PRODUCES";
    public static final MediaType[] WILDCARD_ARRAY = {MediaType.WILDCARD_TYPE};
    public static final List<MediaType> DEFAULT_ACCEPTS = new ArrayList<MediaType>();
 
@@ -284,6 +287,32 @@ public class SegmentNode
             if ("q".equals(name)
                     || "qs".equals(name)) continue;
             params.put(name, entry.getValue());
+         }
+         Annotation[] annotations = match.expression.invoker.getMethod().getAnnotations();
+         boolean hasProduces = false;
+         for (Annotation annotation : annotations)
+         {
+            if (annotation instanceof Produces)
+            {
+               hasProduces = true;
+               break;
+            }
+         }
+         if (!hasProduces)
+         {
+            annotations = match.expression.invoker.getMethod().getClass().getAnnotations();
+            for (Annotation annotation : annotations)
+            {
+               if (annotation instanceof Produces)
+               {
+                  hasProduces = true;
+                  break;
+               }
+            }
+         }
+         if (hasProduces)
+         {
+            params.put(RESTEASY_SERVER_HAS_PRODUCES, "true"); 
          }
          return new MediaType(produces.type, produces.subtype, params);
       }
