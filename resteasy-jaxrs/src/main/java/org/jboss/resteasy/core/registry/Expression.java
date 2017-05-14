@@ -49,6 +49,7 @@ public abstract class Expression implements Comparable<Expression>
          {
             String expr = withPathParam.group(3);
             expr = PathHelper.recoverEnclosedCurlyBraces(expr);
+            expr = PathHelper.replaceCapturingGroup(expr);
             buffer.append(expr);
             numNonDefaultGroups++;
             groups.add(new Group(groupNumber++, name));

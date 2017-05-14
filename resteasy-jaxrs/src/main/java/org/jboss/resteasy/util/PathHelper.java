@@ -76,4 +76,13 @@ public class PathHelper
       return str.replace(openCurlyReplacement, '{').replace(closeCurlyReplacement, '}');
    }
 
+   public static String replaceCapturingGroup(String expr)
+   {
+      if (expr.startsWith("(") && !expr.startsWith("(?")) {
+         return expr.replace("(", "(?:");
+      } else {
+         return expr;
+      }
+   }
+
 }
