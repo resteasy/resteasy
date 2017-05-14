@@ -462,12 +462,20 @@ public class SegmentNode
       }
       Collections.sort(sortList);
       SortEntry sortEntry = sortList.get(0);
-      if (targetMethods != null && targetMethods.size() > 1)
+      if (targetMethods != null && targetMethods.size() > 1 && !checkExpressionsUnique(sortList))
       {
          LogMessages.LOGGER.multipleMethodsMatch(requestToString(request), methodNames(targetMethods));
       }
       request.setAttribute(RESTEASY_CHOSEN_ACCEPT, sortEntry.getAcceptType());
       return sortEntry.match;
+   }
+
+   private boolean checkExpressionsUnique(List<SortEntry> sortList){
+      Set<String> regexps = new HashSet<>();
+      for(SortEntry elm: sortList){
+         regexps.add(elm.match.expression.getRegex());
+      }
+      return regexps.size() == sortList.size();
    }
 
    protected void addExpression(MethodExpression expression)
