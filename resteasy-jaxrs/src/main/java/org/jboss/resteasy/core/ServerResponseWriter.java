@@ -137,6 +137,7 @@ public class ServerResponseWriter
               providerFactory, ent, type, generic, annotations, jaxrsResponse.getMediaType(),
               jaxrsResponse.getMetadata(), os, request);
       writerContext.proceed();
+      response.setOutputStream(writerContext.getOutputStream()); //propagate interceptor changes on the outputstream to the response
       callback.commit(); // just in case the output stream is never used
    }
 

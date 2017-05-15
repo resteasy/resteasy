@@ -22,7 +22,7 @@ public class HttpServletResponseWrapper implements HttpResponse
    protected OutputStream outputStream = new DeferredOutputStream();
 
    /**
-    * RESTEASY-684 wants to defer access to outputstream until a write/flush/close happens
+    * RESTEASY-684 wants to defer access to outputstream until a write happens
     *
     */
    protected class DeferredOutputStream extends OutputStream
@@ -48,13 +48,13 @@ public class HttpServletResponseWrapper implements HttpResponse
       @Override
       public void flush() throws IOException
       {
-         response.getOutputStream().flush();
+         //NOOP (RESTEASY-1650)
       }
 
       @Override
       public void close() throws IOException
       {
-         response.getOutputStream().close();
+         //NOOP (RESTEASY-1650)
       }
    }
 
