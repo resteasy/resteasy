@@ -6,20 +6,18 @@ JBoss's Maven Repository is at:
    </para>
    <para>
 
-     RESTeasy is modularized into 20 plus components.  Each component is accessible as a maven
-     archive.  As a convenience RESTeasy provides a BOM containing the complete set of components
+     RESTEasy is modularized into 20 plus components.  Each component is accessible as a Maven
+     artifact.  As a convenience RESTEasy provides a BOM containing the complete set of components
      with the appropriate versions for the "stack".
    </para>
    <para>
-
      It is recommended to declare the BOM in your POM file, that way you will always
      be sure to get the correct version of the artifacts.  In addition, you will not need
-     to declare the version of each RESTeasy artifact called out in the dependencies section.
+     to declare the version of each RESTEasy artifact called out in the dependencies section.
    </para>
    <para>
-
      Declare the BOM file in the dependencyManagement section of the POM file like this.
-     Note that maven version 2.0.9 or higher is required to process BOM files.
+     Note that Maven version 2.0.9 or higher is required to process BOM files.
    </para>
   <programlisting>
     <![CDATA[
@@ -37,7 +35,7 @@ JBoss's Maven Repository is at:
   ]]>
   </programlisting>
    <para>
-     Declare the specific RESTeasy artifacts you require in the dependencies section of the
+     Declare the specific RESTEasy artifacts you require in the dependencies section of the
      POM file like this.
    </para>
   <programlisting>
@@ -52,7 +50,7 @@ JBoss's Maven Repository is at:
   ]]>
   </programlisting>
    <para>
-     It is possible to reference an RESTeasy artifact version not in the current BOM
+     It is possible to reference a RESTEasy artifact version not in the current BOM
      by specifying a version in the dependency itself.
    </para>
   <programlisting>
