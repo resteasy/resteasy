@@ -21,6 +21,7 @@ import javax.ws.rs.ext.Providers;
 import javax.ws.rs.ext.ReaderInterceptor;
 
 import java.io.ByteArrayInputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -129,7 +130,24 @@ public abstract class ClientResponse extends BuiltResponse
    {
       if (bufferedEntity != null) return new ByteArrayInputStream(bufferedEntity);
       if (isClosed()) throw new ProcessingException(Messages.MESSAGES.streamIsClosed());
-      return getInputStream();
+      InputStream is = getInputStream();
+      return is != null ? new InputStreamWrapper(is, this) : null;
+   }
+   
+   private static class InputStreamWrapper extends FilterInputStream {
+      
+      private ClientResponse response;
+      
+      protected InputStreamWrapper(InputStream in, ClientResponse response) {
+         super(in);
+         this.response = response;
+      }
+      
+      @Override
+      public void close() throws IOException {
+         super.close();
+         this.response.close();
+      }
    }
 
    protected abstract void setInputStream(InputStream is);
