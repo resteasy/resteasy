@@ -176,7 +176,9 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
       *   HTTP headers?
       */
       JsonEncoding enc = findEncoding(mediaType, httpHeaders);
-      final JsonGenerator jg = writer.getFactory().createGenerator(entityStream, enc);
+
+      JsonGenerator jg = writer.getFactory().createGenerator(entityStream, enc);
+      jg.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
 
       try {
          // Want indentation?
@@ -224,11 +226,12 @@ public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
          } else {
             final ObjectWriter smWriter = writer;
             final Object smValue = value;
+            final JsonGenerator smJg = jg;
             AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
                @Override
                public Object run() throws Exception {
 
-                  smWriter.writeValue(jg, smValue);
+                  smWriter.writeValue(smJg, smValue);
                   return null;
                }
             });

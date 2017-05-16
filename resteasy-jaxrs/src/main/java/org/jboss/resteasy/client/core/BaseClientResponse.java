@@ -331,7 +331,10 @@ public class BaseClientResponse<T> extends ClientResponse<T>
    {
       try
       {
-         this.streamFactory.getInputStream().reset();
+          if (this.streamFactory.getInputStream().markSupported())
+          {
+             this.streamFactory.getInputStream().reset();
+          }
       }
       catch (IOException e)
       {
@@ -381,7 +384,7 @@ public class BaseClientResponse<T> extends ClientResponse<T>
 
       if (unmarshaledEntity != null && !type.isInstance(this.unmarshaledEntity))
          throw new RuntimeException(Messages.MESSAGES.entityAlreadyRead(unmarshaledEntity.getClass()));
-         
+
       if (unmarshaledEntity == null)
       {
          if (status == HttpResponseCodes.SC_NO_CONTENT)

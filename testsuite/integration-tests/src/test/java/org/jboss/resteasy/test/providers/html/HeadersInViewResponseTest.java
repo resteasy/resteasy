@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.category.NotForForwardCompatibility;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.providers.html.resource.HeadersInViewResponseResource;
@@ -23,6 +24,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
 /**
@@ -63,6 +65,7 @@ public class HeadersInViewResponseTest {
      * @tpSince RESTEasy 3.1.3.Final
      */
     @Test
+    @Category(NotForForwardCompatibility.class)
     public void testView() throws Exception {
        
        Invocation.Builder request = client.target(generateURL("/test/get")).request();
@@ -74,20 +77,23 @@ public class HeadersInViewResponseTest {
        Assert.assertEquals("value2", map.get("name2").getValue());
     }
     
-    private static File getResteasyHtmlJar()
-    {
+    private static File getResteasyHtmlJar() {
+
+        // Find resteasy-html jar in target
        Path path = Paths.get("..", "..", "providers", "resteasy-html", "target");
        String s = path.toAbsolutePath().toString();
-       System.out.println("s: " + s);
        File dir = new File(s);
-       for (File file : dir.listFiles())
-       {
-          String name = file.getName();
-          if (name.startsWith("resteasy-html") && name.endsWith(".jar") && !name.contains("sources"))
-          {
-             return file;
-          }
+       if (dir.exists() && dir.isDirectory()) {
+           for (File file : dir.listFiles()) {
+               String name = file.getName();
+               if (name.startsWith("resteasy-html") && name.endsWith(".jar") && !name.contains("sources")) {
+                   return file;
+               }
+           }
        }
-       return null;
+
+       // If not found in target, try repository
+       String version = System.getProperty("project.version");
+       return TestUtil.resolveDependency("org.jboss.resteasy:resteasy-html:" + version);
     }
 }

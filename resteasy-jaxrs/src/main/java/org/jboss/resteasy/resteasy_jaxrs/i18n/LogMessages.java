@@ -178,8 +178,12 @@ public interface LogMessages extends BasicLogger
    void mediaTypeLacksCharset(MediaType mediaType, String method);
    
    @LogMessage(level = Level.INFO)
-   @Message(id = BASE + 230, value = "unable to close entity stream")
+   @Message(id = BASE + 230, value = "Unable to close entity stream")
    void unableToCloseEntityStream(@Cause Throwable cause);
+
+   @LogMessage(level = Level.INFO)
+   @Message(id = BASE + 235, value = "Unable to decode GZIP compressed Base64 data")
+   void unableToDecodeGZIPBase64(@Cause Throwable cause);
    
    
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -209,6 +213,10 @@ public interface LogMessages extends BasicLogger
    @LogMessage(level = Level.DEBUG)
    @Message(id = BASE + 320, value = "RUNNING JOB!!!!")
    void runningJob();
+   
+   @LogMessage(level = Level.DEBUG)
+   @Message(id = BASE + 322, value = "Temporary file %s has been created. Consider deleting after it has been used.")
+   void temporaryFileCreated(String fileName);
    
    @LogMessage(level = Level.DEBUG)
    @Message(id = BASE + 325, value = "Unable to retrieve config: disableDTDs defaults to true")
