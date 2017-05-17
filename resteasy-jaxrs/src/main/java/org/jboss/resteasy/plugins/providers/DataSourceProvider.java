@@ -9,8 +9,6 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.NoContent;
 
-import javax.xml.transform.stream.StreamSource;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -114,7 +112,6 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
          int count = in.read(buffer, 0, buffer.length);
          if (count > -1) {
              tempFile = File.createTempFile("resteasy-provider-datasource", null);
-             tempFile.deleteOnExit();
              FileOutputStream fos = new FileOutputStream(tempFile);
              fos.write(buffer, 0, count);
              try
@@ -250,7 +247,10 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
 	   {
 		   if(tempFile.exists())
 		   {
-			   tempFile.delete();
+			   if (!tempFile.delete()) //set delete on exit only if the file can't be deleted now
+			   {
+			      tempFile.deleteOnExit();
+			   }
 		   }
 	   }
    }
