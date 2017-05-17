@@ -422,8 +422,6 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       }
       else
       {
-         File requestBodyFile = memoryManagedOutStream.getFile();
-         requestBodyFile.deleteOnExit();
          entityToBuild = new FileExposingFileEntity(memoryManagedOutStream.getFile(), request.getBodyContentType().toString());
       }
 
@@ -481,8 +479,8 @@ public class ApacheHttpClient4Executor implements ClientExecutor
    }
 
    /**
-    * Log that the file did not get deleted but prevent the request from failing by eating the exception. The file
-    * has been registered to delete on exit, so it will get deleted eventually.
+    * Log that the file did not get deleted but prevent the request from failing by eating the exception.
+    * Register the file to be deleted on exit, so it will get deleted eventually.
     *
     * @param tempRequestFile -
     * @param ex              - a null may be passed in which case this param gets ignored.
@@ -490,6 +488,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
    private void handleFileNotDeletedError(File tempRequestFile, Exception ex)
    {
       LogMessages.LOGGER.couldNotDeleteFile(tempRequestFile.getAbsolutePath(), ex);
+      tempRequestFile.deleteOnExit();
    }
 
    /**
