@@ -90,7 +90,7 @@ public interface LogMessages extends BasicLogger
    void couldNotBindToDirectory(String directory);
    
    @LogMessage(level = Level.WARN)
-   @Message(id = BASE + 125, value = "Could not delete file '%s' for request: ")
+   @Message(id = BASE + 125, value = "Marking file '%s' to be deleted, as it could not be deleted while processing request:")
    void couldNotDeleteFile(String path, @Cause Throwable cause);
    
    @LogMessage(level = Level.WARN)
