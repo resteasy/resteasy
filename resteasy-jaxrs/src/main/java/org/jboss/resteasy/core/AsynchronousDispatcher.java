@@ -131,6 +131,12 @@ public class AsynchronousDispatcher extends SynchronousDispatcher
       counter = new SecureRandomWrapper();
    }
 
+   public AsynchronousDispatcher(ResteasyProviderFactory providerFactory, ResourceMethodRegistry registry)
+   {
+      super(providerFactory, registry);
+      counter = new SecureRandomWrapper();
+   }
+
    /**
     * Max response cache size default is 100
     *

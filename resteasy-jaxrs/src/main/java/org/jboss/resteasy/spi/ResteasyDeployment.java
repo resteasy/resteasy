@@ -110,25 +110,30 @@ public class ResteasyDeployment
 
       if (asyncJobServiceEnabled)
       {
-         AsynchronousDispatcher asyncDispatcher = new AsynchronousDispatcher(providerFactory);
+         AsynchronousDispatcher asyncDispatcher;
+         if (dispatcher == null) {
+            asyncDispatcher = new AsynchronousDispatcher(providerFactory);
+            dispatcher = asyncDispatcher;
+         } else {
+            asyncDispatcher = (AsynchronousDispatcher) dispatcher;
+         }
          asyncDispatcher.setMaxCacheSize(asyncJobServiceMaxJobResults);
          asyncDispatcher.setMaxWaitMilliSeconds(asyncJobServiceMaxWait);
          asyncDispatcher.setThreadPoolSize(asyncJobServiceThreadPoolSize);
          asyncDispatcher.setBasePath(asyncJobServiceBasePath);
          asyncDispatcher.getUnwrappedExceptions().addAll(unwrappedExceptions);
-         dispatcher = asyncDispatcher;
          asyncDispatcher.start();
       }
       else
       {
-         // If dispatcher is NOT null, that means it has already been set
-         // previously, so we don' want to do it again, otherwise the original
-         // one will be replaced
-         if(dispatcher == null) {
-            SynchronousDispatcher dis = new SynchronousDispatcher(providerFactory);
-            dis.getUnwrappedExceptions().addAll(unwrappedExceptions);
+         SynchronousDispatcher dis;
+         if (dispatcher == null) {
+            dis = new SynchronousDispatcher(providerFactory);
             dispatcher = dis;
+         } else {
+            dis = (SynchronousDispatcher) dispatcher;
          }
+         dis.getUnwrappedExceptions().addAll(unwrappedExceptions);
       }
       registry = dispatcher.getRegistry();
       if (widerRequestMatching)
