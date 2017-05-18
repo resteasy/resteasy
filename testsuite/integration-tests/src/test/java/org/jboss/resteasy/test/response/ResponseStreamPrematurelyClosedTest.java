@@ -23,7 +23,15 @@ package org.jboss.resteasy.test.response;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.ManagementFactory;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
+import javax.management.Notification;
+import javax.management.NotificationEmitter;
+import javax.management.NotificationListener;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation.Builder;
@@ -41,7 +49,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.junit.Assert;
 
 @RunWith(Arquillian.class)
@@ -82,7 +89,23 @@ public class ResponseStreamPrematurelyClosedTest
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       //builder.get().readEntity explicitly on the same line below and not saved in any temp variable
       //to let the JVM try finalizing the ClientResponse object
-      IOUtils.copy(builder.get().readEntity(InputStream.class), baos);
+      InputStream ins = builder.get().readEntity(InputStream.class);
+      //suggest jvm to do gc and wait the gc notification
+      final CountDownLatch coutDown = new CountDownLatch(1);
+      List<GarbageCollectorMXBean> gcbeans = ManagementFactory.getGarbageCollectorMXBeans();
+      for (GarbageCollectorMXBean gcbean : gcbeans) {
+          NotificationEmitter emitter = (NotificationEmitter) gcbean;
+          NotificationListener listener = new NotificationListener() {
+              public void handleNotification(Notification notification,
+                      Object handback) {
+                  coutDown.countDown();
+              }
+          };
+          emitter.addNotificationListener(listener, null, null);
+      }
+      System.gc();
+      coutDown.await(10, TimeUnit.SECONDS);
+      IOUtils.copy(ins, baos);
       Assert.assertEquals(100000000, baos.size());
    }
 
