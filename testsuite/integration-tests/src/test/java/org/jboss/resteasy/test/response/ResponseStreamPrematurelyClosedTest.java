@@ -92,21 +92,36 @@ public class ResponseStreamPrematurelyClosedTest
       InputStream ins = builder.get().readEntity(InputStream.class);
       //suggest jvm to do gc and wait the gc notification
       final CountDownLatch coutDown = new CountDownLatch(1);
+
       List<GarbageCollectorMXBean> gcbeans = ManagementFactory.getGarbageCollectorMXBeans();
-      for (GarbageCollectorMXBean gcbean : gcbeans) {
-          NotificationEmitter emitter = (NotificationEmitter) gcbean;
-          NotificationListener listener = new NotificationListener() {
-              public void handleNotification(Notification notification,
-                      Object handback) {
-                  coutDown.countDown();
-              }
-          };
-          emitter.addNotificationListener(listener, null, null);
+      NotificationListener listener = new NotificationListener()
+      {
+         public void handleNotification(Notification notification, Object handback)
+         {
+            coutDown.countDown();
+         }
+      };
+      try
+      {
+         for (GarbageCollectorMXBean gcbean : gcbeans)
+         {
+            NotificationEmitter emitter = (NotificationEmitter) gcbean;
+            emitter.addNotificationListener(listener, null, null);
+         }
+         System.gc();
+         coutDown.await(10, TimeUnit.SECONDS);
+
+         IOUtils.copy(ins, baos);
+         Assert.assertEquals(100000000, baos.size());
       }
-      System.gc();
-      coutDown.await(10, TimeUnit.SECONDS);
-      IOUtils.copy(ins, baos);
-      Assert.assertEquals(100000000, baos.size());
+      finally
+      {
+         //remove the listener
+         for (GarbageCollectorMXBean gcbean : gcbeans)
+         {
+            ((NotificationEmitter)gcbean).removeNotificationListener(listener);
+         }
+      }
    }
 
 }
