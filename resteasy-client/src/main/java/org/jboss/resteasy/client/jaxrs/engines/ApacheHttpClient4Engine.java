@@ -566,6 +566,16 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       {
          File requestBodyFile = memoryManagedOutStream.getFile();
          requestBodyFile.deleteOnExit();
+
+         try {
+            // workaround for an issue with JDK (RESTEASY-1596)
+            if(!requestBodyFile.exists()){
+               handleFileNotDeletedError(requestBodyFile, null);
+            }
+         } catch (Exception ex) {
+            handleFileNotDeletedError(requestBodyFile, ex);
+         }
+
          entityToBuild = new FileExposingFileEntity(memoryManagedOutStream.getFile(), request.getHeaders().getMediaType().toString());
       }
 
