@@ -69,7 +69,7 @@ public class PathParamInjector implements ValueInjector
    private boolean isPathSegmentList(Class type, Type genericType)
    {
       Class collectionBaseType = Types.getCollectionBaseType(type, genericType);
-      return List.class.equals(type) && collectionBaseType != null && collectionBaseType.equals(PathSegment.class);
+      return List.class.isAssignableFrom(type) && collectionBaseType != null && collectionBaseType.equals(PathSegment.class);
    }
 
    public Object inject(HttpRequest request, HttpResponse response)
@@ -90,23 +90,20 @@ public class PathParamInjector implements ValueInjector
          {
             throw new InternalServerErrorException(Messages.MESSAGES.unknownPathParam(paramName, uriInfo.getPath()));
          }
-         PathSegment[] segments = list.get(list.size() - 1);
+         List<PathSegment> segmentList = flattenToList(list);
          if (pathSegmentArray)
          {
+            PathSegment[] segments = new PathSegment[segmentList.size()];
+            segments = segmentList.toArray(segments);
             return segments;
          }
          else if (pathSegmentList)
          {
-            ArrayList<PathSegment> pathlist = new ArrayList<PathSegment>();
-            for (PathSegment seg : segments)
-            {
-               pathlist.add(seg);
-            }
-            return pathlist;
+            return segmentList;
          }
          else
          {
-            return segments[segments.length - 1];
+            return segmentList.get(segmentList.size() - 1);
          }
       }
       else
@@ -140,4 +137,16 @@ public class PathParamInjector implements ValueInjector
       throw new RuntimeException(Messages.MESSAGES.illegalToInjectPathParam());
    }
 
+   private List<PathSegment> flattenToList(List<PathSegment[]> list)
+   {
+      ArrayList<PathSegment> psl = new ArrayList<PathSegment>();
+      for (PathSegment[] psa : list)
+      {
+         for (PathSegment ps : psa)
+         {
+            psl.add(ps);
+         }
+      }
+      return psl;
+   }
 }
