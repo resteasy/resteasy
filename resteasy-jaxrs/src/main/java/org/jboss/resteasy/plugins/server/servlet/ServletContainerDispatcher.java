@@ -214,11 +214,10 @@ public class ServletContainerDispatcher
             return;
          }
 
-         HttpResponse theResponse = responseFactory.createResteasyHttpResponse(response);
-         HttpRequest in = requestFactory.createResteasyHttpRequest(httpMethod, request, headers, uriInfo, theResponse, response);
-
-         try
+         try (HttpResponse theResponse = responseFactory.createResteasyHttpResponse(response))
          {
+            HttpRequest in = requestFactory.createResteasyHttpRequest(httpMethod, request, headers, uriInfo, theResponse, response);
+
             ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
             ResteasyProviderFactory.pushContext(HttpServletResponse.class, response);
 

@@ -42,6 +42,7 @@ public class ValidationThroughRestTest {
     public static Archive<?> createTestArchive() {
         WebArchive war = TestUtil.prepareArchive(ValidationThroughRestTest.class.getSimpleName())
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+
         return TestUtil.finishContainerPrepare(war, null, ValidationThroughRestResource.class);
     }
 

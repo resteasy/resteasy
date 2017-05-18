@@ -24,6 +24,7 @@ import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorCus
 import org.jboss.resteasy.test.spring.deployment.resource.SpringBeanProcessorScannedResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.PortProviderUtil;
+import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TestUtilSpring;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -89,7 +90,7 @@ public class SpringBeanProcessorDependenciesInDeploymentTest {
         archive.addClass(SpringBeanProcessorCustomerParamConverterProvider.class);
         archive.addClass(SpringBeanProcessorScannedResource.class);
         TestUtilSpring.addSpringLibraries(archive);
-        TestUtilSpring.addOtherLibrary(archive, "aopalliance:aopalliance:" + System.getProperty("version.aopalliance", "1.0"));
+        TestUtil.addOtherLibrary(archive, "aopalliance:aopalliance:" + System.getProperty("version.aopalliance", "1.0"));
         return archive;
     }
 

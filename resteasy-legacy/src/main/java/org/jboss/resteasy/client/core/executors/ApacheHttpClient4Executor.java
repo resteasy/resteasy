@@ -36,6 +36,7 @@ import org.jboss.resteasy.util.Types;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -114,6 +115,8 @@ public class ApacheHttpClient4Executor implements ClientExecutor
     */
    private File fileUploadTempFileDir = new File(System.getProperty("java.io.tmpdir"));
 
+   protected int responseBufferSize = 8192;
+
    public ApacheHttpClient4Executor()
    {
       this(new DefaultHttpClient(), null);
@@ -130,6 +133,28 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       this.httpClient = httpClient;
       this.httpContext = httpContext;
       checkClientExceptionMapper();
+   }
+
+   /**
+    * Response stream is wrapped in a BufferedInputStream.  Default is 8192.  Value of 0 will not wrap it.
+    * Value of -1 will use a SelfExpandingBufferedInputStream
+    *
+    *  @return
+    */
+   public int getResponseBufferSize()
+   {
+       return responseBufferSize;
+   }
+
+   /**
+    * Response stream is wrapped in a BufferedInputStream.  Default is 8192.  Value of 0 will not wrap it.
+    * Value of -1 will use a SelfExpandingBufferedInputStream
+    *
+    * @param responseBufferSize
+    */
+   public void setResponseBufferSize(int responseBufferSize)
+   {
+       this.responseBufferSize = responseBufferSize;
    }
 
    public HttpClient getHttpClient()
@@ -188,6 +213,21 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       }
    }
 
+   protected InputStream createBufferedStream(InputStream is)
+   {
+      if (responseBufferSize == 0)
+      {
+         return is;
+      }
+      if (responseBufferSize < 0)
+      {
+         return new SelfExpandingBufferredInputStream(is);
+      }
+      BufferedInputStream bis = new BufferedInputStream(is, responseBufferSize);
+      // mark read limit
+      bis.mark(responseBufferSize);
+      return bis;
+   }
 
    @SuppressWarnings("unchecked")
    public ClientResponse execute(ClientRequest request) throws Exception
@@ -211,7 +251,8 @@ public class ApacheHttpClient4Executor implements ClientExecutor
                {
                   HttpEntity entity = res.getEntity();
                   if (entity == null) return null;
-                  stream = new SelfExpandingBufferredInputStream(entity.getContent());
+                  // stream = new SelfExpandingBufferredInputStream(entity.getContent());
+                  stream = createBufferedStream(entity.getContent());
                }
                return stream;
             }
@@ -388,8 +429,6 @@ public class ApacheHttpClient4Executor implements ClientExecutor
       }
       else
       {
-         File requestBodyFile = memoryManagedOutStream.getFile();
-         requestBodyFile.deleteOnExit();
          entityToBuild = new FileExposingFileEntity(memoryManagedOutStream.getFile(), request.getBodyContentType().toString());
       }
 
@@ -447,8 +486,8 @@ public class ApacheHttpClient4Executor implements ClientExecutor
    }
 
    /**
-    * Log that the file did not get deleted but prevent the request from failing by eating the exception. The file
-    * has been registered to delete on exit, so it will get deleted eventually.
+    * Log that the file did not get deleted but prevent the request from failing by eating the exception.
+    * Register the file to be deleted on exit, so it will get deleted eventually.
     *
     * @param tempRequestFile -
     * @param ex              - a null may be passed in which case this param gets ignored.
@@ -456,6 +495,7 @@ public class ApacheHttpClient4Executor implements ClientExecutor
    private void handleFileNotDeletedError(File tempRequestFile, Exception ex)
    {
       LogMessages.LOGGER.couldNotDeleteFile(tempRequestFile.getAbsolutePath(), ex);
+      tempRequestFile.deleteOnExit();
    }
 
    /**
