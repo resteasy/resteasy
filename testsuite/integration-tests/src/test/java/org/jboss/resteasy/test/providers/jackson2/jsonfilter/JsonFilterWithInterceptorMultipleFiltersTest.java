@@ -43,6 +43,7 @@ public class JsonFilterWithInterceptorMultipleFiltersTest {
         WebArchive war = TestUtil.prepareArchive(JsonFilterWithInterceptorMultipleFiltersTest.class.getSimpleName());
         war.addClasses(Jackson2Person.class, PersonType.class, ObjectFilterModifierMultiple.class);
         war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
+
         return TestUtil.finishContainerPrepare(war, null, Jackson2PersonResource.class, JsonFilterModifierMultipleWriteInterceptor.class);
     }
 

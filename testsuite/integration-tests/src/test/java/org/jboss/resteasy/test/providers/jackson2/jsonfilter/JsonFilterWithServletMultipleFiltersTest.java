@@ -39,6 +39,7 @@ public class JsonFilterWithServletMultipleFiltersTest {
         war.addClasses(Jackson2Person.class, PersonType.class, ObjectFilterModifierMultiple.class, ObjectWriterModifierMultipleFilter.class);
         war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
         war.addAsWebInfResource(JsonFilterWithServletMultipleFiltersTest.class.getPackage(), "web-filter-multiple.xml", "web.xml");
+
         return TestUtil.finishContainerPrepare(war, null, Jackson2PersonResource.class);
     }
 

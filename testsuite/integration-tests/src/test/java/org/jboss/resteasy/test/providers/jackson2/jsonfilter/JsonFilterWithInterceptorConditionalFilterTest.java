@@ -46,6 +46,7 @@ public class JsonFilterWithInterceptorConditionalFilterTest {
         WebArchive war = TestUtil.prepareArchive(JsonFilterWithInterceptorConditionalFilterTest.class.getSimpleName());
         war.addClasses(Jackson2Product.class, ObjectFilterModifierConditional.class);
         war.addAsManifestResource(new StringAsset("Manifest-Version: 1.0\n" + "Dependencies: com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider\n"), "MANIFEST.MF");
+
         return TestUtil.finishContainerPrepare(war, null, Jackson2Resource.class, JsonFilterModifierConditionalWriterInterceptor.class);
     }
 
