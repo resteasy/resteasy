@@ -171,7 +171,11 @@ public class SynchronousDispatcher implements Dispatcher
             }
          }
       }
-      if (response.isCommitted()) throw new UnhandledException(Messages.MESSAGES.responseIsCommitted(), e);
+      if (response.isCommitted())
+      {
+         LogMessages.LOGGER.debug(Messages.MESSAGES.responseIsCommitted());
+         return;
+      }
       Response handledResponse = new ExceptionHandler(providerFactory, unwrappedExceptions).handleException(request, e);
       if (handledResponse == null) throw new UnhandledException(e);
       if (!bufferExceptionEntity)
