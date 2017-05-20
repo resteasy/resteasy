@@ -69,7 +69,7 @@ public class PathParamInjector implements ValueInjector
    private boolean isPathSegmentList(Class type, Type genericType)
    {
       Class collectionBaseType = Types.getCollectionBaseType(type, genericType);
-      return List.class.isAssignableFrom(type) && collectionBaseType != null && collectionBaseType.equals(PathSegment.class);
+      return (List.class.equals(type) || ArrayList.class.equals(type)) && collectionBaseType != null && collectionBaseType.equals(PathSegment.class);
    }
 
    public Object inject(HttpRequest request, HttpResponse response)
