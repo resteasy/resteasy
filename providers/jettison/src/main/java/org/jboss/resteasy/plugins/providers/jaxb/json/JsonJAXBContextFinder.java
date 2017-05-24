@@ -70,7 +70,7 @@ public class JsonJAXBContextFinder extends AbstractJAXBContextFinder implements 
          JAXBContext ctx = badgerXmlTypeCollectionCache.get(key);
          if (ctx != null) return ctx;
          ctx = createXmlTypeContext(annotations, classes);
-         badgerCollectionCache.put(key, ctx);
+         badgerXmlTypeCollectionCache.put(key, ctx);
          return ctx;
       }
       else
@@ -78,7 +78,7 @@ public class JsonJAXBContextFinder extends AbstractJAXBContextFinder implements 
          JAXBContext ctx = mappedXmlTypeCollectionCache.get(key);
          if (ctx != null) return ctx;
          ctx = createXmlTypeContext(annotations, classes);
-         mappedCollectionCache.put(key, ctx);
+         mappedXmlTypeCollectionCache.put(key, ctx);
          return ctx;
       }
    }

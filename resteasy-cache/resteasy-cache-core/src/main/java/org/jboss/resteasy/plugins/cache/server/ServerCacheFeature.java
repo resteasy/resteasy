@@ -61,10 +61,10 @@ public class ServerCacheFeature implements Feature
    protected ServerCache getCache(Configurable configurable)
    {
       if (this.cache != null) return this.cache;
-      ServerCache cache = (ServerCache)configurable.getConfiguration().getProperty(ServerCache.class.getName());
-      if (cache != null) return cache;
-      cache = getXmlCache(configurable);
-      if (cache != null) return cache;
+      ServerCache c = (ServerCache)configurable.getConfiguration().getProperty(ServerCache.class.getName());
+      if (c != null) return c;
+      c = getXmlCache(configurable);
+      if (c != null) return c;
       return getDefaultCache();
    }
 

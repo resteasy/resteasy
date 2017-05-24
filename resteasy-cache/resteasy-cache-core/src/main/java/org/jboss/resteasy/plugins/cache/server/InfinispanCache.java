@@ -187,6 +187,10 @@ public class InfinispanCache implements ServerCache
             {
                outList.add(new HeaderHolder(HeaderHolder.Type.CACHE_CONTROL, CacheControl.class.cast(o).toString()));
             }
+            else if (o instanceof NewCookie)
+            {
+               outList.add(new HeaderHolder(HeaderHolder.Type.NEW_COOKIE, NewCookie.class.cast(o).toString()));
+            }
             else if (o instanceof Cookie)
             {
                outList.add(new HeaderHolder(HeaderHolder.Type.COOKIE, Cookie.class.cast(o).toString()));     
@@ -194,10 +198,6 @@ public class InfinispanCache implements ServerCache
             else if (o instanceof EntityTag)
             {
                outList.add(new HeaderHolder(HeaderHolder.Type.ENTITY_TAG, EntityTag.class.cast(o).toString()));
-            }
-            else if (o instanceof NewCookie)
-            {
-               outList.add(new HeaderHolder(HeaderHolder.Type.NEW_COOKIE, NewCookie.class.cast(o).toString()));
             }
             else
             {

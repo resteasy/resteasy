@@ -78,16 +78,16 @@ public class ResteasyWadlMethodMetaData {
         List<Method> methodsUntilRoot = new ArrayList<Method>();
         methodsUntilRoot.add(method);
         serviceRegistry.collectResourceMethodsUntilRoot(methodsUntilRoot);
-        for (Method method : methodsUntilRoot) {
-            Annotation[][] allAnnotations = method.getParameterAnnotations();
-            Class<?>[] parameterTypes = method.getParameterTypes();
+        for (Method m : methodsUntilRoot) {
+            Annotation[][] allAnnotations = m.getParameterAnnotations();
+            Class<?>[] parameterTypes = m.getParameterTypes();
             for (int i = 0; i < parameterTypes.length; i++) {
                 processMetaData(parameterTypes[i], allAnnotations[i], true);
             }
         }
         // this must be after we scan the params in case of @Form
         this.consumesMIMETypes = getConsumes(consumes);
-        if (wantsForm && !"application/x-www-form-urlencoded".equals(consumesMIMETypes)) {
+        if (wantsForm && !consumesMIMETypes.contains("application/x-www-form-urlencoded")) {
             LogMessages.LOGGER.warn(Messages.MESSAGES.overridingConsumesAnnotation());
             this.consumesMIMETypes = Arrays.asList("application/x-www-form-urlencoded");
         }
