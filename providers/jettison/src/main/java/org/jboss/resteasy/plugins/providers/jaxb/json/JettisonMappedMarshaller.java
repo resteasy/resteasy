@@ -20,6 +20,7 @@ import javax.xml.validation.Schema;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 import java.util.Map;
@@ -56,9 +57,17 @@ public class JettisonMappedMarshaller extends BaseMarshaller
    {
       try
       {
-         marshal(o, new FileOutputStream(file));
+         FileOutputStream fos = new FileOutputStream(file);
+         try
+         {
+            marshal(o, fos);
+         }
+         finally
+         {
+            fos.close();
+         }
       }
-      catch (FileNotFoundException e)
+      catch (IOException e)
       {
          throw new JAXBException(e);
       }
