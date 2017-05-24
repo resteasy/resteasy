@@ -81,7 +81,7 @@ public class ResourceMethodRegistry implements Registry
    {
       POJOResourceFactory resourceFactory = new POJOResourceFactory(clazz);
       register(resourceFactory, null, clazz);
-      if (resourceFactory != null) resourceFactory.registered(providerFactory);
+      resourceFactory.registered(providerFactory);
    }
 
    @Override
@@ -89,7 +89,7 @@ public class ResourceMethodRegistry implements Registry
    {
       POJOResourceFactory resourceFactory = new POJOResourceFactory(clazz);
       register(resourceFactory, basePath, clazz);
-      if (resourceFactory != null) resourceFactory.registered(providerFactory);
+      resourceFactory.registered(providerFactory);
    }
 
    public void addSingletonResource(Object singleton)
@@ -107,7 +107,7 @@ public class ResourceMethodRegistry implements Registry
    {
       SingletonResource resourceFactory = new SingletonResource(singleton, resourceClass);
       register(resourceFactory, null, resourceClass);
-      if (resourceFactory != null) resourceFactory.registered(providerFactory);
+      resourceFactory.registered(providerFactory);
    }
 
    @Override
@@ -115,7 +115,7 @@ public class ResourceMethodRegistry implements Registry
    {
       SingletonResource resourceFactory = new SingletonResource(singleton);
       register(resourceFactory, basePath, resourceClass);
-      if (resourceFactory != null) resourceFactory.registered(providerFactory);
+      resourceFactory.registered(providerFactory);
    }
 
 
@@ -134,7 +134,7 @@ public class ResourceMethodRegistry implements Registry
    {
       JndiResourceFactory resourceFactory = new JndiResourceFactory(jndiName);
       register(resourceFactory, null, resourceClass);
-      if (resourceFactory != null) resourceFactory.registered(providerFactory);
+      resourceFactory.registered(providerFactory);
    }
 
    @Override
@@ -142,7 +142,7 @@ public class ResourceMethodRegistry implements Registry
    {
       JndiResourceFactory resourceFactory = new JndiResourceFactory(jndiName);
       register(resourceFactory, basePath, resourceClass);
-      if (resourceFactory != null) resourceFactory.registered(providerFactory);
+      resourceFactory.registered(providerFactory);
    }
 
 

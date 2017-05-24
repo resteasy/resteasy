@@ -615,8 +615,8 @@ public class MultipartInputImpl implements MultipartInput, ProvidersContextRetai
 
                for (Iterator<File> iterator = filesToDelete.iterator(); iterator.hasNext();)
                {
-                  File file = iterator.next();
-                  if (file.delete())
+                  File f = iterator.next();
+                  if (f.delete())
                   {
                      iterator.remove();
                   }

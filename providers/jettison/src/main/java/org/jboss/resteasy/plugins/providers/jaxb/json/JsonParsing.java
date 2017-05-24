@@ -60,7 +60,7 @@ public class JsonParsing
                }
             }
          }
-      } while (openBrace > 0 && i != -1);
+      } while (openBrace > 0);
       return buffer.toString();
    }
 
@@ -104,7 +104,7 @@ public class JsonParsing
 
             }
          }
-      } while (quote && i != -1);
+      } while (quote);
       return buffer.toString();
    }
 

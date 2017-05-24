@@ -22,7 +22,7 @@ public abstract class AbstractCollectionProcessor<T>
       if (object == null) return target;
       if (object instanceof Collection)
       {
-         for (Object obj : (Collection) object)
+         for (Object obj : (Collection<?>) object)
          {
             target = apply(target, obj);
          }
@@ -31,34 +31,34 @@ public abstract class AbstractCollectionProcessor<T>
       {
          if (object.getClass().getComponentType().isPrimitive())
          {
-            Class componentType = object.getClass().getComponentType();
+            Class<?> componentType = object.getClass().getComponentType();
             if (componentType.equals(boolean.class))
             {
-               for (Boolean bool : (boolean[]) object) target = apply(target, bool.toString());
+               for (boolean bool : (boolean[]) object) target = apply(target, bool);
             }
             else if (componentType.equals(byte.class))
             {
-               for (Byte val : (byte[]) object) target = apply(target, val.toString());
+               for (byte val : (byte[]) object) target = apply(target, val);
             }
             else if (componentType.equals(short.class))
             {
-               for (Short val : (short[]) object) target = apply(target, val.toString());
+               for (short val : (short[]) object) target = apply(target, val);
             }
             else if (componentType.equals(int.class))
             {
-               for (Integer val : (int[]) object) target = apply(target, val.toString());
+               for (int val : (int[]) object) target = apply(target, val);
             }
             else if (componentType.equals(long.class))
             {
-               for (Long val : (long[]) object) target = apply(target, val.toString());
+               for (long val : (long[]) object) target = apply(target, val);
             }
             else if (componentType.equals(float.class))
             {
-               for (Float val : (float[]) object) target = apply(target, val.toString());
+               for (float val : (float[]) object) target = apply(target, val);
             }
             else if (componentType.equals(double.class))
             {
-               for (Double val : (double[]) object) target = apply(target, val.toString());
+               for (double val : (double[]) object) target = apply(target, val);
             }
          }
          else
