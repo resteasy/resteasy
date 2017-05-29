@@ -58,7 +58,10 @@ public class CdiConstructorInjector implements ConstructorInjector
          beans = modifiableBeans;
       }
       
-      LogMessages.LOGGER.debug(Messages.MESSAGES.beansFound(type, beans));
+      if (LogMessages.LOGGER.isDebugEnabled()) //keep this check for performance reasons, as toString() is expensive on CDI Bean
+      {
+         LogMessages.LOGGER.debug(Messages.MESSAGES.beansFound(type, beans));
+      }
       
       Bean<?> bean = manager.resolve(beans);
       CreationalContext<?> context = manager.createCreationalContext(bean);
