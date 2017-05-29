@@ -98,14 +98,15 @@ public class ServerResponseWriter
       Type generic = jaxrsResponse.getGenericType();
       Annotation[] annotations = jaxrsResponse.getAnnotations();
       @SuppressWarnings(value = "unchecked")
+      final MediaType mt = jaxrsResponse.getMediaType();
       MessageBodyWriter writer = providerFactory.getMessageBodyWriter(
-              type, generic, annotations, jaxrsResponse.getMediaType());
+              type, generic, annotations, mt);
       if (writer!=null)
           LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
 
       if (writer == null)
       {
-         throw new NoMessageBodyWriterFoundFailure(type, jaxrsResponse.getMediaType());
+         throw new NoMessageBodyWriterFoundFailure(type, mt);
       }
 
       response.setStatus(jaxrsResponse.getStatus());
@@ -135,7 +136,7 @@ public class ServerResponseWriter
       }
 
       AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors,
-              providerFactory, ent, type, generic, annotations, jaxrsResponse.getMediaType(),
+              providerFactory, ent, type, generic, annotations, mt,
               jaxrsResponse.getMetadata(), os, request);
       writerContext.proceed();
       callback.commit(); // just in case the output stream is never used
