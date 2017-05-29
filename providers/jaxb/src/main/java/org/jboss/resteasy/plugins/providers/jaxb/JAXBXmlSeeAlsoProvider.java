@@ -52,7 +52,7 @@ public class JAXBXmlSeeAlsoProvider extends AbstractJAXBProvider<Object>
                                     Annotation[] annotations,
                                     MediaType mediaType)
    {
-      return (!type.isAnnotationPresent(XmlRootElement.class) && !type.isAnnotationPresent(XmlType.class) && type.isAnnotationPresent(XmlSeeAlso.class)) && (FindAnnotation.findAnnotation(type, annotations, DoNotUseJAXBProvider.class) == null) && !IgnoredMediaTypes.ignored(type, annotations, mediaType);
+      return (type.isAnnotationPresent(XmlSeeAlso.class) && !type.isAnnotationPresent(XmlRootElement.class) && !type.isAnnotationPresent(XmlType.class)) && (FindAnnotation.findAnnotation(type, annotations, DoNotUseJAXBProvider.class) == null) && !IgnoredMediaTypes.ignored(type, annotations, mediaType);
    }
 
 }
