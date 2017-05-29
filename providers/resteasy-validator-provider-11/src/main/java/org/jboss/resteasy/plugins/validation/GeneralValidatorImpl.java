@@ -542,14 +542,21 @@ public class GeneralValidatorImpl implements GeneralValidatorCDI
    
    protected Validator getValidator(HttpRequest request)
    {
-      Locale locale = getLocale(request);
-      if (locale == null)
-      {
-         return validatorFactory.getValidator();
-      } 
-
-      MessageInterpolator interpolator = new LocaleSpecificMessageInterpolator(validatorFactory.getMessageInterpolator(), locale);
-      return validatorFactory.usingContext().messageInterpolator(interpolator).getValidator();
+      Validator v = Validator.class.cast(request.getAttribute(Validator.class.getName()));
+      if (v == null) {
+         Locale locale = getLocale(request);
+         if (locale == null)
+         {
+            v = validatorFactory.getValidator();
+         }
+         else
+         {
+            MessageInterpolator interpolator = new LocaleSpecificMessageInterpolator(validatorFactory.getMessageInterpolator(), locale);
+            v = validatorFactory.usingContext().messageInterpolator(interpolator).getValidator();
+         }
+         request.setAttribute(Validator.class.getName(), v);
+      }
+      return v;
    }
 
    protected SimpleViolationsContainer getViolationsContainer(HttpRequest request, Object target)
