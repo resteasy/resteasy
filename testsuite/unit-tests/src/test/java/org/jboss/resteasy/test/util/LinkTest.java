@@ -52,11 +52,15 @@ public class LinkTest {
     @Test
     public void testFromMethod() {
         for (Method m : LinkResource.class.getDeclaredMethods()) {
-            Link link = Link.fromMethod(LinkResource.class, m.getName()).build();
-            String string = link.toString();
-            logger.info("initial: " + string);
-            Link fromValueOf = Link.valueOf(string);
-            Assert.assertEquals(string, fromValueOf.toString());
+            // This condition is required, when test runs with jacoco, due to use of reflection.
+            //See https://groups.google.com/forum/#!topic/jacoco/tuOwqU_Tv78 for details
+            if (!m.isSynthetic()) {
+                Link link = Link.fromMethod(LinkResource.class, m.getName()).build();
+                String string = link.toString();
+                logger.info("initial: " + string);
+                Link fromValueOf = Link.valueOf(string);
+                Assert.assertEquals(string, fromValueOf.toString());
+            }
         }
     }
 

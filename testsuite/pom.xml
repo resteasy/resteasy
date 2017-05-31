@@ -17,6 +17,9 @@
         <version.resteasy.testsuite>${project.version}</version.resteasy.testsuite>
         <additional.surefire.excluded.groups></additional.surefire.excluded.groups>
         <securityManagerArg></securityManagerArg>
+        <!-- Optional property for jacoco report generation -->
+        <sources.path></sources.path>
+        <jacoco.agent></jacoco.agent>
     </properties>
 
     <build>
@@ -310,6 +313,159 @@
                                 </configuration>
                             </execution>
                         </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- This profile generates jacoco coverage files. To generate html report use "-Djacoco.generate.report" -->
+        <profile>
+            <id>jacoco</id>
+            <activation>
+                <property>
+                    <name>jacoco</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>org.jacoco.core</artifactId>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                     <plugin>
+                         <groupId>org.jacoco</groupId>
+                         <artifactId>jacoco-maven-plugin</artifactId>
+                         <executions>
+                             <execution>
+                                 <id>jacoco-prepare</id>
+                                 <phase>validate</phase>
+                                 <goals>
+                                     <goal>prepare-agent</goal>
+                                 </goals>
+                                 <configuration>
+                                     <destFile>${project.build.directory}/jacoco.exec</destFile>
+                                     <!-- Jacoco sets this property with agent configuration.
+                                     This property is passed to maven-surefire-plugin -->
+                                     <propertyName>surefireArgLine</propertyName>
+                                 </configuration>
+                             </execution>
+                             <execution>
+                                 <id>jacoco-prepare-it</id>
+                                 <phase>validate</phase>
+                                 <goals>
+                                     <goal>prepare-agent-integration</goal>
+                                 </goals>
+                                 <configuration>
+                                     <destFile>${project.build.directory}/jacoco.exec</destFile>
+                                     <!-- Jacoco sets this property with agent configuration.
+                                     This property is passed to maven-surefire-plugin as system property variable jacoco.agent.
+                                     jacoco.agent property is passed to arquillian.xml -->
+                                     <propertyName>jacoco.agent</propertyName>
+                                 </configuration>
+                             </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <argLine>${surefireArgLine}</argLine>
+                            <skipTests>false</skipTests>
+                            <systemPropertyVariables>
+                                <jacoco.agent>@{jacoco.agent}</jacoco.agent>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- This profile generates html report from jacoco coverage files. Use "-Djacoco" property to generate coverage. -->
+        <profile>
+            <id>jacoco-generate-report</id>
+            <activation>
+                <property>
+                    <name>jacoco.generate.report</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <!-- Copy jacoco ant jar. This is needed to generate jacoco report with maven-antrun-plugin -->
+                            <execution>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <phase>process-test-resources</phase>
+                                <inherited>false</inherited>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.jacoco</groupId>
+                                            <artifactId>org.jacoco.ant</artifactId>
+                                            <version>${version.org.jacoco.plugin}</version></artifactItem>
+                                    </artifactItems>
+                                    <stripVersion>true</stripVersion>
+                                    <outputDirectory>${project.build.directory}/jacoco-jars</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>post-integration-test</phase>
+                                <goals><goal>run</goal></goals>
+                                <inherited>false</inherited>
+                                <configuration>
+                                    <target>
+                                        <property name="result.report.dir" location="target/jacoco-report"/>
+                                        <taskdef name="report" classname="org.jacoco.ant.ReportTask">
+                                            <classpath path="${project.build.directory}/jacoco-jars/org.jacoco.ant.jar"/>
+                                        </taskdef>
+                                        <echo>Creating JaCoCo RESTEasy test coverage reports...</echo>
+                                        <report>
+                                            <executiondata>
+                                                <fileset dir="${basedir}">
+                                                    <include name="**/target/jacoco.exec"/>
+                                                </fileset>
+                                            </executiondata>
+                                            <structure name="JaCoCo RESTEasy">
+                                                <classfiles>
+                                                    <fileset dir="${server.home}/modules/">
+                                                        <include name="**/resteasy*.jar"/>
+                                                        <include name="**/jose-jwt*.jar"/>
+                                                        <include name="**/async-http-servlet*.jar"/>
+                                                        <include name="**/jboss-jaxrs-api*.jar"/>
+                                                        <include name="**/jackson-jaxrs*.jar"/>
+                                                        <include name="**/jackson-module*.jar"/>
+                                                        <include name="**/wildfly-jaxrs*.jar"/>
+                                                    </fileset>
+                                                </classfiles>
+                                                <sourcefiles encoding="UTF-8">
+                                                    <fileset dir="${sources.path}">
+                                                        <include name="**/*.java"/>
+                                                    </fileset>
+                                                </sourcefiles>
+                                            </structure>
+                                            <html destdir="\${result.report.dir}"/>
+                                            <xml destfile="\${result.report.dir}/report.xml"/>
+                                        </report>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.jacoco</groupId>
+                                <artifactId>org.jacoco.ant</artifactId>
+                                <version>${version.org.jacoco.plugin}</version>
+                            </dependency>
+                        </dependencies>
                     </plugin>
                 </plugins>
             </build>

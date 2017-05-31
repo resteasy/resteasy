@@ -50,6 +50,7 @@
         <version.org.hibernate.hibernate-validator>5.2.4.Final</version.org.hibernate.hibernate-validator>
         <version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>1.0.0.Final</version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api>
         <version.org.infinispan>8.2.6.Final</version.org.infinispan>
+        <version.org.jacoco>0.7.9</version.org.jacoco>
         <version.org.javassist>3.20.0-GA</version.org.javassist>
         <version.org.jboss.logging.jboss-logging>3.3.0.Final</version.org.jboss.logging.jboss-logging>
         <version.org.jboss.logging.jboss-logging-annotations>2.0.1.Final</version.org.jboss.logging.jboss-logging-annotations>
@@ -465,6 +466,18 @@
             </dependency>
 
             <!-- testsuite dependencies -->
+            <dependency>
+                <groupId>org.jacoco</groupId>
+                <artifactId>org.jacoco.ant</artifactId>
+                <version>${version.org.jacoco}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jacoco</groupId>
+                <artifactId>org.jacoco.core</artifactId>
+                <version>${version.org.jacoco}</version>
+                <scope>test</scope>
+            </dependency>
             <dependency>
                 <groupId>org.jboss.shrinkwrap.resolver</groupId>
                 <artifactId>shrinkwrap-resolver-depchain</artifactId>
