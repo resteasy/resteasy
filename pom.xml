@@ -31,6 +31,8 @@
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <!-- maven-surefire-plugin -->
         <surefire.system.args>${modular.jdk.props}</surefire.system.args>
+        <!-- Plugins versions -->
+        <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
     </properties>
 
     <url>http://rest-easy.org</url>
@@ -297,6 +299,11 @@
                     <groupId>org.eclipse.jetty</groupId>
                     <artifactId>jetty-maven-plugin</artifactId>
                     <version>${version.org.eclipse.jetty}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${version.org.jacoco.plugin}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
