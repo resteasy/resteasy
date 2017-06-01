@@ -636,6 +636,42 @@ public class HeaderParamsAsPrimitivesTest {
     public void testGetDoublePrimitiveListDefault() {
         testListDefault("double", "3.14159265358979");
     }
+    
+    /**
+     * @tpTestDetails Basic test for char
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testGetChar() {
+        basicTest("char", "a");
+    }
+
+    /**
+     * @tpTestDetails Basic test for char, test default value
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testGetCharPrimitivesDefault() {
+        testDefault("char", "a");
+    }
+
+    /**
+     * @tpTestDetails Basic test for char, use wrapper
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testGetCharPrimitiveWrappersDefault() {
+        testWrappersDefault("char", "a");
+    }
+
+    /**
+     * @tpTestDetails Basic test for list of char, do not use wrapper
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testGetCharPrimitiveListDefault() {
+        testListDefault("char", "a");
+    }
 
     /**
      * @tpTestDetails Negative test for int

@@ -73,4 +73,13 @@ public class HeaderParamsAsPrimitivesResourceList implements HeaderParamsAsPrimi
         Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, 3.14159265358979d, v.get(2).doubleValue(), 0.0);
         return "content";
     }
+    
+    @GET
+    @Produces("application/char")
+    public String doGetCharacter(@HeaderParam("char") List<Character> v) {
+        Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, 'a', v.get(0).charValue());
+        Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, 'a', v.get(1).charValue());
+        Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, 'a', v.get(2).charValue());
+        return "content";
+    }
 }

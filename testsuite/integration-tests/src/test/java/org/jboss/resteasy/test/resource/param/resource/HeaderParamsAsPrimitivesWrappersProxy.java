@@ -34,4 +34,8 @@ public interface HeaderParamsAsPrimitivesWrappersProxy {
     @GET
     @Produces("application/double")
     String doGet(@HeaderParam("double") Double v);
+    
+    @GET
+    @Produces("application/char")
+    String doGet(@HeaderParam("char") Character v);
 }

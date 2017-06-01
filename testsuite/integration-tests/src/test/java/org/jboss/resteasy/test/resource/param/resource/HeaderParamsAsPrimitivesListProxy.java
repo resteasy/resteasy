@@ -35,4 +35,8 @@ public interface HeaderParamsAsPrimitivesListProxy {
     @GET
     @Produces("application/double")
     String doGetDouble(@HeaderParam("double") List<Double> v);
+    
+    @GET
+    @Produces("application/char")
+    String doGetCharacter(@HeaderParam("char") List<Character> v);
 }
