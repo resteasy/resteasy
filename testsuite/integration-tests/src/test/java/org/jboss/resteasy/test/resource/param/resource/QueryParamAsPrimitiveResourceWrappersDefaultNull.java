@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.resource.param.resource;
 import org.jboss.resteasy.test.resource.param.QueryParamAsPrimitiveTest;
 import org.junit.Assert;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -57,5 +58,12 @@ public class QueryParamAsPrimitiveResourceWrappersDefaultNull {
     public String doGet(@QueryParam("double") Double v) {
         Assert.assertEquals(QueryParamAsPrimitiveTest.ERROR_MESSAGE, null, v);
         return "content";
+    }
+    
+    @GET
+    @Produces("application/char")
+    public String doGet(@QueryParam("char") Character v) {
+        Assert.assertEquals(QueryParamAsPrimitiveTest.ERROR_MESSAGE, null, v);
+    	return "content";
     }
 }
