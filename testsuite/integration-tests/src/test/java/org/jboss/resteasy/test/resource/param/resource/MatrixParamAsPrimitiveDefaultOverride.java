@@ -59,4 +59,11 @@ public class MatrixParamAsPrimitiveDefaultOverride {
         Assert.assertEquals(MatrixParamAsPrimitiveTest.ERROR_MESSAGE, 3.14159265358979d, v, 0.0);
         return "content";
     }
+    
+    @GET
+    @Produces("application/char")
+    public String doGet(@MatrixParam("char") @DefaultValue("b")  char v) {
+        Assert.assertEquals(MatrixParamAsPrimitiveTest.ERROR_MESSAGE, 'a', v);
+        return "content";
+    }
 }
