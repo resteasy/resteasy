@@ -1,9 +1,18 @@
 package org.jboss.resteasy.client.jaxrs;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
+import java.io.IOException;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
 import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SNIHostName;
+import javax.net.ssl.SNIServerName;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
+
+import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
@@ -11,44 +20,35 @@ import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.DefaultHostnameVerifier;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.DefaultHostnameVerifier;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.ssl.SSLContexts;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.ssl.SSLContexts;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.client.jaxrs.engines.PassthroughTrustManager;
 import org.jboss.resteasy.client.jaxrs.engines.factory.ApacheHttpClient4EngineFactory;
 
-import java.io.IOException;
-import java.security.SecureRandom;
+public class ClientHttpEngineBuilder43 implements ClientHttpEngineBuilder {
 
+   private ResteasyClientBuilder that;
 
-/**
- * A temporary class for transition between Apache pre-4.3 apis and 4.3.
- * Must maintain support for HttpClient creation in ResteasyClientBuilder
- * and creation of HttpClient that refs 4.3 classes not available in pre-4.3.
- * This usage allows pre-4.3 resteasy tests to continue to run successful.
- *
- * User: rsearls
- * Date: 5/24/16
- */
-public class HttpClientBuilder43 {
+   @Override
+   public ClientHttpEngineBuilder resteasyClientBuilder(ResteasyClientBuilder resteasyClientBuilder)
+   {
+      that = resteasyClientBuilder;
+      return this;
+   }
 
-    /**
-     * Create ClientHttpEngine using Apache 4.3.x+ apis.
-     * @return
-     */
-    protected static ClientHttpEngine initDefaultEngine43(ResteasyClientBuilder that)
+   @Override
+   public ClientHttpEngine build()
     {
-        HttpClient httpClient = null;
-
         HostnameVerifier verifier = null;
         if (that.verifier != null) {
-            verifier = new ResteasyClientBuilder.VerifierWrapper(that.verifier);
+            verifier = new VerifierWrapper(that.verifier);
         }
         else
         {
@@ -83,7 +83,16 @@ public class HttpClientBuilder43 {
                     @Override
                     protected void prepareSocket(SSLSocket socket) throws IOException
                     {
-                        that.prepareSocketForSni(socket);
+                        if(!that.sniHostNames.isEmpty()) {
+                            List<SNIServerName> sniNames = new ArrayList<>(that.sniHostNames.size());
+                            for(String sniHostName : that.sniHostNames) {
+                                sniNames.add(new SNIHostName(sniHostName));
+                            }
+
+                            SSLParameters sslParameters = socket.getSSLParameters();
+                            sslParameters.setServerNames(sniNames);
+                            socket.setSSLParameters(sslParameters);
+                        }
                     }
                 };
             }
@@ -148,19 +157,7 @@ public class HttpClientBuilder43 {
                 rcBuilder.setConnectionRequestTimeout(that.connectionCheckoutTimeoutMs);
             }
 
-            httpClient = HttpClientBuilder.create()
-                .setConnectionManager(cm)
-                .setDefaultRequestConfig(rcBuilder.build())
-                .setProxy(that.defaultProxy)
-                .disableContentCompression()
-                .build();
-            ApacheHttpClient43Engine engine =
-                (ApacheHttpClient43Engine) ApacheHttpClient4EngineFactory.create(httpClient, true);
-            engine.setResponseBufferSize(that.responseBufferSize);
-            engine.setHostnameVerifier(verifier);
-            // this may be null.  We can't really support this with Apache Client.
-            engine.setSslContext(theContext);
-            return engine;
+            return createEngine(cm, rcBuilder, that.defaultProxy, that.responseBufferSize, verifier, theContext);
         }
         catch (Exception e)
         {
@@ -168,4 +165,20 @@ public class HttpClientBuilder43 {
         }
     }
 
+   protected ClientHttpEngine createEngine(HttpClientConnectionManager cm, RequestConfig.Builder rcBuilder,
+         HttpHost defaultProxy, int responseBufferSize, HostnameVerifier verifier, SSLContext theContext)
+   {
+      HttpClient httpClient = HttpClientBuilder.create()
+            .setConnectionManager(cm)
+            .setDefaultRequestConfig(rcBuilder.build())
+            .setProxy(defaultProxy)
+            .disableContentCompression().build();
+      ApacheHttpClient43Engine engine = (ApacheHttpClient43Engine) ApacheHttpClient4EngineFactory.create(httpClient,
+            true);
+      engine.setResponseBufferSize(responseBufferSize);
+      engine.setHostnameVerifier(verifier);
+      // this may be null.  We can't really support this with Apache Client.
+      engine.setSslContext(theContext);
+      return engine;
+    }
 }
