@@ -17,7 +17,7 @@ public class HTTPClientVersionCheck {
     static {
         boolean res = true;
         try {
-            Class.forName(HttpClientEngineBuilder43.class.getName());
+            Class.forName(ClientHttpEngineBuilder43.class.getName());
         } catch (Throwable t) {
             res = false;
         }

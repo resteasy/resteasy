@@ -17,7 +17,6 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.ssl.StrictHostnameVerifier;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicClientConnectionManager;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.params.BasicHttpParams;
@@ -26,24 +25,21 @@ import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.client.jaxrs.engines.PassthroughTrustManager;
 import org.jboss.resteasy.client.jaxrs.engines.factory.ApacheHttpClient4EngineFactory;
 
+@Deprecated
+public class ClientHttpEngineBuilder4 implements ClientHttpEngineBuilder {
 
-/**
- * User: rsearls
- * Date: 5/5/17
- */
-public class HttpClientEngineBuilder4 implements HttpClientEngineBuilder {
-        private HttpClientBuilder _httpClientBuilder = null;
+   private ResteasyClientBuilder that;
 
-    @Override
-    public void setHttpClientBuilder (HttpClientBuilder httpClientBuilder) {
-        this._httpClientBuilder = httpClientBuilder;
-    }
+   @Override
+   public ClientHttpEngineBuilder resteasyClientBuilder(ResteasyClientBuilder resteasyClientBuilder)
+   {
+      that = resteasyClientBuilder;
+      return this;
+   }
 
-    @Override
-    public ClientHttpEngine initClientHttpEngine(ResteasyClientBuilder that)
+   @Override
+   public ClientHttpEngine build()
     {
-        DefaultHttpClient httpClient = null;
-
         X509HostnameVerifier verifier = null;
         if (that.verifier != null) {
             verifier = new VerifierWrapper(that.verifier);
@@ -144,18 +140,24 @@ public class HttpClientEngineBuilder4 implements HttpClientEngineBuilder {
             }
             params.setParameter(ConnRoutePNames.DEFAULT_PROXY, that.defaultProxy);
 
-            httpClient = new DefaultHttpClient(cm, params);
-            ApacheHttpClient4Engine engine =
-                (ApacheHttpClient4Engine) ApacheHttpClient4EngineFactory.create(httpClient, true);
-            engine.setResponseBufferSize(that.responseBufferSize);
-            engine.setHostnameVerifier(verifier);
-            // this may be null.  We can't really support this with Apache Client.
-            engine.setSslContext(theContext);
-            return engine;
+            return createEngine(cm, params, verifier, theContext, that.responseBufferSize);
         }
         catch (Exception e)
         {
             throw new RuntimeException(e);
         }
     }
+    
+   protected ClientHttpEngine createEngine(ClientConnectionManager cm, BasicHttpParams params,
+         X509HostnameVerifier verifier, SSLContext theContext, int responseBufferSize)
+   {
+      DefaultHttpClient httpClient = new DefaultHttpClient(cm, params);
+      ApacheHttpClient4Engine engine = (ApacheHttpClient4Engine) ApacheHttpClient4EngineFactory.create(httpClient,
+            true);
+      engine.setResponseBufferSize(responseBufferSize);
+      engine.setHostnameVerifier(verifier);
+      // this may be null.  We can't really support this with Apache Client.
+      engine.setSslContext(theContext);
+      return engine;
+   }
 }

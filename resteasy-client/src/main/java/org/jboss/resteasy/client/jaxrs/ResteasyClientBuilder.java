@@ -353,11 +353,7 @@ public class ResteasyClientBuilder extends ClientBuilder
          executor = Executors.newFixedThreadPool(10);
       }
 
-      ClientHttpEngine engine = httpEngine;
-      if (engine == null) {
-         HttpClientEngineBuilder4 builder4 = new HttpClientEngineBuilder4();
-         engine = builder4.initClientHttpEngine(this);
-      }
+      ClientHttpEngine engine = httpEngine != null ? httpEngine : new ClientHttpEngineBuilder4().resteasyClientBuilder(this).build();
       return new ResteasyClient(engine, executor, cleanupExecutor, config);
 
    }
@@ -382,11 +378,7 @@ public class ResteasyClientBuilder extends ClientBuilder
          executor = Executors.newFixedThreadPool(10);
       }
 
-      ClientHttpEngine engine = httpEngine;
-      if (engine == null) {
-         HttpClientEngineBuilder43 builder43 = new HttpClientEngineBuilder43();
-         engine = builder43.initClientHttpEngine(this);
-      }
+      ClientHttpEngine engine = httpEngine != null ? httpEngine : new ClientHttpEngineBuilder43().resteasyClientBuilder(this).build();
       return new ResteasyClient(engine, executor, cleanupExecutor, config);
 
    }

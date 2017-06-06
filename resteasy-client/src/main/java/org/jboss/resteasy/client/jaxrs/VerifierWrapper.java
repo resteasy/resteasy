@@ -9,13 +9,7 @@ import javax.net.ssl.SSLSocket;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 
-/**
- * This utility is used by more than 1 class.
- *
- * User: rsearls
- * Date: 5/4/17
- */
-class VerifierWrapper implements X509HostnameVerifier
+public class VerifierWrapper implements X509HostnameVerifier
 {
     protected HostnameVerifier verifier;
 
