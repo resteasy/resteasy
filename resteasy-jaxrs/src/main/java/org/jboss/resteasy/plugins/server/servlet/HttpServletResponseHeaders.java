@@ -150,11 +150,32 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
       for (Map.Entry<? extends String, ? extends List<Object>> entry : map.entrySet())
       {
          List<Object> objs = entry.getValue();
-         for (Object obj : objs)
-         {
-            add(entry.getKey(), obj);
+         // When the header key does not exist, undertow creates it and saves this value.
+         // When the header key exists undertow clears the existing values and saves this value.
+         // All subsequent values must be added so they will be appended properly.
+         if (!objs.isEmpty()) {
+            putResponseHeader(entry.getKey(), objs.get(0));
+            for (int i = 1; i < objs.size(); i++) {
+               add(entry.getKey(), objs.get(i));
+            }
          }
       }
+   }
+
+   protected void putResponseHeader(String key, Object value)
+   {
+      RuntimeDelegate.HeaderDelegate delegate = factory.getHeaderDelegate(value.getClass());
+      if (delegate != null)
+      {
+         //System.out.println("putResponseHeader: " + key + " " + delegate.toString(value));
+         response.setHeader(key, delegate.toString(value));
+      }
+      else
+      {
+         //System.out.println("putResponseHeader: " + key + " " + value.toString());
+         response.setHeader(key, value.toString());
+      }
+      cachedHeaders.add(key, value);
    }
 
    public void clear()
