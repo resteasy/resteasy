@@ -69,7 +69,14 @@ public class SourceProvider implements MessageBodyReader<Source>, MessageBodyWri
          if (source instanceof StreamSource)
          {
             StreamSource stream = (StreamSource) source;
-            InputSource inputStream = new InputSource(stream.getInputStream());
+            InputSource inputStream;
+
+            if (stream.getInputStream() == null && stream.getReader() != null) {
+               inputStream = new InputSource(stream.getReader());
+            } else {
+               inputStream = new InputSource(stream.getInputStream());
+            }
+
             inputStream.setCharacterStream(inputStream.getCharacterStream());
             inputStream.setPublicId(stream.getPublicId());
             inputStream.setSystemId(source.getSystemId());
