@@ -96,5 +96,9 @@
       <artifactId>jboss-el-api_3.0_spec</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+    </dependency>
   </dependencies>
 </project>
