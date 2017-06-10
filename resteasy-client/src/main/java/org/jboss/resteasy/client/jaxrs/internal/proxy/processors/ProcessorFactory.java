@@ -104,7 +104,7 @@ public class ProcessorFactory
       else if ((uriParam = FindAnnotation.findAnnotation(annotations,
               PathParam.class)) != null)
       {
-         processor = new PathParamProcessor(uriParam.value(), !isEncoded);
+         processor = new PathParamProcessor(uriParam.value(), isEncoded);
       }
       else if ((matrix = FindAnnotation.findAnnotation(annotations,
               MatrixParam.class)) != null)
