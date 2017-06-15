@@ -313,4 +313,14 @@ public class ClientInvocationBuilder implements Invocation.Builder
       invocation.property(name, value);
       return this;
    }
+   
+   public boolean isChunked()
+   {
+      return invocation.isChunked();
+   }
+   
+   public void setChunked(boolean chunked)
+   {
+      invocation.setChunked(chunked);
+   }
 }

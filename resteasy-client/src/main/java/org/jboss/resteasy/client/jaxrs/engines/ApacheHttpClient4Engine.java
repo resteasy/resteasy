@@ -12,6 +12,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -66,6 +67,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
    protected HostnameVerifier hostnameVerifier;
    protected int responseBufferSize = 8192;
    protected HttpHost defaultProxy = null;
+   protected boolean chunked = false;
 
    /**
     * For uploading File's over JAX-RS framework, this property, together with {@link #fileUploadMemoryUnit},
@@ -511,6 +513,17 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       super.finalize();
    }
 
+   
+   public boolean isChunked()
+   {
+      return chunked;
+   }
+
+   public void setChunked(boolean chunked)
+   {
+      this.chunked = chunked;
+   }
+
    /**
     * If passed httpMethod is of type HttpPost then obtain its entity. If the entity has an enclosing File then
     * delete it by invoking this method after the request has completed. The entity will have an enclosing File
@@ -554,7 +567,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
     */
    protected HttpEntity buildEntity(final ClientInvocation request) throws IOException
    {
-      HttpEntity entityToBuild = null;
+      AbstractHttpEntity entityToBuild = null;
       DeferredFileOutputStream memoryManagedOutStream = writeRequestBodyToOutputStream(request);
 
       if (memoryManagedOutStream.isInMemory())
@@ -567,8 +580,11 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       {
          entityToBuild = new FileExposingFileEntity(memoryManagedOutStream.getFile(), request.getHeaders().getMediaType().toString());
       }
-
-      return entityToBuild;
+      if (request.isChunked())
+      {
+         entityToBuild.setChunked(true);  
+      }
+      return (HttpEntity) entityToBuild;
    }
 
    /**

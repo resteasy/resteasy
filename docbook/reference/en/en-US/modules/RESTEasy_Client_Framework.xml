@@ -34,6 +34,46 @@
             its parent.  This allows you to set specific configuration options per target resource.  For example, username
             and password.
         </para>
+        
+        <para>
+        One Resteasy extension to the client API is the ability to specify that requests should be sent in "chunked" transfer mode.
+        There are two ways of doing that. One is to configure an <classname>org.jboss.resteasy.client.jaxrs.ResteasyWebTarget</classname>
+        so that all requests to that target are sent in chunked mode:
+        </para>
+        
+        <programlisting>
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyWebTarget target = client.target("http://localhost:8081/test");
+      target.setChunked(b.booleanValue());
+      Invocation.Builder request = target.request();
+        </programlisting>
+        
+        <para>
+        Alternatively, it is possible to configure a particular request to be sent in chunked mode:
+        </para>
+        
+        <programlisting>
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      ResteasyWebTarget target = client.target("http://localhost:8081/test");
+      ClientInvocationBuilder request = (ClientInvocationBuilder) target.request();
+      request.setChunked(b);
+        </programlisting>
+        
+        <para>
+        Note that <classname>org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder</classname>,
+        unlike <classname>javax.ws.rs.client.Invocation.Builder</classname>, is a Resteasy class.
+        </para>
+        
+        <para>
+        <emphasis role="bold">Note. </emphasis> The ability to send in chunked mode depends on the underlying
+        transport layer; in particular, it depends on which implementation of
+        <classname>org.jboss.resteasy.client.jaxrs.ClientHttpEngine</classname> is being used. Currently,
+        only the default implementation, <classname>ApacheHttpClient43Engine</classname>
+        and the older <classname>ApacheHttpClient4Engine</classname>, both in package
+        <classname>org.jboss.resteasy.client.jaxrs.engines</classname>,
+        support chunked mode. See Section <link linkend='transport_layer'>Apache HTTP Client 4.x and other backends</link>
+        for more information.
+        </para>
     </sect1>
     <para>
 
@@ -200,21 +240,14 @@ public interface LibraryService {
          by default, by HttpClient (4.x) from the Apache HttpComponents project.  In general,
          the interface between the Resteasy Client Framework and the network is
          found in an implementation of
-         <classname>org.jboss.resteasy.client.jaxrs.ClientHttpEngine</classname>, and
-         <classname>org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine</classname>,
-         which uses HttpClient (4.x), is the default implementation.  Resteasy
-         also ships with the following client engines, all found in the
-         <code>org.jboss.resteasy.client.jaxrs.engines</code> package:
-     </para>
-     
-     <itemizedlist>
-         <listitem>
-             URLConnectionClientExecutor: uses <classname>java.net.HttpURLConnection</classname>;
-         </listitem>
-         <listitem>InMemoryClientExecutor: dispatches requests to a server in the same JVM.</listitem>
-     </itemizedlist>
-     <para>
-         and a client executor may be passed to a specific <classname>ClientRequest</classname>:
+         <classname>org.jboss.resteasy.client.jaxrs.ClientHttpEngine</classname>.
+         <classname>org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine</classname>,
+         which uses HttpClient (4.3+), is the default implementation.  Resteasy
+         also ships with the older <classname>ApacheHttpClient4Engine</classname>, which uses
+         HttpClient 4.2, and <classname>URLConnectionEngine</classname>,
+         which uses <classname>java.net.HttpURLConnection</classname>. It is also possible to pass
+         an alternative implementation of <classname>ClientHttpEngine</classname> to a
+         <classname>ResteasyClient</classname>:
      </para>
      
      <programlisting>
@@ -358,7 +391,7 @@ httpClient.getConnectionManager().shutdown();
         Finally, if your javax.ws.rs.client.Client class has created the engine automatically for you, you should
         call Client.close() and this will clean up any socket connections.
     </para>
-     
+
    </sect1>
    
 

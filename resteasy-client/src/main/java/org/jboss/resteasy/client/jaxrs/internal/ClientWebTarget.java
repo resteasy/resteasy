@@ -27,6 +27,7 @@ public class ClientWebTarget implements ResteasyWebTarget
    protected ResteasyClient client;
    protected UriBuilder uriBuilder;
    protected ClientConfiguration configuration;
+   protected boolean chunked = false;
 
    protected ClientWebTarget(ResteasyClient client, ClientConfiguration configuration)
    {
@@ -343,7 +344,9 @@ public class ClientWebTarget implements ResteasyWebTarget
    public Invocation.Builder request()
    {
       client.abortIfClosed();
-      return new ClientInvocationBuilder(client, uriBuilder.build(), configuration);
+      ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.build(), configuration);
+      builder.setChunked(chunked);
+      return builder;
    }
 
    @Override
@@ -352,6 +355,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       client.abortIfClosed();
       ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.build(), configuration);
       builder.getHeaders().accept(acceptedResponseTypes);
+      builder.setChunked(chunked);
       return builder;
    }
 
@@ -361,6 +365,7 @@ public class ClientWebTarget implements ResteasyWebTarget
       client.abortIfClosed();
       ClientInvocationBuilder builder = new ClientInvocationBuilder(client, uriBuilder.build(), configuration);
       builder.getHeaders().accept(acceptedResponseTypes);
+      builder.setChunked(chunked);
       return builder;
    }
 
@@ -434,6 +439,13 @@ public class ClientWebTarget implements ResteasyWebTarget
    {
       client.abortIfClosed();
       configuration.register(component, contracts);
+      return this;
+   }
+   
+   @Override
+   public ResteasyWebTarget setChunked(boolean chunked)
+   {
+      this.chunked = chunked;
       return this;
    }
 }
