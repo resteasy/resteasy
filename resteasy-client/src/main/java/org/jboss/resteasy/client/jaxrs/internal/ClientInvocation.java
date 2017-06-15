@@ -65,6 +65,7 @@ public class ClientInvocation implements Invocation
    protected Annotation[] entityAnnotations;
    protected ClientConfiguration configuration;
    protected URI uri;
+   protected boolean chunked;
 
    // todo need a better solution for this.  Apache Http Client 4 does not let you obtain the OutputStream before executing
    // this request. is problematic for obtaining and setting
@@ -93,6 +94,7 @@ public class ClientInvocation implements Invocation
       this.entityClass = clientInvocation.entityClass;
       this.entityAnnotations = clientInvocation.entityAnnotations;
       this.uri = clientInvocation.uri;
+      this.chunked = clientInvocation.chunked;
    }
 
    /**
@@ -410,6 +412,16 @@ public class ClientInvocation implements Invocation
    public Configuration getConfiguration()
    {
       return configuration;
+   }
+
+   public boolean isChunked()
+   {
+      return chunked;
+   }
+
+   public void setChunked(boolean chunked)
+   {
+      this.chunked = chunked;
    }
 
    @Override
