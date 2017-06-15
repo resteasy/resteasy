@@ -93,5 +93,7 @@ public interface ResteasyWebTarget extends WebTarget
 
    @Override
    ResteasyWebTarget register(Object component, Map<Class<?>, Integer> contracts);
+   
+   ResteasyWebTarget setChunked(boolean chunked);
 
 }
