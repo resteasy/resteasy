@@ -22,10 +22,7 @@ import org.jboss.resteasy.util.GetRestful;
 import javax.ws.rs.NotFoundException;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
@@ -77,6 +74,11 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       {
          uriInfo.pushCurrentResource(locator);
          Object subResource = method.getMethod().invoke(locator, args);
+          if (subResource.getClass() == Class.class) {
+              // this is a class injection
+              Class<?> subResourceClazz = (Class<?>) subResource;
+              subResource = subResourceClazz.getConstructors()[0].newInstance(args);
+          }
          return subResource;
 
       }
@@ -87,6 +89,8 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       catch (InvocationTargetException e)
       {
          throw new ApplicationException(e.getCause());
+      } catch (InstantiationException e) {
+          throw new ApplicationException(e.getCause());
       }
    }
 
