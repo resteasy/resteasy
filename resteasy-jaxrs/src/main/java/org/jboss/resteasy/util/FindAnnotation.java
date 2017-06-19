@@ -1,5 +1,17 @@
 package org.jboss.resteasy.util;
 
+import javax.json.bind.annotation.JsonbAnnotation;
+import javax.json.bind.annotation.JsonbCreator;
+import javax.json.bind.annotation.JsonbDateFormat;
+import javax.json.bind.annotation.JsonbNillable;
+import javax.json.bind.annotation.JsonbNumberFormat;
+import javax.json.bind.annotation.JsonbProperty;
+import javax.json.bind.annotation.JsonbPropertyOrder;
+import javax.json.bind.annotation.JsonbTransient;
+import javax.json.bind.annotation.JsonbTypeAdapter;
+import javax.json.bind.annotation.JsonbTypeDeserializer;
+import javax.json.bind.annotation.JsonbTypeSerializer;
+import javax.json.bind.annotation.JsonbVisibility;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
@@ -35,6 +47,22 @@ public final class FindAnnotation
 
    private static final Class[] findJaxRSAnnotations_TYPE = new Class[]{};
 
+
+   private static final Class<? extends Annotation>[] JSON_BINDING_ANNOTATIONS =
+           (Class<? extends Annotation>[]) new Class[]{
+                   JsonbCreator.class,
+                   JsonbNillable.class,
+                   JsonbNumberFormat.class,
+                   JsonbVisibility.class,
+                   JsonbPropertyOrder.class,
+                   JsonbTypeAdapter.class,
+                   JsonbTypeSerializer.class,
+                   JsonbProperty.class,
+                   JsonbDateFormat.class,
+                   JsonbTransient.class,
+                   JsonbTypeDeserializer.class,
+                   JsonbAnnotation.class
+           };
 
    private FindAnnotation()
    {
@@ -93,6 +121,23 @@ public final class FindAnnotation
       LinkedList<Class<? extends Annotation>> result = new LinkedList<Class<? extends Annotation>>();
 
       for (Class<? extends Annotation> clazz : JAXRS_ANNOTATIONS)
+      {
+
+         if (findAnnotation(searchList, clazz) != null)
+            result.add(clazz);
+
+      }
+
+      return result.toArray(findJaxRSAnnotations_TYPE);
+
+   }
+
+   public static Class<? extends Annotation>[] findJsonBindingAnnotations(Annotation[] searchList)
+   {
+
+      LinkedList<Class<? extends Annotation>> result = new LinkedList<Class<? extends Annotation>>();
+
+      for (Class<? extends Annotation> clazz : JSON_BINDING_ANNOTATIONS)
       {
 
          if (findAnnotation(searchList, clazz) != null)
