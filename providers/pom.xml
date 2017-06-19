@@ -25,6 +25,7 @@
                 <module>jackson</module>
                 <module>jackson2</module>
                 <module>json-p-ee7</module>
+                <module>json-binding</module>
                 <module>resteasy-atom</module>
                 <module>multipart</module>
                 <module>yaml</module>
