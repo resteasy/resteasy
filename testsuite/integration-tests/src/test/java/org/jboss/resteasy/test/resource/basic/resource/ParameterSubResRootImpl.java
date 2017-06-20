@@ -10,5 +10,10 @@ public class ParameterSubResRootImpl implements ParameterSubResRoot {
         return new ParameterSubResSubImpl<Integer>(path) {
         };
     }
+   @Override
+   public Class<ParameterSubResClassSub> getSubClass()
+   {
+      return ParameterSubResClassSub.class;
+   }
 
 }
