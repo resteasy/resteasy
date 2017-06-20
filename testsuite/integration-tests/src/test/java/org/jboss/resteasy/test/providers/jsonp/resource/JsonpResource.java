@@ -4,6 +4,7 @@ import org.junit.Assert;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.json.JsonString;
 import javax.json.JsonStructure;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -39,6 +40,10 @@ public class JsonpResource {
         Assert.assertTrue("The field 'name' didn't propagated correctly from the request", obj.containsKey("name"));
         Assert.assertEquals("The value of field 'name' didn't propagated correctly from the request"
                 , obj.getJsonString("name").getString(), "Bill");
+        if (obj.containsKey("id")) {
+           Assert.assertEquals("The value of field 'id' didn't propagated correctly from the request"
+                 , obj.getJsonNumber("id").longValue(), 10001);
+        }
         return obj;
     }
 
@@ -53,4 +58,5 @@ public class JsonpResource {
                 obj.getJsonString("name").getString(), "Bill");
         return obj;
     }
+    
 }

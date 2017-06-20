@@ -82,11 +82,15 @@ public class JsonpTest {
         String json = target.request().post(entity, String.class);
         logger.info("Request entity: " + json);
 
-        JsonObject obj = Json.createObjectBuilder().add("name", "Bill").build();
+        JsonObject obj = Json.createObjectBuilder().add("name", "Bill").add("id", 10001).build();
+        
         obj = target.request().post(Entity.json(obj), JsonObject.class);
         Assert.assertTrue("JsonObject from the response doesn't contain field 'name'", obj.containsKey("name"));
         Assert.assertEquals("JsonObject from the response doesn't contain correct value for the field 'name'",
                 obj.getJsonString("name").getString(), "Bill");
+        Assert.assertTrue("JsonObject from the response doesn't contain field 'id'", obj.containsKey("id"));
+        Assert.assertEquals("JsonObject from the response doesn't contain correct value for the field 'id'",
+              obj.getJsonNumber("id").longValue(), 10001);
     }
 
     /**
