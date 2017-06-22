@@ -70,13 +70,7 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
          if (tempFile == null)
             return bis;
          InputStream fis = new FileInputStream(tempFile);
-         CleanableSequenceInputStream csis = new CleanableSequenceInputStream(bis, fis, tempFile);
-         Cleanables cleanables = ResteasyProviderFactory.getContextData(Cleanables.class);
-         if (cleanables != null)
-         {
-             cleanables.addCleanable(csis);
-         }
-         return csis;
+         return new SequenceInputStream(bis, fis);
       }
 
       @Override
@@ -113,6 +107,11 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
          if (count > -1) {
              tempFile = File.createTempFile("resteasy-provider-datasource", null);
              FileOutputStream fos = new FileOutputStream(tempFile);
+             Cleanables cleanables = ResteasyProviderFactory.getContextData(Cleanables.class);
+             if (cleanables != null)
+             {
+                cleanables.addCleanable(new TempFileCleanable(tempFile));
+             }
              fos.write(buffer, 0, count);
              try
              {
@@ -228,30 +227,23 @@ public class DataSourceProvider extends AbstractEntityProvider<DataSource>
 
    }
 
-   private static class CleanableSequenceInputStream extends SequenceInputStream implements Cleanable
-   {
-	   private File tempFile;
-	   public CleanableSequenceInputStream(InputStream is1, InputStream is2, File tempFile)
-	   {
-		   super(is1, is2);
-		   this.tempFile = tempFile;
-	   }
+   private static class TempFileCleanable implements Cleanable {
 
-	   @Override
-	   public void clean() throws Exception
-	   {
-		   deleteTempFile();
-	   }
+      private File tempFile;
 
-	   private void deleteTempFile()
-	   {
-		   if(tempFile.exists())
-		   {
-			   if (!tempFile.delete()) //set delete on exit only if the file can't be deleted now
-			   {
-			      tempFile.deleteOnExit();
-			   }
-		   }
-	   }
+      public TempFileCleanable(File tempFile) {
+         this.tempFile = tempFile;
+      }
+
+      @Override
+      public void clean() throws Exception {
+          if(tempFile.exists())
+          {
+             if (!tempFile.delete()) //set delete on exit only if the file can't be deleted now
+             {
+                tempFile.deleteOnExit();
+             }
+          }
+      }
    }
 }
