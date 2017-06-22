@@ -83,9 +83,7 @@ public class ResourceLocatorInvoker implements ResourceInvoker
          Object subResource = method.getMethod().invoke(locator, args);
          if (subResource instanceof Class)
          {
-            Constructor<?> constructor = ((Class<?>) subResource).getConstructor(new Class[] {});
-            ConstructorInjector constructInjector = injector.createConstructor(constructor, this.providerFactory);
-            subResource = constructInjector.construct();
+            subResource = this.providerFactory.injectedInstance((Class)subResource);
          }
          return subResource;
 
@@ -95,10 +93,6 @@ public class ResourceLocatorInvoker implements ResourceInvoker
          throw new InternalServerErrorException(e);
       }
       catch (InvocationTargetException e)
-      {
-         throw new ApplicationException(e.getCause());
-      }
-      catch (NoSuchMethodException e)
       {
          throw new ApplicationException(e.getCause());
       }
