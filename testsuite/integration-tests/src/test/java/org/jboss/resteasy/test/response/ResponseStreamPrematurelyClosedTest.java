@@ -78,12 +78,13 @@ public class ResponseStreamPrematurelyClosedTest
    @Test
    public void testStream() throws Exception
    {
-      Builder builder = client.target(generateURL("/test/document/abc/content")).request();
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      //builder.get().readEntity explicitly on the same line below and not saved in any temp variable
-      //to let the JVM try finalizing the ClientResponse object
-      IOUtils.copy(builder.get().readEntity(InputStream.class), baos);
-      Assert.assertEquals(100000000, baos.size());
+      try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+         Builder builder = client.target(generateURL("/test/document/abc/content")).request();
+         //builder.get().readEntity explicitly on the same line below and not saved in any temp variable
+         //to let the JVM try finalizing the ClientResponse object
+         IOUtils.copy(builder.get().readEntity(InputStream.class), baos);
+         Assert.assertEquals(10000000, baos.size());
+      }
    }
 
 }
