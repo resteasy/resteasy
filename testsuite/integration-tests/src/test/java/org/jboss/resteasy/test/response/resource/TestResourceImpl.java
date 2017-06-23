@@ -15,7 +15,7 @@ public class TestResourceImpl
    public Response readContent(@PathParam("documentId") java.lang.String id)
    {
       StringBuffer sb = new StringBuffer();
-      for (int i = 0; i < 100000000; i++)
+      for (int i = 0; i < 10000000; i++)
       {
          sb.append("a");
       }
