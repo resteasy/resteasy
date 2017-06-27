@@ -102,7 +102,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       public boolean isBuiltin = false;
 
       public Class<?> template = null;
+      
+      public int priority = Priorities.USER;
 
+      private SortedKey(Class<?> intf, T reader, Class<?> readerClass, int priority, boolean isBuiltin)
+      {
+         this(intf, reader, readerClass);
+         this.priority = priority;
+         this.isBuiltin = isBuiltin;
+      }
 
       private SortedKey(Class<?> intf, T reader, Class<?> readerClass, boolean isBuiltin)
       {
@@ -124,7 +132,21 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          // Sort user provider before builtins
          if (this == tMessageBodyKey) return 0;
-         if (isBuiltin == tMessageBodyKey.isBuiltin) return 0;
+         if (isBuiltin == tMessageBodyKey.isBuiltin)
+         {
+            if (this.priority < tMessageBodyKey.priority)
+            {
+               return -1;
+            }
+            if (this.priority == tMessageBodyKey.priority)
+            {
+               return 0;
+            }
+            if (this.priority > tMessageBodyKey.priority)
+            {
+               return 1;
+            }
+         }
          if (isBuiltin) return 1;
          else return -1;
       }
@@ -758,20 +780,20 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       headerDelegates.put(clazz, header);
    }
 
-   protected void addMessageBodyReader(Class<? extends MessageBodyReader> provider, boolean isBuiltin)
+   protected void addMessageBodyReader(Class<? extends MessageBodyReader> provider, int priority, boolean isBuiltin)
    {
       MessageBodyReader reader = createProviderInstance(provider);
-      addMessageBodyReader(reader, provider, isBuiltin);
+      addMessageBodyReader(reader, provider, priority, isBuiltin);
    }
 
    protected void addMessageBodyReader(MessageBodyReader provider)
    {
-      addMessageBodyReader(provider, false);
+      addMessageBodyReader(provider, Priorities.USER, false);
    }
 
-   protected void addMessageBodyReader(MessageBodyReader provider, boolean isBuiltin)
+   protected void addMessageBodyReader(MessageBodyReader provider, int priority, boolean isBuiltin)
    {
-      addMessageBodyReader(provider, provider.getClass(), isBuiltin);
+      addMessageBodyReader(provider, provider.getClass(), priority, isBuiltin);
    }
 
    /**
@@ -783,9 +805,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * @param isBuiltin
     */
 
-   protected void addMessageBodyReader(MessageBodyReader provider, Class<?> providerClass, boolean isBuiltin)
+   protected void addMessageBodyReader(MessageBodyReader provider, Class<?> providerClass, int priority, boolean isBuiltin)
    {
-      SortedKey<MessageBodyReader> key = new SortedKey<MessageBodyReader>(MessageBodyReader.class, provider, providerClass, isBuiltin);
+      SortedKey<MessageBodyReader> key = new SortedKey<MessageBodyReader>(MessageBodyReader.class, provider, providerClass, priority, isBuiltin);
       injectProperties(providerClass, provider);
       Consumes consumeMime = provider.getClass().getAnnotation(Consumes.class);
       RuntimeType type = null;
@@ -847,15 +869,15 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
    }
 
-   protected void addMessageBodyWriter(Class<? extends MessageBodyWriter> provider, boolean isBuiltin)
+   protected void addMessageBodyWriter(Class<? extends MessageBodyWriter> provider, int priority, boolean isBuiltin)
    {
       MessageBodyWriter writer = createProviderInstance(provider);
-      addMessageBodyWriter(writer, provider, isBuiltin);
+      addMessageBodyWriter(writer, provider, priority, isBuiltin);
    }
 
    protected void addMessageBodyWriter(MessageBodyWriter provider)
    {
-      addMessageBodyWriter(provider, provider.getClass(), false);
+      addMessageBodyWriter(provider, provider.getClass(), Priorities.USER, false);
    }
 
    /**
@@ -866,11 +888,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
     * @param providerClass
     * @param isBuiltin
     */
-   protected void addMessageBodyWriter(MessageBodyWriter provider, Class<?> providerClass, boolean isBuiltin)
+   protected void addMessageBodyWriter(MessageBodyWriter provider, Class<?> providerClass, int priority, boolean isBuiltin)
    {
       injectProperties(providerClass, provider);
       Produces consumeMime = provider.getClass().getAnnotation(Produces.class);
-      SortedKey<MessageBodyWriter> key = new SortedKey<MessageBodyWriter>(MessageBodyWriter.class, provider, providerClass, isBuiltin);
+      SortedKey<MessageBodyWriter> key = new SortedKey<MessageBodyWriter>(MessageBodyWriter.class, provider, providerClass, priority, isBuiltin);
       RuntimeType type = null;
       ConstrainedTo constrainedTo = providerClass.getAnnotation(ConstrainedTo.class);
       if (constrainedTo != null) type = constrainedTo.value();
@@ -1066,7 +1088,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          contextResolvers.put(parameterClass, resolvers);
       }
       Produces produces = provider.getClass().getAnnotation(Produces.class);
-      SortedKey<ContextResolver> key = new SortedKey<ContextResolver>(ContextResolver.class, provider, providerClass, builtin);
+      int priority = this.getPriority(null,  null,  ContextResolver.class, providerClass);
+      SortedKey<ContextResolver> key = new SortedKey<ContextResolver>(ContextResolver.class, provider, providerClass, priority, builtin);
       if (produces != null)
       {
          for (String produce : produces.value())
@@ -1357,8 +1380,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          try
          {
-            addMessageBodyReader(provider, isBuiltin);
-            newContracts.put(MessageBodyReader.class, getPriority(priorityOverride, contracts, MessageBodyReader.class, provider));
+            int priority = getPriority(priorityOverride, contracts, MessageBodyReader.class, provider);
+            addMessageBodyReader(provider, priority, isBuiltin);
+            newContracts.put(MessageBodyReader.class, priority);
          }
          catch (Exception e)
          {
@@ -1369,8 +1393,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          try
          {
-            addMessageBodyWriter(provider, isBuiltin);
-            newContracts.put(MessageBodyWriter.class, getPriority(priorityOverride, contracts, MessageBodyWriter.class, provider));
+            int priority = getPriority(priorityOverride, contracts, MessageBodyWriter.class, provider);
+            addMessageBodyWriter(provider, priority, isBuiltin);
+            newContracts.put(MessageBodyWriter.class, priority);
          }
          catch (Exception e)
          {
@@ -1639,8 +1664,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          try
          {
-            addMessageBodyReader((MessageBodyReader) provider, builtIn);
             int priority = getPriority(priorityOverride, contracts, MessageBodyReader.class, provider.getClass());
+            addMessageBodyReader((MessageBodyReader) provider, priority, builtIn);
             newContracts.put(MessageBodyReader.class, priority);
          }
          catch (Exception e)
@@ -1652,8 +1677,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          try
          {
-            addMessageBodyWriter((MessageBodyWriter) provider, provider.getClass(), builtIn);
             int priority = getPriority(priorityOverride, contracts, MessageBodyWriter.class, provider.getClass());
+            addMessageBodyWriter((MessageBodyWriter) provider, provider.getClass(), priority, builtIn);
             newContracts.put(MessageBodyWriter.class, priority);
          }
          catch (Exception e)

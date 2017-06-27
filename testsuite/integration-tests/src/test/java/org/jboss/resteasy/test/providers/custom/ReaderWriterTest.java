@@ -7,6 +7,8 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ProxyBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterLowPriorityCustomerWriter;
+import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterHignPriorityCustomerWriter;
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterClient;
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterCurlyBraces;
 import org.jboss.resteasy.test.providers.custom.resource.ReaderWriterCustomer;
@@ -28,6 +30,7 @@ import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -41,7 +44,7 @@ import java.net.URL;
 @RunAsClient
 public class ReaderWriterTest {
     static ResteasyClient client;
-
+    static final String PriorityDeploymenetName = "ReaderWriterCustomerWriterWithPriority";
     @Deployment(name = "ReaderWriterCustomerWriter")
     public static Archive<?> deployCustomWriter() {
         WebArchive war = TestUtil.prepareArchive(ReaderWriterCustomerWriter.class.getSimpleName());
@@ -71,7 +74,15 @@ public class ReaderWriterTest {
         war.addClass(PortProviderUtil.class);
         return TestUtil.finishContainerPrepare(war, null, ReaderWriterCurlyBraces.class);
     }
-
+    
+    @Deployment(name = PriorityDeploymenetName)
+    public static Archive<?> deployCustomWriterWithPriority() {
+        WebArchive war = TestUtil.prepareArchive(PriorityDeploymenetName);
+        war.addClass(ReaderWriterCustomer.class);
+        war.addClass(PortProviderUtil.class);
+        return TestUtil.finishContainerPrepare(war, null, ReaderWriterLowPriorityCustomerWriter.class,
+            ReaderWriterCustomerWriter.class, ReaderWriterHignPriorityCustomerWriter.class, ReaderWriterResource.class);
+    }
 
     @BeforeClass
     public static void init() {
@@ -188,5 +199,16 @@ public class ReaderWriterTest {
         Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
         response.close();
     }
-
+    
+    @Test
+    @OperateOnDeployment(PriorityDeploymenetName)
+    public void testProviderWithPriority() throws Exception {
+        WebTarget base = client.target(PortProviderUtil.generateURL("/priority", PriorityDeploymenetName));
+        Response response = base.request().get();
+        Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
+        Assert.assertEquals("application/xml;charset=UTF-8", response.getStringHeaders().getFirst("content-type"));
+        String s = new String(response.readEntity(byte[].class), "UTF-8");
+        Assert.assertEquals("Response contains wrong content", "<customer><name>high priority</name></customer>", s);
+        response.close();
+    }
 }
