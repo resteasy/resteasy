@@ -60,4 +60,14 @@ public class ReaderWriterResource {
 
     }
 
+    @Path("/priority")
+    @GET
+    @Produces("application/xml")
+    public Object getCustomerWithProviderPriority() {
+        logger.info("Get customer with application packaged prioritized provider");
+        ReaderWriterCustomer cust = new ReaderWriterCustomer();
+        cust.setName("resteasy");
+        return Response.ok(cust).build();
+    }
+    
 }
