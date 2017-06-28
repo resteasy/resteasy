@@ -1,10 +1,6 @@
 package org.jboss.resteasy.test;
 
-import org.jboss.resteasy.plugins.server.netty.NettyContainer;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -13,7 +9,11 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import org.jboss.resteasy.plugins.server.netty.NettyContainer;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Created by weinanli on 16/06/2017.
@@ -21,14 +21,11 @@ import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 public class SubresourceClassInjectionTest {
     public static class SubResource {
 
-        String val;
-
-        public SubResource(String val) {
-            this.val = val;
+        public SubResource() {
         }
 
         @GET
-        public String get() {
+        public String get(@PathParam("val") String val) {
             return val;
         }
     }
