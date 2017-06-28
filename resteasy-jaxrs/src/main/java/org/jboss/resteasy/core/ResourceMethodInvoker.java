@@ -39,6 +39,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -326,6 +327,12 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
             validator.checkViolations(request);
          }
       }
+      
+      CompletionStageResponseConsumer completionStageResponseConsumer = null;
+      if (CompletionStage.class.isAssignableFrom(method.getReturnType()))
+      {
+         completionStageResponseConsumer = new CompletionStageResponseConsumer(this);
+      }
 
       Object rtn = null;
       try
@@ -334,6 +341,10 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       catch (RuntimeException ex)
       {
+         if (completionStageResponseConsumer != null)
+         {
+            completionStageResponseConsumer.complete();
+         }
          if (request.getAsyncContext().isSuspended())
          {
             try
@@ -353,7 +364,12 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
       }
 
-
+      if (rtn instanceof CompletionStage)
+      {
+         CompletionStage<?> stage = (CompletionStage<?>) rtn;
+         stage.whenComplete(completionStageResponseConsumer);
+         return null;
+      }
       if (request.getAsyncContext().isSuspended() || request.wasForwarded())
       {
          return null;
