@@ -13,7 +13,7 @@ public class RangeResource {
     static File file;
     static File smallFile;
 
-    public RangeResource() {
+    static {
         file = createFile();
         smallFile = createSmallFile();
     }
@@ -43,12 +43,12 @@ public class RangeResource {
     @GET
     @Path("deletesmallfile")
     public void deleteSmallFile() throws Exception {
-        if (file.exists()) {
+        if (smallFile.exists()) {
             smallFile.delete();
         }
     }
 
-    private File createFile() {
+    private static File createFile() {
         File file = null;
         try {
             file = File.createTempFile("tmp", "tmp");
@@ -65,7 +65,7 @@ public class RangeResource {
         return file;
     }
 
-    private File createSmallFile() {
+    private static File createSmallFile() {
         File smallfile = null;
         try {
             smallfile = File.createTempFile("smalltmp", "tmp");
