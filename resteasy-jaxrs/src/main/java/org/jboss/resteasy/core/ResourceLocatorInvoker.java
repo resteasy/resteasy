@@ -3,37 +3,27 @@ package org.jboss.resteasy.core;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
-import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
 import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.MethodInjector;
-import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
-import org.jboss.resteasy.spi.metadata.ResourceBuilder;
-import org.jboss.resteasy.spi.metadata.ResourceClass;
 import org.jboss.resteasy.spi.metadata.ResourceLocator;
-import org.jboss.resteasy.util.FindAnnotation;
 import org.jboss.resteasy.util.GetRestful;
 
 import javax.ws.rs.NotFoundException;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@SuppressWarnings("unchecked")
 public class ResourceLocatorInvoker implements ResourceInvoker
 {
    protected InjectorFactory injector;
@@ -41,7 +31,7 @@ public class ResourceLocatorInvoker implements ResourceInvoker
    protected ResourceFactory resource;
    protected ResteasyProviderFactory providerFactory;
    protected ResourceLocator method;
-   protected ConcurrentHashMap<Class, LocatorRegistry> cachedSubresources = new ConcurrentHashMap<Class, LocatorRegistry>();
+   protected ConcurrentHashMap<Class<?>, LocatorRegistry> cachedSubresources = new ConcurrentHashMap<Class<?>, LocatorRegistry>();
 
    public ResourceLocatorInvoker(ResourceFactory resource, InjectorFactory injector, ResteasyProviderFactory providerFactory, ResourceLocator locator)
    {
@@ -77,6 +67,10 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       {
          uriInfo.pushCurrentResource(locator);
          Object subResource = method.getMethod().invoke(locator, args);
+         if (subResource instanceof Class)
+         {
+            subResource = this.providerFactory.injectedInstance((Class<?>)subResource);
+         }
          return subResource;
 
       }
@@ -88,6 +82,11 @@ public class ResourceLocatorInvoker implements ResourceInvoker
       {
          throw new ApplicationException(e.getCause());
       }
+      catch (SecurityException e)
+      {
+         throw new ApplicationException(e.getCause());
+      }
+
    }
 
    public Method getMethod()
