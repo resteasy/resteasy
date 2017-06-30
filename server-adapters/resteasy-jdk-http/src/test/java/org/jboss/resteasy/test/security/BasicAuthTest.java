@@ -11,11 +11,13 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
+import org.jboss.resteasy.client.jaxrs.engines.HttpContextProvider;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.embedded.SimpleSecurityDomain;
 import org.jboss.resteasy.plugins.server.sun.http.HttpServerContainer;
@@ -276,17 +278,23 @@ public class BasicAuthTest
       // Create AuthCache instance
       AuthCache authCache = new BasicAuthCache();
       
-      // Generate BASIC scheme object and add it to the local auth cache
-      BasicScheme basicAuth = new BasicScheme();
-      HttpHost targetHost = new HttpHost("localhost", 8081);
-      authCache.put(targetHost, basicAuth);
-
-      // Add AuthCache to the execution context
-      BasicHttpContext localContext = new BasicHttpContext();
-      localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
-      
       // Create ClientExecutor.
-      ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(client, localContext);
+      ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(client, new HttpContextProvider()
+      {
+         @Override
+         public HttpContext getContext()
+         {
+            // Generate BASIC scheme object and add it to the local auth cache
+            BasicScheme basicAuth = new BasicScheme();
+            HttpHost targetHost = new HttpHost("localhost", 8081);
+            authCache.put(targetHost, basicAuth);
+
+            // Add AuthCache to the execution context
+            BasicHttpContext localContext = new BasicHttpContext();
+            localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
+            return localContext;
+         }
+      });
       return engine;
    }
 }

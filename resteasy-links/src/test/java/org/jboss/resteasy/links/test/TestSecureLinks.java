@@ -16,9 +16,11 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
+import org.jboss.resteasy.client.jaxrs.engines.HttpContextProvider;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
@@ -94,19 +96,23 @@ public class TestSecureLinks
 		dispatcher.getRegistry().addResourceFactory(noDefaults);
 		url = generateBaseUrl();
 		
-		// Configure HttpClient to authenticate preemptively
-		// by prepopulating the authentication data cache.
-		// 1. Create AuthCache instance
-		AuthCache authCache = new BasicAuthCache();
-		// 2. Generate BASIC scheme object and add it to the local auth cache
-		BasicScheme basicAuth = new BasicScheme();
-		authCache.put(getHttpHost(url), basicAuth);
-		// 3. Add AuthCache to the execution context
-		BasicHttpContext localContext = new BasicHttpContext();
-		localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
-		
 		httpClient = new DefaultHttpClient();
-		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient, localContext);
+		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient, new HttpContextProvider() {
+			@Override
+			public HttpContext getContext() {
+				// Configure HttpClient to authenticate preemptively
+				// by prepopulating the authentication data cache.
+				// 1. Create AuthCache instance
+				AuthCache authCache = new BasicAuthCache();
+				// 2. Generate BASIC scheme object and add it to the local auth cache
+				BasicScheme basicAuth = new BasicScheme();
+				authCache.put(getHttpHost(url), basicAuth);
+				// 3. Add AuthCache to the execution context
+				BasicHttpContext localContext = new BasicHttpContext();
+				localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
+				return localContext;
+			}
+		});
 		ResteasyWebTarget target = new ResteasyClientBuilder().httpEngine(engine).build().target(url);
 		client = target.proxy(BookStoreService.class);
 	}
