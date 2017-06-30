@@ -62,6 +62,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
    protected HttpClient httpClient;
    protected boolean createdHttpClient;
    protected HttpContext httpContext;
+   protected HttpContextProvider httpContextProvider;
    protected boolean closed;
    protected SSLContext sslContext;
    protected HostnameVerifier hostnameVerifier;
@@ -146,10 +147,28 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
    }
 
 
+   /**
+    * Creates a client engine instance using the specified {@link org.apache.http.client.HttpClient}
+    * and {@link org.apache.http.protocol.HttpContext} instances.
+    * Note that the same instance of httpContext is passed to the engine, which may store thread unsafe
+    * attributes in it. It is hence recommended to override the HttpClient
+    * <pre>execute(HttpUriRequest request, HttpContext context)</pre> method to perform a deep
+    * copy of the context before executing the request.
+    * 
+    * @param httpClient     The http client
+    * @param httpContext    The context to be used for executing requests
+    */
+   @Deprecated
    public ApacheHttpClient4Engine(HttpClient httpClient, HttpContext httpContext)
    {
       this.httpClient = httpClient;
       this.httpContext = httpContext;
+   }
+
+   public ApacheHttpClient4Engine(HttpClient httpClient, HttpContextProvider httpContextProvider)
+   {
+      this.httpClient = httpClient;
+      this.httpContextProvider = httpContextProvider;
    }
 
    /**
@@ -213,11 +232,13 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       return httpClient;
    }
 
+   @Deprecated
    public HttpContext getHttpContext()
    {
       return httpContext;
    }
 
+   @Deprecated
    public void setHttpContext(HttpContext httpContext)
    {
       this.httpContext = httpContext;
@@ -275,7 +296,6 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       return new BufferedInputStream(is, responseBufferSize);
    }
 
-   @SuppressWarnings("unchecked")
    public ClientResponse invoke(ClientInvocation request)
    {
       String uri = request.getUri().toString();
@@ -285,7 +305,12 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       {
          loadHttpMethod(request, httpMethod);
 
-         res = httpClient.execute(httpMethod, httpContext);
+         HttpContext ctx = httpContext;
+         if (ctx == null && httpContextProvider != null)
+         {
+            ctx = httpContextProvider.getContext();
+         }
+         res = httpClient.execute(httpMethod, ctx);
       }
       catch (Exception e)
       {
@@ -652,9 +677,6 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       LogMessages.LOGGER.warn(Messages.MESSAGES.couldNotDeleteFile(tempRequestFile.getAbsolutePath()), ex);
       tempRequestFile.deleteOnExit();
    }
-
-
-
 
    /**
     * We use {@link org.apache.http.entity.FileEntity} as the {@link HttpEntity} implementation when the request OutputStream has been

@@ -37,9 +37,27 @@ public class ApacheHttpClient43Engine extends ApacheHttpClient4Engine
         super(httpClient, closeHttpClient);
     }
 
+    /**
+     * Creates a client engine instance using the specified {@link org.apache.http.client.HttpClient}
+     * and {@link org.apache.http.protocol.HttpContext} instances.
+     * Note that the same instance of httpContext is passed to the engine, which may store thread unsafe
+     * attributes in it. It is hence recommended to override the HttpClient
+     * <pre>execute(HttpUriRequest request, HttpContext context)</pre> method to perform a deep
+     * copy of the context before executing the request.
+     * 
+     * @param httpClient     The http client
+     * @param httpContext    The context to be used for executing requests
+     */
+    @Deprecated
     public ApacheHttpClient43Engine(final HttpClient httpClient, final HttpContext httpContext)
     {
         super(httpClient, httpContext);
+    }
+    
+    public ApacheHttpClient43Engine(HttpClient httpClient, HttpContextProvider httpContextProvider)
+    {
+       this.httpClient = httpClient;
+       this.httpContextProvider = httpContextProvider;
     }
 
     @Override
