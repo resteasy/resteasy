@@ -6,13 +6,11 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.TooLongFrameException;
 import io.netty.handler.codec.http.DefaultHttpResponse;
-import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.timeout.IdleStateEvent;
 import org.jboss.resteasy.plugins.server.netty.i18n.LogMessages;
 import org.jboss.resteasy.plugins.server.netty.i18n.Messages;
 import org.jboss.resteasy.spi.Failure;
 
-import static io.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
 import static io.netty.handler.codec.http.HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
@@ -43,9 +41,10 @@ public class RequestHandler extends SimpleChannelInboundHandler
             NettyHttpRequest request = (NettyHttpRequest) msg;
             try {
 
-                if (request.is100ContinueExpected()) {
-                    send100Continue(ctx);
-                }
+// Not necessary, since io.netty.handler.codec.MessageAggregator has already done it.
+//                if (request.is100ContinueExpected()) {
+//                    send100Continue(ctx);
+//                }
 
                 NettyHttpResponse response = request.getResponse();
                 try {
@@ -69,11 +68,17 @@ public class RequestHandler extends SimpleChannelInboundHandler
         }
     }
 
-   private void send100Continue(ChannelHandlerContext ctx)
-   {
-      HttpResponse response = new DefaultHttpResponse(HTTP_1_1, CONTINUE);
-      ctx.writeAndFlush(response);
-   }
+// No longer called. However, note that if it is called, it should write a 
+// io.netty.handler.codec.http.DefaultFullHttpResponse rather
+// than a io.netty.handler.codec.http.DefaultHttpResponse. The latter doesn't leave 
+// io.netty.handler.codec.http.HttpObjectEncoder in state ST_INIT, so that the next
+// message going into HttpObjectEncoder causes it to throw an exception.
+//
+//   private void send100Continue(ChannelHandlerContext ctx)
+//   {
+//      HttpResponse response = new DefaultHttpResponse(HTTP_1_1, CONTINUE);
+//      ctx.writeAndFlush(response);
+//   }
 
    @Override
    public void exceptionCaught(ChannelHandlerContext ctx, Throwable e)
