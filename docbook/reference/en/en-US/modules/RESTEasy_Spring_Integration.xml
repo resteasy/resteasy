@@ -236,12 +236,21 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 </sect2>
 
 <sect2>
+<title>Spring Boot starter</title>
+
+<para>
+The RESTEasy project does not include its own component for Spring Boot integration, however PayPal has developed a very interesting <ulink url="https://github.com/paypal/resteasy-spring-boot">RESTEasy Spring Boot starter</ulink> and shared it with the community. Please refer to the <ulink url="https://github.com/paypal/resteasy-spring-boot/blob/master/mds/USAGE.md">relevant documentation</ulink> on GitHub for further information.
+</para>
+</sect2>
+
+
+<sect2>
 <title>Upgrading in WildFly</title>
 
 <para>
 <emphasis role="bold">Note.</emphasis>
-As noted in <xref linkend="upgrading-wildfly"/>, the The Resteasy distribution comes with a zip file called resteasy-jboss-modules-&lt;version&gt;.zip,
-which can be unzipped into the modules/system/layers/base/ directory of WildFly to upgrade to a new version of Resteasy.
+As noted in <xref linkend="upgrading-wildfly"/>, the The RESTEasy distribution comes with a zip file called resteasy-jboss-modules-&lt;version&gt;.zip,
+which can be unzipped into the modules/system/layers/base/ directory of WildFly to upgrade to a new version of RESTEasy.
 Because of the way resteasy-spring is used in WildFly, after unzipping the zip file, it is also necessary to remove the
 old resteasy-spring jar from modules/system/layers/base/org/jboss/resteasy/resteasy-spring/main/bundled/resteasy-spring-jar.
 </para>
