@@ -239,8 +239,31 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 <title>Spring Boot starter</title>
 
 <para>
-The RESTEasy project does not include its own component for Spring Boot integration, however PayPal has developed a very interesting <ulink url="https://github.com/paypal/resteasy-spring-boot">RESTEasy Spring Boot starter</ulink> and shared it with the community. Please refer to the <ulink url="https://github.com/paypal/resteasy-spring-boot/blob/master/mds/USAGE.md">relevant documentation</ulink> on GitHub for further information.
+The RESTEasy project does not include its own component for Spring Boot integration, however PayPal has developed a very interesting <ulink url="https://github.com/paypal/resteasy-spring-boot">RESTEasy Spring Boot starter</ulink> and shared it with the community. You can see below an example of how to use it. Please refer to the <ulink url="https://github.com/paypal/resteasy-spring-boot/blob/master/mds/USAGE.md">relevant documentation</ulink> on GitHub for further information.
 </para>
+
+<para>
+First, add dependency <literal>com.paypal.springboot:resteasy-spring-boot-starter</literal> to your Spring Boot application. It is recommended to you use <ulink url="http://search.maven.org/#search%7Cga%7C1%7Cg:com.paypal.springboot">the latest version</ulink>.
+Second, optionally you can register one or more JAX-RS application classes. To do so, just define it as a Spring bean, and it will be automatically registered. See the example below.
+</para>
+
+<programlisting>
+package com.sample.app;
+
+import org.springframework.stereotype.Component;
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
+
+@Component
+@ApplicationPath("/sample-app/")
+public class JaxrsApplication extends Application {
+}
+</programlisting>
+
+<para>
+Finally, to register JAX-RS resources and providers, just define them as Spring beans, and they will be automatically registered. Notice that JAX-RS resources can be singleton or request scoped, while JAX-RS providers must be singletons.
+</para>
+
 </sect2>
 
 
@@ -249,7 +272,7 @@ The RESTEasy project does not include its own component for Spring Boot integrat
 
 <para>
 <emphasis role="bold">Note.</emphasis>
-As noted in <xref linkend="upgrading-wildfly"/>, the The RESTEasy distribution comes with a zip file called resteasy-jboss-modules-&lt;version&gt;.zip,
+As noted in <xref linkend="upgrading-wildfly"/>, the RESTEasy distribution comes with a zip file called resteasy-jboss-modules-&lt;version&gt;.zip,
 which can be unzipped into the modules/system/layers/base/ directory of WildFly to upgrade to a new version of RESTEasy.
 Because of the way resteasy-spring is used in WildFly, after unzipping the zip file, it is also necessary to remove the
 old resteasy-spring jar from modules/system/layers/base/org/jboss/resteasy/resteasy-spring/main/bundled/resteasy-spring-jar.
