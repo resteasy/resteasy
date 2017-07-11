@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.client.resource;
+package org.jboss.resteasy.test.client.exception.resource;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.ext.ReaderInterceptor;
