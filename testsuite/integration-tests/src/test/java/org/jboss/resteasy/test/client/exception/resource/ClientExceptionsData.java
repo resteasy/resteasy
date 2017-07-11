@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.client.resource;
+package org.jboss.resteasy.test.client.exception.resource;
 
 public class ClientExceptionsData {
     public final String data;

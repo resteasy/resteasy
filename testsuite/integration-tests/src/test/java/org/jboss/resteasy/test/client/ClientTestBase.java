@@ -25,7 +25,7 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 /**
  * @author Tomaz Cerar (c) 2016 Red Hat Inc.
  */
-abstract class ClientTestBase {
+public abstract class ClientTestBase {
 
     @ArquillianResource
     URI baseUri;

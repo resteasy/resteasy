@@ -1,20 +1,29 @@
-package org.jboss.resteasy.test.client;
+package org.jboss.resteasy.test.client.exception;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.test.client.resource.ClientExceptionsCustomClientRequestFilter;
-import org.jboss.resteasy.test.client.resource.ClientExceptionsData;
-import org.jboss.resteasy.test.client.resource.ClientExceptionsIOExceptionReaderInterceptor;
-import org.jboss.resteasy.test.client.resource.ClientExceptionsResource;
-import org.jboss.resteasy.test.client.resource.ClientExceptionsCustomClientResponseFilter;
+import org.jboss.resteasy.test.client.ClientTestBase;
+
+import org.jboss.resteasy.test.client.exception.resource.ClientExceptionsData;
+import org.jboss.resteasy.test.client.exception.resource.ClientExceptionsIOExceptionReaderInterceptor;
+import org.jboss.resteasy.test.client.exception.resource.ClientExceptionsIOExceptionResponseFilter;
+import org.jboss.resteasy.test.client.exception.resource.ClientExceptionsIOExceptionRequestFilter;
+import org.jboss.resteasy.test.client.exception.resource.ClientExceptionsRuntimeExceptionResponseFilter;
+import org.jboss.resteasy.test.client.exception.resource.ClientExceptionsRuntimeExceptionRequestFilter;
+import org.jboss.resteasy.test.client.exception.resource.ClientExceptionsCustomExceptionRequestFilter;
+import org.jboss.resteasy.test.client.exception.resource.ClientExceptionsCustomExceptionResponseFilter;
+import org.jboss.resteasy.test.client.exception.resource.ClientExceptionsCustomException;
+import org.jboss.resteasy.test.client.exception.resource.ClientExceptionsResource;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.Assert;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
@@ -38,7 +47,7 @@ import javax.ws.rs.core.Response;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class ClientExceptionsTest extends ClientTestBase{
+public class ClientExceptionsTest extends ClientTestBase {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -125,26 +134,90 @@ public class ClientExceptionsTest extends ClientTestBase{
 
     /**
      * @tpTestDetails WebTarget registers ClientResponseFilter and sends request to a server. The processing of the response gets
-     * interrupted in the ClientResponseFilter and processing ends with ResponseProcessingException.
+     * interrupted in the ClientResponseFilter by IOException and processing ends with ResponseProcessingException.
      * @tpPassCrit ResponseProcessingException is raised
      * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = ResponseProcessingException.class)
-    public void responseFilterThrowsExceptionTest() {
+    public void responseFilterThrowsIOExceptionTest() {
         WebTarget base = client.target(generateURL("/") + "get");
-        base.register(ClientExceptionsCustomClientResponseFilter.class).request("text/plain").get();
+        base.register(ClientExceptionsIOExceptionResponseFilter.class).request("text/plain").get();
 
     }
 
     /**
      * @tpTestDetails WebTarget registers ClientRequestFilter and sends request to a server. The processing of the request gets
-     * interrupted in the ClientRequestFilter and processing ends with ProcessingException.
+     * interrupted in the ClientRequestFilter by IOException and processing ends with ProcessingException.
      * @tpPassCrit ProcessingException is raised
      * @tpSince RESTEasy 3.0.16
      */
     @Test(expected = ProcessingException.class)
-    public void requestFilterThrowsException() {
+    public void requestFilterThrowsIOExceptionTest() {
         WebTarget base = client.target(generateURL("/") + "get");
-        base.register(ClientExceptionsCustomClientRequestFilter.class).request("text/plain").get();
+        base.register(ClientExceptionsIOExceptionRequestFilter.class).request("text/plain").get();
     }
+
+    /**
+     * @tpTestDetails WebTarget registers ClientResponseFilter and sends request to a server. The processing of the response
+     * gets interrupted by RuntimeException in the ClientResponseFilter and processing ends with ResponseProcessingException.
+     * @tpPassCrit ResponseProcessingException is raised
+     * @tpSince RESTEasy 3.0.24
+     */
+    @Test(expected = ResponseProcessingException.class)
+    public void responseFilterThrowsRuntimeExceptionTest() {
+        WebTarget base = client.target(generateURL("/") + "get");
+        base.register(ClientExceptionsRuntimeExceptionResponseFilter.class).request("text/plain").get();
+
+    }
+
+    /**
+     * @tpTestDetails WebTarget registers ClientRequestFilter and sends request to a server. The processing of the request gets
+     * interrupted in the ClientRequestFilter by RuntimeException and processing ends with ProcessingException.
+     * @tpPassCrit ProcessingException is raised
+     * @tpSince RESTEasy 3.0.24
+     */
+    @Test(expected = ProcessingException.class)
+    public void requestFilterThrowsRuntimeExceptionTest() {
+        WebTarget base = client.target(generateURL("/") + "get");
+        base.register(ClientExceptionsRuntimeExceptionRequestFilter.class).request("text/plain").get();
+    }
+
+    /**
+     * @tpTestDetails WebTarget registers ClientResponseFilter and sends request to a server. The processing of the response
+     * gets interrupted by ClientExceptionsCustomException in the ClientResponseFilter and processing ends with ResponseProcessingException.
+     * @tpTrackerLink RESTEASY-1591
+     * @tpPassCrit ResponseProcessingException is raised
+     * @tpSince RESTEasy 3.0.24
+     */
+    @Test
+    public void responseFilterThrowsCustomExceptionTest() {
+        WebTarget base = client.target(generateURL("/") + "get");
+        try {
+            base.register(ClientExceptionsCustomExceptionResponseFilter.class).request("text/plain").get();
+        } catch (ResponseProcessingException ex) {
+            Assert.assertEquals(ClientExceptionsCustomException.class.getCanonicalName() + ": custom message", ex.getMessage());
+        } catch (Throwable ex) {
+            Assert.fail("The exception thrown by client was not instance of javax.ws.rs.client.ResponseProcessingException");
+        }
+    }
+
+    /**
+     * @tpTestDetails WebTarget registers ClientRequestFilter and sends request to a server. The processing of the request gets
+     * interrupted in the ClientRequestFilter by ClientExceptionsCustomException and processing ends with ProcessingException.
+     * @tpTrackerLink RESTEASY-1685, RESTEASY-1591
+     * @tpPassCrit ProcessingException is raised
+     * @tpSince RESTEasy 3.0.24
+     */
+    @Test
+    public void requestFilterThrowsCustomExceptionTest() {
+        WebTarget base = client.target(generateURL("/") + "get");
+        try {
+            base.register(ClientExceptionsCustomExceptionRequestFilter.class).request("text/plain").get();
+        } catch (ProcessingException ex) {
+            Assert.assertEquals(ClientExceptionsCustomException.class.getCanonicalName() + ": custom message", ex.getMessage());
+        } catch (Throwable ex) {
+            Assert.fail("The exception thrown by client was not instance of javax.ws.rs.ProcessingException");
+        }
+    }
+
 }
