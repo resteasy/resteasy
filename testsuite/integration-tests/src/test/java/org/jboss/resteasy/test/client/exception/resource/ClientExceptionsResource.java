@@ -1,4 +1,4 @@
-package org.jboss.resteasy.test.client.resource;
+package org.jboss.resteasy.test.client.exception.resource;
 
 import org.jboss.resteasy.util.HttpResponseCodes;
 
