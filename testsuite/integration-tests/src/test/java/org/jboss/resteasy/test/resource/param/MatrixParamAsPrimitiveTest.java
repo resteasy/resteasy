@@ -427,7 +427,7 @@ public class MatrixParamAsPrimitiveTest {
     
     /**
      * @tpTestDetails Basic test for char
-     * @tpSince RESTEasy 3.0.16
+     * @tpSince RESTEasy 3.0.24
      */
     @Test
     public void testGetChar() {
@@ -436,7 +436,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value of char
-     * @tpSince RESTEasy 3.0.16
+     * @tpSince RESTEasy 3.0.24
      */
     @Test
     public void testGetCharPrimitivesDefault() {
@@ -445,7 +445,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value of char with wrapper
-     * @tpSince RESTEasy 3.0.16
+     * @tpSince RESTEasy 3.0.24
      */
     @Test
     public void testGetCharPrimitiveWrappersDefault() {
@@ -454,7 +454,7 @@ public class MatrixParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test default value of list and array of char
-     * @tpSince RESTEasy 3.0.16
+     * @tpSince RESTEasy 3.0.24
      */
     @Test
     public void testGetCharPrimitiveListDefault() {

@@ -519,7 +519,7 @@ public class QueryParamAsPrimitiveTest {
     
     /**
      * @tpTestDetails Test char primitive object for get method
-     * @tpSince RESTEasy 3.0.16
+     * @tpSince RESTEasy 3.0.24
      */
     @Test
     public void testGetChar() {
@@ -528,7 +528,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test char primitive object
-     * @tpSince RESTEasy 3.0.16
+     * @tpSince RESTEasy 3.0.24
      */
     @Test
     public void testGetCharPrimitivesDefault() {
@@ -537,7 +537,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test char primitive object with proxy
-     * @tpSince RESTEasy 3.0.16
+     * @tpSince RESTEasy 3.0.24
      */
     @Test
     public void testGetCharPrimitiveWrappersDefault() {
@@ -546,7 +546,7 @@ public class QueryParamAsPrimitiveTest {
 
     /**
      * @tpTestDetails Test char primitive objects in list
-     * @tpSince RESTEasy 3.0.16
+     * @tpSince RESTEasy 3.0.24
      */
     @Test
     public void testGetCharPrimitiveListDefault() {
@@ -555,7 +555,7 @@ public class QueryParamAsPrimitiveTest {
     
     /**
      * @tpTestDetails Test char primitive objects in array
-     * @tpSince RESTEasy 3.0.16
+     * @tpSince RESTEasy 3.0.24
      */
     @Test
     public void testGetCharPrimitiveArrayDefault() {
