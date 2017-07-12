@@ -59,4 +59,11 @@ public class HeaderParamsAsPrimitivesResourceDefault {
         Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, 3.14159265358979d, v, 0.0);
         return "content";
     }
+    
+    @GET
+    @Produces("application/char")
+    public String doGet(@HeaderParam("char") @DefaultValue("a") char v) {
+    	Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, 'a', v);
+        return "content";
+    }
 }

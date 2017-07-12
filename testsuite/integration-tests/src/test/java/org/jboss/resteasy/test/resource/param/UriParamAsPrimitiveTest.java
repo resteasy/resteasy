@@ -1,6 +1,9 @@
 package org.jboss.resteasy.test.resource.param;
 
 
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.Response;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -13,6 +16,8 @@ import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResour
 import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriByte;
 import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriByteInterface;
 import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriByteWrapper;
+import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriChar;
+import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriCharWrapper;
 import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriDouble;
 import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriDoubleWrapper;
 import org.jboss.resteasy.test.resource.param.resource.UriParamAsPrimitiveResourceUriFloat;
@@ -33,9 +38,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.Response;
 
 /**
  * @tpSubChapter Parameters
@@ -73,13 +75,15 @@ public class UriParamAsPrimitiveTest {
                 UriParamAsPrimitiveResourceUriLong.class,
                 UriParamAsPrimitiveResourceUriFloat.class,
                 UriParamAsPrimitiveResourceUriDouble.class,
+                UriParamAsPrimitiveResourceUriChar.class,
                 UriParamAsPrimitiveResourceUriBooleanWrapper.class,
                 UriParamAsPrimitiveResourceUriByteWrapper.class,
                 UriParamAsPrimitiveResourceUriShortWrapper.class,
                 UriParamAsPrimitiveResourceUriIntWrapper.class,
                 UriParamAsPrimitiveResourceUriLongWrapper.class,
                 UriParamAsPrimitiveResourceUriFloatWrapper.class,
-                UriParamAsPrimitiveResourceUriDoubleWrapper.class);
+                UriParamAsPrimitiveResourceUriDoubleWrapper.class,
+                UriParamAsPrimitiveResourceUriCharWrapper.class);
     }
 
     private static String generateURL(String path) {
@@ -183,5 +187,14 @@ public class UriParamAsPrimitiveTest {
     @Test
     public void testGetDouble() {
         basicTest("double", "3.14159265358979");
+    }
+    
+    /**
+     * @tpTestDetails Test char primitive object
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testGetChar() {
+        basicTest("char", "a");
     }
 }

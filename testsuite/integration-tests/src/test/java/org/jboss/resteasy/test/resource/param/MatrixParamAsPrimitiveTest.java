@@ -424,6 +424,43 @@ public class MatrixParamAsPrimitiveTest {
         testListDefault("double", "3.14159265358979");
         testArrayDefault("double", "3.14159265358979");
     }
+    
+    /**
+     * @tpTestDetails Basic test for char
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testGetChar() {
+        basicTest("char", "a");
+    }
+
+    /**
+     * @tpTestDetails Test default value of char
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testGetCharPrimitivesDefault() {
+        testDefault("char", "a");
+    }
+
+    /**
+     * @tpTestDetails Test default value of char with wrapper
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testGetCharPrimitiveWrappersDefault() {
+        testWrappersDefault("char", "a");
+    }
+
+    /**
+     * @tpTestDetails Test default value of list and array of char
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testGetCharPrimitiveListDefault() {
+        testListDefault("char", "a");
+        testArrayDefault("char", "a");
+    }
 
     /**
      * @tpTestDetails Test wrong data stored in int format

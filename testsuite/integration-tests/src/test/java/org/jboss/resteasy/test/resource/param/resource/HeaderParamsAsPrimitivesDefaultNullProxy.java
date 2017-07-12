@@ -33,4 +33,8 @@ public interface HeaderParamsAsPrimitivesDefaultNullProxy {
     @GET
     @Produces("application/double")
     String doGet();
+    
+    @GET
+    @Produces("application/char")
+    String doGetChar();
 }

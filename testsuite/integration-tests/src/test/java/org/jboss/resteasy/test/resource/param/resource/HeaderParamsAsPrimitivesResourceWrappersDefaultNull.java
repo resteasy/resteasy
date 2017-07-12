@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.resource.param.resource;
 import org.jboss.resteasy.test.resource.param.HeaderParamsAsPrimitivesTest;
 import org.junit.Assert;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
@@ -56,6 +57,13 @@ public class HeaderParamsAsPrimitivesResourceWrappersDefaultNull {
     @Produces("application/double")
     public String doGet(@HeaderParam("double") Double v) {
         Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, null, v);
+        return "content";
+    }
+    
+    @GET
+    @Produces("application/char")
+    public String doGet(@HeaderParam("char") Character v) {
+    	Assert.assertEquals(HeaderParamsAsPrimitivesTest.ERROR_MESSAGE, null, v);
         return "content";
     }
 }

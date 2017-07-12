@@ -3,6 +3,7 @@ package org.jboss.resteasy.test.resource.param.resource;
 import org.jboss.resteasy.test.resource.param.MatrixParamAsPrimitiveTest;
 import org.junit.Assert;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
@@ -55,6 +56,13 @@ public class MatrixParamAsPrimitiveArrayDefaultNull {
     @GET
     @Produces("application/double")
     public String doGetDouble(@MatrixParam("double") double[] v) {
+        Assert.assertTrue(MatrixParamAsPrimitiveTest.ERROR_MESSAGE, v.length == 0);
+        return "content";
+    }
+    
+    @GET
+    @Produces("application/char")
+    public String doGetCharacter(@MatrixParam("char")  char[] v) {
         Assert.assertTrue(MatrixParamAsPrimitiveTest.ERROR_MESSAGE, v.length == 0);
         return "content";
     }

@@ -35,4 +35,8 @@ public interface HeaderParamsAsPrimitivesDefaultOverrideProxy {
     @GET
     @Produces("application/double")
     String doGet(@HeaderParam("double") @DefaultValue("0.0") double v);
+    
+    @GET
+    @Produces("application/char")
+    String doGet(@HeaderParam("char") @DefaultValue("b") char v);
 }

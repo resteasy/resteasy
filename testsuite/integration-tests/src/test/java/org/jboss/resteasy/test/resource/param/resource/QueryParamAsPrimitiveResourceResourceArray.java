@@ -34,4 +34,8 @@ public interface QueryParamAsPrimitiveResourceResourceArray {
     @GET
     @Produces("application/double")
     String doGetDouble(@QueryParam("double") double[] v);
+    
+    @GET
+    @Produces("application/char")
+    String doGetCharacter(@QueryParam("char") char[] v); 
 }
