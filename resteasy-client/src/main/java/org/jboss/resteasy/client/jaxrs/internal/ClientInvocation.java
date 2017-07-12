@@ -431,11 +431,7 @@ public class ClientInvocation implements Invocation
                {
                   throw e;
                }
-               catch (WebApplicationException e)
-               {
-                  throw e;
-               }
-               catch (IOException e)
+               catch (Throwable e)
                {
                   throw new ProcessingException(e);
                }
@@ -460,7 +456,7 @@ public class ClientInvocation implements Invocation
                {
                   throw e;
                }
-               catch (IOException e)
+               catch (Throwable e)
                {
                   throw new ResponseProcessingException(response, e);
                }
