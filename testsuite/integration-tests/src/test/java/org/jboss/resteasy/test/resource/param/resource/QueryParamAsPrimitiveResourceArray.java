@@ -72,4 +72,13 @@ public class QueryParamAsPrimitiveResourceArray implements QueryParamAsPrimitive
         Assert.assertEquals(QueryParamAsPrimitiveTest.ERROR_MESSAGE, 3.14159265358979d, v[2], 0.0);
         return "content";
     }
+    
+    @GET
+    @Produces("application/char")
+    public String doGetCharacter(@QueryParam("char") char[] v) {
+        Assert.assertEquals(QueryParamAsPrimitiveTest.ERROR_MESSAGE, 'a', v[0]);
+        Assert.assertEquals(QueryParamAsPrimitiveTest.ERROR_MESSAGE, 'a', v[1]);
+        Assert.assertEquals(QueryParamAsPrimitiveTest.ERROR_MESSAGE, 'a', v[2]);
+        return "content";
+    }
 }

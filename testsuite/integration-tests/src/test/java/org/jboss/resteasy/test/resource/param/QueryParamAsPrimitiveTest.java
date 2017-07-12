@@ -516,6 +516,51 @@ public class QueryParamAsPrimitiveTest {
     public void testGetDoublePrimitiveListDefault() {
         testListDefault("double", "3.14159265358979");
     }
+    
+    /**
+     * @tpTestDetails Test char primitive object for get method
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testGetChar() {
+        basicTest("char", "a");
+    }
+
+    /**
+     * @tpTestDetails Test char primitive object
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testGetCharPrimitivesDefault() {
+        testDefault("char", "a");
+    }
+
+    /**
+     * @tpTestDetails Test char primitive object with proxy
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testGetCharPrimitiveWrappersDefault() {
+        testWrappersDefault("char", "a");
+    }
+
+    /**
+     * @tpTestDetails Test char primitive objects in list
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testGetCharPrimitiveListDefault() {
+        testListDefault("char", "a");
+    }
+    
+    /**
+     * @tpTestDetails Test char primitive objects in array
+     * @tpSince RESTEasy 3.0.16
+     */
+    @Test
+    public void testGetCharPrimitiveArrayDefault() {
+        testArrayDefault("char", "a");
+    }
 
     /**
      * @tpTestDetails Negative testing: accept only int, but string is provided. Error is excepted.

@@ -33,4 +33,8 @@ public interface HeaderParamsAsPrimitivesListDefaultProxy {
     @GET
     @Produces("application/double")
     String doGetDouble();
+    
+    @GET
+    @Produces("application/char")
+    String doGetCharacter();
 }

@@ -34,4 +34,8 @@ public interface QueryParamAsPrimitiveResourceResourceWrappersInterface {
     @GET
     @Produces("application/double")
     String doGet(@QueryParam("double") Double v);
+    
+    @GET
+    @Produces("application/char")
+    String doGet(@QueryParam("char") Character v);
 }

@@ -39,6 +39,24 @@ import java.util.TreeSet;
 @SuppressWarnings(value = "unchecked")
 public class StringParameterInjector
 {
+	private static final ParamConverter<Character> characterParamConverter = new  ParamConverter<Character>() {
+
+		@Override
+		public Character fromString(String value) {
+			if(value != null && value.length() == 1)
+			{
+				return value.charAt(0);
+			}
+			return null;
+		}
+
+		@Override
+		public String toString(Character value) {
+			return null;
+		}
+
+	};
+	
    protected Class type;
    protected Class baseType;
    protected Type baseGenericType;
@@ -218,7 +236,14 @@ public class StringParameterInjector
                }
                if (valueOf == null)
                {
-                  throw new RuntimeException(Messages.MESSAGES.unableToFindConstructor(getParamSignature(), target, baseType.getName()));
+            	   if(Character.class.equals(baseType))
+            	   {
+            		   paramConverter = characterParamConverter;
+            	   }
+            	   else
+            	   {
+            		   throw new RuntimeException(Messages.MESSAGES.unableToFindConstructor(getParamSignature(), target, baseType.getName()));
+            	   }
                }
             }
 
