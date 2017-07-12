@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.interceptor;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -14,6 +15,7 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,9 +56,13 @@ public class ResponseFilterCustomExceptionTest {
      * @tpTestDetails Use ClientResponseFilter
      * @tpSince RESTEasy 3.0.21
      */
-    @Test(expected = CustomException.class)
+    @Test
     public void testThrowCustomException() throws Exception {
-        client.register(ThrowCustomExceptionResponseFilter.class);
-        client.target(generateURL("/testCustomException")).request().post(Entity.text("testCustomException"));
+        try {
+            client.register(ThrowCustomExceptionResponseFilter.class);
+            client.target(generateURL("/testCustomException")).request().post(Entity.text("testCustomException"));
+        } catch (ProcessingException pe) {
+            Assert.assertEquals(CustomException.class, pe.getCause().getClass());
+        }
     }
 }
