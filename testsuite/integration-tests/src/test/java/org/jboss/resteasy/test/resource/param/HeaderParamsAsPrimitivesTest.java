@@ -639,7 +639,7 @@ public class HeaderParamsAsPrimitivesTest {
     
     /**
      * @tpTestDetails Basic test for char
-     * @tpSince RESTEasy 3.0.16
+     * @tpSince RESTEasy 3.0.24
      */
     @Test
     public void testGetChar() {
@@ -648,7 +648,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Basic test for char, test default value
-     * @tpSince RESTEasy 3.0.16
+     * @tpSince RESTEasy 3.0.24
      */
     @Test
     public void testGetCharPrimitivesDefault() {
@@ -657,7 +657,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Basic test for char, use wrapper
-     * @tpSince RESTEasy 3.0.16
+     * @tpSince RESTEasy 3.0.24
      */
     @Test
     public void testGetCharPrimitiveWrappersDefault() {
@@ -666,7 +666,7 @@ public class HeaderParamsAsPrimitivesTest {
 
     /**
      * @tpTestDetails Basic test for list of char, do not use wrapper
-     * @tpSince RESTEasy 3.0.16
+     * @tpSince RESTEasy 3.0.24
      */
     @Test
     public void testGetCharPrimitiveListDefault() {
