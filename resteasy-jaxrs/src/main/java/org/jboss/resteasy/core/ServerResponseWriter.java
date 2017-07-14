@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -236,20 +237,22 @@ public class ServerResponseWriter
          {
             annotations = method.getMethodAnnotations();
          }
-         List<MessageBodyWriter<?>> mbrs = providerFactory.getPossibleMessageBodyWriters(type, generic, annotations);
+         Map<MessageBodyWriter<?>, Class<?>> mbrs = providerFactory.getPossibleMessageBodyWritersMap(type, generic, annotations);
          List<MediaType> accepts = request.getHttpHeaders().getAcceptableMediaTypes();
          List<SortableMediaType> M = new ArrayList<SortableMediaType>();
          for (MediaType accept : accepts)
          {
-            for (MessageBodyWriter<?> mbr : mbrs)
+            for (Entry<MessageBodyWriter<?>, Class<?>> e : mbrs.entrySet())
             {
+               MessageBodyWriter<?> mbr = e.getKey();
+               Class<?> wt = e.getValue();
                Produces produces = mbr.getClass().getAnnotation(Produces.class);
                for (String producesString : produces.value())
                {
                   MediaType produce = MediaType.valueOf(producesString);
                   if (produce.isCompatible(accept))
                   {
-                     M.add(mostSpecific(produce, accept));
+                     M.add(mostSpecific(produce, wt, accept, null));
                   }
                }
             }
@@ -336,10 +339,22 @@ public class ServerResponseWriter
    {
       double q = -1;
       double qs = -1;
+      Class<?> writerType = null;
       
       public SortableMediaType(MediaType m)
       {
          this(m.getType(), m.getSubtype(), m.getParameters());
+      }
+      
+      public SortableMediaType(MediaType m, Class<?> writerType)
+      {
+         this(m.getType(), m.getSubtype(), m.getParameters(), writerType);
+      }
+      
+      public SortableMediaType(String type, String subtype, Map<String, String> parameters, Class<?> writerType)
+      {
+         this(type, subtype, parameters);
+         this.writerType = writerType;
       }
       
       public SortableMediaType(String type, String subtype, Map<String, String> parameters)
@@ -403,49 +418,61 @@ public class ServerResponseWriter
          {
             return 1;
          }
+         if (this.writerType == o.writerType) return 0;
+         if (this.writerType == null) return -1;
+         if (o.writerType == null) return 1;
+         if (this.writerType.isAssignableFrom(o.writerType)) return -1;
+         if (o.writerType.isAssignableFrom(this.writerType)) return 1;
          return 0;
       }
+   }
+   
+   
+   private static SortableMediaType mostSpecific(MediaType m1, MediaType m2)
+   {
+      Class<?> wt1 = m1 instanceof SortableMediaType ? ((SortableMediaType)m1).writerType : null;
+      Class<?> wt2 = m2 instanceof SortableMediaType ? ((SortableMediaType)m2).writerType : null;
+      return mostSpecific(m1, wt1, m2, wt2);
    }
    
    /**
     * m1, m2 are compatible
     */
-   private static SortableMediaType mostSpecific(MediaType m1, MediaType m2)
+   private static SortableMediaType mostSpecific(MediaType m1, Class<?> wt1, MediaType m2, Class<?> wt2)
    {
-      MediaType m = null;
       if (m1.getType().equals("*"))
       {
          if (m2.getType().equals("*"))
          {
             if (m1.getSubtype().equals("*"))
             {
-               return new SortableMediaType(m2); // */* <= */?
+               return new SortableMediaType(m2, wt2); // */* <= */?
             }
             else
             {
-               return new SortableMediaType(m1); // */st > */?
+               return new SortableMediaType(m1, wt1); // */st > */?
             }
          }
          else
          {
-            return new SortableMediaType(m2); // */? < t/?
+            return new SortableMediaType(m2, wt2); // */? < t/?
          }
       }
       else
       {
          if (m2.getType().equals("*"))
          {
-            return new SortableMediaType(m1); // t/? > */?
+            return new SortableMediaType(m1, wt1); // t/? > */?
          }
          else
          {
             if (m1.getSubtype().equals("*"))
             {
-               return new SortableMediaType(m2); // t/* <= t/?
+               return new SortableMediaType(m2, wt2); // t/* <= t/?
             }
             else
             {
-               return new SortableMediaType(m1); // t/st >= t/?
+               return new SortableMediaType(m1, wt1); // t/st >= t/?
             }
          }
       }
