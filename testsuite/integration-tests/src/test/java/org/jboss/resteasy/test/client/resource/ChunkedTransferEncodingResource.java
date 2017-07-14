@@ -18,6 +18,10 @@ public class ChunkedTransferEncodingResource {
       if (header == null) {
          header = "null";
       }
-      return Response.ok(header).build();
+      String headerContentLength = headers.getHeaderString("Content-Length");
+      if (headerContentLength == null) {
+         headerContentLength = "null";
+      }
+      return Response.ok(header + " " + headerContentLength).build();
    }
 }
