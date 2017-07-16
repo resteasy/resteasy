@@ -13,6 +13,7 @@ import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.resteasy.utils.TestUtilSpring;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -43,6 +44,7 @@ public class TypeMappingDependenciesInDeploymentTest {
                 .addAsWebInfResource(TypeMappingDependenciesInDeploymentTest.class.getPackage(), "web.xml", "web.xml");
         archive.addAsWebInfResource(TypeMappingDependenciesInDeploymentTest.class.getPackage(), "typeMapping/spring-typemapping-test-server.xml", "applicationContext.xml");
         archive.addClass(TypeMappingResource.class);
+        archive.addAsManifestResource(new StringAsset("Dependencies: org.jboss.resteasy.resteasy-jettison-provider services"), "MANIFEST.MF");
         TestUtilSpring.addSpringLibraries(archive);
         return archive;
     }
