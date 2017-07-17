@@ -34,8 +34,8 @@ import java.lang.reflect.Type;
  * @version $Revision: $
  */
 @Provider
-@Produces({"text/*+xml", "application/*+xml"})
-@Consumes({"text/*+xml", "application/*+xml"})
+@Produces({"text/xml", "text/*+xml", "application/xml", "application/*+xml"})
+@Consumes({"text/xml", "text/*+xml", "application/xml", "application/*+xml"})
 public class DocumentProvider extends AbstractEntityProvider<Document>
 {
    private final TransformerFactory transformerFactory;

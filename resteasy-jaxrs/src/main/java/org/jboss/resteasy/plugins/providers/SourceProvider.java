@@ -35,8 +35,8 @@ import java.lang.reflect.Type;
  * @version $Revision: 1 $
  */
 @Provider
-@Produces({MediaType.TEXT_XML, "application/*+xml"})
-@Consumes({MediaType.TEXT_XML, "application/*+xml"})
+@Produces({MediaType.TEXT_XML, "application/xml", "application/*+xml"})
+@Consumes({MediaType.TEXT_XML, "application/xml", "application/*+xml"})
 public class SourceProvider implements MessageBodyReader<Source>, MessageBodyWriter<Source>
 {
    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType)
