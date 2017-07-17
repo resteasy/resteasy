@@ -94,7 +94,7 @@ public class BadContentTypeTest {
      */
     @Test
     public void testNotAcceptable() throws Exception {
-        ResteasyWebTarget target = client.target(generateURL("/test"));
+        ResteasyWebTarget target = client.target(generateURL("/test/foo"));
         Response response = target.request().header("Accept", "text/plain").get();
         assertEquals("The returned response status is not the expected one",
                 HttpResponseCodes.SC_NOT_ACCEPTABLE, response.getStatus());

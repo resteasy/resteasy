@@ -1886,42 +1886,26 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return null;
    }
    
-   @Deprecated
-   public List<MessageBodyWriter<?>> getPossibleMessageBodyWriters(Class type, Type genericType, Annotation[] annotations)
-   {
-      return new ArrayList<>(getPossibleMessageBodyWritersMap(type, genericType, annotations).keySet());
-   }
-   
-   public Map<MessageBodyWriter<?>, Class<?>> getPossibleMessageBodyWritersMap(Class type, Type genericType, Annotation[] annotations)
+   public Map<MessageBodyWriter<?>, Class<?>> getPossibleMessageBodyWritersMap(Class type, Type genericType, Annotation[] annotations, MediaType accept)
    {
       Map<MessageBodyWriter<?>, Class<?>> map = new HashMap<MessageBodyWriter<?>, Class<?>>();
-      MediaType mediaType = MediaType.WILDCARD_TYPE;
-      List<SortedKey<MessageBodyWriter>> writers = getServerMessageBodyWriters().getPossible(mediaType, type);
+      List<SortedKey<MessageBodyWriter>> writers = getServerMessageBodyWriters().getPossible(accept, type);
       for (SortedKey<MessageBodyWriter> writer : writers)
       {
-         if (writer.obj.isWriteable(type, genericType, annotations, mediaType))
+         if (writer.obj.isWriteable(type, genericType, annotations, accept))
          {
-            MessageBodyWriter mbw = writer.obj;
-            Class<?> mbwc = mbw.getClass();
+            Class<?> mbwc = writer.obj.getClass();
             if (!mbwc.isInterface() && mbwc.getSuperclass() != null && !mbwc.getSuperclass().equals(Object.class) && WeldUtil.isWeldProxy(mbwc)) {
                mbwc = mbwc.getSuperclass();
             }
             Class writerType = Types.getTemplateParameterOfInterface(mbwc, MessageBodyWriter.class);
             if (writerType == null || !writerType.isAssignableFrom(type)) continue;
-            Produces produces = mbw.getClass().getAnnotation(Produces.class);
-            if (produces == null) continue;
-            for (String produce : produces.value())
-            {
-               MediaType mt = MediaType.valueOf(produce);
-               if (mt.isWildcardType() || mt.isWildcardSubtype()) continue;
-               map.put(mbw, writerType);
-               break;
-            }
+            map.put(writer.obj, writerType);
          }
       }
       return map;
    }
-
+   
    public <T> MessageBodyWriter<T> getServerMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       MediaTypeMap<SortedKey<MessageBodyWriter>> availableWriters = getServerMessageBodyWriters();

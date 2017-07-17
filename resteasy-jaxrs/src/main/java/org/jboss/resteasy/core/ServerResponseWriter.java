@@ -247,14 +247,42 @@ public class ServerResponseWriter
          {
             annotations = method.getMethodAnnotations();
          }
-         Map<MessageBodyWriter<?>, Class<?>> mbrs = providerFactory.getPossibleMessageBodyWritersMap(type, generic, annotations);
-         //JAX-RS 2.0 Section 3.8.4
+         
+         //JAX-RS 2.0 Section 3.8.4, 3.8.5
          List<MediaType> accepts = request.getHttpHeaders().getAcceptableMediaTypes();
-         //JAX-RS 2.0 Section 3.8.5
          List<SortableMediaType> M = new ArrayList<SortableMediaType>();
          boolean hasStarStar = false;
          boolean hasApplicationStar = false;
-         if (mbrs.isEmpty())
+         boolean pFound = false;
+         for (MediaType accept : accepts) {
+            //Instead of getting all the MBWs compatible with type/generic and then filtering using accept, we use
+            //getPossibleMessageBodyWritersMap to get the viable MBWs for the given type AND accept.
+            Map<MessageBodyWriter<?>, Class<?>> mbws = providerFactory.getPossibleMessageBodyWritersMap(type, generic, annotations, accept);
+            for (Entry<MessageBodyWriter<?>, Class<?>> e : mbws.entrySet())
+            {
+               MessageBodyWriter<?> mbw = e.getKey();
+               Class<?> wt = e.getValue();
+               Produces produces = mbw.getClass().getAnnotation(Produces.class);
+               if (produces == null) continue;
+               for (String produceValue : produces.value())
+               {
+                  pFound = true;
+                  MediaType produce = MediaType.valueOf(produceValue);
+                  
+                  if (produce.isCompatible(accept))
+                  {
+                     SortableMediaType ms = mostSpecific(produce, wt, accept, null);
+                     if (ms.isWildcardSubtype())
+                     {
+                        hasStarStar |= ms.isWildcardType();
+                        hasApplicationStar |= ms.getType().equals("application");
+                     }
+                     M.add(ms);
+                  }
+               }
+            }
+         }
+         if (!pFound) // JAX-RS 2.0 Section 3.8.3
          {
             for (MediaType accept : accepts)
             {
@@ -268,32 +296,6 @@ public class ServerResponseWriter
                      hasApplicationStar |= ms.getType().equals("application");
                   }
                   M.add(ms);
-               }
-            }
-         }
-         else
-         {
-            for (MediaType accept : accepts)
-            {
-               for (Entry<MessageBodyWriter<?>, Class<?>> e : mbrs.entrySet())
-               {
-                  MessageBodyWriter<?> mbr = e.getKey();
-                  Class<?> wt = e.getValue();
-                  Produces produces = mbr.getClass().getAnnotation(Produces.class);
-                  for (String producesString : produces.value())
-                  {
-                     MediaType produce = MediaType.valueOf(producesString);
-                     if (produce.isCompatible(accept))
-                     {
-                        SortableMediaType ms = mostSpecific(produce, wt, accept, null);
-                        if (ms.isWildcardSubtype())
-                        {
-                           hasStarStar |= ms.isWildcardType();
-                           hasApplicationStar |= ms.getType().equals("application");
-                        }
-                        M.add(ms);
-                     }
-                  }
                }
             }
          }

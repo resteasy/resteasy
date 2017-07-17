@@ -42,7 +42,7 @@ public class TypeMappingTest {
         WebArchive archive = ShrinkWrap.create(WebArchive.class, TypeMappingTest.class.getSimpleName() + ".war")
                 .addAsWebInfResource(TypeMappingTest.class.getPackage(), "web.xml", "web.xml");
         archive.addAsWebInfResource(ContextRefreshTest.class.getPackage(), "typeMapping/spring-typemapping-test-server.xml", "applicationContext.xml");
-        archive.addAsManifestResource(new StringAsset("Dependencies: org.jboss.resteasy.resteasy-jettison-provider services, org.springframework.spring meta-inf\n"), "MANIFEST.MF");
+        archive.addAsManifestResource(new StringAsset("Dependencies: org.springframework.spring meta-inf\n"), "MANIFEST.MF");
         archive.addClass(TypeMappingResource.class);
         return archive;
     }

@@ -18,6 +18,7 @@ public class BadContenTypeTestResource {
 
     @GET
     @Produces("text/html")
+    @Path("foo")
     public Response getMissingMBW() {
         BadContentTypeTestBean bean = new BadContentTypeTestBean();
         bean.setName("myname");
