@@ -89,6 +89,18 @@ public class BadContentTypeTest {
     }
 
     /**
+     * @tpTestDetails Tests if correct HTTP 406 status code is returned when the specified accept media type
+     * is not supported by the server
+     */
+    @Test
+    public void testNotAcceptable() throws Exception {
+        ResteasyWebTarget target = client.target(generateURL("/test"));
+        Response response = target.request().header("Accept", "text/plain").get();
+        assertEquals("The returned response status is not the expected one",
+                HttpResponseCodes.SC_NOT_ACCEPTABLE, response.getStatus());
+    }
+
+    /**
      * @tpTestDetails Tests of receiving Bad Request response code after html error
      * @tpSince RESTEasy 3.0.16
      */

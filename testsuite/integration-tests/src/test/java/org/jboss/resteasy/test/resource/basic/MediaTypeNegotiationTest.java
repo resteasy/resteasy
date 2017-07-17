@@ -18,7 +18,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.core.NoMessageBodyWriterFoundFailure;
-import org.jboss.resteasy.plugins.providers.jaxb.JAXBXmlRootElementProvider;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -77,6 +76,17 @@ public class MediaTypeNegotiationTest
          message.setMessage(String.valueOf(msg));
          return Response.ok(message).build();
       }
+      
+      @Produces({"foo/bar"})
+      @GET
+      @Path("missingMBW")
+      public Response echoMissingMBW(@QueryParam("msg") String msg)
+      {
+         Message message = new Message();
+         message.setStatus(Status.OK.getStatusCode());
+         message.setMessage(String.valueOf(msg));
+         return Response.ok(message).build();
+      }
    }
 
    public static class NotFoundExceptionMapper implements ExceptionMapper<NotFoundException>
@@ -103,33 +113,16 @@ public class MediaTypeNegotiationTest
       }
    }
    
-   @Produces(MediaType.APPLICATION_XML)
-   public static class CustomXMLMessageBodyWritter extends JAXBXmlRootElementProvider {
-
-   }
-
-
    private static Client client;
    private static final String DEP = "MediaTypeNegotiationTest";
-   private static final String DEP_CUSTOM_PROVIDER = "MediaTypeNegotiationTestCustomProvider";
 
-   @Deployment(name = DEP)
+   @Deployment
    public static Archive<?> deploy()
    {
       WebArchive war = TestUtil.prepareArchive(DEP);
       war.addClass(Message.class);
       war.addClass(EchoResource.class);
       return TestUtil.finishContainerPrepare(war, null, NotFoundExceptionMapper.class,
-            NoMessageBodyWriterFoundFailureExceptionMapper.class, EchoResource.class);
-   }
-
-   @Deployment(name = DEP_CUSTOM_PROVIDER)
-   public static Archive<?> deployCustomProvider()
-   {
-      WebArchive war = TestUtil.prepareArchive(DEP_CUSTOM_PROVIDER);
-      war.addClass(Message.class);
-      war.addClass(EchoResource.class);
-      return TestUtil.finishContainerPrepare(war, null, NotFoundExceptionMapper.class, CustomXMLMessageBodyWritter.class,
             NoMessageBodyWriterFoundFailureExceptionMapper.class, EchoResource.class);
    }
 
@@ -169,6 +162,18 @@ public class MediaTypeNegotiationTest
       Invocation.Builder request = client.target(generateURL()).path("echo").queryParam("msg", "Hello world").request("*/xml");
       Response response = request.get();
       try {
+         Assert.assertEquals(Status.NOT_ACCEPTABLE.getStatusCode(), response.getStatus());
+      } finally {
+         response.close();
+      }
+   }
+
+   @Test
+   public void testAcceptFooBar() throws Exception
+   {
+      Invocation.Builder request = client.target(generateURL()).path("echo/missingMBW").queryParam("msg", "Hello world").request("foo/bar");
+      Response response = request.get();
+      try {
          Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
          Assert.assertEquals(MediaType.APPLICATION_XML_TYPE.getType(), response.getMediaType().getType());
          Assert.assertEquals(MediaType.APPLICATION_XML_TYPE.getSubtype(), response.getMediaType().getSubtype());
@@ -179,11 +184,11 @@ public class MediaTypeNegotiationTest
          response.close();
       }
    }
-
+   
    @Test
    public void Should_ReturnXMLEncodedMessageEntity_When_NotFoundException() throws Exception
    {
-      Invocation.Builder request = client.target(PortProviderUtil.generateBaseUrl(DEP_CUSTOM_PROVIDER)).path("notFound").request(MediaType.APPLICATION_XML_TYPE);
+      Invocation.Builder request = client.target(generateURL()).path("notFound").request(MediaType.APPLICATION_XML_TYPE);
       Response response = request.get();
       try
       {
