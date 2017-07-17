@@ -1,9 +1,6 @@
 package org.jboss.resteasy.client.jaxrs.engines;
 
 import org.apache.commons.io.output.DeferredFileOutputStream;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.entity.FileEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -13,12 +10,16 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.params.HttpClientParams;
+import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.SyncBasicHttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
-import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.core.SelfExpandingBufferredInputStream;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
@@ -31,7 +32,6 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.MultivaluedMap;
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -65,6 +65,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
    protected SSLContext sslContext;
    protected HostnameVerifier hostnameVerifier;
    protected int responseBufferSize = 8192;
+   protected HttpHost defaultProxy = null;
 
    /**
     * For uploading File's over JAX-RS framework, this property, together with {@link #fileUploadMemoryUnit},
@@ -121,7 +122,13 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
 
    public ApacheHttpClient4Engine()
    {
-      this.httpClient = new DefaultHttpClient();
+      this.httpClient = createDefaultHttpClient();
+      this.createdHttpClient = true;
+   }
+
+   public ApacheHttpClient4Engine(final HttpHost defaultProxy) {
+      this.defaultProxy = defaultProxy;
+      this.httpClient = createDefaultHttpClient();
       this.createdHttpClient = true;
    }
 
@@ -240,11 +247,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
    {
 	   return (HttpHost) httpClient.getParams().getParameter(ConnRoutePNames.DEFAULT_PROXY);
    }
-   
-   public void setDefaultProxy(HttpHost defaultProxy)
-   {
-	   httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, defaultProxy);
-   }
+
    public static CaseInsensitiveMap<String> extractHeaders(
            HttpResponse response)
    {
@@ -401,15 +404,46 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       }
    }
 
-   protected void loadHttpMethod(final ClientInvocation request, HttpRequestBase httpMethod) throws Exception
+   protected boolean isRedirectRequired(final ClientInvocation request, final HttpRequestBase httpMethod)
    {
       if (httpMethod instanceof HttpGet && false) // todo  && request.followRedirects())
       {
-         HttpClientParams.setRedirecting(httpMethod.getParams(), true);
+         return true;
+      }
+      return false;
+   }
+
+   protected HttpClient createDefaultHttpClient()
+   {
+      HttpParams params = new SyncBasicHttpParams();
+      DefaultHttpClient.setDefaultHttpParams(params);
+      if(defaultProxy != null)
+      {
+         params.setParameter(ConnRoutePNames.DEFAULT_PROXY, defaultProxy);
+      }
+      return new DefaultHttpClient(params);
+   }
+
+   protected void setRedirectRequired(final ClientInvocation request, HttpRequestBase httpMethod)
+   {
+      HttpClientParams.setRedirecting(httpMethod.getParams(), true);
+   }
+
+   protected void setRedirectNotRequired(final ClientInvocation request, HttpRequestBase httpMethod)
+   {
+      HttpClientParams.setRedirecting(httpMethod.getParams(), false);
+   }
+
+
+   protected void loadHttpMethod(final ClientInvocation request, HttpRequestBase httpMethod) throws Exception
+   {
+      if (isRedirectRequired(request,httpMethod)) // todo  && request.followRedirects())
+      {
+         setRedirectRequired(request,httpMethod);
       }
       else
       {
-         HttpClientParams.setRedirecting(httpMethod.getParams(), false);
+        setRedirectNotRequired(request,httpMethod);
       }
 
       if (request.getEntity() != null)
