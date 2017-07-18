@@ -193,7 +193,6 @@ public class ServerResponseWriter
                }
                else 
                {
-                  method.getMethod().getClass().getAnnotation(Produces.class);
                   String[] producesValues = method.getMethod().getClass().getAnnotation(Produces.class).value();
                   produces = new MediaType[producesValues.length];
                   for (int i = 0; i < producesValues.length; i++)
