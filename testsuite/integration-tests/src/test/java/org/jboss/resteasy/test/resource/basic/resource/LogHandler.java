@@ -7,7 +7,7 @@ public class LogHandler extends Handler {
 
    public static final String MESSAGE_CODE = "RESTEASY002142";
    
-   private static int messagesLogged = 0;
+   private static volatile int messagesLogged = 0;
 
    @Override
    public void publish(LogRecord record) {
