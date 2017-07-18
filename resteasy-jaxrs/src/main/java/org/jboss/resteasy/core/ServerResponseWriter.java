@@ -405,11 +405,6 @@ public class ServerResponseWriter
       double qs = -1;
       Class<?> writerType = null;
       
-      public SortableMediaType(MediaType m)
-      {
-         this(m.getType(), m.getSubtype(), m.getParameters());
-      }
-      
       public SortableMediaType(MediaType m, Class<?> writerType)
       {
          this(m.getType(), m.getSubtype(), m.getParameters(), writerType);
@@ -462,7 +457,6 @@ public class ServerResponseWriter
             {
                return 0;
             }
-            MediaType mostSpecific = mostSpecific(o, this);
             return o.equals(mostSpecific(o, this)) ? 1 : -1;
          }
          if (o.q < this.q)
