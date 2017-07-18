@@ -76,6 +76,9 @@ public class MultipleEndpointsWarningTest
 
       response = client.target(generateURL("/unique")).request().accept(MediaType.TEXT_PLAIN).get();
       Assert.assertEquals("Incorrectly logged " + LogHandler.MESSAGE_CODE, new Long(0), response.readEntity(long.class));
+
+      response = client.target(generateURL("/1")).request().get();
+      Assert.assertEquals("Incorrectly logged " + LogHandler.MESSAGE_CODE, new Long(0), response.readEntity(long.class));
    }
 
    /**

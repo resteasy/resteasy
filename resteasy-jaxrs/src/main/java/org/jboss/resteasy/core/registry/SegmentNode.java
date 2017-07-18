@@ -491,9 +491,10 @@ public class SegmentNode
       }
       Collections.sort(sortList);
       SortEntry sortEntry = sortList.get(0);
-      if (targetMethods != null && targetMethods.size() > 1)
+      String[] mm = matchingMethods(sortList);
+      if (mm != null)
       {
-         LogMessages.LOGGER.multipleMethodsMatch(requestToString(request), methodNames(targetMethods));
+         LogMessages.LOGGER.multipleMethodsMatch(requestToString(request), mm);
       }
       request.setAttribute(RESTEASY_CHOSEN_ACCEPT, sortEntry.getAcceptType());
       return sortEntry.match;
@@ -510,15 +511,40 @@ public class SegmentNode
       return "\"" + request.getHttpMethod() + " " + request.getUri().getPath() + "\"";
    }
 
-   private String[] methodNames(Collection<Method> methods) {
-      String[] names = new String[methods.size()];
-      Iterator<Method> iterator = methods.iterator();
-      int i = 0;
-      while (iterator.hasNext()) {
-         names[i++] = iterator.next().toString();
+   private String[] matchingMethods(List<SortEntry> sortList)
+   {
+      Set<Method> s = null;
+      Iterator<SortEntry> it = sortList.iterator();
+      SortEntry a;
+      SortEntry b = it.next();
+      Method first = b.match.expression.getInvoker().getMethod();
+      while (it.hasNext())
+      {
+         a = b;
+         b = it.next();
+         if (a.compareTo(b) == 0)
+         {
+            if (s == null) {
+               s = new HashSet<>();
+               s.add(first);
+            }
+            s.add(b.match.expression.getInvoker().getMethod());
+         }
+         else
+         {
+            break;
+         }
       }
-      return names;
+      if (s != null) {
+         String[] names = new String[s.size()];
+         Iterator<Method> iterator = s.iterator();
+         int i = 0;
+         while (iterator.hasNext())
+         {
+            names[i++] = iterator.next().toString();
+         }
+         return names;
+      }
+      return null;
    }
-
-
 }
