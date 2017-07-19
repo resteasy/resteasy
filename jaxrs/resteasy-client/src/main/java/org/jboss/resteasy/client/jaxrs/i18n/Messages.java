@@ -96,6 +96,9 @@ public interface Messages
    
    @Message(id = BASE + 120, value = "path was null")
    String pathWasNull();
+
+   @Message(id = BASE + 123, value = "Please consider updating the version of Apache HttpClient being used.  Version 4.3.6+ is recommended.")
+   String pleaseConsiderUnpdating();
    
    @Message(id = BASE + 125, value = "proxyInterface was null")
    String proxyInterfaceWasNull();
