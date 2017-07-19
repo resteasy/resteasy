@@ -135,6 +135,7 @@ public class HttpClientBuilder43 {
                 .setConnectionManager(cm)
                 .setDefaultRequestConfig(rcBuilder.build())
                 .setProxy(that.defaultProxy)
+                .disableContentCompression()
                 .build();
             ApacheHttpClient43Engine engine =
                 (ApacheHttpClient43Engine) ApacheHttpClient4EngineFactory.create(httpClient, true);

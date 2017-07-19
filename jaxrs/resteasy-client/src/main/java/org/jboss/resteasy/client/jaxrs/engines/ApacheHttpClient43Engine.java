@@ -53,6 +53,7 @@ public class ApacheHttpClient43Engine extends ApacheHttpClient4Engine
         {
             requestBuilder.setProxy(defaultProxy);
         }
+        builder.disableContentCompression();
         builder.setDefaultRequestConfig(requestBuilder.build());
         return builder.build();
     }
