@@ -22,13 +22,16 @@ import org.jboss.resteasy.test.BaseResourceTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 /**
  * RESTEASY-1398 - false "multiple endpoints" warning
  * 
  * @author <a href="mailto:thofman@redhat.com">Tomas Hofman</a>
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MultipleEndpointsWarningTest extends BaseResourceTest
 {
    @Resource
@@ -77,7 +80,7 @@ public class MultipleEndpointsWarningTest extends BaseResourceTest
 
    private class LogHandler extends Handler {
 
-      private int messagesLogged = 0;
+      private volatile int messagesLogged = 0;
 
       @Override
       public void publish(LogRecord record) {
@@ -114,7 +117,7 @@ public class MultipleEndpointsWarningTest extends BaseResourceTest
    }
 
    @Test
-   public void testUnique() throws Exception {
+   public void test1_Unique() throws Exception {
       Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/unique")).request().accept(MediaType.TEXT_PLAIN, MediaType.WILDCARD).get();
       response.close();
@@ -130,7 +133,7 @@ public class MultipleEndpointsWarningTest extends BaseResourceTest
    }
 
    @Test
-   public void testDifferentVerbs() throws Exception {
+   public void test2_DifferentVerbs() throws Exception {
       Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/verbs")).request().accept(MediaType.TEXT_PLAIN).get();
       response.close();
@@ -146,7 +149,7 @@ public class MultipleEndpointsWarningTest extends BaseResourceTest
    }
 
    @Test
-   public void testDuplicate() throws Exception {
+   public void test3_Duplicate() throws Exception {
       Client client = ClientBuilder.newClient();
       Response response = client.target(generateURL("/duplicate")).request().get();
       response.close();
