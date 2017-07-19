@@ -60,6 +60,8 @@
         <version.io.undertow>1.2.8.Final</version.io.undertow>
         <version.com.fasterxml.jackson>2.6.3</version.com.fasterxml.jackson>
         <version.org.apache.httpcomponents>4.3.6</version.org.apache.httpcomponents>
+        <version.jboss-javaee-6.0.spec>1.0.0.Final</version.jboss-javaee-6.0.spec>
+        <version.javax.validation-api>1.1.0.Final</version.javax.validation-api>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- java 7-->
@@ -448,6 +450,19 @@
                 <artifactId>jboss-servlet-api_3.1_spec</artifactId>
                 <version>${version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.spec</groupId>
+                <artifactId>jboss-javaee-6.0</artifactId>
+                <version>${version.jboss-javaee-6.0.spec}</version>
+                <type>pom</type>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${version.javax.validation-api}</version>
+                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>javax.servlet</groupId>
