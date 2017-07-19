@@ -25,7 +25,7 @@ public class UserDefinedContextResolverTest {
       private static final long serialVersionUID = 1L;
    }
    
-   @Produces({"text/*+xml", "application/*+xml"})
+   @Produces({"text/xml", "text/*+xml", "application/xml", "application/*+xml"})
    @SuppressWarnings("rawtypes")
    public static class TestContextFinder implements JAXBContextFinder {
 
@@ -47,7 +47,7 @@ public class UserDefinedContextResolverTest {
       }
    }
    
-   @Produces({"text/*+xml", "application/*+xml"})
+   @Produces({"text/xml", "text/*+xml", "application/xml", "application/*+xml"})
    public static class TestContextResolver implements ContextResolver<JAXBContextFinder> {
 
       @Override

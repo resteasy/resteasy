@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version $Revision: 1 $
  */
 @Provider
-@Produces("application/*+json")
+@Produces({"application/json", "application/*+json"})
 public class JsonJAXBContextFinder extends AbstractJAXBContextFinder implements ContextResolver<JAXBContextFinder>
 {
    private ConcurrentHashMap<Class<?>, JAXBContext> mappedCache = new ConcurrentHashMap<Class<?>, JAXBContext>();

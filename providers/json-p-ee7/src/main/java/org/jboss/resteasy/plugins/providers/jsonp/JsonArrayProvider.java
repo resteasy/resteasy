@@ -1,7 +1,6 @@
 package org.jboss.resteasy.plugins.providers.jsonp;
 
 import javax.json.JsonArray;
-import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonWriter;
 import javax.ws.rs.Consumes;
@@ -22,8 +21,8 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Consumes({"application/*+json", "text/json"})
-@Produces({"application/*+json", "text/json"})
+@Consumes({"application/json", "application/*+json", "text/json"})
+@Produces({"application/json", "application/*+json", "text/json"})
 public class JsonArrayProvider extends AbstractJsonpProvider implements MessageBodyReader<JsonArray>, MessageBodyWriter<JsonArray>
 {
    @Override

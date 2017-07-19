@@ -29,7 +29,6 @@ import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.PickConstructor;
 import org.jboss.resteasy.util.ThreadLocalStack;
 import org.jboss.resteasy.util.Types;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.annotation.Priority;
 import javax.ws.rs.ConstrainedTo;
@@ -1887,31 +1886,26 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return null;
    }
    
-   public List<MessageBodyWriter<?>> getPossibleMessageBodyWriters(Class type, Type genericType, Annotation[] annotations)
+   public Map<MessageBodyWriter<?>, Class<?>> getPossibleMessageBodyWritersMap(Class type, Type genericType, Annotation[] annotations, MediaType accept)
    {
-      List<MessageBodyWriter<?>> list = new ArrayList<MessageBodyWriter<?>>();
-      MediaType mediaType = MediaType.WILDCARD_TYPE;
-      List<SortedKey<MessageBodyWriter>> writers = getServerMessageBodyWriters().getPossible(mediaType, type);
+      Map<MessageBodyWriter<?>, Class<?>> map = new HashMap<MessageBodyWriter<?>, Class<?>>();
+      List<SortedKey<MessageBodyWriter>> writers = getServerMessageBodyWriters().getPossible(accept, type);
       for (SortedKey<MessageBodyWriter> writer : writers)
       {
-         if (writer.obj.isWriteable(type, genericType, annotations, mediaType))
+         if (writer.obj.isWriteable(type, genericType, annotations, accept))
          {
-            MessageBodyWriter mbw = writer.obj;
-            Class writerType = Types.getTemplateParameterOfInterface(mbw.getClass(), MessageBodyWriter.class);
-            if (writerType == null || writerType.equals(Object.class) || !writerType.isAssignableFrom(type)) continue;
-            Produces produces = mbw.getClass().getAnnotation(Produces.class);
-            if (produces == null) continue;
-            for (String produce : produces.value())
-            {
-               MediaType mt = MediaType.valueOf(produce);
-               if (mt.isWildcardType() || mt.isWildcardSubtype()) continue;
-               list.add(mbw);
+            Class<?> mbwc = writer.obj.getClass();
+            if (!mbwc.isInterface() && mbwc.getSuperclass() != null && !mbwc.getSuperclass().equals(Object.class) && WeldUtil.isWeldProxy(mbwc)) {
+               mbwc = mbwc.getSuperclass();
             }
+            Class writerType = Types.getTemplateParameterOfInterface(mbwc, MessageBodyWriter.class);
+            if (writerType == null || !writerType.isAssignableFrom(type)) continue;
+            map.put(writer.obj, writerType);
          }
       }
-      return list;
+      return map;
    }
-
+   
    public <T> MessageBodyWriter<T> getServerMessageBodyWriter(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType)
    {
       MediaTypeMap<SortedKey<MessageBodyWriter>> availableWriters = getServerMessageBodyWriters();

@@ -19,8 +19,8 @@ import java.lang.annotation.Annotation;
  * @version $Revision: 1 $
  */
 @Provider
-@Consumes("application/*+fastinfoset")
-@Produces("application/*+fastinfoset")
+@Consumes({"application/fastinfoset", "application/*+fastinfoset"})
+@Produces({"application/fastinfoset", "application/*+fastinfoset"})
 public class FastinfoSetJAXBContextFinder extends XmlJAXBContextFinder implements ContextResolver<JAXBContextFinder>
 {
    @Override

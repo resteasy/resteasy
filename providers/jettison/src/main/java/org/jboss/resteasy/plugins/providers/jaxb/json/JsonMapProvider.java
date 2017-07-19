@@ -37,8 +37,8 @@ import java.util.Map;
  * @version $Revision: 1 $
  */
 @Provider
-@Produces("application/*+json")
-@Consumes("application/*+json")
+@Produces({"application/json", "application/*+json"})
+@Consumes({"application/json", "application/*+json"})
 public class JsonMapProvider extends MapProvider
 {
 

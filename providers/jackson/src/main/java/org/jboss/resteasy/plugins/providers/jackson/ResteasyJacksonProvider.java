@@ -20,8 +20,8 @@ import java.lang.reflect.Type;
  * @deprecated Use resteasy-jackson2-provider
  */
 @Provider
-@Consumes({"application/*+json", "text/json"})
-@Produces({"application/*+json", "text/json"})
+@Consumes({"application/json", "application/*+json", "text/json"})
+@Produces({"application/json", "application/*+json", "text/json"})
 @Deprecated
 public class ResteasyJacksonProvider extends JacksonJsonProvider
 {

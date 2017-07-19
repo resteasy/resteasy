@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -165,7 +166,7 @@ public class ServerResponseWriter
          }
       }
    }
-
+   
    protected static void setDefaultContentType(HttpRequest request, BuiltResponse jaxrsResponse, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)
    {
       // Note. If we get here before the request is executed, e.g., if a ContainerRequestFilter aborts,
@@ -178,51 +179,60 @@ public class ServerResponseWriter
       
       if (hasProduces)
       {
-         if (chosen == null || chosen.isWildcardSubtype())
+         //we have @Produces on the resource (method or class), so we're not going to scan for @Produces on MBws  
+         if (!isConcrete(chosen))
          {
+            //no concrete content-type set, compute again (JAX-RS 2.0 Section 3.8 step 2, first and second bullets)
+            MediaType[] produces = null;
             if (method != null)
             {
                // pick most specific
                if (method.getProduces().length > 0)
                {
-                  for (MediaType produce : method.getProduces())
-                  {
-
-                     if (!produce.isWildcardType())
-                     {
-                        chosen = produce;
-                        if (!produce.isWildcardSubtype())
-                        {
-                           break;
-                        }
-                     }
-                  }
+                  produces = method.getProduces();
                }
                else 
                {
-                  method.getMethod().getClass().getAnnotation(Produces.class);
-                  for (String produceString : method.getMethod().getClass().getAnnotation(Produces.class).value())
+                  String[] producesValues = method.getMethod().getClass().getAnnotation(Produces.class).value();
+                  produces = new MediaType[producesValues.length];
+                  for (int i = 0; i < producesValues.length; i++)
                   {
-                     MediaType produce = MediaType.valueOf(produceString);
-                     if (!produce.isWildcardType())
-                     {
-                        chosen = produce;
-                        if (!produce.isWildcardSubtype())
-                        {
-                           break;
-                        }
-                     }
-                  }  
+                     produces[i] = MediaType.valueOf(producesValues[i]);
+                  }
                }
             }
+            //JAX-RS 2.0 Section 3.8.3
+            if (produces == null)
+            {
+               produces = new MediaType[]{MediaType.WILDCARD_TYPE};
+            }
+            //JAX-RS 2.0 Section 3.8.4
+            List<MediaType> accepts = request.getHttpHeaders().getAcceptableMediaTypes();
+            //JAX-RS 2.0 Section 3.8.5
+            List<SortableMediaType> M = new ArrayList<SortableMediaType>();
+            boolean hasStarStar = false;
+            boolean hasApplicationStar = false;
+            for (MediaType accept : accepts)
+            {
+               for (MediaType produce : produces)
+               {
+                  SortableMediaType ms = mostSpecific(produce, null, accept, null);
+                  if (ms.isWildcardSubtype())
+                  {
+                     hasStarStar |= ms.isWildcardType();
+                     hasApplicationStar |= ms.getType().equals("application");
+                  }
+                  M.add(ms);
+               }
+            }
+            chosen = chooseFromM(chosen, M, hasStarStar, hasApplicationStar);
          }
       }
       else
       {
-         if (chosen == null)
-         {
-            chosen = MediaType.WILDCARD_TYPE;   
-         }
+         //no @Produces on resource (class / method), use MBWs
+         chosen = MediaType.WILDCARD_TYPE;
+         //JAX-RS 2.0 Section 3.8.2 step 3
          Class type = jaxrsResponse.getEntityClass();
          Object ent = jaxrsResponse.getEntity();
          Type generic = jaxrsResponse.getGenericType();
@@ -236,42 +246,59 @@ public class ServerResponseWriter
          {
             annotations = method.getMethodAnnotations();
          }
-         List<MessageBodyWriter<?>> mbrs = providerFactory.getPossibleMessageBodyWriters(type, generic, annotations);
+         
+         //JAX-RS 2.0 Section 3.8.4, 3.8.5
          List<MediaType> accepts = request.getHttpHeaders().getAcceptableMediaTypes();
          List<SortableMediaType> M = new ArrayList<SortableMediaType>();
-         for (MediaType accept : accepts)
-         {
-            for (MessageBodyWriter<?> mbr : mbrs)
+         boolean hasStarStar = false;
+         boolean hasApplicationStar = false;
+         boolean pFound = false;
+         for (MediaType accept : accepts) {
+            //Instead of getting all the MBWs compatible with type/generic and then filtering using accept, we use
+            //getPossibleMessageBodyWritersMap to get the viable MBWs for the given type AND accept.
+            Map<MessageBodyWriter<?>, Class<?>> mbws = providerFactory.getPossibleMessageBodyWritersMap(type, generic, annotations, accept);
+            for (Entry<MessageBodyWriter<?>, Class<?>> e : mbws.entrySet())
             {
-               Produces produces = mbr.getClass().getAnnotation(Produces.class);
-               for (String producesString : produces.value())
+               MessageBodyWriter<?> mbw = e.getKey();
+               Class<?> wt = e.getValue();
+               Produces produces = mbw.getClass().getAnnotation(Produces.class);
+               if (produces == null) continue;
+               for (String produceValue : produces.value())
                {
-                  MediaType produce = MediaType.valueOf(producesString);
+                  pFound = true;
+                  MediaType produce = MediaType.valueOf(produceValue);
+                  
                   if (produce.isCompatible(accept))
                   {
-                     M.add(mostSpecific(produce, accept));
+                     SortableMediaType ms = mostSpecific(produce, wt, accept, null);
+                     if (ms.isWildcardSubtype())
+                     {
+                        hasStarStar |= ms.isWildcardType();
+                        hasApplicationStar |= ms.getType().equals("application");
+                     }
+                     M.add(ms);
                   }
                }
             }
          }
-     
-         if (M.size() > 0)
+         if (!pFound) // JAX-RS 2.0 Section 3.8.3
          {
-            Collections.sort(M);
-            chosen = M.get(M.size() - 1);
+            for (MediaType accept : accepts)
+            {
+               MediaType produce = MediaType.WILDCARD_TYPE;
+               if (produce.isCompatible(accept))
+               {
+                  SortableMediaType ms = mostSpecific(produce, null, accept, null);
+                  if (ms.isWildcardSubtype())
+                  {
+                     hasStarStar |= ms.isWildcardType();
+                     hasApplicationStar |= ms.getType().equals("application");
+                  }
+                  M.add(ms);
+               }
+            }
          }
-      }
-      if (chosen.isWildcardType())
-      {
-         chosen = MediaType.APPLICATION_OCTET_STREAM_TYPE;
-      }
-      else if (chosen.isWildcardSubtype() && chosen.getSubtype().equals("application"))
-      {
-         chosen = MediaType.APPLICATION_OCTET_STREAM_TYPE;
-      }
-      else if (chosen.isWildcardSubtype())
-      {
-         throw new NotAcceptableException(Messages.MESSAGES.illegalResponseMediaType(chosen.toString()));
+         chosen = chooseFromM(chosen, M, hasStarStar, hasApplicationStar);
       }
       if (chosen.getParameters().containsKey(SegmentNode.RESTEASY_SERVER_HAS_PRODUCES))
       {
@@ -281,6 +308,45 @@ public class ServerResponseWriter
          chosen = new MediaType(chosen.getType(), chosen.getSubtype(), map);
       }
       jaxrsResponse.getHeaders().putSingle(HttpHeaders.CONTENT_TYPE, chosen);
+   }
+   
+   private static MediaType chooseFromM(MediaType currentChoice, List<SortableMediaType> M, boolean hasStarStar, boolean hasApplicationStar)
+   {
+      //JAX-RS 2.0 Section 3.8.6
+      if (M.isEmpty())
+      {
+         throw new NotAcceptableException();
+      }
+      //JAX-RS 2.0 Section 3.8.7
+      Collections.sort(M);
+      //JAX-RS 2.0 Section 3.8.8
+      for (SortableMediaType m : M)
+      {
+         if (isConcrete(m))
+         {
+            currentChoice = m;
+            break;
+         }
+      }
+      if (!isConcrete(currentChoice))
+      {
+         //JAX-RS 2.0 Section 3.8.9
+         if (hasStarStar || hasApplicationStar)
+         {
+            currentChoice = MediaType.APPLICATION_OCTET_STREAM_TYPE;
+         }
+         else
+         {
+            //JAX-RS 2.0 Section 3.8.10
+            throw new NotAcceptableException();
+         }
+      }
+      return currentChoice;
+   }
+   
+   private static boolean isConcrete(MediaType m)
+   {
+      return m != null && !m.isWildcardType() && !m.isWildcardSubtype();
    }
    
    public static MediaType resolveContentType(BuiltResponse response)
@@ -336,10 +402,17 @@ public class ServerResponseWriter
    {
       double q = -1;
       double qs = -1;
+      Class<?> writerType = null;
       
-      public SortableMediaType(MediaType m)
+      public SortableMediaType(MediaType m, Class<?> writerType)
       {
-         this(m.getType(), m.getSubtype(), m.getParameters());
+         this(m.getType(), m.getSubtype(), m.getParameters(), writerType);
+      }
+      
+      public SortableMediaType(String type, String subtype, Map<String, String> parameters, Class<?> writerType)
+      {
+         this(type, subtype, parameters);
+         this.writerType = writerType;
       }
       
       public SortableMediaType(String type, String subtype, Map<String, String> parameters)
@@ -377,75 +450,86 @@ public class ServerResponseWriter
       @Override
       public int compareTo(SortableMediaType o)
       {
-         if (this.isCompatible(o))
+         if (o.isCompatible(this))
          {
-            if (this.equals(o))
+            if (o.equals(this))
             {
                return 0;
             }
-            MediaType mostSpecific = mostSpecific(this, o);
-            return this.equals(mostSpecific(this, o)) ? 1 : -1;
+            return o.equals(mostSpecific(o, this)) ? 1 : -1;
          }
-         if (this.q < o.q)
+         if (o.q < this.q)
          {
             return -1;
          }
-         if (this.q > o.q)
+         if (o.q > this.q)
          {
             return 1;
          }
-         // this.q == o.q
-         if (this.qs < o.qs)
+         // zzzz.q == this.q
+         if (o.qs < this.qs)
          {
             return -1;
          }
-         if (this.qs > o.qs)
+         if (o.qs > this.qs)
          {
             return 1;
          }
+         if (o.writerType == this.writerType) return 0;
+         if (o.writerType == null) return -1;
+         if (this.writerType == null) return 1;
+         if (o.writerType.isAssignableFrom(this.writerType)) return -1;
+         if (this.writerType.isAssignableFrom(o.writerType)) return 1;
          return 0;
       }
+   }
+   
+   
+   private static SortableMediaType mostSpecific(MediaType m1, MediaType m2)
+   {
+      Class<?> wt1 = m1 instanceof SortableMediaType ? ((SortableMediaType)m1).writerType : null;
+      Class<?> wt2 = m2 instanceof SortableMediaType ? ((SortableMediaType)m2).writerType : null;
+      return mostSpecific(m1, wt1, m2, wt2);
    }
    
    /**
     * m1, m2 are compatible
     */
-   private static SortableMediaType mostSpecific(MediaType m1, MediaType m2)
+   private static SortableMediaType mostSpecific(MediaType m1, Class<?> wt1, MediaType m2, Class<?> wt2)
    {
-      MediaType m = null;
       if (m1.getType().equals("*"))
       {
          if (m2.getType().equals("*"))
          {
             if (m1.getSubtype().equals("*"))
             {
-               return new SortableMediaType(m2); // */* <= */?
+               return new SortableMediaType(m2, wt2); // */* <= */?
             }
             else
             {
-               return new SortableMediaType(m1); // */st > */?
+               return new SortableMediaType(m1, wt1); // */st > */?
             }
          }
          else
          {
-            return new SortableMediaType(m2); // */? < t/?
+            return new SortableMediaType(m2, wt2); // */? < t/?
          }
       }
       else
       {
          if (m2.getType().equals("*"))
          {
-            return new SortableMediaType(m1); // t/? > */?
+            return new SortableMediaType(m1, wt1); // t/? > */?
          }
          else
          {
             if (m1.getSubtype().equals("*"))
             {
-               return new SortableMediaType(m2); // t/* <= t/?
+               return new SortableMediaType(m2, wt2); // t/* <= t/?
             }
             else
             {
-               return new SortableMediaType(m1); // t/st >= t/?
+               return new SortableMediaType(m1, wt1); // t/st >= t/?
             }
          }
       }

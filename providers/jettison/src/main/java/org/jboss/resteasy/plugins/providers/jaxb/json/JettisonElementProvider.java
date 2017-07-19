@@ -11,8 +11,8 @@ import javax.ws.rs.ext.Provider;
  * @version $Revision: 1 $
  */
 @Provider
-@Produces("application/*+json")
-@Consumes("application/*+json")
+@Produces({"application/json", "application/*+json"})
+@Consumes({"application/json", "application/*+json"})
 public class JettisonElementProvider extends JAXBElementProvider
 {
    @Override
