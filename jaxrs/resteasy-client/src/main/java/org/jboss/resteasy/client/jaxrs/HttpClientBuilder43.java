@@ -1,5 +1,8 @@
 package org.jboss.resteasy.client.jaxrs;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.TrustManager;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
@@ -7,11 +10,7 @@ import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLContexts;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
+import org.apache.http.conn.ssl.*;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -19,9 +18,9 @@ import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.client.jaxrs.engines.PassthroughTrustManager;
 import org.jboss.resteasy.client.jaxrs.engines.factory.ApacheHttpClient4EngineFactory;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
+import java.io.IOException;
 import java.security.SecureRandom;
+
 
 /**
  * A temporary class for transition between Apache pre-4.3 apis and 4.3.
@@ -38,8 +37,7 @@ public class HttpClientBuilder43 {
      * Create ClientHttpEngine using Apache 4.3.x+ apis.
      * @return
      */
-
-    protected static ClientHttpEngine initDefaultEngine43(ResteasyClientBuilder that)
+    protected static ClientHttpEngine initDefaultEngine43(final ResteasyClientBuilder that)
     {
         HttpClient httpClient = null;
 
@@ -49,7 +47,18 @@ public class HttpClientBuilder43 {
         }
         else
         {
-            verifier = new BrowserCompatHostnameVerifier();
+            switch (that.policy)
+            {
+                case ANY:
+                    verifier = new AllowAllHostnameVerifier();
+                    break;
+                case WILDCARD:
+                    verifier = new BrowserCompatHostnameVerifier();
+                    break;
+                case STRICT:
+                    verifier = new StrictHostnameVerifier();
+                    break;
+            }
         }
         try
         {
@@ -60,6 +69,7 @@ public class HttpClientBuilder43 {
                 theContext = SSLContext.getInstance("SSL");
                 theContext.init(null, new TrustManager[]{new PassthroughTrustManager()},
                     new SecureRandom());
+                verifier = new AllowAllHostnameVerifier();
                 sslsf = new SSLConnectionSocketFactory(theContext, verifier);
             }
             else if (theContext != null)
@@ -95,7 +105,9 @@ public class HttpClientBuilder43 {
                 PoolingHttpClientConnectionManager tcm = new PoolingHttpClientConnectionManager(
                     registry, null, null ,null, that.connectionTTL, that.connectionTTLUnit);
                 tcm.setMaxTotal(that.connectionPoolSize);
-                if (that.maxPooledPerRoute == 0) that.maxPooledPerRoute = that.connectionPoolSize;
+                if (that.maxPooledPerRoute == 0) {
+                    that.maxPooledPerRoute = that.connectionPoolSize;
+                }
                 tcm.setDefaultMaxPerRoute(that.maxPooledPerRoute);
                 cm = tcm;
 
@@ -120,6 +132,7 @@ public class HttpClientBuilder43 {
             }
 
             httpClient = HttpClientBuilder.create()
+                .setConnectionManager(cm)
                 .setDefaultRequestConfig(rcBuilder.build())
                 .setProxy(that.defaultProxy)
                 .build();
@@ -137,4 +150,5 @@ public class HttpClientBuilder43 {
             throw new RuntimeException(e);
         }
     }
+
 }
