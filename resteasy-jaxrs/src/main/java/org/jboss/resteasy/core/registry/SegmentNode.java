@@ -23,7 +23,6 @@ import javax.ws.rs.core.Response;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -435,8 +434,6 @@ public class SegmentNode
       }
       //if (list.size() == 1) return list.get(0); //don't do this optimization as we need to set chosen accept
       List<SortEntry> sortList = new ArrayList<SortEntry>();
-      Set<Method> targetMethods = null;
-      Method firstTargetMethod = null;
       for (Match match : list)
       {
          ResourceMethodInvoker invoker = (ResourceMethodInvoker) match.expression.getInvoker();
@@ -474,15 +471,6 @@ public class SegmentNode
                   {
                      final Method m = match.expression.getInvoker().getMethod();
                      sortList.add(new SortEntry(match, consume, sortFactor, produce));
-                     if (firstTargetMethod == null) {
-                        firstTargetMethod = m;
-                     } else if (firstTargetMethod != m) {
-                        if (targetMethods == null) {
-                           targetMethods = new HashSet<Method>();
-                           targetMethods.add(firstTargetMethod);
-                        }
-                        targetMethods.add(m);
-                     }
                   }
                }
 
@@ -535,7 +523,7 @@ public class SegmentNode
             break;
          }
       }
-      if (s != null) {
+      if (s != null && s.size() > 1) {
          String[] names = new String[s.size()];
          Iterator<Method> iterator = s.iterator();
          int i = 0;
