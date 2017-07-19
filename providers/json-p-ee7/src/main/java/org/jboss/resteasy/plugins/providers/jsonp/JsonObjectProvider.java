@@ -23,8 +23,8 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@Consumes({"application/*+json", "text/json"})
-@Produces({"application/*+json", "text/json"})
+@Consumes({"application/json", "application/*+json", "text/json"})
+@Produces({"application/json", "application/*+json", "text/json"})
 public class JsonObjectProvider extends AbstractJsonpProvider implements MessageBodyReader<JsonObject>, MessageBodyWriter<JsonObject>
 {
 

@@ -44,8 +44,8 @@ import java.util.TreeSet;
  * @version $Revision: 1 $
  */
 @Provider
-@Produces("application/*+json")
-@Consumes("application/*+json")
+@Produces({"application/json", "application/*+json"})
+@Consumes({"application/json", "application/*+json"})
 public class JsonCollectionProvider extends CollectionProvider
 {
 

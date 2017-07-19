@@ -57,8 +57,8 @@ import java.util.TreeSet;
  * @version $Revision: 1 $
  */
 @Provider
-@Produces({"application/*+xml", "text/*+xml"})
-@Consumes({"application/*+xml", "text/*+xml"})
+@Produces({"application/xml", "application/*+xml", "text/xml", "text/*+xml"})
+@Consumes({"application/xml", "application/*+xml", "text/xml", "text/*+xml"})
 public class CollectionProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object>
 {
    @Context

@@ -44,8 +44,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version $Revision: 1 $
  */
 @Provider
-@Consumes({"application/*+json", "text/json"})
-@Produces({"application/*+json", "text/json"})
+@Consumes({"application/json", "application/*+json", "text/json"})
+@Produces({"application/json", "application/*+json", "text/json"})
 public class ResteasyJackson2Provider extends JacksonJaxbJsonProvider
 {
    @Override

@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version $Revision: 1 $
  */
 @Provider
-@Produces({"text/*+xml", "application/*+xml"})
+@Produces({"text/xml", "text/*+xml", "application/xml", "application/*+xml"})
 public class XmlJAXBContextFinder extends AbstractJAXBContextFinder implements ContextResolver<JAXBContextFinder>
 {
    private ConcurrentHashMap<Class<?>, JAXBContext> cache = new ConcurrentHashMap<Class<?>, JAXBContext>();
