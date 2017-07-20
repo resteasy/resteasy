@@ -42,6 +42,7 @@ import org.jboss.resteasy.utils.PermissionUtil;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
@@ -83,7 +84,11 @@ public class MDBInjectionTest extends AbstractInjectionTestBase {
                 .addClasses(Resource.class, CDIInjectionResourceProducer.class, PersistenceUnitProducer.class)
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                 .addAsResource(InjectionTest.class.getPackage(), "persistence.xml", "META-INF/persistence.xml");
-        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new SocketPermission(PortProviderUtil.getHost(), "resolve")),
+        String host = PortProviderUtil.getHost();
+        if (PortProviderUtil.isIpv6()) {
+            host = String.format("[%s]", host);
+        }
+        war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(new SocketPermission(host, "resolve")),
                 "permissions.xml");
         return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
     }
