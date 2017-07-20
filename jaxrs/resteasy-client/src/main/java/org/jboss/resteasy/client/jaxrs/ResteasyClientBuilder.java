@@ -156,7 +156,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    }
 
    /**
-    * Socket inactivity timeout
+    * The timeout for waiting for data. A timeout value of zero is interpreted as an infinite timeout
     *
     * @param timeout
     * @param unit
