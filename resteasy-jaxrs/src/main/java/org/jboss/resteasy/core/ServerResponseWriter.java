@@ -400,24 +400,14 @@ public class ServerResponseWriter
    
    private static class SortableMediaType extends MediaType implements Comparable<SortableMediaType>
    {
-      double q = -1;
-      double qs = -1;
+      double q = 1;
+      double qs = 1;
       Class<?> writerType = null;
-      
-      public SortableMediaType(MediaType m, Class<?> writerType)
-      {
-         this(m.getType(), m.getSubtype(), m.getParameters(), writerType);
-      }
       
       public SortableMediaType(String type, String subtype, Map<String, String> parameters, Class<?> writerType)
       {
-         this(type, subtype, parameters);
-         this.writerType = writerType;
-      }
-      
-      public SortableMediaType(String type, String subtype, Map<String, String> parameters)
-      {
          super(type, subtype, parameters);
+         this.writerType = writerType;
          String qString = parameters.get("q");
          if (qString != null)
          {
@@ -430,19 +420,16 @@ public class ServerResponseWriter
                // skip
             }
          }
-         if (q < 0)
+         String qsString = parameters.get("qs");
+         if (qsString != null)
          {
-            String qsString = parameters.get("qs");
-            if (qsString != null)
+            try
             {
-               try
-               {
-                  qs = Double.valueOf(qsString);
-               }
-               catch (NumberFormatException e)
-               {
-                  // skip
-               }
+               qs = Double.valueOf(qsString);
+            }
+            catch (NumberFormatException e)
+            {
+               // skip
             }
          }
       }
@@ -456,7 +443,7 @@ public class ServerResponseWriter
             {
                return 0;
             }
-            return o.equals(mostSpecific(o, this)) ? 1 : -1;
+            return o.equals(selectMostSpecific(o, this)) ? 1 : -1;
          }
          if (o.q < this.q)
          {
@@ -484,18 +471,10 @@ public class ServerResponseWriter
       }
    }
    
-   
-   private static SortableMediaType mostSpecific(MediaType m1, MediaType m2)
-   {
-      Class<?> wt1 = m1 instanceof SortableMediaType ? ((SortableMediaType)m1).writerType : null;
-      Class<?> wt2 = m2 instanceof SortableMediaType ? ((SortableMediaType)m2).writerType : null;
-      return mostSpecific(m1, wt1, m2, wt2);
-   }
-   
    /**
     * m1, m2 are compatible
     */
-   private static SortableMediaType mostSpecific(MediaType m1, Class<?> wt1, MediaType m2, Class<?> wt2)
+   private static SortableMediaType selectMostSpecific(SortableMediaType m1, SortableMediaType m2)
    {
       if (m1.getType().equals("*"))
       {
@@ -503,35 +482,100 @@ public class ServerResponseWriter
          {
             if (m1.getSubtype().equals("*"))
             {
-               return new SortableMediaType(m2, wt2); // */* <= */?
+               return m2; // */* <= */?
             }
             else
             {
-               return new SortableMediaType(m1, wt1); // */st > */?
+               return m1; // */st > */?
             }
          }
          else
          {
-            return new SortableMediaType(m2, wt2); // */? < t/?
+            return m2; // */? < t/?
          }
       }
       else
       {
          if (m2.getType().equals("*"))
          {
-            return new SortableMediaType(m1, wt1); // t/? > */?
+            return m1; // t/? > */?
          }
          else
          {
             if (m1.getSubtype().equals("*"))
             {
-               return new SortableMediaType(m2, wt2); // t/* <= t/?
+               return m2; // t/* <= t/?
             }
             else
             {
-               return new SortableMediaType(m1, wt1); // t/st >= t/?
+               return m1; // t/st >= t/?
             }
          }
       }
+   }
+   
+   private static SortableMediaType mostSpecific(MediaType p, Class<?> wtp, MediaType a, Class<?> wta)
+   {
+      if (p.getType().equals("*"))
+      {
+         if (a.getType().equals("*"))
+         {
+            if (p.getSubtype().equals("*"))
+            {
+               return mixAddingQS(a, wta, p); // */* <= */?
+            }
+            else
+            {
+               return mixAddingQ(p, wtp, a); // */st > */?
+            }
+         }
+         else
+         {
+            return mixAddingQS(a, wta, p); // */? < t/?
+         }
+      }
+      else
+      {
+         if (a.getType().equals("*"))
+         {
+            return mixAddingQ(p, wtp, a); // t/? > */?
+         }
+         else
+         {
+            if (p.getSubtype().equals("*"))
+            {
+               return mixAddingQS(a, wta, p); // t/* <= t/?
+            }
+            else
+            {
+               return mixAddingQ(p, wtp, a); // t/st >= t/?
+            }
+         }
+      }
+   }
+   
+   private static SortableMediaType mixAddingQ(MediaType p, Class<?> wtp, MediaType a)
+   {
+      Map<String, String> pars = p.getParameters();
+      String q = a.getParameters().get("q");
+      if (q != null)
+      {
+         pars = new HashMap<>(pars);
+         pars.put("q", q);
+      }
+      return new SortableMediaType(p.getType(), p.getSubtype(), pars, wtp);
+   }
+   
+   private static SortableMediaType mixAddingQS(MediaType a, Class<?> wta, MediaType p)
+   {
+      Map<String, String> pars = a.getParameters();
+      String qs = p.getParameters().get("qs");
+      if (qs != null)
+      {
+         pars = new HashMap<>(pars);
+         pars.put("qs", qs);
+      }
+      return new SortableMediaType(a.getType(), a.getSubtype(), pars, wta);
+      
    }
 }
