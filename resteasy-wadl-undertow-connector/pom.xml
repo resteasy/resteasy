@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs-all</artifactId>
-        <version>3.0.24.Final</version>
+        <version>3.0.25.Final-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
