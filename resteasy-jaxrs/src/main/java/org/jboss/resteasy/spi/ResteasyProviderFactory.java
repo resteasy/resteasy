@@ -1895,7 +1895,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          if (writer.obj.isWriteable(type, genericType, annotations, accept))
          {
             Class<?> mbwc = writer.obj.getClass();
-            if (!mbwc.isInterface() && mbwc.getSuperclass() != null && !mbwc.getSuperclass().equals(Object.class) && WeldUtil.isWeldProxy(mbwc)) {
+            if (!mbwc.isInterface() && mbwc.getSuperclass() != null && !mbwc.getSuperclass().equals(Object.class) && mbwc.isSynthetic()) {
                mbwc = mbwc.getSuperclass();
             }
             Class writerType = Types.getTemplateParameterOfInterface(mbwc, MessageBodyWriter.class);
