@@ -1,7 +1,7 @@
 <chapter id="RESTEasy_Client_Framework">
-    <title>Resteasy Client API</title>
+    <title>RESTEasy Client API</title>
 
-    <sect1>
+    <section>
         <title>JAX-RS 2.0 Client API</title>
         <para>JAX-RS 2.0 introduces a new client API so that you can make http requests to your remote RESTful web services.
         It is a 'fluent' request building API with really 3 main classes:  Client, WebTarget, and Response.  The Client
@@ -24,7 +24,7 @@
             ResteasyWebTarget target = client.target("http://foo.com/resource");
         </programlisting>
         <para>
-            Resteasy will automatically load a set of default providers. (Basically all classes listed in all
+            RESTEasy will automatically load a set of default providers. (Basically all classes listed in all
             META-INF/services/javax.ws.rs.ext.Providers files).  Additionally, you can manually register other providers,
             filters, and interceptors through the Configuration object provided by the method call Client.configuration().
             Configuration also lets you set various configuration properties that may be needed.
@@ -36,7 +36,7 @@
         </para>
         
         <para>
-        One Resteasy extension to the client API is the ability to specify that requests should be sent in "chunked" transfer mode.
+        One RESTEasy extension to the client API is the ability to specify that requests should be sent in "chunked" transfer mode.
         There are two ways of doing that. One is to configure an <classname>org.jboss.resteasy.client.jaxrs.ResteasyWebTarget</classname>
         so that all requests to that target are sent in chunked mode:
         </para>
@@ -61,7 +61,7 @@
         
         <para>
         Note that <classname>org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder</classname>,
-        unlike <classname>javax.ws.rs.client.Invocation.Builder</classname>, is a Resteasy class.
+        unlike <classname>javax.ws.rs.client.Invocation.Builder</classname>, is a RESTEasy class.
         </para>
         
         <para>
@@ -74,23 +74,23 @@
         support chunked mode. See Section <link linkend='transport_layer'>Apache HTTP Client 4.x and other backends</link>
         for more information.
         </para>
-    </sect1>
+    </section>
     <para>
 
     </para>
 
-    <sect1>
-        <title>Resteasy Proxy Framework</title>
+    <section>
+        <title>RESTEasy Proxy Framework</title>
     <para>
 
-        The Resteasy Proxy  Framework is the mirror opposite of the JAX-RS server-side specification. Instead of using
+        The RESTEasy Proxy  Framework is the mirror opposite of the JAX-RS server-side specification. Instead of using
         JAX-RS annotations to map an incoming request to your RESTFul Web Service method, the client framework builds an
         HTTP request that it uses to invoke on a remote RESTful Web Service. This remote service does not have to be a
         JAX-RS service and can be any web resource that accepts HTTP requests.
     </para>
     <para>
 
-        Resteasy has a client proxy framework that allows you to use JAX-RS annotations to invoke on a remote HTTP
+        RESTEasy has a client proxy framework that allows you to use JAX-RS annotations to invoke on a remote HTTP
         resource.
         The way it works is that you write a Java interface and use JAX-RS annotations on methods and the interface. For
         example:
@@ -128,7 +128,7 @@ public interface SimpleClient
     </para>
     <para>
 
-        Resteasy has a simple API based on Apache HttpClient. You generate a proxy then you can invoke methods on the
+        RESTEasy has a simple API based on Apache HttpClient. You generate a proxy then you can invoke methods on the
         proxy. The invoked method gets translated to an HTTP request based on how you annotated the method and posted to
         the server. Here's how you would set this up:
     </para>
@@ -142,7 +142,7 @@ public interface SimpleClient
             SimpleClient simple = rtarget.proxy(SimpleClient.class);
             client.putBasic("hello world");
         </programlisting>
-        Alternatively you can use the Resteasy client extension interfaces directly:
+        Alternatively you can use the RESTEasy client extension interfaces directly:
         <programlisting>
             ResteasyClient client = new ResteasyClientBuilder().build();
             ResteasyWebTarget target = client.target("http://example.com/base/uri");
@@ -165,7 +165,7 @@ public interface SimpleClient
      The framework also supports the JAX-RS locator pattern, but on the client side.  So, if you have a method annotated only with @Path, that proxy method
      will return a new proxy of the interface returned by that method.
     </para>
-    <sect1 id="Custom_client-side_responses">
+    <section id="Custom_client-side_responses">
         <title>Abstract Responses</title>
 
         <para>
@@ -216,8 +216,8 @@ public interface LibraryService {
    Response getAllBooks();
 }</programlisting>
         </para>
-     </sect1>
-    <sect1 id="Sharing_interfaces">
+     </section>
+    <section id="Sharing_interfaces">
         <title>Sharing an interface between client and server</title>
         <para>
             It is generally possible to share an interface between the client and server. In this scenario, you just
@@ -225,76 +225,183 @@ public interface LibraryService {
             and then reuse that same interface to create client proxies to invoke on the client-side.
         </para>
 
-    </sect1>
-    </sect1>
+    </section>
+    </section>
     
     
     
 
    
-   <sect1 id="transport_layer">
+   <section id="transport_layer">
      <title>Apache HTTP Client 4.x and other backends</title>
-     
-     <para>
-         Network communication between the client and server is handled in Resteasy,
-         by default, by HttpClient (4.x) from the Apache HttpComponents project.  In general,
-         the interface between the Resteasy Client Framework and the network is
-         found in an implementation of
-         <classname>org.jboss.resteasy.client.jaxrs.ClientHttpEngine</classname>.
-         <classname>org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine</classname>,
-         which uses HttpClient (4.3+), is the default implementation.  Resteasy
-         also ships with the older <classname>ApacheHttpClient4Engine</classname>, which uses
-         HttpClient 4.2, and <classname>URLConnectionEngine</classname>,
-         which uses <classname>java.net.HttpURLConnection</classname>. It is also possible to pass
-         an alternative implementation of <classname>ClientHttpEngine</classname> to a
-         <classname>ResteasyClient</classname>:
-     </para>
-     
-     <programlisting>
-ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
-     </programlisting>
-     
-     <para>
-         Resteasy and HttpClient make reasonable default decisions so that it is possible to use the client
-         framework without ever referencing HttpClient, but for some applications it may be necessary to drill
-         down into the HttpClient details.  <classname>ApacheHttpClient4Engine</classname> can
-         be supplied with an instance of <classname>org.apache.http.client.HttpClient</classname> and
-         an instance of <classname>org.apache.http.protocol.HttpContext</classname>, which can carry
-         additional configuration details into the HttpClient layer.  For example, authentication
-         may be configured as follows:
-     </para>
-     
-     <programlisting>
-// Configure HttpClient to authenticate preemptively
-// by prepopulating the authentication data cache.
- 
-// 1. Create AuthCache instance
-AuthCache authCache = new BasicAuthCache();
- 
-// 2. Generate BASIC scheme object and add it to the local auth cache
-AuthScheme basicAuth = new BasicScheme();
-authCache.put(new HttpHost("sippycups.bluemonkeydiamond.com"), basicAuth);
- 
-// 3. Add AuthCache to the execution context
-BasicHttpContext localContext = new BasicHttpContext();
-localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
- 
-// 4. Create client executor and proxy
+
+       <para>
+           Network communication between the client and server is handled by default in RESTEasy.
+           It uses the
+           <code class="classname">HttpClient</code> from the Apache
+           <code class="classname">HttpComponents</code> project.
+           The interface between the RESTEasy Client Framework and the network
+           is defined by RESTEasy's
+           <code class="classname">ClientHttpEngine</code> interface.
+           RESTEasy ships with 4 implementations of this interface.
+           The default implementation is
+           <code class="classname">ApacheHttpClient43Engine</code>.  This implementation
+           uses Apache 4.3.
+
+           <code class="classname">ApacheHttpClient4Engine</code> is an implementation that
+           uses the pre-Apache 4.3 version.  This class provides backward compatibility.
+           RESTEasy automatically selects one of these two
+           <code class="classname">ClientHttpEngine</code> implementations
+           based upon the detection of the Apache version.
+           <code class="classname">InMemoryClientEngine</code> is
+           an implementation that dispatches requests to a server in the same JVM and
+           <code class="classname">URLConnectionEngine</code> is an implementation that uses
+           <code class="classname">java.net.HttpURLConnection</code>.
+       </para>
+
+       <table frame="topbot">
+           <tgroup cols="2" rowsep="1" colsep="1">
+               <thead>
+                   <row>
+                       <entry>RESTEasy ClientHttpEngine implementations</entry>
+                       <entry></entry>
+                   </row>
+               </thead>
+               <tbody>
+                   <row>
+                       <entry>ApacheHttpClient43Engine</entry>
+                       <entry>Uses HttpComponents Apache 4.3 api</entry>
+                   </row>
+                   <row>
+                       <entry>ApacheHttpClient4Engine</entry>
+                       <entry>Uses HttpComponents Apache pre-4.3 api</entry>
+                   </row>
+                   <row>
+                       <entry>InMemoryClientEngine</entry>
+                       <entry>Dispatches requests to a server in the same JVM</entry>
+                   </row>
+                   <row>
+                       <entry>URLConnectionEngine</entry>
+                       <entry>Uses java.net.HttpURLConnection</entry>
+                   </row>
+               </tbody>
+           </tgroup>
+       </table>
+
+       <para>
+           The RESTEasy Client Framework can also be customized.  The user can provide
+           their own implementations of
+           <code class="classname">ClientHttpEngine</code> to the
+           <code class="classname">ResteasyClient</code>.
+       </para>
+
+       <programlisting>
+ClientHttpEngine myEngine = new ClientHttpEngine() {
+    protected SSLContext sslContext;
+    protected HostnameVerifier hostnameVerifier;
+
+
+    @Override
+    public ClientResponse invoke(ClientInvocation request) {
+        // implement your processing code and return a
+        // org.jboss.resteasy.client.jaxrs.internal.ClientResponse
+        // object.
+    }
+
+    @Override
+    public SSLContext getSslContext() {
+       return sslContext;
+    }
+
+    @Override
+    public HostnameVerifier getHostnameVerifier() {
+       return hostnameVerifier;
+    }
+
+    @Override
+    public void close() {
+       // do nothing
+    }
+};
+
+ResteasyClient client = new RESTEasyClientBuilder().httpEngine(myEngine).build();
+       </programlisting>
+
+       <para>
+           RESTEasy and <classname>HttpClient</classname> make reasonable default decisions so
+           that it is possible to use the client framework without ever referencing
+           <classname>HttpClient</classname>. For some applications it may be necessary to drill
+           down into the <classname>HttpClient</classname> details.
+           <classname>ApacheHttpClient43Engine</classname> and
+           <classname>ApacheHttpClient4Engine</classname> can
+           be supplied with an instance of
+           <classname>org.apache.http.client.HttpClient</classname> and an instance of
+           <classname>org.apache.http.protocol.HttpContext</classname>, which can carry
+           additional configuration details into the <classname>HttpClient</classname> layer.
+
+       </para>
+           <classname>HttpContextProvider</classname>
+           is a RESTEasy provided interface through which a custom
+           <classname>HttpContext</classname> is supplied to
+           <classname>ApacheHttpClient43Engine</classname> and
+           <classname>ApacheHttpClient4Engine</classname>.
+       <para>
+
+       <programlisting>
+package org.jboss.resteasy.client.jaxrs.engines;
+
+import org.apache.http.protocol.HttpContext;
+
+public interface HttpContextProvider {
+   HttpContext getContext();
+}
+       </programlisting>
+
+       </para>
+
+       <para>
+           Here is an example of providing a custom HttpContext
+       </para>
+
+       <programlisting>
 DefaultHttpClient httpClient = new DefaultHttpClient();
-ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient, localContext);
-ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine).build();
-     </programlisting>
+ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient,
+   new HttpContextProvider() {
+           @Override
+           public HttpContext getContext() {
+              // Configure HttpClient to authenticate preemptively
+              // by prepopulating the authentication data cache.
+              // 1. Create AuthCache instance
+              AuthCache authCache = new BasicAuthCache();
+              // 2. Generate BASIC scheme object and add it to the local auth cache
+              BasicScheme basicAuth = new BasicScheme();
+              authCache.put(getHttpHost(url), basicAuth);
+              // 3. Add AuthCache to the execution context
+              BasicHttpContext localContext = new BasicHttpContext();
+              localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
+              return localContext;
+           }
+});
+       </programlisting>
+
+    <section id="apache_pre_4_3">
+        <title>Apache HTTP Client pre-4.3 APIs</title>
+     <para>
+         The Apache pre-4.3 <classname>HttpClient</classname> implementation uses
+         <classname>org.apache.http.impl.conn.SingleClientConnManager</classname>
+         to manage a single socket and allows
+         <classname>org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager</classname>
+         to replace <classname>SingleClientConnManager</classname> for multithreaded applications.
+         <classname>SingleClientConnManager</classname> manages a single socket at any given time and
+         supports the use case in which one or more invocations are made serially
+         from a single thread.
+     </para>
 
      <para>
-         One default decision made by HttpClient and adopted by Resteasy is the use of
-         <classname>org.apache.http.impl.conn.SingleClientConnManager</classname>,
-         which manages a single socket at any given time and which
-         supports the use case in which one or more invocations are made serially
-         from a single thread.  For multithreaded applications, 
-         <classname>SingleClientConnManager</classname> may be replaced by 
-         <classname>org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager</classname>:
+        Here is an example of replacing the <classname>SingleClientConnManager</classname>
+        with <classname>ThreadSafeClientConnManager</classname> in
+        <classname>ApacheHttpClient4Engine</classname>.
      </para>
-     
      <programlisting>
 ClientConnectionManager cm = new ThreadSafeClientConnManager();
 HttpClient httpClient = new DefaultHttpClient(cm);
@@ -321,7 +428,7 @@ ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
          released from its current use, which can occur in one of two ways.  If
          an execution of a request or a call on
          a proxy returns a class other than <classname>Response</classname>,
-         then Resteasy will take care of releasing the connection.  For example,
+         then RESTEasy will take care of releasing the connection.  For example,
          in the fragments
      </para>
      
@@ -341,7 +448,7 @@ RegistryData data = stats.get();
      </programlisting>
      
      <para>
-        Resteasy will release the connection under the covers.  The only counterexample is the case
+        RESTEasy will release the connection under the covers.  The only counterexample is the case
         in which the response is an instance of <classname>InputStream</classname>, which must
         be closed explicitly.
      </para>
@@ -391,8 +498,22 @@ httpClient.getConnectionManager().shutdown();
         Finally, if your javax.ws.rs.client.Client class has created the engine automatically for you, you should
         call Client.close() and this will clean up any socket connections.
     </para>
+    </section>
 
-   </sect1>
+    <section id="apache_4_3">
+        <title>Apache HTTP Client 4.3 APIs</title>
+        <para>
+            The Apache 4.3 <classname>HttpClient</classname> implementation uses
+            <classname>org.apache.http.impl.conn.BasicHttpClientConnectionManager</classname>
+            to manage a single socket and
+            <classname>org.apache.http.impl.conn.PoolingHttpClientConnectionManager</classname>
+            to service connection requests from multiple execution threads.
+            RESTEasy's <classname>ClientHttpclientBuilder43</classname> and
+            <classname>ApacheHttpClient43Engine</classname>
+            uses them as well.
+        </para>
+    </section>
+   </section>
    
 
 </chapter>
