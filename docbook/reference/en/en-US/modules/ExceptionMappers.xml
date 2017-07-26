@@ -6,7 +6,7 @@
    <para>
 
       ExceptionMappers are custom, application provided, components that can catch thrown application exceptions and
-      write specific HTTP responses. The are classes annotated with @Provider and that implement this interface
+      write specific HTTP responses. They are classes annotated with @Provider and that implement this interface
    </para>
    <para>
 
@@ -122,6 +122,11 @@ If there is an ExceptionMapper for wrapped exception, then that is used to handl
 <entry>DefaultOptionsMethodException</entry>
 <entry>N/A</entry>
 <entry>If the user invokes HTTP OPTIONS and no JAX-RS method for it, Resteasy provides a default behavior by throwing this exception</entry>
+</row>
+<row>
+<entry>UnrecognizedPropertyExceptionHandler</entry>
+<entry>400</entry>
+<entry>A Jackson provider throws this exception when JSON data is determine to be invalid.</entry>
 </row>
 </tbody>
 </tgroup>
