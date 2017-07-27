@@ -1,7 +1,14 @@
 package org.jboss.resteasy.client.jaxrs;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
+import org.apache.http.HttpHost;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -10,7 +17,6 @@ import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.ssl.StrictHostnameVerifier;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
-import org.apache.http.HttpHost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.BasicClientConnectionManager;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
@@ -18,21 +24,16 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.client.jaxrs.engines.PassthroughTrustManager;
+import org.jboss.resteasy.client.jaxrs.engines.factory.ApacheHttpClient4EngineFactory;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Configuration;
-
 import java.io.IOException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
@@ -68,6 +69,17 @@ public class ResteasyClientBuilder extends ClientBuilder
       STRICT
    }
 
+   private static final boolean useOldHTTPClient = Boolean.getBoolean("org.jboss.resteasy.client.useOldHTTPClient");
+   private static final boolean newHTTPClientAvailable;
+   static {
+      boolean res = true;
+      try {
+         Class.forName(HttpClientBuilder43.class.getName());
+      } catch (Throwable t) {
+         res = false;
+      }
+      newHTTPClientAvailable = res;
+   }
    protected KeyStore truststore;
    protected KeyStore clientKeyStore;
    protected String clientPrivateKeyPassword;
@@ -144,7 +156,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    }
 
    /**
-    * Socket inactivity timeout
+    * The timeout for waiting for data. A timeout value of zero is interpreted as an infinite timeout
     *
     * @param timeout
     * @param unit
@@ -342,8 +354,8 @@ public class ResteasyClientBuilder extends ClientBuilder
       return providerFactory;
    }
 
-   @Override
-   public ResteasyClient build()
+   @Deprecated
+   public ResteasyClient buildOld()
    {
       ClientConfiguration config = new ClientConfiguration(getProviderFactory());
       for (Map.Entry<String, Object> entry : properties.entrySet())
@@ -360,7 +372,37 @@ public class ResteasyClientBuilder extends ClientBuilder
       }
 
       ClientHttpEngine engine = httpEngine;
-      if (engine == null) engine = initDefaultEngine();
+      if (engine == null) {
+         engine = initDefaultEngine();
+      }
+      return new ResteasyClient(engine, executor, cleanupExecutor, config);
+
+   }
+
+   @Override
+   public ResteasyClient build()
+   {
+      if (useOldHTTPClient || !newHTTPClientAvailable) {
+         return buildOld();
+      }
+      ClientConfiguration config = new ClientConfiguration(getProviderFactory());
+      for (Map.Entry<String, Object> entry : properties.entrySet())
+      {
+         config.property(entry.getKey(), entry.getValue());
+      }
+
+      ExecutorService executor = asyncExecutor;
+
+      if (executor == null)
+      {
+         cleanupExecutor = true;
+         executor = Executors.newFixedThreadPool(10);
+      }
+
+      ClientHttpEngine engine = httpEngine;
+      if (engine == null) {
+         engine = HttpClientBuilder43.initDefaultEngine43(this);
+      }
       return new ResteasyClient(engine, executor, cleanupExecutor, config);
 
    }
@@ -480,13 +522,14 @@ public class ResteasyClientBuilder extends ClientBuilder
          {
              HttpClientParams.setConnectionManagerTimeout(params, connectionCheckoutTimeoutMs);
          }
+         params.setParameter(ConnRoutePNames.DEFAULT_PROXY, defaultProxy);
          httpClient = new DefaultHttpClient(cm, params);
-         ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient, true);
+         ApacheHttpClient4Engine engine =
+             (ApacheHttpClient4Engine) ApacheHttpClient4EngineFactory.create(httpClient, true);
          engine.setResponseBufferSize(responseBufferSize);
          engine.setHostnameVerifier(verifier);
          // this may be null.  We can't really support this with Apache Client.
          engine.setSslContext(theContext);
-         engine.setDefaultProxy(defaultProxy);
          return engine;
       }
       catch (Exception e)
@@ -568,6 +611,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    public ResteasyClientBuilder withConfig(Configuration config)
    {
       providerFactory = new LocalResteasyProviderFactory(new ResteasyProviderFactory());
+      // return to  original above rls //providerFactory = new ResteasyProviderFactory();
       providerFactory.setProperties(config.getProperties());
       for (Class clazz : config.getClasses())
       {
