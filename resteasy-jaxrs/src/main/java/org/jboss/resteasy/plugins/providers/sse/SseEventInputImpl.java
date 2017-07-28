@@ -23,7 +23,7 @@ public class SseEventInputImpl implements EventInput, Closeable
    private MultivaluedMap<String, String> httpHeaders;
    private InputStream inputStream;
    private final byte[] EventEND = "\r\n\r\n".getBytes();
-   private boolean isClosed = false;
+   private volatile boolean isClosed = false;
 
    public SseEventInputImpl(Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders,
          InputStream inputStream)
