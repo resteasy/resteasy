@@ -91,15 +91,15 @@ public class SseResource
             {
                sink.send(sse.newEventBuilder().name("domain-progress")
                      .data(String.class, "starting domain " + id + " ...").build());
-               Thread.sleep(200);
+               Thread.sleep(1000);
                sink.send(sse.newEvent("domain-progress", "50%"));
-               Thread.sleep(200);
+               Thread.sleep(1000);
                sink.send(sse.newEvent("domain-progress", "60%"));
-               Thread.sleep(200);
+               Thread.sleep(1000);
                sink.send(sse.newEvent("domain-progress", "70%"));
-               Thread.sleep(200);
+               Thread.sleep(1000);
                sink.send(sse.newEvent("domain-progress", "99%"));
-               Thread.sleep(200);
+               Thread.sleep(1000);
                sink.send(sse.newEvent("domain-progress", "Done."));
                sink.close();
             }
