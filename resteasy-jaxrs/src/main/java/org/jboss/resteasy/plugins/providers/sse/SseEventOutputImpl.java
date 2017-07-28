@@ -109,9 +109,11 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             writer.writeTo(event, event.getClass(), null, new Annotation[]{}, event.getMediaType(), null, bout);
             response.getOutputStream().write(bout.toByteArray());
+            System.out.println("*** Writing event " + event.getData());
          }
          response.getOutputStream().write(END);
          response.flushBuffer();
+         System.out.println("*** Written event " + event.getData());
       } catch (Exception e) {
          throw new ProcessingException(e);
       } finally {
