@@ -253,6 +253,7 @@ public class SseEventSourceImpl implements SseEventSource
       @Override
       public void run()
       {
+         System.out.println("++++ Handler.run");
          SseEventInputImpl eventInput = null;
          try {
             final Invocation.Builder request = buildRequest();
@@ -260,6 +261,7 @@ public class SseEventSourceImpl implements SseEventSource
             {
                eventInput = request.get(SseEventInputImpl.class);
             }
+            System.out.println("++++ Handler.run, eventInput: " + eventInput);
          } catch (Throwable e) {
             onErrorConsumers.forEach(consumer -> {consumer.accept(e);});
             e.printStackTrace();
@@ -278,13 +280,16 @@ public class SseEventSourceImpl implements SseEventSource
             else
             {
                InboundSseEvent event = eventInput.read();
+               System.out.println("++++ Handler.run, even = " + event);
                if (event != null)
                {
                   onEvent(event);
+                  System.out.println("++++ Handler.run, executing consumers...");
                   onEventConsumers.forEach(consumer -> {consumer.accept(event);});
                }
             }
          }
+         System.out.println("++++ Handler.run end");
       }
 
       public void awaitConnected()
@@ -336,12 +341,14 @@ public class SseEventSourceImpl implements SseEventSource
 
       private void reconnect(final long delay)
       {
+         System.out.println("++++ Handler.reconnect... ");
          if (state.get() != State.OPEN)
          {
             return;
          }
 
          EventHandler processor = new EventHandler(this);
+         System.out.println("++++ Handler.rescheduling... ");
          if (delay > 0)
          {
             executor.schedule(processor, delay, TimeUnit.MILLISECONDS);
