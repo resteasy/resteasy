@@ -287,6 +287,18 @@ public class SseEventSourceImpl implements SseEventSource
                   System.out.println("++++ Handler.run, executing consumers...");
                   onEventConsumers.forEach(consumer -> {consumer.accept(event);});
                }
+               else
+               {
+                  try
+                  {
+                     Thread.sleep(100);
+                  }
+                  catch (InterruptedException e)
+                  {
+                     // TODO Auto-generated catch block
+                     e.printStackTrace();
+                  }
+               }
             }
          }
          System.out.println("++++ Handler.run end");
