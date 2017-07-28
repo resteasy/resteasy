@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -48,6 +49,7 @@ public class SseTest {
     public void testAddMessage() throws Exception
     {
        final CountDownLatch latch = new CountDownLatch(5);
+       final AtomicInteger errors = new AtomicInteger(0);
        final List<String> results = new ArrayList<String>();
        Client client = ClientBuilder.newBuilder().build();
        WebTarget target = client.target(generateURL("/service/server-sent-events"));
@@ -57,7 +59,7 @@ public class SseTest {
        eventSource.register(event -> {
             results.add(event.toString());
             latch.countDown();
-          }, ex -> {ex.printStackTrace(); throw new RuntimeException(ex);});
+          }, ex -> {errors.incrementAndGet(); ex.printStackTrace(); throw new RuntimeException(ex);});
        eventSource.open();
 
        Client messageClient = new ResteasyClientBuilder().connectionPoolSize(10).build();
@@ -66,6 +68,7 @@ public class SseTest {
        {
           messageTarget.request().post(Entity.text("message " + counter));
        } 
+       Assert.assertEquals(0, errors.get());
        Assert.assertTrue("Waiting for event to be delivered has timed out.", latch.await(30, TimeUnit.SECONDS));
        messageTarget.request().delete();
        messageClient.close();
@@ -80,6 +83,7 @@ public class SseTest {
     {
        final List<String> results = new ArrayList<String>();
        final CountDownLatch latch = new CountDownLatch(6);
+       final AtomicInteger errors = new AtomicInteger(0);
        Client client = new ResteasyClientBuilder().connectionPoolSize(10).build();
        WebTarget target = client.target(generateURL("/service/server-sent-events")).path("domains").path("1");
 
@@ -88,9 +92,10 @@ public class SseTest {
        eventSource.register(event -> {
           results.add(event.readData());
           latch.countDown();
-         }, ex -> {ex.printStackTrace(); throw new RuntimeException(ex);});
+         }, ex -> {errors.incrementAndGet(); ex.printStackTrace(); throw new RuntimeException(ex);});
        eventSource.open();
 
+       Assert.assertEquals(0, errors.get());
        Assert.assertTrue("Waiting for event to be delivered has timed out.", latch.await(30, TimeUnit.SECONDS));
        Assert.assertTrue("6 SseInboundEvent expected", results.size() == 6);
        Assert.assertTrue("Expect the last event is Done event, but it is :" + results.toArray(new String[]
