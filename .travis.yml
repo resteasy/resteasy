@@ -2,6 +2,8 @@ install:
  - mvn clean
 script:
  - travis_wait 30 mvn -B -fae -Dserver.version=$SERVER_VERSION install
+after_script:
+ - cat /home/travis/build/resteasy/Resteasy/testsuite/integration-tests/target/surefire-reports/org.jboss.resteasy.test.providers.sse.SseTest-output.txt
 
 language: java
 jdk:
