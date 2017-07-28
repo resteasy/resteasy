@@ -321,9 +321,11 @@ public abstract class ClientResponse extends BuiltResponse
       if (bufferedEntity != null) return true;
       if (entity != null) return false;
       if (metadata.getFirst(HttpHeaderNames.CONTENT_TYPE) == null) return false;
+      InputStream is = getInputStream();
+      if (is == null) return false;
       try
       {
-         bufferedEntity = ReadFromStream.readFromStream(1024, getInputStream());
+         bufferedEntity = ReadFromStream.readFromStream(1024, is);
       }
       catch (IOException e)
       {
