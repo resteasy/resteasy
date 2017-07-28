@@ -283,6 +283,17 @@ public class SseEventSourceImpl implements SseEventSource
                   onEvent(event);
                   onEventConsumers.forEach(consumer -> {consumer.accept(event);});
                }
+               else
+               {
+                  try
+                  {
+                     Thread.sleep(100);
+                  }
+                  catch (InterruptedException e)
+                  {
+                     // Ignore
+                  }
+               }
             }
          }
       }
