@@ -3,6 +3,8 @@ package org.jboss.resteasy.test.client;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.test.client.resource.AsyncInvokeResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.TestUtil;
@@ -538,5 +540,14 @@ public class AsyncInvokeTest extends ClientTestBase{
             String entity = future.get();
             Assert.assertEquals("patch hello", entity);
         }
+    }
+
+    private ResteasyClient buildClient()
+    {
+        // only with dependency to apache httpasyncclient and co
+        // CloseableHttpAsyncClient asyncClient = HttpAsyncClientBuilder.create().setMaxConnTotal(1).build();
+        // return new ResteasyClientBuilder().httpEngine(new ApacheHttpAsyncClient4Engine(asyncClient, true)).build();
+
+        return new ResteasyClientBuilder().build();
     }
 }
