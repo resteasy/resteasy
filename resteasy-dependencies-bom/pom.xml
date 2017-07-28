@@ -41,6 +41,7 @@
         <version.net.jcip.jcip-annotations>1.0</version.net.jcip.jcip-annotations>
         <version.org.apache.httpcomponents.httpclient>4.5.2</version.org.apache.httpcomponents.httpclient>
         <version.org.apache.httpcomponents.httpcore>4.4.5</version.org.apache.httpcomponents.httpcore>
+        <version.org.apache.httpcomponents.httpasyncclient>4.1.3</version.org.apache.httpcomponents.httpasyncclient>
         <version.org.apache.james.apache-mime4j>0.6</version.org.apache.james.apache-mime4j>
         <version.org.apache.maven>3.3.9</version.org.apache.maven> <!-- Used to download aether-provider -->
         <version.org.bouncycastle>1.55</version.org.bouncycastle>
@@ -234,6 +235,28 @@
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpcore</artifactId>
                 <version>${version.org.apache.httpcomponents.httpcore}</version>
+            </dependency>
+            <!-- OPTIONAL dependency to apache HttpAsyncClient.
+                 To use it in own projects one needs to manually add a dependency to httpcomponents-asyncclient,
+                 and configure ApacheHttpAsyncClient4Engine -->
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpasyncclient</artifactId>
+                <version>${version.org.apache.httpcomponents.httpasyncclient}</version>
+                <exclusions> <!-- avoid changing these transitive dependency-versions  -->
+                    <exclusion>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>httpcore</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>httpclient</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>net.jcip</groupId>
