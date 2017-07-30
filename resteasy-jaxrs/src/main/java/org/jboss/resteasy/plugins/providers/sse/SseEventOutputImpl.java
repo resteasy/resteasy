@@ -28,9 +28,9 @@ import org.jboss.resteasy.util.HttpHeaderNames;
 public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements SseEventSink
 {
    private final MessageBodyWriter<OutboundSseEvent> writer;
-   private Servlet3AsyncHttpRequest request;
-   private HttpServletResponse response;
-   private boolean closed;
+   private final Servlet3AsyncHttpRequest request;
+   private final HttpServletResponse response;
+   private volatile boolean closed;
    private static final byte[] END = "\r\n\r\n".getBytes();
    private final Map<Class<?>, Object> contextDataMap;
    
@@ -64,7 +64,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    }
    
    @Override
-   public void close()
+   public synchronized void close()
    {
       if (request.getAsyncContext().isSuspended() && request.getAsyncContext().getAsyncResponse() != null) {
          if (request.getAsyncContext().isSuspended()) {
@@ -100,7 +100,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    }
    
  
-   protected void writeEvent(OutboundSseEvent event)
+   protected synchronized void writeEvent(OutboundSseEvent event)
    {
       ResteasyProviderFactory.pushContextDataMap(contextDataMap);
       try {

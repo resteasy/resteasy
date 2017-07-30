@@ -59,6 +59,7 @@ public class SseTest {
        SseEventSource eventSource = SseEventSource.target(target).build();
        Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
        eventSource.register(event -> {
+            System.out.println("++++ received event " + event.toString());
             results.add(event.toString());
             latch.countDown();
           }, ex -> {errors.incrementAndGet(); ex.printStackTrace(); throw new RuntimeException(ex);});
