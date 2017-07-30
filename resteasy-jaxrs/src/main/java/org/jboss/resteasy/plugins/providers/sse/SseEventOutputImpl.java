@@ -28,9 +28,9 @@ import org.jboss.resteasy.util.HttpHeaderNames;
 public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements SseEventSink
 {
    private final MessageBodyWriter<OutboundSseEvent> writer;
-   private Servlet3AsyncHttpRequest request;
-   private HttpServletResponse response;
-   private boolean closed;
+   private final Servlet3AsyncHttpRequest request;
+   private final HttpServletResponse response;
+   private volatile boolean closed;
    private static final byte[] END = "\r\n\r\n".getBytes();
    private final Map<Class<?>, Object> contextDataMap;
    
@@ -64,14 +64,16 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    }
    
    @Override
-   public void close()
+   public synchronized void close()
    {
+      System.out.println("*** sink closing..");
       if (request.getAsyncContext().isSuspended() && request.getAsyncContext().getAsyncResponse() != null) {
          if (request.getAsyncContext().isSuspended()) {
             //resume(null) will call into AbstractAsynchronousResponse.internalResume(Throwable exc)
             //The null is valid reference for Throwable:http://stackoverflow.com/questions/17576922/why-can-i-throw-null-in-java
             //Response header will be set with original one
             request.getAsyncContext().getAsyncResponse().resume(Response.noContent().build());
+            System.out.println("*** sink closed");
          }
       }
       closed = true;
@@ -100,8 +102,9 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    }
    
  
-   protected void writeEvent(OutboundSseEvent event)
+   protected synchronized void writeEvent(OutboundSseEvent event)
    {
+      System.out.println("*** preparing for writing...");
       ResteasyProviderFactory.pushContextDataMap(contextDataMap);
       try {
          if (event != null)
@@ -109,9 +112,11 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             writer.writeTo(event, event.getClass(), null, new Annotation[]{}, event.getMediaType(), null, bout);
             response.getOutputStream().write(bout.toByteArray());
+            System.out.println("*** Writing event " + event.getData());
          }
          response.getOutputStream().write(END);
          response.flushBuffer();
+         System.out.println("*** Written event " + event.getData());
       } catch (Exception e) {
          throw new ProcessingException(e);
       } finally {

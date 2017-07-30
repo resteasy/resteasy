@@ -27,6 +27,7 @@ public class SseResource
    @GET
    @Produces(MediaType.SERVER_SENT_EVENTS)
    public void getMessageQueue(@Context SseEventSink eventSink) {
+      System.out.println("***** getMessageQueue: " + eventSink);
        synchronized (outputLock) {
            if (this.eventSink != null) {
                throw new IllegalStateException("Server sink already served.");
@@ -40,6 +41,7 @@ public class SseResource
        if (eventSink == null) {
            throw new IllegalStateException("No client connected.");
        }
+       System.out.println("***** addMessage: " + message);
        eventSink.send(sse.newEvent(message));
    }
    
@@ -70,6 +72,7 @@ public class SseResource
 
    @DELETE
    public void close() throws IOException {
+      System.out.println("***** close ");
        synchronized (outputLock) {
            if (eventSink != null) {
                eventSink.close();
@@ -100,8 +103,8 @@ public class SseResource
                Thread.sleep(200);
                sink.send(sse.newEvent("domain-progress", "99%"));
                Thread.sleep(200);
-               sink.send(sse.newEvent("domain-progress", "Done."));
-               sink.close();
+               sink.send(sse.newEvent("domain-progress", "Done."))
+                  .thenAccept((Object obj) -> {sink.close();});
             }
             catch (final InterruptedException e)
             {
