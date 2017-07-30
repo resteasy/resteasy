@@ -95,6 +95,7 @@ public class SseTest {
        SseEventSource eventSource = SseEventSource.target(target).build();
        Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
        eventSource.register(event -> {
+          System.out.println("++++ received event " + event.toString());
           results.add(event.readData());
           latch.countDown();
          }, ex -> {errors.incrementAndGet(); ex.printStackTrace(); throw new RuntimeException(ex);});
@@ -106,7 +107,6 @@ public class SseTest {
        Assert.assertTrue("Expect the last event is Done event, but it is :" + results.toArray(new String[]
              {})[5], results.toArray(new String[]
        {})[5].indexOf("Done") > -1);
-       target.request().delete();
        eventSource.close();
        client.close();
     }

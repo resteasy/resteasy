@@ -66,12 +66,14 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    @Override
    public synchronized void close()
    {
+      System.out.println("*** sink closing..");
       if (request.getAsyncContext().isSuspended() && request.getAsyncContext().getAsyncResponse() != null) {
          if (request.getAsyncContext().isSuspended()) {
             //resume(null) will call into AbstractAsynchronousResponse.internalResume(Throwable exc)
             //The null is valid reference for Throwable:http://stackoverflow.com/questions/17576922/why-can-i-throw-null-in-java
             //Response header will be set with original one
             request.getAsyncContext().getAsyncResponse().resume(Response.noContent().build());
+            System.out.println("*** sink closed");
          }
       }
       closed = true;
@@ -102,6 +104,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
  
    protected synchronized void writeEvent(OutboundSseEvent event)
    {
+      System.out.println("*** preparing for writing...");
       ResteasyProviderFactory.pushContextDataMap(contextDataMap);
       try {
          if (event != null)
