@@ -48,6 +48,8 @@ public class SseTest {
     @Test
     public void testAddMessage() throws Exception
     {
+       Thread.sleep(11000);
+       System.out.println("------------------- testAddMessage ----------------");
        final CountDownLatch latch = new CountDownLatch(5);
        final AtomicInteger errors = new AtomicInteger(0);
        final List<String> results = new ArrayList<String>();
@@ -81,6 +83,8 @@ public class SseTest {
     @Test
     public void testSseEvent() throws Exception
     {
+       Thread.sleep(11000);
+       System.out.println("------------------- testSseEvent ----------------");
        final List<String> results = new ArrayList<String>();
        final CountDownLatch latch = new CountDownLatch(6);
        final AtomicInteger errors = new AtomicInteger(0);
@@ -110,6 +114,8 @@ public class SseTest {
     @Test
     public void testBroadcast() throws Exception
     {
+       Thread.sleep(11000);
+       System.out.println("------------------- testBroadcast ----------------");
        final CountDownLatch latch = new CountDownLatch(2);
        Client client = new ResteasyClientBuilder().connectionPoolSize(10).build();
        WebTarget target = client.target(generateURL("/service/server-sent-events/subscribe"));
