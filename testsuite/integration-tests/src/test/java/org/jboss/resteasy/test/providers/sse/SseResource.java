@@ -103,8 +103,8 @@ public class SseResource
                Thread.sleep(200);
                sink.send(sse.newEvent("domain-progress", "99%"));
                Thread.sleep(200);
-               sink.send(sse.newEvent("domain-progress", "Done."));
-               sink.close();
+               sink.send(sse.newEvent("domain-progress", "Done."))
+                  .thenAccept((Object obj) -> {sink.close();});
             }
             catch (final InterruptedException e)
             {
