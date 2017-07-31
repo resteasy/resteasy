@@ -1,7 +1,7 @@
 install:
  - mvn clean
 script:
- - travis_wait 30 mvn -B -fae -Dserver.version=$SERVER_VERSION install
+ - mvn -B -fae -Dserver.version=$SERVER_VERSION install
 
 language: java
 jdk:
@@ -19,3 +19,4 @@ addons:
       - oracle-java8-installer
 before_install:
     - "sudo unzip -j -o  travis-libs/jce_policy-8.zip *.jar -d $JAVA_HOME/jre/lib/security"
+after_failure: "cat /home/travis/jimma/Resteasy/testsuite/integration-tests/target/test-server/wildfly-${SERVER_VERSION}/standalone/log/server.log"      
