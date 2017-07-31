@@ -91,6 +91,7 @@ public class SseResource
             {
                sink.send(sse.newEventBuilder().name("domain-progress")
                      .data(String.class, "starting domain " + id + " ...").build());
+               System.out.println("***SseEvent: sending event1");
                Thread.sleep(1000);
                sink.send(sse.newEvent("domain-progress", "50%"));
                Thread.sleep(1000);
@@ -101,6 +102,7 @@ public class SseResource
                sink.send(sse.newEvent("domain-progress", "99%"));
                Thread.sleep(1000);
                sink.send(sse.newEvent("domain-progress", "Done."));
+               System.out.println("***SseEvent: sending event1 done");
                sink.close();
             }
             catch (final InterruptedException e)
