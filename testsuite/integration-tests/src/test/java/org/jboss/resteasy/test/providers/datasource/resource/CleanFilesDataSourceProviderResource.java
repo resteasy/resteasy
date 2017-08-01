@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.providers.datasource.resource;
 
 import javax.activation.DataSource;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -10,6 +11,13 @@ import java.io.InputStream;
 public class CleanFilesDataSourceProviderResource {
 
     public static String clientResponse = "response_from_client";
+
+    @GET
+    @Path("/tmpdirpath")
+    @Produces("text/plain")
+    public String get() {
+        return System.getProperty("java.io.tmpdir");
+    }
 
     @POST
     @Path("once")
@@ -34,4 +42,12 @@ public class CleanFilesDataSourceProviderResource {
         is2.close();
         return clientResponse;
     }
+
+    @POST
+    @Path("never")
+    @Produces("text/plain")
+    public String postDataSource(DataSource datasource) {
+        return datasource.getContentType();
+    }
+
 }
