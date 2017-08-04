@@ -137,6 +137,18 @@ public class DefaultNumberWriter implements MessageBodyWriter<Number>
             return BigDecimal.class.cast(n).toString().getBytes();
          }
       }
+
+      if (n instanceof BigInteger)
+      {
+         try
+         {
+            return BigInteger.class.cast(n).toString().getBytes(charset);
+         }
+         catch (UnsupportedEncodingException e)
+         {
+            return BigInteger.class.cast(n).toString().getBytes();
+         }
+      }
       
       throw new RuntimeException(Messages.MESSAGES.unexpectedNumberSubclass(n.getClass().getName()));
    }
