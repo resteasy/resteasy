@@ -32,7 +32,7 @@ public class MessageBodyParameterProcessor implements InvocationProcessor
    @Override
    public void process(ClientInvocationBuilder invocation, Object param)
    {
-      invocation.getInvocation().setEntity(Entity.entity(new GenericEntity(param, genericType), mediaType, annotations));
+      invocation.getInvocation().setEntity(Entity.entity(param == null? null : new GenericEntity<Object>(param, genericType), mediaType, annotations));
    }
 
    public void build(ClientRequest request, Object object)
