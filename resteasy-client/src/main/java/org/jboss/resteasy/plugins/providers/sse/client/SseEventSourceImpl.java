@@ -268,7 +268,7 @@ public class SseEventSourceImpl implements SseEventSource
                connectedLatch.countDown();
             }
          }
-         while (state.get() == State.OPEN)
+         while (!Thread.currentThread().isInterrupted() && state.get() == State.OPEN)
          {
             if (eventInput.isClosed())
             {
