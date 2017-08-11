@@ -9,11 +9,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.sse.SseEventSink;
 
+import org.jboss.resteasy.plugins.server.servlet.Cleanable;
+import org.jboss.resteasy.plugins.server.servlet.Cleanables;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 @Provider
 @Priority(Integer.MAX_VALUE)
-public class SseEventSinkInterceptor implements ContainerRequestFilter//, ContainerResponseFilter
+public class SseEventSinkInterceptor implements ContainerRequestFilter
 {
    @Override
    public void filter(ContainerRequestContext requestContext) throws IOException
@@ -21,7 +23,14 @@ public class SseEventSinkInterceptor implements ContainerRequestFilter//, Contai
       if (requestContext.getAcceptableMediaTypes().contains(MediaType.SERVER_SENT_EVENTS_TYPE)) {
          SseEventOutputImpl sink = new SseEventOutputImpl(new SseEventProvider());
          ResteasyProviderFactory.getContextDataMap().put(SseEventSink.class, sink);
+         ResteasyProviderFactory.getContextData(Cleanables.class).addCleanable(new Cleanable()
+         {
+            @Override
+            public void clean() throws Exception
+            {
+               sink.flushResponseToClient();
+            }
+         });
       }
    }
-
 }
