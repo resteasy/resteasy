@@ -33,6 +33,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    private volatile boolean closed;
    private static final byte[] END = "\r\n\r\n".getBytes();
    private final Map<Class<?>, Object> contextDataMap;
+   private boolean responseFlushed = false;
    
    public SseEventOutputImpl(final MessageBodyWriter<OutboundSseEvent> writer)
    {
@@ -50,17 +51,6 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       }
 
       response =  ResteasyProviderFactory.getContextData(HttpServletResponse.class);
-      response.setHeader(HttpHeaderNames.CONTENT_TYPE, MediaType.SERVER_SENT_EVENTS);
-      //set back to client 200 OK to implies the SseEventOutput is ready
-      try
-      {
-         response.getOutputStream().write(END);
-         response.flushBuffer();
-      }
-      catch (IOException e)
-      {
-         throw new ProcessingException(Messages.MESSAGES.failedToCreateSseEventOutput(), e);
-      }
    }
    
    @Override
@@ -77,6 +67,24 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       closed = true;
    }
 
+   protected synchronized void flushResponseToClient()
+   {
+      if (!responseFlushed) {
+         response.setHeader(HttpHeaderNames.CONTENT_TYPE, MediaType.SERVER_SENT_EVENTS);
+         //set back to client 200 OK to implies the SseEventOutput is ready
+         try
+         {
+            response.getOutputStream().write(END);
+            response.flushBuffer();
+            responseFlushed = true;
+         }
+         catch (IOException e)
+         {
+            throw new ProcessingException(Messages.MESSAGES.failedToCreateSseEventOutput(), e);
+         }
+      }
+   }
+   
    @Override
    public boolean isClosed()
    {
@@ -92,6 +100,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    //We need this to make it async enough
    public CompletionStage<?> send(OutboundSseEvent event, BiConsumer<SseEventSink, Throwable> errorConsumer)
    {
+      flushResponseToClient();
       CompletableFuture<Object> future = CompletableFuture
             .supplyAsync(() -> {writeEvent(event); return event;});
       //TODO: log this 
