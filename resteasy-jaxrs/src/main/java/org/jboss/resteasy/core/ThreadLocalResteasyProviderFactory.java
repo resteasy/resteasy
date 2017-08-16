@@ -31,6 +31,7 @@ import org.jboss.resteasy.core.interception.jaxrs.ContainerResponseFilterRegistr
 import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.jaxrs.ReaderInterceptorRegistry;
 import org.jboss.resteasy.core.interception.jaxrs.WriterInterceptorRegistry;
+import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -554,6 +555,12 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public Map<Class<?>, ExceptionMapper> getExceptionMappers()
    {
       return getDelegate().getExceptionMappers();
+   }
+
+   @Override
+   public Map<Class<?>, AsyncResponseProvider> getAsyncResponseProviders()
+   {
+      return getDelegate().getAsyncResponseProviders();
    }
 
    @Override
