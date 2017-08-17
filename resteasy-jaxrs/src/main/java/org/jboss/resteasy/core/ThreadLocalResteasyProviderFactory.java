@@ -558,6 +558,12 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
+   public <T> AsyncResponseProvider<T> getAsyncResponseProvider(Class<T> type)
+   {
+      return getDelegate().getAsyncResponseProvider(type);
+   }
+   
+   @Override
    public Map<Class<?>, AsyncResponseProvider> getAsyncResponseProviders()
    {
       return getDelegate().getAsyncResponseProviders();
