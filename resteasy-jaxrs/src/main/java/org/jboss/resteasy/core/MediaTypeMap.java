@@ -272,7 +272,7 @@ public class MediaTypeMap<T>
       {
          this.clazz = new WeakReference(clazz);
          this.mediaType = mediaType;
-         int result = getClazz().hashCode();
+         int result = clazz.hashCode();
          result = 31 * result + (mediaType.getType() != null ? mediaType.getType().hashCode() : 0) +  (mediaType.getSubtype() != null ? mediaType.getSubtype().hashCode() : 0);
          hash = result;
       }
@@ -291,9 +291,10 @@ public class MediaTypeMap<T>
          CachedMediaTypeAndClass that = (CachedMediaTypeAndClass) o;
 
          // WeakReference may have GC'd
-         if (getClazz() == null || that.getClazz() == null) return false;
+         Class<?> clazz = getClazz();
+         if (clazz == null || that.getClazz() == null) return false;
 
-         if (!getClazz().equals(that.getClazz())) return false;
+         if (!clazz.equals(that.getClazz())) return false;
 
          if (mediaType.getType() != null)
          {
