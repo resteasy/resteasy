@@ -72,7 +72,7 @@ public abstract class ClientResponse extends BuiltResponse
    }
 
 	@Override
-	public Object getEntity() {
+	public synchronized Object getEntity() {
 		abortIfClosed();
 		Object entity = super.getEntity();
 		if (entity != null) {
