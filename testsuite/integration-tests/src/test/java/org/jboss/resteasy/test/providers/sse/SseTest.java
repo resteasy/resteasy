@@ -53,31 +53,34 @@ public class SseTest {
        final List<String> results = new ArrayList<String>();
        Client client = ClientBuilder.newBuilder().build();
        WebTarget target = client.target(generateURL("/service/server-sent-events"));
-
-       SseEventSource eventSource = SseEventSource.target(target).build();
-       Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
-       eventSource.register(event -> {
-            results.add(event.toString());
-            latch.countDown();
-          }, ex -> {errors.incrementAndGet(); ex.printStackTrace(); throw new RuntimeException(ex);});
-       eventSource.open();
-
-       Client messageClient = new ResteasyClientBuilder().connectionPoolSize(10).build();
-       WebTarget messageTarget = messageClient.target(generateURL("/service/server-sent-events"));
-       for (int counter = 0; counter < 5; counter++)
+       SseEventSource msgEventSource = SseEventSource.target(target).build();
+       try (SseEventSource eventSource = msgEventSource)
        {
-          messageTarget.request().post(Entity.text("message " + counter));
-       } 
-       Assert.assertEquals(0, errors.get());
-       Assert.assertTrue("Waiting for event to be delivered has timed out.", latch.await(30, TimeUnit.SECONDS));
-       messageTarget.request().delete();
-       messageClient.close();
-       eventSource.close();
-       client.close();
-       
-       Assert.assertTrue("5 messages are expected, but is : " + results.size(), results.size() == 5);
-    }
-    
+          Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
+          eventSource.register(event -> {
+             results.add(event.toString());
+             latch.countDown();
+          }, ex -> {
+             errors.incrementAndGet();
+             ex.printStackTrace();
+             throw new RuntimeException(ex);
+          });
+          eventSource.open();
+
+          Client messageClient = new ResteasyClientBuilder().connectionPoolSize(10).build();
+          WebTarget messageTarget = messageClient.target(generateURL("/service/server-sent-events"));
+          for (int counter = 0; counter < 5; counter++)
+          {
+             messageTarget.request().post(Entity.text("message " + counter));
+          }
+          Assert.assertEquals(0, errors.get());
+          Assert.assertTrue("Waiting for event to be delivered has timed out.", latch.await(30, TimeUnit.SECONDS));
+          messageTarget.request().delete();
+          messageClient.close();
+        }
+        Assert.assertFalse("SseEventSource is not closed", msgEventSource.isOpen());
+        Assert.assertTrue("5 messages are expected, but is : " + results.size(), results.size() == 5);
+     }
     @Test
     public void testSseEvent() throws Exception
     {
