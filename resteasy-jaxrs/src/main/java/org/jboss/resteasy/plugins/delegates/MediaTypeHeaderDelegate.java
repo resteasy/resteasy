@@ -7,6 +7,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -14,10 +16,26 @@ import java.util.HashMap;
  */
 public class MediaTypeHeaderDelegate implements RuntimeDelegate.HeaderDelegate
 {
+   private static final int MAX_MT_CACHE_SIZE = Integer.getInteger("org.jboss.resteasy.plugins.delegates.max_mediatype_cache_size", 200);
+   private static final Map<String, MediaType> map = MAX_MT_CACHE_SIZE > 0 ? new ConcurrentHashMap<String, MediaType>() : null;
+
    public Object fromString(String type) throws IllegalArgumentException
    {
       if (type == null) throw new IllegalArgumentException(Messages.MESSAGES.mediaTypeValueNull());
-      return parse(type);
+
+      if (map == null) return parse(type);
+      MediaType result = map.get(type);
+      if (result == null)
+      {
+         result = parse(type);
+         final int size = map.size();
+         if (size >= MAX_MT_CACHE_SIZE)
+         {
+            map.clear();
+         }
+         map.put(type, result);
+      }
+      return result;
    }
 
    /*
