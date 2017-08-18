@@ -189,11 +189,11 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase{
         WebTarget base = apacheClient.target(generateURL("/get"));
         Future<Response> future = base.request().async().get();
         Response response = null;
-        try {
-            response = future.get(5, TimeUnit.SECONDS);
-        } catch (TimeoutException ex) {
-            Assert.assertEquals(TimeoutException.class.getName(), ex.toString());
-        }
+//        try {
+//            response = future.get(5, TimeUnit.SECONDS);
+//        } catch (TimeoutException ex) {
+//            Assert.assertEquals(TimeoutException.class.getName(), ex.toString());
+//        }
 
         for (int i = 0; i < multiple; i++) {
             WebTarget baseMultiple = apacheClient.target(generateURL("/getPositive"));
@@ -283,11 +283,11 @@ public class AsyncTimeoutExceptionsTest extends ClientTestBase{
         WebTarget base = apacheClient.target(generateURL("/get"));
         Future<Response> future = base.request().async().get(new ResponseCallback());
         Response response = null;
-        try {
-            response = future.get(5, TimeUnit.SECONDS);
-        } catch (TimeoutException ex) {
-            Assert.assertEquals(TimeoutException.class.getName(), ex.toString());
-        }
+//        try {
+//            response = future.get(5, TimeUnit.SECONDS);
+//        } catch (TimeoutException ex) {
+//            Assert.assertEquals(TimeoutException.class.getName(), ex.toString());
+//        }
 
         for (int i = 0; i < multiple; i++) {
             WebTarget baseMultiple = apacheClient.target(generateURL("/getPositive"));
