@@ -106,4 +106,33 @@ public class ProgammaticTest {
       dispatcher.getRegistry().removeRegistrations(resourceclass);
    }
 
+   /**
+    * Check that MockHttpResponse handles a user set character set.
+    * @throws Exception
+    */
+   @Test
+   public void testCharsetHeader() throws Exception
+   {
+      Method get = ProgrammaticResource.class.getMethod("get", String.class);
+      Method setter = ProgrammaticResource.class.getMethod("setHeaders", HttpHeaders.class);
+      Field uriInfo = ProgrammaticResource.class.getDeclaredField("uriInfo");
+      Field configurable = ProgrammaticResource.class.getDeclaredField("configurable");
+      Constructor<?> constructor = ProgrammaticResource.class.getConstructor(Configurable.class);
+
+      ResourceClass resourceclass = ResourceBuilder.rootResource(ProgrammaticResource.class)
+              .constructor(constructor).param(0).context().buildConstructor()
+              .method(get).get().path("test").produces("text/html;charset=UTF-16").param(0).queryParam("a").buildMethod()
+              .field(uriInfo).context().buildField()
+              .field(configurable).context().buildField()
+              .setter(setter).context().buildSetter()
+              .buildClass();
+      dispatcher.getRegistry().addPerRequestResource(resourceclass);
+
+      MockHttpRequest request = MockHttpRequest.get("/test?a=hello");
+      MockHttpResponse response = new MockHttpResponse();
+      dispatcher.invoke(request, response);
+      Assert.assertEquals(response.getContentAsString(), "hello");
+
+   }
+
 }
