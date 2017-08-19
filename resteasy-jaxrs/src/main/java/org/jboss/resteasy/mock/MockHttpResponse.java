@@ -2,12 +2,15 @@ package org.jboss.resteasy.mock;
 
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.util.CaseInsensitiveMap;
+import org.jboss.resteasy.util.HttpHeaderNames;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +22,7 @@ import java.util.List;
  */
 public class MockHttpResponse implements HttpResponse
 {
+   private static final String CHARSET_PREFIX = "charset=";
    protected int status;
    protected ByteArrayOutputStream baos = new ByteArrayOutputStream();
    protected OutputStream os = baos;
@@ -64,9 +68,36 @@ public class MockHttpResponse implements HttpResponse
       return baos.toByteArray();
    }
 
-   public String getContentAsString()
+   public String getContentAsString() throws UnsupportedEncodingException
    {
-      return new String(baos.toByteArray());
+      String charset = getCharset();
+      return (charset == null ? baos.toString() : baos.toString(charset));
+   }
+
+   private String getCharset()
+   {
+      String characterEncoding = null;
+      MultivaluedMap<String, Object> headers = this.getOutputHeaders();
+      Object obj = headers.getFirst(HttpHeaderNames.CONTENT_TYPE);
+      String value = null;
+      if (obj instanceof MediaType)
+      {
+         value = ((MediaType)obj).toString();
+      }
+      else
+      {
+         value = (String)obj;
+      }
+
+      if (value != null && !value.isEmpty())
+      {
+         int charsetIndex = value.toLowerCase().indexOf(CHARSET_PREFIX);
+         if (charsetIndex != -1)
+         {
+            characterEncoding = value.substring(charsetIndex + CHARSET_PREFIX.length());
+         }
+      }
+      return characterEncoding;
    }
 
    public void addNewCookie(NewCookie cookie)
