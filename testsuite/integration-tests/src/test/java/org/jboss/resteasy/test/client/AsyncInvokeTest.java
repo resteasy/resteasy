@@ -1,8 +1,12 @@
 package org.jboss.resteasy.test.client;
 
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpAsyncClient4Engine;
 import org.jboss.resteasy.test.client.resource.AsyncInvokeResource;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.utils.TestUtil;
@@ -23,7 +27,9 @@ import javax.ws.rs.core.Response;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @tpSubChapter Resteasy-client
@@ -41,6 +47,7 @@ public class AsyncInvokeTest extends ClientTestBase{
     }
 
     static Client client;
+    static Client nioClient;
 
     @Deployment
     public static Archive<?> deploy() {
@@ -53,11 +60,15 @@ public class AsyncInvokeTest extends ClientTestBase{
     @Before
     public void init() {
         client = ClientBuilder.newClient();
+        
+        CloseableHttpAsyncClient asyncClient = HttpAsyncClientBuilder.create().setMaxConnTotal(1).build();
+        nioClient = new ResteasyClientBuilder().httpEngine(new ApacheHttpAsyncClient4Engine(asyncClient, true)).build();
     }
 
     @After
     public void after() throws Exception {
         client.close();
+        nioClient.close();
     }
 
     /**
@@ -69,7 +80,7 @@ public class AsyncInvokeTest extends ClientTestBase{
     @Test
     public void AsyncGetTest() throws Exception {
         {
-            Future<Response> future = client.target(generateURL("/test")).request().async().get();
+            Future<Response> future = nioClient.target(generateURL("/test")).request().async().get();
             Response res = future.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
             String entity = res.readEntity(String.class);
@@ -93,7 +104,7 @@ public class AsyncInvokeTest extends ClientTestBase{
     public void AsyncDeleteTest() throws Exception {
 
         {
-            Future<Response> future = client.target(generateURL("/test")).request().async().delete();
+            Future<Response> future = nioClient.target(generateURL("/test")).request().async().delete();
             Response res = future.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
             String entity = res.readEntity(String.class);
@@ -116,7 +127,7 @@ public class AsyncInvokeTest extends ClientTestBase{
     @Test
     public void AsyncPutTest() throws Exception {
         {
-            Future<Response> future = client.target(generateURL("/test")).request().async().put(Entity.text("hello"));
+            Future<Response> future = nioClient.target(generateURL("/test")).request().async().put(Entity.text("hello"));
             Response res = future.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
             String entity = res.readEntity(String.class);
@@ -139,7 +150,7 @@ public class AsyncInvokeTest extends ClientTestBase{
     @Test
     public void AsyncPostTest() throws Exception {
         {
-            Future<Response> future = client.target(generateURL("/test")).request().async().post(Entity.text("hello"));
+            Future<Response> future = nioClient.target(generateURL("/test")).request().async().post(Entity.text("hello"));
             Response res = future.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
             String entity = res.readEntity(String.class);
@@ -164,7 +175,7 @@ public class AsyncInvokeTest extends ClientTestBase{
     @Test
     public void AsyncCustomMethodTest() throws Exception {
         {
-            Future<Response> future = client.target(generateURL("/test")).request().async().method("PATCH", Entity.text("hello"));
+            Future<Response> future = nioClient.target(generateURL("/test")).request().async().method("PATCH", Entity.text("hello"));
             Response res = future.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
             String entity = res.readEntity(String.class);
@@ -178,8 +189,6 @@ public class AsyncInvokeTest extends ClientTestBase{
         }
     }
 
-    static boolean ok;
-
     /**
      * @tpTestDetails Client sends async GET requests using Asynchronous InvocationCallback. First request expects Response object in return,
      * the second expects String object in return
@@ -189,13 +198,13 @@ public class AsyncInvokeTest extends ClientTestBase{
     @Test
     public void AsyncCallbackGetTest() throws Exception {
         {
-            ok = false;
-            Future<Response> future = client.target(generateURL("/test")).request().async().get(new InvocationCallback<Response>() {
+            final CountDownLatch latch = new CountDownLatch(1);
+            Future<Response> future = nioClient.target(generateURL("/test")).request().async().get(new InvocationCallback<Response>() {
                 @Override
                 public void completed(Response response) {
                     String entity = response.readEntity(String.class);
                     Assert.assertEquals("get", entity);
-                    ok = true;
+                    latch.countDown();
                 }
 
                 @Override
@@ -204,17 +213,17 @@ public class AsyncInvokeTest extends ClientTestBase{
             });
             Response res = future.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
-            Assert.assertTrue("Asynchronous invocation didn't use custom implemented Invocation callback", ok);
+            Assert.assertTrue("Asynchronous invocation didn't use custom implemented Invocation callback", latch.await(5, TimeUnit.SECONDS));
 
         }
 
         {
-            ok = false;
-            Future<String> future = client.target(generateURL("/test")).request().async().get(new InvocationCallback<String>() {
+            final CountDownLatch latch = new CountDownLatch(1);
+            Future<String> future = nioClient.target(generateURL("/test")).request().async().get(new InvocationCallback<String>() {
                 @Override
                 public void completed(String entity) {
                     Assert.assertEquals("get", entity);
-                    ok = true;
+                    latch.countDown();
                 }
 
                 @Override
@@ -223,7 +232,7 @@ public class AsyncInvokeTest extends ClientTestBase{
             });
             String entity = future.get();
             Assert.assertEquals("get", entity);
-            Assert.assertTrue("Asynchronous invocation didn't use custom implemented Invocation callback", ok);
+            Assert.assertTrue("Asynchronous invocation didn't use custom implemented Invocation callback", latch.await(5, TimeUnit.SECONDS));
         }
     }
 
@@ -237,13 +246,13 @@ public class AsyncInvokeTest extends ClientTestBase{
     public void AsyncCallbackDeleteTest() throws Exception {
 
         {
-            ok = false;
-            Future<Response> future = client.target(generateURL("/test")).request().async().delete(new InvocationCallback<Response>() {
+            final CountDownLatch latch = new CountDownLatch(1);
+            Future<Response> future = nioClient.target(generateURL("/test")).request().async().delete(new InvocationCallback<Response>() {
                 @Override
                 public void completed(Response response) {
                     String entity = response.readEntity(String.class);
                     Assert.assertEquals("delete", entity);
-                    ok = true;
+                    latch.countDown();
                 }
 
                 @Override
@@ -252,16 +261,16 @@ public class AsyncInvokeTest extends ClientTestBase{
             });
             Response res = future.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
-            Assert.assertTrue("Asynchronous invocation didn't use custom implemented Invocation callback", ok);
+            Assert.assertTrue("Asynchronous invocation didn't use custom implemented Invocation callback", latch.await(5, TimeUnit.SECONDS));
         }
 
         {
-            ok = false;
-            Future<String> future = client.target(generateURL("/test")).request().async().delete(new InvocationCallback<String>() {
+            final CountDownLatch latch = new CountDownLatch(1);
+            Future<String> future = nioClient.target(generateURL("/test")).request().async().delete(new InvocationCallback<String>() {
                 @Override
                 public void completed(String s) {
                     Assert.assertEquals("delete", s);
-                    ok = true;
+                    latch.countDown();
                 }
 
                 @Override
@@ -270,7 +279,7 @@ public class AsyncInvokeTest extends ClientTestBase{
             });
             String entity = future.get();
             Assert.assertEquals("delete", entity);
-            Assert.assertTrue("Asynchronous invocation didn't use custom implemented Invocation callback", ok);
+            Assert.assertTrue("Asynchronous invocation didn't use custom implemented Invocation callback", latch.await(5, TimeUnit.SECONDS));
         }
     }
 
@@ -284,13 +293,13 @@ public class AsyncInvokeTest extends ClientTestBase{
     @Test
     public void AsyncCallbackPutTest() throws Exception {
         {
-            ok = false;
-            Future<Response> future = client.target(generateURL("/test")).request().async().put(Entity.text("hello"), new InvocationCallback<Response>() {
+            final CountDownLatch latch = new CountDownLatch(1);
+            Future<Response> future = nioClient.target(generateURL("/test")).request().async().put(Entity.text("hello"), new InvocationCallback<Response>() {
                 @Override
                 public void completed(Response response) {
                     String entity = response.readEntity(String.class);
                     Assert.assertEquals("put hello", entity);
-                    ok = true;
+                    latch.countDown();
                 }
 
                 @Override
@@ -299,16 +308,16 @@ public class AsyncInvokeTest extends ClientTestBase{
             });
             Response res = future.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
-            Assert.assertTrue("Asynchronous invocation didn't use custom implemented Invocation callback", ok);
+            Assert.assertTrue("Asynchronous invocation didn't use custom implemented Invocation callback", latch.await(5, TimeUnit.SECONDS));
 
         }
         {
-            ok = false;
-            Future<String> future = client.target(generateURL("/test")).request().async().put(Entity.text("hello"), new InvocationCallback<String>() {
+            final CountDownLatch latch = new CountDownLatch(1);
+            Future<String> future = nioClient.target(generateURL("/test")).request().async().put(Entity.text("hello"), new InvocationCallback<String>() {
                 @Override
                 public void completed(String s) {
                     Assert.assertEquals("put hello", s);
-                    ok = true;
+                    latch.countDown();
                 }
 
                 @Override
@@ -317,7 +326,7 @@ public class AsyncInvokeTest extends ClientTestBase{
             });
             String entity = future.get();
             Assert.assertEquals("put hello", entity);
-            Assert.assertTrue("Asynchronous invocation didn't use custom implemented Invocation callback", ok);
+            Assert.assertTrue("Asynchronous invocation didn't use custom implemented Invocation callback", latch.await(5, TimeUnit.SECONDS));
 
         }
     }
@@ -331,13 +340,13 @@ public class AsyncInvokeTest extends ClientTestBase{
     @Test
     public void AsyncCallbackPostTest() throws Exception {
         {
-            ok = false;
-            Future<Response> future = client.target(generateURL("/test")).request().async().post(Entity.text("hello"), new InvocationCallback<Response>() {
+            final CountDownLatch latch = new CountDownLatch(1);
+            Future<Response> future = nioClient.target(generateURL("/test")).request().async().post(Entity.text("hello"), new InvocationCallback<Response>() {
                 @Override
                 public void completed(Response response) {
                     String entity = response.readEntity(String.class);
                     Assert.assertEquals("post hello", entity);
-                    ok = true;
+                    latch.countDown();
                 }
 
                 @Override
@@ -346,16 +355,16 @@ public class AsyncInvokeTest extends ClientTestBase{
             });
             Response res = future.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
-            Assert.assertTrue("Asynchronous invocation didn't use custom implemented Invocation callback", ok);
+            Assert.assertTrue("Asynchronous invocation didn't use custom implemented Invocation callback", latch.await(5, TimeUnit.SECONDS));
 
         }
         {
-            ok = false;
-            Future<String> future = client.target(generateURL("/test")).request().async().post(Entity.text("hello"), new InvocationCallback<String>() {
+            final CountDownLatch latch = new CountDownLatch(1);
+            Future<String> future = nioClient.target(generateURL("/test")).request().async().post(Entity.text("hello"), new InvocationCallback<String>() {
                 @Override
                 public void completed(String s) {
                     Assert.assertEquals("post hello", s);
-                    ok = true;
+                    latch.countDown();
                 }
 
                 @Override
@@ -364,7 +373,7 @@ public class AsyncInvokeTest extends ClientTestBase{
             });
             String entity = future.get();
             Assert.assertEquals("post hello", entity);
-            Assert.assertTrue("Asynchronous invocation didn't use custom implemented Invocation callback", ok);
+            Assert.assertTrue("Asynchronous invocation didn't use custom implemented Invocation callback", latch.await(5, TimeUnit.SECONDS));
 
         }
     }
@@ -378,13 +387,13 @@ public class AsyncInvokeTest extends ClientTestBase{
     @Test
     public void AsyncCallbackCustomMethodTest() throws Exception {
         {
-            ok = false;
-            Future<Response> future = client.target(generateURL("/test")).request().async().method("PATCH", Entity.text("hello"), new InvocationCallback<Response>() {
+            final CountDownLatch latch = new CountDownLatch(1);
+            Future<Response> future = nioClient.target(generateURL("/test")).request().async().method("PATCH", Entity.text("hello"), new InvocationCallback<Response>() {
                 @Override
                 public void completed(Response response) {
                     String entity = response.readEntity(String.class);
                     Assert.assertEquals("patch hello", entity);
-                    ok = true;
+                    latch.countDown();
                 }
 
                 @Override
@@ -393,16 +402,16 @@ public class AsyncInvokeTest extends ClientTestBase{
             });
             Response res = future.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
-            Assert.assertTrue("Asynchronous invocation didn't use custom implemented Invocation callback", ok);
+            Assert.assertTrue("Asynchronous invocation didn't use custom implemented Invocation callback", latch.await(5, TimeUnit.SECONDS));
 
         }
         {
-            ok = false;
-            Future<String> future = client.target(generateURL("/test")).request().async().method("PATCH", Entity.text("hello"), new InvocationCallback<String>() {
+            final CountDownLatch latch = new CountDownLatch(1);
+            Future<String> future = nioClient.target(generateURL("/test")).request().async().method("PATCH", Entity.text("hello"), new InvocationCallback<String>() {
                 @Override
                 public void completed(String s) {
                     Assert.assertEquals("patch hello", s);
-                    ok = true;
+                    latch.countDown();
                 }
 
                 @Override
@@ -411,9 +420,57 @@ public class AsyncInvokeTest extends ClientTestBase{
             });
             String entity = future.get();
             Assert.assertEquals("patch hello", entity);
-            Assert.assertTrue( "Asynchronous invocation didn't use custom implemented Invocation callback", ok);
+            Assert.assertTrue( "Asynchronous invocation didn't use custom implemented Invocation callback", latch.await(5, TimeUnit.SECONDS));
 
         }
+    }
+    
+    @Test
+    public void AsyncCallbackExceptionHandlingTest() throws Exception {
+       {
+          final CountDownLatch latch = new CountDownLatch(1);
+          Future<Response> future = nioClient.target(generateURL("/test")).request().async().get(new InvocationCallback<Response>()
+          {
+             @Override
+             public void completed(Response response)
+             {
+                String entity = response.readEntity(String.class);
+                Assert.assertEquals("get", entity);
+                latch.countDown();
+                throw new RuntimeException("for the test of it");
+             }
+
+             @Override
+             public void failed(Throwable error)
+             {
+             }
+          });
+          Assert.assertTrue(latch.await(15, TimeUnit.SECONDS));
+          Response res = future.get();
+          Assert.assertEquals(200, res.getStatus()); // must not see the runtimeexception of the callback
+       }
+
+       {
+          final CountDownLatch latch = new CountDownLatch(1);
+          Future<String> future = nioClient.target(generateURL("/test")).request().async().get(new InvocationCallback<String>()
+          {
+             @Override
+             public void completed(String s)
+             {
+                Assert.assertEquals("get", s);
+                latch.countDown();
+                throw new RuntimeException("for the test of it");
+             }
+
+             @Override
+             public void failed(Throwable error)
+             {
+             }
+          });
+          Assert.assertTrue(latch.await(15, TimeUnit.SECONDS));
+          String entity = future.get();
+          Assert.assertEquals("get", entity); // must not see the runtimeexception of the callback
+       }
     }
 
 
@@ -428,7 +485,7 @@ public class AsyncInvokeTest extends ClientTestBase{
     public void SubmitGetTest() throws Exception {
 
         {
-            Future<Response> future = client.target(generateURL("/test")).request().buildGet().submit();
+            Future<Response> future = nioClient.target(generateURL("/test")).request().buildGet().submit();
             Response res = future.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
             String entity = res.readEntity(String.class);
@@ -452,7 +509,7 @@ public class AsyncInvokeTest extends ClientTestBase{
     @Test
     public void SubmitDeleteTest() throws Exception {
         {
-            Future<Response> future = client.target(generateURL("/test")).request().buildDelete().submit();
+            Future<Response> future = nioClient.target(generateURL("/test")).request().buildDelete().submit();
             Response res = future.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
             String entity = res.readEntity(String.class);
@@ -476,7 +533,7 @@ public class AsyncInvokeTest extends ClientTestBase{
     @Test
     public void SubmitPutTest() throws Exception {
         {
-            Future<Response> future = client.target(generateURL("/test")).request().buildPut(Entity.text("hello")).submit();
+            Future<Response> future = nioClient.target(generateURL("/test")).request().buildPut(Entity.text("hello")).submit();
             Response res = future.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
             String entity = res.readEntity(String.class);
@@ -501,7 +558,7 @@ public class AsyncInvokeTest extends ClientTestBase{
     @Test
     public void SubmitPostTest() throws Exception {
         {
-            Future<Response> future = client.target(generateURL("/test")).request().buildPost(Entity.text("hello")).submit();
+            Future<Response> future = nioClient.target(generateURL("/test")).request().buildPost(Entity.text("hello")).submit();
             Response res = future.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
             String entity = res.readEntity(String.class);
@@ -526,7 +583,7 @@ public class AsyncInvokeTest extends ClientTestBase{
     @Test
     public void SubmitCustomMethodTest() throws Exception {
         {
-            Future<Response> future = client.target(generateURL("/test")).request().build("PATCH", Entity.text("hello")).submit();
+            Future<Response> future = nioClient.target(generateURL("/test")).request().build("PATCH", Entity.text("hello")).submit();
             Response res = future.get();
             Assert.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
             String entity = res.readEntity(String.class);
