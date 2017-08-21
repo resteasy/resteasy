@@ -196,6 +196,13 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
     */
    private static class StreamingResponseConsumer<T> implements HttpAsyncResponseConsumer<T>
    {
+      private static final IOException unallowedBlockingReadException = new IOException("blocking reads inside an async io-handler are not allowed") {
+         public synchronized Throwable fillInStackTrace() {
+            //do nothing and return
+            return this;
+        }
+      };
+      
       private ClientConfiguration configuration;
       private Map<String, Object> properties;
       private ResultExtractor<T> extractor;
@@ -258,7 +265,7 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
                sharedStream = new SharedInputStream(new SharedInputBuffer(16 * 1024));
                // one could also set the stream after extracting the response, but this would prevent wrapping the stream
                clientResponse.setConnection(sharedStream);
-               sharedStream.setException(new IOException("blocking reads inside an async io-handler are not allowed"));
+               sharedStream.setException(unallowedBlockingReadException);
                result = extractor.extractResult(clientResponse);
                sharedStream.setException(null);
             }
@@ -476,7 +483,8 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
          private void throwIfError() throws IOException {
             IOException ex = this.ex;
             if (ex != null) {
-               throw ex;
+               //create a new exception here to make it easy figuring out where the offending blocking IO comes from
+               throw new IOException(ex);
             }
          }
 

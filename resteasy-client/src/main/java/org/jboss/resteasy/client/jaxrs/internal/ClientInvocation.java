@@ -80,8 +80,6 @@ public class ClientInvocation implements Invocation
 
    protected boolean chunked;
 
-   private static volatile Boolean NIO_SUPPORTED = null;
-
    // todo need a better solution for this.  Apache Http Client 4 does not let you obtain the OutputStream before executing this request.
    // That is problematic for wrapping the output stream in e.g. a RequestFilter for transparent compressing.
    protected DelegatingOutputStream delegatingOutputStream = new DelegatingOutputStream();
@@ -484,86 +482,44 @@ public class ClientInvocation implements Invocation
    @Override
    public Future<Response> submit()
    {
-      if (!asyncClientInClassPath())
+      return doSubmit(false, null, new AsyncClientHttpEngine.ResultExtractor<Response>()
       {
-         return client.asyncInvocationExecutor().submit(new Callable<Response>()
+         @Override
+         public Response extractResult(ClientResponse response)
          {
-            @Override
-            public Response call() throws Exception
-            {
-               return invoke();
-            }
-         });
-      }
-      else
-      {
-         return doSubmit(false, null, new AsyncClientHttpEngine.ResultExtractor<Response>()
-         {
-            @Override
-            public Response extractResult(ClientResponse response)
-            {
-               return response;
-            }
-         });
-      }
+            return response;
+         }
+      });
    }
 
    @Override
    public <T> Future<T> submit(final Class<T> responseType)
    {
-      if (!asyncClientInClassPath())
+      return doSubmit(false, null, new AsyncClientHttpEngine.ResultExtractor<T>()
       {
-         return client.asyncInvocationExecutor().submit(new Callable<T>()
+         @Override
+         public T extractResult(ClientResponse response)
          {
-            @Override
-            public T call() throws Exception
-            {
-               return invoke(responseType);
-            }
-         });
-      }
-      else
-      {
-         return doSubmit(false, null, new AsyncClientHttpEngine.ResultExtractor<T>()
-         {
-            @Override
-            public T extractResult(ClientResponse response)
-            {
-               if (Response.class.equals(responseType))
-                  return (T) response;
-               return ClientInvocation.extractResult(new GenericType<T>(responseType), response, null);
-            }
-         });
-      }
+            if (Response.class.equals(responseType))
+               return (T) response;
+            return ClientInvocation.extractResult(new GenericType<T>(responseType), response, null);
+         }
+      });
    }
 
    @Override
    public <T> Future<T> submit(final GenericType<T> responseType)
    {
-      if (!asyncClientInClassPath())
+      return doSubmit(false, null, new AsyncClientHttpEngine.ResultExtractor<T>()
       {
-         return client.asyncInvocationExecutor().submit(new Callable<T>()
+         @Override
+         public T extractResult(ClientResponse response)
          {
-            @Override
-            public T call() throws Exception
-            {
-               return invoke(responseType);
-            }
-         });
-      }
-      else
-      {
-         return doSubmit(false, null, new AsyncClientHttpEngine.ResultExtractor<T>()
-         {
-            @Override
-            public T extractResult(ClientResponse response)
-            {
-               if (responseType.getRawType().equals(Response.class))
-                  return (T) response;
-               return ClientInvocation.extractResult(responseType, response, null);
-            }
-         });
-      }
+            if (responseType.getRawType().equals(Response.class))
+               return (T) response;
+            return ClientInvocation.extractResult(responseType, response, null);
+         }
+      });
    }
 
    @SuppressWarnings(
@@ -581,52 +537,16 @@ public class ClientInvocation implements Invocation
       }
 
       final GenericType<T> responseType = genericType;
-      if (!asyncClientInClassPath())
+      return doSubmit(true, callback, new AsyncClientHttpEngine.ResultExtractor<T>()
       {
-
-         return client.asyncInvocationExecutor().submit(new Callable<T>()
+         @Override
+         public T extractResult(ClientResponse response)
          {
-            @Override
-            public T call() throws Exception
-            {
-               T result = null;
-               try
-               {
-                  result = invoke(responseType);
-               }
-               catch (Exception e)
-               {
-                  callback.failed(e);
-                  throw e;
-               }
-               try
-               {
-                  callback.completed(result);
-                  return result;
-               }
-               finally
-               {
-                  if (result != null && result instanceof Response)
-                  {
-                     ((Response) result).close();
-                  }
-               }
-            }
-         });
-      }
-      else
-      {
-         return doSubmit(true, callback, new AsyncClientHttpEngine.ResultExtractor<T>()
-         {
-            @Override
-            public T extractResult(ClientResponse response)
-            {
-               if (responseType.getRawType().equals(Response.class))
-                  return (T) response;
-               return ClientInvocation.extractResult(responseType, response, null);
-            }
-         });
-      }
+            if (responseType.getRawType().equals(Response.class))
+               return (T) response;
+            return ClientInvocation.extractResult(responseType, response, null);
+         }
+      });
    }
 
    @Override
@@ -812,7 +732,7 @@ public class ClientInvocation implements Invocation
          }
          catch (Exception e)
          {
-            //                logger.error("ignoring exception in InvocationCallback", e);
+            //logger.error("ignoring exception in InvocationCallback", e);
          }
       }
    }
@@ -827,7 +747,7 @@ public class ClientInvocation implements Invocation
          }
          catch (Exception e)
          {
-            //                logger.error("ignoring exception in InvocationCallback", e);
+            //logger.error("ignoring exception in InvocationCallback", e);
          }
       }
    }
@@ -876,22 +796,5 @@ public class ClientInvocation implements Invocation
       {
          return get();
       }
-   }
-
-   private boolean asyncClientInClassPath()
-   {
-      if (NIO_SUPPORTED == null)
-      {
-         try
-         {
-            Class.forName("org.apache.http.impl.nio.client.CloseableHttpAsyncClient");
-            NIO_SUPPORTED = true;
-         }
-         catch (ClassNotFoundException e)
-         {
-            NIO_SUPPORTED = false;
-         }
-      }
-      return NIO_SUPPORTED;
    }
 }
