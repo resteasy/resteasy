@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.client;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -71,9 +72,8 @@ public class InputStreamTest extends ClientTestBase{
     @Test
     public void testInputStream() throws Exception {
         InputStream is = client.target(generateURL("/test")).request().get(InputStream.class);
-        byte[] buf = new byte[1024];
-        int read = is.read(buf);
-        String str = new String(buf, 0, read);
+        byte[] buf = IOUtils.toByteArray(is);
+        String str = new String(buf);
         Assert.assertEquals("The returned inputStream doesn't contain expexted text", "hello world", str);
         logger.info("Text from inputstream: " + str);
         is.close();
@@ -88,10 +88,9 @@ public class InputStreamTest extends ClientTestBase{
     @Test
     public void testInputStreamProxy() throws Exception {
         InputStreamInterface proxy = client.target(generateURL("/")).proxy(InputStreamInterface.class);
-        byte[] buf = new byte[1024];
         InputStream is = proxy.get();
-        int read = is.read(buf);
-        String str = new String(buf, 0, read);
+        byte[] buf = IOUtils.toByteArray(is);
+        String str = new String(buf);
         Assert.assertEquals("The returned inputStream doesn't contain expexted text", "hello world", str);
         is.close();
     }
