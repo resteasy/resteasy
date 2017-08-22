@@ -153,6 +153,10 @@ public interface LogMessages extends BasicLogger
    @Message(id = BASE + 185, value = "Skip unkown field [%s]")
    void skipUnkownFiled(String filed);
    
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 186, value = "Failed to set servlet request into asynchronous mode, server sent events may not work")
+   void failedToSetRequestAsync();
+   
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
    //                                                  INFO                                                 //
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
