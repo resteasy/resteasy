@@ -45,6 +45,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
+import org.jboss.resteasy.core.interception.ClientResponseFilterRegistry;
+import org.jboss.resteasy.core.interception.ContainerRequestFilterRegistry;
+import org.jboss.resteasy.core.interception.ContainerResponseFilterRegistry;
+import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.core.interception.ReaderInterceptorRegistry;
+import org.jboss.resteasy.core.interception.WriterInterceptorRegistry;
+import org.jboss.resteasy.spi.AsyncResponseProvider;
+import org.jboss.resteasy.spi.ConstructorInjector;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.InjectorFactory;
+import org.jboss.resteasy.spi.ProviderFactoryDelegate;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.StringConverter;
+import org.jboss.resteasy.spi.StringParameterUnmarshaller;
+import org.jboss.resteasy.util.ThreadLocalStack;
 
 /**
  * Allow applications to push/pop provider factories onto the stack
@@ -625,6 +641,18 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public Map<Class<?>, ExceptionMapper> getExceptionMappers()
    {
       return getDelegate().getExceptionMappers();
+   }
+
+   @Override
+   public <T> AsyncResponseProvider<T> getAsyncResponseProvider(Class<T> type)
+   {
+      return getDelegate().getAsyncResponseProvider(type);
+   }
+   
+   @Override
+   public Map<Class<?>, AsyncResponseProvider> getAsyncResponseProviders()
+   {
+      return getDelegate().getAsyncResponseProviders();
    }
 
    @Override

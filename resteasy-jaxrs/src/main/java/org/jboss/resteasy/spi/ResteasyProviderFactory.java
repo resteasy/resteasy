@@ -184,6 +184,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected MediaTypeMap<SortedKey<MessageBodyWriter>> clientMessageBodyWriters;
    protected Map<Class<?>, ExceptionMapper> exceptionMappers;
    protected Map<Class<?>, ClientExceptionMapper> clientExceptionMappers;
+   protected Map<Class<?>, AsyncResponseProvider> asyncResponseProviders;
    protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> contextResolvers;
    protected Map<Class<?>, StringConverter> stringConverters;
    protected List<ParamConverterProvider> paramConverterProviders;
@@ -288,6 +289,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       clientMessageBodyWriters = new MediaTypeMap<SortedKey<MessageBodyWriter>>();
       exceptionMappers = new ConcurrentHashMap<Class<?>, ExceptionMapper>();
       clientExceptionMappers = new ConcurrentHashMap<Class<?>, ClientExceptionMapper>();
+      asyncResponseProviders = new ConcurrentHashMap<Class<?>, AsyncResponseProvider>();
       contextResolvers = new ConcurrentHashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
       paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>();
       stringConverters = new ConcurrentHashMap<Class<?>, StringConverter>();
@@ -375,6 +377,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (clientExceptionMappers == null && parent != null) return parent.getClientExceptionMappers();
       return clientExceptionMappers;
+   }
+
+   public Map<Class<?>, AsyncResponseProvider> getAsyncResponseProviders()
+   {
+      if (asyncResponseProviders == null && parent != null) return parent.getAsyncResponseProviders();
+      return asyncResponseProviders;
    }
 
    protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> getContextResolvers()
@@ -1096,7 +1104,6 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       exceptionMappers.put(exceptionClass, provider);
    }
 
-
    public void addClientExceptionMapper(Class<? extends ClientExceptionMapper<?>> providerClass)
    {
       ClientExceptionMapper<?> provider = createProviderInstance(providerClass);
@@ -1155,6 +1162,36 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    {
       if (clientErrorInterceptors == null && parent != null) return parent.getClientErrorInterceptors();
       return clientErrorInterceptors;
+   }
+
+   protected void addAsyncResponseProvider(Class<? extends AsyncResponseProvider> providerClass)
+   {
+       AsyncResponseProvider provider = createProviderInstance(providerClass);
+       addAsyncResponseProvider(provider, providerClass);
+   }
+
+   protected void addAsyncResponseProvider(AsyncResponseProvider provider)
+   {
+       addAsyncResponseProvider(provider, provider.getClass());
+   }
+
+   protected void addAsyncResponseProvider(AsyncResponseProvider provider, Class providerClass)
+   {
+      Type asyncType = Types.getActualTypeArgumentsOfAnInterface(providerClass, AsyncResponseProvider.class)[0];
+      addAsyncResponseProvider(provider, asyncType);
+   }
+
+   protected void addAsyncResponseProvider(AsyncResponseProvider provider, Type asyncType)
+   {
+      injectProperties(provider.getClass(), provider);
+
+      Class<?> asyncClass = Types.getRawType(asyncType);
+      if (asyncResponseProviders == null)
+      {
+          asyncResponseProviders = new ConcurrentHashMap<Class<?>, AsyncResponseProvider>();
+          asyncResponseProviders.putAll(parent.getAsyncResponseProviders());
+      }
+      asyncResponseProviders.put(asyncClass, provider);
    }
 
    protected void addContextResolver(Class<? extends ContextResolver> resolver, boolean builtin)
@@ -1517,6 +1554,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             throw new RuntimeException(Messages.MESSAGES.unableToInstantiateExceptionMapper(), e);
          }
       }
+
       if (isA(provider, ClientExceptionMapper.class, contracts))
       {
          try
@@ -1527,6 +1565,18 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          catch (Exception e)
          {
             throw new RuntimeException(Messages.MESSAGES.unableToInstantiateClientExceptionMapper(), e);
+         }
+      }
+      if (isA(provider, AsyncResponseProvider.class, contracts))
+      {
+         try
+         {
+            addAsyncResponseProvider(provider);
+            newContracts.put(AsyncResponseProvider.class, getPriority(priorityOverride, contracts, AsyncResponseProvider.class, provider));
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateAsyncResponseProvider(), e);
          }
       }
       if (isA(provider, ClientRequestFilter.class, contracts))
@@ -1897,6 +1947,19 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             throw new RuntimeException(Messages.MESSAGES.unableToInstantiateExceptionMapper(), e);
          }
       }
+      if (isA(provider, AsyncResponseProvider.class, contracts))
+      {
+         try
+         {
+            addAsyncResponseProvider((AsyncResponseProvider) provider);
+            int priority = getPriority(priorityOverride, contracts, AsyncResponseProvider.class, provider.getClass());
+            newContracts.put(AsyncResponseProvider.class, priority);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateAsyncResponseProvider(), e);
+         }
+      }
       if (isA(provider, ContextResolver.class, contracts))
       {
          try
@@ -2175,6 +2238,20 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public <T extends Throwable> ClientExceptionMapper<T> getClientExceptionMapper(Class<T> type)
    {
       return getClientExceptionMappers().get(type);
+   }
+
+//   @Override
+   public <T> AsyncResponseProvider<T> getAsyncResponseProvider(Class<T> type)
+   {
+      Class asyncType = type;
+      AsyncResponseProvider<T> mapper = null;
+      while (mapper == null)
+      {
+         if (asyncType == null) break;
+         mapper = getAsyncResponseProviders().get(asyncType);
+         if (mapper == null) asyncType = asyncType.getSuperclass();
+      }
+      return mapper;
    }
 
    public MediaType getConcreteMediaTypeFromMessageBodyWriters(Class type, Type genericType, Annotation[] annotations, MediaType mediaType)

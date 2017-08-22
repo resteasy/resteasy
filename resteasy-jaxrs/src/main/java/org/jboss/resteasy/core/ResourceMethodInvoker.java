@@ -7,7 +7,7 @@ import org.jboss.resteasy.core.registry.SegmentNode;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
-import org.jboss.resteasy.spi.Failure;
+import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
@@ -329,7 +329,10 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       
       CompletionStageResponseConsumer completionStageResponseConsumer = null;
-      if (CompletionStage.class.isAssignableFrom(method.getReturnType()))
+      @SuppressWarnings("rawtypes")
+      AsyncResponseProvider asyncResponseProvider = resourceMethodProviderFactory.getAsyncResponseProvider(method.getReturnType());
+      
+      if (asyncResponseProvider != null)
       {
          completionStageResponseConsumer = new CompletionStageResponseConsumer(this);
       }
@@ -364,9 +367,10 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
       }
 
-      if (rtn instanceof CompletionStage)
+      if (completionStageResponseConsumer != null)
       {
-         CompletionStage<?> stage = (CompletionStage<?>) rtn;
+         @SuppressWarnings("unchecked")
+         CompletionStage<?> stage = asyncResponseProvider.toCompletionStage(rtn);
          stage.whenComplete(completionStageResponseConsumer);
          return null;
       }
