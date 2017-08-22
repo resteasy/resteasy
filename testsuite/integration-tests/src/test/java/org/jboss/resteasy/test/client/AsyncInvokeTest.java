@@ -61,8 +61,7 @@ public class AsyncInvokeTest extends ClientTestBase{
     public void init() {
         client = ClientBuilder.newClient();
         
-        CloseableHttpAsyncClient asyncClient = HttpAsyncClientBuilder.create().setMaxConnTotal(1).build();
-        nioClient = new ResteasyClientBuilder().httpEngine(new ApacheHttpAsyncClient4Engine(asyncClient, true)).build();
+        nioClient = new ResteasyClientBuilder().useAsyncHttpEngine().build();
     }
 
     @After
