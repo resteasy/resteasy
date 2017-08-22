@@ -108,13 +108,13 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
    @Override
    public SSLContext getSslContext()
    {
-      return null; // not supported
+      throw new UnsupportedOperationException();
    }
 
    @Override
    public HostnameVerifier getHostnameVerifier()
    {
-      return null; // not supported
+      throw new UnsupportedOperationException();
    }
 
    @Override
