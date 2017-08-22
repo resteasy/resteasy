@@ -20,6 +20,7 @@ import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.SseEventSink;
 
 import org.jboss.resteasy.plugins.server.servlet.Servlet3AsyncHttpRequest;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.HttpHeaderNames;
@@ -47,7 +48,14 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       request = (Servlet3AsyncHttpRequest)req;
 
       if (!request.getAsyncContext().isSuspended()) {
-         request.getAsyncContext().suspend();
+         try
+         {
+            request.getAsyncContext().suspend();
+         }
+         catch (IllegalStateException ex)
+         {
+            LogMessages.LOGGER.failedToSetRequestAsync();
+         }
       }
 
       response =  ResteasyProviderFactory.getContextData(HttpServletResponse.class);
