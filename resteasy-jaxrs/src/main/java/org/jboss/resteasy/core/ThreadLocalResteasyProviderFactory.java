@@ -2,6 +2,7 @@ package org.jboss.resteasy.core;
 
 import org.jboss.resteasy.client.core.ClientErrorInterceptor;
 import org.jboss.resteasy.client.exception.mapper.ClientExceptionMapper;
+import org.jboss.resteasy.core.interception.jaxrs.ClientRequestFilterRegistry;
 import org.jboss.resteasy.core.interception.ClientResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.ContainerRequestFilterRegistry;
 import org.jboss.resteasy.core.interception.ContainerResponseFilterRegistry;
@@ -586,6 +587,18 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
       return getDelegate().toString(object, clazz, genericType, annotations);
    }
 
+   @Override
+   public ClientRequestFilterRegistry getClientRequestFilterRegistry()
+   {
+      return getDelegate().getClientRequestFilterRegistry();
+   }
+
+   /**
+    * This method retailed for backward compatibility for jaxrs-legacy code.
+    * Method, getClientRequestFilterRegistry, replaces it.
+    * @return
+    */
+   @Deprecated
    @Override
    public JaxrsInterceptorRegistry<ClientRequestFilter> getClientRequestFilters()
    {
