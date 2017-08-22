@@ -732,4 +732,7 @@ public interface Messages
    String failedToReadData();
    @Message(id = BASE + 1089, value = "Failed to create SseEventOutput")
    String failedToCreateSseEventOutput();
+
+   @Message(id = BASE + 1090, value = "Unable to instantiate AsyncResponseProvider")
+   String unableToInstantiateAsyncResponseProvider();
 }
