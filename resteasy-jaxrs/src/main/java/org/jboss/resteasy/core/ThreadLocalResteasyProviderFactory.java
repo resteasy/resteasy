@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.jboss.resteasy.core.interception.jaxrs.ClientRequestFilterRegistry;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
 
 import javax.ws.rs.RuntimeType;
@@ -500,6 +502,18 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
       return getDelegate().toString(object, clazz, genericType, annotations);
    }
 
+   @Override
+   public ClientRequestFilterRegistry getClientRequestFilterRegistry()
+   {
+      return getDelegate().getClientRequestFilterRegistry();
+   }
+
+   /**
+    * This method retailed for backward compatibility for jaxrs-legacy code.
+    * Method, getClientRequestFilterRegistry, replaces it.
+    * @return
+    */
+   @Deprecated
    @Override
    public JaxrsInterceptorRegistry<ClientRequestFilter> getClientRequestFilters()
    {

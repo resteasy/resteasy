@@ -152,7 +152,11 @@ public interface LogMessages extends BasicLogger
    @LogMessage(level = Level.WARN)
    @Message(id = BASE + 185, value = "Skip unkown field [%s]")
    void skipUnkownFiled(String filed);
-   
+
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 190, value = "Annotation, @PreMaching, not valid on ClientRequestFilter implementation, [%s].  Annotation is being ignored.")
+   void warningPreMatchingSupport(String clazzname);
+
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
    //                                                  INFO                                                 //
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
