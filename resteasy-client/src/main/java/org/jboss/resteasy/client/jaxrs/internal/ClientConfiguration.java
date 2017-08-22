@@ -107,7 +107,7 @@ public class ClientConfiguration implements Configuration, Configurable<ClientCo
 
    public ClientRequestFilter[] getRequestFilters(Class declaring, AccessibleObject target)
    {
-      return providerFactory.getClientRequestFilters().postMatch(declaring, target);
+      return providerFactory.getClientRequestFilterRegistry().postMatch(declaring, target);
    }
 
    public ClientResponseFilter[] getResponseFilters(Class declaring, AccessibleObject target)

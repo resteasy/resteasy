@@ -2,6 +2,7 @@ package org.jboss.resteasy.spi;
 
 import org.jboss.resteasy.core.InjectorFactoryImpl;
 import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.core.interception.jaxrs.ClientRequestFilterRegistry;
 import org.jboss.resteasy.core.interception.jaxrs.ClientResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.jaxrs.ContainerRequestFilterRegistry;
 import org.jboss.resteasy.core.interception.jaxrs.ContainerResponseFilterRegistry;
@@ -182,6 +183,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected ContainerRequestFilterRegistry containerRequestFilterRegistry;
    protected ContainerResponseFilterRegistry containerResponseFilterRegistry;
 
+   protected ClientRequestFilterRegistry clientRequestFilterRegistry;
+
+   @Deprecated    // variable is maintained for jaxrs-leagcy code support only
    protected JaxrsInterceptorRegistry<ClientRequestFilter> clientRequestFilters;
    protected ClientResponseFilterRegistry clientResponseFilters;
    protected ReaderInterceptorRegistry clientReaderInterceptorRegistry;
@@ -301,6 +305,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       containerRequestFilterRegistry = new ContainerRequestFilterRegistry(this);
       containerResponseFilterRegistry = new ContainerResponseFilterRegistry(this);
 
+      clientRequestFilterRegistry = new ClientRequestFilterRegistry(this);
       clientRequestFilters = new JaxrsInterceptorRegistry<ClientRequestFilter>(this, ClientRequestFilter.class);
       clientResponseFilters = new ClientResponseFilterRegistry(this);
       clientReaderInterceptorRegistry = new ReaderInterceptorRegistry(this);
@@ -692,6 +697,18 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return clientWriterInterceptorRegistry;
    }
 
+   public ClientRequestFilterRegistry getClientRequestFilterRegistry()
+   {
+      if (clientRequestFilterRegistry == null && parent != null) return parent.getClientRequestFilterRegistry();
+      return clientRequestFilterRegistry;
+   }
+
+   /**
+    * This method retained for jaxrs-legacy code.  This method is deprecated and is replace
+    * by method, getClientRequestFilterRegistry().
+    * @return
+    */
+   @Deprecated
    public JaxrsInterceptorRegistry<ClientRequestFilter> getClientRequestFilters()
    {
       if (clientRequestFilters == null && parent != null) return parent.getClientRequestFilters();
@@ -1466,13 +1483,22 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       if (isA(provider, ClientRequestFilter.class, contracts))
       {
-         if (clientRequestFilters == null)
+         if (clientRequestFilterRegistry == null)
          {
-            clientRequestFilters = parent.getClientRequestFilters().clone(this);
+            clientRequestFilterRegistry = parent.getClientRequestFilterRegistry().clone(this);
          }
          int priority = getPriority(priorityOverride, contracts, ClientRequestFilter.class, provider);
-         clientRequestFilters.registerClass(provider, priority);
+         clientRequestFilterRegistry.registerClass(provider, priority);
          newContracts.put(ClientRequestFilter.class, priority);
+
+         { // code maintained for backward compatibility for jaxrs-legacy code
+            if (clientRequestFilters == null)
+            {
+               clientRequestFilters = parent.getClientRequestFilters().clone(this);
+            }
+            clientRequestFilters.registerClass(provider, priority);
+         }
+
       }
       if (isA(provider, ClientResponseFilter.class, contracts))
       {
@@ -1777,13 +1803,21 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       if (isA(provider, ClientRequestFilter.class, contracts))
       {
-         if (clientRequestFilters == null)
+         if (clientRequestFilterRegistry == null)
          {
-            clientRequestFilters = parent.getClientRequestFilters().clone(this);
+            clientRequestFilterRegistry = parent.getClientRequestFilterRegistry().clone(this);
          }
          int priority = getPriority(priorityOverride, contracts, ClientRequestFilter.class, provider.getClass());
-         clientRequestFilters.registerSingleton((ClientRequestFilter) provider, priority);
+         clientRequestFilterRegistry.registerSingleton((ClientRequestFilter) provider, priority);
          newContracts.put(ClientRequestFilter.class, priority);
+
+         { // code maintained for backward compatibility for jaxrs-legacy code
+            if (clientRequestFilters == null)
+            {
+               clientRequestFilters = parent.getClientRequestFilters().clone(this);
+            }
+            clientRequestFilters.registerSingleton((ClientRequestFilter) provider, priority);
+         }
       }
       if (isA(provider, ClientResponseFilter.class, contracts))
       {

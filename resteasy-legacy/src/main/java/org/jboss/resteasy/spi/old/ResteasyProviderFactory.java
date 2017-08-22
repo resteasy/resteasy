@@ -27,6 +27,7 @@ import org.jboss.resteasy.core.interception.ContainerResponseFilterRegistry;
 import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.ReaderInterceptorRegistry;
 import org.jboss.resteasy.core.interception.WriterInterceptorRegistry;
+import org.jboss.resteasy.core.interception.jaxrs.ClientRequestFilterRegistry;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.interception.ClientExecutionInterceptor;
 import org.jboss.resteasy.spi.interception.MessageBodyReaderInterceptor;
@@ -93,6 +94,7 @@ public class ResteasyProviderFactory extends org.jboss.resteasy.spi.ResteasyProv
       containerRequestFilterRegistry = new ContainerRequestFilterRegistry(this, precedence);
       containerResponseFilterRegistry = new ContainerResponseFilterRegistry(this, precedence);
 
+      clientRequestFilterRegistry = new ClientRequestFilterRegistry(this);
       clientRequestFilters = new JaxrsInterceptorRegistry<ClientRequestFilter>(this, ClientRequestFilter.class);
       clientResponseFilters = new ClientResponseFilterRegistry(this);
       clientReaderInterceptorRegistry = new ReaderInterceptorRegistry(this, precedence);
