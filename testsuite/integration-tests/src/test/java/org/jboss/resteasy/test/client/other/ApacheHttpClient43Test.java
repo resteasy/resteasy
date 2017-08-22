@@ -8,6 +8,8 @@ import javax.ws.rs.core.Response;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -16,6 +18,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpAsyncClient4Engine;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.client.jaxrs.engines.URLConnectionEngine;
 import org.jboss.resteasy.test.client.other.resource.ApacheHttpClient4Resource;
@@ -41,8 +44,9 @@ public class ApacheHttpClient43Test {
 
     protected static final Logger logger = LogManager.getLogger(ApacheHttpClient43Test.class.getName());
 
-    private Class engine1 = ApacheHttpClient43Engine.class;
-    private Class engine2 = URLConnectionEngine.class;
+    private Class<?> engine1 = ApacheHttpClient43Engine.class;
+    private Class<?> engine2 = URLConnectionEngine.class;
+    private Class<?> engine3 = ApacheHttpAsyncClient4Engine.class;
 
     private AtomicLong counter = new AtomicLong();
 
@@ -61,9 +65,10 @@ public class ApacheHttpClient43Test {
     public void testConnectionCleanupGCBase() throws Exception {
         testConnectionCleanupGC(engine1);
         testConnectionCleanupGC(engine2);
+        testConnectionCleanupGC(engine3);
     }
 
-    public void testConnectionCleanupGC(Class engine) throws Exception {
+    protected void testConnectionCleanupGC(Class<?> engine) throws Exception {
         final Client client = createEngine(engine);
         counter.set(0);
 
@@ -99,9 +104,10 @@ public class ApacheHttpClient43Test {
     public void testConnectionCleanupAuto() throws Exception {
         testConnectionCleanupAuto(engine1);
         testConnectionCleanupAuto(engine2);
+        testConnectionCleanupAuto(engine3);
     }
 
-    public void testConnectionCleanupAuto(Class engine) throws Exception {
+    protected void testConnectionCleanupAuto(Class<?> engine) throws Exception {
         final Client client = createEngine(engine);
         counter.set(0);
 
@@ -136,9 +142,10 @@ public class ApacheHttpClient43Test {
     public void testConnectionCleanupProxy() throws Exception {
         testConnectionCleanupProxy(engine1);
         testConnectionCleanupProxy(engine2);
+        testConnectionCleanupProxy(engine3);
     }
 
-    public void testConnectionCleanupProxy(Class engine) throws Exception {
+    protected void testConnectionCleanupProxy(Class<?> engine) throws Exception {
         final ResteasyClient client = createEngine(engine);
         final ApacheHttpClient4Resource proxy = client.target(PortProviderUtil.generateBaseUrl(ApacheHttpClient43Test.class.getSimpleName())).proxy(ApacheHttpClient4Resource.class);
         counter.set(0);
@@ -177,12 +184,13 @@ public class ApacheHttpClient43Test {
     public void testConnectionCleanupErrorGC() throws Exception {
         testConnectionCleanupErrorGC(engine1);
         testConnectionCleanupErrorGC(engine2);
+        testConnectionCleanupErrorGC(engine3);
     }
 
     /**
      * This is regression test for RESTEASY-1273
      */
-    public void testConnectionCleanupErrorGC(Class engine) throws Exception {
+    protected void testConnectionCleanupErrorGC(Class<?> engine) throws Exception {
         final ResteasyClient client = createEngine(engine);
         final ApacheHttpClient4Resource proxy = client.target(PortProviderUtil.generateBaseUrl(ApacheHttpClient43Test.class.getSimpleName())).proxy(ApacheHttpClient4Resource.class);
         counter.set(0);
@@ -220,12 +228,13 @@ public class ApacheHttpClient43Test {
     public void testConnectionCleanupErrorNoGC() throws Exception {
         testConnectionCleanupErrorNoGC(engine1);
         testConnectionCleanupErrorNoGC(engine2);
+        testConnectionCleanupErrorNoGC(engine3);
     }
 
     /**
      * This is regression test for RESTEASY-1273
      */
-    public void testConnectionCleanupErrorNoGC(Class engine) throws Exception {
+    protected void testConnectionCleanupErrorNoGC(Class<?> engine) throws Exception {
         final ResteasyClient client = createEngine(engine);
         final ApacheHttpClient4Resource proxy = client.target(PortProviderUtil.generateBaseUrl(ApacheHttpClient43Test.class.getSimpleName())).proxy(ApacheHttpClient4Resource.class);
         counter.set(0);
@@ -268,9 +277,10 @@ public class ApacheHttpClient43Test {
     public void testConnectionWithRequestBody() throws InterruptedException {
         testConnectionWithRequestBody(engine1);
         testConnectionWithRequestBody(engine2);
+        testConnectionWithRequestBody(engine3);
     }
 
-    public void testConnectionWithRequestBody(Class engine) throws InterruptedException {
+    protected void testConnectionWithRequestBody(Class<?> engine) throws InterruptedException {
         final ResteasyClient client = createEngine(engine);
         final ApacheHttpClient4Resource proxy = client.target(PortProviderUtil.generateBaseUrl(ApacheHttpClient43Test.class.getSimpleName())).proxy(ApacheHttpClient4Resource.class);
         counter.set(0);
@@ -309,8 +319,7 @@ public class ApacheHttpClient43Test {
         }
     }
 
-    @SuppressWarnings(value = "unchecked")
-    private ResteasyClient createEngine(Class engine) {
+    private ResteasyClient createEngine(Class<?> engine) {
         RequestConfig reqConfig = RequestConfig.custom()   // apache HttpClient specific
                 .setConnectTimeout(5000)
                 .setSocketTimeout(5000)
@@ -325,8 +334,14 @@ public class ApacheHttpClient43Test {
 
         if (engine.isAssignableFrom(ApacheHttpClient43Engine.class)) {
             executor = new ApacheHttpClient43Engine(httpClient);
-        } else {
+        } else if (engine.isAssignableFrom(ApacheHttpAsyncClient4Engine.class)) {
+            CloseableHttpAsyncClient client = HttpAsyncClientBuilder.create().setMaxConnTotal(3).build();
+            executor = new ApacheHttpAsyncClient4Engine(client, true);
+        } else if (engine.isAssignableFrom(URLConnectionEngine.class)) {
             executor = new URLConnectionEngine();
+        } else {
+           Assert.fail("unknown engine");
+           executor = null;
         }
 
 
