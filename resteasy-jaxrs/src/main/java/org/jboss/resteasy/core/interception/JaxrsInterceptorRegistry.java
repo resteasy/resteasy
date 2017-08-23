@@ -1,5 +1,6 @@
 package org.jboss.resteasy.core.interception;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.interception.AcceptedByMethod;
@@ -14,10 +15,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -27,6 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @SuppressWarnings("unchecked")
 public class JaxrsInterceptorRegistry<T>
 {
+   private static Logger logger = Logger.getLogger(JaxrsInterceptorRegistry.class);
    public static class Match
    {
       public Match(Object interceptor, int order)
@@ -431,7 +430,9 @@ public class JaxrsInterceptorRegistry<T>
    {
       sort(matches);
       T[] array = (T[]) Array.newInstance(intf, matches.size());
-      for (int i = 0; i < array.length; i++)
+      logger.info("createArray: The size of matches is : " + matches.size());
+      logger.info("createArray: The array length is : " + array.length);
+      for (int i = 0; i < matches.size(); i++)
       {
          array[i] = (T) matches.get(i).interceptor;
       }
