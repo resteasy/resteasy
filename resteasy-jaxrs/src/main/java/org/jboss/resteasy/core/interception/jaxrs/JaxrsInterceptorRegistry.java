@@ -336,13 +336,22 @@ public class JaxrsInterceptorRegistry<T>
 
    private T[] createArray(List<Match> matches)
    {
-      sort(matches);
-      T[] array = (T[]) Array.newInstance(intf, matches.size());
-      for (int i = 0; i < array.length; i++)
+      // This bit of defensive programming is to help avoid possible JDK bugs ,like the one
+      // reported on JBEAP-12701, when initialising an array with a zero-size list
+      if (matches.size() > 0)
       {
-         array[i] = (T) matches.get(i).interceptor;
+         sort(matches);
+         T[] array = (T[]) Array.newInstance(intf, matches.size());
+         for (int i = 0; i < array.length; i++)
+         {
+            array[i] = (T) matches.get(i).interceptor;
+         }
+         return array;
       }
-      return array;
+      else
+      {
+         return (T[]) Array.newInstance(intf, 0);
+      }
    }
 
    protected void sort(List<Match> matches)
