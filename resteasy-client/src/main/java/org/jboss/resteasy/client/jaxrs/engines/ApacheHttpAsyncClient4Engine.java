@@ -50,6 +50,7 @@ import org.apache.http.nio.util.SimpleInputBuffer;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.jboss.resteasy.client.jaxrs.AsyncClientHttpEngine;
+import org.jboss.resteasy.client.jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
@@ -592,6 +593,10 @@ public class ApacheHttpAsyncClient4Engine implements AsyncClientHttpEngine, Clos
          try
          {
             invocationCallback.completed(response);
+         }
+         catch (Throwable t)
+         {
+            LogMessages.LOGGER.exceptionIgnored(t);
          }
          finally
          {
