@@ -123,7 +123,7 @@ public class SseTest {
           latch.countDown();
        });
        eventSource.open();
-       eventSource.register(insse -> {Assert.assertTrue("", textMessage.equals(insse.readData()));});
+       eventSource.register(insse -> {Assert.assertTrue("Unexpected sever sent event data", textMessage.equals(insse.readData()));});
             
        Client client2 = new ResteasyClientBuilder().build();
        WebTarget target2 = client2.target(generateURL("/service/sse/subscribe"));
@@ -135,13 +135,16 @@ public class SseTest {
        eventSource2.open();
        
        //Test for eventSource subscriber
-       eventSource2.register(insse -> {Assert.assertTrue("", textMessage.equals(insse.readData()));});
+       eventSource2.register(insse -> {Assert.assertTrue("Unexpected sever sent event data", textMessage.equals(insse.readData()));});
        client.target(generateURL("/service/server-sent-events/broadcast")).request().post(Entity.entity(textMessage, MediaType.SERVER_SENT_EVENTS)); 
        Assert.assertTrue("Waiting for broadcast event to be delivered has timed out.", latch.await(20, TimeUnit.SECONDS));
+       
+       Client closeClient = new ResteasyClientBuilder().build();
+       WebTarget closeTarget = closeClient.target(generateURL("/service/sse"));
+       Assert.assertTrue("Subscribed eventsink is not closed", closeTarget.request().delete().readEntity(Boolean.class));
+       
        eventSource.close();
        eventSource2.close();
-       client.close();
-       client2.close();
     }
 
 //    @Test
