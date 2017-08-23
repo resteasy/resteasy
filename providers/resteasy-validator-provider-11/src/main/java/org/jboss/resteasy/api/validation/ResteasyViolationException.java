@@ -87,7 +87,7 @@ public class ResteasyViolationException extends ConstraintViolationException
    public ResteasyViolationException(SimpleViolationsContainer container)
    {
       this(container.getViolations());
-      exception = container.getException();
+      setException(container.getException());
    }
    
    /**
@@ -100,14 +100,14 @@ public class ResteasyViolationException extends ConstraintViolationException
    public ResteasyViolationException(SimpleViolationsContainer container, List<MediaType> accept)
    {
       this(container.getViolations(), accept);
-      exception = container.getException();
+      setException(container.getException());
    }
    
    public ResteasyViolationException(ViolationsContainer<?> container)
    {
       super(null);
       convertToStrings(container);
-      exception = container.getException();
+      setException(container.getException());
       accept = new ArrayList<CloneableMediaType>();
       accept.add(CloneableMediaType.TEXT_PLAIN_TYPE);
    }
@@ -116,7 +116,7 @@ public class ResteasyViolationException extends ConstraintViolationException
    {
       super(null);
       convertToStrings(container);
-      exception = container.getException();
+      setException(container.getException());
       this.accept = toCloneableMediaTypeList(accept);
    }
    
@@ -143,8 +143,9 @@ public class ResteasyViolationException extends ConstraintViolationException
    }
 
    public void setException(Exception exception)
-   {
+   { 
       this.exception = exception;
+      initCause(exception);
    }
 
    public List<ResteasyConstraintViolation> getViolations()
