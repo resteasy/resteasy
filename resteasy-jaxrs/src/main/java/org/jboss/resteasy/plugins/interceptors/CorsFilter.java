@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.interceptors;
 
+import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.CorsHeaders;
 
@@ -13,6 +14,7 @@ import javax.ws.rs.core.Response;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -147,6 +149,7 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
          return;
       }
       responseContext.getHeaders().putSingle(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
+      responseContext.getHeaders().putSingle(CorsHeaders.VARY, CorsHeaders.ORIGIN);
       if (allowCredentials) responseContext.getHeaders().putSingle(CorsHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
 
       if (exposedHeaders != null) {
@@ -161,6 +164,7 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
 
       Response.ResponseBuilder builder = Response.ok();
       builder.header(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
+      builder.header(CorsHeaders.VARY, CorsHeaders.ORIGIN);
       if (allowCredentials) builder.header(CorsHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
       String requestMethods = requestContext.getHeaderString(CorsHeaders.ACCESS_CONTROL_REQUEST_METHOD);
       if (requestMethods != null)
