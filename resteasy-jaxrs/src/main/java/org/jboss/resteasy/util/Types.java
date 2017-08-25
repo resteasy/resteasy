@@ -1,5 +1,7 @@
 package org.jboss.resteasy.util;
 
+import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
@@ -7,10 +9,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
 /**
  * Type conversions and generic type manipulations
@@ -195,6 +196,76 @@ public class Types
       return intfMethod;
    }
 
+   /**
+    * Find the by a method implementation implemented interface method.
+    *
+    * @param root The root class of the class hierarchy.
+    * @param iface The containing interface of the implemented method in the class hierarchy.
+    * @param implementation The method implementation.
+    * @return The implemented method.
+    */
+   public static Method getImplementedInterfaceMethod(final Class<?> root, final Class<?> iface, final Method implementation)
+   {
+      Method overriddenInterfaceMethod = findOverriddenMethod(root, iface, implementation);
+      if (overriddenInterfaceMethod != null) {
+         return overriddenInterfaceMethod;
+      }
+
+      for (Class<?> extended : iface.getInterfaces()) {
+         overriddenInterfaceMethod = getImplementedInterfaceMethod(root, extended, implementation);
+
+         if (overriddenInterfaceMethod != null) {
+            return overriddenInterfaceMethod;
+         }
+      }
+
+      return null;
+   }
+
+   /**
+    * Find the by a method implementation overridden superclass method.
+    *
+    * @param root The root class of the class hierarchy.
+    * @param superClass The containing class of the overridden method in the class hierarchy.
+    * @param implementation The method implementation.
+    * @return The overridden method.
+    */
+   public static Method findOverriddenMethod(final Class<?> root, final Class<?> superClass, final Method implementation)
+   {
+      // Check if the overridden method exists without generics
+      try
+      {
+         final Method method = superClass.getDeclaredMethod(implementation.getName(), implementation.getParameterTypes());
+         return method;
+      }
+      catch (NoSuchMethodException e)
+      {
+         // ignore
+      }
+
+      // Check if the overridden method exists with generics
+      final Map<TypeVariable<?>, Type> genericTypeMap = populateParameterizedMap(root, superClass);
+
+      for (Method superClassMethod : superClass.getDeclaredMethods())
+      {
+         if (superClassMethod.isSynthetic())
+         {
+            continue;
+         }
+         if (!implementation.getName().equals(superClassMethod.getName()) || implementation.getParameterCount() != superClassMethod.getParameterCount())
+         {
+            continue;
+         }
+
+         final Type[] actualMethodParameters = extractTypeVariables(genericTypeMap, superClassMethod.getGenericParameterTypes());
+         if (Arrays.equals(implementation.getGenericParameterTypes(), actualMethodParameters))
+         {
+            return superClassMethod;
+         }
+      }
+
+      return null;
+   }
 
    public static Class<?> getRawType(Type type)
    {
@@ -441,7 +512,7 @@ public class Types
    {
       if (Object.class.equals(root)) return null;
 
-      Map<String, Type> typeVarMap = populateParameterizedMap(root, rootType);
+      Map<TypeVariable<?>, Type> typeVarMap = populateParameterizedMap(root, rootType);
 
       Class<?> superclass = root.getSuperclass();
       Type genericSuper = root.getGenericSuperclass();
@@ -472,24 +543,54 @@ public class Types
       return null;
    }
 
-   private static Map<String, Type> populateParameterizedMap(Class<?> root, ParameterizedType rootType)
+   private static Map<TypeVariable<?>, Type> populateParameterizedMap(Class<?> root, ParameterizedType rootType)
    {
-      Map<String, Type> typeVarMap = new HashMap<String, Type>();
+      Map<TypeVariable<?>, Type> typeVarMap = new HashMap<>();
       if (rootType != null)
       {
          TypeVariable<? extends Class<?>>[] vars = root.getTypeParameters();
          for (int i = 0; i < vars.length; i++)
          {
-            typeVarMap.put(vars[i].getName(), rootType.getActualTypeArguments()[i]);
+            typeVarMap.put(vars[i], rootType.getActualTypeArguments()[i]);
          }
       }
       return typeVarMap;
    }
 
+   /**
+    * Create a mapping for generic types to actual types between two classes / interfaces of a type hierarchy.
+    *
+    * @param root The root class / interface of the type hierarchy.
+    * @param superClass A superclass / interface of the type hierarchy.
+    * @return The Mapping for generic types to actual types.
+    */
+   public static Map<TypeVariable<?>, Type> populateParameterizedMap(final Class<?> root, final Class<?> superClass)
+   {
+      final Type[] types = Types.findParameterizedTypes(root, superClass);
+      final TypeVariable<? extends Class<?>>[] typeParameters = superClass.getTypeParameters();
+
+      final Map<TypeVariable<?>, Type> genericTypeMap = new HashMap<>();
+      if (typeParameters != null && types != null)
+      {
+         int i = 0;
+         while (i < types.length)
+         {
+            genericTypeMap.put(typeParameters[i], types[i]);
+            i++;
+         }
+         while (i < typeParameters.length)
+         {
+            genericTypeMap.put(typeParameters[i], typeParameters[i].getGenericDeclaration());
+            i++;
+         }
+      }
+
+      return genericTypeMap;
+   }
 
    public static Type[] findInterfaceParameterizedTypes(Class<?> root, ParameterizedType rootType, Class<?> searchedForInterface)
    {
-      Map<String, Type> typeVarMap = populateParameterizedMap(root, rootType);
+      Map<TypeVariable<?>, Type> typeVarMap = populateParameterizedMap(root, rootType);
 
       for (int i = 0; i < root.getInterfaces().length; i++)
       {
@@ -518,7 +619,7 @@ public class Types
       return recurseSuperclassForInterface(searchedForInterface, typeVarMap, genericSuper, superclass);
    }
 
-   private static Type[] recurseSuperclassForInterface(Class<?> searchedForInterface, Map<String, Type> typeVarMap, Type genericSub, Class<?> sub)
+   private static Type[] recurseSuperclassForInterface(Class<?> searchedForInterface, Map<TypeVariable<?>, Type> typeVarMap, Type genericSub, Class<?> sub)
    {
       if (genericSub instanceof ParameterizedType)
       {
@@ -540,32 +641,42 @@ public class Types
       return null;
    }
 
-   private static Type[] extractTypeVariables(Map<String, Type> typeVarMap, Type[] types)
+   /**
+    * Resolve generic types to actual types.
+    *
+    * @param typeVarMap The mapping for generic types to actual types.
+    * @param types The types to resolve.
+    * @return An array of resolved method parameter types in declaration order.
+    */
+   private static Type[] extractTypeVariables(final Map<TypeVariable<?>, Type> typeVarMap, final Type[] types)
    {
-      for (int j = 0; j < types.length; j++)
+      final Type[] resolvedMethodParameterTypes = new Type[types.length];
+
+      for (int i = 0; i < types.length; i++)
       {
-         if (types[j] instanceof TypeVariable)
+         final Type methodParameterType = types[i];
+
+         if (methodParameterType instanceof TypeVariable<?>)
          {
-            TypeVariable tv = (TypeVariable) types[j];
-            types[j] = typeVarMap.get(tv.getName());
+            resolvedMethodParameterTypes[i] = typeVarMap.get(methodParameterType);
          }
          else
          {
-            types[j] = types[j];
+            resolvedMethodParameterTypes[i] = methodParameterType;
          }
       }
-      return types;
+
+      return resolvedMethodParameterTypes;
    }
 
-   private static Type[] extractTypes(Map<String, Type> typeVarMap, Type genericSub)
+   private static Type[] extractTypes(Map<TypeVariable<?>, Type> typeVarMap, Type genericSub)
    {
       if (genericSub instanceof ParameterizedType)
       {
          ParameterizedType param = (ParameterizedType) genericSub;
          Type[] types = param.getActualTypeArguments();
-         Type[] returnTypes = new Type[types.length];
-         System.arraycopy(types, 0, returnTypes, 0, types.length);
-         extractTypeVariables(typeVarMap, returnTypes);
+
+         Type[] returnTypes = extractTypeVariables(typeVarMap, types);
          return returnTypes;
       }
       else
