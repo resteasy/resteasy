@@ -25,24 +25,31 @@ public class AnotherSseResource
    @Path("/subscribe")
    @Produces(MediaType.SERVER_SENT_EVENTS)
    public void subscribe(@Context SseEventSink sink) throws IOException {
-	   if (sink == null) {
-           throw new IllegalStateException("No client connected.");
-       }
-       //subscribe
-	   if (sseBroadcaster == null) {
-		   sseBroadcaster = sse.newBroadcaster();
-	   }
-	   sseBroadcaster.register(sink);	  
+
+      if (sink == null)
+      {
+         throw new IllegalStateException("No client connected.");
+      }
+      eventSink = sink;
+      //subscribe
+      if (sseBroadcaster == null)
+      {
+         sseBroadcaster = sse.newBroadcaster();
+      }
+      sseBroadcaster.register(sink);  
    }
   
    @DELETE
-   public void close() throws IOException {
+   @Produces(MediaType.TEXT_PLAIN)
+   public boolean close() throws IOException {
        synchronized (outputLock) {
            if (eventSink != null) {
-               eventSink.close();
-               eventSink = null;
+              try (SseEventSink sink = eventSink) {
+                 //do nothing and this is intented to test eventSink's try-with-resources autoCloseable
+              }
            }
        }
+       return eventSink.isClosed();
    }
 
 }
