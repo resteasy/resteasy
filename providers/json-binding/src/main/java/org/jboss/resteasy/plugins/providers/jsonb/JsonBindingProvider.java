@@ -23,8 +23,8 @@ import org.jboss.resteasy.util.FindAnnotation;
  * Created by rsearls on 6/26/17.
  */
 @Provider
-@Produces({"application/*+json", "text/json", "*/*"})
-@Consumes({"application/*+json", "text/json", "*/*"})
+@Produces({"application/json", "application/*+json", "text/json", "*/*"})
+@Consumes({"application/json", "application/*+json", "text/json", "*/*"})
 public class JsonBindingProvider extends AbstractJsonBindingProvider
         implements MessageBodyReader<Object>, MessageBodyWriter<Object> {
 

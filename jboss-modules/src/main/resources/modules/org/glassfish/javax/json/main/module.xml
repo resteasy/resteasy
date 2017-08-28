@@ -23,8 +23,6 @@
   -->
 
 <module xmlns="urn:jboss:module:1.5" name="org.glassfish.javax.json">
-    <!-- todo this is temporary and should be removed when wildfly makes the needed update
-     -->
     <properties>
         <property name="jboss.api" value="private"/>
     </properties>
@@ -32,7 +30,7 @@
     <dependencies>
     </dependencies>
     <resources>
-        <artifact name="org.glassfish:javax.json:1.1"/>
+        <!-- Insert resources here -->
     </resources>
 
 </module>
