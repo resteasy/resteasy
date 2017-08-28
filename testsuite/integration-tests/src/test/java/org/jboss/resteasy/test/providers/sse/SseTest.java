@@ -1,6 +1,7 @@
 package org.jboss.resteasy.test.providers.sse;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -16,6 +17,7 @@ import javax.ws.rs.sse.SseEventSource;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit.InSequence;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -46,6 +48,7 @@ public class SseTest {
     }
     
     @Test
+    @InSequence(1)
     public void testAddMessage() throws Exception
     {
        final CountDownLatch latch = new CountDownLatch(5);
@@ -66,6 +69,7 @@ public class SseTest {
              throw new RuntimeException(ex);
           });
           eventSource.open();
+          
 
           Client messageClient = new ResteasyClientBuilder().connectionPoolSize(10).build();
           WebTarget messageTarget = messageClient.target(generateURL("/service/server-sent-events"));
@@ -81,7 +85,29 @@ public class SseTest {
         Assert.assertFalse("SseEventSource is not closed", msgEventSource.isOpen());
         Assert.assertTrue("5 messages are expected, but is : " + results.size(), results.size() == 5);
      }
+    
+    //Test for Last-Event-Id. This test uses the message items stores in testAddMessage()
     @Test
+    @InSequence(2)
+    public void testLastEventId() throws Exception
+    {
+        final CountDownLatch missedEventLatch = new CountDownLatch(3);
+        final List<String> missedEvents = new ArrayList<String>();
+        WebTarget lastEventTarget = ClientBuilder.newBuilder().build().target(generateURL("/service/server-sent-events"));
+        SseEventSourceImpl lastEventSource = (SseEventSourceImpl)SseEventSource.target(lastEventTarget).build();
+        lastEventSource.register(event -> {
+            missedEvents.add(event.toString());
+            missedEventLatch.countDown();
+        }, ex -> {
+            throw new RuntimeException(ex);
+        });
+        lastEventSource.open("1");
+        Assert.assertTrue("Waiting for missed events to be delivered has timed our, received events :"  + Arrays.toString(missedEvents.toArray(new String[]{})), missedEventLatch.await(30, TimeUnit.SECONDS));
+        Assert.assertTrue("3 messages are expected, but is : " +  missedEvents.toArray(new String[]{}), missedEvents.size() == 3);
+        lastEventSource.close();
+    }
+    @Test
+    @InSequence(3)
     public void testSseEvent() throws Exception
     {
        final List<String> results = new ArrayList<String>();
@@ -110,6 +136,7 @@ public class SseTest {
     
     
     @Test
+    @InSequence(4)
     public void testBroadcast() throws Exception
     {
        final CountDownLatch latch = new CountDownLatch(2);
