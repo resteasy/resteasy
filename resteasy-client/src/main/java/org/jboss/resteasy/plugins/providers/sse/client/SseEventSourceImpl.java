@@ -143,14 +143,21 @@ public class SseEventSourceImpl implements SseEventSource
    @Override
    public void open()
    {
+      open(null);
+   }
+   
+
+   public void open(String lastEventId)
+   {
       if (!state.compareAndSet(State.CLOSED, State.PENDING))
       {
          throw new IllegalStateException(Messages.MESSAGES.eventSourceIsNotReadyForOpen());
       }
-      EventHandler handler = new EventHandler(reconnectDelay, null);
+      EventHandler handler = new EventHandler(reconnectDelay, lastEventId);
       executor.submit(handler);
       handler.awaitConnected();
    }
+   
    @Override
    public boolean isOpen()
    {
