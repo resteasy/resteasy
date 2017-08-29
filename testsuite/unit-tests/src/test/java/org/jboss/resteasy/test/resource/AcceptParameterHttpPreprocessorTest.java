@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.resource;
 
 import org.jboss.resteasy.core.AcceptParameterHttpPreprocessor;
-import org.jboss.resteasy.core.interception.PreMatchContainerRequestContext;
+import org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.junit.Assert;

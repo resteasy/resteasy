@@ -40,7 +40,8 @@ import org.jboss.resteasy.util.Types;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
+@Deprecated
 public class ResteasyProviderFactory extends org.jboss.resteasy.spi.ResteasyProviderFactory
 {
    protected Map<Class<?>, ClientExceptionMapper> clientExceptionMappers;
@@ -136,10 +137,6 @@ public class ResteasyProviderFactory extends org.jboss.resteasy.spi.ResteasyProv
      registerDefaultInterceptorPrecedences(getClientExecutionInterceptorRegistry());
    }
    
-   private boolean isParentSameType() {
-      return parent != null && parent instanceof ResteasyProviderFactory;
-   }
-
    /**
     * Append interceptor predence
     *

@@ -1,6 +1,5 @@
 package org.jboss.resteasy.plugins.server.netty;
 
-import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
@@ -26,8 +25,8 @@ public class NettyUtil
 {
    public static ResteasyUriInfo extractUriInfo(HttpRequest request, String contextPath, String protocol)
    {
-      String host = HttpHeaders.getHost(request, "unknown");
-      String uri = request.getUri();
+      String host = request.headers().get(HttpHeaderNames.HOST, "unknown");
+      String uri = request.uri();
 
       String uriString;
 

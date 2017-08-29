@@ -33,6 +33,7 @@ import java.util.Date;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("deprecation")
 public class RSAVerifierTest
 {
    private static X509Certificate[] idpCertificates;

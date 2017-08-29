@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
@@ -74,14 +74,15 @@ public class TestLinksNoPackage
 	public void before(){
 		POJOResourceFactory noDefaults = new POJOResourceFactory(resourceType);
 		dispatcher.getRegistry().addResourceFactory(noDefaults);
-		httpClient = new DefaultHttpClient();
+		httpClient = HttpClientBuilder.create().build();
 		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
 		url = generateBaseUrl();
 		ResteasyWebTarget target = new ResteasyClientBuilder().httpEngine(engine).build().target(url);
 		client = target.proxy(BookStoreService.class);
 	}
 
-	@After
+	@SuppressWarnings("deprecation")
+    @After
 	public void after(){
 		// TJWS does not support chunk encodings well so I need to kill kept
 		// alive connections
