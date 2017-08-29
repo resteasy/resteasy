@@ -1,32 +1,9 @@
 package org.jboss.resteasy.test.security;
 
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.AuthCache;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
-import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
-import org.jboss.resteasy.client.jaxrs.engines.HttpContextProvider;
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.plugins.server.embedded.SimpleSecurityDomain;
-import org.jboss.resteasy.plugins.server.sun.http.HttpServerContainer;
-import org.jboss.resteasy.test.TestPortProvider;
-import org.jboss.resteasy.util.HttpResponseCodes;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.jboss.resteasy.test.TestPortProvider.createProxy;
+import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+
+import java.util.List;
 
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.RolesAllowed;
@@ -39,10 +16,36 @@ import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.util.List;
 
-import static org.jboss.resteasy.test.TestPortProvider.createProxy;
-import static org.jboss.resteasy.test.TestPortProvider.generateURL;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
+import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
+import org.jboss.resteasy.client.jaxrs.engines.HttpContextProvider;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.plugins.server.embedded.SimpleSecurityDomain;
+import org.jboss.resteasy.plugins.server.sun.http.HttpServerContainer;
+import org.jboss.resteasy.test.TestPortProvider;
+import org.jboss.resteasy.util.HttpResponseCodes;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -159,9 +162,9 @@ public class BasicAuthTest
    @Test
    public void testProxy() throws Exception
    {
-      DefaultHttpClient httpClient = new DefaultHttpClient();
-      UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("bill", "password");
-      httpClient.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY), credentials);
+      BasicCredentialsProvider cp = new BasicCredentialsProvider();
+      cp.setCredentials(new AuthScope(AuthScope.ANY), new UsernamePasswordCredentials("bill", "password"));
+      CloseableHttpClient httpClient = HttpClientBuilder.create().setDefaultCredentialsProvider(cp).build();
       ClientHttpEngine engine = createAuthenticatingEngine(httpClient);
       Client client = new ResteasyClientBuilder().httpEngine(engine).build();
       ResteasyWebTarget target = (ResteasyWebTarget) client.target(generateURL(""));
@@ -190,9 +193,9 @@ public class BasicAuthTest
    @Test
    public void testSecurity() throws Exception
    {
-      DefaultHttpClient httpClient = new DefaultHttpClient();
-      UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("bill", "password");
-      httpClient.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY), credentials);
+      BasicCredentialsProvider cp = new BasicCredentialsProvider();
+      cp.setCredentials(new AuthScope(AuthScope.ANY), new UsernamePasswordCredentials("bill", "password"));
+      CloseableHttpClient httpClient = HttpClientBuilder.create().setDefaultCredentialsProvider(cp).build();
       ClientHttpEngine engine = createAuthenticatingEngine(httpClient);
       Client client = new ResteasyClientBuilder().httpEngine(engine).build();
  
@@ -227,9 +230,9 @@ public class BasicAuthTest
    @Test
    public void test579() throws Exception
    {
-      DefaultHttpClient httpClient = new DefaultHttpClient();
-      UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("bill", "password");
-      httpClient.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY), credentials);
+      BasicCredentialsProvider cp = new BasicCredentialsProvider();
+      cp.setCredentials(new AuthScope(AuthScope.ANY), new UsernamePasswordCredentials("bill", "password"));
+      CloseableHttpClient httpClient = HttpClientBuilder.create().setDefaultCredentialsProvider(cp).build();
       ClientHttpEngine engine = createAuthenticatingEngine(httpClient);
       Client client = new ResteasyClientBuilder().httpEngine(engine).build();
       Response response = client.target(generateURL("/secured2")).request().get();
@@ -240,7 +243,8 @@ public class BasicAuthTest
    @Test
    public void testSecurityFailure() throws Exception
    {
-      DefaultHttpClient httpClient = new DefaultHttpClient();
+      BasicCredentialsProvider cp = new BasicCredentialsProvider();
+      CloseableHttpClient httpClient = HttpClientBuilder.create().setDefaultCredentialsProvider(cp).build();
 
       {
          HttpGet method = new HttpGet(generateURL("/secured"));
@@ -254,7 +258,7 @@ public class BasicAuthTest
       
       {
          UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("bill", "password");
-         httpClient.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY), credentials);
+         cp.setCredentials(new AuthScope(AuthScope.ANY), credentials);
          Response response = client.target(generateURL("/secured/authorized")).request().get();
          Assert.assertEquals(HttpResponseCodes.SC_OK, response.getStatus());
          Assert.assertEquals("authorized", response.readEntity(String.class));  
@@ -262,7 +266,7 @@ public class BasicAuthTest
       
       {
          UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("mo", "password");
-         httpClient.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY), credentials);
+         cp.setCredentials(new AuthScope(AuthScope.ANY), credentials);
          Response response = client.target(generateURL("/secured/authorized")).request().get();
          Assert.assertEquals(HttpResponseCodes.SC_FORBIDDEN, response.getStatus());
          response.close();
@@ -273,13 +277,13 @@ public class BasicAuthTest
     * Create a ClientExecutor which does preemptive authentication.
     */
    
-   static private ClientHttpEngine createAuthenticatingEngine(DefaultHttpClient client)
+   static private ClientHttpEngine createAuthenticatingEngine(CloseableHttpClient client)
    {
       // Create AuthCache instance
       AuthCache authCache = new BasicAuthCache();
       
       // Create ClientExecutor.
-      ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(client, new HttpContextProvider()
+      ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(client, new HttpContextProvider()
       {
          @Override
          public HttpContext getContext()
@@ -291,7 +295,7 @@ public class BasicAuthTest
 
             // Add AuthCache to the execution context
             BasicHttpContext localContext = new BasicHttpContext();
-            localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
+            localContext.setAttribute(HttpClientContext.AUTH_CACHE, authCache);
             return localContext;
          }
       });

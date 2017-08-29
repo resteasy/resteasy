@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.providers;
 
-import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.providers.resource.ProviderFactoryStrParamUnmarshaller;
 import org.junit.Assert;

@@ -2,7 +2,8 @@ package org.jboss.resteasy.test.nextgen.providers.jackson;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.codehaus.jackson.annotate.JsonProperty;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -364,16 +365,16 @@ public class JacksonTest extends BaseResourceTest
 
     @Test
     public void testJacksonJAXB() throws Exception {
+        try (CloseableHttpClient client = HttpClientBuilder.create().build())
         {
-            DefaultHttpClient client = new DefaultHttpClient();
             HttpGet get = new HttpGet(generateBaseUrl() + "/jaxb");
             HttpResponse response = client.execute(get);
             BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             Assert.assertTrue(reader.readLine().contains("attr_1"));
         }
 
+        try (CloseableHttpClient client = HttpClientBuilder.create().build())
         {
-            DefaultHttpClient client = new DefaultHttpClient();
             HttpGet get = new HttpGet(generateBaseUrl() + "/jaxb/json");
             HttpResponse response = client.execute(get);
             BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));

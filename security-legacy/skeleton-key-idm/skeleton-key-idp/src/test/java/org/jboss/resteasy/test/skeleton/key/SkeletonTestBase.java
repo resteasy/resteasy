@@ -16,6 +16,7 @@ import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.global.GlobalConfiguration;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
+import org.infinispan.eviction.EvictionType;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -119,7 +120,7 @@ public class SkeletonTestBase
       Configuration configuration = new ConfigurationBuilder()
           .eviction()
           .strategy(EvictionStrategy.NONE)
-          .maxEntries(5000)
+          .type(EvictionType.COUNT).size(5000)
        .jmxStatistics().enable()
           .build();
       EmbeddedCacheManager manager = new DefaultCacheManager(gconfig, configuration);

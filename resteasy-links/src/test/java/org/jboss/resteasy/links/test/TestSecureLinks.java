@@ -11,15 +11,17 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.client.jaxrs.engines.HttpContextProvider;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.links.RESTServiceDiscovery;
@@ -85,7 +87,8 @@ public class TestSecureLinks
 	private Class<?> resourceType;
 	private String url;
 	private BookStoreService client;
-	private DefaultHttpClient httpClient;
+	private CloseableHttpClient httpClient;
+	private CredentialsProvider cp;
 	public TestSecureLinks(Class<?> resourceType){
 		this.resourceType = resourceType;
 	}
@@ -96,8 +99,9 @@ public class TestSecureLinks
 		dispatcher.getRegistry().addResourceFactory(noDefaults);
 		url = generateBaseUrl();
 		
-		httpClient = new DefaultHttpClient();
-		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient, new HttpContextProvider() {
+		cp = new BasicCredentialsProvider();
+		httpClient = HttpClientBuilder.create().setDefaultCredentialsProvider(cp).build();
+		ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient, new HttpContextProvider() {
 			@Override
 			public HttpContext getContext() {
 				// Configure HttpClient to authenticate preemptively
@@ -109,7 +113,7 @@ public class TestSecureLinks
 				authCache.put(getHttpHost(url), basicAuth);
 				// 3. Add AuthCache to the execution context
 				BasicHttpContext localContext = new BasicHttpContext();
-				localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
+				localContext.setAttribute(HttpClientContext.AUTH_CACHE, authCache);
 				return localContext;
 			}
 		});
@@ -120,12 +124,12 @@ public class TestSecureLinks
 	@After
 	public void after(){
 		dispatcher.getRegistry().removeRegistrations(resourceType);
+		cp = null;
 	}
 	
 	@Test
 	public void testSecureLinksAdmin() throws Exception
 	{
-		CredentialsProvider cp = httpClient.getCredentialsProvider();
 		cp.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("admin", "asd"));
 		Book book = client.getBookXML("foo");
 		checkBookLinks1(url, book, "add", "update", "list", "self", "remove");
@@ -134,7 +138,6 @@ public class TestSecureLinks
 	@Test
 	public void testSecureLinksPowerUser() throws Exception
 	{
-		CredentialsProvider cp = httpClient.getCredentialsProvider();
 		cp.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("power-user", "asd"));
 		Book book = client.getBookXML("foo");
 		checkBookLinks1(url, book, "add", "update", "list", "self");
@@ -143,7 +146,6 @@ public class TestSecureLinks
 	@Test
 	public void testSecureLinksUser() throws Exception
 	{
-		CredentialsProvider cp = httpClient.getCredentialsProvider();
 		cp.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("user", "asd"));
 		Book book = client.getBookXML("foo");
 		checkBookLinks1(url, book, "list", "self");
