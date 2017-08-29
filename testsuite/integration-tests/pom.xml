@@ -351,6 +351,37 @@
                 </excludes>
             </testResource>
         </testResources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>default-test</id>
+                            <configuration>
+                                <includes>
+                                    <include>**/Test*.java</include>
+                                </includes>
+                                <excludes>
+                                     <!-- Tests requires excluding JsonBindingProvider-->
+                                     <exclude>**/JsonBindingTest.java</exclude>
+                                </excludes>
+                                <classpathDependencyExcludes>
+                                    <classpathDependencyExcludes>org.jboss.resteasy:resteasy-json-binding-provider</classpathDependencyExcludes>
+                                </classpathDependencyExcludes>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <!-- Add JsonBindingProvider tests here-->
+                            <id>jsonb-test</id>
+                            <configuration>
+                                <includes>
+                                    <include>**/JsonBindingTest.java</include>
+                                </includes>
+                            </configuration>
+                        </execution>
+                    </executions>
+            </plugin>
+        </plugins>
     </build>
 
 </project>
