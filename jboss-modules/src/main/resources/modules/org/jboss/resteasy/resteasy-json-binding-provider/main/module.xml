@@ -37,9 +37,11 @@
         <module name="javax.json.bind.api"/>
         <module name="org.eclipse.yasson"/>
         <module name="javax.api"/>
+        <module name="javax.annotation.api"/>
         <module name="javax.json.api"/>
         <module name="javax.enterprise.api"/>
         <module name="javax.ws.rs.api"/>
+        <module name="javax.xml.bind.api"/>
         <module name="org.jboss.resteasy.resteasy-jaxrs"/>
         <module name="org.jboss.logging"/>
     </dependencies>
