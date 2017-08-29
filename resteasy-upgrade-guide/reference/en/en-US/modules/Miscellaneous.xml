@@ -1,0 +1,48 @@
+<chapter id="Miscellaneous">
+   <title>Miscellaneous changes</title>
+   
+   <section>
+      <title>Matching Requests to Resource Methods</title>
+
+      <para>
+         Improvements and corrections have been made in Resteasy 3 to the implementation of
+         the matching rules as defined in the JAX-RS 2.0 specification.  In particular
+         a change for handling an ambiguous uri on a sub-resource method and
+         sub-resource locator was made.  In Resteasy 2 it was possible for a
+         sub-resource locator to execute successfully even when there was also a sub-resource
+         with the same uri.  This was incorrect behavior according to the specification.
+         In Resteasy 3 when there is an ambiguous uri for a sub-resource and a
+         sub-resource locator, calling the sub-resource will be successful, but calling
+         the sub-resource locator will result in an HTTP, 405 Method Not Allowed error.
+      </para>
+      <para>
+         Here is an example of ambiguous uri on a sub-resource method and sub-resource locator.
+         The uri to both endpoints, create and splitPattern, is the same.  The difference between
+         the two endpoints is that method, create, is associated with the REST verb, "POST".
+         Method, splitPattern is not associated with any REST verb.  According to the specification
+         in such a situation the endpoint with the REST verb will always be selected.
+      </para>
+      <programlisting>
+@Path("myResource")
+public class ExampleSubResources {
+
+         @POST
+         @Path("items")
+         public Response create(@QueryParam("msg") final String msg) {
+         return Response.ok().build();
+         }
+
+         @Path("items")
+         public List&lt;String&gt; splitPattern(@QueryParam("pattern") final String pattern) {
+         String [] split = pattern.split
+         List &lt;String&gt; myList = new List &lt;String&gt;();
+         for (int i=0; i &lt; split.length; i++) {
+         myList.add(split[i]);
+         }
+         return myList;
+         }
+
+}
+      </programlisting>
+   </section>
+</chapter>
