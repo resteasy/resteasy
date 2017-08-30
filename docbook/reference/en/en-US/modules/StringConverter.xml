@@ -125,6 +125,93 @@ public class DateParamConverter implements ParamConverter&lt;Date&gt; {
    </sect1>
    
    <sect1>
+   <title>StringParameterUnmarshaller</title>
+   
+   <para>
+   In addition to the JAX-RS <classname>javax.ws.rs.ext.ParamConverterProvider</classname>,
+   Resteasy also has its own <classname>org.jboss.resteasy.StringParameterUnmarshaller</classname>, defined
+   </para>
+   
+   <programlisting>
+public interface StringParameterUnmarshaller&lt;T&gt;
+{
+   void setAnnotations(Annotation[] annotations);
+
+   T fromString(String str);
+}
+   </programlisting>
+   <para>
+   It is similar to <classname>javax.ws.rs.ext.ParamConverter</classname> except that
+   </para>
+   <itemizedlist>
+      <listitem>it converts only from <classname>String</classname>s;</listitem>
+      <listitem>it is configured with the annotations on the injected parameter, which 
+                allows for fine-grained control over the injection; and</listitem>
+      <listitem>it is bound to a given parameter by an annotation that is annotated with the meta-annotation
+                <classname>org.jboss.resteasy.annotations.StringParameterUnmarshallerBinder:</classname></listitem>
+   </itemizedlist>
+   
+   <programlisting>
+@Target({ElementType.ANNOTATION_TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface StringParameterUnmarshallerBinder
+{
+   Class&lt;? extends StringParameterUnmarshaller&gt; value();
+}
+   </programlisting>
+   <para>
+   For example,
+   </para>
+   
+   <programlisting>
+   @Retention(RetentionPolicy.RUNTIME)
+   @StringParameterUnmarshallerBinder(TestDateFormatter.class)
+   public @interface TestDateFormat {
+      String value();
+   }
+
+   public static class TestDateFormatter implements StringParameterUnmarshaller&lt;Date&gt; {
+      private SimpleDateFormat formatter;
+
+      public void setAnnotations(Annotation[] annotations) {
+         TestDateFormat format = FindAnnotation.findAnnotation(annotations, TestDateFormat.class);
+         formatter = new SimpleDateFormat(format.value());
+      }
+
+      public Date fromString(String str) {
+         try {
+            return formatter.parse(str);
+         } catch (ParseException e) {
+            throw new RuntimeException(e);
+         }
+      }
+   }
+   
+   @Path("/")
+   public static class TestResource {
+
+      @GET
+      @Produces("text/plain")
+      @Path("/datetest/{date}")
+      public String get(@PathParam("date") @TestDateFormat("MM-dd-yyyy") Date date) {
+         Calendar c = Calendar.getInstance();
+         c.setTime(date);
+         return date.toString();
+      }
+   }
+   </programlisting>
+   
+   <para>
+   Note that the annotation <classname>@StringParameterUnmarshallerBinder</classname> on the
+   annotation <classname>@TestDateFormat</classname> binds the formatter
+   <classname>TestDateFormatter</classname> to a parameter annotated with <classname>@TestDateFormat</classname>.
+   In this example, <classname>TestDateFormatter</classname> is used to format the <classname>Date</classname> parameter.
+   Note also that the parameter "MM-dd-yyyy" to <classname>@TestDateFormat</classname> is accessible from
+   <methodname>TestDateFormatter.setAnnotations()</methodname>.
+   </para>
+   </sect1>
+   
+   <sect1>
    <title>Collections</title>
    
    <para>
