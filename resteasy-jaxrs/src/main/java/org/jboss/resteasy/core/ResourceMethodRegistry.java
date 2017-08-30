@@ -3,6 +3,7 @@ package org.jboss.resteasy.core;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+
 import org.jboss.resteasy.core.registry.RootClassNode;
 import org.jboss.resteasy.core.registry.RootNode;
 import org.jboss.resteasy.plugins.server.resourcefactory.JndiResourceFactory;
@@ -276,6 +277,50 @@ public class ResourceMethodRegistry implements Registry
       for (ResourceLocator method : resourceClass.getResourceLocators())
       {
          processMethod(rf, base, method);
+      }
+   }
+
+   /**
+    * Resteasy 2.x does not properly handle sub-resource and sub-resource locator
+    * endpoints with the same uri.  Resteasy 3.x does handle this properly.  In
+    * assisting customers identify this issue during an upgrade from Resteasy 2 to 3
+    * provides a waring when the situation is found.
+    */
+   public void checkAmbiguousUri()
+   {
+      for (Map.Entry<String, List<ResourceInvoker>> entry : this.root.getBounded().entrySet())
+      {
+         List<ResourceInvoker> values = entry.getValue();
+         if (values.size() > 1) {
+            int locatorCnt = 0;
+            int methodCnt = 0;
+            for(ResourceInvoker rInvoker : values)
+            {
+               if (rInvoker instanceof ResourceLocatorInvoker)
+               {
+                  locatorCnt++;
+               } else if (rInvoker instanceof ResourceMethodInvoker)
+               {
+                  methodCnt++;
+               }
+            }
+            if (methodCnt > 0 && locatorCnt > 0)
+            {
+               StringBuilder sb = new StringBuilder();
+               int cnt = values.size();
+               for (int i=0; i < cnt; i++) {
+                  ResourceInvoker exp = values.get(i);
+                  sb.append(exp.getMethod().getDeclaringClass().getName())
+                          .append(".")
+                          .append(exp.getMethod().getName());
+                  if (i < cnt-1)
+                  {
+                     sb.append(", ");
+                  }
+               }
+               LogMessages.LOGGER.uriAmbiguity(entry.getKey(), sb.toString());
+            }
+         }
       }
    }
 
