@@ -93,7 +93,7 @@ public class SseTest {
     {
         final CountDownLatch missedEventLatch = new CountDownLatch(3);
         final List<String> missedEvents = new ArrayList<String>();
-        WebTarget lastEventTarget = ClientBuilder.newBuilder().build().target(generateURL("/service/server-sent-events"));
+        WebTarget lastEventTarget = new ResteasyClientBuilder().connectionPoolSize(10).build().target(generateURL("/service/server-sent-events"));
         SseEventSourceImpl lastEventSource = (SseEventSourceImpl)SseEventSource.target(lastEventTarget).build();
         lastEventSource.register(event -> {
             missedEvents.add(event.toString());
@@ -104,6 +104,7 @@ public class SseTest {
         lastEventSource.open("1");
         Assert.assertTrue("Waiting for missed events to be delivered has timed our, received events :"  + Arrays.toString(missedEvents.toArray(new String[]{})), missedEventLatch.await(30, TimeUnit.SECONDS));
         Assert.assertTrue("3 messages are expected, but is : " +  missedEvents.toArray(new String[]{}), missedEvents.size() == 3);
+        lastEventTarget.request().delete();
         lastEventSource.close();
     }
     @Test
@@ -127,9 +128,8 @@ public class SseTest {
        Assert.assertEquals(0, errors.get());
        Assert.assertTrue("Waiting for event to be delivered has timed out.", latch.await(30, TimeUnit.SECONDS));
        Assert.assertTrue("6 SseInboundEvent expected", results.size() == 6);
-       Assert.assertTrue("Expect the last event is Done event, but it is :" + results.toArray(new String[]
-             {})[5], results.toArray(new String[]
-       {})[5].indexOf("Done") > -1);
+       Assert.assertTrue("Expect the last event is Done event, but it is :" + results.toArray(new String[]{})[5], 
+               results.toArray(new String[] {})[5].indexOf("Done") > -1);
        eventSource.close();
        client.close();
     }
@@ -173,6 +173,43 @@ public class SseTest {
        eventSource.close();
        eventSource2.close();
     }
+    //This test is checking SseEventSource reconnect ability. When request post /addMessageAndDisconnect path, server will 
+    //disconnect the connection, but events is continued to add to eventsStore. SseEventSource will automatically reconnect
+    //with LastEventId and receive the missed events  
+    @Test
+    @InSequence(5)
+    public void testReconnect() throws Exception
+    {
+       final CountDownLatch latch = new CountDownLatch(10);
+       final CountDownLatch closeLatch = new CountDownLatch(1);
+       final List<String> results = new ArrayList<String>();
+       final AtomicInteger errors = new AtomicInteger(0);
+       Client client = new ResteasyClientBuilder().connectionPoolSize(10).build();
+       WebTarget target = client.target(generateURL("/service/server-sent-events"));
+       try(SseEventSource eventSource = SseEventSource.target(target).reconnectingEvery(2, TimeUnit.SECONDS).build()) {
+            Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
+            eventSource.register(event -> {
+                results.add(event.toString());
+                latch.countDown();
+                closeLatch.countDown();
+            }, ex -> {
+                errors.incrementAndGet();
+                ex.printStackTrace();
+                throw new RuntimeException(ex);
+            });
+            eventSource.open();
+
+            Client messageClient = new ResteasyClientBuilder().build();
+            WebTarget messageTarget = messageClient.target(generateURL("/service/server-sent-events/addMessageAndDisconnect"));
+            messageTarget.request().post(Entity.text("msg"));
+            messageClient.close();
+
+            Assert.assertEquals(0, errors.get());
+            Assert.assertTrue("Waiting for event to be delivered has timed out.", latch.await(30, TimeUnit.SECONDS));
+            Assert.assertTrue("10 events are expected, but is : " + results.size(), results.size() == 10);
+            target.request().delete();
+        }
+     }
 
 //    @Test
 //    //This will open a browser and test with html sse client
