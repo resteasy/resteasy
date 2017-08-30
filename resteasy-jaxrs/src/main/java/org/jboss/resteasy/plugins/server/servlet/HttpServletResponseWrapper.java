@@ -48,7 +48,7 @@ public class HttpServletResponseWrapper implements HttpResponse
       @Override
       public void flush() throws IOException
       {
-         //NOOP (RESTEASY-1650)
+         response.getOutputStream().flush();
       }
 
       @Override
