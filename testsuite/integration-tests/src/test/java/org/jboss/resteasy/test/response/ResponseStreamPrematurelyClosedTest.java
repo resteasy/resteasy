@@ -79,37 +79,45 @@ public class ResponseStreamPrematurelyClosedTest {
 
     @Test
     public void testStream() throws Exception {
+        Builder builder = client.target(generateURL("/test/document/abc/content")).request();
+
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            Builder builder = client.target(generateURL("/test/document/abc/content")).request();
-            //builder.get().readEntity explicitly on the same line below and not saved in any temp variable
-            //to let the JVM try finalizing the ClientResponse object
-            InputStream ins = builder.get().readEntity(InputStream.class);
-            //suggest jvm to do gc and wait the gc notification
-            final CountDownLatch coutDown = new CountDownLatch(1);
 
-            List<GarbageCollectorMXBean> gcbeans = ManagementFactory.getGarbageCollectorMXBeans();
-            NotificationListener listener = new NotificationListener() {
-                public void handleNotification(Notification notification, Object handback) {
-                    coutDown.countDown();
-                }
-            };
-            try {
-                for (GarbageCollectorMXBean gcbean : gcbeans) {
-                    NotificationEmitter emitter = (NotificationEmitter) gcbean;
-                    emitter.addNotificationListener(listener, null, null);
-                }
-                System.gc();
-                coutDown.await(10, TimeUnit.SECONDS);
+            if (! TestUtil.isIbmJdk()) {
+                //builder.get().readEntity explicitly on the same line below and not saved in any temp variable
+                //to let the JVM try finalizing the ClientResponse object
+                InputStream ins = builder.get().readEntity(InputStream.class);
+                //suggest jvm to do gc and wait the gc notification
+                final CountDownLatch coutDown = new CountDownLatch(1);
 
-                IOUtils.copy(ins, baos);
+                List<GarbageCollectorMXBean> gcbeans = ManagementFactory.getGarbageCollectorMXBeans();
+                NotificationListener listener = new NotificationListener() {
+                    public void handleNotification(Notification notification, Object handback) {
+                        coutDown.countDown();
+                    }
+                };
+                try {
+                    for (GarbageCollectorMXBean gcbean : gcbeans) {
+                        NotificationEmitter emitter = (NotificationEmitter) gcbean;
+                        emitter.addNotificationListener(listener, null, null);
+                    }
+                    System.gc();
+                    coutDown.await(10, TimeUnit.SECONDS);
+
+                    IOUtils.copy(ins, baos);
+                    Assert.assertEquals(10000000, baos.size());
+                } finally {
+                    //remove the listener
+                    for (GarbageCollectorMXBean gcbean : gcbeans) {
+                        ((NotificationEmitter) gcbean).removeNotificationListener(listener);
+                    }
+                }
+            } else { // workaround for Ibm jdk - doesn't allow to use NotificationEmitter with GarbageCollectorMXBean
+                //builder.get().readEntity explicitly on the same line below and not saved in any temp variable
+                //to let the JVM try finalizing the ClientResponse object
+                IOUtils.copy(builder.get().readEntity(InputStream.class), baos);
                 Assert.assertEquals(10000000, baos.size());
-            } finally {
-                //remove the listener
-                for (GarbageCollectorMXBean gcbean : gcbeans) {
-                    ((NotificationEmitter) gcbean).removeNotificationListener(listener);
-                }
             }
         }
-
     }
 }
