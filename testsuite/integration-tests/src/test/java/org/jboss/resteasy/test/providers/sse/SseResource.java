@@ -68,6 +68,28 @@ public class SseResource
        eventSink.send(event);
    }
    
+   @POST
+   @Path("/addMessageAndDisconnect")
+   public void addMessageAndDisconnect(final String message) throws IOException, InterruptedException {
+        //clear events store first
+        eventsStore.clear();
+        for (int i = 0; i < 10; i++) {
+            OutboundSseEvent event = null;
+            synchronized (eventsStore) {
+                event = sse.newEventBuilder().id(Integer.toString(eventsStore.size())).data(i + "-" + message).build();
+                eventsStore.add(event);
+            }
+            //disconnect after 3 messages
+            if (i == 3) {
+                close();
+            }
+            if (eventSink != null) {
+                eventSink.send(event);
+            }
+            Thread.sleep(1000);
+        }
+   }
+   
    @GET
    @Path("/subscribe")
    @Produces(MediaType.SERVER_SENT_EVENTS)

@@ -52,14 +52,22 @@ public class SseEventInputImpl implements EventInput, Closeable
       try
       {
          chunk = readEvent(inputStream);
+         if (chunk == null) {
+            close();
+            return null;
+         } 
       }
       catch (IOException e1)
       {
+         try
+         {
+            close();
+         }
+         catch (IOException e)
+         {
+           //TODO: add a log message
+         }
          throw new RuntimeException(Messages.MESSAGES.readEventException(), e1);
-      }
-      if (chunk == null)
-      {
-         return null;
       }
 
       final ByteArrayInputStream entityStream = new ByteArrayInputStream(chunk);
