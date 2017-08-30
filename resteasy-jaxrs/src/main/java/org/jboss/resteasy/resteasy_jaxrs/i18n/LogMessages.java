@@ -145,6 +145,10 @@ public interface LogMessages extends BasicLogger
    @Message(id = BASE + 175, value = "The use of %s is deprecated, please use javax.ws.rs.Application as a context-param instead")
    void useOfApplicationClass(String className);
    
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 195, value = "The following sub-resource methods and sub-resource locators have the same path, [%s].  The paths should be unique.  [%s]")
+   void uriAmbiguity(String path, String methodList);
+
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
    //                                                  INFO                                                 //
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
