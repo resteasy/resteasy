@@ -105,4 +105,6 @@ public interface Registry
    void addJndiResource(String jndiName, ResourceClass resourceClass);
 
    void addJndiResource(String jndiName, ResourceClass resourceClass, String basePath);
+
+   void checkAmbiguousUri();
 }

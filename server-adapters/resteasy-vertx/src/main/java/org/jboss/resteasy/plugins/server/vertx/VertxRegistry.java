@@ -172,4 +172,10 @@ public class VertxRegistry implements Registry
    {
       delegate.addJndiResource(jndiName, resourceClass, basePath);
    }
+
+   @Override
+   public void checkAmbiguousUri()
+   {
+      //no-op
+   }
 }

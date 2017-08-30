@@ -477,6 +477,7 @@ public class ResteasyDeployment
       {
          registry.addResourceFactory(factory);
       }
+      registry.checkAmbiguousUri();
    }
 
    protected void registerJndiComponentResource(String resource)
