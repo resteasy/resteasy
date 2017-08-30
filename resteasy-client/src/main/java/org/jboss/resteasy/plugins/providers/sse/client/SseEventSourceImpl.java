@@ -362,6 +362,8 @@ public class SseEventSourceImpl implements SseEventSource
          }
 
          EventHandler processor = new EventHandler(this);
+         //reset state to PENDING
+         state.compareAndSet(State.OPEN, State.PENDING);
          if (delay > 0)
          {
             executor.schedule(processor, delay, TimeUnit.MILLISECONDS);
