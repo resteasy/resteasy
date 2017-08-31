@@ -210,6 +210,26 @@ public class SseTest {
             target.request().delete();
         }
      }
+    
+    @Test
+    @InSequence(5)
+    public void testEventSourceConsumer() throws Exception
+    {
+        final List<String> results = new ArrayList<String>();
+        final AtomicInteger errors = new AtomicInteger(0);
+        Client client = new ResteasyClientBuilder().connectionPoolSize(10).build();
+        WebTarget target = client.target(generateURL("/service/server-sent-events/error"));
+        try (SseEventSource eventSource = SseEventSource.target(target).build()) {
+            eventSource.register(event -> {
+                results.add(event.toString());
+            }, ex -> {
+                errors.incrementAndGet();
+            });
+            eventSource.open();
+        }
+        
+        Assert.assertEquals("EventSource error consumer is not called", 1, errors.get());
+     }
 
 //    @Test
 //    //This will open a browser and test with html sse client

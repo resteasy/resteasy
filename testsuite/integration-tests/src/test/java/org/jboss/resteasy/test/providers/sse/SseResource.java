@@ -3,8 +3,6 @@ package org.jboss.resteasy.test.providers.sse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -14,8 +12,10 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
@@ -156,6 +156,13 @@ public class SseResource
             }
          }
       }.start();
+   }
+
+   @GET
+   @Path("/error")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void testErrorConsumer(@Context SseEventSink eventSink) {
+       throw new ServerErrorException(Response.Status.INTERNAL_SERVER_ERROR);
    }
 
 }
