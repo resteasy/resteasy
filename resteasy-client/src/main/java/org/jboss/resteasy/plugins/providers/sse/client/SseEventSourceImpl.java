@@ -271,7 +271,6 @@ public class SseEventSourceImpl implements SseEventSource
          } catch (Throwable e) {
             onErrorConsumers.forEach(consumer -> {consumer.accept(e);});
             state.set(State.CLOSED);
-            e.printStackTrace();
          } finally {
             if (connectedLatch != null) {
                connectedLatch.countDown();
@@ -292,6 +291,7 @@ public class SseEventSourceImpl implements SseEventSource
                   onEvent(event);
                   onEventConsumers.forEach(consumer -> {consumer.accept(event);});
                }
+               //TODO: look at if this really necessary
                else
                {
                   try
@@ -309,10 +309,6 @@ public class SseEventSourceImpl implements SseEventSource
 
       public void awaitConnected()
       {
-         if (connectedLatch == null)
-         {
-            return;
-         }
          try
          {
             connectedLatch.await(30, TimeUnit.SECONDS);
