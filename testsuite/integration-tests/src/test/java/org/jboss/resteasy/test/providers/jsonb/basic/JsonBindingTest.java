@@ -83,6 +83,6 @@ public class JsonBindingTest {
       logger.info("Request entity: " + entity);
       Assert.assertTrue("Failed to return the correct name", "Alfred".equals(json.getName()));
       String jsonbResponse = target.request().post(entity).readEntity(String.class);
-      Assert.assertEquals("JsonBindingProvider is not enabled", "{\"color\":\"ginger\",\"domesticated\":true,\"name\":\"Alfred\",\"sort\":\"semi-british\"}", jsonbResponse);
+      Assert.assertEquals("JsonBindingProvider is not enabled", "{\"color\":\"ginger\",\"sort\":\"semi-british\",\"name\":\"Alfred\",\"domesticated\":true}", jsonbResponse);
    }
 }

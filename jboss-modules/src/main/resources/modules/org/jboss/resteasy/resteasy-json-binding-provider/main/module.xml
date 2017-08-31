@@ -34,7 +34,7 @@
 
     <dependencies>
         <module name="org.glassfish.javax.json"/>
-        <module name="javax.json.bind.api"/>
+        <module name="javax.json.bind.api" export="true"/>
         <module name="org.eclipse.yasson"/>
         <module name="javax.api"/>
         <module name="javax.annotation.api"/>
