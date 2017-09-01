@@ -212,7 +212,7 @@ public class SseTest {
      }
     
     @Test
-    @InSequence(5)
+    @InSequence(6)
     public void testEventSourceConsumer() throws Exception
     {
         final List<String> results = new ArrayList<String>();
