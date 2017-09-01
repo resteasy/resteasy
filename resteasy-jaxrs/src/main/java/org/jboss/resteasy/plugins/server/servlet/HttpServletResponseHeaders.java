@@ -66,6 +66,10 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
 
    public void putSingle(String key, Object value)
    {
+      if (value == null)
+      {
+         return;
+      }
       cachedHeaders.putSingle(key, value);
       RuntimeDelegate.HeaderDelegate delegate = factory.getHeaderDelegate(value.getClass());
       if (delegate != null)
@@ -88,6 +92,9 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
 
    protected void addResponseHeader(String key, Object value)
    {
+      if (value == null) {
+         return;
+      }
       RuntimeDelegate.HeaderDelegate delegate = factory.getHeaderDelegate(value.getClass());
       if (delegate != null)
       {
@@ -164,6 +171,10 @@ public class HttpServletResponseHeaders implements MultivaluedMap<String, Object
 
    protected void putResponseHeader(String key, Object value)
    {
+      if (value == null)
+      {
+         return;
+      }
       RuntimeDelegate.HeaderDelegate delegate = factory.getHeaderDelegate(value.getClass());
       if (delegate != null)
       {
