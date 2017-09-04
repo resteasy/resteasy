@@ -34,6 +34,7 @@ import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.jaxrs.ReaderInterceptorRegistry;
 import org.jboss.resteasy.core.interception.jaxrs.WriterInterceptorRegistry;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
+import org.jboss.resteasy.spi.AsyncStreamProvider;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -582,6 +583,18 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public Map<Class<?>, AsyncResponseProvider> getAsyncResponseProviders()
    {
       return getDelegate().getAsyncResponseProviders();
+   }
+
+   @Override
+   public <T> AsyncStreamProvider<T> getAsyncStreamProvider(Class<T> type)
+   {
+      return getDelegate().getAsyncStreamProvider(type);
+   }
+   
+   @Override
+   public Map<Class<?>, AsyncStreamProvider> getAsyncStreamProviders()
+   {
+      return getDelegate().getAsyncStreamProviders();
    }
 
    @Override
