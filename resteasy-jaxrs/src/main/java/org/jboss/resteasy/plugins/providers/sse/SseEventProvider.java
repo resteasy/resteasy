@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.sse;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -98,7 +99,6 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
                payloadClass = Object.class;
             }
 
-            entityStream.write(SseConstants.DATA_LEAD);
             MessageBodyWriter writer = ResteasyProviderFactory.getInstance().getMessageBodyWriter(payloadClass,
                   payloadType, annotations, event.getMediaType());
 
@@ -147,6 +147,7 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
                      }                    
                   });
             entityStream.write(SseConstants.EOL);
+
          }
 
       }
