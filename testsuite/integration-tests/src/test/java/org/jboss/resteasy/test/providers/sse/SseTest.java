@@ -41,7 +41,7 @@ public class SseTest {
         war.addAsWebInfResource("org/jboss/resteasy/test/providers/sse/web.xml","web.xml");
         war.addAsWebResource("org/jboss/resteasy/test/providers/sse/index.html","index.html");
         war.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
-        return TestUtil.finishContainerPrepare(war, null, SseApplication.class, GreenHouse.class, SseResource.class, AnotherSseResource.class);
+        return TestUtil.finishContainerPrepare(war, null, SseApplication.class, GreenHouse.class, SseResource.class, AnotherSseResource.class, EscapingSseResource.class);
     }
 
     private String generateURL(String path) {
@@ -279,6 +279,41 @@ public class SseTest {
         Assert.assertTrue("3 data fields are expected, but is : " + lines.length, lines.length == 3);
         Assert.assertEquals("expect second data field value is : " + lines[1], "data1b", lines[1]);
         
+     }
+
+    @Test
+    public void testEscapedMessage() throws Exception
+    {
+       final CountDownLatch latch = new CountDownLatch(3);
+       final AtomicInteger errors = new AtomicInteger(0);
+       final List<String> results = new ArrayList<String>();
+       final List<String> sent = new ArrayList<String>();
+       sent.add("foo\nbar");
+       sent.add("foo\nbar");
+       sent.add("foo\nbar");
+       Client client = ClientBuilder.newBuilder().build();
+       WebTarget target = client.target(generateURL("/service/sse-escaping"));
+       SseEventSource msgEventSource = SseEventSource.target(target).build();
+       try (SseEventSource eventSource = msgEventSource)
+       {
+          Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
+          eventSource.register(event -> {
+             results.add(event.readData(String.class));
+             latch.countDown();
+          }, ex -> {
+             errors.incrementAndGet();
+             ex.printStackTrace();
+             throw new RuntimeException(ex);
+          });
+          eventSource.open();
+          
+
+          Assert.assertEquals(0, errors.get());
+          Assert.assertTrue("Waiting for event to be delivered has timed out.", latch.await(30, TimeUnit.SECONDS));
+        }
+        Assert.assertFalse("SseEventSource is not closed", msgEventSource.isOpen());
+        Assert.assertTrue("3 messages are expected, but is : " + results.size(), results.size() == 3);
+        Assert.assertEquals("3 messages not equal", sent, results);
      }
 
 //    @Test
