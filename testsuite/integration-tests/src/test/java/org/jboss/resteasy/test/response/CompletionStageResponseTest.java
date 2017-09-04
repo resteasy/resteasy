@@ -38,7 +38,8 @@ public class CompletionStageResponseTest {
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(CompletionStageResponseTest.class.getSimpleName());
       war.addClass(CompletionStageResponseTestClass.class);
-      return TestUtil.finishContainerPrepare(war, null, CompletionStageResponseMessageBodyWriter.class, CompletionStageResponseResource.class);
+      war.addAsLibrary(TestUtil.resolveDependency("io.reactivex.rxjava2:rxjava:2.1.3"));
+      return TestUtil.finishContainerPrepare(war, null, CompletionStageResponseMessageBodyWriter.class, CompletionStageResponseResource.class, SingleProvider.class);
    }
 
    private String generateURL(String path) {
@@ -182,5 +183,19 @@ public class CompletionStageResponseTest {
       Assert.assertEquals(500, response.getStatus());
       Assert.assertTrue(entity.contains(CompletionStageResponseResource.EXCEPTION));
       response.close();
+   }
+
+   /**
+    * @tpTestDetails Resource method returns CompletionStage<String>.
+    * @tpSince RESTEasy 4.0
+    */
+   @Test
+   public void testTextSingle() throws Exception
+   {
+      Invocation.Builder request = client.target(generateURL("/textSingle")).request();
+      Response response = request.get();
+      String entity = response.readEntity(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals(CompletionStageResponseResource.HELLO, entity);
    }
 }
