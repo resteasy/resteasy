@@ -22,30 +22,12 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<module xmlns="urn:jboss:module:1.3" name="org.jboss.resteasy.resteasy-jaxrs">
+<module xmlns="urn:jboss:module:1.3" name="org.reactivestreams">
     <resources>
         <!-- Insert resources here -->
     </resources>
 
     <dependencies>
-        <module name="org.jboss.resteasy.resteasy-jaxrs-services" services="import"/>
-        <module name="javax.api"/>
-        <module name="javax.annotation.api"/>
-        <module name="javax.activation.api"/>
-        <module name="javax.validation.api"/>
-        <module name="javax.enterprise.api"/>
-        <module name="javax.xml.bind.api"/>
-        <module name="javax.ws.rs.api"/>
-        <module name="javax.json.bind.api"/>
-        <module name="org.apache.commons.io"/>
-        <module name="org.apache.commons.codec" />
-        <module name="org.apache.httpcomponents"/>
-        <module name="org.apache.log4j"/>
-        <module name="org.hibernate.validator" optional="true" services="import"/>
-        <module name="org.slf4j" />
-        <module name="javax.servlet.api"/>
-        <module name="org.jboss.resteasy.resteasy-validator-provider-11" optional="true" services="export" export="true"/>
-        <module name="org.jboss.logging"/>
-        <module name="org.reactivestreams" export="true"/>
+        <!-- Insert dependencies here -->
     </dependencies>
 </module>
