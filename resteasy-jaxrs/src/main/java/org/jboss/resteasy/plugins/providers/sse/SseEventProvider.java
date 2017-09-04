@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.sse;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -96,7 +97,6 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
                payloadClass = Object.class;
             }
 
-            entityStream.write(SseConstants.DATA_LEAD);
             MessageBodyWriter writer = ResteasyProviderFactory.getInstance().getMessageBodyWriter(payloadClass,
                   payloadType, annotations, event.getMediaType());
 
@@ -106,9 +106,54 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
                      Response.Status.INTERNAL_SERVER_ERROR);
             }
 
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
             writer.writeTo(event.getData(), payloadClass, payloadType, annotations, event.getMediaType(), httpHeaders,
-                  entityStream);
-            entityStream.write(SseConstants.EOL);
+                  baos);
+            
+            // write the response by line chunks
+            byte[] bytes = baos.toByteArray();
+            int start = 0;
+            for (int i = 0; i < bytes.length; i++)
+            {
+               byte b = bytes[i];
+               // LF
+               if(b == '\n') 
+               {
+                  entityStream.write(SseConstants.DATA_LEAD);
+                  entityStream.write(bytes, start, i-start);
+                  entityStream.write(SseConstants.EOL);
+                  start = i+1;
+               }
+               else if(b == '\r') 
+               {
+                  if(i + 1 < bytes.length
+                        && bytes[i+1] == '\n') 
+                  {
+                     // CR LF
+                     entityStream.write(SseConstants.DATA_LEAD);
+                     entityStream.write(bytes, start, i-start);
+                     entityStream.write(SseConstants.EOL);
+                     start = i+2;
+                     // eat the following LF
+                     i++;
+                  }
+                  else
+                  {
+                     // CR
+                     entityStream.write(SseConstants.DATA_LEAD);
+                     entityStream.write(bytes, start, i-start);
+                     entityStream.write(SseConstants.EOL);
+                     start = i+1;
+                  }
+               }
+            }
+            // any remaining?
+            if(start < bytes.length)
+            {
+               entityStream.write(SseConstants.DATA_LEAD);
+               entityStream.write(bytes, start, bytes.length - start);
+               entityStream.write(SseConstants.EOL);
+            }
          }
 
       }
