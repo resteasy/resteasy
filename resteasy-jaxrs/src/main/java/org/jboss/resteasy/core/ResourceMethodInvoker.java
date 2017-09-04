@@ -8,6 +8,7 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
+import org.jboss.resteasy.spi.AsyncStreamProvider;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
@@ -39,7 +40,6 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -328,14 +328,25 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          }
       }
       
-      CompletionStageResponseConsumer completionStageResponseConsumer = null;
+      AsyncResponseConsumer asyncStreamResponseConsumer = null;
       @SuppressWarnings("rawtypes")
       AsyncResponseProvider asyncResponseProvider = resourceMethodProviderFactory.getAsyncResponseProvider(method.getReturnType());
+      @SuppressWarnings("rawtypes")
+      AsyncStreamProvider asyncStreamProvider = null;
       
       if (asyncResponseProvider != null)
       {
-         completionStageResponseConsumer = new CompletionStageResponseConsumer(this);
+         asyncStreamResponseConsumer = AsyncResponseConsumer.makeAsyncResponseConsumer(this, asyncResponseProvider);
       }
+      else
+      {
+         asyncStreamProvider = resourceMethodProviderFactory.getAsyncStreamProvider(method.getReturnType());
+         if (asyncStreamProvider != null)
+         {
+            asyncStreamResponseConsumer = AsyncResponseConsumer.makeAsyncResponseConsumer(this, asyncStreamProvider);
+         }
+      }
+      
 
       Object rtn = null;
       try
@@ -344,9 +355,9 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       catch (RuntimeException ex)
       {
-         if (completionStageResponseConsumer != null)
+         if (asyncStreamResponseConsumer != null)
          {
-            completionStageResponseConsumer.complete();
+            asyncStreamResponseConsumer.complete();
          }
          if (request.getAsyncContext().isSuspended())
          {
@@ -367,11 +378,9 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
       }
 
-      if (completionStageResponseConsumer != null)
+      if(asyncStreamResponseConsumer != null)
       {
-         @SuppressWarnings("unchecked")
-         CompletionStage<?> stage = asyncResponseProvider.toCompletionStage(rtn);
-         stage.whenComplete(completionStageResponseConsumer);
+         asyncStreamResponseConsumer.subscribe(rtn);
          return null;
       }
       if (request.getAsyncContext().isSuspended() || request.wasForwarded())
