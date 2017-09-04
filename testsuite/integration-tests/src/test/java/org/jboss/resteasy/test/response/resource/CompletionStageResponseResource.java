@@ -11,6 +11,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import io.reactivex.Single;
+
 @Path("")
 public class CompletionStageResponseResource {
    
@@ -31,7 +33,22 @@ public class CompletionStageResponseResource {
             });
       return cs;
    }
-   
+
+   @GET
+   @Path("textSingle")
+   @Produces("text/plain")
+   public Single<String> textSingle() {
+      return Single.create(emitter -> {
+         ExecutorService executor = Executors.newSingleThreadExecutor();
+         executor.submit(
+               new Runnable() {
+                  public void run() {
+                     emitter.onSuccess(HELLO);
+                  }
+               });
+      });
+   }
+
    @GET
    @Path("testclass")
    public CompletionStage<CompletionStageResponseTestClass> entityTestClass() {
