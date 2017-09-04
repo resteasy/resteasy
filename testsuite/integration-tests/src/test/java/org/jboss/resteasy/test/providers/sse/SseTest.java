@@ -54,6 +54,7 @@ public class SseTest {
        final CountDownLatch latch = new CountDownLatch(5);
        final AtomicInteger errors = new AtomicInteger(0);
        final List<String> results = new ArrayList<String>();
+       final List<String> sent = new ArrayList<String>();
        Client client = ClientBuilder.newBuilder().build();
        WebTarget target = client.target(generateURL("/service/server-sent-events"));
        SseEventSource msgEventSource = SseEventSource.target(target).build();
@@ -61,7 +62,7 @@ public class SseTest {
        {
           Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
           eventSource.register(event -> {
-             results.add(event.toString());
+             results.add(event.readData(String.class));
              latch.countDown();
           }, ex -> {
              errors.incrementAndGet();
@@ -75,7 +76,9 @@ public class SseTest {
           WebTarget messageTarget = messageClient.target(generateURL("/service/server-sent-events"));
           for (int counter = 0; counter < 5; counter++)
           {
-             messageTarget.request().post(Entity.text("message " + counter));
+             String msg = "message " + counter;
+             sent.add(msg);
+             messageTarget.request().post(Entity.text(msg));
           }
           Assert.assertEquals(0, errors.get());
           Assert.assertTrue("Waiting for event to be delivered has timed out.", latch.await(30, TimeUnit.SECONDS));
@@ -84,6 +87,7 @@ public class SseTest {
         }
         Assert.assertFalse("SseEventSource is not closed", msgEventSource.isOpen());
         Assert.assertTrue("5 messages are expected, but is : " + results.size(), results.size() == 5);
+        Assert.assertEquals("5 messages not equal", sent, results);
      }
     
     //Test for Last-Event-Id. This test uses the message items stores in testAddMessage()
