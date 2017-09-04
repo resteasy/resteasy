@@ -62,7 +62,6 @@ public class PublisherResponseTest {
       client = null;
    }
 
-
    /**
     * @tpTestDetails Resource method returns Publisher<String>.
     * @tpSince RESTEasy 4.0
