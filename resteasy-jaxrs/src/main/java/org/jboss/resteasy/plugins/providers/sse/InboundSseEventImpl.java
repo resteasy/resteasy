@@ -34,7 +34,7 @@ public class InboundSseEventImpl implements InboundSseEvent
       private String name;
       private String id;
       private long reconnectDelay = -1;
-      private final ByteArrayOutputStream dataStream;
+      private final EventByteArrayOutputStream dataStream;
       private final Annotation[] annotations;
       private final MediaType mediaType;
       private final MultivaluedMap<String, String> headers;
@@ -47,7 +47,7 @@ public class InboundSseEventImpl implements InboundSseEvent
          this.headers = headers;
 
          this.commentBuilder = new StringBuilder();
-         this.dataStream = new ByteArrayOutputStream();
+         this.dataStream = new EventByteArrayOutputStream();
       }
 
       public Builder name(String name)
@@ -100,14 +100,9 @@ public class InboundSseEventImpl implements InboundSseEvent
          //from https://html.spec.whatwg.org/multipage/server-sent-events.html#processField
          //If the data buffer's last character is a U+000A LINE FEED (LF) character, 
          //then remove the last character from the data buffer
-         byte[] result = dataStream.toByteArray();
-         if (result.length > 0 && '\n' == result[result.length-1]) 
-         {
-            result = Arrays.copyOfRange(result, 0, result.length-1);
-         }
          return new InboundSseEventImpl(name, id,
                commentBuilder.length() > 0 ? commentBuilder.substring(0, commentBuilder.length() - 1) : null,
-               reconnectDelay, result, annotations, mediaType, headers);
+               reconnectDelay, dataStream.getEventData(), annotations, mediaType, headers);
       }
    }
 
@@ -235,4 +230,5 @@ public class InboundSseEventImpl implements InboundSseEvent
       return "InboundSseEvent{id=" + id + '\'' + ", comment=" + (comment == null ? "[]" : '\'' + comment + '\'')
             + ", data=" + s + '}';
    }
+
 }
