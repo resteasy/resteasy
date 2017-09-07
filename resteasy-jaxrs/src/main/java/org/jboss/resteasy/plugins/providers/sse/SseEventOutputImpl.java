@@ -30,7 +30,6 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    private final ResteasyAsynchronousContext asyncContext;
    private final HttpResponse response;
    private volatile boolean closed;
-   private static final byte[] END = "\r\n\r\n".getBytes();
    private final Map<Class<?>, Object> contextDataMap;
    private boolean responseFlushed = false;
    
@@ -77,7 +76,8 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
          //set back to client 200 OK to implies the SseEventOutput is ready
          try
          {
-            response.getOutputStream().write(END);
+            response.getOutputStream().write(SseConstants.EOL);
+            response.getOutputStream().write(SseConstants.EOL);
             response.flushBuffer();
             responseFlushed = true;
          }
@@ -120,9 +120,9 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             writer.writeTo(event, event.getClass(), null, new Annotation[]{}, event.getMediaType(), null, bout);
             response.getOutputStream().write(bout.toByteArray());
+            response.flushBuffer();
          }
-         response.getOutputStream().write(END);
-         response.flushBuffer();
+        
       } catch (Exception e) {
          throw new ProcessingException(e);
       } finally {
