@@ -10,18 +10,18 @@ public class EventByteArrayOutputStream extends ByteArrayOutputStream
       // delimiter is \r or \n
       if (count >=2 && this.buf[count-2] == this.buf[count-1])
       {
-         count = count -1;
+         return Arrays.copyOf(buf, count -1);
       }
       //delimiter is 
-      if (count >= 1 && buf[count-2] == '\r' && buf[count-1] == '\n') {
-         count = count -2;
+      if (count >= 2 && buf[count-2] == '\r' && buf[count-1] == '\n') {
+         Arrays.copyOf(buf, count-2);
       }
       return Arrays.copyOf(buf, count);
    }
    
    public synchronized byte[] getEventData()
    {
-      if (buf[count-1] == '\n')
+      if (count >=1 && buf[count-1] == '\n')
       {
          return Arrays.copyOf(buf, count - 1);
       }
