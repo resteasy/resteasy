@@ -3,6 +3,7 @@ package org.jboss.resteasy.plugins.server.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.DecoderResult;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpUtil;
@@ -56,6 +57,22 @@ public class RestEasyHttpRequestDecoder extends MessageToMessageDecoder<io.netty
     {
         boolean keepAlive = HttpUtil.isKeepAlive(request);
         final NettyHttpResponse response = new NettyHttpResponse(ctx, keepAlive, dispatcher.getProviderFactory(), request.method());
+        
+        DecoderResult decoderResult = request.decoderResult();
+        if (decoderResult.isFailure())
+        {
+           Throwable t = decoderResult.cause();
+           if (t != null && t.getLocalizedMessage() != null)
+           {
+              response.sendError(400, t.getLocalizedMessage());
+           }
+           else
+           {
+              response.sendError(400);
+           }
+           return;
+        }
+        
         final ResteasyHttpHeaders headers;
         final ResteasyUriInfo uriInfo;
         try
