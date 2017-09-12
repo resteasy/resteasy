@@ -391,9 +391,9 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       if (request.getAsyncContext().isSuspended())
       {
-         if(method.getReturnType().equals(void.class))
+         if(method.isAsynchronous())
             return null;
-         // resume an async request that returns something
+         // resume a sync request that got turned async by filters
          request.getAsyncContext().getAsyncResponse().resume(rtn);
          return null;
       }
@@ -575,5 +575,10 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    public MediaType[] getConsumes()
    {
       return method.getConsumes();
+   }
+
+   public void markMethodAsAsync()
+   {
+      method.markAsynchronous();
    }
 }
