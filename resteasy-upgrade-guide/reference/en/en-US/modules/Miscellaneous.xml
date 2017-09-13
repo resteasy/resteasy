@@ -66,7 +66,7 @@ public class SubResource {
            anotherResourceLocator, reside in the same class, TestResource3.  Both resources are declared
            to use the same path, "anotherTest/y".  As in the previous case, because the REST verb
            "POST" is declared on method anotherResource, and method anotherResourceLocator is defined as
-           a sub-resource locator, the endpoint, anotherResource, is the one selected by the matching rules.
+           a sub-resource locator, the endpoint anotherResource is the one selected by the matching rules.
        </para>
    <programlisting>
 @Path("anotherTest")
