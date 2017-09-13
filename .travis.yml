@@ -9,7 +9,7 @@ jdk:
 env:
   - SERVER_VERSION=10.1.0.Final
   - SERVER_VERSION=10.0.0.Final
-  - SERVER_VERSION=11.0.0.Beta1
+  - SERVER_VERSION=11.0.0.CR1
 cache:
  directories:
   - $HOME/.m2

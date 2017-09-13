@@ -143,14 +143,21 @@ public class SseEventSourceImpl implements SseEventSource
    @Override
    public void open()
    {
+      open(null);
+   }
+   
+
+   public void open(String lastEventId)
+   {
       if (!state.compareAndSet(State.CLOSED, State.PENDING))
       {
          throw new IllegalStateException(Messages.MESSAGES.eventSourceIsNotReadyForOpen());
       }
-      EventHandler handler = new EventHandler(reconnectDelay, null);
+      EventHandler handler = new EventHandler(reconnectDelay, lastEventId);
       executor.submit(handler);
       handler.awaitConnected();
    }
+   
    @Override
    public boolean isOpen()
    {
@@ -264,7 +271,6 @@ public class SseEventSourceImpl implements SseEventSource
          } catch (Throwable e) {
             onErrorConsumers.forEach(consumer -> {consumer.accept(e);});
             state.set(State.CLOSED);
-            e.printStackTrace();
          } finally {
             if (connectedLatch != null) {
                connectedLatch.countDown();
@@ -285,27 +291,12 @@ public class SseEventSourceImpl implements SseEventSource
                   onEvent(event);
                   onEventConsumers.forEach(consumer -> {consumer.accept(event);});
                }
-               else
-               {
-                  try
-                  {
-                     Thread.sleep(100);
-                  }
-                  catch (InterruptedException e)
-                  {
-                     // Ignore
-                  }
-               }
             }
          }
       }
 
       public void awaitConnected()
       {
-         if (connectedLatch == null)
-         {
-            return;
-         }
          try
          {
             connectedLatch.await(30, TimeUnit.SECONDS);
@@ -355,6 +346,8 @@ public class SseEventSourceImpl implements SseEventSource
          }
 
          EventHandler processor = new EventHandler(this);
+         //reset state to PENDING
+         state.compareAndSet(State.OPEN, State.PENDING);
          if (delay > 0)
          {
             executor.schedule(processor, delay, TimeUnit.MILLISECONDS);

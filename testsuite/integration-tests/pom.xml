@@ -167,6 +167,13 @@
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-json-binding-provider</artifactId>
+            <version>${version.resteasy.testsuite}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-yaml-provider</artifactId>
             <version>${version.resteasy.testsuite}</version>
             <scope>provided</scope>
@@ -286,7 +293,10 @@
             <artifactId>httpclient</artifactId>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpasyncclient</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
@@ -341,6 +351,37 @@
                 </excludes>
             </testResource>
         </testResources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>default-test</id>
+                            <configuration>
+                                <includes>
+                                    <include>**/Test*.java</include>
+                                </includes>
+                                <excludes>
+                                     <!-- Tests requires excluding JsonBindingProvider-->
+                                     <exclude>**/JsonBindingTest.java</exclude>
+                                </excludes>
+                                <classpathDependencyExcludes>
+                                    <classpathDependencyExcludes>org.jboss.resteasy:resteasy-json-binding-provider</classpathDependencyExcludes>
+                                </classpathDependencyExcludes>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <!-- Add JsonBindingProvider tests here-->
+                            <id>jsonb-test</id>
+                            <configuration>
+                                <includes>
+                                    <include>**/JsonBindingTest.java</include>
+                                </includes>
+                            </configuration>
+                        </execution>
+                    </executions>
+            </plugin>
+        </plugins>
     </build>
 
 </project>

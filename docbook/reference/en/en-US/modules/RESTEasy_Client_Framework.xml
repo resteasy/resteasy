@@ -217,6 +217,278 @@ public interface LibraryService {
 }</programlisting>
         </para>
      </section>
+     
+    <section id="Response_proxies">
+        <title>Response proxies</title>
+        <para>
+           A further extension implemented by the Resteasy client proxy framework is the "response proxy facility",
+           where a client proxy method returns an interface that represents the information
+           contained in a <classname>javax.ws.rs.core.Response</classname>. Such an interface must be annotated with
+           <classname>@ResponseObject</classname> from package <classname>org.jboss.resteasy.annotations</classname>,
+           and its methods may be further annotated with <classname>@Body</classname>, <classname>@LinkHeaderParam</classname>,
+           and <classname>@Status</classname> from the same package,  as well as <classname>javax.ws.rs.HeaderParam</classname>.
+           Consider the following example.
+        </para>
+        
+        <programlisting>
+   @ResponseObject
+   public interface TestResponseObject {
+      
+      @Status
+      int status();
+
+      @Body
+      String body();
+
+      @HeaderParam("Content-Type")
+      String contentType();
+      
+      ClientResponse response();
+   }
+
+   @Path("test")
+   public interface TestClient {
+   
+      @GET
+      TestResponseObject get();
+   }
+
+   @Path("test")
+   public static class TestResource {
+
+      @GET
+      @Produces("text/plain")
+      public String get() {
+         return "ABC";
+      }
+   }
+        </programlisting>
+        
+        <para>
+           Here, <classname>TestClient</classname> will define the client side proxy for <classname>TestResource</classname>.
+           Note that <methodname>TestResource.get()</methodname> returns a <classname>String</classname> but the proxy
+           based on <classname>TestClient</classname> will return a <classname>TestResponseObject</classname> on a 
+           call to <methodname>get()</methodname>:
+        </para>
+
+        <programlisting>
+      Client client = ClientBuilder.newClient();
+      TestClient ClientInterface = ProxyBuilder.builder(TestClient.class, client.target("http://localhost:8081")).build();
+      TestResponseObject tro = ClientInterface.get();
+        </programlisting>
+        
+        <para>
+           The methods of <classname>TestResponseObject</classname> provide access to various pieces of information about the
+           response received from <methodname>TestResponse.get()</methodname>. This is where the annotations on those methods
+           come into play. <methodname>status()</methodname> is annotated with <classname>@Status</classname>, and a call to
+           <methodname>status()</methodname> returns the HTTP status. Similarly, <methodname>body()</methodname> returns the
+           returned entity, and <methodname>contentType()</methodname> returns the value of the response header Content-Type:
+        </para>
+        
+        <programlisting>
+      System.out.println("status: " + tro.status());
+      System.out.println("entity: " + tro.body());
+      System.out.println("Content-Type: " + tro.contentType());
+        </programlisting>
+        
+        <para>
+           will yield
+        </para>
+
+        <programlisting>
+status: 200
+entity: ABC
+Content-Type: text/plain;charset=UTF-8        
+        </programlisting>
+        
+        <para>
+           Note that there is one other method in <classname>TestResponseObject</classname>, <methodname>response()</methodname>,
+           that has no annotation. When Resteasy sees a method in an interface annotated with <classname>@ResponseObject</classname>
+           that returns a <classname>javax.ws.rs.core.Response</classname> (or a subclass thereof), it will return a
+           <classname>org.jboss.resteasy.client.jaxrs.internal.ClientResponse</classname>. For example,
+        </para>
+        
+        <programlisting>
+      ClientResponse clientResponse =  tro.response();
+      System.out.println("Content-Length: " + clientResponse.getLength());
+        </programlisting>
+        
+        <para>
+           Perhaps the most interesting piece of the response proxy facility is the treatment of methods 
+           annotated with <classname>@LinkHeaderParam</classname>. Its simplest use is to assist in 
+           accessing a <classname>javax.ws.rs.core.Link</classname> returned by a resource method. For 
+           example, let's add
+        </para>
+        
+        <programlisting>
+      @GET
+      @Path("/link-header")
+      public Response getWithHeader(@Context UriInfo uri) {
+         URI subUri = uri.getAbsolutePathBuilder().path("next-link").build();
+         Link link = new LinkBuilderImpl().uri(subUri).rel("nextLink").build();
+         return Response.noContent().header("Link", link.toString()).build();
+      }
+        </programlisting>
+        
+        <para>
+           to <classname>TestResource</classname>, add
+        </para>
+        
+        <programlisting>
+       @GET
+       @Path("link-header")
+       ResponseObjectInterface performGetBasedOnHeader();
+        </programlisting>
+        
+        <para>
+           to <classname>ClientInterface</classname>, and add
+        </para>
+        
+        <programlisting>
+       @LinkHeaderParam(rel = "nextLink")
+       URI nextLink();
+        </programlisting>
+        
+        <para>
+           to <classname>ResponseObjectInterface</classname>. Then calling       
+        </para>
+        
+        <programlisting>
+      ResponseObjectInterface obj = ClientInterface.performGetBasedOnHeader();
+      System.out.println("nextLink(): " + obj.nextLink());
+        </programlisting>
+        
+        <para>
+           will access the <classname>LinkHeader</classname> returned by <methodname>TestResource.getWithHeader()</methodname>:
+        </para>
+        
+        <programlisting>
+nextlink: http://localhost:8081/test/link-header/next-link
+        </programlisting>
+        
+        <para>
+           Last but not least, let's add
+        </para>
+        
+        <programlisting>
+      @GET
+      @Produces("text/plain")
+      @Path("/link-header/next-link")
+      public String getHeaderForward() {
+         return "forwarded";
+      }
+        </programlisting>
+        
+        <para>
+           to <classname>TestResource</classname> and
+        </para>
+        
+        <programlisting>
+       @GET
+       @LinkHeaderParam(rel = "nextLink")
+       String followNextLink();
+        </programlisting>
+        
+        <para>
+           to <classname>ResponseObjectInterface</classname>. Note that, unlike
+           <methodname>ResponseObjectInterface.nextLink()</methodname>, <methodname>followNextLink()</methodname>
+           is annotated with <classname>@GET</classname>; that is, it qualifies as (the client proxy to) a resource
+           method. When executing <methodname>followNextLink()</methodname>, Resteasy will retrieve the value
+           of the <classname>Link</classname> returned by <methodname>TestResource.getWithHeader()</methodname>
+           and then will make a GET invocation on the <classname>URL</classname> in that <classname>Link</classname>.
+           Calling
+        </para>
+        
+        <programlisting>
+      System.out.println("followNextLink(): " + obj.followNextLink());
+        </programlisting>
+        
+        <para>
+           causes Resteasy to retrieve the <classname>URL</classname> http://localhost:8081/test/link-header/next-link
+           from the call to <methodname>TestResource.getWithHeader()</methodname> and then perform a GET on it,
+           invoking <methodname>TestResource.getHeaderForward()</methodname>:
+        </para>
+        
+        <programlisting>
+followNextLink(): forwarded
+        </programlisting>
+        
+        <para><emphasis role="bold">Note.</emphasis> This facility for extracting a <classname>URL</classname>
+        and following it is a step toward supporting the Representation State Transfer principle of HATEOAS.
+        For more information, see
+        <ulink url="http://shop.oreilly.com/product/0636920028925.do">RESTful Java with JAX-RS 2.0, 2nd Edition</ulink>
+        by Bill Burke.
+        </para>
+    </section>
+    
+    <section id="ClientURI">
+      <title>Giving client proxy an ad hoc URI</title>
+      
+      <para>
+          Client proxies figure out appropriate URIs for targeting resource methods by looking at <classname>@Path</classname> 
+          annotations in the client side interface, but it is also possible to pass URIs explicitly to the proxy through the
+          use of the <classname>org.jboss.resteasy.annotations.ClientURI</classname> annotation. For example, let 
+          <classname>TestResource</classname> be a client side interface and <classname>TestResourceImpl</classname> a server resource:
+      </para>
+      
+      <programlisting>
+   @Path("")
+   public interface TestResource {
+      
+      @GET
+      @Path("dispatch")
+      public String dispatch(@ClientURI String uri);
+   }
+   
+   @Path("")
+   public static class TestResourceImpl {
+      
+      @GET
+      @Path("a")
+      public String a() {
+         return "a";
+      }
+      
+      @GET
+      @Path("b")
+      public String b() {
+         return "b";
+      }
+   }
+      </programlisting>
+      
+      <para>
+          Calling <methodname>TestResource.dispatch()</methodname> allows specifying a specific URI for accessing a resource method. In the
+          following, let BASE_URL be the address of the <classname>TestResourceImpl</classname> resource.
+      </para>
+      
+      <programlisting>
+   private static String BASE_URL = "http://localhost:8081/";
+   ...
+   public void test() throws Exception
+   {
+      ResteasyClient client = new ResteasyClientBuilder().build();
+      TestResource proxy = client.target(BASE_URL).proxy(TestResource.class);
+      String name = proxy.dispatch(BASE_URL + "a");
+      System.out.println("name: " + name);
+      name = proxy.dispatch(BASE_URL + "b");
+      System.out.println("name: " + name);
+      client.close();
+   }
+      </programlisting>
+      
+      <para>
+          Then passing "http://localhost:8081/a" and "http://localhost/b" to <methodname>dispatch()</methodname> invokes
+          <methodname>TestResourceImp.a()</methodname> and <methodname>TestResourceImpl.b()</methodname> respectively, yielding
+          the output
+      </para>
+      
+      <programlisting>
+name: a
+name: b
+      </programlisting>
+    </section>
+    
     <section id="Sharing_interfaces">
         <title>Sharing an interface between client and server</title>
         <para>
