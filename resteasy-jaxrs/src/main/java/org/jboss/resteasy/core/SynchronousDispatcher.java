@@ -99,13 +99,9 @@ public class SynchronousDispatcher implements Dispatcher
             preprocessor.preProcess(request);
          }
          ContainerRequestFilter[] requestFilters = providerFactory.getContainerRequestFilterRegistry().preMatch();
-         PreMatchContainerRequestContext requestContext = new PreMatchContainerRequestContext(request);
-         for (ContainerRequestFilter filter : requestFilters)
-         {
-            filter.filter(requestContext);
-            aborted = requestContext.getResponseAbortedWith();
-            if (aborted != null) break;
-         }
+         // FIXME: support async
+         PreMatchContainerRequestContext requestContext = new PreMatchContainerRequestContext(request, requestFilters, null);
+         aborted = requestContext.filter();
       }
       catch (Exception e)
       {
@@ -120,7 +116,7 @@ public class SynchronousDispatcher implements Dispatcher
     *
     * @return true if request should continue
     */
-   protected boolean preprocess(HttpRequest request, HttpResponse response)
+   protected void preprocess(HttpRequest request, HttpResponse response, Runnable continuation)
    {
       Response aborted = null;
       try
@@ -130,26 +126,28 @@ public class SynchronousDispatcher implements Dispatcher
             preprocessor.preProcess(request);
          }
          ContainerRequestFilter[] requestFilters = providerFactory.getContainerRequestFilterRegistry().preMatch();
-         PreMatchContainerRequestContext requestContext = new PreMatchContainerRequestContext(request);
-         for (ContainerRequestFilter filter : requestFilters)
+         PreMatchContainerRequestContext requestContext = new PreMatchContainerRequestContext(request, requestFilters, continuation);
+         aborted = requestContext.filter();
+         System.out.println("Filter done: aborted: "+aborted);
+         System.out.println("Filter done: suspended: "+requestContext.isSuspended());
+         if(aborted == null)
          {
-            filter.filter(requestContext);
-            aborted = requestContext.getResponseAbortedWith();
-            if (aborted != null) break;
+            if(requestContext.isSuspended())
+               return;
          }
       }
       catch (Exception e)
       {
          //logger.error("Failed in preprocess, mapping exception", e);
          writeException(request, response, e);
-         return false;
+         return;
       }
       if (aborted != null)
       {
          writeResponse(request, response, aborted);
-         return false;
+         return;
       }
-      return true;
+      continuation.run();
    }
 
    public void writeException(HttpRequest request, HttpResponse response, Throwable e)
@@ -194,19 +192,30 @@ public class SynchronousDispatcher implements Dispatcher
       try
       {
          pushContextObjects(request, response);
-         if (!preprocess(request, response)) return;
-         ResourceInvoker invoker = null;
-         try
-         {
-            invoker = getInvoker(request);
-         }
-         catch (Exception exception)
-         {
-            //logger.error("getInvoker() failed mapping exception", exception);
-            writeException(request, response, exception);
-            return;
-         }
-         invoke(request, response, invoker);
+         System.out.println("A");
+         preprocess(request, response, () -> {
+            System.out.println("In continuation");
+            ResourceInvoker invoker = null;
+            try
+            {
+               try
+               {
+                  invoker = getInvoker(request);
+               }
+               catch (Exception exception)
+               {
+                  //logger.error("getInvoker() failed mapping exception", exception);
+                  writeException(request, response, exception);
+                  return;
+               }
+               invoke(request, response, invoker);
+            }
+            finally
+            {
+               // we're probably clearing it twice but still required
+               clearContextData();
+            }
+         });
       }
       finally
       {
@@ -225,26 +234,36 @@ public class SynchronousDispatcher implements Dispatcher
       try
       {
          pushContextObjects(request, response);
-         if (!preprocess(request, response)) return;
-         ResourceInvoker invoker = null;
-         try
-         {
-            invoker = getInvoker(request);
-         }
-         catch (Exception failure)
-         {
-            if (failure instanceof NotFoundException)
+         System.out.println("B");
+         preprocess(request, response, () -> {
+            ResourceInvoker invoker = null;
+            try
             {
-               throw ((NotFoundException) failure);
+               try
+               {
+                  invoker = getInvoker(request);
+               }
+               catch (Exception failure)
+               {
+                  if (failure instanceof NotFoundException)
+                  {
+                     throw ((NotFoundException) failure);
+                  }
+                  else
+                  {
+                     //logger.error("getInvoker() failed mapping exception", failure);
+                     writeException(request, response, failure);
+                     return;
+                  }
+               }
+               invoke(request, response, invoker);
             }
-            else
+            finally
             {
-               //logger.error("getInvoker() failed mapping exception", failure);
-               writeException(request, response, failure);
-               return;
+               // we're probably clearing it twice but still required
+               clearContextData();
             }
-         }
-         invoke(request, response, invoker);
+         });
       }
       finally
       {
