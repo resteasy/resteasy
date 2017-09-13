@@ -12,6 +12,9 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.test.asynch.resource.AsyncPreMatchRequestFilter1;
+import org.jboss.resteasy.test.asynch.resource.AsyncPreMatchRequestFilter2;
+import org.jboss.resteasy.test.asynch.resource.AsyncPreMatchRequestFilter3;
 import org.jboss.resteasy.test.asynch.resource.AsyncRequestFilter;
 import org.jboss.resteasy.test.asynch.resource.AsyncRequestFilter1;
 import org.jboss.resteasy.test.asynch.resource.AsyncRequestFilter2;
@@ -39,7 +42,9 @@ public class AsyncRequestFilterTest {
     public static Archive<?> createTestArchive() {
 
         WebArchive war = TestUtil.prepareArchive(AsyncRequestFilterTest.class.getSimpleName());
-        war.addClasses(AsyncRequestFilterResource.class, AsyncRequestFilter.class, AsyncRequestFilter1.class, AsyncRequestFilter2.class, AsyncRequestFilter3.class);
+        war.addClasses(AsyncRequestFilterResource.class, AsyncRequestFilter.class, 
+              AsyncRequestFilter1.class, AsyncRequestFilter2.class, AsyncRequestFilter3.class,
+              AsyncPreMatchRequestFilter1.class, AsyncPreMatchRequestFilter2.class, AsyncPreMatchRequestFilter3.class);
         return war;
     }
 
@@ -158,6 +163,121 @@ public class AsyncRequestFilterTest {
               .get();
         assertEquals(200, response.getStatus());
         assertEquals("Filter2", response.readEntity(String.class));
+
+        client.close();
+    }
+
+    /**
+     * @tpTestDetails Interceptors work
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testPreMatchRequestFilters() throws Exception {
+        Client client = ClientBuilder.newClient();
+
+        // Create book.
+        WebTarget base = client.target(generateURL("/"));
+
+        // all sync
+        
+        Response response = base.request()
+           .header("PreMatchFilter1", "sync-pass")
+           .header("PreMatchFilter2", "sync-pass")
+           .header("PreMatchFilter3", "sync-pass")
+           .get();
+        assertEquals(200, response.getStatus());
+        assertEquals("resource", response.readEntity(String.class));
+
+        response = base.request()
+              .header("PreMatchFilter1", "sync-fail")
+              .header("PreMatchFilter2", "sync-fail")
+              .header("PreMatchFilter3", "sync-fail")
+              .get();
+        assertEquals(200, response.getStatus());
+        assertEquals("PreMatchFilter1", response.readEntity(String.class));
+
+        response = base.request()
+              .header("PreMatchFilter1", "sync-pass")
+              .header("PreMatchFilter2", "sync-fail")
+              .header("PreMatchFilter3", "sync-fail")
+              .get();
+        assertEquals(200, response.getStatus());
+        assertEquals("PreMatchFilter2", response.readEntity(String.class));
+
+        response = base.request()
+              .header("PreMatchFilter1", "sync-pass")
+              .header("PreMatchFilter2", "sync-pass")
+              .header("PreMatchFilter3", "sync-fail")
+              .get();
+        assertEquals(200, response.getStatus());
+        assertEquals("PreMatchFilter3", response.readEntity(String.class));
+
+        // async
+        response = base.request()
+              .header("PreMatchFilter1", "async-pass")
+              .header("PreMatchFilter2", "sync-pass")
+              .header("PreMatchFilter3", "sync-pass")
+              .get();
+        assertEquals("resource", response.readEntity(String.class));
+        assertEquals(200, response.getStatus());
+
+        response = base.request()
+              .header("PreMatchFilter1", "async-pass")
+              .header("PreMatchFilter2", "async-pass")
+              .header("PreMatchFilter3", "sync-pass")
+              .get();
+        assertEquals(200, response.getStatus());
+        assertEquals("resource", response.readEntity(String.class));
+
+        response = base.request()
+              .header("PreMatchFilter1", "async-pass")
+              .header("PreMatchFilter2", "async-pass")
+              .header("PreMatchFilter3", "async-pass")
+              .get();
+        assertEquals(200, response.getStatus());
+        assertEquals("resource", response.readEntity(String.class));
+
+        response = base.request()
+              .header("PreMatchFilter1", "async-pass")
+              .header("PreMatchFilter2", "sync-pass")
+              .header("PreMatchFilter3", "async-pass")
+              .get();
+        assertEquals(200, response.getStatus());
+        assertEquals("resource", response.readEntity(String.class));
+
+        response = base.request()
+              .header("PreMatchFilter1", "sync-pass")
+              .header("PreMatchFilter2", "async-pass")
+              .header("PreMatchFilter3", "sync-pass")
+              .get();
+        assertEquals(200, response.getStatus());
+        assertEquals("resource", response.readEntity(String.class));
+
+        // async failures
+
+        response = base.request()
+              .header("PreMatchFilter1", "async-fail")
+              .header("PreMatchFilter2", "sync-fail")
+              .header("PreMatchFilter3", "sync-fail")
+              .get();
+        assertEquals(200, response.getStatus());
+        assertEquals("PreMatchFilter1", response.readEntity(String.class));
+
+        response = base.request()
+              .header("PreMatchFilter1", "async-pass")
+              .header("PreMatchFilter2", "sync-fail")
+              .header("PreMatchFilter3", "sync-pass")
+              .get();
+        assertEquals(200, response.getStatus());
+        assertEquals("PreMatchFilter2", response.readEntity(String.class));
+
+        response = base.request()
+              .header("PreMatchFilter1", "async-pass")
+              .header("PreMatchFilter2", "async-fail")
+              .header("PreMatchFilter3", "sync-pass")
+              .get();
+        assertEquals(200, response.getStatus());
+        assertEquals("PreMatchFilter2", response.readEntity(String.class));
 
         client.close();
     }
