@@ -44,6 +44,11 @@ import java.util.Map.Entry;
  */
 public class ServerResponseWriter
 {
+   @FunctionalInterface
+   public static interface RunnableWithIOException {
+	   public void run() throws IOException;
+   }
+	
    public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, final ResteasyProviderFactory providerFactory) throws IOException
    {
       writeNomapResponse(jaxrsResponse, request, response, providerFactory, true);
@@ -57,67 +62,72 @@ public class ServerResponseWriter
       // which is used by marshalling, and NPEs otherwise
       setResponseMediaType(jaxrsResponse, request, response, providerFactory, method);
       
-      executeFilters(jaxrsResponse, request, response, providerFactory, method);
-
-      //[RESTEASY-1627] check on response.getOutputStream() to avoid resteasy-netty4 trying building a chunked response body for HEAD requests 
-      if (jaxrsResponse.getEntity() == null || response.getOutputStream() == null)
-      {
-         response.setStatus(jaxrsResponse.getStatus());
-         commitHeaders(jaxrsResponse, response);
-         return;
-      }
-
-      Class type = jaxrsResponse.getEntityClass();
-      Object ent = jaxrsResponse.getEntity();
-      Type generic = jaxrsResponse.getGenericType();
-      Annotation[] annotations = jaxrsResponse.getAnnotations();
-      final MediaType mt = jaxrsResponse.getMediaType();
-      @SuppressWarnings(value = "unchecked")
-      MessageBodyWriter writer = providerFactory.getMessageBodyWriter(
-              type, generic, annotations, mt);
-      if (writer!=null)
-          LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
-
-      if (writer == null)
-      {
-         throw new NoMessageBodyWriterFoundFailure(type, mt);
-      }
-
-      if(sendHeaders)
-         response.setStatus(jaxrsResponse.getStatus());
-      final BuiltResponse built = jaxrsResponse;
-      CommitHeaderOutputStream.CommitCallback callback = new CommitHeaderOutputStream.CommitCallback()
-      {
-         private boolean committed;
-
-         @Override
-         public void commit()
+      executeFilters(jaxrsResponse, request, response, providerFactory, method, () -> {
+         System.err.println("In response continuation");
+         //[RESTEASY-1627] check on response.getOutputStream() to avoid resteasy-netty4 trying building a chunked response body for HEAD requests 
+         if (jaxrsResponse.getEntity() == null || response.getOutputStream() == null)
          {
-            if (committed) return;
-            committed = true;
-            commitHeaders(built, response);
+            response.setStatus(jaxrsResponse.getStatus());
+            commitHeaders(jaxrsResponse, response);
+            return;
          }
-      };
-      OutputStream os = sendHeaders ? new CommitHeaderOutputStream(response.getOutputStream(), callback) : response.getOutputStream();
 
-      WriterInterceptor[] writerInterceptors = null;
-      if (method != null)
-      {
-         writerInterceptors = method.getWriterInterceptors();
-      }
-      else
-      {
-         writerInterceptors = providerFactory.getServerWriterInterceptorRegistry().postMatch(null, null);
-      }
+         System.err.println("In response continuation 2");
+         Class type = jaxrsResponse.getEntityClass();
+         Object ent = jaxrsResponse.getEntity();
+         Type generic = jaxrsResponse.getGenericType();
+         Annotation[] annotations = jaxrsResponse.getAnnotations();
+         @SuppressWarnings(value = "unchecked")
+         final MediaType mt = jaxrsResponse.getMediaType();
+         MessageBodyWriter writer = providerFactory.getMessageBodyWriter(
+               type, generic, annotations, mt);
+         if (writer!=null)
+            LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
 
-      AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors,
-              providerFactory, ent, type, generic, annotations, mt,
-              jaxrsResponse.getMetadata(), os, request);
-      writerContext.proceed();
-      if(sendHeaders) {
-         response.setOutputStream(writerContext.getOutputStream()); //propagate interceptor changes on the outputstream to the response
-         callback.commit(); // just in case the output stream is never used
-      }
+         if (writer == null)
+         {
+            throw new NoMessageBodyWriterFoundFailure(type, mt);
+         }
+
+         System.err.println("In response continuation 3");
+         if(sendHeaders)
+            response.setStatus(jaxrsResponse.getStatus());
+         final BuiltResponse built = jaxrsResponse;
+         CommitHeaderOutputStream.CommitCallback callback = new CommitHeaderOutputStream.CommitCallback()
+         {
+            private boolean committed;
+
+            @Override
+            public void commit()
+            {
+               if (committed) return;
+               committed = true;
+               commitHeaders(built, response);
+            }
+         };
+         OutputStream os = sendHeaders ? new CommitHeaderOutputStream(response.getOutputStream(), callback) : response.getOutputStream();
+
+         WriterInterceptor[] writerInterceptors = null;
+         if (method != null)
+         {
+            writerInterceptors = method.getWriterInterceptors();
+         }
+         else
+         {
+            writerInterceptors = providerFactory.getServerWriterInterceptorRegistry().postMatch(null, null);
+         }
+
+         System.err.println("In response continuation 4");
+         AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors,
+               providerFactory, ent, type, generic, annotations, mt,
+               jaxrsResponse.getMetadata(), os, request);
+         writerContext.proceed();
+         if(sendHeaders) {
+            response.setOutputStream(writerContext.getOutputStream()); //propagate interceptor changes on the outputstream to the response
+            callback.commit(); // just in case the output stream is never used
+         }
+         System.err.println("In response continuation 5");
+      });
    }
 
    public static void setResponseMediaType(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)
@@ -158,7 +168,8 @@ public class ServerResponseWriter
       }
    }
 
-   private static void executeFilters(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method) throws IOException
+   private static void executeFilters(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory, 
+		   ResourceMethodInvoker method, RunnableWithIOException continuation) throws IOException
    {
       ContainerResponseFilter[] responseFilters = null;
 
@@ -174,11 +185,11 @@ public class ServerResponseWriter
       if (responseFilters != null)
       {
          ResponseContainerRequestContext requestContext = new ResponseContainerRequestContext(request);
-         ContainerResponseContextImpl responseContext = new ContainerResponseContextImpl(request, response, jaxrsResponse);
-         for (ContainerResponseFilter filter : responseFilters)
-         {
-            filter.filter(requestContext, responseContext);
-         }
+         ContainerResponseContextImpl responseContext = new ContainerResponseContextImpl(request, response, jaxrsResponse, 
+        		 requestContext, responseFilters, continuation);
+         responseContext.filter();
+         if(!responseContext.isSuspended())
+        	 continuation.run();
       }
    }
    
