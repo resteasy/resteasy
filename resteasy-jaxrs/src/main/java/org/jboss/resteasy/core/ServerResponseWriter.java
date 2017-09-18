@@ -63,7 +63,6 @@ public class ServerResponseWriter
       setResponseMediaType(jaxrsResponse, request, response, providerFactory, method);
       
       executeFilters(jaxrsResponse, request, response, providerFactory, method, () -> {
-         System.err.println("In response continuation");
          //[RESTEASY-1627] check on response.getOutputStream() to avoid resteasy-netty4 trying building a chunked response body for HEAD requests 
          if (jaxrsResponse.getEntity() == null || response.getOutputStream() == null)
          {
@@ -72,7 +71,6 @@ public class ServerResponseWriter
             return;
          }
 
-         System.err.println("In response continuation 2");
          Class type = jaxrsResponse.getEntityClass();
          Object ent = jaxrsResponse.getEntity();
          Type generic = jaxrsResponse.getGenericType();
@@ -89,7 +87,6 @@ public class ServerResponseWriter
             throw new NoMessageBodyWriterFoundFailure(type, mt);
          }
 
-         System.err.println("In response continuation 3");
          if(sendHeaders)
             response.setStatus(jaxrsResponse.getStatus());
          final BuiltResponse built = jaxrsResponse;
@@ -117,7 +114,6 @@ public class ServerResponseWriter
             writerInterceptors = providerFactory.getServerWriterInterceptorRegistry().postMatch(null, null);
          }
 
-         System.err.println("In response continuation 4");
          AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors,
                providerFactory, ent, type, generic, annotations, mt,
                jaxrsResponse.getMetadata(), os, request);
@@ -126,7 +122,6 @@ public class ServerResponseWriter
             response.setOutputStream(writerContext.getOutputStream()); //propagate interceptor changes on the outputstream to the response
             callback.commit(); // just in case the output stream is never used
          }
-         System.err.println("In response continuation 5");
       });
    }
 

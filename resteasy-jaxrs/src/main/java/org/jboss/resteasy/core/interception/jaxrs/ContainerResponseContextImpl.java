@@ -281,11 +281,9 @@ public class ContainerResponseContextImpl implements ContainerResponseContext
    
    public synchronized void filter()
    {
-      System.out.println("Filter");
       // FIXME: check what happens if the filter suspends and resumes/abort within the same call (same thread)
       while(currentFilter < responseFilters.length)
       {
-         System.out.println("Filter["+currentFilter+"]");
          ContainerResponseFilter filter = responseFilters[currentFilter++];
          try
          {
@@ -296,7 +294,6 @@ public class ContainerResponseContextImpl implements ContainerResponseContext
          {
             throw new ApplicationException(e);
          }
-         System.out.println("Filter["+currentFilter+"] suspended: "+suspended);
          if(suspended) {
             if(!request.getAsyncContext().isSuspended())
                request.getAsyncContext().suspend();

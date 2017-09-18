@@ -128,8 +128,6 @@ public class SynchronousDispatcher implements Dispatcher
          ContainerRequestFilter[] requestFilters = providerFactory.getContainerRequestFilterRegistry().preMatch();
          PreMatchContainerRequestContext requestContext = new PreMatchContainerRequestContext(request, requestFilters, continuation);
          aborted = requestContext.filter();
-         System.out.println("Filter done: aborted: "+aborted);
-         System.out.println("Filter done: suspended: "+requestContext.isSuspended());
          if(aborted == null)
          {
             if(requestContext.isSuspended())
@@ -192,9 +190,7 @@ public class SynchronousDispatcher implements Dispatcher
       try
       {
          pushContextObjects(request, response);
-         System.out.println("A");
          preprocess(request, response, () -> {
-            System.out.println("In continuation");
             ResourceInvoker invoker = null;
             try
             {
@@ -234,7 +230,6 @@ public class SynchronousDispatcher implements Dispatcher
       try
       {
          pushContextObjects(request, response);
-         System.out.println("B");
          preprocess(request, response, () -> {
             ResourceInvoker invoker = null;
             try
