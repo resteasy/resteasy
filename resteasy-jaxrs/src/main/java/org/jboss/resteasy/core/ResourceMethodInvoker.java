@@ -357,9 +357,10 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       {
          if (asyncStreamResponseConsumer != null)
          {
-            asyncStreamResponseConsumer.complete();
+            asyncStreamResponseConsumer.internalResume(ex);
+            return null;
          }
-         if (request.getAsyncContext().isSuspended())
+         else if (request.getAsyncContext().isSuspended())
          {
             try
             {

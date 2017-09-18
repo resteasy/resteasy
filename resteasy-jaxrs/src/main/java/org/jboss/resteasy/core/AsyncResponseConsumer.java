@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiConsumer;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.OutboundSseEvent;
@@ -25,6 +23,7 @@ import org.jboss.resteasy.spi.AsyncResponseProvider;
 import org.jboss.resteasy.spi.AsyncStreamProvider;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
@@ -39,7 +38,7 @@ public abstract class AsyncResponseConsumer
    protected Map<Class<?>, Object> contextDataMap;
    protected ResourceMethodInvoker method;
    protected SynchronousDispatcher dispatcher;
-   protected AsyncContext asyncContext;
+   protected ResteasyAsynchronousResponse asyncResponse;
    protected boolean isComplete;
 
    public AsyncResponseConsumer(ResourceMethodInvoker method)
@@ -47,11 +46,11 @@ public abstract class AsyncResponseConsumer
       this.method = method;
       contextDataMap = ResteasyProviderFactory.getContextDataMap();
       dispatcher = (SynchronousDispatcher) contextDataMap.get(Dispatcher.class);
-      HttpServletRequest httpServletRequest = (HttpServletRequest) contextDataMap.get(HttpServletRequest.class);
-      if(httpServletRequest.isAsyncStarted())
-         asyncContext = httpServletRequest.getAsyncContext();
+      HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
+      if(httpRequest.getAsyncContext().isSuspended())
+         asyncResponse = httpRequest.getAsyncContext().getAsyncResponse();
       else
-         asyncContext = httpServletRequest.startAsync();
+         asyncResponse = httpRequest.getAsyncContext().suspend();
    }
    
    public static AsyncResponseConsumer makeAsyncResponseConsumer(ResourceMethodInvoker method, AsyncResponseProvider<?> asyncResponseProvider) {
@@ -77,7 +76,7 @@ public abstract class AsyncResponseConsumer
    }
 
    protected void doComplete() {
-      asyncContext.complete();
+      asyncResponse.complete();
    }
    
    synchronized public void complete()
