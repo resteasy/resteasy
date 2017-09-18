@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiConsumer;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.OutboundSseEvent;
@@ -65,11 +66,16 @@ public abstract class AsyncResponseConsumer
             return new AsyncStreamingResponseConsumer(method, asyncStreamProvider);
          }
       }
-      for (MediaType mediaType : method.getProduces())
-      {
-         if(mediaType.equals(MediaType.SERVER_SENT_EVENTS_TYPE))
+      HttpHeaders req = ResteasyProviderFactory.getContextData(HttpHeaders.class);
+      // FIXME: probably redundant but I prefer the producer to be explicit and not just
+      // send SSE if the client accepts everything
+      if(req.getAcceptableMediaTypes().contains(MediaType.SERVER_SENT_EVENTS_TYPE)) {
+         for (MediaType mediaType : method.getProduces())
          {
-            return new AsyncStreamSseResponseConsumer(method, asyncStreamProvider);
+            if(mediaType.equals(MediaType.SERVER_SENT_EVENTS_TYPE))
+            {
+               return new AsyncStreamSseResponseConsumer(method, asyncStreamProvider);
+            }
          }
       }
       return new AsyncStreamCollectorResponseConsumer(method, asyncStreamProvider);
