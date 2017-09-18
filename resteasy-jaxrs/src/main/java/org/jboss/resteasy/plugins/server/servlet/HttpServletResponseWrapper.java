@@ -118,4 +118,10 @@ public class HttpServletResponseWrapper implements HttpResponse
       outputHeaders = new HttpServletResponseHeaders(response, factory);
    }
 
+   @Override
+   public void flushBuffer() throws IOException
+   {
+      response.flushBuffer();
+   }
+
 }
