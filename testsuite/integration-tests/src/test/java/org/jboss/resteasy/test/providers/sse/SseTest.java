@@ -19,6 +19,7 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -229,6 +230,51 @@ public class SseTest {
         }
         
         Assert.assertEquals("EventSource error consumer is not called", 1, errors.get());
+     }
+    @Test
+    @InSequence(7)
+    public void testMultipleDataFields() throws Exception
+    {
+       final CountDownLatch latch = new CountDownLatch(7);
+       final AtomicInteger errors = new AtomicInteger(0);
+       final List<String> results = new ArrayList<String>();
+       Client client = ClientBuilder.newBuilder().build();
+       WebTarget target = client.target(generateURL("/service/server-sent-events"));
+       SseEventSource msgEventSource = SseEventSource.target(target).build();
+       try (SseEventSource eventSource = msgEventSource)
+       {
+          Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
+          eventSource.register(event -> {
+             results.add(event.readData());
+             latch.countDown();
+          }, ex -> {
+             errors.incrementAndGet();
+             ex.printStackTrace();
+             throw new RuntimeException(ex);
+          });
+          eventSource.open();
+          
+
+          Client messageClient = new ResteasyClientBuilder().connectionPoolSize(10).build();
+          WebTarget messageTarget = messageClient.target(generateURL("/service/server-sent-events"));
+          messageTarget.request().post(Entity.text("data0a"));
+          messageTarget.request().post(Entity.text("data1a\ndata1b\n\rdata1c"));
+          messageTarget.request().post(Entity.text("data2a\r\ndata2b"));
+          messageTarget.request().post(Entity.text("data3a\n\rdata3b"));
+          messageTarget.request().post(Entity.text("data4a\r\ndata4b"));
+          messageTarget.request().post(Entity.text("data5a\r\r\r\ndata5b"));
+          messageTarget.request().post(Entity.text("data6a\n\n\r\r\ndata6b"));
+          Assert.assertEquals(0, errors.get());
+          Assert.assertTrue("Waiting for event to be delivered has timed out.", latch.await(30, TimeUnit.SECONDS));
+          messageTarget.request().delete();
+          messageClient.close();
+        }
+        Assert.assertFalse("SseEventSource is not closed", msgEventSource.isOpen());
+        Assert.assertTrue("5 messages are expected, but is : " + results.size(), results.size() == 7);
+        String[] lines = results.get(1).split("\n");
+        Assert.assertTrue("3 data fields are expected, but is : " + lines.length, lines.length == 3);
+        Assert.assertEquals("expect second data field value is : " + lines[1], "data1b", lines[1]);
+        
      }
 
 //    @Test
