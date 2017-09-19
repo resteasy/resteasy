@@ -14,7 +14,6 @@ import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.InputStreamToByteArray;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.util.Types;
-import org.omg.IOP.IOR;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.MediaType;
