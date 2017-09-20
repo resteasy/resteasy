@@ -4,7 +4,6 @@ import org.jboss.resteasy.client.jaxrs.ProxyConfig;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
-import org.jboss.resteasy.client.jaxrs.internal.ClientInvocationBuilder;
 import org.jboss.resteasy.client.jaxrs.internal.ClientRequestHeaders;
 import org.jboss.resteasy.client.jaxrs.internal.ClientResponse;
 import org.jboss.resteasy.client.jaxrs.internal.proxy.extractors.ClientContext;
@@ -15,15 +14,21 @@ import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.ProcessorFactor
 import org.jboss.resteasy.client.jaxrs.internal.proxy.processors.WebTargetProcessor;
 import org.jboss.resteasy.util.FeatureContextDelegate;
 import org.jboss.resteasy.util.MediaTypeHelper;
+import org.jboss.resteasy.util.WeightedMediaType;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
-
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -77,11 +82,87 @@ public class ClientInvoker implements MethodInvoker
          feature.configure(info, new FeatureContextDelegate(invokerConfig));
       }
 
-
-      this.processors = ProcessorFactory.createProcessors(declaring, method, invokerConfig, config.getDefaultConsumes());
-      accepts = MediaTypeHelper.getProduces(declaring, method, config.getDefaultProduces());
       entityExtractorFactory = new DefaultEntityExtractorFactory();
       this.extractor = entityExtractorFactory.createExtractor(method);
+
+      MediaType defaultConsumes = checkConsumesMediaTypes(config);
+
+      this.processors = ProcessorFactory.createProcessors(declaring, method, invokerConfig, defaultConsumes);
+      accepts = MediaTypeHelper.getProduces(declaring, method, config.getDefaultProduces());
+
+      checkProducesMediaTypes();
+   }
+
+   /**
+    * Traverse the parent tree checking for a class associated Consumes annotation.
+    * @param config
+    * @return
+    */
+   private MediaType checkConsumesMediaTypes(ProxyConfig config)
+   {
+
+      MediaType defaultConsumes = config.getDefaultConsumes();
+      if (defaultConsumes == null)
+      {
+         WeightedMediaType weightedMediaType = null;
+         Queue<Class<?>> interfaces = new LinkedList<>();
+         for (Class<?> superClass = declaring; superClass != null; superClass = superClass.getSuperclass())
+         {
+            Collections.addAll(interfaces, superClass.getInterfaces());
+            for (Class<?> next = interfaces.poll(); next != null; next = interfaces.poll())
+            {
+               Consumes annotation = (Consumes) next.getAnnotation(Consumes.class);
+               if (annotation != null) {
+                  String[] values = annotation.value();
+                  for (String value : values)
+                  {
+                     WeightedMediaType candidateWeightedMediaType = WeightedMediaType.valueOf(value);
+                     if (weightedMediaType == null || candidateWeightedMediaType.compareTo(weightedMediaType) < 0) {
+                        weightedMediaType = candidateWeightedMediaType;
+                     }
+                  }
+               }
+               Collections.addAll(interfaces, next.getInterfaces());
+            }
+         }
+         defaultConsumes = weightedMediaType;
+      }
+
+      return defaultConsumes;
+   }
+
+   /**
+    * Traverse the parent tree checking for a class associated Produces annotation.
+    */
+   private void checkProducesMediaTypes()
+   {
+      if (accepts == null)
+      {
+         Set<WeightedMediaType> weightedMediaTypes = new TreeSet<>();
+         Queue<Class<?>> interfaces = new LinkedList<>();
+         for (Class<?> superClass = declaring; superClass != null; superClass = superClass.getSuperclass())
+         {
+            Collections.addAll(interfaces, superClass.getInterfaces());
+            for (Class<?> next = interfaces.poll(); next != null; next = interfaces.poll())
+            {
+               Produces annotation = (Produces) next.getAnnotation(Produces.class);
+               if (annotation != null) {
+                  String[] values = annotation.value();
+                  for (String value : values)
+                  {
+                     WeightedMediaType weightedMediaType = WeightedMediaType.valueOf(value);
+                     weightedMediaTypes.add(weightedMediaType);
+                  }
+               }
+               Collections.addAll(interfaces, next.getInterfaces());
+            }
+         }
+
+         if (!weightedMediaTypes.isEmpty())
+         {
+            accepts = weightedMediaTypes.toArray(new WeightedMediaType[weightedMediaTypes.size()]);
+         }
+      }
    }
 
    public MediaType[] getAccepts()
