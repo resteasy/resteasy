@@ -356,6 +356,47 @@
                 </excludes>
             </testResource>
         </testResources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+                    <executions>
+                        <execution>
+                            <id>normal-test</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>test</goal>
+                            </goals>
+                            <configuration>
+                                <skip>false</skip>
+                                <excludes>
+                                     <!-- Tests requires excluding JsonBindingProvider-->
+                                     <exclude>**/JsonBindingTest.java</exclude>
+                                </excludes>
+                                <classpathDependencyExcludes>
+                                    <classpathDependencyExcludes>org.jboss.resteasy:resteasy-json-binding-provider</classpathDependencyExcludes>
+                                </classpathDependencyExcludes>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <!-- Add JsonBindingProvider tests here-->
+                            <id>jsonb-test</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>test</goal>
+                            </goals>
+                            <configuration>
+                                <skip>false</skip>
+                                <includes>
+                                    <include>**/JsonBindingTest.java</include>
+                                </includes>
+                            </configuration>
+                        </execution>
+                    </executions>
+            </plugin>
+        </plugins>
     </build>
 
 </project>

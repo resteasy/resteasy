@@ -9,10 +9,10 @@ import java.util.concurrent.TimeUnit;
 import javax.ws.rs.InternalServerErrorException;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.links.test.BookStoreService;
 import org.jboss.resteasy.plugins.server.netty.NettyJaxrsServer;
@@ -73,14 +73,15 @@ public class TestLinksInvalidEL
 	public void before(){
 		POJOResourceFactory noDefaults = new POJOResourceFactory(resourceType);
 		dispatcher.getRegistry().addResourceFactory(noDefaults);
-		httpClient = new DefaultHttpClient();
-		ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
+		httpClient = HttpClientBuilder.create().build();
+		ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(httpClient);
 		url = generateBaseUrl();
 		ResteasyWebTarget target = new ResteasyClientBuilder().httpEngine(engine).build().target(url);
 		client = target.proxy(BookStoreService.class);
 	}
 
-	@After
+	@SuppressWarnings("deprecation")
+    @After
 	public void after(){
 		// TJWS does not support chunk encodings well so I need to kill kept
 		// alive connections
@@ -88,7 +89,6 @@ public class TestLinksInvalidEL
 		dispatcher.getRegistry().removeRegistrations(resourceType);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testELWorksWithoutPackageXML() throws Exception
 	{
@@ -102,7 +102,6 @@ public class TestLinksInvalidEL
 	         Assert.fail("Expected InternalServerErrorException");
 	    }
 	}
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testELWorksWithoutPackageJSON() throws Exception
 	{

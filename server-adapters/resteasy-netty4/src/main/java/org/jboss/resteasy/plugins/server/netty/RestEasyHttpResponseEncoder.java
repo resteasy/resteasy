@@ -1,19 +1,19 @@
 package org.jboss.resteasy.plugins.server.netty;
 
-import io.netty.channel.ChannelHandler.Sharable;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageEncoder;
-import io.netty.handler.codec.http.HttpHeaders.Names;
-import io.netty.handler.codec.http.HttpHeaders.Values;
-import io.netty.handler.codec.http.HttpResponse;
-import io.netty.handler.codec.http.LastHttpContent;
-
 import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
+import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToMessageEncoder;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaderValues;
+import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.LastHttpContent;
 
 
 /**
@@ -46,11 +46,11 @@ public class RestEasyHttpResponseEncoder extends MessageToMessageEncoder<NettyHt
    {
       if(nettyResponse.isKeepAlive()) 
       {
-         response.headers().set(Names.CONNECTION, Values.KEEP_ALIVE);
+         response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
       } 
       else 
       {
-         response.headers().set(Names.CONNECTION, Values.CLOSE);
+         response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
       }
       
       for (Map.Entry<String, List<Object>> entry : nettyResponse.getOutputHeaders().entrySet())

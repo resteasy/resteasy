@@ -13,6 +13,7 @@ import java.security.PublicKey;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("deprecation")
 public class Realm implements Serializable
 {
    private static final long serialVersionUID = 1L;

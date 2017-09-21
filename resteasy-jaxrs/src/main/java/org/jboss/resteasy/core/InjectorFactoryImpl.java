@@ -74,6 +74,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       return new MethodInjectorImpl(method, factory);
    }
 
+   @SuppressWarnings("deprecation")
    @Override
    public ValueInjector createParameterExtractor(Parameter parameter, ResteasyProviderFactory providerFactory)
    {
@@ -137,6 +138,7 @@ public class InjectorFactoryImpl implements InjectorFactory
       return createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations, true, providerFactory);
    }
 
+   @SuppressWarnings("deprecation")
    @Override
    public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type, Type genericType, Annotation[] annotations, boolean useDefault, ResteasyProviderFactory providerFactory)
    {

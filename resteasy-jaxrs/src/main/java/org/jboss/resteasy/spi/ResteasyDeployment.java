@@ -15,17 +15,14 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.util.GetRestful;
 
-import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Configurable;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -79,7 +76,7 @@ public class ResteasyDeployment
    protected ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
    protected String paramMapping;
 
-   @SuppressWarnings(value = "unchecked")
+   @SuppressWarnings(value = {"unchecked", "deprecation"})
    public void start()
    {
       // it is very important that each deployment create their own provider factory

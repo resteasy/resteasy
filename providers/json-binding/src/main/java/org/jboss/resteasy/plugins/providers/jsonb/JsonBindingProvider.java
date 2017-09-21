@@ -3,7 +3,9 @@ package org.jboss.resteasy.plugins.providers.jsonb;
 import org.jboss.resteasy.plugins.providers.jsonb.i18n.Messages;
 
 import javax.json.bind.Jsonb;
+import javax.annotation.Priority;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -11,12 +13,15 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
 import org.jboss.resteasy.util.FindAnnotation;
 
 /**
@@ -25,6 +30,7 @@ import org.jboss.resteasy.util.FindAnnotation;
 @Provider
 @Produces({"application/json", "application/*+json", "text/json", "*/*"})
 @Consumes({"application/json", "application/*+json", "text/json", "*/*"})
+@Priority(Priorities.USER-100)
 public class JsonBindingProvider extends AbstractJsonBindingProvider
         implements MessageBodyReader<Object>, MessageBodyWriter<Object> {
 

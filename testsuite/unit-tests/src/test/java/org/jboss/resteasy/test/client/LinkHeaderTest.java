@@ -12,6 +12,7 @@ import org.junit.Test;
  * @tpTestCaseDetails Test for LinkHeader (it use deprecated Link). Test also new Link provided by jax-rs 2.0 spec
  * @tpSince RESTEasy 3.0.16
  */
+@SuppressWarnings("deprecation")
 public class LinkHeaderTest {
 
     /**

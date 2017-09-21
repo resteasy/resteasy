@@ -41,7 +41,9 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
       return -1;
    }
 
+   
    @Override
+   @SuppressWarnings({"unchecked"})
    public void writeTo(OutboundSseEvent event, Class<?> type, Type genericType, Annotation[] annotations,
          MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
          throws IOException, WebApplicationException
@@ -105,55 +107,46 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
                throw new ServerErrorException(Messages.MESSAGES.notFoundMBW(payloadClass.getName()),
                      Response.Status.INTERNAL_SERVER_ERROR);
             }
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            writer.writeTo(event.getData(), payloadClass, payloadType, annotations, event.getMediaType(), httpHeaders,
-                  baos);
             
-            // write the response by line chunks
-            byte[] bytes = baos.toByteArray();
-            int start = 0;
-            for (int i = 0; i < bytes.length; i++)
-            {
-               byte b = bytes[i];
-               // LF
-               if(b == '\n') 
-               {
-                  entityStream.write(SseConstants.DATA_LEAD);
-                  entityStream.write(bytes, start, i-start);
-                  entityStream.write(SseConstants.EOL);
-                  start = i+1;
-               }
-               else if(b == '\r') 
-               {
-                  if(i + 1 < bytes.length
-                        && bytes[i+1] == '\n') 
+            writer.writeTo(event.getData(), payloadClass, payloadType, annotations, event.getMediaType(), httpHeaders,
+                  new OutputStream()
                   {
-                     // CR LF
-                     entityStream.write(SseConstants.DATA_LEAD);
-                     entityStream.write(bytes, start, i-start);
-                     entityStream.write(SseConstants.EOL);
-                     start = i+2;
-                     // eat the following LF
-                     i++;
-                  }
-                  else
-                  {
-                     // CR
-                     entityStream.write(SseConstants.DATA_LEAD);
-                     entityStream.write(bytes, start, i-start);
-                     entityStream.write(SseConstants.EOL);
-                     start = i+1;
-                  }
-               }
-            }
-            // any remaining?
-            if(start < bytes.length)
-            {
-               entityStream.write(SseConstants.DATA_LEAD);
-               entityStream.write(bytes, start, bytes.length - start);
-               entityStream.write(SseConstants.EOL);
-            }
+                     boolean isNewLine = false;
+
+                     @Override
+                     public void write(int b) throws IOException
+                     {
+                        if (b == '\n' || b == '\r')
+                        {
+                           if (!isNewLine) {
+                              entityStream.write(SseConstants.EOL);
+                           }
+                           isNewLine = true;
+                        }
+                        else
+                        {
+                           if (isNewLine)
+                           {
+                              entityStream.write(SseConstants.DATA_LEAD);
+                           }
+                           entityStream.write(b);
+                           isNewLine = false;
+                        }
+                     }
+
+                     @Override
+                     public void flush() throws IOException
+                     {
+                        entityStream.flush();
+                     }
+
+                     @Override
+                     public void close() throws IOException
+                     {
+                        entityStream.close();
+                     }                    
+                  });
+            entityStream.write(SseConstants.EOL);
          }
 
       }

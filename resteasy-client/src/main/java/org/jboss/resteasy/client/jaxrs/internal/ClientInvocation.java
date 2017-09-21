@@ -497,6 +497,7 @@ public class ClientInvocation implements Invocation
    {
       return doSubmit(false, null, new AsyncClientHttpEngine.ResultExtractor<T>()
       {
+         @SuppressWarnings("unchecked")
          @Override
          public T extractResult(ClientResponse response)
          {
@@ -512,6 +513,7 @@ public class ClientInvocation implements Invocation
    {
       return doSubmit(false, null, new AsyncClientHttpEngine.ResultExtractor<T>()
       {
+         @SuppressWarnings("unchecked")
          @Override
          public T extractResult(ClientResponse response)
          {

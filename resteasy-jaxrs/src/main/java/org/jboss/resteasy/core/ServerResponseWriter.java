@@ -71,8 +71,8 @@ public class ServerResponseWriter
       Object ent = jaxrsResponse.getEntity();
       Type generic = jaxrsResponse.getGenericType();
       Annotation[] annotations = jaxrsResponse.getAnnotations();
-      @SuppressWarnings(value = "unchecked")
       final MediaType mt = jaxrsResponse.getMediaType();
+      @SuppressWarnings(value = "unchecked")
       MessageBodyWriter writer = providerFactory.getMessageBodyWriter(
               type, generic, annotations, mt);
       if (writer!=null)

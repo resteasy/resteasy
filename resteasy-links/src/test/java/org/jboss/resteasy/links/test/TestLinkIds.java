@@ -5,7 +5,7 @@ import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
@@ -37,7 +37,7 @@ public class TestLinkIds
       dispatcher = server.getDeployment().getDispatcher();
       POJOResourceFactory noDefaults = new POJOResourceFactory(IDServiceTestBean.class);
       dispatcher.getRegistry().addResourceFactory(noDefaults);
-      httpClient = new DefaultHttpClient();
+      httpClient = HttpClientBuilder.create().build();
       ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(httpClient);
       url = generateBaseUrl();
       ResteasyWebTarget target = new ResteasyClientBuilder().httpEngine(engine).build().target(url);
@@ -52,12 +52,12 @@ public class TestLinkIds
       dispatcher = null;
    }
 
-	private static Class<?> resourceType;
 	private static String url;
 	private static IDServiceTest client;
 	private static HttpClient httpClient;
 	
-	@After
+	@SuppressWarnings("deprecation")
+    @After
 	public void after(){
 		// TJWS does not support chunk encodings well so I need to kill kept
 		// alive connections
