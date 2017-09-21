@@ -36,4 +36,6 @@ public interface ResteasyAsynchronousResponse extends AsyncResponse
     void setMethod(ResourceMethodInvoker method);
 
     void complete();
+    
+    void completionCallbacks(Throwable throwable);
 }
