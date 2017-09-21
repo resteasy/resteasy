@@ -12,7 +12,7 @@ public class EventByteArrayOutputStream extends ByteArrayOutputStream
       {
          return Arrays.copyOf(buf, count -1);
       }
-      //delimiter is 
+      //delimiter is \r\n
       if (count >= 2 && buf[count-2] == '\r' && buf[count-1] == '\n') {
          Arrays.copyOf(buf, count-2);
       }
