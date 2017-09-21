@@ -169,6 +169,23 @@ public class AsyncRequestFilterTest {
         assertEquals(200, response.getStatus());
         assertEquals("Filter2", response.readEntity(String.class));
 
+        // async instantaneous
+        response = base.request()
+              .header("Filter1", "async-pass-instant")
+              .header("Filter2", "sync-pass")
+              .header("Filter3", "sync-pass")
+              .get();
+        assertEquals(200, response.getStatus());
+        assertEquals("resource", response.readEntity(String.class));
+
+        response = base.request()
+              .header("Filter1", "async-fail-instant")
+              .header("Filter2", "sync-pass")
+              .header("Filter3", "sync-pass")
+              .get();
+        assertEquals(200, response.getStatus());
+        assertEquals("Filter1", response.readEntity(String.class));
+        
         client.close();
     }
 

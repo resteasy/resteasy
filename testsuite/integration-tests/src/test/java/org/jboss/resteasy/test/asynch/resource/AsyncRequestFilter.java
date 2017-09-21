@@ -33,10 +33,16 @@ public abstract class AsyncRequestFilter implements ContainerRequestFilter {
          ctx.suspend();
          ExecutorService executor = Executors.newSingleThreadExecutor();
          executor.submit(() -> ctx.resume());
+      }else if("async-pass-instant".equals(action)) {
+         ctx.suspend();
+         ctx.resume();
       }else if("async-fail".equals(action)) {
          ctx.suspend();
          ExecutorService executor = Executors.newSingleThreadExecutor();
          executor.submit(() -> ctx.abortWith(Response.ok(name).build()));
+      }else if("async-fail-instant".equals(action)) {
+         ctx.suspend();
+         ctx.abortWith(Response.ok(name).build());
       }
       System.err.println("Filter request for "+name+" with action: "+action+" done");
    }

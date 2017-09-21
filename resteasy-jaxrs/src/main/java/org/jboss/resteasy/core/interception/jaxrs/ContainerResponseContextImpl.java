@@ -21,7 +21,10 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.ServerResponseWriter.RunnableWithIOException;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -275,10 +278,44 @@ public class ContainerResponseContextImpl implements ContainerResponseContext
       if(!suspended)
          throw new RuntimeException("Cannot resume: not suspended");
       ResteasyProviderFactory.pushContextDataMap(contextDataMap);
-      // just go on
-      filter();
+      // go on, but with proper exception handling
+      try {
+         filter();
+      }catch(Throwable t) {
+         // don't throw to client
+         writeException(t);
+      }
    }
    
+   public synchronized void resume(Throwable t) {
+      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+      writeException(t);
+   }
+   
+   private void writeException(Throwable t)
+   {
+      HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
+      HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
+      SynchronousDispatcher dispatcher = (SynchronousDispatcher) contextDataMap.get(Dispatcher.class);
+      try {
+         dispatcher.writeException(httpRequest, httpResponse, t);
+      }catch(Throwable x) {
+         LogMessages.LOGGER.unhandledAsynchronousException(x);
+         // unhandled exceptions need to be processed as they can't be thrown back to the servlet container
+         if (!httpResponse.isCommitted()) {
+            try
+            {
+               httpResponse.reset();
+               httpResponse.sendError(500);
+            }
+            catch (IOException e)
+            {
+
+            }
+         }
+      }
+   }
+
    public synchronized void filter()
    {
       // FIXME: check what happens if the filter suspends and resumes/abort within the same call (same thread)

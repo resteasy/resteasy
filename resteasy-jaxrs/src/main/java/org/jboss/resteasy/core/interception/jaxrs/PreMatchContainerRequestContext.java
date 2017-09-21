@@ -1,8 +1,12 @@
 package org.jboss.resteasy.core.interception.jaxrs;
 
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.ws.rs.container.ContainerRequestContext;
@@ -40,6 +44,8 @@ public class PreMatchContainerRequestContext implements ContainerRequestContext
    private boolean filterReturnIsMeaningful = true;
    private Runnable continuation;
    private Map<Class<?>, Object> contextDataMap;
+   private boolean inFilter;
+   private Throwable throwable;
 
    public PreMatchContainerRequestContext(HttpRequest request, 
          ContainerRequestFilter[] requestFilters, Runnable continuation)
@@ -219,25 +225,79 @@ public class PreMatchContainerRequestContext implements ContainerRequestContext
    @Override
    public synchronized void abortWith(Response response)
    {
-      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
-      if(suspended)
+      if(suspended && !inFilter)
       {
+         ResteasyProviderFactory.pushContextDataMap(contextDataMap);
          httpRequest.getAsyncContext().getAsyncResponse().resume(response);
       }
       else
       {
+         // not suspended, or suspend/abortWith within filter, same thread: collect and move on
          this.response = response;
+         suspended = false;
       }
    }
    
    public synchronized void resume() {
       if(!suspended)
          throw new RuntimeException("Cannot resume: not suspended");
+      if(inFilter)
+      {
+         // suspend/resume within filter, same thread: just ignore and move on
+         suspended = false;
+         return;
+      }
+         
       ResteasyProviderFactory.pushContextDataMap(contextDataMap);
-      // just go on
-      filter();
+      // go on, but with proper exception handling
+      try {
+         filter();
+      }catch(Throwable t) {
+         // don't throw to client
+         writeException(t);
+      }
    }
    
+   public synchronized void resume(Throwable t) {
+      if(!suspended)
+         throw new RuntimeException("Cannot resume: not suspended");
+      if(inFilter)
+      {
+         // not suspended, or suspend/abortWith within filter, same thread: collect and move on
+         throwable = t;
+         suspended = false;
+      }
+      else
+      {
+         ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+         writeException(t);
+      }
+   }
+   
+   private void writeException(Throwable t)
+   {
+      HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
+      HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
+      SynchronousDispatcher dispatcher = (SynchronousDispatcher) contextDataMap.get(Dispatcher.class);
+      try {
+         dispatcher.writeException(httpRequest, httpResponse, t);
+      }catch(Throwable x) {
+         LogMessages.LOGGER.unhandledAsynchronousException(x);
+         // unhandled exceptions need to be processed as they can't be thrown back to the servlet container
+         if (!httpResponse.isCommitted()) {
+            try
+            {
+               httpResponse.reset();
+               httpResponse.sendError(500);
+            }
+            catch (IOException e)
+            {
+
+            }
+         }
+      }
+   }
+
    public synchronized BuiltResponse filter()
    {
       // FIXME: check what happens if the filter suspends and resumes/abort within the same call (same thread)
@@ -247,11 +307,18 @@ public class PreMatchContainerRequestContext implements ContainerRequestContext
          try
          {
             suspended = false;
+            response = null;
+            throwable = null;
+            inFilter = true;
             filter.filter(this);
          }
          catch (IOException e)
          {
             throw new ApplicationException(e);
+         }
+         finally
+         {
+            inFilter = false;
          }
          if(suspended) {
             if(!httpRequest.getAsyncContext().isSuspended())
@@ -270,6 +337,17 @@ public class PreMatchContainerRequestContext implements ContainerRequestContext
             else
                httpRequest.getAsyncContext().getAsyncResponse().resume(serverResponse);
          }
+         if (throwable != null)
+         {
+            // handle the case where we've been suspended by a previous filter
+            if(filterReturnIsMeaningful)
+               rethrow(throwable);
+            else
+            {
+               writeException(throwable);
+               return null;
+            }
+         }
       }
       // here it means we reached the last filter
       // if we've never been suspended, the caller is valid and let it go on doing the request
@@ -278,6 +356,11 @@ public class PreMatchContainerRequestContext implements ContainerRequestContext
       // if we've been suspended then the caller is a filter and have to invoke our continuation
       continuation.run();
       return null;
+   }
+
+   private <T extends Throwable> void rethrow(Throwable t) throws T
+   {
+      throw (T)t;
    }
 
    public boolean isSuspended()
