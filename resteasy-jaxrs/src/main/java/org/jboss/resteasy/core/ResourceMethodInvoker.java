@@ -17,6 +17,7 @@ import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
@@ -357,7 +358,19 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       {
          if (asyncStreamResponseConsumer != null)
          {
-            asyncStreamResponseConsumer.internalResume(ex);
+            // WARNING: this can throw if the exception is not mapped by the user, in
+            // which case we haven't completed the connection and called the callbacks
+            try 
+            {
+               asyncStreamResponseConsumer.internalResume(ex);
+            }
+            catch(UnhandledException x) 
+            {
+               // make sure we call the callbacks before throwing to the container
+               request.getAsyncContext().getAsyncResponse().completionCallbacks(ex);
+               throw x;
+            }
+            asyncStreamResponseConsumer.complete(ex);
             return null;
          }
          else if (request.getAsyncContext().isSuspended())

@@ -9,8 +9,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import org.jboss.resteasy.spi.HttpRequest;
+import org.reactivestreams.Publisher;
+
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 @Path("")
@@ -22,7 +27,8 @@ public class CompletionStageResponseResource {
    @GET
    @Path("text")
    @Produces("text/plain")
-   public CompletionStage<String> text() {
+   public CompletionStage<String> text(@Context HttpRequest req) {
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
       CompletableFuture<String> cs = new CompletableFuture<>();
       ExecutorService executor = Executors.newSingleThreadExecutor();
       executor.submit(
@@ -110,7 +116,8 @@ public class CompletionStageResponseResource {
    @GET
    @Path("exception/delay")
    @Produces("text/plain")
-   public CompletionStage<String> exceptionDelay() {
+   public CompletionStage<String> exceptionDelay(@Context HttpRequest req) {
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
       CompletableFuture<String> cs = new CompletableFuture<>();
       ExecutorService executor = Executors.newSingleThreadExecutor();
       executor.submit(
@@ -126,14 +133,30 @@ public class CompletionStageResponseResource {
    @GET
    @Path("exception/immediate/runtime")
    @Produces("text/plain")
-   public CompletionStage<String> exceptionImmediateRuntime() {
+   public CompletionStage<String> exceptionImmediateRuntime(@Context HttpRequest req) {
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
       throw new RuntimeException(EXCEPTION + ": expect stacktrace");
    }
 
    @GET
    @Path("exception/immediate/notruntime")
    @Produces("text/plain")
-   public CompletionStage<String> exceptionImmediateNotRuntime() throws Exception {
+   public CompletionStage<String> exceptionImmediateNotRuntime(@Context HttpRequest req) throws Exception {
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
       throw new Exception( EXCEPTION + ": expect stacktrace");
+   }
+
+   @GET
+   @Path("callback-called-no-error")
+   public String callbackCalledNoError() {
+      AsyncResponseCallback.assertCalled(false);
+      return "OK";
+   }
+
+   @GET
+   @Path("callback-called-with-error")
+   public String callbackCalledWithError() {
+      AsyncResponseCallback.assertCalled(true);
+      return "OK";
    }
 }
