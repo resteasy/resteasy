@@ -85,12 +85,13 @@ public abstract class AsyncResponseConsumer
       asyncResponse.complete();
    }
    
-   synchronized public void complete()
+   synchronized final public void complete(Throwable t)
    {
       if (!isComplete)
       {
          isComplete = true;
          doComplete();
+         asyncResponse.completionCallbacks(t);
          ResteasyProviderFactory.removeContextDataLevel();
       }
    }
@@ -118,7 +119,7 @@ public abstract class AsyncResponseConsumer
          {
          }
          // be done with this stream
-         complete();
+         complete(e);
          return false;
       }
    }
@@ -216,7 +217,7 @@ public abstract class AsyncResponseConsumer
          }
          finally
          {
-            complete();
+            complete(u);
          }
       }
 
@@ -243,14 +244,16 @@ public abstract class AsyncResponseConsumer
       @Override
       protected void doComplete()
       {
-         subscription.cancel();
+         // we can be done by exception before we've even subscribed
+         if(subscription != null)
+            subscription.cancel();
          super.doComplete();
       }
       
       @Override
       public void onComplete()
       {
-         complete();
+         complete(null);
       }
 
       @Override
@@ -262,7 +265,7 @@ public abstract class AsyncResponseConsumer
          }
          finally
          {
-            complete();
+            complete(t);
          }
       }
 
@@ -355,7 +358,7 @@ public abstract class AsyncResponseConsumer
          }
          finally
          {
-            complete();
+            complete(null);
          }
       }
       

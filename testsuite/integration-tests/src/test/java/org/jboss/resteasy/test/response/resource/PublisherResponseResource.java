@@ -1,17 +1,16 @@
 package org.jboss.resteasy.test.response.resource;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.sse.Sse;
-import javax.ws.rs.sse.SseEventSink;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.annotations.Stream;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.Flowable;
@@ -22,8 +21,39 @@ public class PublisherResponseResource {
    @GET
    @Path("text")
    @Produces("application/json")
-   public Publisher<String> text() {
+   public Publisher<String> text(@Context HttpRequest req) {
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
 	   return Flowable.fromArray("one", "two");
+   }
+
+   @GET
+   @Path("callback-called-no-error")
+   public String callbackCalledNoError() {
+      AsyncResponseCallback.assertCalled(false);
+      return "OK";
+   }
+
+   @GET
+   @Path("text-error-immediate")
+   @Produces("application/json")
+   public Publisher<String> textErrorImmediate(@Context HttpRequest req) {
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      throw new AsyncResponseException();
+   }
+
+   @GET
+   @Path("text-error-deferred")
+   @Produces("application/json")
+   public Publisher<String> textErrorDeferred(@Context HttpRequest req) {
+      req.getAsyncContext().getAsyncResponse().register(new AsyncResponseCallback());
+      return Flowable.error(new AsyncResponseException());
+   }
+
+   @GET
+   @Path("callback-called-with-error")
+   public String callbackCalledWithError() {
+      AsyncResponseCallback.assertCalled(true);
+      return "OK";
    }
 
    @Stream

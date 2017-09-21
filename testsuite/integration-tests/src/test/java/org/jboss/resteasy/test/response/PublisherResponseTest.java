@@ -3,7 +3,6 @@ package org.jboss.resteasy.test.response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -15,7 +14,9 @@ import javax.ws.rs.sse.SseEventSource;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.resteasy.test.response.resource.PublisherResponseMessageBodyWriter;
+import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
+import org.jboss.resteasy.test.response.resource.AsyncResponseException;
+import org.jboss.resteasy.test.response.resource.AsyncResponseExceptionMapper;
 import org.jboss.resteasy.test.response.resource.PublisherResponseResource;
 import org.jboss.resteasy.test.response.resource.PublisherResponseTestClass;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -44,7 +45,8 @@ public class PublisherResponseTest {
       WebArchive war = TestUtil.prepareArchive(PublisherResponseTest.class.getSimpleName());
       war.addClass(PublisherResponseTestClass.class);
       war.addAsLibrary(TestUtil.resolveDependency("io.reactivex.rxjava2:rxjava:2.1.3"));
-      return TestUtil.finishContainerPrepare(war, null, PublisherResponseMessageBodyWriter.class, PublisherResponseResource.class);
+      return TestUtil.finishContainerPrepare(war, null, PublisherResponseResource.class,
+            AsyncResponseCallback.class, AsyncResponseExceptionMapper.class, AsyncResponseException.class);
    }
 
    private String generateURL(String path) {
@@ -72,9 +74,54 @@ public class PublisherResponseTest {
       Invocation.Builder request = client.target(generateURL("/text")).request();
       Response response = request.get();
       String entity = response.readEntity(String.class);
-      System.out.println("STEF: "+entity);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("[\"one\",\"two\"]", entity);
+
+      // make sure the completion callback was called with no error
+      request = client.target(generateURL("/callback-called-no-error")).request();
+      response = request.get();
+      Assert.assertEquals(200, response.getStatus());
+      response.close();
+   }
+
+   /**
+    * @tpTestDetails Resource method returns Publisher<String>, throws exception immediately.
+    * @tpSince RESTEasy 4.0
+    */
+   @Test
+   public void testTextErrorImmediate() throws Exception
+   {
+      Invocation.Builder request = client.target(generateURL("/text-error-immediate")).request();
+      Response response = request.get();
+      String entity = response.readEntity(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("Got it", entity);
+
+      // make sure the completion callback was called with with an error
+      request = client.target(generateURL("/callback-called-with-error")).request();
+      response = request.get();
+      Assert.assertEquals(200, response.getStatus());
+      response.close();
+   }
+
+   /**
+    * @tpTestDetails Resource method returns Publisher<String>, throws exception in stream.
+    * @tpSince RESTEasy 4.0
+    */
+   @Test
+   public void testTextErrorDeferred() throws Exception
+   {
+      Invocation.Builder request = client.target(generateURL("/text-error-deferred")).request();
+      Response response = request.get();
+      String entity = response.readEntity(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("Got it", entity);
+
+      // make sure the completion callback was called with with an error
+      request = client.target(generateURL("/callback-called-with-error")).request();
+      response = request.get();
+      Assert.assertEquals(200, response.getStatus());
+      response.close();
    }
 
    /**
