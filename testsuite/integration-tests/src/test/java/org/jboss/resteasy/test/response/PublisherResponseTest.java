@@ -64,80 +64,80 @@ public class PublisherResponseTest {
       client = null;
    }
 
-   /**
-    * @tpTestDetails Resource method returns Publisher<String>.
-    * @tpSince RESTEasy 4.0
-    */
-   @Test
-   public void testText() throws Exception
-   {
-      Invocation.Builder request = client.target(generateURL("/text")).request();
-      Response response = request.get();
-      String entity = response.readEntity(String.class);
-      Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("[\"one\",\"two\"]", entity);
-
-      // make sure the completion callback was called with no error
-      request = client.target(generateURL("/callback-called-no-error")).request();
-      response = request.get();
-      Assert.assertEquals(200, response.getStatus());
-      response.close();
-   }
-
-   /**
-    * @tpTestDetails Resource method returns Publisher<String>, throws exception immediately.
-    * @tpSince RESTEasy 4.0
-    */
-   @Test
-   public void testTextErrorImmediate() throws Exception
-   {
-      Invocation.Builder request = client.target(generateURL("/text-error-immediate")).request();
-      Response response = request.get();
-      String entity = response.readEntity(String.class);
-      Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("Got it", entity);
-
-      // make sure the completion callback was called with with an error
-      request = client.target(generateURL("/callback-called-with-error")).request();
-      response = request.get();
-      Assert.assertEquals(200, response.getStatus());
-      response.close();
-   }
-
-   /**
-    * @tpTestDetails Resource method returns Publisher<String>, throws exception in stream.
-    * @tpSince RESTEasy 4.0
-    */
-   @Test
-   public void testTextErrorDeferred() throws Exception
-   {
-      Invocation.Builder request = client.target(generateURL("/text-error-deferred")).request();
-      Response response = request.get();
-      String entity = response.readEntity(String.class);
-      Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("Got it", entity);
-
-      // make sure the completion callback was called with with an error
-      request = client.target(generateURL("/callback-called-with-error")).request();
-      response = request.get();
-      Assert.assertEquals(200, response.getStatus());
-      response.close();
-   }
-
-   /**
-    * @tpTestDetails Resource method returns Publisher<String>.
-    * @tpSince RESTEasy 4.0
-    */
-   @Test
-   public void testChunked() throws Exception
-   {
-      Invocation.Builder request = client.target(generateURL("/chunked")).request();
-      Response response = request.get();
-      String entity = response.readEntity(String.class);
-      System.out.println("STEF2: "+entity);
-      Assert.assertEquals(200, response.getStatus());
-      Assert.assertEquals("onetwo", entity);
-   }
+//   /**
+//    * @tpTestDetails Resource method returns Publisher<String>.
+//    * @tpSince RESTEasy 4.0
+//    */
+//   @Test
+//   public void testText() throws Exception
+//   {
+//      Invocation.Builder request = client.target(generateURL("/text")).request();
+//      Response response = request.get();
+//      String entity = response.readEntity(String.class);
+//      Assert.assertEquals(200, response.getStatus());
+//      Assert.assertEquals("[\"one\",\"two\"]", entity);
+//
+//      // make sure the completion callback was called with no error
+//      request = client.target(generateURL("/callback-called-no-error")).request();
+//      response = request.get();
+//      Assert.assertEquals(200, response.getStatus());
+//      response.close();
+//   }
+//
+//   /**
+//    * @tpTestDetails Resource method returns Publisher<String>, throws exception immediately.
+//    * @tpSince RESTEasy 4.0
+//    */
+//   @Test
+//   public void testTextErrorImmediate() throws Exception
+//   {
+//      Invocation.Builder request = client.target(generateURL("/text-error-immediate")).request();
+//      Response response = request.get();
+//      String entity = response.readEntity(String.class);
+//      Assert.assertEquals(200, response.getStatus());
+//      Assert.assertEquals("Got it", entity);
+//
+//      // make sure the completion callback was called with with an error
+//      request = client.target(generateURL("/callback-called-with-error")).request();
+//      response = request.get();
+//      Assert.assertEquals(200, response.getStatus());
+//      response.close();
+//   }
+//
+//   /**
+//    * @tpTestDetails Resource method returns Publisher<String>, throws exception in stream.
+//    * @tpSince RESTEasy 4.0
+//    */
+//   @Test
+//   public void testTextErrorDeferred() throws Exception
+//   {
+//      Invocation.Builder request = client.target(generateURL("/text-error-deferred")).request();
+//      Response response = request.get();
+//      String entity = response.readEntity(String.class);
+//      Assert.assertEquals(200, response.getStatus());
+//      Assert.assertEquals("Got it", entity);
+//
+//      // make sure the completion callback was called with with an error
+//      request = client.target(generateURL("/callback-called-with-error")).request();
+//      response = request.get();
+//      Assert.assertEquals(200, response.getStatus());
+//      response.close();
+//   }
+//
+//   /**
+//    * @tpTestDetails Resource method returns Publisher<String>.
+//    * @tpSince RESTEasy 4.0
+//    */
+//   @Test
+//   public void testChunked() throws Exception
+//   {
+//      Invocation.Builder request = client.target(generateURL("/chunked")).request();
+//      Response response = request.get();
+//      String entity = response.readEntity(String.class);
+//      System.out.println("STEF2: "+entity);
+//      Assert.assertEquals(200, response.getStatus());
+//      Assert.assertEquals("onetwo", entity);
+//   }
 
    /**
     * @tpTestDetails Resource method returns Publisher<String>.
