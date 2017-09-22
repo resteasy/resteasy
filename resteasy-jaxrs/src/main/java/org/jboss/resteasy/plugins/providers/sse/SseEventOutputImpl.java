@@ -125,7 +125,8 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
          response.getOutputStream().write(END);
          response.flushBuffer();
          System.out.println("data-out: written " + event.getData());
-      } catch (Exception e) {
+      } catch (Throwable e) {
+         e.printStackTrace();
          throw new ProcessingException(e);
       } finally {
          ResteasyProviderFactory.removeContextDataLevel();
