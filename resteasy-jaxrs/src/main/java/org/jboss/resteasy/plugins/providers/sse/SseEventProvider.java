@@ -144,6 +144,7 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
                      @Override
                      public void close() throws IOException
                      {
+                        new Exception().printStackTrace();
                         entityStream.close();
                      }                    
                   });
