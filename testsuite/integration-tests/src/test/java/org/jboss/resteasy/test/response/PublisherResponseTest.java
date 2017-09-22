@@ -171,7 +171,7 @@ public class PublisherResponseTest {
       future.get();
       Assert.assertEquals(2, collector.size());
       Assert.assertEquals(0, errors.size());
-      Assert.assertEquals("one", collector.get(0));
-      Assert.assertEquals("two", collector.get(1));
+      Assert.assertTrue(collector.contains("one"));
+      Assert.assertTrue(collector.contains("two"));
    }
 }
