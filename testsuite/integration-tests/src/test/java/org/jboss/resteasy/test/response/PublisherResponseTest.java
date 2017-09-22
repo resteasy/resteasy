@@ -23,9 +23,9 @@ import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -38,7 +38,7 @@ import org.junit.runner.RunWith;
 @RunAsClient
 public class PublisherResponseTest {
 
-   static Client client;
+   Client client;
 
    @Deployment
    public static Archive<?> deploy() {
@@ -53,13 +53,13 @@ public class PublisherResponseTest {
       return PortProviderUtil.generateURL(path, PublisherResponseTest.class.getSimpleName());
    }
 
-   @BeforeClass
-   public static void setup() {
+   @Before
+   public void setup() {
       client = ClientBuilder.newClient();
    }
 
-   @AfterClass
-   public static void close() {
+   @After
+   public void close() {
       client.close();
       client = null;
    }
@@ -134,7 +134,6 @@ public class PublisherResponseTest {
       Invocation.Builder request = client.target(generateURL("/chunked")).request();
       Response response = request.get();
       String entity = response.readEntity(String.class);
-      System.out.println("STEF2: "+entity);
       Assert.assertEquals(200, response.getStatus());
       Assert.assertEquals("onetwo", entity);
    }
@@ -168,6 +167,7 @@ public class PublisherResponseTest {
     		  });
       source.open();
       future.get();
+      source.close();
       Assert.assertEquals(2, collector.size());
       Assert.assertEquals(0, errors.size());
       Assert.assertEquals("one", collector.get(0));
