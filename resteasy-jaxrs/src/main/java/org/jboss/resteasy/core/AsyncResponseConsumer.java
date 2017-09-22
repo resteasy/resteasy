@@ -409,6 +409,14 @@ public abstract class AsyncResponseConsumer
       }
 
       @Override
+      protected boolean addNextElement(Object element)
+      {
+         super.addNextElement(element);
+         // never ask for a new element until we are done sending it
+         return false;
+      }
+      
+      @Override
       protected void sendBuiltResponse(BuiltResponse builtResponse, HttpRequest httpRequest, HttpResponse httpResponse)
       {
          ServerResponseWriter.setResponseMediaType(builtResponse, httpRequest, httpResponse, dispatcher.getProviderFactory(), method);
@@ -416,7 +424,15 @@ public abstract class AsyncResponseConsumer
             .mediaType(builtResponse.getMediaType())
             .data(builtResponse.getEntityClass(), builtResponse.getEntity())
             .build();
-         sseEventSink.send(event);
+         sseEventSink.send(event).whenComplete((val, ex) -> {
+            if(ex != null)
+               internalResume(ex);
+            else
+            {
+               // we're good, ask for the next one
+               subscription.request(1);
+            }
+         });
       }
 
       @Override
