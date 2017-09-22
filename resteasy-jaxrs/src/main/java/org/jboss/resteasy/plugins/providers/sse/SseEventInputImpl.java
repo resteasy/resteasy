@@ -39,6 +39,7 @@ public class SseEventInputImpl implements EventInput, Closeable
    public void close() throws IOException
    {
       System.out.println("SseEventInput#close()");
+      new Exception("SseEventInput#close()").printStackTrace();
       this.inputStream.close();
       isClosed = true;
    }

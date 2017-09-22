@@ -213,7 +213,7 @@ public class SseEventSourceImpl implements SseEventSource
    @Override
    public boolean close(final long timeout, final TimeUnit unit)
    {
-      System.out.println("Source close requested...");
+      System.out.println("Source close requested... ");
       if (state.getAndSet(State.CLOSED) != State.CLOSED)
       {
          ResteasyWebTarget resteasyWebTarget = (ResteasyWebTarget)target;
