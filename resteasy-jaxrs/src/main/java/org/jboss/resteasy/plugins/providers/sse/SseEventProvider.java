@@ -109,6 +109,7 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
             }
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            System.out.println("data-out: writing " + event.getData());
             writer.writeTo(event.getData(), payloadClass, payloadType, annotations, event.getMediaType(), httpHeaders,
                   baos);
             
