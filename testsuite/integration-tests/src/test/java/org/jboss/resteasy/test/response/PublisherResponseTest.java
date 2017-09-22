@@ -153,6 +153,7 @@ public class PublisherResponseTest {
       SseEventSource source = SseEventSource.target(target).build();
       source.register(evt -> {
     	  String data = evt.readData(String.class);
+    	  System.out.println("data: " + data);
     	  collector.add(data);
     	  if(collector.size() >= 2) {
     		  future.complete(null);
