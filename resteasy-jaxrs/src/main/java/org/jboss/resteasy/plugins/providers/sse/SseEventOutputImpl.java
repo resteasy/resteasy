@@ -107,8 +107,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       CompletableFuture<Object> future = CompletableFuture
             .supplyAsync(() -> {writeEvent(event); return event;});
       //TODO: log this 
-      future.exceptionally((Throwable ex) -> { errorConsumer.accept(this, ex); return ex;});
-      return future;
+      return future.exceptionally((Throwable ex) -> { errorConsumer.accept(this, ex); return ex;});
    }
    
  
