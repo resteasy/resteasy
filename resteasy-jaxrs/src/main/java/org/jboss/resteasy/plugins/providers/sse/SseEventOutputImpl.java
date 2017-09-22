@@ -116,6 +116,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    {
       ResteasyProviderFactory.pushContextDataMap(contextDataMap);
       try {
+         System.out.println("data-out: preparing for writing " + event.getData());
          if (event != null)
          {
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
@@ -124,6 +125,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
          }
          response.getOutputStream().write(END);
          response.flushBuffer();
+         System.out.println("data-out: written " + event.getData());
       } catch (Exception e) {
          throw new ProcessingException(e);
       } finally {
