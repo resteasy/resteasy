@@ -38,6 +38,7 @@ public class SseEventInputImpl implements EventInput, Closeable
    @Override
    public void close() throws IOException
    {
+      System.out.println("SseEventInput#close()");
       this.inputStream.close();
       isClosed = true;
    }
