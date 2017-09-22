@@ -73,7 +73,17 @@ public class SynchronousExecutionContext extends AbstractExecutionContext
          super(dispatcher, request, response);
       }
 
-
+      @Override
+      public void complete()
+      {
+         synchronized (responseLock)
+         {
+            if (done) return;
+            if (cancelled) return;
+            done = true;
+            syncLatch.countDown();
+         }
+      }
 
       @Override
       public boolean resume(Object entity)

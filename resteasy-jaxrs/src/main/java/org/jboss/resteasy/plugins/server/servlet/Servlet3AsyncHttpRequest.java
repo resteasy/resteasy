@@ -100,6 +100,20 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
          }
 
          @Override
+         public void complete()
+         {
+            synchronized (responseLock)
+            {
+               if (done) return;
+               if (cancelled) return;
+               AsyncContext asyncContext = getAsyncContext();
+               done = true;
+               asyncContext.complete();
+            }
+
+         }
+
+         @Override
          public boolean resume(Throwable exc)
          {
             synchronized (responseLock)
