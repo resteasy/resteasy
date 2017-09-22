@@ -150,28 +150,29 @@ public class PublisherResponseTest {
       List<String> collector = new ArrayList<>();
       List<Throwable> errors = new ArrayList<>();
       CompletableFuture<Void> future = new CompletableFuture<Void>();
-      SseEventSource source = SseEventSource.target(target).build();
-      source.register(evt -> {
-    	  String data = evt.readData(String.class);
-    	  System.out.println("data: " + data);
-    	  collector.add(data);
-    	  if(collector.size() >= 2) {
-    		  future.complete(null);
-    	  }
-      }, 
-    		  t -> {
-    			  t.printStackTrace();
-    			  errors.add(t);  
-    		  }, 
-    		  () -> {
-    			  // bah, never called
-    			  future.complete(null);
-    		  });
-      source.open();
-      future.get();
-      Assert.assertEquals(2, collector.size());
-      Assert.assertEquals(0, errors.size());
-      Assert.assertTrue(collector.contains("one"));
-      Assert.assertTrue(collector.contains("two"));
+      try (SseEventSource source = SseEventSource.target(target).build())
+      {
+         source.register(evt -> {
+            String data = evt.readData(String.class);
+            System.out.println("data: " + data);
+            collector.add(data);
+            if (collector.size() >= 2)
+            {
+               future.complete(null);
+            }
+         }, t -> {
+            t.printStackTrace();
+            errors.add(t);
+         }, () -> {
+            // bah, never called
+            future.complete(null);
+         });
+         source.open();
+         future.get();
+         Assert.assertEquals(2, collector.size());
+         Assert.assertEquals(0, errors.size());
+         Assert.assertTrue(collector.contains("one"));
+         Assert.assertTrue(collector.contains("two"));
+      }
    }
 }
