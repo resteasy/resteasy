@@ -21,11 +21,53 @@
         <!-- Optional property for jacoco report generation -->
         <sources.path></sources.path>
         <jacoco.agent></jacoco.agent>
-        <additionalJvmArgs></additionalJvmArgs>
+        <additionalJvmArgs>-javaagent:${BYTEMAN_HOME}/lib/byteman.jar=script:/home/asoldano/ale.btm,prop:org.jboss.byteman.debug=true
+    -Djboss.modules.system.pkgs=org.jboss.byteman</additionalJvmArgs>
+    
+    <!-- 
+    
+RULE R2A
+CLASS org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl
+METHOD close
+AT ENTRY
+IF true
+DO  traceStack("____________________________ SseEventInput close()!\n");traceln("");
+ENDRULE
+
+RULE REOF1
+CLASS org.apache.http.impl.io.ChunkedInputStream
+METHOD close
+AT ENTRY
+IF true
+DO  traceStack("ChunkedInputStream#close .............")
+ENDRULE
+    
+     -->
+    
+    
     </properties>
 
     <build>
         <plugins>
+ 		    <plugin>
+		        <groupId>org.jboss.byteman</groupId>
+		        <artifactId>byteman-rulecheck-maven-plugin</artifactId>
+		        <version>2.1.3</version>
+		        <executions>
+		          <execution>
+		            <id>rulecheck-test</id>
+		            <goals>
+		              <goal>rulecheck</goal>
+		            </goals>
+		            <configuration>
+		                <includes>
+		                    <include>**/*.btm</include>
+		                </includes>
+		                <verbose>true</verbose>
+		            </configuration>
+		          </execution>
+		        </executions>
+		      </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
@@ -69,10 +111,10 @@
             </activation>
             <modules>
                 <module>arquillian-utils</module>
-                <module>unit-tests</module>
-                <module>legacy-integration-tests</module>
+<!--                <module>unit-tests</module>
+                <module>legacy-integration-tests</module>-->
                 <module>integration-tests</module>
-                <module>integration-tests-spring</module>
+<!--                <module>integration-tests-spring</module>-->
             </modules>
         </profile>
         <!-- Forward compatibility: use EAP 7.0.0.GA and newer Client from CP stream (e.g. client from RESTEasy delivered by EAP 7.0.2 -->

@@ -213,6 +213,7 @@ public class SseEventSourceImpl implements SseEventSource
    @Override
    public boolean close(final long timeout, final TimeUnit unit)
    {
+      System.out.println("Source close requested... ");
       if (state.getAndSet(State.CLOSED) != State.CLOSED)
       {
          ResteasyWebTarget resteasyWebTarget = (ResteasyWebTarget)target;
@@ -350,6 +351,7 @@ public class SseEventSourceImpl implements SseEventSource
          state.compareAndSet(State.OPEN, State.PENDING);
          if (delay > 0)
          {
+            System.out.println("Scheduling source reconnection...");
             executor.schedule(processor, delay, TimeUnit.MILLISECONDS);
          }
          else

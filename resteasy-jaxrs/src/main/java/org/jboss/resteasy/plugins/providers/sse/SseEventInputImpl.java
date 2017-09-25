@@ -24,6 +24,7 @@ public class SseEventInputImpl implements EventInput, Closeable
    private InputStream inputStream;
    private final byte[] EventEND = "\r\n\r\n".getBytes();
    private volatile boolean isClosed = false;
+   private boolean lastFieldWasData;
 
    public SseEventInputImpl(Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders,
          InputStream inputStream)
@@ -37,6 +38,8 @@ public class SseEventInputImpl implements EventInput, Closeable
    @Override
    public void close() throws IOException
    {
+      System.out.println("SseEventInput#close()");
+      new Exception("SseEventInput#close()").printStackTrace();
       this.inputStream.close();
       isClosed = true;
    }
@@ -51,6 +54,7 @@ public class SseEventInputImpl implements EventInput, Closeable
       byte[] chunk = null;
       try
       {
+         lastFieldWasData = false;
          chunk = readEvent(inputStream);
          if (chunk == null) {
             close();
@@ -176,14 +180,17 @@ public class SseEventInputImpl implements EventInput, Closeable
          charset = Charset.forName(mediaType.getParameters().get(MediaType.CHARSET_PARAMETER));
       }
       String valueString = new String(value, charset);
+      boolean newLastFieldWasData = false;
       if ("event".equals(name))
       {
          inboundEventBuilder.name(valueString);
       }
       else if ("data".equals(name))
       {
+         if(lastFieldWasData)
+            inboundEventBuilder.write(SseConstants.EOL);
          inboundEventBuilder.write(value);
-         inboundEventBuilder.write(SseConstants.EOL);
+         newLastFieldWasData = true;
       }
       else if ("id".equals(name))
       {
@@ -204,6 +211,7 @@ public class SseEventInputImpl implements EventInput, Closeable
       {
          LogMessages.LOGGER.skipUnkownFiled(name);
       }
+      lastFieldWasData = newLastFieldWasData;
    }
 
    public byte[] readEvent(final InputStream in) throws IOException

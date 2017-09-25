@@ -46,8 +46,82 @@ public class ServerResponseWriter
 {
    public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, final ResteasyProviderFactory providerFactory) throws IOException
    {
+      writeNomapResponse(jaxrsResponse, request, response, providerFactory, true);
+   }
+   
+   public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, final ResteasyProviderFactory providerFactory, boolean sendHeaders) throws IOException
+   {
       ResourceMethodInvoker method =(ResourceMethodInvoker) request.getAttribute(ResourceMethodInvoker.class.getName());
 
+      // do this even if we're not sending the headers, because this sets the content type in the response,
+      // which is used by marshalling, and NPEs otherwise
+      setResponseMediaType(jaxrsResponse, request, response, providerFactory, method);
+      
+      executeFilters(jaxrsResponse, request, response, providerFactory, method);
+
+      //[RESTEASY-1627] check on response.getOutputStream() to avoid resteasy-netty4 trying building a chunked response body for HEAD requests 
+      if (jaxrsResponse.getEntity() == null || response.getOutputStream() == null)
+      {
+         response.setStatus(jaxrsResponse.getStatus());
+         commitHeaders(jaxrsResponse, response);
+         return;
+      }
+
+      Class type = jaxrsResponse.getEntityClass();
+      Object ent = jaxrsResponse.getEntity();
+      Type generic = jaxrsResponse.getGenericType();
+      Annotation[] annotations = jaxrsResponse.getAnnotations();
+      final MediaType mt = jaxrsResponse.getMediaType();
+      @SuppressWarnings(value = "unchecked")
+      MessageBodyWriter writer = providerFactory.getMessageBodyWriter(
+              type, generic, annotations, mt);
+      if (writer!=null)
+          LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
+
+      if (writer == null)
+      {
+         throw new NoMessageBodyWriterFoundFailure(type, mt);
+      }
+
+      if(sendHeaders)
+         response.setStatus(jaxrsResponse.getStatus());
+      final BuiltResponse built = jaxrsResponse;
+      CommitHeaderOutputStream.CommitCallback callback = new CommitHeaderOutputStream.CommitCallback()
+      {
+         private boolean committed;
+
+         @Override
+         public void commit()
+         {
+            if (committed) return;
+            committed = true;
+            commitHeaders(built, response);
+         }
+      };
+      OutputStream os = sendHeaders ? new CommitHeaderOutputStream(response.getOutputStream(), callback) : response.getOutputStream();
+
+      WriterInterceptor[] writerInterceptors = null;
+      if (method != null)
+      {
+         writerInterceptors = method.getWriterInterceptors();
+      }
+      else
+      {
+         writerInterceptors = providerFactory.getServerWriterInterceptorRegistry().postMatch(null, null);
+      }
+
+      AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors,
+              providerFactory, ent, type, generic, annotations, mt,
+              jaxrsResponse.getMetadata(), os, request);
+      writerContext.proceed();
+      if(sendHeaders) {
+         response.setOutputStream(writerContext.getOutputStream()); //propagate interceptor changes on the outputstream to the response
+         callback.commit(); // just in case the output stream is never used
+      }
+   }
+
+   public static void setResponseMediaType(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)
+   {
       if (jaxrsResponse.getEntity() != null)
       {
         if (jaxrsResponse.getMediaType() == null)
@@ -82,65 +156,6 @@ public class ServerResponseWriter
            }
         }
       }
-      
-      executeFilters(jaxrsResponse, request, response, providerFactory, method);
-
-      //[RESTEASY-1627] check on response.getOutputStream() to avoid resteasy-netty4 trying building a chunked response body for HEAD requests 
-      if (jaxrsResponse.getEntity() == null || response.getOutputStream() == null)
-      {
-         response.setStatus(jaxrsResponse.getStatus());
-         commitHeaders(jaxrsResponse, response);
-         return;
-      }
-
-      Class type = jaxrsResponse.getEntityClass();
-      Object ent = jaxrsResponse.getEntity();
-      Type generic = jaxrsResponse.getGenericType();
-      Annotation[] annotations = jaxrsResponse.getAnnotations();
-      final MediaType mt = jaxrsResponse.getMediaType();
-      @SuppressWarnings(value = "unchecked")
-      MessageBodyWriter writer = providerFactory.getMessageBodyWriter(
-              type, generic, annotations, mt);
-      if (writer!=null)
-          LogMessages.LOGGER.debugf("MessageBodyWriter: %s", writer.getClass().getName());
-
-      if (writer == null)
-      {
-         throw new NoMessageBodyWriterFoundFailure(type, mt);
-      }
-
-      response.setStatus(jaxrsResponse.getStatus());
-      final BuiltResponse built = jaxrsResponse;
-      CommitHeaderOutputStream.CommitCallback callback = new CommitHeaderOutputStream.CommitCallback()
-      {
-         private boolean committed;
-
-         @Override
-         public void commit()
-         {
-            if (committed) return;
-            committed = true;
-            commitHeaders(built, response);
-         }
-      };
-      OutputStream os = new CommitHeaderOutputStream(response.getOutputStream(), callback);
-
-      WriterInterceptor[] writerInterceptors = null;
-      if (method != null)
-      {
-         writerInterceptors = method.getWriterInterceptors();
-      }
-      else
-      {
-         writerInterceptors = providerFactory.getServerWriterInterceptorRegistry().postMatch(null, null);
-      }
-
-      AbstractWriterInterceptorContext writerContext =  new ServerWriterInterceptorContext(writerInterceptors,
-              providerFactory, ent, type, generic, annotations, mt,
-              jaxrsResponse.getMetadata(), os, request);
-      writerContext.proceed();
-      response.setOutputStream(writerContext.getOutputStream()); //propagate interceptor changes on the outputstream to the response
-      callback.commit(); // just in case the output stream is never used
    }
 
    private static void executeFilters(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method) throws IOException

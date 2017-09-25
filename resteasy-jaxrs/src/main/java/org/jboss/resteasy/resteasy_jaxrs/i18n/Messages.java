@@ -735,4 +735,6 @@ public interface Messages
 
    @Message(id = BASE + 1090, value = "Unable to instantiate AsyncResponseProvider")
    String unableToInstantiateAsyncResponseProvider();
+   @Message(id = BASE + 1091, value = "Unable to instantiate AsyncStreamProvider")
+   String unableToInstantiateAsyncStreamProvider();
 }
