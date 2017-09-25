@@ -5,13 +5,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.core.Response;
 
-import org.jboss.resteasy.core.interception.jaxrs.ContainerResponseContextImpl;
-import org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext;
+import org.jboss.resteasy.core.interception.jaxrs.SuspendableContainerResponseContext;
 
 public abstract class AsyncResponseFilter implements ContainerResponseFilter {
 
@@ -26,7 +23,7 @@ public abstract class AsyncResponseFilter implements ContainerResponseFilter {
    public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
          throws IOException
    {
-      ContainerResponseContextImpl ctx = (ContainerResponseContextImpl) responseContext;
+      SuspendableContainerResponseContext ctx = (SuspendableContainerResponseContext) responseContext;
       String action = requestContext.getHeaderString(name);
       System.err.println("Filter response for "+name+" with action: "+action);
       if("sync-pass".equals(action)) {

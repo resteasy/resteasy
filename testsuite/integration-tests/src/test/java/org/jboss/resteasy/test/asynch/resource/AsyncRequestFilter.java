@@ -8,7 +8,7 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Response;
 
-import org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext;
+import org.jboss.resteasy.core.interception.jaxrs.SuspendableContainerRequestContext;
 
 public abstract class AsyncRequestFilter implements ContainerRequestFilter {
 
@@ -22,7 +22,7 @@ public abstract class AsyncRequestFilter implements ContainerRequestFilter {
    @Override
    public void filter(ContainerRequestContext requestContext) throws IOException
    {
-      PreMatchContainerRequestContext ctx = (PreMatchContainerRequestContext) requestContext;
+      SuspendableContainerRequestContext ctx = (SuspendableContainerRequestContext) requestContext;
       String action = ctx.getHeaderString(name);
       System.err.println("Filter request for "+name+" with action: "+action);
       if("sync-pass".equals(action)) {

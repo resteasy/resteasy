@@ -1,24 +1,5 @@
 package org.jboss.resteasy.core.interception.jaxrs;
 
-import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.core.SynchronousDispatcher;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
-import org.jboss.resteasy.specimpl.BuiltResponse;
-import org.jboss.resteasy.spi.ApplicationException;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -30,11 +11,29 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
+
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
+import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.spi.ApplicationException;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
+
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class PreMatchContainerRequestContext implements ContainerRequestContext
+public class PreMatchContainerRequestContext implements SuspendableContainerRequestContext
 {
    protected final HttpRequest httpRequest;
    protected Response response;
@@ -216,6 +215,7 @@ public class PreMatchContainerRequestContext implements ContainerRequestContext
       return httpRequest.getHttpHeaders().getHeaderString(name);
    }
 
+   @Override
    public synchronized void suspend() {
       if(continuation == null)
          throw new RuntimeException("Suspend not supported yet");
@@ -238,6 +238,7 @@ public class PreMatchContainerRequestContext implements ContainerRequestContext
       }
    }
    
+   @Override
    public synchronized void resume() {
       if(!suspended)
          throw new RuntimeException("Cannot resume: not suspended");
@@ -258,6 +259,7 @@ public class PreMatchContainerRequestContext implements ContainerRequestContext
       }
    }
    
+   @Override
    public synchronized void resume(Throwable t) {
       if(!suspended)
          throw new RuntimeException("Cannot resume: not suspended");
