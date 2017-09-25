@@ -20,6 +20,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -370,31 +371,32 @@ public class ServerResponseWriter
 
    public static void commitHeaders(BuiltResponse jaxrsResponse, HttpResponse response)
    {
-      if (jaxrsResponse.getMetadata() != null)
+	  MultivaluedMap<String, Object> headers = jaxrsResponse.getHeaders();
+      if (headers== null)
       {
-         List<Object> cookies = jaxrsResponse.getMetadata().get(
-                 HttpHeaderNames.SET_COOKIE);
-         if (cookies != null)
-         {
-            Iterator<Object> it = cookies.iterator();
-            while (it.hasNext())
-            {
-               Object next = it.next();
-               if (next instanceof NewCookie)
-               {
-                  NewCookie cookie = (NewCookie) next;
-                  response.addNewCookie(cookie);
-                  it.remove();
-               }
-            }
-            if (cookies.size() < 1)
-               jaxrsResponse.getMetadata().remove(HttpHeaderNames.SET_COOKIE);
-         }
+    	  return;
       }
-      if (jaxrsResponse.getMetadata() != null
-              && jaxrsResponse.getMetadata().size() > 0)
+      List<Object> cookies = headers.get(HttpHeaderNames.SET_COOKIE);
+      if (cookies != null)
       {
-         response.getOutputHeaders().putAll(jaxrsResponse.getMetadata());
+    	  Iterator<Object> it = cookies.iterator();
+		  while (it.hasNext())
+		  	{
+			  Object next = it.next();
+		      if (next instanceof NewCookie)
+		      {
+		         NewCookie cookie = (NewCookie) next;
+		         response.addNewCookie(cookie);
+		         it.remove();
+		      }
+		    }
+		    if (cookies.size() < 1)
+		    	headers.remove(HttpHeaderNames.SET_COOKIE);
+      }
+      if (headers.size() > 0)
+      {
+    	   MultivaluedMap<String, Object> outputHeaders = response.getOutputHeaders();
+	       headers.entrySet().forEach(e -> { outputHeaders.addAll(e.getKey(), e.getValue()); });
       }
    }
    
