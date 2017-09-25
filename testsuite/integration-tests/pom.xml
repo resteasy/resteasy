@@ -87,6 +87,14 @@
     </profiles>
 
     <dependencies>
+    
+    <dependency>
+  <groupId>org.jboss.arquillian.extension</groupId>
+  <artifactId>arquillian-extension-byteman</artifactId>
+  <version>1.0.0.Alpha4</version>
+  <scope>test</scope>
+</dependency>
+    
         <!-- TODO Workaround dependency for arquillian to work with container using Remoting 5. Remove when updated version of
         wildfly-arquillian-container-managed is available -->
         <dependency>
@@ -291,7 +299,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <scope>provided</scope>
+            <scope>compile</scope> <!--TEMP: compile instead of provided to please byteman-->
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
