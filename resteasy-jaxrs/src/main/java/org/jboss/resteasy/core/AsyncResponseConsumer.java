@@ -392,6 +392,8 @@ public abstract class AsyncResponseConsumer
    {
       private SseImpl sse;
       private SseEventSink sseEventSink;
+      private volatile boolean onCompleteReceived = false;
+      private volatile boolean sendingEvent = false;
       
       private AsyncStreamSseResponseConsumer(ResourceMethodInvoker method, AsyncStreamProvider<?> asyncStreamProvider)
       {
@@ -409,6 +411,22 @@ public abstract class AsyncResponseConsumer
       }
 
       @Override
+      protected boolean addNextElement(Object element)
+      {
+         super.addNextElement(element);
+         // never ask for a new element until we are done sending it
+         return false;
+      }
+      
+      @Override
+      public synchronized void onComplete()
+      {
+         onCompleteReceived = true;
+         if(sendingEvent == false)
+            super.onComplete();
+      }
+      
+      @Override
       protected void sendBuiltResponse(BuiltResponse builtResponse, HttpRequest httpRequest, HttpResponse httpResponse)
       {
          ServerResponseWriter.setResponseMediaType(builtResponse, httpRequest, httpResponse, dispatcher.getProviderFactory(), method);
@@ -416,7 +434,22 @@ public abstract class AsyncResponseConsumer
             .mediaType(builtResponse.getMediaType())
             .data(builtResponse.getEntityClass(), builtResponse.getEntity())
             .build();
-         sseEventSink.send(event);
+         sendingEvent = true;
+         // we can only get onComplete after we return from this method
+         sseEventSink.send(event).whenComplete((val, ex) -> {
+            synchronized (this) {
+               sendingEvent = false;
+               if (onCompleteReceived)
+                  super.onComplete();
+               else if (ex != null)
+                  internalResume(ex);
+               else
+               {
+                  // we're good, ask for the next one
+                  subscription.request(1);
+               }
+            }
+         });
       }
 
       @Override
