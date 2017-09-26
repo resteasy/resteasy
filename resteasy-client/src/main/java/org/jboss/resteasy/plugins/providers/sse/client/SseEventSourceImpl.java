@@ -216,7 +216,10 @@ public class SseEventSourceImpl implements SseEventSource
       if (state.getAndSet(State.CLOSED) != State.CLOSED)
       {
          ResteasyWebTarget resteasyWebTarget = (ResteasyWebTarget)target;
-         resteasyWebTarget.getResteasyClient().close();
+         if (!resteasyWebTarget.getResteasyClient().isClosed())
+         {
+            resteasyWebTarget.getResteasyClient().close();
+         }
          executor.shutdownNow();
       }
       try
