@@ -75,6 +75,10 @@
             <maven-resource group="org.codehaus.jettison" artifact="jettison"/>
         </module-def>
 
+        <module-def name="org.reactivestreams">
+            <maven-resource group="org.reactivestreams" artifact="reactive-streams"/>
+        </module-def>
+
         <module-def name="com.fasterxml.jackson.core.jackson-core">
             <maven-resource group="com.fasterxml.jackson.core" artifact="jackson-core"/>
         </module-def>

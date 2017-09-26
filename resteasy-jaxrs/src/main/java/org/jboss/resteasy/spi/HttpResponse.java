@@ -35,4 +35,6 @@ public interface HttpResponse
     */
    void reset();
 
+   void flushBuffer() throws IOException;
+
 }
