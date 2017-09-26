@@ -19,7 +19,6 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -81,14 +80,17 @@ public class SseTest {
              sent.add(msg);
              messageTarget.request().post(Entity.text(msg));
           }
+          boolean waitResult = latch.await(30, TimeUnit.SECONDS);
           Assert.assertEquals(0, errors.get());
-          Assert.assertTrue("Waiting for event to be delivered has timed out.", latch.await(30, TimeUnit.SECONDS));
+          Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
           messageTarget.request().delete();
           messageClient.close();
         }
         Assert.assertFalse("SseEventSource is not closed", msgEventSource.isOpen());
         Assert.assertTrue("5 messages are expected, but is : " + results.size(), results.size() == 5);
-        Assert.assertEquals("5 messages not equal", sent, results);
+        for (String s : sent) {
+           Assert.assertTrue("Sent message \"" + s + "\" not found as result.", results.contains(s));
+        }
      }
     
     //Test for Last-Event-Id. This test uses the message items stores in testAddMessage()
@@ -130,8 +132,9 @@ public class SseTest {
          }, ex -> {errors.incrementAndGet(); ex.printStackTrace(); throw new RuntimeException(ex);});
        eventSource.open();
 
+       boolean waitResult = latch.await(30, TimeUnit.SECONDS);
        Assert.assertEquals(0, errors.get());
-       Assert.assertTrue("Waiting for event to be delivered has timed out.", latch.await(30, TimeUnit.SECONDS));
+       Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
        Assert.assertTrue("6 SseInboundEvent expected", results.size() == 6);
        Assert.assertTrue("Expect the last event is Done event, but it is :" + results.toArray(new String[]{})[5], 
                results.toArray(new String[] {})[5].indexOf("Done") > -1);
@@ -191,7 +194,7 @@ public class SseTest {
        final AtomicInteger errors = new AtomicInteger(0);
        Client client = new ResteasyClientBuilder().connectionPoolSize(10).build();
        WebTarget target = client.target(generateURL("/service/server-sent-events"));
-       try(SseEventSource eventSource = SseEventSource.target(target).reconnectingEvery(2, TimeUnit.SECONDS).build()) {
+       try(SseEventSource eventSource = SseEventSource.target(target).reconnectingEvery(1, TimeUnit.SECONDS).build()) {
             Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
             eventSource.register(event -> {
                 results.add(event.toString());
@@ -209,32 +212,46 @@ public class SseTest {
             messageTarget.request().post(Entity.text("msg"));
             messageClient.close();
 
+            boolean waitResult = latch.await(30, TimeUnit.SECONDS);
             Assert.assertEquals(0, errors.get());
-            Assert.assertTrue("Waiting for event to be delivered has timed out.", latch.await(30, TimeUnit.SECONDS));
+            Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
             Assert.assertTrue("10 events are expected, but is : " + results.size(), results.size() == 10);
             target.request().delete();
         }
      }
     
-    @Test
-    @InSequence(6)
-    public void testEventSourceConsumer() throws Exception
-    {
-        final List<String> results = new ArrayList<String>();
+     @Test
+     @InSequence(6)
+     public void testEventSourceConsumer() throws Exception
+     {
+        final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger errors = new AtomicInteger(0);
         Client client = new ResteasyClientBuilder().connectionPoolSize(10).build();
         WebTarget target = client.target(generateURL("/service/server-sent-events/error"));
-        try (SseEventSource eventSource = SseEventSource.target(target).build()) {
-            eventSource.register(event -> {
-                results.add(event.toString());
-            }, ex -> {
-                errors.incrementAndGet();
-            });
-            eventSource.open();
+        Thread t = new Thread(new Runnable()
+        {
+           @Override
+           public void run()
+           {
+              try (SseEventSource eventSource = SseEventSource.target(target).build())
+              {
+                 eventSource.register(event -> {
+                    latch.countDown();
+                 }, ex -> {
+                    errors.incrementAndGet();
+                    latch.countDown();
+                 });
+                 eventSource.open();
+              }
+           }
+        });
+        t.start();
+        if (latch.await(45, TimeUnit.SECONDS)) {
+           t.interrupt();
         }
-        
         Assert.assertEquals("EventSource error consumer is not called", 1, errors.get());
-     }
+   }
+    
     @Test
     @InSequence(7)
     public void testMultipleDataFields() throws Exception
@@ -268,8 +285,9 @@ public class SseTest {
           messageTarget.request().post(Entity.text("data4a\r\ndata4b"));
           messageTarget.request().post(Entity.text("data5a\r\r\r\ndata5b"));
           messageTarget.request().post(Entity.text("data6a\n\n\r\r\ndata6b"));
+          boolean waitResult = latch.await(30, TimeUnit.SECONDS);
           Assert.assertEquals(0, errors.get());
-          Assert.assertTrue("Waiting for event to be delivered has timed out.", latch.await(30, TimeUnit.SECONDS));
+          Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
           messageTarget.request().delete();
           messageClient.close();
         }
@@ -282,15 +300,16 @@ public class SseTest {
      }
 
     @Test
+    @InSequence(8)
     public void testEscapedMessage() throws Exception
     {
        final CountDownLatch latch = new CountDownLatch(3);
        final AtomicInteger errors = new AtomicInteger(0);
        final List<String> results = new ArrayList<String>();
        final List<String> sent = new ArrayList<String>();
-       sent.add("foo\nbar");
-       sent.add("foo\nbar");
-       sent.add("foo\nbar");
+       sent.add("foo1\nbar");
+       sent.add("foo2\nbar");
+       sent.add("foo3\nbar");
        Client client = ClientBuilder.newBuilder().build();
        WebTarget target = client.target(generateURL("/service/sse-escaping"));
        SseEventSource msgEventSource = SseEventSource.target(target).build();
@@ -307,13 +326,15 @@ public class SseTest {
           });
           eventSource.open();
           
-
+          boolean waitResult = latch.await(30, TimeUnit.SECONDS);
           Assert.assertEquals(0, errors.get());
-          Assert.assertTrue("Waiting for event to be delivered has timed out.", latch.await(30, TimeUnit.SECONDS));
+          Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
         }
         Assert.assertFalse("SseEventSource is not closed", msgEventSource.isOpen());
         Assert.assertTrue("3 messages are expected, but is : " + results.size(), results.size() == 3);
-        Assert.assertEquals("3 messages not equal", sent, results);
+        for (String s : sent) {
+           Assert.assertTrue("Sent message \"" + s + "\" not found as result.", results.contains(s));
+        }
      }
 
 //    @Test

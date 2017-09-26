@@ -1,5 +1,6 @@
 package org.jboss.resteasy.test.providers.sse;
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -24,11 +25,15 @@ public class EscapingSseResource
       {
          throw new IllegalStateException("No client connected.");
       }
-      try(SseEventSink s = sink) 
+      try (SseEventSink s = sink)
       {
-         s.send(sse.newEvent("foo\nbar"));
-         s.send(sse.newEvent("foo\r\nbar"));
-         s.send(sse.newEvent("foo\rbar"));
+         CompletableFuture.allOf(s.send(sse.newEvent("foo1\nbar")).toCompletableFuture(),
+               s.send(sse.newEvent("foo2\r\nbar")).toCompletableFuture(),
+               s.send(sse.newEvent("foo3\rbar")).toCompletableFuture()).get();
+      }
+      catch (Exception e)
+      {
+         throw new IOException(e);
       }
    }
 }

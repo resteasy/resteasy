@@ -18,7 +18,6 @@ import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
 import org.jboss.resteasy.test.response.resource.AsyncResponseException;
 import org.jboss.resteasy.test.response.resource.AsyncResponseExceptionMapper;
 import org.jboss.resteasy.test.response.resource.PublisherResponseResource;
-import org.jboss.resteasy.test.response.resource.PublisherResponseTestClass;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
 import org.jboss.shrinkwrap.api.Archive;
@@ -43,7 +42,6 @@ public class PublisherResponseTest {
    @Deployment
    public static Archive<?> deploy() {
       WebArchive war = TestUtil.prepareArchive(PublisherResponseTest.class.getSimpleName());
-      war.addClass(PublisherResponseTestClass.class);
       war.addAsLibrary(TestUtil.resolveDependency("io.reactivex.rxjava2:rxjava:2.1.3"));
       return TestUtil.finishContainerPrepare(war, null, PublisherResponseResource.class,
             AsyncResponseCallback.class, AsyncResponseExceptionMapper.class, AsyncResponseException.class);
