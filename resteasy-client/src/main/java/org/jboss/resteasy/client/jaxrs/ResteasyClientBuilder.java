@@ -65,7 +65,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    protected SSLContext sslContext;
    protected Map<String, Object> properties = new HashMap<String, Object>();
    protected ClientHttpEngine httpEngine;
-   protected int connectionPoolSize;
+   protected int connectionPoolSize = 50;
    protected int maxPooledPerRoute = 0;
    protected long connectionTTL = -1;
    protected TimeUnit connectionTTLUnit = TimeUnit.MILLISECONDS;
