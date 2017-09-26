@@ -182,10 +182,11 @@ public class ServerResponseWriter
          ResponseContainerRequestContext requestContext = new ResponseContainerRequestContext(request);
          ContainerResponseContextImpl responseContext = new ContainerResponseContextImpl(request, response, jaxrsResponse, 
         		 requestContext, responseFilters, continuation);
+         // filter calls the continuation
          responseContext.filter();
-         if(!responseContext.isSuspended())
-        	 continuation.run();
       }
+      else
+         continuation.run();
    }
    
    protected static void setDefaultContentType(HttpRequest request, BuiltResponse jaxrsResponse, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)

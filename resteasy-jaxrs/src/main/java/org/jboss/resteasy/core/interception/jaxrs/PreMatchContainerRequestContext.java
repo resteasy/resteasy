@@ -10,6 +10,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Cookie;
@@ -41,13 +42,14 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
    private int currentFilter;
    private boolean suspended;
    private boolean filterReturnIsMeaningful = true;
-   private Runnable continuation;
+   private Supplier<BuiltResponse> continuation;
    private Map<Class<?>, Object> contextDataMap;
    private boolean inFilter;
    private Throwable throwable;
+   private boolean startedContinuation;
 
    public PreMatchContainerRequestContext(HttpRequest request, 
-         ContainerRequestFilter[] requestFilters, Runnable continuation)
+         ContainerRequestFilter[] requestFilters, Supplier<BuiltResponse> continuation)
    {
       this.httpRequest = request;
       this.requestFilters = requestFilters;
@@ -337,13 +339,16 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
             if(filterReturnIsMeaningful)
                return serverResponse;
             else
+            {
                httpRequest.getAsyncContext().getAsyncResponse().resume(serverResponse);
+               return null;
+            }
          }
          if (throwable != null)
          {
             // handle the case where we've been suspended by a previous filter
             if(filterReturnIsMeaningful)
-               rethrow(throwable);
+               SynchronousDispatcher.rethrow(throwable);
             else
             {
                writeException(throwable);
@@ -352,21 +357,18 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
          }
       }
       // here it means we reached the last filter
-      // if we've never been suspended, the caller is valid and let it go on doing the request
-      if(filterReturnIsMeaningful)
+      // some frameworks don't support async request filters, in which case suspend() is forbidden
+      // so if we get here we're still synchronous and don't have a continuation, which must be in
+      // the caller
+      startedContinuation = true;
+      if(continuation == null)
          return null;
-      // if we've been suspended then the caller is a filter and have to invoke our continuation
-      continuation.run();
-      return null;
+      // in any case, return the continuation: sync will use it, and async will ignore it
+      return continuation.get();
    }
 
-   private <T extends Throwable> void rethrow(Throwable t) throws T
+   public boolean startedContinuation()
    {
-      throw (T)t;
-   }
-
-   public boolean isSuspended()
-   {
-      return !filterReturnIsMeaningful;
+      return startedContinuation;
    }
 }

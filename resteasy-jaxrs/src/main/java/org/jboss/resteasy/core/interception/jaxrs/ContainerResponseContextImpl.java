@@ -318,7 +318,7 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
       }
    }
 
-   public synchronized void filter()
+   public synchronized void filter() throws IOException
    {
       // FIXME: check what happens if the filter suspends and resumes/abort within the same call (same thread)
       while(currentFilter < responseFilters.length)
@@ -342,9 +342,18 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
          }
       }
       // here it means we reached the last filter
-      // if we've never been suspended, the caller is valid and let it go on doing the request
-      if(filterReturnIsMeaningful)
+
+      // some frameworks don't support async request filters, in which case suspend() is forbidden
+      // so if we get here we're still synchronous and don't have a continuation, which must be in
+      // the caller
+      if(continuation == null)
          return;
+
+      // if we've never been suspended, the caller is valid so let it handle any exception
+      if(filterReturnIsMeaningful) {
+         continuation.run();
+         return;
+      }
       // if we've been suspended then the caller is a filter and have to invoke our continuation
       // FIXME: we don't really know if we're already trying to send an exception, so we can't just blindly
       // try to write it out
@@ -358,10 +367,5 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
       {
          e.printStackTrace();
       }
-   }
-
-   public boolean isSuspended()
-   {
-      return !filterReturnIsMeaningful;
    }
 }

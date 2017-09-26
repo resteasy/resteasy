@@ -119,6 +119,7 @@ public class SynchronousDispatcher implements Dispatcher
    protected void preprocess(HttpRequest request, HttpResponse response, Runnable continuation)
    {
       Response aborted = null;
+      PreMatchContainerRequestContext requestContext = null;
       try
       {
          for (HttpRequestPreprocessor preprocessor : this.requestPreprocessors)
@@ -126,26 +127,37 @@ public class SynchronousDispatcher implements Dispatcher
             preprocessor.preProcess(request);
          }
          ContainerRequestFilter[] requestFilters = providerFactory.getContainerRequestFilterRegistry().preMatch();
-         PreMatchContainerRequestContext requestContext = new PreMatchContainerRequestContext(request, requestFilters, continuation);
+         requestContext = new PreMatchContainerRequestContext(request, requestFilters, 
+               () -> { 
+                  continuation.run();
+                  return null;
+               });
          aborted = requestContext.filter();
-         if(aborted == null)
-         {
-            if(requestContext.isSuspended())
-               return;
-         }
       }
       catch (Exception e)
       {
          //logger.error("Failed in preprocess, mapping exception", e);
-         writeException(request, response, e);
-         return;
+         // we only want to catch exceptions happening in the filters, not in the continuation
+         if(requestContext == null || !requestContext.startedContinuation())
+         {
+            writeException(request, response, e);
+            return;
+         }
+         else
+         {
+            rethrow(e);
+         }
       }
       if (aborted != null)
       {
          writeResponse(request, response, aborted);
          return;
       }
-      continuation.run();
+   }
+
+   public static <T extends Throwable> void rethrow(Throwable t) throws T
+   {
+      throw (T)t;
    }
 
    public void writeException(HttpRequest request, HttpResponse response, Throwable e)

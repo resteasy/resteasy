@@ -294,13 +294,8 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
       PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this, requestFilters, 
             () -> invokeOnTargetAfterFilter(request, response, target));
-      BuiltResponse abortResponse = requestContext.filter();
-      if(abortResponse != null)
-         return abortResponse;
-      if(!requestContext.isSuspended())
-         return invokeOnTargetAfterFilter(request, response, target);
-      // don't return anything: the request has been suspended
-      return null;
+      // let it handle the continuation
+      return requestContext.filter();
    }   
 
    protected BuiltResponse invokeOnTargetAfterFilter(HttpRequest request, HttpResponse response, Object target)
