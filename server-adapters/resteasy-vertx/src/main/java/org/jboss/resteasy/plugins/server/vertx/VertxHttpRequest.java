@@ -249,6 +249,18 @@ public class VertxHttpRequest extends BaseHttpRequest
          }
 
          @Override
+         public void complete()
+         {
+            synchronized (responseLock)
+            {
+               if (done) return;
+               if (cancelled) return;
+               done = true;
+               vertxFlush();
+            }
+         }
+
+         @Override
          public boolean resume(Object entity)
          {
             synchronized (responseLock)

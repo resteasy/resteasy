@@ -211,5 +211,10 @@ public class NettyHttpResponse implements HttpResponse
 
    }
 
-
+   @Override
+   public void flushBuffer() throws IOException {
+	   if(os != null)
+		   os.flush();
+	   ctx.flush();
+   }
 }
