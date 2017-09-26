@@ -3,6 +3,8 @@ package org.jboss.resteasy.test.providers.sse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -258,7 +260,7 @@ public class SseTest {
     {
        final CountDownLatch latch = new CountDownLatch(7);
        final AtomicInteger errors = new AtomicInteger(0);
-       final List<String> results = new ArrayList<String>();
+       final SortedSet<String> results = new TreeSet<String>();
        Client client = ClientBuilder.newBuilder().build();
        WebTarget target = client.target(generateURL("/service/server-sent-events"));
        SseEventSource msgEventSource = SseEventSource.target(target).build();
@@ -293,7 +295,7 @@ public class SseTest {
         }
         Assert.assertFalse("SseEventSource is not closed", msgEventSource.isOpen());
         Assert.assertTrue("5 messages are expected, but is : " + results.size(), results.size() == 7);
-        String[] lines = results.get(1).split("\n");
+        String[] lines = results.toArray(new String[]{})[1].split("\n");
         Assert.assertTrue("3 data fields are expected, but is : " + lines.length, lines.length == 3);
         Assert.assertEquals("expect second data field value is : " + lines[1], "data1b", lines[1]);
         
