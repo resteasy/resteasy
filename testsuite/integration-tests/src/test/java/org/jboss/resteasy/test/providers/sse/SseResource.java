@@ -86,7 +86,7 @@ public class SseResource
             if (eventSink != null) {
                 eventSink.send(event);
             }
-            Thread.sleep(1000);
+            Thread.sleep(250);
         }
    }
    

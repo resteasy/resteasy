@@ -147,6 +147,7 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
                      }                    
                   });
             entityStream.write(SseConstants.EOL);
+
          }
 
       }
