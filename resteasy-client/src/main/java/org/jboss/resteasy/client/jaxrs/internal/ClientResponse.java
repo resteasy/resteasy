@@ -14,6 +14,7 @@ import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.InputStreamToByteArray;
 import org.jboss.resteasy.util.ReadFromStream;
 import org.jboss.resteasy.util.Types;
+import org.omg.IOP.IOR;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.MediaType;
@@ -70,12 +71,38 @@ public abstract class ClientResponse extends BuiltResponse
       this.processor = configuration;
    }
 
-   @Override
-   public Object getEntity()
-   {
-      abortIfClosed();
-      return super.getEntity();
-   }
+	@Override
+	public synchronized Object getEntity() {
+		abortIfClosed();
+		Object entity = super.getEntity();
+		if (entity != null) {
+			return entity;
+		}
+		//Check if the entity was previously fully consumed
+		try {
+			InputStream inputStream = getEntityStream();
+			if(inputStream.available() == 0){
+				throw new IllegalStateException();
+		    }
+			return inputStream;
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+   
+	@Override
+	public Class<?> getEntityClass() {
+		Class<?> classs = super.getEntityClass();
+		if (classs != null) {
+			return classs;
+		}
+		Object entity = null;
+		try {
+			entity = getEntity();
+		} catch (Exception e) {
+		}
+		return entity != null ? entity.getClass() : null;
+	}
 
    @Override
    public boolean hasEntity()
