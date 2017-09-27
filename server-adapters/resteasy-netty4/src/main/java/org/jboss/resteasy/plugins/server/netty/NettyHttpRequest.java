@@ -266,8 +266,8 @@ public class NettyHttpRequest extends BaseHttpRequest
             public void complete() {
                 synchronized (responseLock)
                 {
-                    if (done);
-                    if (cancelled);
+                    if (done) return;
+                    if (cancelled) return;
                     done = true;
                     nettyFlush();
                 }
