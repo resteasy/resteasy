@@ -288,31 +288,18 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       return rtn;
    }
 
-   
-
    protected BuiltResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
    {
       ResteasyProviderFactory.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
 
+      PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this, requestFilters, 
+            () -> invokeOnTargetAfterFilter(request, response, target));
+      // let it handle the continuation
+      return requestContext.filter();
+   }   
 
-      PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this);
-      for (ContainerRequestFilter filter : requestFilters)
-      {
-         try
-         {
-            filter.filter(requestContext);
-         }
-         catch (IOException e)
-         {
-            throw new ApplicationException(e);
-         }
-         BuiltResponse serverResponse = (BuiltResponse)requestContext.getResponseAbortedWith();
-         if (serverResponse != null)
-         {
-            return serverResponse;
-         }
-      }
-
+   protected BuiltResponse invokeOnTargetAfterFilter(HttpRequest request, HttpResponse response, Object target)
+   {
       if (validator != null)
       {
          if (isValidatable)
@@ -397,7 +384,15 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          asyncStreamResponseConsumer.subscribe(rtn);
          return null;
       }
-      if (request.getAsyncContext().isSuspended() || request.wasForwarded())
+      if (request.getAsyncContext().isSuspended())
+      {
+         if(method.isAsynchronous())
+            return null;
+         // resume a sync request that got turned async by filters
+         request.getAsyncContext().getAsyncResponse().resume(rtn);
+         return null;
+      }
+      if (request.wasForwarded())
       {
          return null;
       }
@@ -575,5 +570,10 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    public MediaType[] getConsumes()
    {
       return method.getConsumes();
+   }
+
+   public void markMethodAsAsync()
+   {
+      method.markAsynchronous();
    }
 }
