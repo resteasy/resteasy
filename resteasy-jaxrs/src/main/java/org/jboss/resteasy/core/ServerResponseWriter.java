@@ -23,6 +23,7 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.WriterInterceptor;
@@ -410,9 +411,14 @@ public class ServerResponseWriter
                   response.addNewCookie(cookie);
                   it.remove();
                }
+               else
+               {
+                  response.getOutputHeaders().add(javax.ws.rs.core.HttpHeaders.SET_COOKIE, next);
+                  it.remove();
+               }
             }
-            if (cookies.size() < 1)
-               jaxrsResponse.getMetadata().remove(HttpHeaderNames.SET_COOKIE);
+
+            jaxrsResponse.getMetadata().remove(HttpHeaderNames.SET_COOKIE);
          }
       }
       if (jaxrsResponse.getMetadata() != null
