@@ -40,7 +40,7 @@ public class ContainerRequestContextTest {
      */
     @Test
     public void testQueryParamatersClear() throws URISyntaxException {
-        ContainerRequestContext containerRequestContext = new PreMatchContainerRequestContext(request);
+        ContainerRequestContext containerRequestContext = new PreMatchContainerRequestContext(request, null, null);
 
         logger.info("request uri: " + containerRequestContext.getUriInfo().getRequestUri());
 
