@@ -371,32 +371,42 @@ public class ServerResponseWriter
 
    public static void commitHeaders(BuiltResponse jaxrsResponse, HttpResponse response)
    {
-	  MultivaluedMap<String, Object> headers = jaxrsResponse.getHeaders();
+      MultivaluedMap<String, Object> headers = jaxrsResponse.getHeaders();
       if (headers== null)
       {
-    	  return;
+  	return;
       }
+      List<NewCookie> newCookies = null;
       List<Object> cookies = headers.get(HttpHeaderNames.SET_COOKIE);
       if (cookies != null)
       {
-    	  Iterator<Object> it = cookies.iterator();
-		  while (it.hasNext())
-		  	{
-			  Object next = it.next();
-		      if (next instanceof NewCookie)
-		      {
-		         NewCookie cookie = (NewCookie) next;
-		         response.addNewCookie(cookie);
-		         it.remove();
-		      }
-		    }
-		    if (cookies.size() < 1)
-		    	headers.remove(HttpHeaderNames.SET_COOKIE);
+  	Iterator<Object> it = cookies.iterator();
+  	while (it.hasNext())
+	{
+           Object next = it.next();
+           if (next instanceof NewCookie)
+           {
+		if (newCookies == null) 
+		{
+		  newCookies = new LinkedList<>();
+	        }
+	        newCookies.add((NewCookie) next);
+		it.remove();
+	    }
+         }	
+	 if (cookies.size() < 1)
+		 headers.remove(HttpHeaderNames.SET_COOKIE);
       }
       if (headers.size() > 0)
       {
-    	   MultivaluedMap<String, Object> outputHeaders = response.getOutputHeaders();
-	       headers.entrySet().forEach(e -> { outputHeaders.addAll(e.getKey(), e.getValue()); });
+	response.getOutputHeaders().putAll(jaxrsResponse.getMetadata());
+      }
+      if (newCookies != null)
+      {
+	for (NewCookie newCookie : newCookies)
+	{
+	  response.addNewCookie(newCookie);
+	}
       }
    }
    
