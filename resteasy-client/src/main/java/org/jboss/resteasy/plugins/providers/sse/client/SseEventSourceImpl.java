@@ -280,7 +280,7 @@ public class SseEventSourceImpl implements SseEventSource
          }
          while (!Thread.currentThread().isInterrupted() && state.get() == State.OPEN)
          {
-            if (eventInput.isClosed())
+            if (eventInput == null || eventInput.isClosed())
             {
                reconnect(reconnectDelay);
                break;
@@ -348,8 +348,6 @@ public class SseEventSourceImpl implements SseEventSource
          }
 
          EventHandler processor = new EventHandler(this);
-         //reset state to PENDING
-         state.compareAndSet(State.OPEN, State.PENDING);
          if (delay > 0)
          {
             executor.schedule(processor, delay, TimeUnit.MILLISECONDS);
