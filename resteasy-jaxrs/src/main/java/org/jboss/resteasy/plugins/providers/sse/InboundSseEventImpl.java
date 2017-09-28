@@ -34,7 +34,7 @@ public class InboundSseEventImpl implements InboundSseEvent
       private String name;
       private String id;
       private long reconnectDelay = -1;
-      private final EventByteArrayOutputStream dataStream;
+      private final ByteArrayOutputStream dataStream;
       private final Annotation[] annotations;
       private final MediaType mediaType;
       private final MultivaluedMap<String, String> headers;
@@ -47,7 +47,7 @@ public class InboundSseEventImpl implements InboundSseEvent
          this.headers = headers;
 
          this.commentBuilder = new StringBuilder();
-         this.dataStream = new EventByteArrayOutputStream();
+         this.dataStream = new ByteArrayOutputStream();
       }
 
       public Builder name(String name)
@@ -102,7 +102,7 @@ public class InboundSseEventImpl implements InboundSseEvent
          //then remove the last character from the data buffer
          return new InboundSseEventImpl(name, id,
                commentBuilder.length() > 0 ? commentBuilder.substring(0, commentBuilder.length() - 1) : null,
-               reconnectDelay, dataStream.getEventData(), annotations, mediaType, headers);
+               reconnectDelay, dataStream.toByteArray(), annotations, mediaType, headers);
       }
    }
 

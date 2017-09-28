@@ -18,13 +18,4 @@ public class EventByteArrayOutputStream extends ByteArrayOutputStream
       }
       return Arrays.copyOf(buf, count);
    }
-   
-   public synchronized byte[] getEventData()
-   {
-      if (count >=1 && buf[count-1] == '\n')
-      {
-         return Arrays.copyOf(buf, count - 1);
-      }
-      return Arrays.copyOf(buf, count);
-   }
 }
