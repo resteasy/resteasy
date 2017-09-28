@@ -49,11 +49,13 @@ public class SubResourceWarningTest {
 
    /**
     * Confirms that 2 warning messages about this incorrect coding is printed to the server.log
+    * Must check for path because warning text, RESTEASY002195, exist in log for a previous test
+    * in the suite.
     * @throws Exception
     */
    @Test
    public void testWarningMsg () throws Exception {
-      int cnt = TestUtil.getWarningCount("RESTEASY002195", false);
+      int cnt = TestUtil.getWarningCount("have the same path, [test", false);
       Assert.assertEquals( "Improper log WARNING count",cnt, 2);
    }
 }
