@@ -36,7 +36,7 @@ public class SseEventSourceImpl implements SseEventSource
    private enum State {
       PENDING, OPEN, CLOSED
    }
-   private final AtomicReference<State> state = new AtomicReference<>(State.CLOSED);
+   private final AtomicReference<State> state = new AtomicReference<>(State.PENDING);
    private final List<Consumer<InboundSseEvent>> onEventConsumers = new CopyOnWriteArrayList<>();
    private final List<Consumer<Throwable>> onErrorConsumers = new CopyOnWriteArrayList<>();
    private final List<Runnable> onCompleteConsumers = new CopyOnWriteArrayList<>();
@@ -149,7 +149,7 @@ public class SseEventSourceImpl implements SseEventSource
 
    public void open(String lastEventId)
    {
-      if (!state.compareAndSet(State.CLOSED, State.PENDING))
+      if (!state.compareAndSet(State.PENDING, State.OPEN))
       {
          throw new IllegalStateException(Messages.MESSAGES.eventSourceIsNotReadyForOpen());
       }
@@ -266,11 +266,10 @@ public class SseEventSourceImpl implements SseEventSource
          SseEventInputImpl eventInput = null;
          try {
             final Invocation.Builder request = buildRequest();
-            if (state.get() == State.PENDING)
+            if (state.get() == State.OPEN)
             {
                eventInput = request.get(SseEventInputImpl.class);
             }
-            state.set(State.OPEN);
          } catch (Throwable e) {
             onErrorConsumers.forEach(consumer -> {consumer.accept(e);});
             state.set(State.CLOSED);

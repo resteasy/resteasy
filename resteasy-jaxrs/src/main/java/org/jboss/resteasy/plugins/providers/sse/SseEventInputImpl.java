@@ -54,10 +54,11 @@ public class SseEventInputImpl implements EventInput, Closeable
       {
          lastFieldWasData = false;
          chunk = readEvent(inputStream);
-         if (chunk == null) {
+         if (chunk == null)
+         {
             close();
             return null;
-         } 
+         }
       }
       catch (IOException e1)
       {
