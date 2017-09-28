@@ -734,4 +734,6 @@ public interface Messages
    String unableToInstantiateAsyncResponseProvider();
    @Message(id = BASE + 1091, value = "Unable to instantiate AsyncStreamProvider")
    String unableToInstantiateAsyncStreamProvider();
+   @Message(id = BASE + 1092, value = "SseEventSink is closed")
+   String sseEventSinkIsClosed();
 }
