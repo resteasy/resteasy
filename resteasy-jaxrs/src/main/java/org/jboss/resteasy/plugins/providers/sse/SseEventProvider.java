@@ -49,10 +49,6 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
          throws IOException, WebApplicationException
    {
       Charset charset = StandardCharsets.UTF_8;
-      if (mediaType != null && mediaType.getParameters().get(MediaType.CHARSET_PARAMETER) != null)
-      {
-         charset = Charset.forName(mediaType.getParameters().get(MediaType.CHARSET_PARAMETER));
-      }
       if (event.getComment() != null)
       {
          for (final String comment : event.getComment().split("\n"))
