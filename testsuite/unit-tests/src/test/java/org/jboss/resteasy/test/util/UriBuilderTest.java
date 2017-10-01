@@ -1033,6 +1033,20 @@ public class UriBuilderTest {
                 builder.build();
             }
         }
+
+        // RESTEASY-1718 checks
+        {
+            Assert.assertEquals("http://foo", UriBuilder.fromUri("http://foo").build().toString());
+            Assert.assertEquals("http://foo:8080", UriBuilder.fromUri("http://foo:8080").build().toString());
+            Assert.assertEquals("http://[::1]", UriBuilder.fromUri("http://[::1]").build().toString());
+            Assert.assertEquals("http://[::1]:8080", UriBuilder.fromUri("http://[::1]:8080").build().toString());
+
+            Assert.assertEquals("http://[0:0:0:0:0:0:0:1]", UriBuilder.fromUri("http://[0:0:0:0:0:0:0:1]").build().toString());
+            Assert.assertEquals("http://[0:0:0:0:0:0:0:1]:8080", UriBuilder.fromUri("http://[0:0:0:0:0:0:0:1]:8080").build().toString());
+            Assert.assertEquals("http://foo", UriBuilder.fromUri("http://{host}").build("foo").toString());
+            Assert.assertEquals("http://foo:8080", UriBuilder.fromUri("http://{host}:8080").build("foo").toString());
+        }
+
     }
 
     public void printParse(String uri) {
