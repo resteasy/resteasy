@@ -23,12 +23,13 @@ import org.jboss.resteasy.spi.metadata.ResourceLocator;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.util.GetRestful;
 import org.jboss.resteasy.util.IsHttpMethod;
-import org.jboss.resteasy.util.Types;
 
 import javax.ws.rs.Path;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -232,7 +233,7 @@ public class ResourceMethodRegistry implements Registry
       {
          for (Method method : getDeclaredMethods(clazz))
          {
-            Method _method = findAnnotatedMethod(clazz, method);
+            Method _method = ResourceBuilder.findAnnotatedMethod(clazz, method);
             if (_method != null && !java.lang.reflect.Modifier.isPublic(_method.getModifiers()))
             {
                LogMessages.LOGGER.JAXRSAnnotationsFoundAtNonPublicMethod(method.getDeclaringClass().getName(), method.getName());
@@ -357,77 +358,6 @@ public class ResourceMethodRegistry implements Registry
             rootNode.addInvoker(fullpath, locator);
          else root.addInvoker(classExpression, fullpath, locator);
       }
-   }
-
-   private Method findAnnotatedInterfaceMethod(Class<?> root, Class<?> iface, Method implementation)
-   {
-      for (Method method : iface.getMethods())
-      {
-         if (method.isSynthetic()) continue;
-
-         if (!method.getName().equals(implementation.getName())) continue;
-         if (method.getParameterTypes().length != implementation.getParameterTypes().length) continue;
-
-         Method actual = Types.getImplementingMethod(root, method);
-         if (!actual.equals(implementation)) continue;
-
-         if (method.isAnnotationPresent(Path.class) || IsHttpMethod.getHttpMethods(method) != null)
-            return method;
-
-      }
-      for (Class<?> extended : iface.getInterfaces())
-      {
-         Method m = findAnnotatedInterfaceMethod(root, extended, implementation);
-         if (m != null)
-            return m;
-      }
-      return null;
-   }
-
-   private Method findAnnotatedMethod(Class<?> root, Method implementation)
-   {
-      // check the method itself
-      if (implementation.isAnnotationPresent(Path.class) || IsHttpMethod.getHttpMethods(implementation) != null)
-         return implementation;
-
-      // Per http://download.oracle.com/auth/otn-pub/jcp/jaxrs-1.0-fr-oth-JSpec/jaxrs-1.0-final-spec.pdf
-      // Section 3.2 Annotation Inheritance
-
-      // Check possible superclass declarations
-      for (Class<?> clazz = implementation.getDeclaringClass().getSuperclass(); clazz != null; clazz = clazz.getSuperclass())
-      {
-         try
-         {
-            Method method = clazz.getDeclaredMethod(implementation.getName(), implementation.getParameterTypes());
-            if (method.isAnnotationPresent(Path.class) || IsHttpMethod.getHttpMethods(method) != null)
-               return method;
-         }
-         catch (NoSuchMethodException e)
-         {
-            // ignore
-         }
-      }
-
-      // Not found yet, so next check ALL interfaces from the root,
-      // but ensure no redefinition by peer interfaces (ambiguous) to preserve logic found in
-      // original implementation
-      for (Class<?> clazz = root; clazz != null; clazz = clazz.getSuperclass())
-      {
-         Method method = null;
-         for (Class<?> iface : clazz.getInterfaces())
-         {
-            Method m = findAnnotatedInterfaceMethod(root, iface, implementation);
-            if (m != null)
-            {
-               if (method != null && !m.equals(method))
-                  throw new RuntimeException(Messages.MESSAGES.ambiguousInheritedAnnotations(implementation));
-               method = m;
-            }
-         }
-         if (method != null)
-            return method;
-      }
-      return null;
    }
 
    /**

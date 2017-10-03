@@ -1,8 +1,5 @@
 package org.jboss.resteasy.spi.metadata;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import org.jboss.resteasy.annotations.Body;
 import org.jboss.resteasy.annotations.Form;
 import org.jboss.resteasy.annotations.Query;
@@ -35,7 +32,6 @@ import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
@@ -43,6 +39,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -767,87 +766,105 @@ public class ResourceBuilder
       return builder.buildClass();
    }
 
-   private static Method findAnnotatedInterfaceMethod(Class<?> root, Class<?> iface, Method implementation)
+   /**
+    * Find the annotated resource method or sub-resource method / sub-resource locator in the class hierarchy.
+    *
+    * @param root The root resource class.
+    * @param implementation The resource method or sub-resource method / sub-resource locator implementation
+    * @return The annotated resource method or sub-resource method / sub-resource locator.
+    */
+   public static Method findAnnotatedMethod(final Class<?> root, final Method implementation)
    {
-      for (Method method : iface.getMethods())
+      if (implementation.isSynthetic())
       {
-         if (method.isSynthetic()) continue;
-
-         if (!method.getName().equals(implementation.getName())) continue;
-         if (method.getParameterTypes().length != implementation.getParameterTypes().length) continue;
-
-         Method actual = Types.getImplementingMethod(root, method);
-         if (!actual.equals(implementation)) continue;
-
-         if (method.isAnnotationPresent(Path.class) || IsHttpMethod.getHttpMethods(method) != null)
-            return method;
-
-      }
-      for (Class<?> extended : iface.getInterfaces())
-      {
-         Method m = findAnnotatedInterfaceMethod(root, extended, implementation);
-         if(m != null)
-            return m;
-      }
-      return null;
-   }
-
-   private static Method findAnnotatedMethod(Class<?> root, Method implementation)
-   {
-      // check the method itself
-      if (implementation.isAnnotationPresent(Path.class) || IsHttpMethod.getHttpMethods(implementation) != null)
-         return implementation;
-
-      if (implementation.isAnnotationPresent(Produces.class)
-              || implementation.isAnnotationPresent(Consumes.class))
-      {
-         // completely abort this method
          return null;
+      }
+
+      // Check the method itself for JAX-RS annotations
+      if (implementation.isAnnotationPresent(Path.class) || IsHttpMethod.getHttpMethods(implementation) != null)
+      {
+         return implementation;
       }
 
       // Per http://download.oracle.com/auth/otn-pub/jcp/jaxrs-1.0-fr-oth-JSpec/jaxrs-1.0-final-spec.pdf
       // Section 3.2 Annotation Inheritance
 
-      // Check possible superclass declarations
+      if (implementation.isAnnotationPresent(Produces.class) || implementation.isAnnotationPresent(Consumes.class))
+      {
+         // Abort the search for inherited annotations as specified by the JAX-RS specification.
+         // If a implementation method has any JAX-RS annotations then all the annotations
+         // on the superclass or interface method are ignored.
+         // Therefore a method can be omitted if it is neither a resource method nor a sub-resource method /
+         // sub-resource locator but is annotated with other JAX-RS annotations.
+         return null;
+      }
+
+      // Check super-classes for inherited annotations
       for (Class<?> clazz = implementation.getDeclaringClass().getSuperclass(); clazz != null; clazz = clazz.getSuperclass())
       {
-         try
+         final Method overriddenMethod = Types.findOverriddenMethod(implementation.getDeclaringClass(), clazz, implementation);
+         if (overriddenMethod == null)
          {
-            Method method = clazz.getDeclaredMethod(implementation.getName(), implementation.getParameterTypes());
-            if (method.isAnnotationPresent(Path.class) || IsHttpMethod.getHttpMethods(method) != null)
-               return method;
-            if (method.isAnnotationPresent(Produces.class)
-                    || method.isAnnotationPresent(Consumes.class))
-            {
-               // completely abort this method
-               return null;
-            }
+            continue;
          }
-         catch (NoSuchMethodException e)
+
+         if (overriddenMethod.isAnnotationPresent(Path.class) || IsHttpMethod.getHttpMethods(overriddenMethod) != null)
          {
-            // ignore
+            return overriddenMethod;
+         }
+         if (overriddenMethod.isAnnotationPresent(Produces.class) || overriddenMethod.isAnnotationPresent(Consumes.class))
+         {
+            // Abort the search for inherited annotations as specified by the JAX-RS specification.
+            // If a implementation method has any JAX-RS annotations then all the annotations
+            // on the superclass or interface method are ignored.
+            // Therefore a method can be omitted if it is neither a resource method nor a sub-resource method /
+            // sub-resource locator but is annotated with other JAX-RS annotations.
+            return null;
          }
       }
 
-      // Not found yet, so next check ALL interfaces from the root,
-      // but ensure no redefinition by peer interfaces (ambiguous) to preserve logic found in
-      // original implementation
+      // Check implemented interfaces for inherited annotations
       for (Class<?> clazz = root; clazz != null; clazz = clazz.getSuperclass())
       {
-         Method method = null;
-         for (Class<?> iface : clazz.getInterfaces())
+         Method overriddenMethod = null;
+
+         for (Class<?> classInterface : clazz.getInterfaces())
          {
-            Method m = findAnnotatedInterfaceMethod(root, iface, implementation);
-            if (m != null)
+            final Method overriddenInterfaceMethod = Types.getImplementedInterfaceMethod(root, classInterface, implementation);
+            if (overriddenInterfaceMethod == null)
             {
-               if(method != null && !m.equals(method))
-                  throw new RuntimeException(Messages.MESSAGES.ambiguousInheritedAnnotations(implementation));
-               method = m;
+               continue;
             }
+            if (!overriddenInterfaceMethod.isAnnotationPresent(Path.class) && IsHttpMethod.getHttpMethods(overriddenInterfaceMethod) == null)
+            {
+               if (overriddenInterfaceMethod.isAnnotationPresent(Produces.class) || overriddenInterfaceMethod.isAnnotationPresent(Consumes.class))
+               {
+                  // Abort the search for inherited annotations as specified by the JAX-RS specification.
+                  // If a implementation method has any JAX-RS annotations then all the annotations
+                  // on the superclass or interface method are ignored.
+                  // Therefore a method can be omitted if it is neither a resource method nor a sub-resource method /
+                  // sub-resource locator but is annotated with other JAX-RS annotations.
+                  return null;
+               } else {
+                  continue;
+               }
+            }
+            // Ensure no redefinition by peer interfaces (ambiguous) to preserve logic found in
+            // original implementation
+            if (overriddenMethod != null && !overriddenInterfaceMethod.equals(overriddenMethod))
+            {
+               throw new RuntimeException(Messages.MESSAGES.ambiguousInheritedAnnotations(implementation));
+            }
+
+            overriddenMethod = overriddenInterfaceMethod;
          }
-         if (method != null)
-            return method;
+
+         if (overriddenMethod != null)
+         {
+            return overriddenMethod;
+         }
       }
+
       return null;
    }
 
