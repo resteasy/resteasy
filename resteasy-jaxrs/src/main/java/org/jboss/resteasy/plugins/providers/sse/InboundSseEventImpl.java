@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.GenericType;
@@ -83,7 +84,6 @@ public class InboundSseEventImpl implements InboundSseEvent
          {
             return this;
          }
-
          try
          {
             this.dataStream.write(data);
@@ -97,6 +97,9 @@ public class InboundSseEventImpl implements InboundSseEvent
 
       public InboundSseEvent build()
       {
+         //from https://html.spec.whatwg.org/multipage/server-sent-events.html#processField
+         //If the data buffer's last character is a U+000A LINE FEED (LF) character, 
+         //then remove the last character from the data buffer
          return new InboundSseEventImpl(name, id,
                commentBuilder.length() > 0 ? commentBuilder.substring(0, commentBuilder.length() - 1) : null,
                reconnectDelay, dataStream.toByteArray(), annotations, mediaType, headers);
@@ -227,4 +230,5 @@ public class InboundSseEventImpl implements InboundSseEvent
       return "InboundSseEvent{id=" + id + '\'' + ", comment=" + (comment == null ? "[]" : '\'' + comment + '\'')
             + ", data=" + s + '}';
    }
+
 }

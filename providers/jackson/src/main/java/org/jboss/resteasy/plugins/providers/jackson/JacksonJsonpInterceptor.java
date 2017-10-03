@@ -17,7 +17,7 @@ import javax.ws.rs.ext.WriterInterceptorContext;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.jboss.resteasy.core.MediaTypeMap;
-import org.jboss.resteasy.resteasy_jaxrs.i18n.*;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 
 /**
  * <p>

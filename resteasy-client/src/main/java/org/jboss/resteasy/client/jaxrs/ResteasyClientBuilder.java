@@ -1,6 +1,8 @@
 package org.jboss.resteasy.client.jaxrs;
 
 import org.apache.http.HttpHost;
+import org.apache.http.impl.nio.client.HttpAsyncClients;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpAsyncClient4Engine;
 import org.jboss.resteasy.client.jaxrs.i18n.Messages;
 import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
@@ -63,7 +65,7 @@ public class ResteasyClientBuilder extends ClientBuilder
    protected SSLContext sslContext;
    protected Map<String, Object> properties = new HashMap<String, Object>();
    protected ClientHttpEngine httpEngine;
-   protected int connectionPoolSize;
+   protected int connectionPoolSize = 50;
    protected int maxPooledPerRoute = 0;
    protected long connectionTTL = -1;
    protected TimeUnit connectionTTLUnit = TimeUnit.MILLISECONDS;
@@ -256,6 +258,12 @@ public class ResteasyClientBuilder extends ClientBuilder
    public ResteasyClientBuilder httpEngine(ClientHttpEngine httpEngine)
    {
       this.httpEngine = httpEngine;
+      return this;
+   }
+
+   public ResteasyClientBuilder useAsyncHttpEngine()
+   {
+      this.httpEngine = new ApacheHttpAsyncClient4Engine(HttpAsyncClients.createSystem(), true);
       return this;
    }
 

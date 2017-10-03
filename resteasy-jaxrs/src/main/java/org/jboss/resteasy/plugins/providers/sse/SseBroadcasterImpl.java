@@ -5,7 +5,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -26,7 +25,9 @@ public class SseBroadcasterImpl implements SseBroadcaster
    @Override
    public void close()
    {
-      outputQueue.forEach(evenSink -> {closeConsumers.forEach(consumer-> {consumer.accept(evenSink);});});
+      //Javadoc says close the broadcaster and all subscribed {@link SseEventSink} instances.
+      //is it necessay to close the subsribed SseEventSink ?
+      outputQueue.forEach(evenSink -> {evenSink.close(); closeConsumers.forEach(consumer-> {consumer.accept(evenSink);});});
       outputQueue.clear();
    }
 

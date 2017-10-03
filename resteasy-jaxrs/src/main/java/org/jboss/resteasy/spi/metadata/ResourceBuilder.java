@@ -243,6 +243,7 @@ public class ResourceBuilder
          return (T)this;
       }
 
+      @SuppressWarnings("deprecation")
       public T fromAnnotations()
       {
          Annotation[] annotations = parameter.getAnnotations();

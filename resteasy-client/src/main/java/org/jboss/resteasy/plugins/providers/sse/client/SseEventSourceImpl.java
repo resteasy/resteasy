@@ -36,7 +36,7 @@ public class SseEventSourceImpl implements SseEventSource
    private enum State {
       PENDING, OPEN, CLOSED
    }
-   private final AtomicReference<State> state = new AtomicReference<>(State.CLOSED);
+   private final AtomicReference<State> state = new AtomicReference<>(State.PENDING);
    private final List<Consumer<InboundSseEvent>> onEventConsumers = new CopyOnWriteArrayList<>();
    private final List<Consumer<Throwable>> onErrorConsumers = new CopyOnWriteArrayList<>();
    private final List<Runnable> onCompleteConsumers = new CopyOnWriteArrayList<>();
@@ -143,14 +143,21 @@ public class SseEventSourceImpl implements SseEventSource
    @Override
    public void open()
    {
-      if (!state.compareAndSet(State.CLOSED, State.PENDING))
+      open(null);
+   }
+   
+
+   public void open(String lastEventId)
+   {
+      if (!state.compareAndSet(State.PENDING, State.OPEN))
       {
          throw new IllegalStateException(Messages.MESSAGES.eventSourceIsNotReadyForOpen());
       }
-      EventHandler handler = new EventHandler(reconnectDelay, null);
+      EventHandler handler = new EventHandler(reconnectDelay, lastEventId);
       executor.submit(handler);
       handler.awaitConnected();
    }
+   
    @Override
    public boolean isOpen()
    {
@@ -209,7 +216,10 @@ public class SseEventSourceImpl implements SseEventSource
       if (state.getAndSet(State.CLOSED) != State.CLOSED)
       {
          ResteasyWebTarget resteasyWebTarget = (ResteasyWebTarget)target;
-         resteasyWebTarget.getResteasyClient().close();
+         if (!resteasyWebTarget.getResteasyClient().isClosed())
+         {
+            resteasyWebTarget.getResteasyClient().close();
+         }
          executor.shutdownNow();
       }
       try
@@ -256,15 +266,13 @@ public class SseEventSourceImpl implements SseEventSource
          SseEventInputImpl eventInput = null;
          try {
             final Invocation.Builder request = buildRequest();
-            if (state.get() == State.PENDING)
+            if (state.get() == State.OPEN)
             {
                eventInput = request.get(SseEventInputImpl.class);
             }
-            state.set(State.OPEN);
          } catch (Throwable e) {
             onErrorConsumers.forEach(consumer -> {consumer.accept(e);});
             state.set(State.CLOSED);
-            e.printStackTrace();
          } finally {
             if (connectedLatch != null) {
                connectedLatch.countDown();
@@ -272,7 +280,7 @@ public class SseEventSourceImpl implements SseEventSource
          }
          while (!Thread.currentThread().isInterrupted() && state.get() == State.OPEN)
          {
-            if (eventInput.isClosed())
+            if (eventInput == null || eventInput.isClosed())
             {
                reconnect(reconnectDelay);
                break;
@@ -285,27 +293,12 @@ public class SseEventSourceImpl implements SseEventSource
                   onEvent(event);
                   onEventConsumers.forEach(consumer -> {consumer.accept(event);});
                }
-               else
-               {
-                  try
-                  {
-                     Thread.sleep(100);
-                  }
-                  catch (InterruptedException e)
-                  {
-                     // Ignore
-                  }
-               }
             }
          }
       }
 
       public void awaitConnected()
       {
-         if (connectedLatch == null)
-         {
-            return;
-         }
          try
          {
             connectedLatch.await(30, TimeUnit.SECONDS);

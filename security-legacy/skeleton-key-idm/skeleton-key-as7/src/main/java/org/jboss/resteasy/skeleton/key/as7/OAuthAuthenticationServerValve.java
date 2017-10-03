@@ -54,7 +54,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.Principal;
@@ -83,6 +82,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("deprecation")
 public class OAuthAuthenticationServerValve extends FormAuthenticator implements LifecycleListener
 {
 

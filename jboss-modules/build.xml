@@ -75,6 +75,10 @@
             <maven-resource group="org.codehaus.jettison" artifact="jettison"/>
         </module-def>
 
+        <module-def name="org.reactivestreams">
+            <maven-resource group="org.reactivestreams" artifact="reactive-streams"/>
+        </module-def>
+
         <module-def name="com.fasterxml.jackson.core.jackson-core">
             <maven-resource group="com.fasterxml.jackson.core" artifact="jackson-core"/>
         </module-def>
@@ -99,6 +103,21 @@
             <maven-resource group="com.fasterxml.jackson.jaxrs" artifact="jackson-jaxrs-json-provider"/>
             <maven-resource group="com.fasterxml.jackson.jaxrs" artifact="jackson-jaxrs-base"/>
             <maven-resource group="com.fasterxml.jackson.module" artifact="jackson-module-jaxb-annotations" />
+        </module-def>
+
+        <module-def name="javax.json.bind.api">
+            <maven-resource group="javax.json.bind" artifact="javax.json.bind-api"/>
+        </module-def>
+
+        <!-- todo this is temporary and should be removed when wildfly makes the needed update
+     -->
+        <module-def name="org.eclipse.yasson">
+            <maven-resource group="org.eclipse" artifact="yasson"/>
+        </module-def>
+        <!-- todo this is temporary and should be removed when wildfly makes the needed update
+     -->
+        <module-def name="org.glassfish.javax.json">
+            <maven-resource group="org.glassfish" artifact="javax.json"/>
         </module-def>
 
         <!-- already present in wildfly -->
@@ -165,7 +184,11 @@
         <module-def name="org.jboss.resteasy.resteasy-json-p-provider">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-json-p-provider"/>
         </module-def>
-        	
+
+        <module-def name="org.jboss.resteasy.resteasy-json-binding-provider">
+            <maven-resource group="org.jboss.resteasy" artifact="resteasy-json-binding-provider"/>
+        </module-def>
+
         <module-def name="org.jboss.resteasy.resteasy-legacy">
             <maven-resource group="org.jboss.resteasy" artifact="resteasy-legacy"/>
         </module-def>

@@ -1,7 +1,7 @@
 package org.jboss.resteasy.test.resource;
 
 import org.jboss.resteasy.core.AcceptParameterHttpPreprocessor;
-import org.jboss.resteasy.core.interception.PreMatchContainerRequestContext;
+import org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.junit.Assert;
@@ -38,7 +38,7 @@ public class AcceptParameterHttpPreprocessorTest {
 
         MediaType mediaType = MediaType.valueOf(type);
 
-        PreMatchContainerRequestContext context = new PreMatchContainerRequestContext(request);
+        PreMatchContainerRequestContext context = new PreMatchContainerRequestContext(request, null, null);
         processor.filter(context);
 
         List<MediaType> list = request.getHttpHeaders().getAcceptableMediaTypes();
@@ -60,7 +60,7 @@ public class AcceptParameterHttpPreprocessorTest {
         List<MediaType> expected = Arrays.asList(MediaType.TEXT_XML_TYPE, MediaType.TEXT_PLAIN_TYPE, MediaType.TEXT_HTML_TYPE, MediaType.APPLICATION_XHTML_XML_TYPE);
 
         MockHttpRequest request = MockHttpRequest.get("foo?" + acceptParamName + "=" + expected.get(0) + "," + expected.get(1));
-        PreMatchContainerRequestContext context = new PreMatchContainerRequestContext(request);
+        PreMatchContainerRequestContext context = new PreMatchContainerRequestContext(request, null, null);
 
         request.accept(expected.get(2));
         request.accept(expected.get(3));
@@ -88,7 +88,7 @@ public class AcceptParameterHttpPreprocessorTest {
         List<MediaType> expected = Arrays.asList(MediaType.TEXT_PLAIN_TYPE, MediaType.TEXT_HTML_TYPE);
 
         MockHttpRequest request = MockHttpRequest.get("foo");
-        PreMatchContainerRequestContext context = new PreMatchContainerRequestContext(request);
+        PreMatchContainerRequestContext context = new PreMatchContainerRequestContext(request, null, null);
         request.accept(expected.get(0));
         request.accept(expected.get(1));
 
@@ -124,7 +124,7 @@ public class AcceptParameterHttpPreprocessorTest {
                 "foo?" + acceptParamName + "=" + param1 + "&" +
                         acceptParamName + "=" + param2);
 
-        PreMatchContainerRequestContext context = new PreMatchContainerRequestContext(request);
+        PreMatchContainerRequestContext context = new PreMatchContainerRequestContext(request, null, null);
         processor.filter(context);
 
         List<MediaType> actual = request.getHttpHeaders().getAcceptableMediaTypes();

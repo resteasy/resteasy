@@ -1,10 +1,14 @@
 package org.jboss.resteasy.core.interception.jaxrs;
 
+import java.net.URI;
+import java.util.function.Supplier;
+
+import javax.ws.rs.container.ContainerRequestFilter;
+
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.HttpRequest;
-
-import java.net.URI;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -14,9 +18,10 @@ public class PostMatchContainerRequestContext extends PreMatchContainerRequestCo
 {
    protected final ResourceMethodInvoker resourceMethod;
 
-   public PostMatchContainerRequestContext(HttpRequest request,ResourceMethodInvoker resourceMethod)
+   public PostMatchContainerRequestContext(HttpRequest request,ResourceMethodInvoker resourceMethod, 
+         ContainerRequestFilter[] requestFilters, Supplier<BuiltResponse> continuation)
    {
-      super(request);
+      super(request, requestFilters, continuation);
       this.resourceMethod = resourceMethod;
    }
 

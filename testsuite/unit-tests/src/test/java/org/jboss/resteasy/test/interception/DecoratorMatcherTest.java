@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.interception;
 
 import org.jboss.resteasy.annotations.Decorator;
-import org.jboss.resteasy.core.interception.DecoratorMatcher;
-import org.jboss.resteasy.spi.interception.DecoratorProcessor;
+import org.jboss.resteasy.core.interception.jaxrs.DecoratorMatcher;
+import org.jboss.resteasy.spi.DecoratorProcessor;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

@@ -25,6 +25,7 @@ import java.security.Security;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("deprecation")
 public class GrantTest extends SkeletonTestBase
 {
    @BeforeClass

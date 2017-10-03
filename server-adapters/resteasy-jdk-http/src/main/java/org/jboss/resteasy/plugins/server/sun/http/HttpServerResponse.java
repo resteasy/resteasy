@@ -163,4 +163,10 @@ public class HttpServerResponse implements HttpResponse
    {
       outputHeaders.clear();
    }
+
+   @Override
+   public void flushBuffer() throws IOException {
+	   commitHeaders();
+	   exchange.getResponseBody().flush();
+   }
 }

@@ -161,6 +161,10 @@ public interface LogMessages extends BasicLogger
    @Message(id = BASE + 190, value = "Annotation, @PreMaching, not valid on ClientRequestFilter implementation, [%s].  Annotation is being ignored.")
    void warningPreMatchingSupport(String clazzname);
 
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 195, value = "The following sub-resource methods and sub-resource locators have the same path, [%s].  The paths should be unique.  [%s]")
+   void uriAmbiguity(String path, String methodList);
+
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
    //                                                  INFO                                                 //
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////

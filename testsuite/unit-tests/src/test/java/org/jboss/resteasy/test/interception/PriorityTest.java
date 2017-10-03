@@ -1,8 +1,8 @@
 package org.jboss.resteasy.test.interception;
 
-import org.jboss.resteasy.core.interception.ClientResponseFilterRegistry;
-import org.jboss.resteasy.core.interception.ContainerResponseFilterRegistry;
-import org.jboss.resteasy.core.interception.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.core.interception.jaxrs.ClientResponseFilterRegistry;
+import org.jboss.resteasy.core.interception.jaxrs.ContainerResponseFilterRegistry;
+import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.interception.resource.PriorityClientRequestFilter1;
 import org.jboss.resteasy.test.interception.resource.PriorityClientRequestFilter2;

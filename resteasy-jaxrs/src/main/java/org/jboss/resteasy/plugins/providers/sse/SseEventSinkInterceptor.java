@@ -9,6 +9,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.sse.SseEventSink;
 
+import org.jboss.resteasy.core.interception.jaxrs.PostMatchContainerRequestContext;
 import org.jboss.resteasy.plugins.server.servlet.Cleanable;
 import org.jboss.resteasy.plugins.server.servlet.Cleanables;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -22,6 +23,10 @@ public class SseEventSinkInterceptor implements ContainerRequestFilter
    {
       if (requestContext.getAcceptableMediaTypes().contains(MediaType.SERVER_SENT_EVENTS_TYPE)) {
          SseEventOutputImpl sink = new SseEventOutputImpl(new SseEventProvider());
+         // make sure we register this as being an async method
+         if(requestContext instanceof PostMatchContainerRequestContext) {
+            ((PostMatchContainerRequestContext) requestContext).getResourceMethod().markMethodAsAsync();
+         }
          ResteasyProviderFactory.getContextDataMap().put(SseEventSink.class, sink);
          ResteasyProviderFactory.getContextData(Cleanables.class).addCleanable(new Cleanable()
          {

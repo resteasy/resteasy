@@ -336,7 +336,7 @@ public class ClientInvocationBuilder implements Invocation.Builder
    {
       RxInvokerProvider<T> provider = invocation.getClientConfiguration().getRxInvokerProvider(clazz);
       if (provider == null) {
-         throw new RuntimeException(Messages.MESSAGES.unableToInstantiate(clazz));
+         throw new IllegalStateException(Messages.MESSAGES.unableToInstantiate(clazz));
       }
       return provider.getRxInvoker(this, invocation.getClient().asyncInvocationExecutor());
    }

@@ -2,7 +2,7 @@ package org.jboss.resteasy.test.request;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jboss.resteasy.core.interception.PreMatchContainerRequestContext;
+import org.jboss.resteasy.core.interception.jaxrs.PreMatchContainerRequestContext;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.junit.Before;
@@ -40,7 +40,7 @@ public class ContainerRequestContextTest {
      */
     @Test
     public void testQueryParamatersClear() throws URISyntaxException {
-        ContainerRequestContext containerRequestContext = new PreMatchContainerRequestContext(request);
+        ContainerRequestContext containerRequestContext = new PreMatchContainerRequestContext(request, null, null);
 
         logger.info("request uri: " + containerRequestContext.getUriInfo().getRequestUri());
 

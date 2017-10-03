@@ -8,6 +8,7 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
+import org.jboss.resteasy.spi.AsyncStreamProvider;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.InjectorFactory;
@@ -16,6 +17,7 @@ import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyAsynchronousResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
+import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.resteasy.spi.metadata.ResourceMethod;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
@@ -39,7 +41,6 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -287,31 +288,18 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       return rtn;
    }
 
-   
-
    protected BuiltResponse invokeOnTarget(HttpRequest request, HttpResponse response, Object target)
    {
       ResteasyProviderFactory.pushContext(ResourceInfo.class, resourceInfo);  // we don't pop so writer interceptors can get at this
 
+      PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this, requestFilters, 
+            () -> invokeOnTargetAfterFilter(request, response, target));
+      // let it handle the continuation
+      return requestContext.filter();
+   }   
 
-      PostMatchContainerRequestContext requestContext = new PostMatchContainerRequestContext(request, this);
-      for (ContainerRequestFilter filter : requestFilters)
-      {
-         try
-         {
-            filter.filter(requestContext);
-         }
-         catch (IOException e)
-         {
-            throw new ApplicationException(e);
-         }
-         BuiltResponse serverResponse = (BuiltResponse)requestContext.getResponseAbortedWith();
-         if (serverResponse != null)
-         {
-            return serverResponse;
-         }
-      }
-
+   protected BuiltResponse invokeOnTargetAfterFilter(HttpRequest request, HttpResponse response, Object target)
+   {
       if (validator != null)
       {
          if (isValidatable)
@@ -328,14 +316,25 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
          }
       }
       
-      CompletionStageResponseConsumer completionStageResponseConsumer = null;
+      AsyncResponseConsumer asyncStreamResponseConsumer = null;
       @SuppressWarnings("rawtypes")
       AsyncResponseProvider asyncResponseProvider = resourceMethodProviderFactory.getAsyncResponseProvider(method.getReturnType());
+      @SuppressWarnings("rawtypes")
+      AsyncStreamProvider asyncStreamProvider = null;
       
       if (asyncResponseProvider != null)
       {
-         completionStageResponseConsumer = new CompletionStageResponseConsumer(this);
+         asyncStreamResponseConsumer = AsyncResponseConsumer.makeAsyncResponseConsumer(this, asyncResponseProvider);
       }
+      else
+      {
+         asyncStreamProvider = resourceMethodProviderFactory.getAsyncStreamProvider(method.getReturnType());
+         if (asyncStreamProvider != null)
+         {
+            asyncStreamResponseConsumer = AsyncResponseConsumer.makeAsyncResponseConsumer(this, asyncStreamProvider);
+         }
+      }
+      
 
       Object rtn = null;
       try
@@ -344,11 +343,24 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
       }
       catch (RuntimeException ex)
       {
-         if (completionStageResponseConsumer != null)
+         if (asyncStreamResponseConsumer != null)
          {
-            completionStageResponseConsumer.complete();
+            // WARNING: this can throw if the exception is not mapped by the user, in
+            // which case we haven't completed the connection and called the callbacks
+            try 
+            {
+               asyncStreamResponseConsumer.internalResume(ex);
+            }
+            catch(UnhandledException x) 
+            {
+               // make sure we call the callbacks before throwing to the container
+               request.getAsyncContext().getAsyncResponse().completionCallbacks(ex);
+               throw x;
+            }
+            asyncStreamResponseConsumer.complete(ex);
+            return null;
          }
-         if (request.getAsyncContext().isSuspended())
+         else if (request.getAsyncContext().isSuspended())
          {
             try
             {
@@ -367,14 +379,20 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
 
       }
 
-      if (completionStageResponseConsumer != null)
+      if(asyncStreamResponseConsumer != null)
       {
-         @SuppressWarnings("unchecked")
-         CompletionStage<?> stage = asyncResponseProvider.toCompletionStage(rtn);
-         stage.whenComplete(completionStageResponseConsumer);
+         asyncStreamResponseConsumer.subscribe(rtn);
          return null;
       }
-      if (request.getAsyncContext().isSuspended() || request.wasForwarded())
+      if (request.getAsyncContext().isSuspended())
+      {
+         if(method.isAsynchronous())
+            return null;
+         // resume a sync request that got turned async by filters
+         request.getAsyncContext().getAsyncResponse().resume(rtn);
+         return null;
+      }
+      if (request.wasForwarded())
       {
          return null;
       }
@@ -552,5 +570,10 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
    public MediaType[] getConsumes()
    {
       return method.getConsumes();
+   }
+
+   public void markMethodAsAsync()
+   {
+      method.markAsynchronous();
    }
 }

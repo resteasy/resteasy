@@ -265,6 +265,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       this.hostnameVerifier = hostnameVerifier;
    }
 
+   @SuppressWarnings("deprecation")
    public HttpHost getDefaultProxy()
    {
 	   return (HttpHost) httpClient.getParams().getParameter(ConnRoutePNames.DEFAULT_PROXY);
@@ -440,6 +441,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       return false;
    }
 
+   @SuppressWarnings("deprecation")
    protected HttpClient createDefaultHttpClient()
    {
       HttpParams params = new SyncBasicHttpParams();
@@ -451,11 +453,13 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       return new DefaultHttpClient(params);
    }
 
+   @SuppressWarnings("deprecation")
    protected void setRedirectRequired(final ClientInvocation request, HttpRequestBase httpMethod)
    {
       HttpClientParams.setRedirecting(httpMethod.getParams(), true);
    }
 
+   @SuppressWarnings("deprecation")
    protected void setRedirectNotRequired(final ClientInvocation request, HttpRequestBase httpMethod)
    {
       HttpClientParams.setRedirecting(httpMethod.getParams(), false);
@@ -511,6 +515,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       }
    }
 
+   @SuppressWarnings("deprecation")
    public void close()
    {
       if (closed)
@@ -695,6 +700,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
        * @param pFile -
        * @param pContentType -
        */
+      @SuppressWarnings("deprecation")
       public FileExposingFileEntity(File pFile, String pContentType)
       {
          super(pFile, pContentType);

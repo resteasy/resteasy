@@ -121,4 +121,92 @@ ResteasyProviderFactory.getInstance().registerProvider(POJOConverterProvider.cla
    </para>
    
    </section>
+
+   <section>
+      <title>Matching Requests to Resource Methods</title>
+
+      <para>
+         Improvements and corrections have been made in Resteasy 3 to the implementation of
+         the matching rules as defined in the JAX-RS 2.0 specification.  In particular
+         a change for handling an ambiguous URI on a sub-resource method and
+         sub-resource locator was made.  In Resteasy 2 it was possible for a
+         sub-resource locator to execute successfully even when there was also a sub-resource
+         with the same URI.  This was incorrect behavior according to the specification.
+      </para>
+      <para>
+         A sub-resource method is associated with a @Path annotation and a REST verb (e.g. @GET, @POST);
+         it handles a HTTP request directly.  A sub-resource locator method is annotated with a @Path
+         annotation but returns an object that handles the HTTP request. The presence or absence of a
+         REST verb on the resource method differentiates the two.  In the situation where a sub-resource
+          and sub-resource locator method share the same URI, the sub-resource is selected.
+      </para>
+      <para>
+         Here are two scenarios of an ambiguous uri on a sub-resource method and sub-resource locator.
+      </para>
+      <para>
+         In the first scenario the sub-resource method, subResource, resides in class TestResource1,
+         and the sub-resource locator method, subResourceLocator, resides in a different class,
+         TestResource2.  Both resources are declared to use the same path, "test/x".  The matching rules
+         declare this as an uri ambiguity.  In such a case the method with the REST verb is selected
+         (i.e. subResource).
+      </para>
+
+      <programlisting>
+@Path("test")
+public class TestResource1 {
+
+         @GET
+         @Path("x")
+         @Produces("text/plain")
+         public Response subResource() {
+            return Response.ok("ok").build();
+         }
+ }
+
+@Path("test")
+public class TestResource2 {
+
+         @Path("x")
+         @Produces("text/plain")
+         public SubResource subResourceLocator() {
+            return new SubResource();
+         }
+ }
+
+public class SubResource {
+
+         @POST
+         @Path("")
+         public String sub(String s) {
+            return "sub(" + s + ")";
+         }
+ }
+      </programlisting>
+       <para>
+           In the second scenario the sub-resource method, anotherResource, and sub-resource locator method,
+           anotherResourceLocator, reside in the same class, TestResource3.  Both resources are declared
+           to use the same path, "anotherTest/y".  As in the previous case, because the REST verb
+           "POST" is declared on method anotherResource, and method anotherResourceLocator is defined as
+           a sub-resource locator, the endpoint anotherResource is the one selected by the matching rules.
+       </para>
+   <programlisting>
+@Path("anotherTest")
+   public class TestResource3 {
+
+         @POST
+         @Path("y")
+         @Produces("text/plain")
+         public Response anotherResource(String text) {
+            return Response.ok("ok").build();
+         }
+
+         @Path("y")
+         @Produces("text/plain")
+         public SubResource anotherResourceLocator() {
+            return new SubResource();
+         }
+}
+      </programlisting>
+
+   </section>
 </chapter>

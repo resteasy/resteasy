@@ -34,6 +34,7 @@ import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.jaxrs.ReaderInterceptorRegistry;
 import org.jboss.resteasy.core.interception.jaxrs.WriterInterceptorRegistry;
 import org.jboss.resteasy.spi.AsyncResponseProvider;
+import org.jboss.resteasy.spi.AsyncStreamProvider;
 import org.jboss.resteasy.spi.ConstructorInjector;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -50,6 +51,7 @@ import org.jboss.resteasy.util.ThreadLocalStack;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@SuppressWarnings("deprecation")
 public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory implements ProviderFactoryDelegate
 {
    private static final ThreadLocalStack<ResteasyProviderFactory> delegate = new ThreadLocalStack<ResteasyProviderFactory>();
@@ -581,6 +583,18 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    public Map<Class<?>, AsyncResponseProvider> getAsyncResponseProviders()
    {
       return getDelegate().getAsyncResponseProviders();
+   }
+
+   @Override
+   public <T> AsyncStreamProvider<T> getAsyncStreamProvider(Class<T> type)
+   {
+      return getDelegate().getAsyncStreamProvider(type);
+   }
+   
+   @Override
+   public Map<Class<?>, AsyncStreamProvider> getAsyncStreamProviders()
+   {
+      return getDelegate().getAsyncStreamProviders();
    }
 
    @Override
