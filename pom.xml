@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>21</version>
+        <version>25</version>
         <relativePath/>
     </parent>
 
@@ -21,9 +21,16 @@
         <jboss.home/>
         <!-- print logs to file by default -->
         <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
-
+        <!-- Modularized JDK support (various workarounds) - activated via profile -->
+        <modular.jdk.args/>
+        <modular.jdk.props/>
+        <!-- maven-enforcer-plugin -->
+        <maven.min.version>3.2.5</maven.min.version>
+        <jdk.min.version>${maven.compiler.source}</jdk.min.version>
+        <!-- maven-javadoc-plugin -->
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <!-- maven-surefire-plugin -->
+        <surefire.system.args>${modular.jdk.args} ${modular.jdk.props}</surefire.system.args>
         <!-- Plugins versions -->
         <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
     </properties>
@@ -174,6 +181,34 @@
                     </dependency>
                 </dependencies>
             </dependencyManagement>
+        </profile>
+        <profile>
+          <id>jdk9</id>
+          <activation>
+            <jdk>9</jdk>
+          </activation>
+          <properties>
+            <!--<maven.compiler.verbose>true</maven.compiler.verbose>-->
+            <modular.jdk.args>--add-modules=java.se</modular.jdk.args>
+            <modular.jdk.props>-Dsun.util.logging.disableCallerCheck=true
+              -Dsun.reflect.debugModuleAccessChecks=true
+              --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED
+              --add-exports=java.xml/com.sun.org.apache.xerces.internal.jaxp=ALL-UNNAMED
+              --add-exports=java.xml/com.sun.org.apache.xalan.internal.xsltc.trax=ALL-UNNAMED
+              --add-exports=java.xml/com.sun.org.apache.xerces.internal.jaxp.datatype=ALL-UNNAMED
+              --add-exports=java.xml/com.sun.xml.internal.stream=ALL-UNNAMED
+            </modular.jdk.props>
+          </properties>
+          <build>
+            <plugins>
+              <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                  <additionalparam>--add-modules=ALL-SYSTEM</additionalparam>
+                </configuration>
+              </plugin>
+            </plugins>
+          </build>
         </profile>
     </profiles>
 
