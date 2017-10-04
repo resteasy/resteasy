@@ -1,11 +1,12 @@
 install:
  - mvn clean
 script:
- - travis_wait 30 mvn -B -fae -Dserver.version=$SERVER_VERSION install
+ - mvn -B -fae -Dserver.version=$SERVER_VERSION install
 
 language: java
 jdk:
   - oraclejdk8
+  - oraclejdk9
 env:
   - SERVER_VERSION=10.1.0.Final
   - SERVER_VERSION=10.0.0.Final
@@ -18,4 +19,4 @@ addons:
     packages:
       - oracle-java8-installer
 before_install:
-    - "sudo unzip -j -o  travis-libs/jce_policy-8.zip *.jar -d $JAVA_HOME/jre/lib/security"
+  - "if [ -d \"$JAVA_HOME/jre\" ]; then SEC_LIB=$JAVA_HOME/jre; else SEC_LIB=$JAVA_HOME; fi; sudo unzip -j -o  travis-libs/jce_policy-8.zip *.jar -d $SEC_LIB/lib/security;"
