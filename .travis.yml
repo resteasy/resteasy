@@ -11,6 +11,12 @@ env:
   - SERVER_VERSION=10.1.0.Final
   - SERVER_VERSION=10.0.0.Final
   - SERVER_VERSION=11.0.0.CR1
+matrix:
+  exclude:
+    - jdk: oraclejdk9
+      env: SERVER_VERSION=10.0.0.Final
+    - jdk: oraclejdk9
+      env: SERVER_VERSION=10.1.0.Final
 cache:
  directories:
   - $HOME/.m2
