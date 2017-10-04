@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>22</version>
+        <version>25</version>
         <relativePath/>
     </parent>
 
@@ -30,7 +30,7 @@
         <!-- maven-javadoc-plugin -->
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <!-- maven-surefire-plugin -->
-        <surefire.system.args>${modular.jdk.props}</surefire.system.args>
+        <surefire.system.args>${modular.jdk.args} ${modular.jdk.props}</surefire.system.args>
         <!-- Plugins versions -->
         <version.org.jacoco.plugin>0.7.9</version.org.jacoco.plugin>
     </properties>
@@ -191,19 +191,9 @@
           </activation>
           <properties>
             <!--<maven.compiler.verbose>true</maven.compiler.verbose>-->
-            <modular.jdk.args>--add-modules java.se.ee</modular.jdk.args>
+            <modular.jdk.args>--add-modules=java.se</modular.jdk.args>
             <modular.jdk.props>-Dsun.util.logging.disableCallerCheck=true
               -Dsun.reflect.debugModuleAccessChecks=true
-              --add-opens=java.base/java.lang=ALL-UNNAMED
-              --add-opens=java.base/java.nio=ALL-UNNAMED
-              --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
-              --add-opens=java.base/java.io=ALL-UNNAMED
-              --add-opens=java.base/java.util=ALL-UNNAMED
-              --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
-              --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
-              --add-opens=java.base/sun.util.calendar=ALL-UNNAMED
-              --add-opens=java.base/java.security=ALL-UNNAMED
-              --add-opens=java.base/sun.reflect.annotation=ALL-UNNAMED
               --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED
               --add-exports=java.xml/com.sun.org.apache.xerces.internal.jaxp=ALL-UNNAMED
               --add-exports=java.xml/com.sun.org.apache.xalan.internal.xsltc.trax=ALL-UNNAMED
@@ -214,20 +204,9 @@
           <build>
             <plugins>
               <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                  <!-- fork is needed so compiler args can be used -->
-                  <fork>true</fork>
-                  <compilerArgs>
-                    <arg>-J--add-modules</arg>
-                    <arg>-Jjava.xml.ws.annotation</arg>
-                  </compilerArgs>
-                </configuration>
-              </plugin>
-              <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                  <additionalparam>--add-modules java.se.ee</additionalparam>
+                  <additionalparam>--add-modules=ALL-SYSTEM</additionalparam>
                 </configuration>
               </plugin>
             </plugins>
@@ -255,15 +234,6 @@
     <build>
         <pluginManagement>
             <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <compilerArgument>
-                            -AgeneratedTranslationFilesPath=${project.basedir}/target/generated-translation-files
-                        </compilerArgument>
-                    </configuration>
-                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
