@@ -191,7 +191,6 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>1.4</version> <!-- https://issues.apache.org/jira/browse/MENFORCER-248 -->
                 </plugin>
             </plugins>
         </pluginManagement>
