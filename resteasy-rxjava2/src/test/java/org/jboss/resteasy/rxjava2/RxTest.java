@@ -1,6 +1,5 @@
 package org.jboss.resteasy.rxjava2;
 
-import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
 import static org.jboss.resteasy.test.TestPortProvider.generateURL;
 import static org.junit.Assert.*;
 
@@ -21,6 +20,7 @@ import org.junit.Test;
 public class RxTest
 {
    private static NettyJaxrsServer server;
+
    private static Dispatcher dispatcher;
 
    @BeforeClass
@@ -43,42 +43,43 @@ public class RxTest
       dispatcher = null;
    }
 
-	private String url;
-	private ResteasyClient client;
-	
-	@Before
-	public void before(){
-		client = new ResteasyClientBuilder()
-	                .socketTimeout(5, TimeUnit.SECONDS)
-	                .connectionCheckoutTimeout(5, TimeUnit.SECONDS)
-	                .establishConnectionTimeout(5, TimeUnit.SECONDS)
-	                .build();
-		url = generateBaseUrl();
-	}
+   private ResteasyClient client;
 
-    @After
-	public void after(){
-		client.close();
-	}
+   @Before
+   public void before()
+   {
+      client = new ResteasyClientBuilder()
+            .readTimeout(5, TimeUnit.SECONDS)
+            .connectionCheckoutTimeout(5, TimeUnit.SECONDS)
+            .connectTimeout(5, TimeUnit.SECONDS)
+            .build();
+   }
 
-    @Test
-    public void testSingle() {
-    	String data = client.target(generateURL("/single")).request().get(String.class);
-    	assertEquals("got it", data);
+   @After
+   public void after()
+   {
+      client.close();
+   }
 
-    	String[] data2 = client.target(generateURL("/observable")).request().get(String[].class);
-    	assertArrayEquals(new String[] {"one", "two"}, data2);
+   @Test
+   public void testSingle()
+   {
+      String data = client.target(generateURL("/single")).request().get(String.class);
+      assertEquals("got it", data);
 
-    	data2 = client.target(generateURL("/flowable")).request().get(String[].class);
-    	assertArrayEquals(new String[] {"one", "two"}, data2);
+      String[] data2 = client.target(generateURL("/observable")).request().get(String[].class);
+      assertArrayEquals(new String[] {"one", "two"}, data2);
 
-    	data = client.target(generateURL("/context/single")).request().get(String.class);
-    	assertEquals("got it", data);
+      data2 = client.target(generateURL("/flowable")).request().get(String[].class);
+      assertArrayEquals(new String[] {"one", "two"}, data2);
 
-    	data2 = client.target(generateURL("/context/observable")).request().get(String[].class);
-    	assertArrayEquals(new String[] {"one", "two"}, data2);
+      data = client.target(generateURL("/context/single")).request().get(String.class);
+      assertEquals("got it", data);
 
-    	data2 = client.target(generateURL("/context/flowable")).request().get(String[].class);
-    	assertArrayEquals(new String[] {"one", "two"}, data2);
-}
+      data2 = client.target(generateURL("/context/observable")).request().get(String[].class);
+      assertArrayEquals(new String[] {"one", "two"}, data2);
+
+      data2 = client.target(generateURL("/context/flowable")).request().get(String[].class);
+      assertArrayEquals(new String[] {"one", "two"}, data2);
+   }
 }

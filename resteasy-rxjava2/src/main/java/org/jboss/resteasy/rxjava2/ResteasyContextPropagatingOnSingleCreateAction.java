@@ -9,42 +9,50 @@ import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiFunction;
 
-public class ResteasyContextPropagatingOnSingleCreateAction implements BiFunction<Single, SingleObserver, SingleObserver> {
+@SuppressWarnings("rawtypes")
+public class ResteasyContextPropagatingOnSingleCreateAction implements BiFunction<Single, SingleObserver, SingleObserver>
+{
+   @SuppressWarnings("unchecked")
+   @Override
+   public SingleObserver apply(Single t1, SingleObserver t2) throws Exception
+   {
+      return new ContextCapturerObserver<>(t2);
+   }
 
-	@Override
-	public SingleObserver apply(Single t1, SingleObserver t2) throws Exception {
-		return new ContextCapturerObserver<>(t2);
-	}
+   final static class ContextCapturerObserver<T> implements SingleObserver<T>
+   {
 
-	final static class ContextCapturerObserver<T> implements SingleObserver<T> {
+      final Map<Class<?>, Object> contextDataMap = ResteasyProviderFactory.getContextDataMap();
 
-		final Map<Class<?>, Object> contextDataMap = ResteasyProviderFactory.getContextDataMap();
+      final SingleObserver<T> actual;
 
-	    final SingleObserver<T> actual;
+      public ContextCapturerObserver(SingleObserver<T> actual)
+      {
+         this.actual = actual;
+      }
 
-	    public ContextCapturerObserver(SingleObserver<T> actual) {
-	        this.actual = actual;
-	    }
+      @Override
+      public void onError(Throwable e)
+      {
+         ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+         actual.onError(e);
+         ResteasyProviderFactory.removeContextDataLevel();
+      }
 
-	    @Override
-	    public void onError(Throwable e) {
-	    	ResteasyProviderFactory.pushContextDataMap(contextDataMap);
-	    	actual.onError(e);
-	    	ResteasyProviderFactory.removeContextDataLevel();
-	    }
+      @Override
+      public void onSuccess(T value)
+      {
+         ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+         actual.onSuccess(value);
+         ResteasyProviderFactory.removeContextDataLevel();
+      }
 
-	    @Override
-	    public void onSuccess(T value) {
-	    	ResteasyProviderFactory.pushContextDataMap(contextDataMap);
-	    	actual.onSuccess(value);
-	    	ResteasyProviderFactory.removeContextDataLevel();
-	    }
-
-		@Override
-		public void onSubscribe(Disposable d) {
-	    	ResteasyProviderFactory.pushContextDataMap(contextDataMap);
-			actual.onSubscribe(d);
-	    	ResteasyProviderFactory.removeContextDataLevel();
-		}
-	}
+      @Override
+      public void onSubscribe(Disposable d)
+      {
+         ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+         actual.onSubscribe(d);
+         ResteasyProviderFactory.removeContextDataLevel();
+      }
+   }
 }

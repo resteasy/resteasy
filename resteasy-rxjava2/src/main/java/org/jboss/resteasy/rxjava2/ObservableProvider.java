@@ -10,15 +10,18 @@ import io.reactivex.Observable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 @Provider
-public class ObservableProvider implements AsyncStreamProvider<Observable<?>>{
+public class ObservableProvider implements AsyncStreamProvider<Observable<?>>
+{
 
-	static {
-		RxJavaPlugins.setOnObservableSubscribe(new ResteasyContextPropagatingOnObservableCreateAction());
-	}
+   static
+   {
+      RxJavaPlugins.setOnObservableSubscribe(new ResteasyContextPropagatingOnObservableCreateAction());
+   }
 
-	@Override
-	public Publisher<?> toAsyncStream(Observable<?> asyncResponse) {
-		return asyncResponse.toFlowable(BackpressureStrategy.BUFFER);
-	}
+   @Override
+   public Publisher<?> toAsyncStream(Observable<?> asyncResponse)
+   {
+      return asyncResponse.toFlowable(BackpressureStrategy.BUFFER);
+   }
 
 }

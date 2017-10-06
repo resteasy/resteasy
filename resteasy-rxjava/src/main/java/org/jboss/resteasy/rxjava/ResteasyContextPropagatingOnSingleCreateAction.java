@@ -9,54 +9,65 @@ import rx.Single.OnSubscribe;
 import rx.SingleSubscriber;
 import rx.functions.Func1;
 
-public class ResteasyContextPropagatingOnSingleCreateAction implements Func1<OnSubscribe, OnSubscribe> {
+@SuppressWarnings("rawtypes")
+public class ResteasyContextPropagatingOnSingleCreateAction implements Func1<OnSubscribe, OnSubscribe>
+{
 
-	@Override
-	public OnSubscribe<?> call(OnSubscribe t) {
-		return new ContextCapturerSingle<>(t);
-	}
-	
-	final static class ContextCapturerSingle<T> implements Single.OnSubscribe<T> {
+   @SuppressWarnings("unchecked")
+   @Override
+   public OnSubscribe<?> call(OnSubscribe t)
+   {
+      return new ContextCapturerSingle<>(t);
+   }
 
-		final Map<Class<?>, Object> contextDataMap = ResteasyProviderFactory.getContextDataMap();
+   final static class ContextCapturerSingle<T> implements Single.OnSubscribe<T>
+   {
 
-	    final Single.OnSubscribe<T> source;
+      final Map<Class<?>, Object> contextDataMap = ResteasyProviderFactory.getContextDataMap();
 
-	    public ContextCapturerSingle(Single.OnSubscribe<T> source) {
-	        this.source = source;
-	    }
+      final Single.OnSubscribe<T> source;
 
-	    @Override
-	    public void call(SingleSubscriber<? super T> t) {
-	        source.call(new OnAssemblySingleSubscriber<T>(t, contextDataMap));
-	    }
+      public ContextCapturerSingle(Single.OnSubscribe<T> source)
+      {
+         this.source = source;
+      }
 
-	    static final class OnAssemblySingleSubscriber<T> extends SingleSubscriber<T> {
+      @Override
+      public void call(SingleSubscriber<? super T> t)
+      {
+         source.call(new OnAssemblySingleSubscriber<T>(t, contextDataMap));
+      }
 
-	        final SingleSubscriber<? super T> actual;
+      static final class OnAssemblySingleSubscriber<T> extends SingleSubscriber<T>
+      {
 
-	        final Map<Class<?>, Object> contextDataMap;
+         final SingleSubscriber<? super T> actual;
 
-	        public OnAssemblySingleSubscriber(SingleSubscriber<? super T> actual, Map<Class<?>, Object> contextDataMap) {
-	            this.actual = actual;
-	            this.contextDataMap = contextDataMap;
-	            actual.add(this);
-	        }
+         final Map<Class<?>, Object> contextDataMap;
 
-	        @Override
-	        public void onError(Throwable e) {
-				ResteasyProviderFactory.pushContextDataMap(contextDataMap);
-	            actual.onError(e);
-				ResteasyProviderFactory.removeContextDataLevel();
-	        }
+         public OnAssemblySingleSubscriber(SingleSubscriber<? super T> actual, Map<Class<?>, Object> contextDataMap)
+         {
+            this.actual = actual;
+            this.contextDataMap = contextDataMap;
+            actual.add(this);
+         }
 
-	        @Override
-	        public void onSuccess(T t) {
-				ResteasyProviderFactory.pushContextDataMap(contextDataMap);
-	            actual.onSuccess(t);
-				ResteasyProviderFactory.removeContextDataLevel();
-	        }
-	    }
-	}
+         @Override
+         public void onError(Throwable e)
+         {
+            ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+            actual.onError(e);
+            ResteasyProviderFactory.removeContextDataLevel();
+         }
+
+         @Override
+         public void onSuccess(T t)
+         {
+            ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+            actual.onSuccess(t);
+            ResteasyProviderFactory.removeContextDataLevel();
+         }
+      }
+   }
 
 }
