@@ -147,6 +147,7 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
          return;
       }
       responseContext.getHeaders().putSingle(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
+      responseContext.getHeaders().putSingle(CorsHeaders.VARY, CorsHeaders.ORIGIN);
       if (allowCredentials) responseContext.getHeaders().putSingle(CorsHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
 
       if (exposedHeaders != null) {
@@ -161,6 +162,7 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
 
       Response.ResponseBuilder builder = Response.ok();
       builder.header(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
+      builder.header(CorsHeaders.VARY, CorsHeaders.ORIGIN);
       if (allowCredentials) builder.header(CorsHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
       String requestMethods = requestContext.getHeaderString(CorsHeaders.ACCESS_CONTROL_REQUEST_METHOD);
       if (requestMethods != null)
