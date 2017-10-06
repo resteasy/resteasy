@@ -12,32 +12,35 @@ import rx.Subscription;
 import rx.plugins.RxJavaHooks;
 
 @Provider
-public class SingleProvider implements AsyncResponseProvider<Single<?>>{
-	
-	static {
-		RxJavaHooks.setOnSingleCreate(new ResteasyContextPropagatingOnSingleCreateAction());
-	}
+public class SingleProvider implements AsyncResponseProvider<Single<?>>
+{
 
-	private static class SingleAdaptor<T> extends CompletableFuture<T> 
-	{
-		private Subscription subscription;
+   static
+   {
+      RxJavaHooks.setOnSingleCreate(new ResteasyContextPropagatingOnSingleCreateAction());
+   }
 
-		public SingleAdaptor(Single<T> observable) 
-		{
-			this.subscription = observable.subscribe(this::complete, this::completeExceptionally);
-		}
+   private static class SingleAdaptor<T> extends CompletableFuture<T>
+   {
+      private Subscription subscription;
 
-		@Override
-		public boolean cancel(boolean mayInterruptIfRunning)
-		{
-			subscription.unsubscribe();
-			return super.cancel(mayInterruptIfRunning);
-		}
-	}
+      public SingleAdaptor(Single<T> observable)
+      {
+         this.subscription = observable.subscribe(this::complete, this::completeExceptionally);
+      }
 
-	@Override
-	public CompletionStage<?> toCompletionStage(Single<?> asyncResponse) {
-		return new SingleAdaptor<>(asyncResponse);
-	}
+      @Override
+      public boolean cancel(boolean mayInterruptIfRunning)
+      {
+         subscription.unsubscribe();
+         return super.cancel(mayInterruptIfRunning);
+      }
+   }
+
+   @Override
+   public CompletionStage<?> toCompletionStage(Single<?> asyncResponse)
+   {
+      return new SingleAdaptor<>(asyncResponse);
+   }
 
 }

@@ -15,55 +15,63 @@ import rx.Observable;
 import rx.Single;
 
 @Path("/")
-public class RxResource {
+public class RxResource
+{
 
-	@Path("single")
-	@GET
-	public Single<String> single(){
-		return Single.just("got it");
-	}
+   @Path("single")
+   @GET
+   public Single<String> single()
+   {
+      return Single.just("got it");
+   }
 
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("observable")
-	@GET
-	public Observable<String> observable(){
-		return Observable.from(new String[] {"one", "two"});
-	}
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("observable")
+   @GET
+   public Observable<String> observable()
+   {
+      return Observable.from(new String[]
+      {"one", "two"});
+   }
 
-	@Path("context/single")
-	@GET
-	public Single<String> contextSingle(@Context UriInfo uriInfo){
-		return Single.<String>fromEmitter(foo -> {
-			ExecutorService executor = Executors.newSingleThreadExecutor();
-			executor.submit(
-					new Runnable() {
-						public void run() {
-							foo.onSuccess("got it");
-						}
-					});
-		}).map(str -> {
-			uriInfo.getAbsolutePath();
-			return str;
-		});
-	}
+   @Path("context/single")
+   @GET
+   public Single<String> contextSingle(@Context UriInfo uriInfo)
+   {
+      return Single.<String>fromEmitter(foo -> {
+         ExecutorService executor = Executors.newSingleThreadExecutor();
+         executor.submit(new Runnable()
+         {
+            public void run()
+            {
+               foo.onSuccess("got it");
+            }
+         });
+      }).map(str -> {
+         uriInfo.getAbsolutePath();
+         return str;
+      });
+   }
 
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("context/observable")
-	@GET
-	public Observable<String> contextObservable(@Context UriInfo uriInfo){
-		return Observable.<String>create(foo -> {
-			ExecutorService executor = Executors.newSingleThreadExecutor();
-			executor.submit(
-					new Runnable() {
-						public void run() {
-							foo.onNext("one");
-							foo.onNext("two");
-							foo.onCompleted();
-						}
-					});
-		}, BackpressureMode.BUFFER).map(str -> {
-			uriInfo.getAbsolutePath();
-			return str;
-		});
-	}
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("context/observable")
+   @GET
+   public Observable<String> contextObservable(@Context UriInfo uriInfo)
+   {
+      return Observable.<String>create(foo -> {
+         ExecutorService executor = Executors.newSingleThreadExecutor();
+         executor.submit(new Runnable()
+         {
+            public void run()
+            {
+               foo.onNext("one");
+               foo.onNext("two");
+               foo.onCompleted();
+            }
+         });
+      }, BackpressureMode.BUFFER).map(str -> {
+         uriInfo.getAbsolutePath();
+         return str;
+      });
+   }
 }
