@@ -10,15 +10,18 @@ import rx.RxReactiveStreams;
 import rx.plugins.RxJavaHooks;
 
 @Provider
-public class ObservableProvider implements AsyncStreamProvider<Observable<?>>{
+public class ObservableProvider implements AsyncStreamProvider<Observable<?>>
+{
 
-	static {
-		RxJavaHooks.setOnObservableCreate(new ResteasyContextPropagatingOnObservableCreateAction());
-	}
+   static
+   {
+      RxJavaHooks.setOnObservableCreate(new ResteasyContextPropagatingOnObservableCreateAction());
+   }
 
-	@Override
-	public Publisher<?> toAsyncStream(Observable<?> asyncResponse) {
-		return RxReactiveStreams.toPublisher(asyncResponse);
-	}
+   @Override
+   public Publisher<?> toAsyncStream(Observable<?> asyncResponse)
+   {
+      return RxReactiveStreams.toPublisher(asyncResponse);
+   }
 
 }
