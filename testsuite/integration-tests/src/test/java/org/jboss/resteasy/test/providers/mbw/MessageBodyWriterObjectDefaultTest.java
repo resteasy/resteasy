@@ -66,4 +66,13 @@ public class MessageBodyWriterObjectDefaultTest {
       response = request.get();
       Assert.assertTrue(Boolean.parseBoolean(response.readEntity(String.class)));
    }
+   @Test
+ //RESTEASY-1730: Could not find MessageBodyWriter for response object of type: java.lang.Boolean of media type: application/octet-stream
+   public void testGetBoolean() throws Exception {
+      Invocation.Builder request = client.target(generateURL("/test/getbool")).request();
+      Response response = request.get();
+      String entity = response.readEntity(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("true", entity);
+   }
 }

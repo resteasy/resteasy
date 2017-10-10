@@ -20,4 +20,9 @@ public class MessageBodyWriterObjectResource {
    public Response used() {
       return Response.ok(Boolean.toString(MessageBodyWriterObjectMessageBodyWriter.used)).build();
    }
+   @GET
+   @Path("/getbool")
+   public boolean testBoolean() {
+      return true;
+   }
 }
