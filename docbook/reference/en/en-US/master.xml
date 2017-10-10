@@ -56,6 +56,7 @@
                 <!ENTITY Validation SYSTEM "modules/Validation.xml">
                 <!ENTITY CORS SYSTEM "modules/cors.xml">
                 <!ENTITY I18N SYSTEM "modules/I18N.xml">
+                <!ENTITY JAX-RS_2.1_additions SYSTEM "modules/JAX-RS_2.1_additions.xml">
                 <!ENTITY Deprecated_security_modules SYSTEM "modules/Deprecated_security_modules.xml">
                 ]>
 
@@ -152,6 +153,7 @@ This one is short
    &Deprecated_security_modules;
    &Migration_to_3_1;
    &Migration_from_older_versions;
+   &JAX-RS_2.1_additions;
    &Books;
 </book>
 
