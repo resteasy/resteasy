@@ -1,6 +1,6 @@
 package org.jboss.resteasy.test.providers;
 
-import org.jboss.resteasy.plugins.providers.DefaultTextPlain;
+import org.jboss.resteasy.plugins.providers.DefaultBooleanWriter;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.providers.resource.ProviderFactoryPrecedenceBase;
@@ -67,7 +67,7 @@ public class ProviderFactoryPrecedenceTest {
 
         MessageBodyWriter<Boolean> writer = factory.getMessageBodyWriter(Boolean.class, null, null, new MediaType("text", "plain"));
         Assert.assertNotNull("No writer exists for the given media type", writer);
-        Assert.assertEquals("The type of the writer is incorrect", writer.getClass(), DefaultTextPlain.class);
+        Assert.assertEquals("The type of the writer is incorrect", writer.getClass(), DefaultBooleanWriter.class);
     }
 
     /**
@@ -128,7 +128,7 @@ public class ProviderFactoryPrecedenceTest {
     }
 
     private void verifyPlainWriter(ResteasyProviderFactory factory) {
-        MessageBodyWriter writer2 = factory.getMessageBodyWriter(Boolean.class, null, null, MediaType.TEXT_PLAIN_TYPE);
+        MessageBodyWriter writer2 = factory.getMessageBodyWriter(Character.class, null, null, MediaType.TEXT_PLAIN_TYPE);
         Assert.assertNotNull("No writer exists for the given media type", writer2);
         Assert.assertTrue("The type of the writer is incorrect", writer2 instanceof ProviderFactoryPrecendencePlainTextWriter);
     }
