@@ -541,6 +541,17 @@ public class MyApplication extends Application
                                 Enables <link linkend='Http_Precondition'>RFC7232 compliant HTTP preconditions handling</link>.
                             </entry>
                         </row>
+                        <row>
+                            <entry>
+                                resteasy.gzip.max.input
+                            </entry>
+                            <entry>
+                                10000000
+                            </entry>
+                            <entry>
+                                Imposes maximum size on decompressed gzipped .
+                            </entry>
+                        </row>
                     </tbody>
                 </tgroup>
             </table>

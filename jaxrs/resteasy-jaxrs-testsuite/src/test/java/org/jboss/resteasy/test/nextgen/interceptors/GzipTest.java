@@ -12,14 +12,17 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.internal.ClientWebTarget;
+import org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor;
 import org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.test.nextgen.interceptors.resource.GzipProxy;
 import org.jboss.resteasy.test.nextgen.interceptors.resource.Pair;
 import org.jboss.resteasy.util.HttpResponseCodes;
 import org.jboss.resteasy.util.ReadFromStream;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +46,8 @@ import static org.jboss.resteasy.test.TestPortProvider.generateBaseUrl;
  */
 public class GzipTest extends BaseResourceTest
 {
+
+   private ResteasyClient client;
 
    @Path("/")
    public static interface IGZIP
@@ -156,7 +161,21 @@ public class GzipTest extends BaseResourceTest
    @Before
    public void setUp() throws Exception
    {
+      ResteasyProviderFactory.getInstance().registerProvider(AcceptEncodingGZIPFilter.class);
+      ResteasyProviderFactory.getInstance().registerProvider(GZIPEncodingInterceptor.class);
+      ResteasyProviderFactory.getInstance().registerProvider(GZIPDecodingInterceptor.class);
       addPerRequestResource(GZIPService.class);
+
+      client = new ResteasyClientBuilder()
+              .register(AcceptEncodingGZIPFilter.class)
+              .register(GZIPDecodingInterceptor.class)
+              .register(GZIPEncodingInterceptor.class)
+              .build();
+   }
+
+   @After
+   public void tearDown() throws Exception {
+      client.close();
    }
 
    @Test
@@ -185,7 +204,6 @@ public class GzipTest extends BaseResourceTest
    @Test
    public void testProxy() throws Exception
    {
-      ResteasyClient client = new ResteasyClientBuilder().build();
       ResteasyWebTarget target = client.target(generateBaseUrl());
       IGZIP proxy = target.proxy(IGZIP.class);
       Assert.assertEquals("HELLO WORLD", proxy.getText());
@@ -203,10 +221,6 @@ public class GzipTest extends BaseResourceTest
          String txt = (String) failure.getResponse().readEntity(String.class);
          Assert.assertEquals("Hello", txt);
       }
-      finally
-      {
-         client.close();
-      }
    }
 
    /**
@@ -217,7 +231,6 @@ public class GzipTest extends BaseResourceTest
    @Test
    public void testContentLength() throws Exception
    {
-      ResteasyClient client = new ResteasyClientBuilder().build();
       {
          WebTarget target = client.target(TestPortProvider.generateURL("/text"));
          Response response = target.request().get();
@@ -281,7 +294,6 @@ public class GzipTest extends BaseResourceTest
    @Test
    public void testRequest() throws Exception
    {
-      ResteasyClient client = new ResteasyClientBuilder().build();
       WebTarget target = client.target(TestPortProvider.generateURL("/text"));
       String val = target.request().get(String.class);
       Assert.assertEquals("HELLO WORLD", val);
@@ -292,7 +304,6 @@ public class GzipTest extends BaseResourceTest
    @Test
    public void testRequest2() throws Exception
    {
-      ResteasyClient client = new ResteasyClientBuilder().build();
       WebTarget target = client.target(TestPortProvider.generateURL("/encoded/text"));
       Response response = target.request().get();
       Assert.assertEquals("HELLO WORLD", response.readEntity(String.class));
@@ -357,7 +368,6 @@ public class GzipTest extends BaseResourceTest
     */
    @Test
    public void testGzipPost() {
-      Client client = new ResteasyClientBuilder().build();
       WebTarget target = client.target(TestPortProvider.generateURL(""));
       GzipProxy gzipProxy = ProxyBuilder.builder(GzipProxy.class, target).build();
       Pair data = new Pair();

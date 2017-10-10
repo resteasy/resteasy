@@ -243,6 +243,9 @@ public interface Messages
    @Message(id = BASE + 355, value = "A GET request cannot have a body.")
    String getRequestCannotHaveBody();
 
+   @Message(id = BASE + 357, value = "GZIP input exceeds max size: %s")
+   String gzipExceedsMaxSize(int size);
+
    @Message(id = BASE + 360, value = "%s has no String constructor")
    String hasNoStringConstructor(String className);
    

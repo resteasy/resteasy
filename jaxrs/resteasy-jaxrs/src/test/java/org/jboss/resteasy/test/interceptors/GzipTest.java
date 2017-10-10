@@ -10,8 +10,10 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPFilter;
 import org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor;
 import org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.test.BaseResourceTest;
 import org.jboss.resteasy.test.TestPortProvider;
 import org.jboss.resteasy.util.ReadFromStream;
@@ -143,6 +145,9 @@ public class GzipTest extends BaseResourceTest
    @Before
    public void setUp() throws Exception
    {
+      ResteasyProviderFactory.getInstance().registerProvider(AcceptEncodingGZIPFilter.class);
+      ResteasyProviderFactory.getInstance().registerProvider(GZIPEncodingInterceptor.class);
+      ResteasyProviderFactory.getInstance().registerProvider(GZIPDecodingInterceptor.class);
       addPerRequestResource(GZIPService.class);
    }
 
@@ -200,6 +205,7 @@ public class GzipTest extends BaseResourceTest
    {
       {
          ClientRequest request = new ClientRequest(TestPortProvider.generateURL("/text"));
+         // register providers for GZIP
          ClientResponse<String> response = request.get(String.class);
          Assert.assertEquals("HELLO WORLD", response.getEntity());
          String cl = response.getResponseHeaders().getFirst("Content-Length");

@@ -1,6 +1,10 @@
 package org.jboss.resteasy.test.nextgen.client;
 
 import junit.framework.Assert;
+import org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPFilter;
+import org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor;
+import org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -38,6 +42,7 @@ public class ClientProviderTest extends BaseResourceTest {
     public static void setupClient()
     {
         addPerRequestResource(Resource.class);
+
         client = ClientBuilder.newClient();
 
     }
@@ -142,7 +147,7 @@ public class ClientProviderTest extends BaseResourceTest {
     {
         WebTarget base = client.target(generateURL("/") + "/post");
         String result = base.register(StringEntityProviderWriter.class).request().post(Entity.text("test"), String.class);
-        Assert.assertEquals("Application defined provider: text/plain[Accept-Encoding=gzip, deflate,Content-Type=text/plain]", result);
+        Assert.assertEquals("Application defined provider: text/plain[Content-Type=text/plain]", result);
 
         WebTarget base2 = client.target(generateURL("/") + "/post");
         result = base2.request().post(Entity.text("test"), String.class);
