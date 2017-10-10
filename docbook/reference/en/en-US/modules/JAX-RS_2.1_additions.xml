@@ -1,0 +1,66 @@
+<chapter id="JAX-RS_2.1_additions">
+    <title>JAX-RS 2.1 Additions</title>
+    <para>JAX-RS 2.1 adds more asynchronous processing support in both the
+        Client and the Server API.  The specification adds a Reactive programming
+        style to the Client side and Server-Sent Events (SSE) protocol support to
+        both client and server.
+    </para>
+
+    <sect1>
+        <title>Rective Clients API</title>
+        <para>The specification defines a new type of invoker named RxInvoker, and a default
+            implementation of this type named CompletionStageRxInvoker.
+            CompletionStageRxInvoker implements Java 8's interface CompletionStage.
+            This interface declares a large number of methods dedicated to managing
+            asynchronous computations.
+        </para>
+        <para>There is also a new rx method which is used in a similar manner to async.
+        </para>
+    </sect1>
+
+    <sect1>
+        <title>Server-Sent Events (SSE)</title>
+        <para>Server-sent events provides a way to establish a one-way channel from a server
+            to a client. The connection is long running and it is re-used for multiple events
+            sent from the server.
+        </para>
+        <sect2>
+            <title>SSE Client API</title>
+            <para>
+                The SSE entry point in the client API is the SseEventSource class.
+                This object is constructed from a WebTarget.
+                It does not duplicate any functionality in WebTarget.
+                It only adds the necessary logic for SSE.
+            </para>
+            <para>
+                Clients request an SSE connection by using the special media type
+                <emphasis>text/event-stream</emphasis>
+                in the Accept header.
+            </para>
+        </sect2>
+        <sect2>
+            <title>SSE Server API</title>
+            <para>
+                The SSE server API is used to accept connections and send events to one or more clients.
+                A resource method that injects an SseEventSink and produces the media type
+                <emphasis>text/event-stream</emphasis>
+                is an SSE resource method.
+            </para>
+        </sect2>
+        <sect2>
+            <title>Broadcasting</title>
+            <para>
+                SSE provides a way to broadcast events to multiple clients simultaneously.
+                Multiple SseEventSink’s can be registered on a single SseBroadcaster object.
+            </para>
+        </sect2>
+    </sect1>
+    <sect1>
+        <title>Java API for JSON Binding</title>
+        <para>
+            RESTEasy supports both JSON-B and JSON-P.  In accordance with the specification,
+            entity providers for JSON-B take precedence over those for JSON-P for all types
+            except JsonValue and its sub-types.
+        </para>
+    </sect1>
+</chapter>

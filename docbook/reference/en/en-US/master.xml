@@ -58,6 +58,7 @@
                 <!ENTITY Validation SYSTEM "modules/Validation.xml">
                 <!ENTITY CORS SYSTEM "modules/cors.xml">
                 <!ENTITY I18N SYSTEM "modules/I18N.xml">
+                <!ENTITY JAX-RS_2.1_additions SYSTEM "modules/JAX-RS_2.1_additions.xml">
                 ]>
 
 <book>
@@ -155,6 +156,7 @@ This one is short
    &JBoss;
    &Migration_to_3_1;
    &Migration_from_older_versions;
+   &JAX-RS_2.1_additions;
    &Books;
 
 </book>
