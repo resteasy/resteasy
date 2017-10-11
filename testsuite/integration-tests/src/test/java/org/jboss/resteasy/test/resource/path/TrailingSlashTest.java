@@ -35,12 +35,12 @@ public class TrailingSlashTest {
 
     @Deployment
     public static Archive<?> deploy() {
-        WebArchive war = TestUtil.prepareArchive(ResteasyTrailingSlashTest.class.getSimpleName());
+        WebArchive war = TestUtil.prepareArchive(TrailingSlashTest.class.getSimpleName());
         return TestUtil.finishContainerPrepare(war, null, TrailingSlashResource.class);
     }
 
     private String generateURL(String path) {
-        return PortProviderUtil.generateURL(path, ResteasyTrailingSlashTest.class.getSimpleName());
+        return PortProviderUtil.generateURL(path, TrailingSlashTest.class.getSimpleName());
     }
 
     /**
