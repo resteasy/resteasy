@@ -68,6 +68,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
    protected int responseBufferSize = 8192;
    protected HttpHost defaultProxy = null;
    protected boolean chunked = false;
+   protected boolean followRedirects = false;
 
    /**
     * For uploading File's over JAX-RS framework, this property, together with {@link #fileUploadMemoryUnit},
@@ -434,7 +435,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
 
    protected boolean isRedirectRequired(final ClientInvocation request, final HttpRequestBase httpMethod)
    {
-      if (httpMethod instanceof HttpGet && false) // todo  && request.followRedirects())
+      if (httpMethod instanceof HttpGet && isFollowRedirects())
       {
          return true;
       }
@@ -468,7 +469,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
 
    protected void loadHttpMethod(final ClientInvocation request, HttpRequestBase httpMethod) throws Exception
    {
-      if (isRedirectRequired(request,httpMethod)) // todo  && request.followRedirects())
+      if (isRedirectRequired(request,httpMethod))
       {
          setRedirectRequired(request,httpMethod);
       }
@@ -552,6 +553,16 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
    public void setChunked(boolean chunked)
    {
       this.chunked = chunked;
+   }
+   
+   public boolean isFollowRedirects()
+   {
+      return followRedirects;
+   }
+
+   public void setFollowRedirects(boolean followRedirects)
+   {
+      this.followRedirects = followRedirects;
    }
 
    /**

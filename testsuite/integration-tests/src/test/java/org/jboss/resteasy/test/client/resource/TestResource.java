@@ -14,8 +14,11 @@ import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.jboss.resteasy.utils.PortProviderUtil;
 
 @Path("")
 public class TestResource
@@ -95,5 +98,19 @@ public class TestResource
    public Response methodEntity(String s)
    {
       return Response.ok(s).build();
+   }
+   
+   @Path("redirect/{p}")
+   @GET
+   public Response redirect(@PathParam("p") String p)
+   {
+      return Response.temporaryRedirect(PortProviderUtil.createURI("/redirected", p)).build();
+   }
+
+   @Path("redirected")
+   @GET
+   public Response redirected()
+   {
+      return Response.ok("OK").build();
    }
 }
