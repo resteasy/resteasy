@@ -111,7 +111,6 @@ public class PathParamInjector implements ValueInjector
          List<String> list = request.getUri().getPathParameters(!encode).get(paramName);
          if (list == null)
          {
-            if (extractor.defaultValue == null) throw new InternalServerErrorException(Messages.MESSAGES.unknownPathParam(paramName, request.getUri().getPath()));
             if (extractor.isCollectionOrArray())
             {
                return extractor.extractValues(null);
