@@ -8,8 +8,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.SseEventSource;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -83,24 +85,16 @@ public class SseEventSinkTest {
         
         eventSource.close();
         Assert.assertFalse("Closed eventSource state is expceted", eventSource.isOpen());
+        
+        WebTarget messageTarget = ClientBuilder.newClient().target(generateURL("/service/server-sent-events"));
+        for (int counter = 0; counter < 5; counter++)
+        {
+           String msg = "messageAfterClose";
+           messageTarget.request().post(Entity.text(msg));
+        }
+        
+        Assert.assertTrue("EventSource should not receive msg after it is closed" , results.indexOf("messageAfterClose") == -1);
         Assert.assertFalse("EventSink close is expected ", isOpenRequest.get().readEntity(Boolean.class));
 
     }
-
-//    @Test
-//    //This will open a browser and test with html sse client
-//    public void testHtmlSse() throws Exception
-//    {
-//       
-//       Runtime runtime = Runtime.getRuntime();
-//       try
-//       {
-//          runtime.exec("xdg-open " + generateURL(""));
-//       }
-//       catch (IOException e)
-//       {
-//
-//       }
-//       Thread.sleep(30 * 1000);
-//    }
 }
