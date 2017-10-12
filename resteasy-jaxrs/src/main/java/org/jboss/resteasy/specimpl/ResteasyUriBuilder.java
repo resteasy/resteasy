@@ -89,7 +89,7 @@ public class ResteasyUriBuilder extends UriBuilder
    public static final Pattern opaqueUri = Pattern.compile("^([^:/?#]+):([^/].*)");
    public static final Pattern hierarchicalUri = Pattern.compile("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
    private static final Pattern hostPortPattern = Pattern.compile("([^/:]+):(\\d+)");
-   private static final Pattern squareHostBrackets = Pattern.compile( "(\\[(([0-9A-Fa-f]{0,4}:){2,7})([0-9A-Fa-f]{0,4})\\]):(\\d+)" );
+   private static final Pattern squareHostBrackets = Pattern.compile( "(\\[(([0-9A-Fa-f]{0,4}:){2,7})([0-9A-Fa-f]{0,4})%?.*\\]):(\\d+)" );
 
    public static boolean compare(String s1, String s2)
    {
@@ -208,6 +208,7 @@ public class ResteasyUriBuilder extends UriBuilder
             if (host.startsWith("["))
             {
                // Must support an IPv6 hostname of format "[::1]" or [0:0:0:0:0:0:0:0]
+               // and IPv6 link-local format [fe80::1234%1] [ff08::9abc%interface10]
                Matcher bracketsMatch = squareHostBrackets.matcher(host);
                if (bracketsMatch.matches())
                {
