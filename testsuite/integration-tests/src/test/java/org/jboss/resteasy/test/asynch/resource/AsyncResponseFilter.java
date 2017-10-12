@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.core.Response;
 
 import org.jboss.resteasy.core.interception.jaxrs.SuspendableContainerResponseContext;
 
@@ -34,6 +35,9 @@ public abstract class AsyncResponseFilter implements ContainerResponseFilter {
          ctx.suspend();
          ExecutorService executor = Executors.newSingleThreadExecutor();
          executor.submit(() -> ctx.resume());
+      }else if("async-pass-instant".equals(action)) {
+         ctx.suspend();
+         ctx.resume();
       }else if("async-fail".equals(action)) {
          ctx.suspend();
          ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -41,6 +45,10 @@ public abstract class AsyncResponseFilter implements ContainerResponseFilter {
             ctx.setEntity(name);
             ctx.resume();
          });
+      }else if("async-fail-instant".equals(action)) {
+         ctx.suspend();
+         ctx.setEntity(name);
+         ctx.resume();
       }
       System.err.println("Filter response for "+name+" with action: "+action+" done");
    }
