@@ -6,7 +6,7 @@ import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.RuntimeType;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.Configurable;
+import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.FeatureContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -33,7 +33,24 @@ public class ServerContentEncodingAnnotationFeature implements DynamicFeature
          encodings = getEncodings(declaring.getAnnotations());
          if (encodings.size() <= 0) return;
       }
+      // check if GZIP encoder has been registered
+      if (!isGZipRegistered(configurable.getConfiguration()))
+      {
+         encodings.remove("gzip");
+      }
       configurable.register(createFilter(encodings));
+   }
+   
+   protected boolean isGZipRegistered(Configuration configuration)
+   {
+      //TODO replace with the line below when dropping resteasy-legacy
+      //return configuration.isRegistered(GZIPEncodingInterceptor.class);
+      for (Class<?> c : configuration.getClasses()) {
+         if (GZIPEncodingInterceptor.class.isAssignableFrom(c)) {
+            return true;
+         }
+      }
+      return false;
    }
 
    protected ServerContentEncodingAnnotationFilter createFilter(Set<String> encodings)
