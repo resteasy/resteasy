@@ -46,6 +46,8 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
    private boolean suspended;
    private boolean filterReturnIsMeaningful = true;
    private Map<Class<?>, Object> contextDataMap;
+   private boolean inFilter;
+   private Throwable throwable;
 
    public ContainerResponseContextImpl(HttpRequest request, HttpResponse httpResponse, BuiltResponse serverResponse, 
          ResponseContainerRequestContext requestContext, ContainerResponseFilter[] responseFilters, RunnableWithIOException continuation)
@@ -278,6 +280,13 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
    public synchronized void resume() {
       if(!suspended)
          throw new RuntimeException("Cannot resume: not suspended");
+      if(inFilter)
+      {
+         // suspend/resume within filter, same thread: just ignore and move on
+         suspended = false;
+         return;
+      }
+
       ResteasyProviderFactory.pushContextDataMap(contextDataMap);
       // go on, but with proper exception handling
       try {
@@ -290,8 +299,19 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
 
    @Override
    public synchronized void resume(Throwable t) {
-      ResteasyProviderFactory.pushContextDataMap(contextDataMap);
-      writeException(t);
+      if(!suspended)
+         throw new RuntimeException("Cannot resume: not suspended");
+      if(inFilter)
+      {
+         // not suspended, or suspend/abortWith within filter, same thread: collect and move on
+         throwable = t;
+         suspended = false;
+      }
+      else
+      {
+         ResteasyProviderFactory.pushContextDataMap(contextDataMap);
+         writeException(t);
+      }
    }
 
    private void writeException(Throwable t)
@@ -320,18 +340,23 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
 
    public synchronized void filter() throws IOException
    {
-      // FIXME: check what happens if the filter suspends and resumes/abort within the same call (same thread)
       while(currentFilter < responseFilters.length)
       {
          ContainerResponseFilter filter = responseFilters[currentFilter++];
          try
          {
             suspended = false;
+            throwable = null;
+            inFilter = true;
             filter.filter(requestContext, this);
          }
          catch (IOException e)
          {
             throw new ApplicationException(e);
+         }
+         finally
+         {
+            inFilter = false;
          }
          if(suspended) {
             if(!request.getAsyncContext().isSuspended())
@@ -339,6 +364,17 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
             // ignore any abort request until we are resumed
             filterReturnIsMeaningful = false;
             return;
+         }
+         if (throwable != null)
+         {
+            // handle the case where we've been suspended by a previous filter
+            if(filterReturnIsMeaningful)
+               SynchronousDispatcher.rethrow(throwable);
+            else
+            {
+               writeException(throwable);
+               return;
+            }
          }
       }
       // here it means we reached the last filter
