@@ -304,7 +304,6 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
 
    public synchronized BuiltResponse filter()
    {
-      // FIXME: check what happens if the filter suspends and resumes/abort within the same call (same thread)
       while(currentFilter < requestFilters.length)
       {
          ContainerRequestFilter filter = requestFilters[currentFilter++];
