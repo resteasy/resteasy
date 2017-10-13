@@ -32,6 +32,8 @@ public class SseResource
    private Sse sse;
    private volatile SseEventSink eventSink;
    private SseBroadcaster sseBroadcaster;
+   private Object openLock = new Object();
+   private volatile boolean sending = true;
    private List<OutboundSseEvent> eventsStore = new ArrayList<OutboundSseEvent>();
    @GET
    @Produces(MediaType.SERVER_SENT_EVENTS)
@@ -156,6 +158,49 @@ public class SseResource
             }
          }
       }.start();
+   }
+   
+   
+   @GET
+   @Path("/events")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void eventStream(@Context SseEventSink sink) throws IOException {
+       if (sink == null) {
+           throw new IllegalStateException("No client connected.");
+       }
+       this.eventSink = sink;
+       new Thread() {
+           public void run() {
+               while (!eventSink.isClosed() && sending) {
+                   synchronized (openLock) {
+                       eventSink.send(sse.newEvent("msg"));
+                   }
+                   try
+                   {
+                       Thread.sleep(200);
+                   }catch (final InterruptedException e)
+                   {
+                       e.printStackTrace();
+                   }
+                  
+               }
+           }
+        }.start();
+   }
+   @GET
+   @Path("/isopen")
+   public boolean isOpen() {
+       synchronized (openLock) {
+          return !eventSink.isClosed();
+       }
+      
+   }
+   
+   @GET
+   @Path("/stopevent")
+   public void stopEvent() {
+       this.sending = false;
+      
    }
 
    @GET
