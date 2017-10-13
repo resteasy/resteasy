@@ -175,6 +175,14 @@ public class SseResource
                    synchronized (openLock) {
                        eventSink.send(sse.newEvent("msg"));
                    }
+                   try
+                   {
+                       Thread.sleep(200);
+                   }catch (final InterruptedException e)
+                   {
+                       e.printStackTrace();
+                   }
+                  
                }
            }
         }.start();
