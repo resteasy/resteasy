@@ -13,7 +13,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.ServerErrorException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.OutboundSseEvent;
@@ -34,6 +36,7 @@ public class SseResource
    private SseBroadcaster sseBroadcaster;
    private Object openLock = new Object();
    private volatile boolean sending = true;
+   private volatile boolean isServiceAvailable = false;
    private List<OutboundSseEvent> eventsStore = new ArrayList<OutboundSseEvent>();
    @GET
    @Produces(MediaType.SERVER_SENT_EVENTS)
@@ -209,5 +212,19 @@ public class SseResource
    public void testErrorConsumer(@Context SseEventSink eventSink) {
        throw new ServerErrorException(Response.Status.INTERNAL_SERVER_ERROR);
    }
-
+   @GET
+   @Path("/retryafter")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void sendMessage(@Context SseEventSink sink) {
+        if (!isServiceAvailable) {
+            isServiceAvailable = true;
+            throw new WebApplicationException(
+                  Response.status(503).header(HttpHeaders.RETRY_AFTER, String.valueOf(1)).build());
+        } else {
+            try (SseEventSink s = sink) {
+                s.send(sse.newEvent("ServiceAvailable"));
+                isServiceAvailable = false;
+            }
+        }
+   }
 }

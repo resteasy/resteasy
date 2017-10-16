@@ -1,5 +1,6 @@
 package org.jboss.resteasy.plugins.providers.sse.client;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -11,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
+import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -216,10 +218,8 @@ public class SseEventSourceImpl implements SseEventSource
       if (state.getAndSet(State.CLOSED) != State.CLOSED)
       {
          ResteasyWebTarget resteasyWebTarget = (ResteasyWebTarget)target;
-         if (!resteasyWebTarget.getResteasyClient().isClosed())
-         {
-            resteasyWebTarget.getResteasyClient().close();
-         }
+         //close httpEngine to close connection
+         resteasyWebTarget.getResteasyClient().httpEngine().close();
          executor.shutdownNow();
       }
       try
@@ -264,17 +264,32 @@ public class SseEventSourceImpl implements SseEventSource
       public void run()
       {
          SseEventInputImpl eventInput = null;
-         try {
+         try
+         {
             final Invocation.Builder request = buildRequest();
             if (state.get() == State.OPEN)
             {
                eventInput = request.get(SseEventInputImpl.class);
             }
-         } catch (Throwable e) {
+         }
+         catch (ServiceUnavailableException ex)
+         {
+            if (ex.hasRetryAfter())
+            {
+               Date requestTime = new Date();
+               reconnectDelay = ex.getRetryTime(requestTime).getTime() - requestTime.getTime();
+            }
+            onErrorConsumers.forEach(consumer -> {consumer.accept(ex);});
+         }
+         catch (Throwable e)
+         {
             onErrorConsumers.forEach(consumer -> {consumer.accept(e);});
             state.set(State.CLOSED);
-         } finally {
-            if (connectedLatch != null) {
+         }
+         finally
+         {
+            if (connectedLatch != null)
+            {
                connectedLatch.countDown();
             }
          }
