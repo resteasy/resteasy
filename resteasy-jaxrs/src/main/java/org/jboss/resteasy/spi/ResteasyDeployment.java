@@ -76,8 +76,20 @@ public class ResteasyDeployment
    protected ThreadLocalResteasyProviderFactory threadLocalProviderFactory;
    protected String paramMapping;
 
-   @SuppressWarnings(value = {"unchecked", "deprecation"})
    public void start()
+   {
+      try
+      {
+         startInternal();
+      }
+      finally
+      {
+         ThreadLocalResteasyProviderFactory.pop();
+      }
+   }
+
+   @SuppressWarnings(value = {"unchecked", "deprecation"})
+   protected void startInternal()
    {
       // it is very important that each deployment create their own provider factory
       // this allows each WAR to have their own set of providers 
@@ -97,6 +109,14 @@ public class ResteasyDeployment
                threadLocalProviderFactory = new ThreadLocalResteasyProviderFactory(providerFactory);
                ResteasyProviderFactory.setInstance(threadLocalProviderFactory);
             }
+            else
+            {
+               ThreadLocalResteasyProviderFactory.push(providerFactory);
+            }
+         }
+         else
+         {
+            ThreadLocalResteasyProviderFactory.push(providerFactory);
          }
       }
       else
