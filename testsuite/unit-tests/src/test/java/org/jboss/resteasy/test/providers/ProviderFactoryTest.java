@@ -1,17 +1,30 @@
 package org.jboss.resteasy.test.providers;
 
 import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistry;
+import org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor;
+import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.test.providers.namespace.mapping.NamespaceMappingResource;
 import org.jboss.resteasy.test.providers.resource.ProviderFactoryStrParamUnmarshaller;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.ws.rs.Priorities;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.container.DynamicFeature;
+import javax.ws.rs.container.ResourceInfo;
+import javax.ws.rs.core.FeatureContext;
+import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.ReaderInterceptor;
+import javax.ws.rs.ext.ReaderInterceptorContext;
+
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.Date;
 import java.util.List;
@@ -91,4 +104,59 @@ public class ProviderFactoryTest {
         Assert.assertEquals(priorityOverride, order);
     }
 
+   @Test
+   public void testDeploymentStart()
+   {
+      ResteasyProviderFactory orig = ResteasyProviderFactory.peekInstance();
+      try
+      {
+         ResteasyProviderFactory.setInstance(null);
+
+         ResteasyProviderFactory rpf1 = ResteasyProviderFactory.newInstance();
+         RegisterBuiltin.register(rpf1);
+         rpf1.registerProvider(MyInterceptor.class);
+         ResteasyDeployment dep1 = new ResteasyDeployment();
+         dep1.setProviderFactory(rpf1);
+         dep1.setDeploymentSensitiveFactoryEnabled(true);
+         dep1.start();
+
+         ResteasyProviderFactory rpf2 = ResteasyProviderFactory.newInstance();
+         RegisterBuiltin.register(rpf2);
+         rpf2.register(new DynamicFeature()
+         {
+            @Override
+            public void configure(ResourceInfo resourceInfo, FeatureContext context)
+            {
+               if (ResteasyProviderFactory.getInstance().isRegistered(MyInterceptor.class))
+               {
+                  Assert.fail("Second deployment consuming provider factory from first deployment");
+               }
+
+            }
+         });
+         ResteasyDeployment dep2 = new ResteasyDeployment();
+         dep2.setProviderFactory(rpf2);
+         dep2.setDeploymentSensitiveFactoryEnabled(true);
+         dep2.getResourceClasses().add(NamespaceMappingResource.class.getName());
+         dep2.start();
+
+         dep1.stop();
+         dep2.stop();
+      }
+      finally
+      {
+         ResteasyProviderFactory.setInstance(orig);
+      }
+   }
+
+   @Provider
+   public static class MyInterceptor implements ReaderInterceptor
+   {
+      @Override
+      public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException
+      {
+         // TODO Auto-generated method stub
+         return null;
+      }
+   }
 }
