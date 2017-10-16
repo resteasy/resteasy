@@ -9,6 +9,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -339,7 +340,34 @@ public class SseTest {
            Assert.assertTrue("Sent message \"" + s + "\" not found as result.", results.contains(s));
         }
      }
-
+    @Test
+    @InSequence(9)
+    public void testServiceUnavialbeRetryAfter() throws Exception
+    {
+       final CountDownLatch latch = new CountDownLatch(1);
+       final AtomicInteger errors = new AtomicInteger(0);
+       final List<String> results = new ArrayList<String>();
+       Client client = ClientBuilder.newBuilder().build();
+       WebTarget target = client.target(generateURL("/service/server-sent-events/retryafter"));
+       SseEventSource msgEventSource = SseEventSource.target(target).build();
+       try (SseEventSource eventSource = msgEventSource)
+       {
+          Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
+          eventSource.register(event -> {
+             results.add(event.readData(String.class));
+             latch.countDown();
+          }, ex -> {
+             errors.incrementAndGet();
+             Assert.assertTrue("ServiceUnavalile exception is expected", ex instanceof ServiceUnavailableException);
+          });
+          eventSource.open();
+          
+          boolean waitResult = latch.await(30, TimeUnit.SECONDS);
+          Assert.assertEquals(1, errors.get());
+          Assert.assertTrue("Waiting for event to be delivered has timed out.", waitResult);
+        }
+        Assert.assertTrue("ServiceAvailable message is expected", results.get(0).equals("ServiceAvailable"));
+     }
 //    @Test
 //    //This will open a browser and test with html sse client
 //    public void testHtmlSse() throws Exception
