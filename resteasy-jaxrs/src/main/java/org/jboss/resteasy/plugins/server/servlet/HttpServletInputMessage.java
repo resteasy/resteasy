@@ -184,6 +184,11 @@ public class HttpServletInputMessage extends BaseHttpRequest
       }
       return decodedFormParameters;
    }
+   
+   public boolean formParametersRead()
+   {
+      return decodedFormParameters != null;
+   }
 
    @Override
    public HttpHeaders getHttpHeaders()
