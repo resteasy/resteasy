@@ -22,6 +22,8 @@ import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 
 import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 
@@ -226,5 +228,14 @@ public class SseResource
                 isServiceAvailable = false;
             }
         }
+   }
+   @GET
+   @Path("/xmlevent")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void sendXmlType(@Context SseEventSink sink) {
+       try (SseEventSink eventSink = sink) {
+           JAXBElement<String> element = new JAXBElement<String>(new QName("name"), String.class, "xmldata");
+           eventSink.send(sse.newEventBuilder().data(element).mediaType(MediaType.APPLICATION_XML_TYPE).build());
+       }
    }
 }
