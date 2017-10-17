@@ -84,6 +84,10 @@ public interface LogMessages extends BasicLogger
    @LogMessage(level = Level.WARN)
    @Message(id = BASE + 115, value = "Attempting to register unassignable contract for %s")
    void attemptingToRegisterUnassignableContract(String className);   
+
+   @LogMessage(level = Level.WARN)
+   @Message(id = BASE + 117, value = "Charset %s unavailable.")
+   void charsetUnavailable(String charset); 
    
    @LogMessage(level = Level.WARN)
    @Message(id = BASE + 120, value = "ClassNotFoundException: Unable to load builtin provider {0} from {1}", format=Format.MESSAGE_FORMAT)
