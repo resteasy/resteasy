@@ -365,7 +365,7 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
          httpServletRequest.getAsyncContext().complete();
       } catch (IOException e)
       {
-         e.printStackTrace();
+         LogMessages.LOGGER.unknownException(request.getHttpMethod(), request.getUri().getPath(), e);
       }
    }
 }

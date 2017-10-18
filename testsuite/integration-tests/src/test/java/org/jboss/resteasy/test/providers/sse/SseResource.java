@@ -23,6 +23,7 @@ import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 
 @Path("/server-sent-events")
@@ -38,6 +39,8 @@ public class SseResource
    private volatile boolean sending = true;
    private volatile boolean isServiceAvailable = false;
    private List<OutboundSseEvent> eventsStore = new ArrayList<OutboundSseEvent>();
+   private final static Logger logger = Logger.getLogger(SseResource.class);
+
    @GET
    @Produces(MediaType.SERVER_SENT_EVENTS)
    public void getMessageQueue(@HeaderParam(SseConstants.LAST_EVENT_ID_HEADER) @DefaultValue("-1") int lastEventId, @Context SseEventSink eventSink) {
@@ -157,7 +160,7 @@ public class SseResource
             }
             catch (final InterruptedException e)
             {
-               e.printStackTrace();
+                logger.error(e.getMessage(), e);
             }
          }
       }.start();
@@ -183,7 +186,7 @@ public class SseResource
                        Thread.sleep(200);
                    }catch (final InterruptedException e)
                    {
-                       e.printStackTrace();
+                       logger.error(e.getMessage(), e);
                    }
                   
                }

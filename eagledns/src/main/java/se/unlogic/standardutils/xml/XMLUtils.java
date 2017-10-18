@@ -7,6 +7,7 @@
  ******************************************************************************/
 package se.unlogic.standardutils.xml;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -39,6 +40,7 @@ public class XMLUtils {
 
 	private static DocumentBuilder documentBuilder;
 	private static DocumentBuilder namespaceAwareDocumentBuilder;
+	private final static Logger logger = Logger.getLogger(XMLUtils.class);
 
 	static {
 		try {
@@ -50,7 +52,7 @@ public class XMLUtils {
 
 			namespaceAwareDocumentBuilder = documentBuilderFactory.newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 	}
 

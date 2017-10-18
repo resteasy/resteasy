@@ -7,6 +7,8 @@
  ******************************************************************************/
 package se.unlogic.standardutils.threads;
 
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -32,7 +34,8 @@ public class ThreadPoolTaskGroupHandler<T extends TaskGroup> implements TaskGrou
 	protected Status status = Status.RUNNING;
 	
 	protected final ArrayList<Thread> threads = new ArrayList<Thread>();
-	
+
+	private final static Logger logger = Logger.getLogger(ThreadPoolTaskGroupHandler.class);
 	
 	public ThreadPoolTaskGroupHandler(int poolSize, boolean daemon){
 		
@@ -96,7 +99,7 @@ public class ThreadPoolTaskGroupHandler<T extends TaskGroup> implements TaskGrou
 					
 					}catch(Throwable e){
 						
-						e.printStackTrace();
+						logger.error(e.getMessage(), e);
 						
 					}finally{
 						
