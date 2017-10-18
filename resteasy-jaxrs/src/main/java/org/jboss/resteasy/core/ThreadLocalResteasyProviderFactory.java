@@ -568,12 +568,6 @@ public class ThreadLocalResteasyProviderFactory extends ResteasyProviderFactory 
    }
 
    @Override
-   public Map<Class<?>, ExceptionMapper> getExceptionMappers()
-   {
-      return getDelegate().getExceptionMappers();
-   }
-
-   @Override
    public <T> AsyncResponseProvider<T> getAsyncResponseProvider(Class<T> type)
    {
       return getDelegate().getAsyncResponseProvider(type);

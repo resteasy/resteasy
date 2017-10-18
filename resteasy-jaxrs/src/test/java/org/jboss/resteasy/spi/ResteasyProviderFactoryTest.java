@@ -22,9 +22,9 @@ public class ResteasyProviderFactoryTest {
    @Test
    public void testExceptionMappersPriority() {
       ResteasyProviderFactory providerFactory = new ResteasyProviderFactory();
-      providerFactory.addExceptionMapper(ExceptionMapper1.class);
-      providerFactory.addExceptionMapper(ExceptionMapper2.class);
-      providerFactory.addExceptionMapper(ExceptionMapper3.class);
+      providerFactory.addExceptionMapper(ExceptionMapper1.class, false);
+      providerFactory.addExceptionMapper(ExceptionMapper2.class, false);
+      providerFactory.addExceptionMapper(ExceptionMapper3.class, false);
       Assert.assertFalse(providerFactory.getExceptionMapper(IllegalArgumentException.class).getClass().isAssignableFrom(ExceptionMapper1.class));
       Assert.assertTrue(providerFactory.getExceptionMapper(IllegalArgumentException.class).getClass().isAssignableFrom(ExceptionMapper2.class));
       Assert.assertFalse(providerFactory.getExceptionMapper(IllegalArgumentException.class).getClass().isAssignableFrom(ExceptionMapper3.class));

@@ -75,9 +75,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -156,6 +156,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          return template;
       }
+
+       public T getObj() {
+           return obj;
+       }
    }
 
    protected static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
@@ -168,12 +172,12 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected MediaTypeMap<SortedKey<MessageBodyWriter>> serverMessageBodyWriters;
    protected MediaTypeMap<SortedKey<MessageBodyReader>> clientMessageBodyReaders;
    protected MediaTypeMap<SortedKey<MessageBodyWriter>> clientMessageBodyWriters;
-   protected Map<Class<?>, ExceptionMapper> exceptionMappers;
+   protected Map<Class<?>, SortedKey<ExceptionMapper>> exceptionMappers;
    protected Map<Class<?>, AsyncResponseProvider> asyncResponseProviders;
    protected Map<Class<?>, AsyncStreamProvider> asyncStreamProviders;
    protected Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> contextResolvers;
    protected Map<Class<?>, StringConverter> stringConverters;
-   protected List<ParamConverterProvider> paramConverterProviders;
+   protected Set<SortedKey<ParamConverterProvider>> paramConverterProviders;
    protected Map<Class<?>, Class<? extends StringParameterUnmarshaller>> stringParameterUnmarshallers;
    protected Map<Class<?>, Map<Class<?>, Integer>> classContracts;
 
@@ -272,11 +276,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       serverMessageBodyWriters = new MediaTypeMap<SortedKey<MessageBodyWriter>>();
       clientMessageBodyReaders = new MediaTypeMap<SortedKey<MessageBodyReader>>();
       clientMessageBodyWriters = new MediaTypeMap<SortedKey<MessageBodyWriter>>();
-      exceptionMappers = new ConcurrentHashMap<Class<?>, ExceptionMapper>();
+      exceptionMappers = new ConcurrentHashMap<Class<?>, SortedKey<ExceptionMapper>>();
       asyncResponseProviders = new ConcurrentHashMap<Class<?>, AsyncResponseProvider>();
       asyncStreamProviders = new ConcurrentHashMap<Class<?>, AsyncStreamProvider>();
       contextResolvers = new ConcurrentHashMap<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>>();
-      paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>();
+      paramConverterProviders = Collections.synchronizedSortedSet(new TreeSet<SortedKey<ParamConverterProvider>>());
       stringConverters = new ConcurrentHashMap<Class<?>, StringConverter>();
       stringParameterUnmarshallers = new ConcurrentHashMap<Class<?>, Class<? extends StringParameterUnmarshaller>>();
 
@@ -354,7 +358,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
 
 
-   public Map<Class<?>, ExceptionMapper> getExceptionMappers()
+   private Map<Class<?>, SortedKey<ExceptionMapper>> getExceptionMappers()
    {
       if (exceptionMappers == null && parent != null) return parent.getExceptionMappers();
       return exceptionMappers;
@@ -383,7 +387,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       if (stringConverters == null && parent != null) return parent.getStringConverters();
       return stringConverters;
    }
-   protected List<ParamConverterProvider> getParamConverterProviders()
+   protected Set<SortedKey<ParamConverterProvider>> getParamConverterProviders()
    {
       if (paramConverterProviders == null && parent != null) return parent.getParamConverterProviders();
       return paramConverterProviders;
@@ -1045,25 +1049,25 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       return null;
    }
 
-   protected void addExceptionMapper(Class<? extends ExceptionMapper> providerClass)
+   protected void addExceptionMapper(Class<? extends ExceptionMapper> providerClass, boolean isBuiltin)
    {
       ExceptionMapper provider = createProviderInstance(providerClass);
-      addExceptionMapper(provider, providerClass);
+      addExceptionMapper(provider, providerClass, isBuiltin);
    }
 
-   protected void addExceptionMapper(ExceptionMapper provider)
+   protected void addExceptionMapper(ExceptionMapper provider, boolean isBuiltin)
    {
-      addExceptionMapper(provider, provider.getClass());
+      addExceptionMapper(provider, provider.getClass(), isBuiltin);
    }
 
-   protected void addExceptionMapper(ExceptionMapper provider, Class providerClass)
+   protected void addExceptionMapper(ExceptionMapper provider, Class providerClass, boolean isBuiltin)
    {
       Type exceptionType = Types.getActualTypeArgumentsOfAnInterface(providerClass, ExceptionMapper.class)[0];
-      addExceptionMapper(provider, exceptionType);
+      addExceptionMapper(provider, exceptionType, isBuiltin);
    }
 
 
-   protected void addExceptionMapper(ExceptionMapper provider, Type exceptionType)
+   protected void addExceptionMapper(ExceptionMapper provider, Type exceptionType, boolean isBuiltin)
    {
       injectProperties(provider.getClass(), provider);
 
@@ -1074,10 +1078,17 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
       if (exceptionMappers == null)
       {
-         exceptionMappers = new ConcurrentHashMap<Class<?>, ExceptionMapper>();
+         exceptionMappers = new ConcurrentHashMap<Class<?>, SortedKey<ExceptionMapper>>();
          exceptionMappers.putAll(parent.getExceptionMappers());
       }
-      exceptionMappers.put(exceptionClass, provider);
+      int priority = getPriority(null, null, ExceptionMapper.class, provider.getClass());
+      SortedKey<ExceptionMapper> candidateExceptionMapper = new SortedKey<>(null, provider, provider.getClass(), priority, isBuiltin);
+      SortedKey<ExceptionMapper> registeredExceptionMapper;
+      if ((registeredExceptionMapper = exceptionMappers.get(exceptionClass)) != null
+          && (candidateExceptionMapper.compareTo(registeredExceptionMapper) > 0)) {
+         return;
+      }
+      exceptionMappers.put(exceptionClass, candidateExceptionMapper);
    }
 
    protected void addAsyncResponseProvider(Class<? extends AsyncResponseProvider> providerClass)
@@ -1302,9 +1313,9 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    public ParamConverter getParamConverter(Class clazz, Type genericType, Annotation[] annotations)
    {
-      for (ParamConverterProvider provider : getParamConverterProviders())
+      for (SortedKey<ParamConverterProvider> provider : getParamConverterProviders())
       {
-         ParamConverter converter = provider.getConverter(clazz, genericType, annotations);
+         ParamConverter converter = provider.getObj().getConverter(clazz, genericType, annotations);
          if (converter != null) return converter;
       }
       return null;
@@ -1464,9 +1475,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          injectProperties(provider);
          if (paramConverterProviders == null)
          {
-            paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>(parent.getParamConverterProviders());
+            paramConverterProviders = Collections.synchronizedSortedSet(new TreeSet<>(parent.getParamConverterProviders()));
          }
-         paramConverterProviders.add(paramConverterProvider);
+         int priority = getPriority(priorityOverride, contracts, ParamConverterProvider.class, provider);
+         paramConverterProviders.add(new SortedKey<>(null, paramConverterProvider, provider, priority, isBuiltin));
          newContracts.put(ParamConverterProvider.class, getPriority(priorityOverride, contracts, ParamConverterProvider.class, provider));
       }
       if (isA(provider, MessageBodyReader.class, contracts))
@@ -1499,7 +1511,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          try
          {
-            addExceptionMapper(provider);
+            addExceptionMapper(provider, isBuiltin);
             newContracts.put(ExceptionMapper.class, getPriority(priorityOverride, contracts, ExceptionMapper.class, provider));
          }
          catch (Exception e)
@@ -1780,10 +1792,10 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          injectProperties(provider);
          if (paramConverterProviders == null)
          {
-            paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>(parent.getParamConverterProviders());
+            paramConverterProviders = Collections.synchronizedSortedSet(new TreeSet<>(parent.getParamConverterProviders()));//new CopyOnWriteArrayList<ParamConverterProvider>(parent.getParamConverterProviders());
          }
-         paramConverterProviders.add((ParamConverterProvider) provider);
          int priority = getPriority(priorityOverride, contracts, ParamConverterProvider.class, provider.getClass());
+         paramConverterProviders.add(new SortedKey<>(null, (ParamConverterProvider) provider, provider.getClass(), priority, builtIn));
          newContracts.put(ParamConverterProvider.class, priority);
       }
       if (isA(provider, MessageBodyReader.class, contracts))
@@ -1816,7 +1828,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          try
          {
-            addExceptionMapper((ExceptionMapper) provider);
+            addExceptionMapper((ExceptionMapper) provider, builtIn);
             int priority = getPriority(priorityOverride, contracts, ExceptionMapper.class, provider.getClass());
             newContracts.put(ExceptionMapper.class, priority);
          }
@@ -2046,14 +2058,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    public <T extends Throwable> ExceptionMapper<T> getExceptionMapper(Class<T> type)
    {
       Class exceptionType = type;
-      ExceptionMapper<T> mapper = null;
+      SortedKey<ExceptionMapper> mapper = null;
       while (mapper == null)
       {
          if (exceptionType == null) break;
          mapper = getExceptionMappers().get(exceptionType);
          if (mapper == null) exceptionType = exceptionType.getSuperclass();
       }
-      return mapper;
+      return mapper != null ? mapper.getObj() : null;
    }
 
 //   @Override
