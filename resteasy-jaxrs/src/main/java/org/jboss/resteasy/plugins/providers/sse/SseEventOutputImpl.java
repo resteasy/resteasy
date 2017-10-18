@@ -58,6 +58,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    @Override
    public synchronized void close()
    {
+      closed = true;
       if (asyncContext.isSuspended() && asyncContext.getAsyncResponse() != null) {
          if (asyncContext.isSuspended()) {
             //resume(null) will call into AbstractAsynchronousResponse.internalResume(Throwable exc)
@@ -66,7 +67,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             asyncContext.getAsyncResponse().resume(Response.noContent().build());
          }
       }
-      closed = true;
+      
    }
 
    protected synchronized void flushResponseToClient()
@@ -83,6 +84,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
          }
          catch (IOException e)
          {
+            close();
             throw new ProcessingException(Messages.MESSAGES.failedToCreateSseEventOutput(), e);
          }
       }
@@ -122,10 +124,11 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    }
    
  
-   protected synchronized void writeEvent(OutboundSseEvent event)
+   protected synchronized void writeEvent(OutboundSseEvent event) throws IOException
    {
       ResteasyProviderFactory.pushContextDataMap(contextDataMap);
-      try {
+      try
+      {
          if (event != null)
          {
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
@@ -133,10 +136,20 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
             response.getOutputStream().write(bout.toByteArray());
             response.flushBuffer();
          }
-        
-      } catch (Exception e) {
+      }
+      catch (IOException e)
+      {
+         //The connection could be broken or closed. whenever IO error happens, mark closed to true to 
+         //stop event writing 
+         close();
+         LogMessages.LOGGER.failedToWriteSseEvent(event.toString(), e);
+         throw e;
+      }
+      catch (Exception e) {
+         LogMessages.LOGGER.failedToWriteSseEvent(event.toString(), e);
          throw new ProcessingException(e);
-      } finally {
+      }
+      finally {
          ResteasyProviderFactory.removeContextDataLevel();
       }
    }

@@ -89,6 +89,7 @@ public class ResteasyUriBuilder extends UriBuilder
    public static final Pattern opaqueUri = Pattern.compile("^([^:/?#]+):([^/].*)");
    public static final Pattern hierarchicalUri = Pattern.compile("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
    private static final Pattern hostPortPattern = Pattern.compile("([^/:]+):(\\d+)");
+   private static final Pattern squareHostBrackets = Pattern.compile( "(\\[(([0-9A-Fa-f]{0,4}:){2,7})([0-9A-Fa-f]{0,4})%?.*\\]):(\\d+)" );
 
    public static boolean compare(String s1, String s2)
    {
@@ -189,20 +190,38 @@ public class ResteasyUriBuilder extends UriBuilder
             host = host.substring(at + 1);
             this. userInfo = user;
          }
+
          Matcher hostPortMatch = hostPortPattern.matcher(host);
          if (hostPortMatch.matches())
          {
             this.host = hostPortMatch.group(1);
             int val = 0;
-            try {
+            try
+            {
                this.port = Integer.parseInt(hostPortMatch.group(2));
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e)
+            {
                throw new IllegalArgumentException(Messages.MESSAGES.illegalUriTemplate(uriTemplate), e);
             }
-         }
-         else
+         } else
          {
+            if (host.startsWith("["))
+            {
+               // Must support an IPv6 hostname of format "[::1]" or [0:0:0:0:0:0:0:0]
+               // and IPv6 link-local format [fe80::1234%1] [ff08::9abc%interface10]
+               Matcher bracketsMatch = squareHostBrackets.matcher(host);
+               if (bracketsMatch.matches())
+               {
+                  host = bracketsMatch.group(1);
+                  try
+                  {
+                     this.port = Integer.parseInt(bracketsMatch.group(5));
+                  } catch (NumberFormatException e)
+                  {
+                     throw new IllegalArgumentException(Messages.MESSAGES.illegalUriTemplate(uriTemplate), e);
+                  }
+               }
+            }
             this.host = host;
          }
       }

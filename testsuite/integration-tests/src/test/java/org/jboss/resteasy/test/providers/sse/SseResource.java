@@ -13,13 +13,17 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.ServerErrorException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 
 import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 
@@ -32,6 +36,9 @@ public class SseResource
    private Sse sse;
    private volatile SseEventSink eventSink;
    private SseBroadcaster sseBroadcaster;
+   private Object openLock = new Object();
+   private volatile boolean sending = true;
+   private volatile boolean isServiceAvailable = false;
    private List<OutboundSseEvent> eventsStore = new ArrayList<OutboundSseEvent>();
    @GET
    @Produces(MediaType.SERVER_SENT_EVENTS)
@@ -157,6 +164,49 @@ public class SseResource
          }
       }.start();
    }
+   
+   
+   @GET
+   @Path("/events")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void eventStream(@Context SseEventSink sink) throws IOException {
+       if (sink == null) {
+           throw new IllegalStateException("No client connected.");
+       }
+       this.eventSink = sink;
+       new Thread() {
+           public void run() {
+               while (!eventSink.isClosed() && sending) {
+                   synchronized (openLock) {
+                       eventSink.send(sse.newEvent("msg"));
+                   }
+                   try
+                   {
+                       Thread.sleep(200);
+                   }catch (final InterruptedException e)
+                   {
+                       e.printStackTrace();
+                   }
+                  
+               }
+           }
+        }.start();
+   }
+   @GET
+   @Path("/isopen")
+   public boolean isOpen() {
+       synchronized (openLock) {
+          return !eventSink.isClosed();
+       }
+      
+   }
+   
+   @GET
+   @Path("/stopevent")
+   public void stopEvent() {
+       this.sending = false;
+      
+   }
 
    @GET
    @Path("/error")
@@ -164,5 +214,28 @@ public class SseResource
    public void testErrorConsumer(@Context SseEventSink eventSink) {
        throw new ServerErrorException(Response.Status.INTERNAL_SERVER_ERROR);
    }
-
+   @GET
+   @Path("/retryafter")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void sendMessage(@Context SseEventSink sink) {
+        if (!isServiceAvailable) {
+            isServiceAvailable = true;
+            throw new WebApplicationException(
+                  Response.status(503).header(HttpHeaders.RETRY_AFTER, String.valueOf(1)).build());
+        } else {
+            try (SseEventSink s = sink) {
+                s.send(sse.newEvent("ServiceAvailable"));
+                isServiceAvailable = false;
+            }
+        }
+   }
+   @GET
+   @Path("/xmlevent")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void sendXmlType(@Context SseEventSink sink) {
+       try (SseEventSink eventSink = sink) {
+           JAXBElement<String> element = new JAXBElement<String>(new QName("name"), String.class, "xmldata");
+           eventSink.send(sse.newEventBuilder().data(element).mediaType(MediaType.APPLICATION_XML_TYPE).build());
+       }
+   }
 }
