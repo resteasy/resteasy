@@ -1,5 +1,7 @@
 package org.jboss.resteasy.test;
 
+import org.jboss.logging.Logger;
+
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -21,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 public class AsyncJaxrsResource
 {
    protected boolean cancelled;
+   private final static Logger logger = Logger.getLogger(AsyncJaxrsResource.class);
 
    @GET
    @Path("resume/object")
@@ -48,7 +51,7 @@ public class AsyncJaxrsResource
    @GET
    @Path("injection-failure/{param}")
    public void injectionFailure(@Suspended final AsyncResponse response, @PathParam("param") int id) {
-      System.out.println("injectionFailure: " + id);
+      logger.debug("injectionFailure: " + id);
       throw new ForbiddenException("Should be unreachable");
    }
 
@@ -91,7 +94,7 @@ public class AsyncJaxrsResource
             }
             catch (Exception e)
             {
-               e.printStackTrace();
+               logger.error(e.getMessage(), e);
             }
          }
       };
@@ -116,7 +119,7 @@ public class AsyncJaxrsResource
             }
             catch (Exception e)
             {
-               e.printStackTrace();
+               logger.error(e.getMessage(), e);
             }
          }
       };
@@ -142,7 +145,7 @@ public class AsyncJaxrsResource
             }
             catch (Exception e)
             {
-               e.printStackTrace();
+               logger.error(e.getMessage(), e);
             }
          }
       };
@@ -154,7 +157,7 @@ public class AsyncJaxrsResource
    @Produces("text/plain")
    public void cancel(@Suspended final AsyncResponse response) throws Exception
    {
-      System.out.println("entering cancel()");
+      logger.debug("entering cancel()");
       response.setTimeout(10000, TimeUnit.MILLISECONDS);
       final CountDownLatch sync = new CountDownLatch(1);
       final CountDownLatch ready = new CountDownLatch(1);
@@ -165,24 +168,24 @@ public class AsyncJaxrsResource
          {
             try
             {
-               System.out.println("cancel(): starting thread");
+               logger.debug("cancel(): starting thread");
                sync.countDown();
                ready.await();
                Response jaxrs = Response.ok("hello").type(MediaType.TEXT_PLAIN).build();
-               System.out.println("SETTING CANCELLED");
+               logger.debug("SETTING CANCELLED");
                cancelled = !response.resume(jaxrs);
-               System.out.println("cancelled: " + cancelled);
+               logger.debug("cancelled: " + cancelled);
             }
             catch (Exception e)
             {
-               e.printStackTrace();
+               logger.error(e.getMessage(), e);
             }
          }
       };
       t.start();
 
       sync.await();
-      System.out.println("cancel(): cancelling response");
+      logger.debug("cancel(): cancelling response");
       response.cancel();
       ready.countDown();
       Thread.sleep(1000);
