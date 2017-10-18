@@ -23,6 +23,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -39,6 +40,8 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class SseTest {
+
+    private final static Logger logger = Logger.getLogger(SseTest.class);
 
     @Deployment
     public static Archive<?> deploy() {
@@ -73,7 +76,7 @@ public class SseTest {
              latch.countDown();
           }, ex -> {
              errors.incrementAndGet();
-             ex.printStackTrace();
+             logger.error(ex.getMessage(), ex);
              throw new RuntimeException(ex);
           });
           eventSource.open();
@@ -136,7 +139,7 @@ public class SseTest {
        eventSource.register(event -> {
           results.add(event.readData());
           latch.countDown();
-         }, ex -> {errors.incrementAndGet(); ex.printStackTrace(); throw new RuntimeException(ex);});
+         }, ex -> {errors.incrementAndGet(); logger.error(ex.getMessage(), ex); throw new RuntimeException(ex);});
        eventSource.open();
 
        boolean waitResult = latch.await(30, TimeUnit.SECONDS);
@@ -209,7 +212,7 @@ public class SseTest {
                 closeLatch.countDown();
             }, ex -> {
                 errors.incrementAndGet();
-                ex.printStackTrace();
+                logger.error(ex.getMessage(), ex);
                 throw new RuntimeException(ex);
             });
             eventSource.open();
@@ -277,7 +280,7 @@ public class SseTest {
              latch.countDown();
           }, ex -> {
              errors.incrementAndGet();
-             ex.printStackTrace();
+             logger.error(ex.getMessage(), ex);
              throw new RuntimeException(ex);
           });
           eventSource.open();
@@ -328,7 +331,7 @@ public class SseTest {
              latch.countDown();
           }, ex -> {
              errors.incrementAndGet();
-             ex.printStackTrace();
+             logger.error(ex.getMessage(), ex);
              throw new RuntimeException(ex);
           });
           eventSource.open();

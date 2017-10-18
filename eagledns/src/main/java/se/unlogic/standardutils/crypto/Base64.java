@@ -1,5 +1,7 @@
 package se.unlogic.standardutils.crypto;
 
+import org.apache.log4j.Logger;
+
 /**
  * <p>
  * Encodes and decodes to and from Base64 notation.
@@ -165,6 +167,8 @@ public class Base64 {
 
 	private final static byte WHITE_SPACE_ENC = -5; // Indicates white space in encoding
 	private final static byte EQUALS_SIGN_ENC = -1; // Indicates equals sign in encoding
+
+	private final static Logger logger = Logger.getLogger(Base64.class);
 
 	/* ******** S T A N D A R D B A S E 6 4 A L P H A B E T ******** */
 
@@ -1162,7 +1166,7 @@ public class Base64 {
 
 				} // end try
 				catch (java.io.IOException e) {
-					e.printStackTrace();
+					logger.error(e.getMessage(), e);
 					// Just return originally-decoded bytes
 				} // end catch
 				finally {
