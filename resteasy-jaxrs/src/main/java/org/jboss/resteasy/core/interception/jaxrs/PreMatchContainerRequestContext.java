@@ -284,21 +284,9 @@ public class PreMatchContainerRequestContext implements SuspendableContainerRequ
       HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
       SynchronousDispatcher dispatcher = (SynchronousDispatcher) contextDataMap.get(Dispatcher.class);
       try {
-         dispatcher.writeException(httpRequest, httpResponse, t);
+         dispatcher.writeException(httpRequest, httpResponse, t, t2 -> {});
       }catch(Throwable x) {
-         LogMessages.LOGGER.unhandledAsynchronousException(x);
-         // unhandled exceptions need to be processed as they can't be thrown back to the servlet container
-         if (!httpResponse.isCommitted()) {
-            try
-            {
-               httpResponse.reset();
-               httpResponse.sendError(500);
-            }
-            catch (IOException e)
-            {
-
-            }
-         }
+         dispatcher.unhandledAsynchronousException(httpResponse, x);
       }
    }
 

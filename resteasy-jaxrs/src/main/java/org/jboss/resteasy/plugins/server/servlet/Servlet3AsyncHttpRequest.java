@@ -86,15 +86,8 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                if (done) return false;
                if (cancelled) return false;
                AsyncContext asyncContext = getAsyncContext();
-               try
-               {
-                  return internalResume(entity);
-               }
-               finally
-               {
-                  done = true;
-                  asyncContext.complete();
-               }
+               done = true;
+               return internalResume(entity, t -> asyncContext.complete());
             }
 
          }
@@ -121,19 +114,17 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                if (done) return false;
                if (cancelled) return false;
                AsyncContext asyncContext = getAsyncContext();
-               try
-               {
-                  return internalResume(exc);
-               }
-               catch (UnhandledException unhandled)
-               {
-                  return internalResume(Response.status(500).build());
-               }
-               finally
-               {
-                  done = true;
-                  asyncContext.complete();
-               }
+               done = true;
+               return internalResume(exc, t -> {
+                  if(t instanceof UnhandledException)
+                  {
+                     internalResume(Response.status(500).build(), t2 -> asyncContext.complete());
+                  }
+                  else
+                  {
+                     asyncContext.complete();
+                  }
+               });
             }
          }
 
@@ -192,15 +183,8 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                done = true;
                cancelled = true;
                AsyncContext asyncContext = getAsyncContext();
-               try
-               {
-                  LogMessages.LOGGER.debug(Messages.MESSAGES.cancellingWith503());
-                  return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).build());
-               }
-               finally
-               {
-                  asyncContext.complete();
-               }
+               LogMessages.LOGGER.debug(Messages.MESSAGES.cancellingWith503());
+               return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).build(), t -> asyncContext.complete());
             }
          }
 
@@ -214,14 +198,8 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                done = true;
                cancelled = true;
                AsyncContext asyncContext = getAsyncContext();
-               try
-               {
-                  return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
-               }
-               finally
-               {
-                  asyncContext.complete();
-               }
+               return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(),
+                     t -> asyncContext.complete());
             }
          }
 
@@ -235,14 +213,8 @@ public class Servlet3AsyncHttpRequest extends HttpServletInputMessage
                done = true;
                cancelled = true;
                AsyncContext asyncContext = getAsyncContext();
-               try
-               {
-                  return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build());
-               }
-               finally
-               {
-                  asyncContext.complete();
-               }
+               return internalResume(Response.status(Response.Status.SERVICE_UNAVAILABLE).header(HttpHeaders.RETRY_AFTER, retryAfter).build(),
+                     t -> asyncContext.complete());
             }
          }
 
