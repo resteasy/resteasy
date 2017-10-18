@@ -1,10 +1,13 @@
 package org.jboss.resteasy.core;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map.Entry;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -14,6 +17,7 @@ import org.jboss.resteasy.core.interception.jaxrs.AbstractReaderInterceptorConte
 import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistry;
 import org.jboss.resteasy.core.interception.jaxrs.JaxrsInterceptorRegistryListener;
 import org.jboss.resteasy.core.interception.jaxrs.ServerReaderInterceptorContext;
+import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -133,9 +137,53 @@ public class MessageBodyParameterInjector implements ValueInjector, JaxrsInterce
          //throw new BadRequestException("content-type was null and expecting to extract a body into " + this.target);
       }
 
+      InputStream is = null;
+      if (MediaType.APPLICATION_FORM_URLENCODED_TYPE.equals(mediaType))
+      {
+        MultivaluedMap<String, String> map = request.getDecodedFormParameters();
+        if (map != null)
+        {
+           StringBuilder sb = new StringBuilder();
+           for (Entry<String, List<String>> entry : map.entrySet())
+           {
+              String key = entry.getKey();
+              sb.append(key);
+              List<String> values = entry.getValue();
+              for (String value : values)
+              {
+                 if (!("".equals(value)))
+                 {
+                    sb.append("=").append(value);
+                 }
+                 sb.append("&");
+              }
+           }
+           if (sb.length() > 0 && '&' == sb.charAt(sb.length() - 1))
+           {
+              sb.deleteCharAt(sb.length() - 1);
+           }
+           String charset = "UTF-8";
+           if (mediaType.getParameters().get("charset") != null)
+           {
+              charset = mediaType.getParameters().get("charset");
+           }
+           try
+           {
+              is = new ByteArrayInputStream(sb.toString().getBytes(charset));
+           } 
+           catch (Exception e)
+           {
+              LogMessages.LOGGER.charsetUnavailable(charset);
+           }
+        }
+      }
+      
       try
       {
-         InputStream is = request.getInputStream();
+         if (is == null)
+         {
+            is = request.getInputStream();
+         }
          if (isMarshalledEntity)
          {
             is = new InputStreamToByteArray(is);
