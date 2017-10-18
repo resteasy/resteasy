@@ -116,6 +116,7 @@ public abstract class AsyncResponseConsumer
       }
       catch (IOException e)
       {
+         onComplete.accept(e);
          exceptionWhileResuming(e);
       }
    }
@@ -272,7 +273,10 @@ public abstract class AsyncResponseConsumer
        */
       protected void addNextElement(Object element) 
       {
-         internalResume(element, t -> {});
+         internalResume(element, t -> {
+            if(t != null)
+               complete(t);
+         });
       }
       
       @Override
@@ -284,7 +288,6 @@ public abstract class AsyncResponseConsumer
       @Override
       public void onSubscribe(Subscription subscription)
       {
-         // TODO: cancel it if required
          this.subscription = subscription;
          subscription.request(1);
       }
@@ -317,8 +320,14 @@ public abstract class AsyncResponseConsumer
       protected void addNextElement(Object element) 
       {
          internalResume(element, t -> {
-            // FIXME: handle error
-            subscription.request(1);
+            if(t != null) 
+            {
+               complete(t);
+            }
+            else
+            {
+               subscription.request(1);
+            }
          });
       }
 
@@ -429,21 +438,31 @@ public abstract class AsyncResponseConsumer
             .build();
          sendingEvent = true;
          // we can only get onComplete after we return from this method
-         sseEventSink.send(event).whenComplete((val, ex) -> {
-            synchronized(this) {
-               sendingEvent = false;
-               if(onCompleteReceived)
-                  super.onComplete();
-               else if(ex != null)
-                  internalResume(ex, onComplete);
-               else
-               {
-                  // we're good, ask for the next one
-                  subscription.request(1);
-                  onComplete.accept(ex);
+         try {
+            sseEventSink.send(event).whenComplete((val, ex) -> {
+               synchronized(this) {
+                  sendingEvent = false;
+                  if(onCompleteReceived)
+                     super.onComplete();
+                  else if(ex != null)
+                  {
+                     // cancel the subscription
+                     complete(ex);
+                     onComplete.accept(ex);
+                  }
+                  else
+                  {
+                     // we're good, ask for the next one
+                     subscription.request(1);
+                     onComplete.accept(ex);
+                  }
                }
-            }
-         });
+            });
+         }catch(Exception x) {
+            // most likely connection closed
+            complete(x);
+            onComplete.accept(x);
+         }
       }
 
       @Override
