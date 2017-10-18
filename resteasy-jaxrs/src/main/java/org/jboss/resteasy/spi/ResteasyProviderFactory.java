@@ -68,6 +68,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -158,6 +159,19 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
    }
 
+   protected Comparator<ParamConverterProvider> paramConverterProviderComparator = new Comparator<ParamConverterProvider> ()
+   {
+		@Override
+		public int compare(ParamConverterProvider o1, ParamConverterProvider o2)
+		{
+			Priority o1Annotation = o1.getClass().getAnnotation(Priority.class);
+			int o1Priority = o1Annotation != null ? o1Annotation.value() : Priorities.USER;
+			Priority o2Annotation = o2.getClass().getAnnotation(Priority.class);
+			int o2Priority = o2Annotation != null ? o2Annotation.value() : Priorities.USER;
+			return o1Priority - o2Priority;
+		}
+   };
+   
    protected static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
    protected static ThreadLocalStack<Map<Class<?>, Object>> contextualData = new ThreadLocalStack<Map<Class<?>, Object>>();
    protected static int maxForwards = 20;
@@ -1077,6 +1091,18 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          exceptionMappers = new ConcurrentHashMap<Class<?>, ExceptionMapper>();
          exceptionMappers.putAll(parent.getExceptionMappers());
       }
+      ExceptionMapper<?> oldMapper = exceptionMappers.get(exceptionType);
+      if (oldMapper != null)
+      {
+    	  Priority oldPriority = oldMapper.getClass().getAnnotation(Priority.class);
+    	  Priority newPriority = provider.getClass().getAnnotation(Priority.class);
+    	  int oldValue = oldPriority != null ? oldPriority.value() : javax.ws.rs.Priorities.USER;
+        int newValue = newPriority != null ? newPriority.value() : javax.ws.rs.Priorities.USER;
+    	  if (newValue >= oldValue)
+    	  {
+             return;
+    	  }
+      }
       exceptionMappers.put(exceptionClass, provider);
    }
 
@@ -1467,6 +1493,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>(parent.getParamConverterProviders());
          }
          paramConverterProviders.add(paramConverterProvider);
+         Collections.sort(paramConverterProviders, paramConverterProviderComparator);
          newContracts.put(ParamConverterProvider.class, getPriority(priorityOverride, contracts, ParamConverterProvider.class, provider));
       }
       if (isA(provider, MessageBodyReader.class, contracts))
@@ -1783,6 +1810,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>(parent.getParamConverterProviders());
          }
          paramConverterProviders.add((ParamConverterProvider) provider);
+         Collections.sort(paramConverterProviders, paramConverterProviderComparator);
          int priority = getPriority(priorityOverride, contracts, ParamConverterProvider.class, provider.getClass());
          newContracts.put(ParamConverterProvider.class, priority);
       }
