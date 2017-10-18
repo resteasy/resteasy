@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.ContainerResponseFilter;
@@ -48,9 +49,12 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
    private Map<Class<?>, Object> contextDataMap;
    private boolean inFilter;
    private Throwable throwable;
+   private Consumer<Throwable> onComplete;
+   private boolean weSuspended;
 
    public ContainerResponseContextImpl(HttpRequest request, HttpResponse httpResponse, BuiltResponse serverResponse, 
-         ResponseContainerRequestContext requestContext, ContainerResponseFilter[] responseFilters, RunnableWithIOException continuation)
+         ResponseContainerRequestContext requestContext, ContainerResponseFilter[] responseFilters, 
+         Consumer<Throwable> onComplete, RunnableWithIOException continuation)
    {
       this.request = request;
       this.httpResponse = httpResponse;
@@ -58,6 +62,7 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
       this.requestContext = requestContext;
       this.responseFilters = responseFilters;
       this.continuation = continuation;
+      this.onComplete = onComplete;
       contextDataMap = ResteasyProviderFactory.getContextDataMap();
    }
 
@@ -320,21 +325,11 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
       HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
       SynchronousDispatcher dispatcher = (SynchronousDispatcher) contextDataMap.get(Dispatcher.class);
       try {
-         dispatcher.writeException(httpRequest, httpResponse, t);
+         dispatcher.writeException(httpRequest, httpResponse, t, onComplete);
       }catch(Throwable x) {
+         dispatcher.unhandledAsynchronousException(httpResponse, x);
          LogMessages.LOGGER.unhandledAsynchronousException(x);
-         // unhandled exceptions need to be processed as they can't be thrown back to the servlet container
-         if (!httpResponse.isCommitted()) {
-            try
-            {
-               httpResponse.reset();
-               httpResponse.sendError(500);
-            }
-            catch (IOException e)
-            {
-
-            }
-         }
+         onComplete.accept(null);
       }
    }
 
@@ -359,8 +354,11 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
             inFilter = false;
          }
          if(suspended) {
-            if(!request.getAsyncContext().isSuspended())
+            if(!request.getAsyncContext().isSuspended()) 
+            {
                request.getAsyncContext().suspend();
+               weSuspended = true;
+            }
             // ignore any abort request until we are resumed
             filterReturnIsMeaningful = false;
             return;
@@ -388,6 +386,7 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
       // if we've never been suspended, the caller is valid so let it handle any exception
       if(filterReturnIsMeaningful) {
          continuation.run();
+         onComplete.accept(null);
          return;
       }
       // if we've been suspended then the caller is a filter and have to invoke our continuation
@@ -396,9 +395,13 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
       try
       {
          continuation.run();
-         // if we're the ones who turned the request async, nobody will call complete() for us, so we have to
-         HttpServletRequest httpServletRequest = (HttpServletRequest) contextDataMap.get(HttpServletRequest.class);
-         httpServletRequest.getAsyncContext().complete();
+         onComplete.accept(null);
+         if(weSuspended)
+         {
+            // if we're the ones who turned the request async, nobody will call complete() for us, so we have to
+            HttpServletRequest httpServletRequest = (HttpServletRequest) contextDataMap.get(HttpServletRequest.class);
+            httpServletRequest.getAsyncContext().complete();
+         }
       } catch (IOException e)
       {
          LogMessages.LOGGER.unknownException(request.getHttpMethod(), request.getUri().getPath(), e);
