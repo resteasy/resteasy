@@ -45,6 +45,21 @@ public abstract class AsyncResponseFilter implements ContainerResponseFilter {
             ctx.setEntity(name);
             ctx.resume();
          });
+      }else if("async-fail-late".equals(action)) {
+         ctx.suspend();
+         ExecutorService executor = Executors.newSingleThreadExecutor();
+         executor.submit(() -> {
+            try
+            {
+               Thread.sleep(2000);
+            } catch (InterruptedException e)
+            {
+               // TODO Auto-generated catch block
+               e.printStackTrace();
+            }
+            ctx.setEntity(name);
+            ctx.resume();
+         });
       }else if("async-fail-instant".equals(action)) {
          ctx.suspend();
          ctx.setEntity(name);
