@@ -15,6 +15,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
 import javax.xml.bind.JAXBElement;
@@ -403,6 +404,18 @@ public class SseTest {
         }
        JAXBElement<String> jaxbElement=results.get(0).readData(new javax.ws.rs.core.GenericType<JAXBElement<String>>(){} , MediaType.APPLICATION_XML_TYPE);
        Assert.assertEquals("xmldata is expceted", jaxbElement.getValue(), "xmldata");
+     }
+    
+    @Test
+    @InSequence(11)
+    public void testGetSseEvent() throws Exception
+    {
+       Client client =  ClientBuilder.newClient();
+       WebTarget target = client.target(generateURL("/service/server-sent-events/events"));
+       Response response = target.request().get();
+       Assert.assertEquals("response OK is expected", response.getStatus(), 200);
+       Assert.assertEquals("text/event-stream is expected" , response.getMediaType(), MediaType.SERVER_SENT_EVENTS_TYPE);
+       client.close();
      }
     
 //    @Test
