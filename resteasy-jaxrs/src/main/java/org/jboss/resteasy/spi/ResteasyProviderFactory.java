@@ -1063,13 +1063,13 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
    protected void addExceptionMapper(ExceptionMapper provider, Class providerClass, boolean isBuiltin)
    {
       Type exceptionType = Types.getActualTypeArgumentsOfAnInterface(providerClass, ExceptionMapper.class)[0];
-      addExceptionMapper(provider, exceptionType, isBuiltin);
+      addExceptionMapper(provider, exceptionType, providerClass, isBuiltin);
    }
 
 
-   protected void addExceptionMapper(ExceptionMapper provider, Type exceptionType, boolean isBuiltin)
+   protected void addExceptionMapper(ExceptionMapper provider, Type exceptionType, Class providerClass, boolean isBuiltin)
    {
-      injectProperties(provider.getClass(), provider);
+      injectProperties(providerClass, provider);
 
       Class<?> exceptionClass = Types.getRawType(exceptionType);
       if (!Throwable.class.isAssignableFrom(exceptionClass))
@@ -1081,8 +1081,8 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          exceptionMappers = new ConcurrentHashMap<Class<?>, SortedKey<ExceptionMapper>>();
          exceptionMappers.putAll(parent.getExceptionMappers());
       }
-      int priority = getPriority(null, null, ExceptionMapper.class, provider.getClass());
-      SortedKey<ExceptionMapper> candidateExceptionMapper = new SortedKey<>(null, provider, provider.getClass(), priority, isBuiltin);
+      int priority = getPriority(null, null, ExceptionMapper.class, providerClass);
+      SortedKey<ExceptionMapper> candidateExceptionMapper = new SortedKey<>(null, provider, providerClass, priority, isBuiltin);
       SortedKey<ExceptionMapper> registeredExceptionMapper;
       if ((registeredExceptionMapper = exceptionMappers.get(exceptionClass)) != null
           && (candidateExceptionMapper.compareTo(registeredExceptionMapper) > 0)) {
@@ -1792,7 +1792,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
          injectProperties(provider);
          if (paramConverterProviders == null)
          {
-            paramConverterProviders = Collections.synchronizedSortedSet(new TreeSet<>(parent.getParamConverterProviders()));//new CopyOnWriteArrayList<ParamConverterProvider>(parent.getParamConverterProviders());
+            paramConverterProviders = Collections.synchronizedSortedSet(new TreeSet<>(parent.getParamConverterProviders()));
          }
          int priority = getPriority(priorityOverride, contracts, ParamConverterProvider.class, provider.getClass());
          paramConverterProviders.add(new SortedKey<>(null, (ParamConverterProvider) provider, provider.getClass(), priority, builtIn));
