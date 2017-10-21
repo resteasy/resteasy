@@ -193,7 +193,7 @@
           </activation>
           <properties>
             <!--<maven.compiler.verbose>true</maven.compiler.verbose>-->
-            <modular.jdk.args>--add-modules=java.se</modular.jdk.args>
+            <modular.jdk.args>--add-modules=java.se,java.xml.bind</modular.jdk.args>
             <modular.jdk.props>-Dsun.util.logging.disableCallerCheck=true
               -Dsun.reflect.debugModuleAccessChecks=true
               --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED
