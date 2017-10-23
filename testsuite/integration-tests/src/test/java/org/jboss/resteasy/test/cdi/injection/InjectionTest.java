@@ -124,7 +124,7 @@ public class InjectionTest extends AbstractInjectionTestBase {
                 .addAsResource(InjectionTest.class.getPackage(), "persistence.xml", "META-INF/persistence.xml");
 
         war.addAsManifestResource(PermissionUtil.createPermissionsXmlAsset(
-            new SocketPermission(PortProviderUtil.getHost(), "resolve")),
+            new SocketPermission("[" + PortProviderUtil.getHost() + "]", "resolve")),
             "permissions.xml");
 
         return TestUtil.finishContainerPrepare(war, null, (Class<?>[]) null);
