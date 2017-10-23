@@ -365,18 +365,14 @@
         <plugins>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
                     <executions>
                         <execution>
-                            <id>normal-test</id>
+                            <id>default-test</id>
                             <phase>test</phase>
                             <goals>
                                 <goal>test</goal>
                             </goals>
                             <configuration>
-                                <skip>false</skip>
                                 <excludes>
                                      <!-- Tests requires excluding JsonBindingProvider-->
                                      <exclude>**/JsonBindingTest.java</exclude>
@@ -394,7 +390,6 @@
                                 <goal>test</goal>
                             </goals>
                             <configuration>
-                                <skip>false</skip>
                                 <includes>
                                     <include>**/JsonBindingTest.java</include>
                                 </includes>
