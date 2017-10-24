@@ -24,6 +24,8 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
+import javax.ws.rs.ApplicationPath;
+
 import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.List;
@@ -239,6 +241,15 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer
         eventLoopGroup = new NioEventLoopGroup(ioWorkerCount);
         eventExecutor = new NioEventLoopGroup(executorThreadCount);
         deployment.start();
+        // dynamically set the root path (the user can rewrite it by calling setRootResourcePath)
+        if (deployment.getApplication() != null) {
+           ApplicationPath appPath = deployment.getApplication().getClass().getAnnotation(ApplicationPath.class);
+           if (appPath != null && (root == null || "".equals(root))) {
+              // annotation is present and original root is not set
+              String path = appPath.value();
+              setRootResourcePath(path);
+           }
+        }
         // Configure the server.
         bootstrap.group(eventLoopGroup)
                 .channel(NioServerSocketChannel.class)
