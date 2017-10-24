@@ -216,6 +216,40 @@
             </plugins>
           </build>
         </profile>
+        <profile>
+            <id>checkstyle</id>
+            <activation>
+                <property>
+                    <name>checkstyle</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-checkstyle-plugin</artifactId>
+                        <version>${version.checkstyle.plugin}</version>
+                        <configuration>
+                            <configLocation>checkstyle.xml</configLocation>
+                            <consoleOutput>true</consoleOutput>
+                            <failsOnError>true</failsOnError>
+                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                            <excludes>**/*$logger.java,**/*$bundle.java</excludes>
+                            <useFile/>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>check-style</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>checkstyle</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <contributors>
