@@ -8,6 +8,7 @@ import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.client.Client;
@@ -159,37 +160,57 @@ public class SseTest {
     public void testBroadcast() throws Exception
     {
        final CountDownLatch latch = new CountDownLatch(2);
-       Client client = new ResteasyClientBuilder().connectionPoolSize(10).build();
+       Client client = new ResteasyClientBuilder().build();
        WebTarget target = client.target(generateURL("/service/server-sent-events/subscribe"));
        final String textMessage = "This is broadcast message";
-
+       Consumer<InboundSseEvent> checkConsumer = insse -> {
+           if (latch.getCount() > 0) {
+                Assert.assertTrue("Unexpected sever sent event data", textMessage.equals(insse.readData()));
+           }
+           latch.countDown();
+       };
        SseEventSource eventSource = SseEventSource.target(target).build();
        Assert.assertEquals(SseEventSourceImpl.class, eventSource.getClass());
-       eventSource.register(event -> {
-          latch.countDown();
-       });
+       eventSource.register(checkConsumer);
        eventSource.open();
-       eventSource.register(insse -> {Assert.assertTrue("Unexpected sever sent event data", textMessage.equals(insse.readData()));});
-            
+
+       
        Client client2 = new ResteasyClientBuilder().build();
        WebTarget target2 = client2.target(generateURL("/service/sse/subscribe"));
 
        SseEventSource eventSource2 = SseEventSource.target(target2).build();
-       eventSource2.register(event -> {
-          latch.countDown();
-       });
+       eventSource2.register(checkConsumer);
        eventSource2.open();
-       
        //Test for eventSource subscriber
-       eventSource2.register(insse -> {Assert.assertTrue("Unexpected sever sent event data", textMessage.equals(insse.readData()));});
+       
        client.target(generateURL("/service/server-sent-events/broadcast")).request().post(Entity.entity(textMessage, MediaType.SERVER_SENT_EVENTS)); 
        Assert.assertTrue("Waiting for broadcast event to be delivered has timed out.", latch.await(20, TimeUnit.SECONDS));
+
+       //one subscriber is closed and test if another subscriber works
+       CountDownLatch latch3 = new CountDownLatch(5);
+       CountDownLatch latch4 = new CountDownLatch(5);
+       eventSource.register(insse -> {latch3.countDown();});
+       eventSource2.register(insse -> {latch4.countDown();});
+       client2.target(generateURL("/service/server-sent-events/broadcast")).request().post(Entity.entity("repeat", MediaType.SERVER_SENT_EVENTS));
+       Assert.assertTrue("Waiting for repeatable broadcast events to be delivered has timed out.", latch3.await(20, TimeUnit.SECONDS));
+       Assert.assertTrue("Waiting for repeatable broadcast events to be delivered has timed out.", latch4.await(20, TimeUnit.SECONDS));
+       
+       
+       client.close();
+       CountDownLatch latch5 = new CountDownLatch(5);
+       CountDownLatch latch6 = new CountDownLatch(5);
+
+       eventSource.register(insse -> {latch5.countDown();});
+       eventSource2.register(insse -> {latch6.countDown();});
+       
+       Assert.assertTrue("Eventsource should not receive event after close", latch5.getCount() == 5);
+       Assert.assertTrue("Waiting for eventsource2 receive broadcast events to be delivered has timed out.", latch6.await(20, TimeUnit.SECONDS));
+       
+       client2.target(generateURL("/service/server-sent-events/broadcast")).request().post(Entity.entity("close one subscriber", MediaType.SERVER_SENT_EVENTS)); 
        
        Client closeClient = new ResteasyClientBuilder().build();
        WebTarget closeTarget = closeClient.target(generateURL("/service/sse"));
        Assert.assertTrue("Subscribed eventsink is not closed", closeTarget.request().delete().readEntity(Boolean.class));
-       
-       eventSource.close();
        eventSource2.close();
     }
     //This test is checking SseEventSource reconnect ability. When request post /addMessageAndDisconnect path, server will 

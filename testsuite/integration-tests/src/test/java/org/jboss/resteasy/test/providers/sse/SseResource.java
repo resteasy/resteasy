@@ -117,11 +117,30 @@ public class SseResource
    @POST
    @Path("/broadcast")
    public void broadcast(String message) throws IOException {
-	   if (sseBroadcaster == null) {
-		   sseBroadcaster = sse.newBroadcaster();
-	   }
-	   sseBroadcaster.broadcast(sse.newEvent(message));
-   }
+        if (sseBroadcaster == null) {
+            sseBroadcaster = sse.newBroadcaster();
+        }
+        if ("repeat".equals(message)) {
+            new Thread()
+            {
+               public void run()
+               {
+                   for (int i = 0; i < 100; i++) {
+                       sseBroadcaster.broadcast(sse.newEvent(message));
+                       try {
+                           Thread.sleep(100);
+                       } catch (final InterruptedException e) {
+                           logger.error(e.getMessage(), e);
+                       }
+                   }
+               }
+            }.start();
+            
+
+        } else {
+            sseBroadcaster.broadcast(sse.newEvent(message));
+        }
+    }
    
    
 
