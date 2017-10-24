@@ -14,6 +14,7 @@ import javax.ws.rs.sse.SseEventSource;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.test.response.resource.AsyncResponseCallback;
 import org.jboss.resteasy.test.response.resource.AsyncResponseException;
 import org.jboss.resteasy.test.response.resource.AsyncResponseExceptionMapper;
@@ -38,6 +39,8 @@ import org.junit.runner.RunWith;
 public class PublisherResponseTest {
 
    Client client;
+
+   private final static Logger logger = Logger.getLogger(PublisherResponseTest.class);
 
    @Deployment
    public static Archive<?> deploy() {
@@ -156,7 +159,7 @@ public class PublisherResponseTest {
     	  }
       }, 
     		  t -> {
-    			  t.printStackTrace();
+    			  logger.error(t.getMessage(), t);
     			  errors.add(t);  
     		  }, 
     		  () -> {

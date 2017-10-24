@@ -10,6 +10,7 @@ import java.net.Socket;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -33,6 +34,7 @@ public class ChunkedTransferEncodingUnitTest
    private static Thread t;
    private static ServerSocket ss;
    private static Socket s;
+   private final static Logger logger = Logger.getLogger(ChunkedTransferEncodingUnitTest.class);
    
    private static String RESPONSE_200 =
          "HTTP/1.1 200 OK\r\n" +
@@ -86,7 +88,7 @@ public class ChunkedTransferEncodingUnitTest
                }
                return;
             } catch (IOException e) {
-               e.printStackTrace();
+               logger.error(e.getMessage(), e);
             }
          }
       };

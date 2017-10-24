@@ -17,6 +17,7 @@ import javax.ws.rs.sse.SseEventSource;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl;
 import org.jboss.resteasy.utils.PortProviderUtil;
 import org.jboss.resteasy.utils.TestUtil;
@@ -31,6 +32,8 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class SseEventSinkTest {
+
+    private final static Logger logger = Logger.getLogger(SseEventSinkTest.class);
 
     @Deployment
     public static Archive<?> deploy() {
@@ -69,7 +72,7 @@ public class SseEventSinkTest {
             latch.countDown();
         }, ex -> {
             errors.incrementAndGet();
-            ex.printStackTrace();
+            logger.error(ex.getMessage(), ex);
             throw new RuntimeException(ex);
         });
         eventSource.open();

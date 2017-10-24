@@ -79,7 +79,7 @@ public class VertxRequestHandler implements Handler<HttpServerRequest>
                vertxResponse.finish();
             } catch (IOException e)
             {
-               e.printStackTrace();
+               LogMessages.LOGGER.error(Messages.MESSAGES.unexpected(), e);
             }
          }
       });

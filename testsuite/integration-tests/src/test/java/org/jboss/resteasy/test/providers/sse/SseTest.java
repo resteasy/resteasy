@@ -15,6 +15,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.InboundSseEvent;
 import javax.ws.rs.sse.SseEventSource;
 import javax.xml.bind.JAXBElement;
@@ -23,6 +24,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.plugins.providers.sse.client.SseEventSourceImpl;
 import org.jboss.resteasy.utils.PortProviderUtil;
@@ -39,6 +41,8 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 public class SseTest {
+
+    private final static Logger logger = Logger.getLogger(SseTest.class);
 
     @Deployment
     public static Archive<?> deploy() {
@@ -73,7 +77,7 @@ public class SseTest {
              latch.countDown();
           }, ex -> {
              errors.incrementAndGet();
-             ex.printStackTrace();
+             logger.error(ex.getMessage(), ex);
              throw new RuntimeException(ex);
           });
           eventSource.open();
@@ -136,7 +140,7 @@ public class SseTest {
        eventSource.register(event -> {
           results.add(event.readData());
           latch.countDown();
-         }, ex -> {errors.incrementAndGet(); ex.printStackTrace(); throw new RuntimeException(ex);});
+         }, ex -> {errors.incrementAndGet(); logger.error(ex.getMessage(), ex); throw new RuntimeException(ex);});
        eventSource.open();
 
        boolean waitResult = latch.await(30, TimeUnit.SECONDS);
@@ -209,7 +213,7 @@ public class SseTest {
                 closeLatch.countDown();
             }, ex -> {
                 errors.incrementAndGet();
-                ex.printStackTrace();
+                logger.error(ex.getMessage(), ex);
                 throw new RuntimeException(ex);
             });
             eventSource.open();
@@ -277,7 +281,7 @@ public class SseTest {
              latch.countDown();
           }, ex -> {
              errors.incrementAndGet();
-             ex.printStackTrace();
+             logger.error(ex.getMessage(), ex);
              throw new RuntimeException(ex);
           });
           eventSource.open();
@@ -328,7 +332,7 @@ public class SseTest {
              latch.countDown();
           }, ex -> {
              errors.incrementAndGet();
-             ex.printStackTrace();
+             logger.error(ex.getMessage(), ex);
              throw new RuntimeException(ex);
           });
           eventSource.open();
@@ -400,6 +404,18 @@ public class SseTest {
         }
        JAXBElement<String> jaxbElement=results.get(0).readData(new javax.ws.rs.core.GenericType<JAXBElement<String>>(){} , MediaType.APPLICATION_XML_TYPE);
        Assert.assertEquals("xmldata is expceted", jaxbElement.getValue(), "xmldata");
+     }
+    
+    @Test
+    @InSequence(11)
+    public void testGetSseEvent() throws Exception
+    {
+       Client client =  ClientBuilder.newClient();
+       WebTarget target = client.target(generateURL("/service/server-sent-events/events"));
+       Response response = target.request().get();
+       Assert.assertEquals("response OK is expected", response.getStatus(), 200);
+       Assert.assertEquals("text/event-stream is expected" , response.getMediaType(), MediaType.SERVER_SENT_EVENTS_TYPE);
+       client.close();
      }
     
 //    @Test
