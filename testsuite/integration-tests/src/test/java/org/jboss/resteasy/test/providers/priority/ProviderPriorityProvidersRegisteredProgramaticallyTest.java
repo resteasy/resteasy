@@ -2,6 +2,9 @@ package org.jboss.resteasy.test.providers.priority;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
@@ -30,31 +33,34 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * @tpSubChapter ExceptionMappers and ParamConverterProviders
+ * @tpSubChapter ExceptionMappers and ParamConverterProviders registered programatically
  * @tpChapter Integration tests
  * @tpSince RESTEasy 4.0.0
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class ProviderPriorityTest {
+public class ProviderPriorityProvidersRegisteredProgramaticallyTest {
    
    static ResteasyClient client;
 
    @Deployment
    public static Archive<?> deploy() {
-      WebArchive war = TestUtil.prepareArchive(ProviderPriorityTest.class.getSimpleName());
+      WebArchive war = TestUtil.prepareArchive(ProviderPriorityProvidersRegisteredProgramaticallyTest.class.getSimpleName());
       war.addClasses(ProviderPriorityFoo.class, 
             ProviderPriorityFooParamConverter.class,
-            ProviderPriorityTestException.class
+            ProviderPriorityTestException.class,
+            ProviderPriorityExceptionMapperCCC.class,
+            ProviderPriorityFooParamConverterProviderCCC.class
             );
-      return TestUtil.finishContainerPrepare(war, null,
+      List<Class<?>> singletons = new ArrayList<Class<?>>();
+      singletons.add(ProviderPriorityExceptionMapperCCC.class);
+      singletons.add(ProviderPriorityFooParamConverterProviderCCC.class);
+      return TestUtil.finishContainerPrepare(war, null, singletons,
             ProviderPriorityResource.class, 
             ProviderPriorityExceptionMapperAAA.class,
             ProviderPriorityExceptionMapperBBB.class,
-            ProviderPriorityExceptionMapperCCC.class,
             ProviderPriorityFooParamConverterProviderAAA.class,
-            ProviderPriorityFooParamConverterProviderBBB.class,
-            ProviderPriorityFooParamConverterProviderCCC.class
+            ProviderPriorityFooParamConverterProviderBBB.class
             );
    }
 
@@ -69,29 +75,27 @@ public class ProviderPriorityTest {
    }
 
    private String generateURL(String path) {
-      return PortProviderUtil.generateURL(path, ProviderPriorityTest.class.getSimpleName());
+      return PortProviderUtil.generateURL(path, ProviderPriorityProvidersRegisteredProgramaticallyTest.class.getSimpleName());
    }
 
    /**
-    * @tpTestDetails Tests that ExceptionMappers are sorted by priority
+    * @tpTestDetails Tests that Programatically registered ExceptionMappers and
+    *                ParamConverterProviders are sorted by priority
     * @tpSince RESTEasy 4.0.0
     */
    @Test
-   public void testExceptionMapper() throws Exception {
-      WebTarget base = client.target(generateURL("/exception"));
-      Response response = base.request().get();
+   public void testProgramaticRegistration() throws Exception {
+      WebTarget base = client.target(generateURL(""));
+      base.path("/register");
+      Response response = base.path("/register").request().get();
+      assertEquals(200, response.getStatus());
+      assertEquals("ok", response.readEntity(String.class));
+      
+      response = base.path("/exception").request().get();
       assertEquals(444, response.getStatus());
       assertEquals("CCC", response.readEntity(String.class));
-   }
-   
-   /**
-    * @tpTestDetails Tests that ParamConverterProviders are sorted by priority
-    * @tpSince RESTEasy 4.0.0
-    */
-   @Test
-   public void testParamConverterProvider() throws Exception {
-      WebTarget base = client.target(generateURL("/paramconverter/dummy"));
-      Response response = base.request().get();
+      
+      response = base.path("/paramconverter/dummy").request().get();
       assertEquals(200, response.getStatus());
       assertEquals("CCC", response.readEntity(String.class));
    }
