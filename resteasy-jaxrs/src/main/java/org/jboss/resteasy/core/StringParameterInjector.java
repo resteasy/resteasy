@@ -380,6 +380,7 @@ public class StringParameterInjector
    protected String paramName;
    protected Class<?> paramType;
    protected boolean isCollection;
+   protected boolean isArray;
    @SuppressWarnings("rawtypes")
    protected Class<? extends Collection> collectionType;
    protected AccessibleObject target;
@@ -400,7 +401,7 @@ public class StringParameterInjector
 
    public boolean isCollectionOrArray()
    {
-      return isCollection || type.isArray();
+      return isCollection || isArray;
    }
 
    protected void initialize(Class<?> type, Type genericType, String paramName, Class<?> paramType, String defaultValue, AccessibleObject target, Annotation[] annotations, ResteasyProviderFactory factory)
@@ -412,49 +413,58 @@ public class StringParameterInjector
       this.target = target;
       baseType = type;
       baseGenericType = genericType;
-
-      if (type.isArray())
-      {
-    	  baseType = type.getComponentType();
-      }
-     
-      if (!baseType.isPrimitive())
-      {
-    	  boolean initialized = initialize(annotations, factory);
-    	  if(!initialized)
-    	  {
-	         collectionType = convertParameterTypeToCollectionType();
-	         if (collectionType != null)
-	         {
-	        	 isCollection = true;
-		         if (genericType instanceof ParameterizedType)
-		         {
-		            ParameterizedType zType = (ParameterizedType) baseGenericType;
-		            baseType = Types.getRawType(zType.getActualTypeArguments()[0]);
-		            baseGenericType = zType.getActualTypeArguments()[0];
-		         }
-		         else
-		         {
-		            baseType = String.class;
-		            baseGenericType = null;
-		         }
-		         if(baseType.isPrimitive())
-		         {
-		        	 return;
-		         }
-		         initialized = initialize(annotations, factory);
-	        }
-	        if(!initialized)
-	    	{  
-	        	throw new RuntimeException(Messages.MESSAGES.unableToFindConstructor(getParamSignature(), target, baseType.getName()));
-	    	}
-    	}
-     }
       
+      //Step 1: try to find a conversion mechanism using the type as it is
+      if(initialize(annotations, factory))
+      {
+    	  return;
+      }
+      
+      //Step2: try to find a conversion mechanism if the type is an array type
+	  if (type.isArray())
+      {
+		  isArray = true;
+    	  baseType = type.getComponentType();
+    	  if(initialize(annotations, factory))
+    	  {
+    		  return ;
+    	  }
+      }
+	  
+	  //Step 3: try to find a conversion mechanism if the type is a collection type
+	  collectionType = convertParameterTypeToCollectionType();
+	  if (collectionType != null)
+	  {
+    	 isCollection = true;
+         if (genericType instanceof ParameterizedType)
+         {
+            ParameterizedType zType = (ParameterizedType) baseGenericType;
+            baseType = Types.getRawType(zType.getActualTypeArguments()[0]);
+            baseGenericType = zType.getActualTypeArguments()[0];
+         }
+         else
+         {
+            baseType = String.class;
+            baseGenericType = null;
+         }
+         if(initialize(annotations, factory))
+         {
+        	 return;
+         }
+	  }
+      
+	  throw new RuntimeException(Messages.MESSAGES.unableToFindConstructor(getParamSignature(), target, baseType.getName()));
+
   }
    
    
    private boolean initialize(Annotation[] annotations, ResteasyProviderFactory factory){
+	   
+	   //No need to find any conversion mechanism if we are dealing with primitive type
+	   if(baseType.isPrimitive())
+	   {
+		   return true;
+	   }
 	   
 	   // First try to find a ParamConverter if any
 	   paramConverter = factory.getParamConverter(baseType, baseGenericType, annotations);
@@ -611,7 +621,7 @@ public class StringParameterInjector
 
    public Object extractValues(List<String> values)
    {
-      if (values == null && (type.isArray() || isCollection) && defaultValue != null)
+      if (values == null && (isArray || isCollection) && defaultValue != null)
       {
          values = new ArrayList<String>(1);
          values.add(defaultValue);
@@ -620,7 +630,7 @@ public class StringParameterInjector
       {
          values = Collections.emptyList();
       }
-      if (type.isArray())
+      if (isArray)
       {
          if (values == null) return null;
          Object vals = Array.newInstance(type.getComponentType(), values.size());
