@@ -286,7 +286,8 @@ public class ValidateOnExecutionTest {
         } catch (ValidationException ve) {
             // OK
         } catch (Exception e) {
-            if (e.getCause() != null && e.getCause().getMessage().contains("Caused by: javax.validation.ValidationException")) {
+            if (e.getMessage().contains("Caused by: javax.validation.ValidationException") ||
+                    (e.getCause() != null && e.getCause().getMessage().contains("Caused by: javax.validation.ValidationException"))) {
                 // OK
                 return;
             }
