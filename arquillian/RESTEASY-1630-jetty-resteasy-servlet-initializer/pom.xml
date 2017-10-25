@@ -63,6 +63,10 @@
       <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.jboss.spec.javax.xml.bind</groupId>
+      <artifactId>jboss-jaxb-api_2.2_spec</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-servlet-initializer</artifactId>
       <version>${project.version}</version>
