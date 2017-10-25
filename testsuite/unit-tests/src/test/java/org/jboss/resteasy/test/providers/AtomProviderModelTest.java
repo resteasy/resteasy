@@ -1,7 +1,5 @@
 package org.jboss.resteasy.test.providers;
 
-import com.sun.istack.NotNull;
-import com.sun.istack.Nullable;
 import com.sun.xml.bind.api.ClassResolver;
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.apache.logging.log4j.LogManager;
