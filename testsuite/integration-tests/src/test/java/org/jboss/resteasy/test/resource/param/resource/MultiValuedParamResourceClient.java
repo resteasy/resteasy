@@ -46,6 +46,10 @@ public interface MultiValuedParamResourceClient {
 		@GET
 		@Path("customConversion_multiValuedParam")
 		String customConversion_multiValuedParam(@QueryParam("date") String dates);
+		
+		@GET
+		@Path("customConversion_multiValuedParam_array")
+		String customConversion_multiValuedParam_array(@QueryParam("date") String dates);
 
 		@GET
 		@Path("defaultConversion_list")
@@ -70,6 +74,10 @@ public interface MultiValuedParamResourceClient {
 		@GET
 		@Path("defaultConversion_treeSet")
 		String defaultConversion_treeSet(@QueryParam("date") TreeSet<String> dates);
+		
+		@GET
+		@Path("defaultConversion_array")
+		String defaultConversion_array(@QueryParam("date") String[] dates);
 
 	}
 
@@ -79,6 +87,10 @@ public interface MultiValuedParamResourceClient {
 		@GET
 		@Path("customConversion_multiValuedParam")
 		String customConversion_multiValuedParam(@HeaderParam("date") String dates);
+		
+		@GET
+		@Path("customConversion_multiValuedParam_array")
+		String customConversion_multiValuedParam_array(@HeaderParam("date") String dates);
 
 		@GET
 		@Path("defaultConversion_list")
@@ -103,6 +115,10 @@ public interface MultiValuedParamResourceClient {
 		@GET
 		@Path("defaultConversion_treeSet")
 		String defaultConversion_treeSet(@HeaderParam("date") TreeSet<String> dates);
+		
+		@GET
+		@Path("defaultConversion_array")
+		String defaultConversion_array(@HeaderParam("date") String[] dates);
 
 	}
 
@@ -112,6 +128,10 @@ public interface MultiValuedParamResourceClient {
 		@GET
 		@Path("customConversion_multiValuedParam")
 		String customConversion_multiValuedParam(@MatrixParam("date") String dates);
+		
+		@GET
+		@Path("customConversion_multiValuedParam_array")
+		String customConversion_multiValuedParam_array(@MatrixParam("date") String dates);
 
 		@GET
 		@Path("defaultConversion_list")
@@ -136,6 +156,10 @@ public interface MultiValuedParamResourceClient {
 		@GET
 		@Path("defaultConversion_treeSet")
 		String defaultConversion_treeSet(@MatrixParam("date") TreeSet<String> dates);
+		
+		@GET
+		@Path("defaultConversion_array")
+		String defaultConversion_array(@MatrixParam("date") String[] dates);
 
 	}
 
@@ -145,6 +169,10 @@ public interface MultiValuedParamResourceClient {
 		@GET
 		@Path("customConversion_multiValuedCookieParam")
 		String customConversion_multiValuedCookieParam(@CookieParam("date") String dates);
+		
+		@GET
+		@Path("customConversion_multiValuedCookieParam_array")
+		String customConversion_multiValuedCookieParam_array(@CookieParam("date") String dates);
 
 		@GET
 		@Path("defaultConversion_list")
@@ -169,6 +197,10 @@ public interface MultiValuedParamResourceClient {
 		@GET
 		@Path("defaultConversion_treeSet")
 		String defaultConversion_treeSet(@CookieParam("date") String dates);
+		
+		@GET
+		@Path("defaultConversion_array")
+		String defaultConversion_array(@CookieParam("date") String dates);
 
 	}
 	
@@ -179,6 +211,10 @@ public interface MultiValuedParamResourceClient {
 		@POST
 		@Path("customConversion_multiValuedParam")
 		String customConversion_multiValuedParam(@FormParam("date") String dates);
+		
+		@POST
+		@Path("customConversion_multiValuedParam_array")
+		String customConversion_multiValuedParam_array(@FormParam("date") String dates);
 
 		@POST
 		@Path("defaultConversion_list")
@@ -203,6 +239,10 @@ public interface MultiValuedParamResourceClient {
 		@POST
 		@Path("defaultConversion_treeSet")
 		String defaultConversion_treeSet(@FormParam("date") TreeSet<String> dates);
+		
+		@POST
+		@Path("defaultConversion_array")
+		String defaultConversion_array(@FormParam("date") String[] dates);
 
 	}
 	
@@ -212,6 +252,10 @@ public interface MultiValuedParamResourceClient {
 		@GET
 		@Path("customConversion_multiValuedPathParam/{path1}/{path2}/{path3}")
 		String customConversion_multiValuedPathParam(@PathParam("path1") String path1, @PathParam("path2") String path2, @PathParam("path3") String path3);
+		
+		@GET
+		@Path("customConversion_multiValuedPathParam_array/{path1}/{path2}/{path3}")
+		String customConversion_multiValuedPathParam_array(@PathParam("path1") String path1, @PathParam("path2") String path2, @PathParam("path3") String path3);
 
 		@GET
 		@Path("defaultConversion_list/{path}")
@@ -236,6 +280,10 @@ public interface MultiValuedParamResourceClient {
 		@GET
 		@Path("defaultConversion_treeSet/{path}")
 		String defaultConversion_treeSet(@PathParam("path") String path);
+		
+		@GET
+		@Path("defaultConversion_array/{path}")
+		String defaultConversion_array(@PathParam("path") String path);
 
 	}
 
