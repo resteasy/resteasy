@@ -34,50 +34,41 @@ import java.util.List;
  * @version $Revision: 1.2 $
  */
 @PreMatching
-public class AcceptParameterHttpPreprocessor implements ContainerRequestFilter
-{
+public class AcceptParameterHttpPreprocessor implements ContainerRequestFilter {
 
-   private final String paramMapping;
+    private final String paramMapping;
 
-   /**
-    * Create a new AcceptParameterHttpPreprocessor.
-    *
-    * @param paramMapping The name of query parameter that will be used to do the content negotiation
-    */
-   public AcceptParameterHttpPreprocessor(String paramMapping)
-   {
-      if (paramMapping == null || paramMapping.matches("\\s+"))
-         throw new IllegalArgumentException(Messages.MESSAGES.constructorMappingInvalid());
-      this.paramMapping = paramMapping;
-   }
+    /**
+     * Create a new AcceptParameterHttpPreprocessor.
+     *
+     * @param paramMapping The name of query parameter that will be used to do the content negotiation
+     */
+    public AcceptParameterHttpPreprocessor(final String paramMapping) {
+        if (paramMapping == null || paramMapping.matches("\\s+"))
+            throw new IllegalArgumentException(Messages.MESSAGES.constructorMappingInvalid());
+        this.paramMapping = paramMapping;
+    }
 
-   @Override
-   public void filter(ContainerRequestContext request) throws IOException
-   {
-      MultivaluedMap<String, String> params = request.getUriInfo().getQueryParameters(false);
+    @Override
+    public void filter(ContainerRequestContext request) throws IOException {
+        MultivaluedMap<String, String> params = request.getUriInfo().getQueryParameters(false);
 
-      if (params != null)
-      {
-         List<String> accepts = params.get(paramMapping);
+        if (params != null) {
+            List<String> accepts = params.get(paramMapping);
 
-         if (accepts != null && !accepts.isEmpty())
-         {
-            for (String accept : accepts)
-            {
-               try
-               {
-                  accept = URLDecoder.decode(accept, StandardCharsets.UTF_8.name());
-                  request.getHeaders().add(HttpHeaders.ACCEPT, accept);
-               }
-               catch (UnsupportedEncodingException e)
-               {
-                  throw new RuntimeException(e);
-               }
+            if (accepts != null && !accepts.isEmpty()) {
+                for (String accept : accepts) {
+                    try {
+                        accept = URLDecoder.decode(accept, StandardCharsets.UTF_8.name());
+                        request.getHeaders().add(HttpHeaders.ACCEPT, accept);
+                    } catch (UnsupportedEncodingException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
             }
+        }
 
-         }
-      }
-
-   }
+    }
 
 }

@@ -1,6 +1,5 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.plugins.providers.validation.ViolationsContainer;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.jboss.resteasy.spi.BadRequestException;
@@ -32,7 +31,7 @@ public class MethodInjectorImpl implements MethodInjector
    protected Method interfaceBasedMethod;
    protected boolean expectsBody;
 
-   public MethodInjectorImpl(ResourceLocator resourceMethod, ResteasyProviderFactory factory)
+   public MethodInjectorImpl(final ResourceLocator resourceMethod, final ResteasyProviderFactory factory)
    {
       this.factory = factory;
       this.method = resourceMethod;

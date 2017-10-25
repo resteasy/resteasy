@@ -18,38 +18,31 @@ import java.util.List;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class CookieParamInjector extends StringParameterInjector implements ValueInjector
-{
+public class CookieParamInjector extends StringParameterInjector implements ValueInjector {
 
-   public CookieParamInjector(Class type, Type genericType, AccessibleObject target, String cookieName, String defaultValue, Annotation[] annotations, ResteasyProviderFactory factory)
-   {
-      if (type.equals(Cookie.class))
-      {
-         this.type = type;
-         this.paramName = cookieName;
-         this.paramType = CookieParam.class;
-         this.defaultValue = defaultValue;
+    public CookieParamInjector(final Class type, final Type genericType, final AccessibleObject target, final String cookieName, final String defaultValue, final Annotation[] annotations, final ResteasyProviderFactory factory) {
+        if (type.equals(Cookie.class)) {
+            this.type = type;
+            this.paramName = cookieName;
+            this.paramType = CookieParam.class;
+            this.defaultValue = defaultValue;
 
-      }
-      else
-      {
-         initialize(type, genericType, cookieName, CookieParam.class, defaultValue, target, annotations, factory);
-      }
-   }
+        } else {
+            initialize(type, genericType, cookieName, CookieParam.class, defaultValue, target, annotations, factory);
+        }
+    }
 
-   public Object inject(HttpRequest request, HttpResponse response)
-   {
-      Cookie cookie = request.getHttpHeaders().getCookies().get(paramName);
-      if (type.equals(Cookie.class)) return cookie;
+    public Object inject(HttpRequest request, HttpResponse response) {
+        Cookie cookie = request.getHttpHeaders().getCookies().get(paramName);
+        if (type.equals(Cookie.class)) return cookie;
 
-      if (cookie == null) return extractValues(null);
-      List<String> values = new ArrayList<String>();
-      values.add(cookie.getValue());
-      return extractValues(values);
-   }
+        if (cookie == null) return extractValues(null);
+        List<String> values = new ArrayList<String>();
+        values.add(cookie.getValue());
+        return extractValues(values);
+    }
 
-   public Object inject()
-   {
-      throw new RuntimeException(Messages.MESSAGES.illegalToInjectCookieParam());
-   }
+    public Object inject() {
+        throw new RuntimeException(Messages.MESSAGES.illegalToInjectCookieParam());
+    }
 }

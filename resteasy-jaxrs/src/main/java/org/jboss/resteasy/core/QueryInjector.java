@@ -1,6 +1,11 @@
 package org.jboss.resteasy.core;
 
-import org.jboss.resteasy.spi.*;
+
+import org.jboss.resteasy.spi.ConstructorInjector;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.PropertyInjector;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import java.lang.reflect.Constructor;
 
@@ -14,7 +19,7 @@ public class QueryInjector implements ValueInjector {
    private ConstructorInjector constructorInjector;
    private PropertyInjector propertyInjector;
 
-   public QueryInjector(Class type, ResteasyProviderFactory factory) {
+   public QueryInjector(final Class type, final ResteasyProviderFactory factory) {
       this.type = type;
       Constructor<?> constructor;
 

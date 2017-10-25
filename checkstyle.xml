@@ -58,6 +58,7 @@
         <module name="ModifierOrder"/>
         <module name="RedundantModifier"/>
 
+        <!-- Commented for now until we clean up the other checkstyle warnings more -->
         <!-- Checks for blocks.                              -->
         <!--<module name="LeftCurly">
             <property name="option" value="eol"/>
@@ -104,7 +105,7 @@
             <property name="format" value="printStackTrace\(\)"/>
             <property name="illegalPattern" value="true"/>
         </module>
-        
+
     </module>
 
 </module>
