@@ -509,22 +509,21 @@ name: b
 
        <para>
            Network communication between the client and server is handled by default in RESTEasy.
-           It uses the
-           <code class="classname">HttpClient</code> from the Apache
-           <code class="classname">HttpComponents</code> project.
            The interface between the RESTEasy Client Framework and the network
-           is defined by RESTEasy's
-           <code class="classname">ClientHttpEngine</code> interface.
-           RESTEasy ships with 4 implementations of this interface.
-           The default implementation is
-           <code class="classname">ApacheHttpClient43Engine</code>.  This implementation
-           uses Apache 4.3.
-
+           is defined by RESTEasy's <code class="classname">ClientHttpEngine</code> interface.
+           RESTEasy ships with multiple implementations of this interface. The default
+           implementation is <code class="classname">ApacheHttpClient43Engine</code>, which uses
+           version 4.3 of the <code class="classname">HttpClient</code> from the Apache
+           <code class="classname">HttpComponents</code> project.
            <code class="classname">ApacheHttpClient4Engine</code> is an implementation that
-           uses the pre-Apache 4.3 version.  This class provides backward compatibility.
+           uses the pre-Apache 4.3 version, to provide backward compatibility.
            RESTEasy automatically selects one of these two
-           <code class="classname">ClientHttpEngine</code> implementations
-           based upon the detection of the Apache version.
+           <code class="classname">ClientHttpEngine</code> implementations based upon the
+           detection of the Apache version.
+           <code class="classname">ApacheHttpAsyncClient4Engine</code>, instead, is built on top
+           of <emphasis>HttpAsyncClient</emphasis> (still from the Apache
+           <emphasis>HttpComponents</emphasis> project) with internally dispatches requests
+           using a non-blocking IO model. Finally,
            <code class="classname">InMemoryClientEngine</code> is
            an implementation that dispatches requests to a server in the same JVM and
            <code class="classname">URLConnectionEngine</code> is an implementation that uses
@@ -542,11 +541,15 @@ name: b
                <tbody>
                    <row>
                        <entry>ApacheHttpClient43Engine</entry>
-                       <entry>Uses HttpComponents Apache 4.3 api</entry>
+                       <entry>Uses HttpComponents HttpClient 4.3 api</entry>
                    </row>
                    <row>
                        <entry>ApacheHttpClient4Engine</entry>
-                       <entry>Uses HttpComponents Apache pre-4.3 api</entry>
+                       <entry>Uses HttpComponents HttpClient pre-4.3 api</entry>
+                   </row>
+                   <row>
+                       <entry>ApacheHttpAsyncClient4Engine</entry>
+                       <entry>Uses HttpComponents HttpAsyncClient</entry>
                    </row>
                    <row>
                        <entry>InMemoryClientEngine</entry>
@@ -785,6 +788,86 @@ httpClient.getConnectionManager().shutdown();
             uses them as well.
         </para>
     </section>
+
+    <section id="apache_asynch">
+        <title>Asynchronous HTTP Request Processing</title>
+        <para>
+            RESTEasy's default async engine implementation class is
+            <emphasis>ApacheHttpAsyncClient4Engine</emphasis>.  It can be set as the active
+            engine by calling method <emphasis>useAsyncHttpEngine</emphasis> in
+            <emphasis>ResteasyClientBuilder</emphasis>.
+        </para>
+        <programlisting>
+    Client asyncClient = new ResteasyClientBuilder().useAsyncHttpEngine()
+                             .build();
+    Future&lt;Response&gt; future = asyncClient
+                             .target("http://locahost:8080/test").request()
+                             .async().get();
+    Response res = future.get();
+    Assert.assertEquals(HttpResponseCodes.SC_OK, res.getStatus());
+    String entity = res.readEntity(String.class);
+        </programlisting>
+        <sect2>
+            <title>InvocationCallbacks</title>
+            <para>
+                InvocationCallbacks are called from within the io-threads and thus must not block or else
+                the application may slow down to a halt. Reading the response is safe because the response
+                is buffered in memory, as are other async and in-memory client-invocations that submit-calls
+                returning a future not containing Response, InputStream or Reader.
+            </para>
+            <programlisting>
+   final CountDownLatch latch = new CountDownLatch(1);
+   Future&lt;String&gt; future = nioClient.target(generateURL("/test")).request()
+         .async().get(new InvocationCallback&lt;String&gt;()
+                {
+                   @Override
+                   public void completed(String s)
+                   {
+                      Assert.assertEquals("get", s);
+                      latch.countDown();
+                      throw new RuntimeException("for the test of it");
+                   }
+
+                   @Override
+                   public void failed(Throwable error)
+                   {
+                   }
+                });
+   String entity = future.get();
+   Assert.assertEquals("get", entity);
+            </programlisting>
+            <para>
+                InvocationCallbacks may be called seemingly "after" the future-object returns. Thus, responses
+                should be handled solely in the InvocationCallback.
+            </para>
+            <para>
+                InvocationCallbacks will see the same result as the future-object and vice versa. Thus, if the
+                invocationcallback throws an exception, the future-object will not see it. This is the
+                reason to handle responses only in the InvocationCallback.
+            </para>
+
+        </sect2>
+
+        <sect2>
+            <title>Async Engine Usage Considerations</title>
+            <para>
+                Asynchronous IO means non-blocking IO utilizing few threads, typically at most as many
+                threads as number of cores.  As such, performance may profit from fewer thread switches
+                and less memory usage due to fewer thread-stacks. But doing synchronous, blocking IO (the
+                invoke-methods not returning a future) may suffer, because the data has to be transferred
+                piecewise to/from the io-threads.
+            </para>
+            <para>
+                Request-Entities are fully buffered in memory, thus <emphasis>HttpAsyncClient</emphasis>
+                is unsuitable for very large uploads.  Response-Entities are buffered in memory, except
+                if requesting a Response, InputStream or Reader as Result. Thus for large downloads or
+                COMET, one of these three return types must be requested, but there may be a performance
+                penalty because the response-body is transferred piecewise from the io-threads. When
+                using InvocationCallbacks, the response is always fully buffered in memory.
+            </para>
+        </sect2>
+    </section>
+
    </section>
    
 
