@@ -9,6 +9,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.BiConsumer;
 
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -16,8 +17,14 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.SseEventSink;
 
+import org.jboss.resteasy.core.ResourceMethodInvoker;
+import org.jboss.resteasy.core.ServerResponseWriter;
+import org.jboss.resteasy.core.interception.jaxrs.ContainerResponseContextImpl;
+import org.jboss.resteasy.core.interception.jaxrs.ResponseContainerRequestContext;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.LogMessages;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
+import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -29,6 +36,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    private final MessageBodyWriter<OutboundSseEvent> writer;
    private final ResteasyAsynchronousContext asyncContext;
    private final HttpResponse response;
+   private final HttpRequest request;
    private volatile boolean closed;
    private final Map<Class<?>, Object> contextDataMap;
    private boolean responseFlushed = false;
@@ -38,8 +46,8 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
       this.writer = writer; 
       contextDataMap = ResteasyProviderFactory.getContextDataMap();
 
-      org.jboss.resteasy.spi.HttpRequest req = ResteasyProviderFactory.getContextData(org.jboss.resteasy.spi.HttpRequest.class);
-      asyncContext = req.getAsyncContext();
+      request = ResteasyProviderFactory.getContextData(org.jboss.resteasy.spi.HttpRequest.class);
+      asyncContext = request.getAsyncContext();
 
       if (!asyncContext.isSuspended()) {
          try
@@ -73,10 +81,11 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
    protected synchronized void flushResponseToClient()
    {
       if (!responseFlushed) {
-         response.getOutputHeaders().add(HttpHeaderNames.CONTENT_TYPE, MediaType.SERVER_SENT_EVENTS);
          //set back to client 200 OK to implies the SseEventOutput is ready
+         BuiltResponse jaxrsResponse = (BuiltResponse)Response.ok().type(MediaType.SERVER_SENT_EVENTS).build();
          try
          {
+            ServerResponseWriter.writeNomapResponse(jaxrsResponse, request, response, ResteasyProviderFactory.getInstance(), true);
             response.getOutputStream().write(SseConstants.EOL);
             response.getOutputStream().write(SseConstants.EOL);
             response.flushBuffer();
@@ -153,4 +162,6 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
          ResteasyProviderFactory.removeContextDataLevel();
       }
    }
+   
+   
 }
