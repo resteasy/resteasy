@@ -1,5 +1,10 @@
 package org.jboss.resteasy.test.asynch.resource;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -29,6 +34,25 @@ public class AsyncRequestFilterResource {
        if(async != request.getAsyncContext().isSuspended())
           return Response.serverError().entity("Request suspention is wrong").build();
        return Response.ok("resource").build();
+    }
+
+    @Path("async")
+    @GET
+    public CompletionStage<Response> async() {
+       ExecutorService executor = Executors.newSingleThreadExecutor();
+       CompletableFuture<Response> resp = new CompletableFuture<>();
+       executor.submit(() -> {
+          try
+         {
+            Thread.sleep(2000);
+         } catch (InterruptedException e)
+         {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+         }
+          resp.complete(Response.ok("resource").build());
+       });
+       return resp;
     }
 
    private boolean isAsync(String filter)

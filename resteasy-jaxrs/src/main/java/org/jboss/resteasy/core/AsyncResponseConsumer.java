@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -96,49 +97,59 @@ public abstract class AsyncResponseConsumer
       }
    }
 
-   protected boolean internalResume(Object entity)
+   protected void internalResume(Object entity, Consumer<Throwable> onComplete)
    {
       ResteasyProviderFactory.pushContextDataMap(contextDataMap);
       HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
       HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
 
+      BuiltResponse builtResponse = createResponse(entity, httpRequest);
       try
       {
-         BuiltResponse builtResponse = createResponse(entity, httpRequest);
-         sendBuiltResponse(builtResponse, httpRequest, httpResponse);
-         return true;
+         sendBuiltResponse(builtResponse, httpRequest, httpResponse, e -> {
+            if(e != null)
+            {
+               exceptionWhileResuming(e);
+            }
+            onComplete.accept(e);
+         });
       }
-      catch (Throwable e)
+      catch (IOException e)
       {
-         try 
-         {
-            // OK, not funny: if this is not a handled exception, it will just be logged and rethrown, so ignore it and move on
-            internalResume(e);
-         }
-         catch(Throwable t)
-         {
-         }
-         // be done with this stream
-         complete(e);
-         return false;
+         onComplete.accept(e);
+         exceptionWhileResuming(e);
       }
    }
 
-   protected void sendBuiltResponse(BuiltResponse builtResponse, HttpRequest httpRequest, HttpResponse httpResponse) throws IOException
+   private void exceptionWhileResuming(Throwable e)
+   {
+      try 
+      {
+         // OK, not funny: if this is not a handled exception, it will just be logged and rethrown, so ignore it and move on
+         internalResume(e, t -> {});
+      }
+      catch(Throwable t2)
+      {
+      }
+      // be done with this stream
+      complete(e);
+   }
+
+   protected void sendBuiltResponse(BuiltResponse builtResponse, HttpRequest httpRequest, HttpResponse httpResponse, Consumer<Throwable> onComplete) throws IOException
    {
       // send headers only if we're not streaming, or if we're sending the first stream element
       boolean sendHeaders = sendHeaders();
-      ServerResponseWriter.writeNomapResponse(builtResponse, httpRequest, httpResponse, dispatcher.getProviderFactory(), sendHeaders);
+      ServerResponseWriter.writeNomapResponse(builtResponse, httpRequest, httpResponse, dispatcher.getProviderFactory(), onComplete, sendHeaders);
    }
 
    protected abstract boolean sendHeaders();
    
-   protected void internalResume(Throwable t)
+   protected void internalResume(Throwable t, Consumer<Throwable> onComplete)
    {
       ResteasyProviderFactory.pushContextDataMap(contextDataMap);
       HttpRequest httpRequest = (HttpRequest) contextDataMap.get(HttpRequest.class);
       HttpResponse httpResponse = (HttpResponse) contextDataMap.get(HttpResponse.class);
-      dispatcher.writeException(httpRequest, httpResponse, t);
+      dispatcher.writeException(httpRequest, httpResponse, t, onComplete);
    }
 
    protected BuiltResponse createResponse(Object entity, HttpRequest httpRequest)
@@ -204,20 +215,13 @@ public abstract class AsyncResponseConsumer
       @Override
       public void accept(Object t, Throwable u)
       {
-         try
+         if (t != null || u == null)
          {
-            if (t != null || u == null)
-            {
-               internalResume(t);
-            }
-            else
-            {
-               internalResume(u);
-            }
+            internalResume(t, x -> complete(null));
          }
-         finally
+         else
          {
-            complete(u);
+            internalResume(u, x -> complete(u));
          }
       }
 
@@ -259,14 +263,7 @@ public abstract class AsyncResponseConsumer
       @Override
       public void onError(Throwable t)
       {
-         try
-         {
-            internalResume(t);
-         }
-         finally
-         {
-            complete(t);
-         }
+         internalResume(t, x -> complete(t));
       }
 
       /**
@@ -274,23 +271,23 @@ public abstract class AsyncResponseConsumer
        * @param element the next element to collect
        * @return true if you want more elements, false if not
        */
-      protected boolean addNextElement(Object element) 
+      protected void addNextElement(Object element) 
       {
-         return internalResume(element);
+         internalResume(element, t -> {
+            if(t != null)
+               complete(t);
+         });
       }
       
       @Override
       public void onNext(Object v)
       {
-         boolean wantNext = addNextElement(v);
-         if(wantNext)
-            subscription.request(1);
+         addNextElement(v);
       }
 
       @Override
       public void onSubscribe(Subscription subscription)
       {
-         // TODO: cancel it if required
          this.subscription = subscription;
          subscription.request(1);
       }
@@ -314,12 +311,26 @@ public abstract class AsyncResponseConsumer
       }
 
       @Override
-      protected void sendBuiltResponse(BuiltResponse builtResponse, HttpRequest httpRequest, HttpResponse httpResponse) throws IOException
+      protected void sendBuiltResponse(BuiltResponse builtResponse, HttpRequest httpRequest, HttpResponse httpResponse, Consumer<Throwable> onComplete) throws IOException
       {
-         super.sendBuiltResponse(builtResponse, httpRequest, httpResponse);
+         super.sendBuiltResponse(builtResponse, httpRequest, httpResponse, onComplete);
          sentEntity = true;
       }
       
+      protected void addNextElement(Object element) 
+      {
+         internalResume(element, t -> {
+            if(t != null) 
+            {
+               complete(t);
+            }
+            else
+            {
+               subscription.request(1);
+            }
+         });
+      }
+
       @Override
       protected boolean sendHeaders()
       {
@@ -343,23 +354,16 @@ public abstract class AsyncResponseConsumer
       }
       
       @Override
-      protected boolean addNextElement(Object element)
+      protected void addNextElement(Object element)
       {
          collector.add(element);
-         return true;
+         subscription.request(1);
       }      
 
       @Override
       public void onComplete()
       {
-         try
-         {
-            internalResume(collector);
-         }
-         finally
-         {
-            complete(null);
-         }
+         internalResume(collector, t -> complete(t));
       }
       
       @Override
@@ -411,11 +415,9 @@ public abstract class AsyncResponseConsumer
       }
 
       @Override
-      protected boolean addNextElement(Object element)
+      protected void addNextElement(Object element)
       {
          super.addNextElement(element);
-         // never ask for a new element until we are done sending it
-         return false;
       }
 
       @Override
@@ -427,7 +429,7 @@ public abstract class AsyncResponseConsumer
       }
       
       @Override
-      protected void sendBuiltResponse(BuiltResponse builtResponse, HttpRequest httpRequest, HttpResponse httpResponse)
+      protected void sendBuiltResponse(BuiltResponse builtResponse, HttpRequest httpRequest, HttpResponse httpResponse, Consumer<Throwable> onComplete)
       {
          ServerResponseWriter.setResponseMediaType(builtResponse, httpRequest, httpResponse, dispatcher.getProviderFactory(), method);
          OutboundSseEvent event = sse.newEventBuilder()
@@ -436,20 +438,31 @@ public abstract class AsyncResponseConsumer
             .build();
          sendingEvent = true;
          // we can only get onComplete after we return from this method
-         sseEventSink.send(event).whenComplete((val, ex) -> {
-            synchronized(this) {
-               sendingEvent = false;
-               if(onCompleteReceived)
-                  super.onComplete();
-               else if(ex != null)
-                  internalResume(ex);
-               else
-               {
-                  // we're good, ask for the next one
-                  subscription.request(1);
+         try {
+            sseEventSink.send(event).whenComplete((val, ex) -> {
+               synchronized(this) {
+                  sendingEvent = false;
+                  if(onCompleteReceived)
+                     super.onComplete();
+                  else if(ex != null)
+                  {
+                     // cancel the subscription
+                     complete(ex);
+                     onComplete.accept(ex);
+                  }
+                  else
+                  {
+                     // we're good, ask for the next one
+                     subscription.request(1);
+                     onComplete.accept(ex);
+                  }
                }
-            }
-         });
+            });
+         }catch(Exception x) {
+            // most likely connection closed
+            complete(x);
+            onComplete.accept(x);
+         }
       }
 
       @Override

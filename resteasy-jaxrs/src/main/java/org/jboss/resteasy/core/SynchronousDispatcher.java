@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -140,7 +141,7 @@ public class SynchronousDispatcher implements Dispatcher
          // we only want to catch exceptions happening in the filters, not in the continuation
          if(requestContext == null || !requestContext.startedContinuation())
          {
-            writeException(request, response, e);
+            writeException(request, response, e, t -> {});
             return;
          }
          else
@@ -160,7 +161,7 @@ public class SynchronousDispatcher implements Dispatcher
       throw (T)t;
    }
 
-   public void writeException(HttpRequest request, HttpResponse response, Throwable e)
+   public void writeException(HttpRequest request, HttpResponse response, Throwable e, Consumer<Throwable> onComplete)
    {
       if (!bufferExceptionEntityRead)
       {
@@ -188,7 +189,7 @@ public class SynchronousDispatcher implements Dispatcher
       }
       try
       {
-         ServerResponseWriter.writeNomapResponse(((BuiltResponse) handledResponse), request, response, providerFactory);
+         ServerResponseWriter.writeNomapResponse(((BuiltResponse) handledResponse), request, response, providerFactory, onComplete);
       }
       catch (Exception e1)
       {
@@ -213,7 +214,7 @@ public class SynchronousDispatcher implements Dispatcher
                catch (Exception exception)
                {
                   //logger.error("getInvoker() failed mapping exception", exception);
-                  writeException(request, response, exception);
+                  writeException(request, response, exception, t -> {});
                   return;
                }
                invoke(request, response, invoker);
@@ -259,7 +260,7 @@ public class SynchronousDispatcher implements Dispatcher
                   else
                   {
                      //logger.error("getInvoker() failed mapping exception", failure);
-                     writeException(request, response, failure);
+                     writeException(request, response, failure, t->{});
                      return;
                   }
                }
@@ -441,20 +442,20 @@ public class SynchronousDispatcher implements Dispatcher
       catch (Exception e)
       {
          //logger.error("invoke() failed mapping exception", e);
-         writeException(request, response, e);
+         writeException(request, response, e, t->{});
          return;
       }
 
       if (jaxrsResponse != null) writeResponse(request, response, jaxrsResponse);
    }
 
-   public void asynchronousDelivery(HttpRequest request, HttpResponse response, Response jaxrsResponse) throws IOException
+   public void asynchronousDelivery(HttpRequest request, HttpResponse response, Response jaxrsResponse, Consumer<Throwable> onComplete) throws IOException
    {
       if (jaxrsResponse == null) return;
       try
       {
          pushContextObjects(request, response);
-         ServerResponseWriter.writeNomapResponse((BuiltResponse) jaxrsResponse, request, response, providerFactory);
+         ServerResponseWriter.writeNomapResponse((BuiltResponse) jaxrsResponse, request, response, providerFactory, onComplete);
       }
       finally
       {
@@ -462,32 +463,38 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
 
-   public void asynchronousExceptionDelivery(HttpRequest request, HttpResponse response, Throwable exception)
+   public void unhandledAsynchronousException(HttpResponse response, Throwable ex) {
+      LogMessages.LOGGER.unhandledAsynchronousException(ex);
+      // unhandled exceptions need to be processed as they can't be thrown back to the servlet container
+      if (!response.isCommitted()) {
+         try
+         {
+            response.reset();
+            response.sendError(500);
+         }
+         catch (IOException e)
+         {
+
+         }
+      }
+   }
+   
+   public void asynchronousExceptionDelivery(HttpRequest request, HttpResponse response, Throwable exception, Consumer<Throwable> onComplete)
    {
       try
       {
          pushContextObjects(request, response);
-         writeException(request, response, exception);
+         writeException(request, response, exception, t -> {
+            if(t != null)
+               unhandledAsynchronousException(response, t);
+            onComplete.accept(null);
+            ResteasyProviderFactory.removeContextDataLevel();
+         });
       }
       catch (Throwable ex)
       {
-         LogMessages.LOGGER.unhandledAsynchronousException(ex);
-         // unhandled exceptions need to be processed as they can't be thrown back to the servlet container
-         if (!response.isCommitted()) {
-            try
-            {
-               response.reset();
-               response.sendError(500);
-            }
-            catch (IOException e)
-            {
-
-            }
-         }
-      }
-      finally
-      {
-         ResteasyProviderFactory.removeContextDataLevel();
+         onComplete.accept(ex);
+         unhandledAsynchronousException(response, ex);
       }
    }
 
@@ -496,12 +503,16 @@ public class SynchronousDispatcher implements Dispatcher
    {
       try
       {
-         ServerResponseWriter.writeNomapResponse((BuiltResponse) jaxrsResponse, request, response, providerFactory);
+         ServerResponseWriter.writeNomapResponse((BuiltResponse) jaxrsResponse, request, response, providerFactory,
+               t -> {
+                  if(t != null)
+                     writeException(request, response, t, t2 -> {});
+               });
       }
       catch (Exception e)
       {
          //logger.error("writeResponse() failed mapping exception", e);
-         writeException(request, response, e);
+         writeException(request, response, e, t -> {});
       }
    }
 
