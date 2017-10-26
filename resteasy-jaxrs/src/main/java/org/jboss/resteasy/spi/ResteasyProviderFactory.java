@@ -68,6 +68,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -158,6 +159,24 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       }
    }
 
+   protected int getPriority(Object o)
+   {
+      Class<?> clazz = o.getClass();
+      // Check for weld proxy.
+      clazz = clazz.isSynthetic() ? clazz.getSuperclass() : clazz;
+      Priority priority = clazz.getAnnotation(Priority.class);
+      return priority != null ? priority.value() : Priorities.USER;
+   }
+   
+   protected Comparator<Object> priorityComparator = new Comparator<Object> ()
+   {
+      @Override
+      public int compare(Object o1, Object o2)
+      {
+         return getPriority(o1) - getPriority(o2);
+      }
+   };
+   
    protected static AtomicReference<ResteasyProviderFactory> pfr = new AtomicReference<ResteasyProviderFactory>();
    protected static ThreadLocalStack<Map<Class<?>, Object>> contextualData = new ThreadLocalStack<Map<Class<?>, Object>>();
    protected static int maxForwards = 20;
@@ -1058,6 +1077,11 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
 
    protected void addExceptionMapper(ExceptionMapper provider, Class providerClass)
    {
+      // Check for weld proxy.
+      if (providerClass.isSynthetic())
+      {
+         providerClass = providerClass.getSuperclass();
+      }
       Type exceptionType = Types.getActualTypeArgumentsOfAnInterface(providerClass, ExceptionMapper.class)[0];
       addExceptionMapper(provider, exceptionType);
    }
@@ -1076,6 +1100,14 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
       {
          exceptionMappers = new ConcurrentHashMap<Class<?>, ExceptionMapper>();
          exceptionMappers.putAll(parent.getExceptionMappers());
+      }
+      ExceptionMapper<?> oldMapper = exceptionMappers.get(exceptionType);
+      if (oldMapper != null)
+      {
+         if(priorityComparator.compare(oldMapper, provider) <= 0)
+         {
+            return;
+         }
       }
       exceptionMappers.put(exceptionClass, provider);
    }
@@ -1467,6 +1499,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>(parent.getParamConverterProviders());
          }
          paramConverterProviders.add(paramConverterProvider);
+         Collections.sort(paramConverterProviders, priorityComparator);
          newContracts.put(ParamConverterProvider.class, getPriority(priorityOverride, contracts, ParamConverterProvider.class, provider));
       }
       if (isA(provider, MessageBodyReader.class, contracts))
@@ -1783,6 +1816,7 @@ public class ResteasyProviderFactory extends RuntimeDelegate implements Provider
             paramConverterProviders = new CopyOnWriteArrayList<ParamConverterProvider>(parent.getParamConverterProviders());
          }
          paramConverterProviders.add((ParamConverterProvider) provider);
+         Collections.sort(paramConverterProviders, priorityComparator);
          int priority = getPriority(priorityOverride, contracts, ParamConverterProvider.class, provider.getClass());
          newContracts.put(ParamConverterProvider.class, priority);
       }
