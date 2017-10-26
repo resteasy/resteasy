@@ -161,6 +161,12 @@ public class SynchronousDispatcher implements Dispatcher
       throw (T)t;
    }
 
+   @Deprecated
+   public void writeException(HttpRequest request, HttpResponse response, Throwable e)
+   {
+      writeException(request, response, e, t -> {});
+   }
+
    public void writeException(HttpRequest request, HttpResponse response, Throwable e, Consumer<Throwable> onComplete)
    {
       if (!bufferExceptionEntityRead)
@@ -449,6 +455,12 @@ public class SynchronousDispatcher implements Dispatcher
       if (jaxrsResponse != null) writeResponse(request, response, jaxrsResponse);
    }
 
+   @Deprecated
+   public void asynchronousDelivery(HttpRequest request, HttpResponse response, Response jaxrsResponse) throws IOException
+   {
+      asynchronousDelivery(request, response, jaxrsResponse, t -> {});
+   }
+
    public void asynchronousDelivery(HttpRequest request, HttpResponse response, Response jaxrsResponse, Consumer<Throwable> onComplete) throws IOException
    {
       if (jaxrsResponse == null) return;
@@ -479,6 +491,12 @@ public class SynchronousDispatcher implements Dispatcher
       }
    }
    
+   @Deprecated
+   public void asynchronousExceptionDelivery(HttpRequest request, HttpResponse response, Throwable exception)
+   {
+      asynchronousExceptionDelivery(request, response, exception, t -> {});
+   }
+
    public void asynchronousExceptionDelivery(HttpRequest request, HttpResponse response, Throwable exception, Consumer<Throwable> onComplete)
    {
       try

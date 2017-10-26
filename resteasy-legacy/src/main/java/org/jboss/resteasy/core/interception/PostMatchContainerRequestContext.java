@@ -14,6 +14,6 @@ public class PostMatchContainerRequestContext extends org.jboss.resteasy.core.in
 
    public PostMatchContainerRequestContext(HttpRequest request, ResourceMethodInvoker resourceMethod)
    {
-      super(request, resourceMethod, null, null);
+      super(request, resourceMethod);
    }
 }

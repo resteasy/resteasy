@@ -52,6 +52,12 @@ public class ContainerResponseContextImpl implements SuspendableContainerRespons
    private Consumer<Throwable> onComplete;
    private boolean weSuspended;
 
+   @Deprecated
+   public ContainerResponseContextImpl(HttpRequest request, HttpResponse httpResponse, BuiltResponse serverResponse)
+   {
+      this(request, httpResponse, serverResponse, null, new ContainerResponseFilter[]{}, t -> {}, null);
+   }
+
    public ContainerResponseContextImpl(HttpRequest request, HttpResponse httpResponse, BuiltResponse serverResponse, 
          ResponseContainerRequestContext requestContext, ContainerResponseFilter[] responseFilters, 
          Consumer<Throwable> onComplete, RunnableWithIOException continuation)

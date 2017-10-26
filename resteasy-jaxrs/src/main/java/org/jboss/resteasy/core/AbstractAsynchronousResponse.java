@@ -157,6 +157,12 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
       }
    }
 
+   @Deprecated
+   protected boolean internalResume(Object entity)
+   {
+      return internalResume(entity, t -> {});
+   }
+
    protected boolean internalResume(Object entity, Consumer<Throwable> onComplete)
    {
       ResteasyProviderFactory.pushContextDataMap(contextDataMap);
@@ -203,6 +209,12 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
          });
       }
       return true;
+   }
+
+   @Deprecated
+   protected boolean internalResume(Throwable exc)
+   {
+      return internalResume(exc, t -> {});
    }
 
    protected boolean internalResume(Throwable exc, Consumer<Throwable> onComplete)

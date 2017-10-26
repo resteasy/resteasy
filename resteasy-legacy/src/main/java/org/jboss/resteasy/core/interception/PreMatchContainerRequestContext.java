@@ -13,6 +13,6 @@ public class PreMatchContainerRequestContext extends org.jboss.resteasy.core.int
 
    public PreMatchContainerRequestContext(HttpRequest request)
    {
-      super(request, null, null);
+      super(request);
    }
 }

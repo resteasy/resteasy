@@ -56,7 +56,21 @@ public class ServerResponseWriter
    {
       writeNomapResponse(jaxrsResponse, request, response, providerFactory, onComplete, true);
    }
-   
+
+   @Deprecated
+   public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, 
+         final ResteasyProviderFactory providerFactory) throws IOException
+   {
+      writeNomapResponse(jaxrsResponse, request, response, providerFactory, t -> {}, true);
+   }
+
+   @Deprecated
+   public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, 
+         final ResteasyProviderFactory providerFactory, boolean sendHeaders) throws IOException
+   {
+      writeNomapResponse(jaxrsResponse, request, response, providerFactory, t -> {}, sendHeaders);
+   }
+
    public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, 
          final ResteasyProviderFactory providerFactory, Consumer<Throwable> onComplete, boolean sendHeaders) throws IOException
    {

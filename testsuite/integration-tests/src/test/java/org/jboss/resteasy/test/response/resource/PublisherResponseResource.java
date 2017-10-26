@@ -35,10 +35,8 @@ public class PublisherResponseResource {
       terminated = false;
       System.err.println("Starting ");
       return Flowable.interval(1, TimeUnit.SECONDS).map(v -> {
-         System.err.println("Emitting after "+v);
          return "one";
       }).doFinally(() -> {
-         System.err.println("FINALLY");
          terminated = true;
       });
    }
@@ -92,10 +90,8 @@ public class PublisherResponseResource {
       Arrays.fill(chunk, 'a');
       String ret = new String(chunk);
       return Flowable.interval(1, TimeUnit.SECONDS).map(v -> {
-         System.err.println("Emitting after "+v);
          return ret;
       }).doFinally(() -> {
-         System.err.println("FINALLY");
          terminated = true;
       });
    }
@@ -113,10 +109,8 @@ public class PublisherResponseResource {
    public Publisher<String> sseInfinite() {
       terminated = false;
       return Flowable.interval(1, TimeUnit.SECONDS).map(v -> {
-         System.err.println("Emitting after "+v);
          return "one";
       }).doFinally(() -> {
-         System.err.println("FINALLY");
          terminated = true;
       });
    }
