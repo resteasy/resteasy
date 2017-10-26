@@ -13,41 +13,34 @@ import java.lang.reflect.Constructor;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class FormInjector implements ValueInjector
-{
-   private Class type;
-   private ConstructorInjector constructorInjector;
-   private PropertyInjector propertyInjector;
+public class FormInjector implements ValueInjector {
+    private Class type;
+    private ConstructorInjector constructorInjector;
+    private PropertyInjector propertyInjector;
 
-   @SuppressWarnings(value = "unchecked")
-   public FormInjector(Class type, ResteasyProviderFactory factory)
-   {
-      this.type = type;
-      Constructor<?> constructor = null;
+    @SuppressWarnings(value = "unchecked")
+    public FormInjector(final Class type, final ResteasyProviderFactory factory) {
+        this.type = type;
+        Constructor<?> constructor = null;
 
-      try
-      {
-         constructor = type.getConstructor();
-      }
-      catch (NoSuchMethodException e)
-      {
-         throw new RuntimeException(Messages.MESSAGES.unableToInstantiateForm());
-      }
+        try {
+            constructor = type.getConstructor();
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(Messages.MESSAGES.unableToInstantiateForm());
+        }
 
-      constructorInjector = factory.getInjectorFactory().createConstructor(constructor, factory);
-      propertyInjector = factory.getInjectorFactory().createPropertyInjector(type, factory);
+        constructorInjector = factory.getInjectorFactory().createConstructor(constructor, factory);
+        propertyInjector = factory.getInjectorFactory().createPropertyInjector(type, factory);
 
-   }
+    }
 
-   public Object inject()
-   {
-      throw new IllegalStateException(Messages.MESSAGES.cannotInjectIntoForm());
-   }
+    public Object inject() {
+        throw new IllegalStateException(Messages.MESSAGES.cannotInjectIntoForm());
+    }
 
-   public Object inject(HttpRequest request, HttpResponse response)
-   {
-      Object target = constructorInjector.construct();
-      propertyInjector.inject(request, response, target);
-      return target;
-   }
+    public Object inject(HttpRequest request, HttpResponse response) {
+        Object target = constructorInjector.construct();
+        propertyInjector.inject(request, response, target);
+        return target;
+    }
 }

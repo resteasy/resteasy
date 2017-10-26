@@ -19,48 +19,38 @@ import java.util.List;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public class MatrixParamInjector extends StringParameterInjector implements ValueInjector
-{
-   private boolean encode;
-   
-   public MatrixParamInjector(Class type, Type genericType, AccessibleObject target, String paramName, String defaultValue, boolean encode, Annotation[] annotations, ResteasyProviderFactory factory)
-   {
-      super(type, genericType, paramName, MatrixParam.class, defaultValue, target, annotations, factory);
-      this.encode = encode;
-   }
+public class MatrixParamInjector extends StringParameterInjector implements ValueInjector {
+    private boolean encode;
 
-   public Object inject(HttpRequest request, HttpResponse response)
-   {
-      ArrayList<String> values = new ArrayList<String>();
-      if (encode)
-      {
-         for (PathSegment segment : request.getUri().getPathSegments(false))
-         {
-            List<String> list = segment.getMatrixParameters().get(paramName);
-            if (list != null) values.addAll(list);
-         }
-      }
-      else
-      {
-         for (PathSegment segment : request.getUri().getPathSegments())
-         {
-            List<String> list = segment.getMatrixParameters().get(paramName);
-            if (list != null) values.addAll(list);
-         }
-      }
-      if (values.size() == 0) return extractValues(null);
-      else return extractValues(values);
-   }
+    public MatrixParamInjector(final Class type, final Type genericType, final AccessibleObject target, final String paramName, final String defaultValue, final boolean encode, final Annotation[] annotations, final ResteasyProviderFactory factory) {
+        super(type, genericType, paramName, MatrixParam.class, defaultValue, target, annotations, factory);
+        this.encode = encode;
+    }
 
-   @Override
-   protected void throwProcessingException(String message, Throwable cause)
-   {
-      throw new NotFoundException(message, cause);
+    public Object inject(final HttpRequest request, final HttpResponse response) {
+        ArrayList<String> values = new ArrayList<String>();
+        if (encode) {
+            for (PathSegment segment : request.getUri().getPathSegments(false)) {
+                List<String> list = segment.getMatrixParameters().get(paramName);
+                if (list != null) values.addAll(list);
+            }
+        } else {
+            for (PathSegment segment : request.getUri().getPathSegments()) {
+                List<String> list = segment.getMatrixParameters().get(paramName);
+                if (list != null) values.addAll(list);
+            }
+        }
+        if (values.size() == 0) return extractValues(null);
+        else return extractValues(values);
+    }
 
-   }
+    @Override
+    protected void throwProcessingException(String message, Throwable cause) {
+        throw new NotFoundException(message, cause);
 
-   public Object inject()
-   {
-      throw new RuntimeException(Messages.MESSAGES.illegalToInjectMatrixParam());
-   }
+    }
+
+    public Object inject() {
+        throw new RuntimeException(Messages.MESSAGES.illegalToInjectMatrixParam());
+    }
 }

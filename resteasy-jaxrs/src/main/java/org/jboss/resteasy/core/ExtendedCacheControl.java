@@ -4,15 +4,14 @@ import javax.ws.rs.core.CacheControl;
 
 /**
  * Adds support for the public directive which is not supported by {@link CacheControl} for some reason.
- * 
+ *
  * @author <a href="http://community.jboss.org/people/jharting">Jozef Hartinger</a>
- * 
  * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1
  */
 public class ExtendedCacheControl extends CacheControl {
 
     private boolean _public = false;
-    
+
     public boolean isPublic() {
         return _public;
     }
