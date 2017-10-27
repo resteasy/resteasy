@@ -11,7 +11,6 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.SseEventSource;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -42,7 +41,7 @@ public class SseEventSinkTest {
         war.addAsWebInfResource("org/jboss/resteasy/test/providers/sse/web.xml","web.xml");
         war.addAsWebResource("org/jboss/resteasy/test/providers/sse/index.html","index.html");
         war.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
-        return TestUtil.finishContainerPrepare(war, null, SseApplication.class, GreenHouse.class, SseResource.class, AnotherSseResource.class, EscapingSseResource.class);
+        return TestUtil.finishContainerPrepare(war, null, SseApplication.class, GreenHouse.class, SseResource.class, AnotherSseResource.class, EscapingSseResource.class, ExecutorServletContextListener.class);
     }
 
     private String generateURL(String path) {

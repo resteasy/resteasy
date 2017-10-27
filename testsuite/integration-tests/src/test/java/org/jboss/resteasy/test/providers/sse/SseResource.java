@@ -3,7 +3,9 @@ package org.jboss.resteasy.test.providers.sse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -35,6 +37,8 @@ public class SseResource
    private final Object outputLock = new Object();
    @Context
    private Sse sse;
+   @Context
+   private ServletContext servletContext;
    private volatile SseEventSink eventSink;
    private SseBroadcaster sseBroadcaster;
    private Object openLock = new Object();
@@ -120,22 +124,24 @@ public class SseResource
         if (sseBroadcaster == null) {
             sseBroadcaster = sse.newBroadcaster();
         }
+        ExecutorService service = (ExecutorService)servletContext.getAttribute(ExecutorServletContextListener.TEST_EXECUTOR);
         if ("repeat".equals(message)) {
-            new Thread()
+            service.execute(new Thread()
             {
                public void run()
                {
                    for (int i = 0; i < 100; i++) {
-                       sseBroadcaster.broadcast(sse.newEvent(message));
+                       
                        try {
+                           sseBroadcaster.broadcast(sse.newEvent(message));
                            Thread.sleep(100);
                        } catch (final InterruptedException e) {
                            logger.error(e.getMessage(), e);
+                           break;
                        }
                    }
                }
-            }.start();
-            
+            });
 
         } else {
             sseBroadcaster.broadcast(sse.newEvent(message));
@@ -159,8 +165,8 @@ public class SseResource
    @Produces(MediaType.SERVER_SENT_EVENTS)
    public void startDomain(@PathParam("id") final String id,
                            @Context SseEventSink sink) {
-      new Thread()
-      {
+      ExecutorService service = (ExecutorService)servletContext.getAttribute(ExecutorServletContextListener.TEST_EXECUTOR);
+      service.execute(new Thread(){
          public void run()
          {
             try
@@ -184,7 +190,7 @@ public class SseResource
                 logger.error(e.getMessage(), e);
             }
          }
-      }.start();
+      });
    }
    
    
@@ -196,23 +202,25 @@ public class SseResource
            throw new IllegalStateException("No client connected.");
        }
        this.eventSink = sink;
-       new Thread() {
+       ExecutorService service = (ExecutorService)servletContext.getAttribute(ExecutorServletContextListener.TEST_EXECUTOR);
+       service.execute(new Thread() {
            public void run() {
                while (!eventSink.isClosed() && sending) {
-                   synchronized (openLock) {
-                       eventSink.send(sse.newEvent("msg"));
-                   }
                    try
-                   {
+                   { 
+                       synchronized (openLock) {
+                           eventSink.send(sse.newEvent("msg"));
+                       }
                        Thread.sleep(200);
                    }catch (final InterruptedException e)
                    {
                        logger.error(e.getMessage(), e);
+                       break;
                    }
                   
                }
            }
-        }.start();
+        });
    }
    @GET
    @Path("/isopen")
