@@ -51,16 +51,16 @@ public class ExceptionHandler
    @SuppressWarnings(value = "unchecked")
    public Response executeExactExceptionMapper(Throwable exception)
    {
-      ExceptionMapper mapper = providerFactory.getExceptionMappers().get(exception.getClass());
+      ExceptionMapper mapper = providerFactory.getExceptionMapper(exception.getClass());
       if (mapper == null) return null;
       mapperExecuted = true;
       return mapper.toResponse(exception);
    }
 
    @SuppressWarnings(value = "unchecked")
-   public Response executeExceptionMapperForClass(Throwable exception, Class clazz)
+   public Response executeExceptionMapperForClass(Throwable exception, Class<? extends Throwable> clazz)
    {
-      ExceptionMapper mapper = providerFactory.getExceptionMappers().get(clazz);
+      ExceptionMapper mapper = providerFactory.getExceptionMapper(clazz);
       if (mapper == null) return null;
       mapperExecuted = true;
       return mapper.toResponse(exception);
@@ -91,11 +91,11 @@ public class ExceptionHandler
    {
       ExceptionMapper mapper = null;
 
-      Class causeClass = exception.getClass();
+      Class<? extends Throwable> causeClass = exception.getClass();
       while (mapper == null) {
          if (causeClass == null) break;
-         mapper = providerFactory.getExceptionMappers().get(causeClass);
-         if (mapper == null) causeClass = causeClass.getSuperclass();
+         mapper = providerFactory.getExceptionMapper(causeClass);
+         if (mapper == null) causeClass = (Class<? extends Throwable>) causeClass.getSuperclass();
       }
       if (mapper != null) {
          mapperExecuted = true;
