@@ -40,7 +40,7 @@ public class ResteasyNoResourceFoundView implements View
                                HttpResponse response) throws Exception
          {
             SynchronousDispatcher dispatcher = (SynchronousDispatcher)deployment.getDispatcher();
-            dispatcher.writeException(requestWrapper.getHttpRequest(), response, failure);
+            dispatcher.writeException(requestWrapper.getHttpRequest(), response, failure, t -> {});
             return null;
          }
 

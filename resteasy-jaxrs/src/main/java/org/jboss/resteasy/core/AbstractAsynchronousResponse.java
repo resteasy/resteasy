@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -156,7 +157,13 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
       }
    }
 
+   @Deprecated
    protected boolean internalResume(Object entity)
+   {
+      return internalResume(entity, t -> {});
+   }
+
+   protected boolean internalResume(Object entity, Consumer<Throwable> onComplete)
    {
       ResteasyProviderFactory.pushContextDataMap(contextDataMap);
       Response response = null;
@@ -179,27 +186,44 @@ public abstract class AbstractAsynchronousResponse implements ResteasyAsynchrono
       }
       try
       {
-         dispatcher.asynchronousDelivery(this.request, this.response, response);
+         dispatcher.asynchronousDelivery(this.request, this.response, response, t -> {
+            if(t != null)
+            {
+               internalResume(t, t2 -> {
+                  onComplete.accept(t);
+                  // callbacks done by internalResume
+               });
+            }
+            else
+            {
+               onComplete.accept(null);
+               completionCallbacks(null);
+            }
+         });
       }
       catch (Throwable e)
       {
-         return internalResume(e);
+         return internalResume(e, t -> {
+            onComplete.accept(e);
+            // callbacks done by internalResume
+         });
       }
-      completionCallbacks(null);
       return true;
    }
 
+   @Deprecated
    protected boolean internalResume(Throwable exc)
    {
+      return internalResume(exc, t -> {});
+   }
+
+   protected boolean internalResume(Throwable exc, Consumer<Throwable> onComplete)
+   {
       ResteasyProviderFactory.pushContextDataMap(contextDataMap);
-      try
-      {
-         dispatcher.asynchronousExceptionDelivery(request, response, exc);
-      }
-      finally
-      {
+      dispatcher.asynchronousExceptionDelivery(request, response, exc, t -> {
+         onComplete.accept(t);
          completionCallbacks(exc);
-      }
+      });
       return true;
    }
 

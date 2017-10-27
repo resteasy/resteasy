@@ -15,7 +15,7 @@ public class ContainerResponseContextImpl extends org.jboss.resteasy.core.interc
 
    public ContainerResponseContextImpl(HttpRequest request, HttpResponse httpResponse, BuiltResponse serverResponse)
    {
-      super(request, httpResponse, serverResponse, null, null, null);
+      super(request, httpResponse, serverResponse);
    }
 
 }
