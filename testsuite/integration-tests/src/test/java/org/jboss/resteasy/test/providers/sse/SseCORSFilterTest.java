@@ -30,7 +30,7 @@ public class SseCORSFilterTest
       war.addClass(SseCORSFilterTest.class);
       war.addAsWebInfResource("org/jboss/resteasy/test/providers/sse/filter/web.xml", "web.xml");
       war.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
-      return TestUtil.finishContainerPrepare(war, null, SseFilterApplication.class, SseResource.class, CORSFilter.class);
+      return TestUtil.finishContainerPrepare(war, null, SseFilterApplication.class, SseResource.class, CORSFilter.class, ExecutorServletContextListener.class);
    }
 
    private String generateURL(String path)
