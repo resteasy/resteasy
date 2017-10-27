@@ -27,6 +27,7 @@ public class VertxHttpResponse implements HttpResponse
    private boolean committed;
    private ResteasyProviderFactory providerFactory;
    private final HttpMethod method;
+   private Throwable vertxException;
 
    public VertxHttpResponse(HttpServerResponse response, ResteasyProviderFactory providerFactory)
    {
@@ -40,6 +41,8 @@ public class VertxHttpResponse implements HttpResponse
       os = (method == null || !method.equals(HttpMethod.HEAD)) ? new ChunkOutputStream(this, 1000) : null;
       this.response = response;
       this.providerFactory = providerFactory;
+      response.exceptionHandler(t -> vertxException = t);
+      response.closeHandler(v -> vertxException = new IOException("Connection closed"));
    }
 
    @Override
@@ -78,15 +81,25 @@ public class VertxHttpResponse implements HttpResponse
       outputHeaders.add(javax.ws.rs.core.HttpHeaders.SET_COOKIE, cookie);
    }
 
+   void checkException() throws IOException
+   {
+      if(vertxException instanceof IOException)
+         throw (IOException)vertxException;
+      if(vertxException != null)
+         throw new IOException(vertxException);
+   }
+   
    @Override
    public void sendError(int status) throws IOException
    {
+      checkException();
       sendError(status, null);
    }
 
    @Override
    public void sendError(int status, String message) throws IOException
    {
+      checkException();
       if (committed)
       {
          throw new IllegalStateException();
@@ -164,6 +177,7 @@ public class VertxHttpResponse implements HttpResponse
 
    public void finish() throws IOException
    {
+      checkException();
       if (os != null) {
          os.flush();
          if (!isCommitted())
@@ -178,6 +192,7 @@ public class VertxHttpResponse implements HttpResponse
 
    @Override
    public void flushBuffer() throws IOException {
+      checkException();
 	   if(os != null) {
 		   os.flush();
 	   }

@@ -40,6 +40,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -52,12 +53,28 @@ public class ServerResponseWriter
 	   public void run() throws IOException;
    }
 	
-   public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, final ResteasyProviderFactory providerFactory) throws IOException
+   public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, 
+         final ResteasyProviderFactory providerFactory, Consumer<Throwable> onComplete) throws IOException
    {
-      writeNomapResponse(jaxrsResponse, request, response, providerFactory, true);
+      writeNomapResponse(jaxrsResponse, request, response, providerFactory, onComplete, true);
    }
-   
-   public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, final ResteasyProviderFactory providerFactory, boolean sendHeaders) throws IOException
+
+   @Deprecated
+   public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, 
+         final ResteasyProviderFactory providerFactory) throws IOException
+   {
+      writeNomapResponse(jaxrsResponse, request, response, providerFactory, t -> {}, true);
+   }
+
+   @Deprecated
+   public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, 
+         final ResteasyProviderFactory providerFactory, boolean sendHeaders) throws IOException
+   {
+      writeNomapResponse(jaxrsResponse, request, response, providerFactory, t -> {}, sendHeaders);
+   }
+
+   public static void writeNomapResponse(BuiltResponse jaxrsResponse, final HttpRequest request, final HttpResponse response, 
+         final ResteasyProviderFactory providerFactory, Consumer<Throwable> onComplete, boolean sendHeaders) throws IOException
    {
       ResourceMethodInvoker method =(ResourceMethodInvoker) request.getAttribute(ResourceMethodInvoker.class.getName());
 
@@ -65,7 +82,7 @@ public class ServerResponseWriter
       // which is used by marshalling, and NPEs otherwise
       setResponseMediaType(jaxrsResponse, request, response, providerFactory, method);
       
-      executeFilters(jaxrsResponse, request, response, providerFactory, method, () -> {
+      executeFilters(jaxrsResponse, request, response, providerFactory, method, onComplete, () -> {
          //[RESTEASY-1627] check on response.getOutputStream() to avoid resteasy-netty4 trying building a chunked response body for HEAD requests 
          if (jaxrsResponse.getEntity() == null || response.getOutputStream() == null)
          {
@@ -166,8 +183,9 @@ public class ServerResponseWriter
       }
    }
 
-   private static void executeFilters(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, ResteasyProviderFactory providerFactory, 
-		   ResourceMethodInvoker method, RunnableWithIOException continuation) throws IOException
+   private static void executeFilters(BuiltResponse jaxrsResponse, HttpRequest request, HttpResponse response, 
+         ResteasyProviderFactory providerFactory, 
+		   ResourceMethodInvoker method, Consumer<Throwable> onComplete, RunnableWithIOException continuation) throws IOException
    {
       ContainerResponseFilter[] responseFilters = null;
 
@@ -184,12 +202,23 @@ public class ServerResponseWriter
       {
          ResponseContainerRequestContext requestContext = new ResponseContainerRequestContext(request);
          ContainerResponseContextImpl responseContext = new ContainerResponseContextImpl(request, response, jaxrsResponse, 
-        		 requestContext, responseFilters, continuation);
+        		 requestContext, responseFilters, onComplete, continuation);
          // filter calls the continuation
          responseContext.filter();
       }
       else
-         continuation.run();
+      {
+         try 
+         {
+            continuation.run();
+            onComplete.accept(null);
+         }
+         catch(Throwable t)
+         {
+            onComplete.accept(t);
+            SynchronousDispatcher.rethrow(t);
+         }
+      }
    }
    
    protected static void setDefaultContentType(HttpRequest request, BuiltResponse jaxrsResponse, ResteasyProviderFactory providerFactory, ResourceMethodInvoker method)

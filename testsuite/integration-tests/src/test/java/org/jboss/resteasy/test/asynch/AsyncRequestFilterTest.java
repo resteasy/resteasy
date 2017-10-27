@@ -416,6 +416,45 @@ public class AsyncRequestFilterTest {
         assertEquals(200, response.getStatus());
         assertEquals("ResponseFilter2", response.readEntity(String.class));
 
+        // async instantaneous
+        response = base.request()
+              .header("ResponseFilter1", "async-pass-instant")
+              .header("ResponseFilter2", "sync-pass")
+              .header("ResponseFilter3", "sync-pass")
+              .get();
+        assertEquals(200, response.getStatus());
+        assertEquals("resource", response.readEntity(String.class));
+
+        response = base.request()
+              .header("ResponseFilter1", "async-fail-instant")
+              .header("ResponseFilter2", "sync-pass")
+              .header("ResponseFilter3", "sync-pass")
+              .get();
+        assertEquals(200, response.getStatus());
+        assertEquals("ResponseFilter1", response.readEntity(String.class));
+
+        client.close();
+    }
+    /**
+     * @tpTestDetails Interceptors work
+     * @tpSince RESTEasy 4.0.0
+     */
+    @Test
+    public void testResponseFilters2() throws Exception {
+        Client client = ClientBuilder.newClient();
+
+        // Create book.
+        WebTarget base = client.target(generateURL("/async"));
+
+        // async way later
+        Response response = base.request()
+              .header("ResponseFilter1", "sync-pass")
+              .header("ResponseFilter2", "sync-pass")
+              .header("ResponseFilter3", "async-fail-late")
+              .get();
+        assertEquals(200, response.getStatus());
+        assertEquals("ResponseFilter3", response.readEntity(String.class));
+
         client.close();
     }
 }

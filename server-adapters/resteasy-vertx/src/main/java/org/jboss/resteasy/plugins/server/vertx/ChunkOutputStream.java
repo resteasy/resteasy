@@ -91,6 +91,7 @@ public class ChunkOutputStream extends OutputStream
       int readable = buffer.length();
       if (readable == 0) return;
       if (!response.isCommitted()) response.prepareChunkStream();
+      response.checkException();
       response.response.write(buffer);
       buffer = Buffer.factory.buffer();
       super.flush();

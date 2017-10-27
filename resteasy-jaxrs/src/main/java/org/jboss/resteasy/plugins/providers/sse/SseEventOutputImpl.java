@@ -85,7 +85,7 @@ public class SseEventOutputImpl extends GenericType<OutboundSseEvent> implements
          BuiltResponse jaxrsResponse = (BuiltResponse)Response.ok().type(MediaType.SERVER_SENT_EVENTS).build();
          try
          {
-            ServerResponseWriter.writeNomapResponse(jaxrsResponse, request, response, ResteasyProviderFactory.getInstance(), true);
+            ServerResponseWriter.writeNomapResponse(jaxrsResponse, request, response, ResteasyProviderFactory.getInstance(), t -> {}, true);
             response.getOutputStream().write(SseConstants.EOL);
             response.getOutputStream().write(SseConstants.EOL);
             response.flushBuffer();

@@ -349,7 +349,8 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
             // which case we haven't completed the connection and called the callbacks
             try 
             {
-               asyncStreamResponseConsumer.internalResume(ex);
+               AsyncResponseConsumer consumer = asyncStreamResponseConsumer;
+               asyncStreamResponseConsumer.internalResume(ex, t -> consumer.complete(ex));
             }
             catch(UnhandledException x) 
             {
@@ -357,7 +358,6 @@ public class ResourceMethodInvoker implements ResourceInvoker, JaxrsInterceptorR
                request.getAsyncContext().getAsyncResponse().completionCallbacks(ex);
                throw x;
             }
-            asyncStreamResponseConsumer.complete(ex);
             return null;
          }
          else if (request.getAsyncContext().isSuspended())

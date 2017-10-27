@@ -3,6 +3,9 @@ package org.jboss.resteasy.test.response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -173,5 +176,76 @@ public class PublisherResponseTest {
       Assert.assertEquals(0, errors.size());
       Assert.assertEquals("one", collector.get(0));
       Assert.assertEquals("two", collector.get(1));
+   }
+
+   /**
+    * @tpTestDetails Resource method unsubscribes on close for infinite streams.
+    * @tpSince RESTEasy 4.0
+    */
+   @Test
+   public void testInfiniteStreamsSse() throws Exception
+   {
+      WebTarget target = client.target(generateURL("/sse-infinite"));
+      List<String> collector = new ArrayList<>();
+      List<Throwable> errors = new ArrayList<>();
+      CompletableFuture<Void> future = new CompletableFuture<Void>();
+      SseEventSource source = SseEventSource.target(target).build();
+      source.register(evt -> {
+        String data = evt.readData(String.class);
+        collector.add(data);
+        if(collector.size() >= 2) {
+           future.complete(null);
+        }
+      }, 
+           t -> {
+              t.printStackTrace();
+              errors.add(t);  
+           }, 
+           () -> {
+              // bah, never called
+              future.complete(null);
+           });
+      source.open();
+      future.get();
+      source.close();
+      Assert.assertEquals(2, collector.size());
+      Assert.assertEquals(0, errors.size());
+      Assert.assertEquals("one", collector.get(0));
+      Assert.assertEquals("one", collector.get(1));
+
+      close();
+      setup();
+      Thread.sleep(5000);
+      Invocation.Builder request = client.target(generateURL("/infinite-done")).request();
+      Response response = request.get();
+      String entity = response.readEntity(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("true", entity);
+   }
+
+   /**
+    * @tpTestDetails Resource method unsubscribes on close for infinite streams.
+    * @tpSince RESTEasy 4.0
+    */
+   @Test
+   public void testInfiniteStreamsChunked() throws Exception
+   {
+      Invocation.Builder request = client.target(generateURL("/chunked-infinite")).request();
+      Future<Response> futureResponse = request.async().get();
+      try 
+      {
+         futureResponse.get(2, TimeUnit.SECONDS);
+      }
+      catch(TimeoutException x) 
+      {
+      }
+      close();
+      setup();
+      Thread.sleep(5000);
+      request = client.target(generateURL("/infinite-done")).request();
+      Response response = request.get();
+      String entity = response.readEntity(String.class);
+      Assert.assertEquals(200, response.getStatus());
+      Assert.assertEquals("true", entity);
    }
 }
