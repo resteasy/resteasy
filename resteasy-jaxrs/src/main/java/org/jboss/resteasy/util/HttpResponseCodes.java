@@ -141,6 +141,15 @@ public interface HttpResponseCodes
    public static final int SC_TEMPORARY_REDIRECT = 307;
 
    /**
+    * Status code (308) indicating that the requested resource
+    * resides permanently under a different URI. The permanent URI
+    * <em>SHOULD</em> be given by the <code><em>Location</em></code>
+    * field in the response.
+    */
+
+   public static final int SC_PERMANENT_REDIRECT = 308;
+
+   /**
     * Status code (400) indicating the request sent by the client was
     * syntactically incorrect.
     */
