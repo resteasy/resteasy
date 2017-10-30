@@ -3,7 +3,9 @@ package org.jboss.resteasy.test.providers.sse;
 public class GreenHouse
 {
    private long timestamp;
+
    private int temperature;
+
    private int humidity;
 
    public GreenHouse()

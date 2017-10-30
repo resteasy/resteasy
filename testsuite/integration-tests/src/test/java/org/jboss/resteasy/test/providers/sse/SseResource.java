@@ -35,138 +35,179 @@ public class SseResource
 {
 
    private final Object outputLock = new Object();
+
    @Context
    private Sse sse;
+
    @Context
    private ServletContext servletContext;
+
    private volatile SseEventSink eventSink;
+
    private SseBroadcaster sseBroadcaster;
+
    private Object openLock = new Object();
+
    private volatile boolean sending = true;
+
    private volatile boolean isServiceAvailable = false;
+
    private List<OutboundSseEvent> eventsStore = new ArrayList<OutboundSseEvent>();
+
    private final static Logger logger = Logger.getLogger(SseResource.class);
 
    @GET
    @Produces(MediaType.SERVER_SENT_EVENTS)
-   public void getMessageQueue(@HeaderParam(SseConstants.LAST_EVENT_ID_HEADER) @DefaultValue("-1") int lastEventId, @Context SseEventSink eventSink) {
-       synchronized (outputLock) {
-           if (this.eventSink != null) {
-               throw new IllegalStateException("Server sink already served.");
-           }
-       }
-       this.eventSink = eventSink;
-       //replay missed events
-       if (lastEventId > -1) {
-           synchronized (eventsStore) {
-               if (lastEventId + 1 < eventsStore.size()) {
-                   List<OutboundSseEvent> missedEvents = eventsStore.subList(lastEventId + 1, eventsStore.size());
-                   for (OutboundSseEvent item : missedEvents) {
-                        this.eventSink.send(item);
-                   }
+   public void getMessageQueue(@HeaderParam(SseConstants.LAST_EVENT_ID_HEADER) @DefaultValue("-1") int lastEventId,
+         @Context SseEventSink eventSink)
+   {
+      synchronized (outputLock)
+      {
+         if (this.eventSink != null)
+         {
+            throw new IllegalStateException("Server sink already served.");
+         }
+      }
+      this.eventSink = eventSink;
+      //replay missed events
+      if (lastEventId > -1)
+      {
+         synchronized (eventsStore)
+         {
+            if (lastEventId + 1 < eventsStore.size())
+            {
+               List<OutboundSseEvent> missedEvents = eventsStore.subList(lastEventId + 1, eventsStore.size());
+               for (OutboundSseEvent item : missedEvents)
+               {
+                  this.eventSink.send(item);
                }
-           }
-       }
+            }
+         }
+      }
    }
 
    @POST
-   public void addMessage(final String message) throws IOException {
-       if (eventSink == null) {
-           throw new IllegalStateException("No client connected.");
-       }
-       OutboundSseEvent event = null;
-       synchronized(eventsStore) {
-          event = sse.newEventBuilder().id(Integer.toString(eventsStore.size())).data(message).build();
-          eventsStore.add(event);
-       }
-       eventSink.send(event);
+   public void addMessage(final String message) throws IOException
+   {
+      if (eventSink == null)
+      {
+         throw new IllegalStateException("No client connected.");
+      }
+      OutboundSseEvent event = null;
+      synchronized (eventsStore)
+      {
+         event = sse.newEventBuilder().id(Integer.toString(eventsStore.size())).data(message).build();
+         eventsStore.add(event);
+      }
+      eventSink.send(event);
    }
-   
+
    @POST
    @Path("/addMessageAndDisconnect")
-   public void addMessageAndDisconnect(final String message) throws IOException, InterruptedException {
-        //clear events store first
-        eventsStore.clear();
-        for (int i = 0; i < 10; i++) {
-            OutboundSseEvent event = null;
-            synchronized (eventsStore) {
-                event = sse.newEventBuilder().id(Integer.toString(eventsStore.size())).data(i + "-" + message).build();
-                eventsStore.add(event);
-            }
-            //disconnect after 3 messages
-            if (i == 3) {
-                close();
-            }
-            if (eventSink != null) {
-                eventSink.send(event);
-            }
-            Thread.sleep(250);
-        }
+   public void addMessageAndDisconnect(final String message) throws IOException, InterruptedException
+   {
+      //clear events store first
+      eventsStore.clear();
+      for (int i = 0; i < 10; i++)
+      {
+         OutboundSseEvent event = null;
+         synchronized (eventsStore)
+         {
+            event = sse.newEventBuilder().id(Integer.toString(eventsStore.size())).data(i + "-" + message).build();
+            eventsStore.add(event);
+         }
+         //disconnect after 3 messages
+         if (i == 3)
+         {
+            close();
+         }
+         if (eventSink != null)
+         {
+            eventSink.send(event);
+         }
+         Thread.sleep(250);
+      }
    }
-   
+
    @GET
    @Path("/subscribe")
    @Produces(MediaType.SERVER_SENT_EVENTS)
-   public void subscribe(@Context SseEventSink sink) throws IOException {
-	   if (sink == null) {
-           throw new IllegalStateException("No client connected.");
-       }
-       //subscribe
-	   if (sseBroadcaster == null) {
-		   sseBroadcaster = sse.newBroadcaster();
-	   }
-	   sseBroadcaster.register(sink);	  
+   public void subscribe(@Context SseEventSink sink) throws IOException
+   {
+      if (sink == null)
+      {
+         throw new IllegalStateException("No client connected.");
+      }
+      //subscribe
+      if (sseBroadcaster == null)
+      {
+         sseBroadcaster = sse.newBroadcaster();
+      }
+      sseBroadcaster.register(sink);
    }
-   
+
    @POST
    @Path("/broadcast")
-   public void broadcast(String message) throws IOException {
-        if (sseBroadcaster == null) {
-            sseBroadcaster = sse.newBroadcaster();
-        }
-        ExecutorService service = (ExecutorService)servletContext.getAttribute(ExecutorServletContextListener.TEST_EXECUTOR);
-        if ("repeat".equals(message)) {
-            service.execute(new Thread()
+   public void broadcast(String message) throws IOException
+   {
+      if (sseBroadcaster == null)
+      {
+         sseBroadcaster = sse.newBroadcaster();
+      }
+      ExecutorService service = (ExecutorService) servletContext
+            .getAttribute(ExecutorServletContextListener.TEST_EXECUTOR);
+      if ("repeat".equals(message))
+      {
+         service.execute(new Thread()
+         {
+            public void run()
             {
-               public void run()
+               for (int i = 0; i < 100; i++)
                {
-                   for (int i = 0; i < 100; i++) {
-                       
-                       try {
-                           sseBroadcaster.broadcast(sse.newEvent(message));
-                           Thread.sleep(100);
-                       } catch (final InterruptedException e) {
-                           logger.error(e.getMessage(), e);
-                           break;
-                       }
-                   }
-               }
-            });
 
-        } else {
-            sseBroadcaster.broadcast(sse.newEvent(message));
-        }
-    }
-   
-   
+                  try
+                  {
+                     sseBroadcaster.broadcast(sse.newEvent(message));
+                     Thread.sleep(100);
+                  }
+                  catch (final InterruptedException e)
+                  {
+                     logger.error(e.getMessage(), e);
+                     break;
+                  }
+               }
+            }
+         });
+
+      }
+      else
+      {
+         sseBroadcaster.broadcast(sse.newEvent(message));
+      }
+   }
 
    @DELETE
-   public void close() throws IOException {
-       synchronized (outputLock) {
-           if (eventSink != null) {
-               eventSink.close();
-               eventSink = null;
-           }
-       }
+   public void close() throws IOException
+   {
+      synchronized (outputLock)
+      {
+         if (eventSink != null)
+         {
+            eventSink.close();
+            eventSink = null;
+         }
+      }
    }
 
    @GET
    @Path("domains/{id}")
    @Produces(MediaType.SERVER_SENT_EVENTS)
-   public void startDomain(@PathParam("id") final String id,
-                           @Context SseEventSink sink) {
-      ExecutorService service = (ExecutorService)servletContext.getAttribute(ExecutorServletContextListener.TEST_EXECUTOR);
-      service.execute(new Thread(){
+   public void startDomain(@PathParam("id") final String id, @Context SseEventSink sink)
+   {
+      ExecutorService service = (ExecutorService) servletContext
+            .getAttribute(ExecutorServletContextListener.TEST_EXECUTOR);
+      service.execute(new Thread()
+      {
          public void run()
          {
             try
@@ -182,90 +223,112 @@ public class SseResource
                Thread.sleep(200);
                sink.send(sse.newEvent("domain-progress", "99%"));
                Thread.sleep(200);
-               sink.send(sse.newEvent("domain-progress", "Done."))
-                  .thenAccept((Object obj) -> {sink.close();});
+               sink.send(sse.newEvent("domain-progress", "Done.")).thenAccept((Object obj) -> {
+                  sink.close();
+               });
             }
             catch (final InterruptedException e)
             {
-                logger.error(e.getMessage(), e);
+               logger.error(e.getMessage(), e);
             }
          }
       });
    }
-   
-   
+
    @GET
    @Path("/events")
    @Produces(MediaType.SERVER_SENT_EVENTS)
-   public void eventStream(@Context SseEventSink sink) throws IOException {
-       if (sink == null) {
-           throw new IllegalStateException("No client connected.");
-       }
-       this.eventSink = sink;
-       ExecutorService service = (ExecutorService)servletContext.getAttribute(ExecutorServletContextListener.TEST_EXECUTOR);
-       service.execute(new Thread() {
-           public void run() {
-               while (!eventSink.isClosed() && sending) {
-                   try
-                   { 
-                       synchronized (openLock) {
-                           eventSink.send(sse.newEvent("msg"));
-                       }
-                       Thread.sleep(200);
-                   }catch (final InterruptedException e)
-                   {
-                       logger.error(e.getMessage(), e);
-                       break;
-                   }
-                  
+   public void eventStream(@Context SseEventSink sink) throws IOException
+   {
+      if (sink == null)
+      {
+         throw new IllegalStateException("No client connected.");
+      }
+      this.eventSink = sink;
+      ExecutorService service = (ExecutorService) servletContext
+            .getAttribute(ExecutorServletContextListener.TEST_EXECUTOR);
+      service.execute(new Thread()
+      {
+         public void run()
+         {
+            while (!eventSink.isClosed() && sending)
+            {
+               try
+               {
+                  synchronized (openLock)
+                  {
+                     eventSink.send(sse.newEvent("msg"));
+                  }
+                  Thread.sleep(200);
                }
-           }
-        });
+               catch (final InterruptedException e)
+               {
+                  logger.error(e.getMessage(), e);
+                  break;
+               }
+
+            }
+         }
+      });
    }
+
    @GET
    @Path("/isopen")
-   public boolean isOpen() {
-       synchronized (openLock) {
-          return !eventSink.isClosed();
-       }
-      
+   public boolean isOpen()
+   {
+      synchronized (openLock)
+      {
+         return !eventSink.isClosed();
+      }
+
    }
-   
+
    @GET
    @Path("/stopevent")
-   public void stopEvent() {
-       this.sending = false;
-      
+   public void stopEvent()
+   {
+      this.sending = false;
+
    }
 
    @GET
    @Path("/error")
    @Produces(MediaType.SERVER_SENT_EVENTS)
-   public void testErrorConsumer(@Context SseEventSink eventSink) {
-       throw new ServerErrorException(Response.Status.INTERNAL_SERVER_ERROR);
+   public void testErrorConsumer(@Context SseEventSink eventSink)
+   {
+      throw new ServerErrorException(Response.Status.INTERNAL_SERVER_ERROR);
    }
+
    @GET
    @Path("/retryafter")
    @Produces(MediaType.SERVER_SENT_EVENTS)
-   public void sendMessage(@Context SseEventSink sink) {
-        if (!isServiceAvailable) {
-            isServiceAvailable = true;
-            throw new WebApplicationException(
-                  Response.status(503).header(HttpHeaders.RETRY_AFTER, String.valueOf(1)).build());
-        } else {
-            try (SseEventSink s = sink) {
-                s.send(sse.newEvent("ServiceAvailable"));
-                isServiceAvailable = false;
-            }
-        }
+   public void sendMessage(@Context SseEventSink sink)
+   {
+      if (!isServiceAvailable)
+      {
+         isServiceAvailable = true;
+         throw new WebApplicationException(Response.status(503).header(HttpHeaders.RETRY_AFTER, String.valueOf(1))
+               .build());
+      }
+      else
+      {
+         try (SseEventSink s = sink)
+         {
+            s.send(sse.newEvent("ServiceAvailable"));
+            isServiceAvailable = false;
+         }
+      }
    }
+
    @GET
    @Path("/xmlevent")
    @Produces(MediaType.SERVER_SENT_EVENTS)
-   public void sendXmlType(@Context SseEventSink sink) {
-       try (SseEventSink eventSink = sink) {
-           JAXBElement<String> element = new JAXBElement<String>(new QName("name"), String.class, "xmldata");
-           eventSink.send(sse.newEventBuilder().data(element).mediaType(MediaType.APPLICATION_XML_TYPE).build());
-       }
+   public void sendXmlType(@Context SseEventSink sink)
+   {
+      try (SseEventSink eventSink = sink)
+      {
+         JAXBElement<String> element = new JAXBElement<String>(new QName("name"), String.class, "xmldata");
+         eventSink.send(sse.newEventBuilder().data(element).mediaType(MediaType.APPLICATION_XML_TYPE).build());
+      }
    }
 }

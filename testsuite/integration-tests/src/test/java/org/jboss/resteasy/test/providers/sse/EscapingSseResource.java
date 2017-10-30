@@ -1,4 +1,5 @@
 package org.jboss.resteasy.test.providers.sse;
+
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
@@ -19,7 +20,8 @@ public class EscapingSseResource
 
    @GET
    @Produces(MediaType.SERVER_SENT_EVENTS)
-   public void subscribe(@Context SseEventSink sink) throws IOException {
+   public void subscribe(@Context SseEventSink sink) throws IOException
+   {
 
       if (sink == null)
       {

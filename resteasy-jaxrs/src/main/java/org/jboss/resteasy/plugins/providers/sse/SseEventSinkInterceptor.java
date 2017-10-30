@@ -40,10 +40,13 @@ public class SseEventSinkInterceptor implements ContainerRequestFilter
 
       }
    }
-   private void enableSse(ContainerRequestContext requestContext) {
+
+   private void enableSse(ContainerRequestContext requestContext)
+   {
       SseEventOutputImpl sink = new SseEventOutputImpl(new SseEventProvider());
       // make sure we register this as being an async method
-      if(requestContext instanceof PostMatchContainerRequestContext) {
+      if (requestContext instanceof PostMatchContainerRequestContext)
+      {
          ((PostMatchContainerRequestContext) requestContext).getResourceMethod().markMethodAsAsync();
       }
       ResteasyProviderFactory.getContextDataMap().put(SseEventSink.class, sink);
