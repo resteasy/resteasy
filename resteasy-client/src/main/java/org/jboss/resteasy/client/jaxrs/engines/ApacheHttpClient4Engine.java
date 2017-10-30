@@ -433,15 +433,6 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
       }
    }
 
-   protected boolean isRedirectRequired(final ClientInvocation request, final HttpRequestBase httpMethod)
-   {
-      if (httpMethod instanceof HttpGet && isFollowRedirects())
-      {
-         return true;
-      }
-      return false;
-   }
-
    @SuppressWarnings("deprecation")
    protected HttpClient createDefaultHttpClient()
    {
@@ -469,7 +460,7 @@ public class ApacheHttpClient4Engine implements ClientHttpEngine
 
    protected void loadHttpMethod(final ClientInvocation request, HttpRequestBase httpMethod) throws Exception
    {
-      if (isRedirectRequired(request,httpMethod))
+      if (isFollowRedirects())
       {
          setRedirectRequired(request,httpMethod);
       }
