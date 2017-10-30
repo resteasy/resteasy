@@ -12,21 +12,33 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 public class OutboundSseEventImpl implements OutboundSseEvent
 {
    private final String name;
+
    private final String comment;
+
    private final String id;
+
    private final GenericType type;
+
    private final MediaType mediaType;
+
    private final Object data;
+
    private final long reconnectDelay;
 
    public static class BuilderImpl implements Builder
    {
       private String name;
+
       private String comment;
+
       private String id;
+
       private long reconnectDelay = -1;
+
       private GenericType type;
+
       private Object data;
+
       private MediaType mediaType = MediaType.SERVER_SENT_EVENTS_TYPE;
 
       public Builder name(String name)

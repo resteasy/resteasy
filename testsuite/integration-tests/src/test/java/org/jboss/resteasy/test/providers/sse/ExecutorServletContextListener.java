@@ -9,12 +9,15 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 import org.jboss.logging.Logger;
+
 @WebListener
 public class ExecutorServletContextListener implements ServletContextListener
 {
 
    public static final String TEST_EXECUTOR = "testExecutor";
+
    private final static Logger logger = Logger.getLogger(ExecutorServletContextListener.class);
+
    private ExecutorService executors = null;
 
    @Override

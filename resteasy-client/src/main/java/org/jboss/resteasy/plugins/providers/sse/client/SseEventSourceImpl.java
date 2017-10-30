@@ -25,29 +25,40 @@ import org.jboss.resteasy.plugins.providers.sse.SseConstants;
 import org.jboss.resteasy.plugins.providers.sse.SseEventInputImpl;
 import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 
-
 public class SseEventSourceImpl implements SseEventSource
 {
    public static final long RECONNECT_DEFAULT = 500;
 
    private final WebTarget target;
+
    private static final long CLOSE_WAIT = 30;
+
    private final long reconnectDelay;
+
    private final boolean disableKeepAlive;
+
    private final ScheduledExecutorService executor;
+
    private enum State {
       PENDING, OPEN, CLOSED
    }
+
    private final AtomicReference<State> state = new AtomicReference<>(State.PENDING);
+
    private final List<Consumer<InboundSseEvent>> onEventConsumers = new CopyOnWriteArrayList<>();
+
    private final List<Consumer<Throwable>> onErrorConsumers = new CopyOnWriteArrayList<>();
+
    private final List<Runnable> onCompleteConsumers = new CopyOnWriteArrayList<>();
-   
+
    protected static class SourceBuilder extends Builder
    {
       private WebTarget target = null;
+
       private long reconnect = RECONNECT_DEFAULT;
+
       private String name = null;
+
       private boolean disableKeepAlive = false;
 
       public SourceBuilder()
@@ -69,7 +80,8 @@ public class SseEventSourceImpl implements SseEventSource
       @Override
       public Builder target(WebTarget target)
       {
-         if (target == null) {
+         if (target == null)
+         {
             throw new NullPointerException();
          }
          this.target = target;
@@ -110,10 +122,12 @@ public class SseEventSourceImpl implements SseEventSource
          name = String.format("sse-event-source(%s)", target.getUri());
       }
       ScheduledExecutorService scheduledExecutor = null;
-      if (target instanceof ResteasyWebTarget) {
-         scheduledExecutor = ((ResteasyWebTarget)target).getResteasyClient().getScheduledExecutor();
+      if (target instanceof ResteasyWebTarget)
+      {
+         scheduledExecutor = ((ResteasyWebTarget) target).getResteasyClient().getScheduledExecutor();
       }
-      this.executor =  scheduledExecutor != null ? scheduledExecutor : Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory());
+      this.executor = scheduledExecutor != null ? scheduledExecutor : Executors
+            .newSingleThreadScheduledExecutor(new DaemonThreadFactory());
       if (open)
       {
          open();
@@ -123,8 +137,11 @@ public class SseEventSourceImpl implements SseEventSource
    private static class DaemonThreadFactory implements ThreadFactory
    {
       private static final AtomicInteger poolNumber = new AtomicInteger(1);
+
       private final ThreadGroup group;
+
       private final AtomicInteger threadNumber = new AtomicInteger(1);
+
       private final String namePrefix;
 
       DaemonThreadFactory()
@@ -147,7 +164,6 @@ public class SseEventSourceImpl implements SseEventSource
    {
       open(null);
    }
-   
 
    public void open(String lastEventId)
    {
@@ -159,7 +175,7 @@ public class SseEventSourceImpl implements SseEventSource
       executor.submit(handler);
       handler.awaitConnected();
    }
-   
+
    @Override
    public boolean isOpen()
    {
@@ -173,20 +189,24 @@ public class SseEventSourceImpl implements SseEventSource
    }
 
    @Override
-   public void register(Consumer<InboundSseEvent> onEvent) {
-      if (onEvent == null) {
+   public void register(Consumer<InboundSseEvent> onEvent)
+   {
+      if (onEvent == null)
+      {
          throw new IllegalArgumentException();
       }
       onEventConsumers.add(onEvent);
    }
 
    @Override
-   public void register(Consumer<InboundSseEvent> onEvent,
-                  Consumer<Throwable> onError) {
-      if (onEvent == null) {
+   public void register(Consumer<InboundSseEvent> onEvent, Consumer<Throwable> onError)
+   {
+      if (onEvent == null)
+      {
          throw new IllegalArgumentException();
       }
-      if (onError == null) {
+      if (onError == null)
+      {
          throw new IllegalArgumentException();
       }
       onEventConsumers.add(onEvent);
@@ -194,16 +214,18 @@ public class SseEventSourceImpl implements SseEventSource
    }
 
    @Override
-   public void register(Consumer<InboundSseEvent> onEvent,
-                  Consumer<Throwable> onError,
-                  Runnable onComplete) {
-      if (onEvent == null) {
+   public void register(Consumer<InboundSseEvent> onEvent, Consumer<Throwable> onError, Runnable onComplete)
+   {
+      if (onEvent == null)
+      {
          throw new IllegalArgumentException();
       }
-      if (onError == null) {
+      if (onError == null)
+      {
          throw new IllegalArgumentException();
       }
-      if (onComplete == null) {
+      if (onComplete == null)
+      {
          throw new IllegalArgumentException();
       }
       onEventConsumers.add(onEvent);
@@ -211,13 +233,12 @@ public class SseEventSourceImpl implements SseEventSource
       onCompleteConsumers.add(onComplete);
    }
 
-   
    @Override
    public boolean close(final long timeout, final TimeUnit unit)
    {
       if (state.getAndSet(State.CLOSED) != State.CLOSED)
       {
-         ResteasyWebTarget resteasyWebTarget = (ResteasyWebTarget)target;
+         ResteasyWebTarget resteasyWebTarget = (ResteasyWebTarget) target;
          //close httpEngine to close connection
          resteasyWebTarget.getResteasyClient().httpEngine().close();
          executor.shutdownNow();
@@ -231,11 +252,13 @@ public class SseEventSourceImpl implements SseEventSource
       }
       catch (InterruptedException e)
       {
-         onErrorConsumers.forEach(consumer -> {consumer.accept(e);});
+         onErrorConsumers.forEach(consumer -> {
+            consumer.accept(e);
+         });
          Thread.currentThread().interrupt();
          return false;
       }
-      
+
       return true;
    }
 
@@ -243,7 +266,9 @@ public class SseEventSourceImpl implements SseEventSource
    {
 
       private final CountDownLatch connectedLatch;
+
       private String lastEventId;
+
       private long reconnectDelay;
 
       public EventHandler(final long reconnectDelay, final String lastEventId)
@@ -279,11 +304,15 @@ public class SseEventSourceImpl implements SseEventSource
                Date requestTime = new Date();
                reconnectDelay = ex.getRetryTime(requestTime).getTime() - requestTime.getTime();
             }
-            onErrorConsumers.forEach(consumer -> {consumer.accept(ex);});
+            onErrorConsumers.forEach(consumer -> {
+               consumer.accept(ex);
+            });
          }
          catch (Throwable e)
          {
-            onErrorConsumers.forEach(consumer -> {consumer.accept(e);});
+            onErrorConsumers.forEach(consumer -> {
+               consumer.accept(e);
+            });
             state.set(State.CLOSED);
          }
          finally
@@ -306,7 +335,9 @@ public class SseEventSourceImpl implements SseEventSource
                if (event != null)
                {
                   onEvent(event);
-                  onEventConsumers.forEach(consumer -> {consumer.accept(event);});
+                  onEventConsumers.forEach(consumer -> {
+                     consumer.accept(event);
+                  });
                }
             }
          }

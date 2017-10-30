@@ -20,12 +20,19 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 public class SseEventInputImpl implements EventInput, Closeable
 {
    private Annotation[] annotations;
+
    private MediaType mediaType;
+
    private MultivaluedMap<String, String> httpHeaders;
+
    private InputStream inputStream;
+
    private volatile boolean isClosed = false;
+
    private boolean lastFieldWasData;
+
    private final String DELIMITER = new String(SseConstants.EVENT_DELIMITER, StandardCharsets.UTF_8);
+
    public SseEventInputImpl(Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders,
          InputStream inputStream)
    {
@@ -68,7 +75,7 @@ public class SseEventInputImpl implements EventInput, Closeable
          }
          catch (IOException e)
          {
-           //TODO: add a log message
+            //TODO: add a log message
          }
          throw new RuntimeException(Messages.MESSAGES.readEventException(), e1);
       }
@@ -92,11 +99,11 @@ public class SseEventInputImpl implements EventInput, Closeable
          {
             if (currentState == SseConstants.EVENT.START)
             {
-               if (b == '\r' ||b == '\n')
+               if (b == '\r' || b == '\n')
                {
                   continue;
                }
-               
+
                if (b == ':')
                {
                   currentState = SseConstants.EVENT.COMMENT;
@@ -188,7 +195,7 @@ public class SseEventInputImpl implements EventInput, Closeable
       }
       else if ("data".equals(name))
       {
-         if(lastFieldWasData)
+         if (lastFieldWasData)
             inboundEventBuilder.write(SseConstants.EOL);
          inboundEventBuilder.write(value);
          newLastFieldWasData = true;
@@ -254,7 +261,7 @@ public class SseEventInputImpl implements EventInput, Closeable
          if (boundary && buffer.size() == pos)
          {
             pos = 0;
-            boundary=false;
+            boundary = false;
             buffer.reset();
             continue;
          }

@@ -13,7 +13,8 @@ public class SseApplication extends Application
 
    public Set<Object> getSingletons()
    {
-      if (singletons.isEmpty()) {
+      if (singletons.isEmpty())
+      {
          singletons.add(new SseResource());
          singletons.add(new AnotherSseResource());
          singletons.add(new EscapingSseResource());

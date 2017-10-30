@@ -15,11 +15,14 @@ import javax.ws.rs.sse.SseEventSink;
 public class SseBroadcasterImpl implements SseBroadcaster
 {
    private ConcurrentLinkedQueue<SseEventSink> outputQueue = new ConcurrentLinkedQueue<SseEventSink>();
+
    private final List<BiConsumer<SseEventSink, Throwable>> onErrorConsumers = new CopyOnWriteArrayList<>();
+
    private final List<Consumer<SseEventSink>> closeConsumers = new CopyOnWriteArrayList<>();
-   
-   public SseBroadcasterImpl () {
-     
+
+   public SseBroadcasterImpl()
+   {
+
    }
 
    @Override
@@ -27,36 +30,41 @@ public class SseBroadcasterImpl implements SseBroadcaster
    {
       //Javadoc says close the broadcaster and all subscribed {@link SseEventSink} instances.
       //is it necessay to close the subsribed SseEventSink ?
-      outputQueue.forEach(evenSink -> {evenSink.close(); closeConsumers.forEach(consumer-> {consumer.accept(evenSink);});});
+      outputQueue.forEach(evenSink -> {
+         evenSink.close();
+         closeConsumers.forEach(consumer -> {
+            consumer.accept(evenSink);
+         });
+      });
       outputQueue.clear();
    }
 
    @Override
    public void onError(BiConsumer<SseEventSink, Throwable> onError)
    {
-      onErrorConsumers.add(onError); 
+      onErrorConsumers.add(onError);
    }
 
    @Override
    public void onClose(Consumer<SseEventSink> onClose)
-   {      
+   {
       closeConsumers.add(onClose);
    }
-   
+
    @Override
    public void register(SseEventSink sseEventSink)
    {
       outputQueue.add(sseEventSink);
-      
+
    }
 
-   @Override  
+   @Override
    public CompletionStage<?> broadcast(OutboundSseEvent event)
-   {  
+   {
       //return event immediately and doesn't block anything
       return CompletableFuture.runAsync(() -> {
          outputQueue.forEach(eventSink -> {
-            SseEventOutputImpl outputImpl = (SseEventOutputImpl)eventSink;
+            SseEventOutputImpl outputImpl = (SseEventOutputImpl) eventSink;
             if (!outputImpl.isClosed())
             {
                outputImpl.send(event, callAllErrConsumers());
@@ -68,12 +76,15 @@ public class SseBroadcasterImpl implements SseBroadcaster
          });
       });
    }
-   
-   BiConsumer<SseEventSink, Throwable> callAllErrConsumers() {
+
+   BiConsumer<SseEventSink, Throwable> callAllErrConsumers()
+   {
       return (eventSink, err) -> {
-         onErrorConsumers.forEach(consumer -> {consumer.accept(eventSink, err);});
+         onErrorConsumers.forEach(consumer -> {
+            consumer.accept(eventSink, err);
+         });
       };
-      
+
    }
 
 }
