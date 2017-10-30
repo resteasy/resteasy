@@ -604,6 +604,66 @@ public static class TestResource {
    could be either a <classname>List</classname> or a <classname>LinkedList</classname>.
    </para>
    
+   <para>
+   Finally, note that this extension works for arrays as well. For example,
+   </para>
+   
+   <programlisting>
+  public static class Foo {
+      private String foo;
+      public Foo(String foo) {this.foo = foo;}
+      public String getFoo() {return foo;}
+   }
+   
+   public static class FooArrayParamConverter implements ParamConverter&lt;Foo[]&gt; {
+
+      @Override
+      public Foo[] fromString(String value)
+      {
+         String[] ss = value.split(",");
+         Foo[] fs = new Foo[ss.length];
+         int i = 0;
+         for (String s : ss) {
+            fs[i++] = new Foo(s);
+         }
+         return fs;
+      }
+
+      @Override
+      public String toString(Foo[] values)
+      {
+         StringBuffer sb = new StringBuffer();
+         for (int i = 0; i &lt; values.length; i++) {
+            sb.append(values[i].getFoo()).append(",");
+         }
+         if (sb.length() &gt; 0) {
+            sb.deleteCharAt(sb.length() - 1);
+         }
+         return sb.toString();
+      }
+   }
+   
+   @Provider
+   public static class FooArrayParamConverterProvider implements ParamConverterProvider {
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public &lt;T&gt; ParamConverter&lt;T&gt; getConverter(Class&lt;T&gt; rawType, Type genericType, Annotation[] annotations) {
+         if (rawType.equals(Foo[].class));
+         return (ParamConverter&lt;T&gt;) new FooArrayParamConverter();
+      }
+   }
+   
+   @Path("")
+   public static class ParamConverterResource {
+
+      @GET
+      @Path("test")
+      public Response test(@QueryParam("foos") Foo[] foos) {
+         return Response.ok(new FooArrayParamConverter().toString(foos)).build();
+      }
+   }
+   </programlisting>
    </sect1>
    
 </chapter>
