@@ -1,4 +1,5 @@
 package org.jboss.resteasy.test.providers.sse;
+
 import java.io.IOException;
 
 import javax.ws.rs.DELETE;
@@ -16,15 +17,19 @@ public class AnotherSseResource
 {
 
    private final Object outputLock = new Object();
+
    @Context
    private Sse sse;
+
    private volatile SseEventSink eventSink;
+
    private SseBroadcaster sseBroadcaster;
 
    @GET
    @Path("/subscribe")
    @Produces(MediaType.SERVER_SENT_EVENTS)
-   public void subscribe(@Context SseEventSink sink) throws IOException {
+   public void subscribe(@Context SseEventSink sink) throws IOException
+   {
 
       if (sink == null)
       {
@@ -36,20 +41,24 @@ public class AnotherSseResource
       {
          sseBroadcaster = sse.newBroadcaster();
       }
-      sseBroadcaster.register(sink);  
+      sseBroadcaster.register(sink);
    }
-  
+
    @DELETE
    @Produces(MediaType.TEXT_PLAIN)
-   public boolean close() throws IOException {
-       synchronized (outputLock) {
-           if (eventSink != null) {
-              try (SseEventSink sink = eventSink) {
-                 //do nothing and this is intented to test eventSink's try-with-resources autoCloseable
-              }
-           }
-       }
-       return eventSink.isClosed();
+   public boolean close() throws IOException
+   {
+      synchronized (outputLock)
+      {
+         if (eventSink != null)
+         {
+            try (SseEventSink sink = eventSink)
+            {
+               //do nothing and this is intented to test eventSink's try-with-resources autoCloseable
+            }
+         }
+      }
+      return eventSink.isClosed();
    }
 
 }

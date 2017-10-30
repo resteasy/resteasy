@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
-import java.util.stream.Stream;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.GenericType;
@@ -21,23 +20,37 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 public class InboundSseEventImpl implements InboundSseEvent
 {
    private final String name;
+
    private final String id;
+
    private final String comment;
+
    private final byte[] data;
+
    private final long reconnectDelay;
+
    private final Annotation[] annotations;
+
    private final MediaType mediaType;
+
    private final MultivaluedMap<String, String> headers;
 
    static class Builder
    {
       private String name;
+
       private String id;
+
       private long reconnectDelay = -1;
+
       private final ByteArrayOutputStream dataStream;
+
       private final Annotation[] annotations;
+
       private final MediaType mediaType;
+
       private final MultivaluedMap<String, String> headers;
+
       private final StringBuilder commentBuilder;
 
       public Builder(Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> headers)
@@ -100,9 +113,9 @@ public class InboundSseEventImpl implements InboundSseEvent
          //from https://html.spec.whatwg.org/multipage/server-sent-events.html#processField
          //If the data buffer's last character is a U+000A LINE FEED (LF) character, 
          //then remove the last character from the data buffer
-         return new InboundSseEventImpl(name, id,
-               commentBuilder.length() > 0 ? commentBuilder.substring(0, commentBuilder.length() - 1) : null,
-               reconnectDelay, dataStream.toByteArray(), annotations, mediaType, headers);
+         return new InboundSseEventImpl(name, id, commentBuilder.length() > 0 ? commentBuilder.substring(0,
+               commentBuilder.length() - 1) : null, reconnectDelay, dataStream.toByteArray(), annotations, mediaType,
+               headers);
       }
    }
 
@@ -178,10 +191,10 @@ public class InboundSseEventImpl implements InboundSseEvent
    {
       //System.out.println("Thread " + Thread.currentThread().getName() + "read data");
       final MediaType effectiveMediaType = mediaType == null ? this.mediaType : mediaType;
-      ResteasyProviderFactory factory =  ResteasyProviderFactory.getInstance();
+      ResteasyProviderFactory factory = ResteasyProviderFactory.getInstance();
       RegisterBuiltin.register(factory);
-      final MessageBodyReader reader = factory.getClientMessageBodyReader(type.getRawType(),
-            type.getType(), annotations, mediaType);
+      final MessageBodyReader reader = factory.getClientMessageBodyReader(type.getRawType(), type.getType(),
+            annotations, mediaType);
       if (reader == null)
       {
          throw new IllegalStateException(Messages.MESSAGES.notFoundMBR(type.getClass().getName()));

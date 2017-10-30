@@ -24,8 +24,10 @@ import org.jboss.resteasy.resteasy_jaxrs.i18n.Messages;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 @Provider
-@Produces({"text/event-stream"})
-@Consumes({"text/event-stream"})
+@Produces(
+{"text/event-stream"})
+@Consumes(
+{"text/event-stream"})
 public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, MessageBodyReader<SseEventInputImpl>
 {
    @Override
@@ -41,9 +43,9 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
       return -1;
    }
 
-   
    @Override
-   @SuppressWarnings({"unchecked"})
+   @SuppressWarnings(
+   {"unchecked"})
    public void writeTo(OutboundSseEvent event, Class<?> type, Type genericType, Annotation[] annotations,
          MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
          throws IOException, WebApplicationException
@@ -114,7 +116,8 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
                      {
                         if (b == '\n' || b == '\r')
                         {
-                           if (!isNewLine) {
+                           if (!isNewLine)
+                           {
                               entityStream.write(SseConstants.EOL);
                            }
                            isNewLine = true;
@@ -140,7 +143,7 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
                      public void close() throws IOException
                      {
                         entityStream.close();
-                     }                    
+                     }
                   });
             entityStream.write(SseConstants.EOL);
 
@@ -149,8 +152,7 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
       }
       entityStream.write(SseConstants.EOL);
    }
-   
-   
+
    @Override
    public boolean isReadable(Class<?> cls, Type type, Annotation[] annotations, MediaType mediaType)
    {
@@ -159,8 +161,8 @@ public class SseEventProvider implements MessageBodyWriter<OutboundSseEvent>, Me
 
    @Override
    public SseEventInputImpl readFrom(Class<SseEventInputImpl> cls, Type type, Annotation[] annotations,
-         MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-         throws IOException, WebApplicationException
+         MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
+         WebApplicationException
    {
       return new SseEventInputImpl(annotations, mediaType, httpHeaders, entityStream);
    }

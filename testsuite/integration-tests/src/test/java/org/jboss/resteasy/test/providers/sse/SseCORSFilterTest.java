@@ -30,7 +30,8 @@ public class SseCORSFilterTest
       war.addClass(SseCORSFilterTest.class);
       war.addAsWebInfResource("org/jboss/resteasy/test/providers/sse/filter/web.xml", "web.xml");
       war.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
-      return TestUtil.finishContainerPrepare(war, null, SseFilterApplication.class, SseResource.class, CORSFilter.class, ExecutorServletContextListener.class);
+      return TestUtil.finishContainerPrepare(war, null, SseFilterApplication.class, SseResource.class,
+            CORSFilter.class, ExecutorServletContextListener.class);
    }
 
    private String generateURL(String path)
@@ -49,9 +50,10 @@ public class SseCORSFilterTest
       Assert.assertTrue("CORS http header is expected in event response",
             response.getHeaders().get("Access-Control-Allow-Origin").contains("*"));
       Assert.assertEquals("text/event-stream is expected", response.getMediaType(), MediaType.SERVER_SENT_EVENTS_TYPE);
-      
+
       Client isOpenClient = ClientBuilder.newClient();
-      Invocation.Builder isOpenRequest = isOpenClient.target(generateURL("/service/server-sent-events/isopen")).request();
+      Invocation.Builder isOpenRequest = isOpenClient.target(generateURL("/service/server-sent-events/isopen"))
+            .request();
       javax.ws.rs.core.Response isOpenResponse = isOpenRequest.get();
       Assert.assertTrue("EventSink open is expected ", isOpenResponse.readEntity(Boolean.class));
       Assert.assertTrue("CORS http header is expected in isOpenResponse",
