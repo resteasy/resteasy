@@ -113,4 +113,11 @@ public class TestResource
    {
       return Response.ok("OK").build();
    }
+
+   @Path("post-redirect")
+   @POST
+   public Response postRedirect(String p)
+   {
+      return Response.seeOther(PortProviderUtil.createURI("/redirected", p)).build();
+   }
 }
