@@ -70,8 +70,10 @@ public class HelloModule implements Module
       <title>Request Scope</title>
       <para>
         Add the RequestScopeModule to your modules to allow objects to be scoped to the HTTP request by adding
-        the @RequestScoped annotation to your class.  All the objects injectable via the @Context annotation are 
+        the @RequestScoped annotation to your fields in resource classes. All the objects injectable via the @Context annotation are 
         also injectable, except ServletConfig and ServletContext.
+        Note that RequestScopeModule will already be added if any of your modules extends com.google.inject.servlet.ServletModule.
+        In such cases you should not add it again to avoid injector creation errors.
       </para>
 <programlisting>
 <![CDATA[
@@ -81,10 +83,9 @@ import javax.ws.rs.core.Context;
 
 import org.jboss.resteasy.plugins.guice.RequestScoped;
 
-@RequestScoped
 public class MyClass
 {
-    @Inject @Context
+    @Inject @RequestScoped @Context
     private HttpRequest request;
 }
 ]]>
