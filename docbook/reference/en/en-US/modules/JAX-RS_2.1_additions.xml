@@ -20,38 +20,155 @@
 
     <sect1>
         <title>Server-Sent Events (SSE)</title>
-        <para>Server-sent events provides a way to establish a one-way channel from a server
-            to a client. The connection is long running and it is re-used for multiple events
-            sent from the server.
+        <para>
+             SSE is a part of HTML standard and now it is supported by many browsers. 
+             It is another server push technology, which provides a way to establish 
+             a one-way channel to continuously send data to client. SSE event is pushed 
+             to the client via a long-running HTTP connection and the client can automatically 
+             reconnect to retrieve missed events after the connection is lost by set 
+             a "Last-Event-ID" HTTP header in the request.
+        </para>
+        <para> 
+             SSE stream has text/event-stream media type and it contains multiple SSE events. 
+             SSE event is a data structure encoded with UTF-8 and contains fields and comment. 
+             The field can be event, data, id, retry and other kinds of field will be ignored.
+        </para>
+        <para>
+             From JAX-RS 2.1, Server-sent Events APIs are introduced to support send, receive and broadcast SSE event.
         </para>
         <sect2>
-            <title>SSE Client API</title>
+            <title>SSE Server</title>
             <para>
-                The SSE entry point in the client API is the SseEventSource class.
-                This object is constructed from a WebTarget.
-                It does not duplicate any functionality in WebTarget.
-                It only adds the necessary logic for SSE.
+              Like the following example,  SSE resource method has the text/event-stream produce 
+              media type and a injected context parameter SseEventSink. Injected SseEventSink is 
+              the connected SSE stream where events can send. Another injected context Sse is an 
+              entry point for creating event and broadcast SSE event. Here is an example to 
+               demonstrate send SSE events every 200ms and close stream after the "done" event.             
             </para>
             <para>
-                Clients request an SSE connection by using the special media type
-                <emphasis>text/event-stream</emphasis>
-                in the Accept header.
+            <example>
+               <programlisting><![CDATA[
+   @GET
+   @Path("domains/{id}")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void startDomain(@PathParam("id") final String id, @Context SseEventSink sink @Context Sse sse)
+   {
+      ExecutorService service = (ExecutorService) servletContext
+            .getAttribute(ExecutorServletContextListener.TEST_EXECUTOR);
+      service.execute(new Thread()
+      {
+         public void run()
+         {
+            try
+            {
+               sink.send(sse.newEventBuilder().name("domain-progress")
+                     .data(String.class, "starting domain " + id + " ...").build());
+               Thread.sleep(200);
+               sink.send(sse.newEvent("domain-progress", "50%"));
+               Thread.sleep(200);
+               sink.send(sse.newEvent("domain-progress", "60%"));
+               Thread.sleep(200);
+               sink.send(sse.newEvent("domain-progress", "70%"));
+               Thread.sleep(200);
+               sink.send(sse.newEvent("domain-progress", "99%"));
+               Thread.sleep(200);
+               sink.send(sse.newEvent("domain-progress", "Done.")).thenAccept((Object obj) -> {
+                  sink.close();
+               });
+            }
+            catch (final InterruptedException e)
+            {
+               logger.error(e.getMessage(), e);
+            }
+         }
+      });
+   }              
+                ]]>
+                </programlisting>
+             </example>
             </para>
         </sect2>
         <sect2>
-            <title>SSE Server API</title>
+            <title>SSE Broadcasting</title>
             <para>
-                The SSE server API is used to accept connections and send events to one or more clients.
-                A resource method that injects an SseEventSink and produces the media type
-                <emphasis>text/event-stream</emphasis>
-                is an SSE resource method.
+               With SseBroadcaster, SSE events can be broadcasted to multiple clients simultaneously. 
+               It will iterate all registered SseEventSinks and send event to all requested SSE Stream.  
+               An application can create SseBroadcaster from an injected context Sse.The broadcast 
+               method on a SseBroadcaster is used to send SSE event to all registered clients.
+               The following code snippet is an example to create SseBroadcaster, subscribe 
+               and broadcast event to all subscribed consumers. 
+            </para>
+            <para>
+            <example>
+               <programlisting><![CDATA[
+   @GET
+   @Path("/subscribe")
+   @Produces(MediaType.SERVER_SENT_EVENTS)
+   public void subscribe(@Context SseEventSink sink) throws IOException
+   {
+      if (sink == null)
+      {
+         throw new IllegalStateException("No client connected.");
+      }
+      if (sseBroadcaster == null)
+      {
+         sseBroadcaster = sse.newBroadcaster();
+      }
+      sseBroadcaster.register(sink);
+   }
+
+   @POST
+   @Path("/broadcast")
+   public void broadcast(String message) throws IOException
+   {
+      if (sseBroadcaster == null)
+      {
+         sseBroadcaster = sse.newBroadcaster();
+      }
+      sseBroadcaster.broadcast(sse.newEvent(message));
+
+   }          
+                ]]>
+                </programlisting>
+             </example>
             </para>
         </sect2>
         <sect2>
-            <title>Broadcasting</title>
+            <title>SSE Client</title>
             <para>
-                SSE provides a way to broadcast events to multiple clients simultaneously.
-                Multiple SseEventSink’s can be registered on a single SseBroadcaster object.
+                SseEventSource is the entry point to read and process incoming SSE event. 
+                A SseEventSource instance can be initialized with a WebTarget. Once SseEventSource 
+                is created and connected to a server, registered event consumer will be invoked when 
+                an inbound event arrives. When there is error happens, the exception will be passed 
+                to a registered consumer to process. SseEventSource can automatically reconnect server 
+                and continuously receive pushed events after the connection is lost. SseEventSource 
+                can send lastEventId to server by default when it is reconnected, and server may use 
+                this id to replay all missed events. But reply event is really upon on SSE resource 
+                method implementation.  If the server responds HTTP 503 with a RETRY_AFTER header, 
+                SseEventSource will automatically schedule a  reconnect task with this RETRY_AFTER 
+                value. The following code snippet is to create a SseEventSource and print the 
+                inbound event data value and error if it happens.
+            </para>
+          <para>
+            <example>
+               <programlisting><![CDATA[
+    public void printEvent() throws Exception
+    {
+      WebTarget target = client.target("http://localhost:8080/service/server-sent-events"));
+      SseEventSource msgEventSource = SseEventSource.target(target).build();
+      try (SseEventSource eventSource = msgEventSource)
+      {
+         eventSource.register(event -> {
+            System.out.println(event.readData(String.class));
+         }, ex -> {
+            ex.printStackTrace();
+         });
+         eventSource.open();
+      } 
+    }   
+                ]]>
+                </programlisting>
+             </example>
             </para>
         </sect2>
     </sect1>
