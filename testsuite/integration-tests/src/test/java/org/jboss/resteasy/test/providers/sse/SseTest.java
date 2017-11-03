@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -285,9 +286,9 @@ public class SseTest
    public void testEventSourceConsumer() throws Exception
    {
       final CountDownLatch latch = new CountDownLatch(1);
-      final AtomicInteger errors = new AtomicInteger(0);
       Client client = new ResteasyClientBuilder().connectionPoolSize(10).build();
       WebTarget target = client.target(generateURL("/service/server-sent-events/error"));
+      List<Throwable> errorList = new ArrayList<Throwable>();
       Thread t = new Thread(new Runnable()
       {
          @Override
@@ -298,19 +299,22 @@ public class SseTest
                eventSource.register(event -> {
                   latch.countDown();
                }, ex -> {
-                  errors.incrementAndGet();
-                  latch.countDown();
+                  if (ex instanceof InternalServerErrorException)
+                  {
+                     errorList.add(ex);
+                     latch.countDown();
+                  }
                });
                eventSource.open();
             }
          }
       });
       t.start();
-      if (latch.await(45, TimeUnit.SECONDS))
+      if (latch.await(30, TimeUnit.SECONDS))
       {
          t.interrupt();
       }
-      Assert.assertEquals("EventSource error consumer is not called", 1, errors.get());
+      Assert.assertFalse("InternalServerErrorException isn't processed in error consumer", errorList.isEmpty());
    }
 
    @Test
